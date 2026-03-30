@@ -1,0 +1,112 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.accordion.title }} <span class="fw-normal">{{ t.pages.accordion.subtitle
+            }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.accordion.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+
+      <li-tabsx type="tabs">
+
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.accordion.intro }}</p>
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">O accordion organiza blocos densos de informação em seções expansíveis,
+                    reduzindo ruído visual sem perder contexto.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Itens recolhidos, expandidos, desabilitados e com cabeçalho customizado.</li>
+                    <li>Eventos de abertura por item.</li>
+                    <li>Renderização tardia e destruição opcional do corpo.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Conteúdo muito interativo exige cuidado com foco.</li>
+                    <li>Seções longas demais ainda pedem hierarquia interna.</li>
+                    <li>O layout não substitui navegação por rotas.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <li-accordion [allowMultipleOpen]="true" [flush]="true" [lazy]="true" [destroyOnCollapse]="true">
+              <li-accordion-item [header]="t.pages.accordion.collapsedHeader"
+                [description]="t.pages.accordion.collapsedDescription" iconClass="ph-caret-circle-down"
+                (expandedChange)="onAccordionStateChange(t.pages.accordion.collapsedHeader, $event)">
+                {{ t.pages.accordion.collapsedBody }}
+              </li-accordion-item>
+
+              <li-accordion-item [header]="t.pages.accordion.expandedHeader"
+                [description]="t.pages.accordion.expandedDescription" iconClass="ph-sparkle" [expanded]="true"
+                (expandedChange)="onAccordionStateChange(t.pages.accordion.expandedHeader, $event)">
+                {{ t.pages.accordion.expandedBody }}
+              </li-accordion-item>
+
+              <li-accordion-item [header]="t.pages.accordion.disabledHeader"
+                [description]="t.pages.accordion.disabledDescription" iconClass="ph-prohibit" [disabled]="true">
+                {{ t.pages.accordion.disabledBody }}
+              </li-accordion-item>
+
+              <li-accordion-item [header]="t.pages.accordion.customHeader"
+                [description]="t.pages.accordion.customDescription" iconClass="ph-chart-line"
+                (expandedChange)="onAccordionStateChange(t.pages.accordion.customHeader, $event)">
+                <template li-accordion-header>
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="ph-chart-line text-primary"></i>
+                    <span>{{ t.pages.accordion.customHeader }}</span>
+                    <span class="badge bg-primary ms-auto">{{ t.pages.accordion.templateBadge }}</span>
+                  </span>
+                </template>
+                {{ t.pages.accordion.customBody }}
+              </li-accordion-item>
+            </li-accordion>
+
+            <div class="demo-summary-box mt-3">{{ accordionEventLog.isEmpty ? initialAccordionEventLog :
+              accordionEventLog }}</div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.accordion.intro }}</p>
+            <ul class="mb-3 ps-3">
+              <li><code>[allowMultipleOpen]</code> permite manter mais de um item expandido ao mesmo tempo.</li>
+              <li><code>[flush]</code> remove contornos extras para uma composição mais compacta.</li>
+              <li><code>[lazy]</code> adia a renderização do corpo até a primeira abertura.</li>
+              <li><code>[destroyOnCollapse]</code> remove o conteúdo do DOM quando o item fecha.</li>
+              <li><code>[expanded]</code> e <code>(expandedChange)</code> controlam abertura por item.</li>
+            </ul>
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-accordion [allowMultipleOpen]="true"&gt;
+  &lt;li-accordion-item
+    [header]="'Título'"
+    [expanded]="true"
+    (expandedChange)="onChange($event)"&gt;
+  &lt;/li-accordion-item&gt;
+&lt;/li-accordion&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

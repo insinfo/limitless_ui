@@ -1,0 +1,24 @@
+/* Fix: Phosphor 2.0.3 icon codes for fancytree expander.
+   all.min.css uses \f31c / \f31a (Phosphor Fill), but the loaded font
+   only has regular-weight glyphs (\eXXX range). */
+
+/* Collapsed — ph-caret-right */
+.fancytree-exp-c > .fancytree-expander:after,
+.fancytree-exp-cl > .fancytree-expander:after,
+.fancytree-exp-cd > .fancytree-expander:after,
+.fancytree-exp-cdl > .fancytree-expander:after {
+  content: "\ea00" !important;
+}
+
+/* Expanded — ph-caret-down */
+.fancytree-exp-e > .fancytree-expander:after,
+.fancytree-exp-ed > .fancytree-expander:after,
+.fancytree-exp-edl > .fancytree-expander:after,
+.fancytree-exp-el > .fancytree-expander:after {
+  content: "\e9fe" !important;
+}
+
+/* Loading — ph-spinner */
+.fancytree-loading > .fancytree-expander:after {
+  content: "\ed16" !important;
+}

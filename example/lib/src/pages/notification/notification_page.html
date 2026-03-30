@@ -1,0 +1,42 @@
+<div class="demo-page">
+  <li-notification-outlet [service]="notifications"></li-notification-outlet>
+
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.notification.title }} <span class="fw-normal">{{ t.pages.notification.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.notification.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.notification.cardTitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-0">{{ t.pages.notification.idle }}</p>
+          </div>
+        </li-tabx>
+        <li-tabx header="Exemplos">
+          <div class="card-body">
+            <div class="demo-action-grid">
+              <button class="btn btn-success" type="button" (click)="showSuccess()">Success</button>
+              <button class="btn btn-warning" type="button" (click)="showWarning()">Warning</button>
+              <button class="btn btn-outline-primary" type="button" (click)="showWithLink()">{{ t.pages.notification.withLink }}</button>
+            </div>
+
+            <div class="demo-summary-box mt-3">{{ lastAction.isEmpty ? t.pages.notification.idle : lastAction }}</div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

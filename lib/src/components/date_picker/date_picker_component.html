@@ -1,0 +1,76 @@
+<div class="date-picker-wrapper">
+    <div #triggerElement class="input-group" [class.disabled]="isDisabled" (click)="toggleOpen()">
+        <input type="text" class="form-control date-picker-field" [value]="displayValue" [placeholder]="effectivePlaceholder"
+            readonly [disabled]="isDisabled">
+        <button type="button" class="btn btn-light border" tabindex="-1" [disabled]="isDisabled">
+            <i class="ph ph-calendar-blank"></i>
+        </button>
+    </div>
+
+    <div #panelElement class="daterangepicker date-picker-open single ltr show-calendar opensright"
+        (click)="onPanelClick($event)"
+        [class.is-open]="isOpen">
+        <div class="drp-calendar left single-calendar">
+            <div class="date-picker-panel-header">
+                <button type="button" class="calendar-nav prev available" (click)="navigateBackward()">
+                    <span></span>
+                </button>
+                <button type="button" class="date-picker-view-switch" (click)="toggleViewMode()">
+                    {{ currentHeaderLabel }}
+                </button>
+                <button type="button" class="calendar-nav next available" (click)="navigateForward()">
+                    <span></span>
+                </button>
+            </div>
+
+            <div class="calendar-table" *ngIf="isDayView">
+                <table class="table-condensed date-picker-calendar-table">
+                    <thead>
+                        <tr>
+                            <th *ngFor="let weekday of weekdayLabels; trackBy: trackByYear">{{ weekday }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let week of calendar; trackBy: trackByWeek">
+                            <td *ngFor="let cell of week; trackBy: trackByCell" [class.off]="!cell.isCurrentMonth"
+                                [class.disabled]="isDisabledDate(cell.date)" [class.available]="!isDisabledDate(cell.date)"
+                                [class.today]="isToday(cell.date)" [class.active]="isSelectedDate(cell.date)"
+                                (click)="selectDay(cell.date)">
+                                {{ cell.date.day }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div *ngIf="isMonthView" class="date-picker-selection-grid">
+                <button type="button" *ngFor="let option of monthOptions; trackBy: trackByMonthOption"
+                    class="date-picker-selection-item" [class.active]="option.month == visibleMonth.month"
+                    [class.disabled]="isMonthDisabled(visibleMonth.year, option.month)"
+                    (click)="selectMonth(option.month)">
+                    {{ option.label }}
+                </button>
+            </div>
+
+            <div *ngIf="isYearView" class="date-picker-selection-grid date-picker-selection-grid-years">
+                <button type="button" *ngFor="let year of visibleYearRange; trackBy: trackByYear"
+                    class="date-picker-selection-item" [class.active]="year == visibleMonth.year"
+                    [class.disabled]="isYearDisabled(year)" (click)="selectYear(year)">
+                    {{ year }}
+                </button>
+            </div>
+        </div>
+
+        <div class="drp-buttons">
+            <span class="drp-selected">
+                {{ draftDisplayValue.isEmpty ? emptySelectionLabel : draftDisplayValue }}
+            </span>
+            <button type="button" class="btn btn-light" (click)="clear()">
+                {{ clearLabel }}
+            </button>
+            <button type="button" class="btn btn-light" (click)="close()">
+                {{ cancelLabel }}
+            </button>
+        </div>
+    </div>
+</div>

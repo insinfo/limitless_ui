@@ -1,0 +1,129 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.alerts.title }} <span class="fw-normal">{{ t.pages.alerts.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.alerts.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.alerts.intro }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">O componente destaca estados rápidos, confirmações e avisos operacionais sem depender de JavaScript externo.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Variantes cromáticas e ícones inline ou em bloco.</li>
+                    <li>Modo sólido, pill, borderless e dismissible.</li>
+                    <li>Customização por classes auxiliares.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Alertas não substituem fluxos de confirmação crítica.</li>
+                    <li>Mensagens longas pedem composição mais estruturada.</li>
+                    <li>Estados simultâneos demais reduzem a hierarquia visual.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-3">
+              <button class="btn btn-sm btn-light" type="button" (click)="restoreReleaseAlert()">
+                {{ t.common.restoreAlert }}
+              </button>
+            </div>
+
+            <div class="demo-component-stack">
+              <li-alert
+                  variant="primary"
+                  iconClass="ph-rocket-launch"
+                  iconMode="inline"
+                  [visible]="releaseAlertVisible"
+                  [dismissible]="true"
+                  (visibleChange)="handleVisibilityChange($event)"
+                  (dismissed)="dismissReleaseAlert()">
+                <strong>{{ t.pages.alerts.releaseDone }}</strong> {{ t.pages.alerts.releaseBody }}
+              </li-alert>
+
+              <li-alert
+                  variant="warning"
+                  [solid]="true"
+                  iconClass="ph-warning-circle"
+                  iconMode="block"
+                  [closeButtonWhite]="true"
+                  [dismissible]="true">
+                <strong>{{ t.pages.alerts.attention }}</strong> {{ t.pages.alerts.solidHelp }}
+              </li-alert>
+
+              <li-alert
+                  variant="indigo"
+                  iconClass="ph-info"
+                  iconMode="inline"
+                  iconPosition="end"
+                  [roundedPill]="true"
+                  [borderless]="true">
+                {{ t.pages.alerts.borderlessHelp }}
+              </li-alert>
+
+              <li-alert
+                  variant="teal"
+                  iconClass="ph-article"
+                  iconMode="block"
+                  iconContainerClass="bg-teal text-white"
+                  textClass="text-body"
+                  alertClass="shadow-sm"
+                  [truncated]="true">
+                {{ t.pages.alerts.customHelp }}
+              </li-alert>
+            </div>
+
+            <div class="demo-summary-box mt-3">{{ alertEventLog }}</div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">Use alertas para mensagens curtas, estados operacionais e avisos de interface. O componente aceita configuração visual sem precisar de wrappers externos.</p>
+            <ul class="mb-3 ps-3">
+              <li><code>variant</code> define a paleta do alerta.</li>
+              <li><code>iconClass</code>, <code>iconMode</code> e <code>iconPosition</code> controlam a leitura visual.</li>
+              <li><code>[solid]</code>, <code>[dismissible]</code>, <code>[roundedPill]</code> e <code>[borderless]</code> ajustam o acabamento.</li>
+              <li><code>(visibleChange)</code> e <code>(dismissed)</code> sincronizam o estado com o componente pai.</li>
+              <li><code>alertClass</code>, <code>textClass</code> e <code>iconContainerClass</code> refinam a aparência sem criar nova variante.</li>
+            </ul>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-alert
+  variant="warning"
+  [solid]="true"
+  iconClass="ph-warning-circle"
+  [dismissible]="true"&gt;
+  &lt;strong&gt;Atenção.&lt;/strong&gt; Revise a operação.
+&lt;/li-alert&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

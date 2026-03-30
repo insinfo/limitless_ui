@@ -1,0 +1,16 @@
+.demo-summary-box {
+	padding: 0.875rem 1rem;
+	border-radius: var(--border-radius-lg);
+	background: var(--gray-100);
+}
+
+.date-picker-feature-card {
+	height: 100%;
+	padding: 1rem;
+	border-radius: var(--border-radius-lg);
+}
+
+.date-picker-feature-title {
+	font-weight: 700;
+	margin-bottom: 0.5rem;
+}

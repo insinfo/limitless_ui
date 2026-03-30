@@ -1,0 +1,94 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">Components <span class="fw-normal">Inputs</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">Selects e intervalo de datas</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Inputs</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-0">Esta página agrupa selects simples, multiseleção e intervalo de datas numa mesma vitrine de formulários.</p>
+          </div>
+        </li-tabx>
+        <li-tabx header="Exemplos">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-xl-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Selects</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-4">
+                      <label class="form-label fw-semibold">Status da entrega</label>
+                      <li-select
+                          [dataSource]="statusOptions"
+                          labelKey="label"
+                          valueKey="id"
+                          disabledKey="disabled"
+                          [(ngModel)]="selectedStatus">
+                      </li-select>
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="form-label fw-semibold">Canais de notificacao</label>
+                      <li-multi-select
+                          [dataSource]="channelOptions"
+                          labelKey="label"
+                          valueKey="id"
+                          [(ngModel)]="selectedChannels">
+                      </li-multi-select>
+                    </div>
+
+                    <div class="demo-summary-box">
+                      <div><strong>Status:</strong> {{ selectedStatusLabel }}</div>
+                      <div><strong>Canais:</strong> {{ selectedChannelsLabel }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Date range picker</h5>
+                  </div>
+                  <div class="card-body">
+                    <li-date-range-picker
+                        [inicio]="rangeStart"
+                        [fim]="rangeEnd"
+                        placeholder="Selecione o periodo da sprint"
+                        (inicioChange)="onRangeStartChange($event)"
+                        (fimChange)="onRangeEndChange($event)">
+                    </li-date-range-picker>
+
+                    <div class="demo-summary-box mt-3">
+                      <div><strong>Periodo atual:</strong> {{ selectedRangeLabel }}</div>
+                      <div class="text-muted">
+                        Configure `minDate`, `maxDate`, `placeholder` e `locale`
+                        conforme o fluxo.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,90 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.tabs.title }} <span class="fw-normal">{{ t.pages.tabs.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.tabs.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.tabs.cardTitle }}</h5>
+      </div>
+
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">A página de tabs demonstra composição horizontal, vertical, cabeçalhos customizados e estados desabilitados.</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e funcionam bem para documentação, formulários segmentados e painéis administrativos.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Modo tabs e pills.</li>
+                    <li>Posicionamento horizontal ou lateral.</li>
+                    <li>Cabeçalho projetado e abas desabilitadas.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Muitas abas no mesmo nível prejudicam escaneabilidade.</li>
+                    <li>Conteúdo longo demais pede hierarquia adicional.</li>
+                    <li>Abas aninhadas devem ser isoladas em subcomponentes.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Exemplo visível</h5>
+              </div>
+              <div class="card-body">
+                <p class="text-muted mb-3">O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba desabilitada, sem contaminar a navegação da página de documentação.</p>
+                <tabs-preview-component></tabs-preview-component>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">Use o componente para agrupar conteúdo relacionado quando a navegação por seções fizer mais sentido do que empilhar cards ou abrir novas rotas.</p>
+            <ul class="mb-3 ps-3">
+              <li><code>type</code> aceita <code>tabs</code> ou <code>pills</code>.</li>
+              <li><code>placement</code> controla a posição das abas, como topo ou lateral.</li>
+              <li><code>[justified]</code> distribui os gatilhos de forma uniforme.</li>
+              <li><code>[active]</code> e <code>[disabled]</code> controlam estado por aba.</li>
+              <li><code>template li-tabx-header</code> permite cabeçalhos customizados.</li>
+            </ul>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-tabsx type="pills" placement="left" [justified]="true"&gt;
+  &lt;li-tabx header="Tokens" [active]="true"&gt;
+    &lt;div class="p-3"&gt;Conteúdo&lt;/div&gt;
+  &lt;/li-tabx&gt;
+
+  &lt;li-tabx header="Bloqueada" [disabled]="true"&gt;&lt;/li-tabx&gt;
+&lt;/li-tabsx&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

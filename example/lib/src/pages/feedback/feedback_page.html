@@ -1,0 +1,176 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">Components <span class="fw-normal">Feedback</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">Feedback</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Feedback</h5>
+      </div>
+
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">
+              A página combina alertas e barras de progresso para demonstrar padrões de feedback
+              transacional e contínuo em uma interface administrativa.
+            </p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">A tela reúne componentes úteis para mensagens imediatas, estados de atenção, acompanhamento de progresso e comunicação de status.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Alertas com variantes, ícones, preenchimento sólido e dismiss.</li>
+                    <li>Barras de progresso simples e empilhadas.</li>
+                    <li>Composição adequada para feedback transacional e operacional.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Alertas não substituem fluxo de confirmação crítica.</li>
+                    <li>Progress não faz polling ou sincronização automática.</li>
+                    <li>Estados muito densos pedem hierarquia visual no componente pai.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Alerts</h5>
+                <button class="btn btn-sm btn-light" type="button" (click)="restoreReleaseAlert()">
+                  Restaurar alerta
+                </button>
+              </div>
+
+              <div class="card-body">
+                <p class="text-muted">
+                  Exemplos reais com variant, solid, dismissible, iconMode e iconPosition.
+                </p>
+
+                <div class="demo-component-stack">
+                  <li-alert
+                      variant="primary"
+                      iconClass="ph-rocket-launch"
+                      iconMode="inline"
+                      [visible]="releaseAlertVisible"
+                      [dismissible]="true"
+                      (dismissed)="dismissReleaseAlert()">
+                    <strong>Deploy concluído.</strong> O pacote já está pronto para ser validado no navegador.
+                  </li-alert>
+
+                  <li-alert
+                      variant="warning"
+                      [solid]="true"
+                      iconClass="ph-warning-circle"
+                      [dismissible]="true">
+                    <strong>Atenção.</strong> Use solid=true quando quiser mais contraste em avisos importantes.
+                  </li-alert>
+
+                  <li-alert
+                      variant="indigo"
+                      iconClass="ph-info"
+                      iconMode="inline"
+                      iconPosition="end"
+                      [borderless]="true">
+                    Borderless, roundedPill e alertClass permitem compor estilos mais específicos sem criar variantes novas.
+                  </li-alert>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mt-4">
+              <div class="card-header">
+                <h5 class="mb-0">Progress</h5>
+              </div>
+
+              <div class="card-body">
+                <div class="demo-progress-block">
+                  <div>
+                    <div class="fw-semibold">Pipeline de release</div>
+                    <small class="text-muted">Config: height, rounded, showValueLabel</small>
+                  </div>
+                  <li-progress [height]="'1rem'" [rounded]="true">
+                    <li-progress-bar class="bg-primary" [value]="78" [showValueLabel]="true"></li-progress-bar>
+                  </li-progress>
+                </div>
+
+                <div class="demo-progress-block">
+                  <div>
+                    <div class="fw-semibold">Capacidade por squad</div>
+                    <small class="text-muted">Config: striped, animated, barras empilhadas</small>
+                  </div>
+                  <li-progress [height]="'1rem'" [striped]="true" [animated]="true">
+                    <li-progress-bar class="bg-success" [value]="42" label="Produto"></li-progress-bar>
+                    <li-progress-bar class="bg-info" [value]="28" label="UX"></li-progress-bar>
+                    <li-progress-bar class="bg-warning" [value]="16" label="QA"></li-progress-bar>
+                  </li-progress>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <div class="row g-4">
+              <div class="col-xl-6">
+                <h6 class="mb-2">Como utilizar alerts</h6>
+                <ul class="mb-3 ps-3">
+                  <li><code>variant</code> define a cor sem criar classes manuais.</li>
+                  <li><code>[solid]</code> aumenta contraste em avisos importantes.</li>
+                  <li><code>[dismissible]</code> e <code>[visible]</code> permitem ciclo controlado pelo componente pai.</li>
+                  <li><code>iconClass</code>, <code>iconMode</code> e <code>iconPosition</code> ajustam a leitura visual.</li>
+                  <li><code>[borderless]</code>, <code>[roundedPill]</code> e <code>alertClass</code> refinam o acabamento.</li>
+                </ul>
+
+                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-alert
+  variant="warning"
+  [solid]="true"
+  iconClass="ph-warning-circle"
+  [dismissible]="true"&gt;
+  &lt;strong&gt;Atenção.&lt;/strong&gt; Revise a operação.
+&lt;/li-alert&gt;</code></pre>
+              </div>
+
+              <div class="col-xl-6">
+                <h6 class="mb-2">Como utilizar progress</h6>
+                <ul class="mb-3 ps-3">
+                  <li><code>[height]</code> controla a espessura da barra.</li>
+                  <li><code>[rounded]</code>, <code>[striped]</code> e <code>[animated]</code> ajustam o tratamento visual.</li>
+                  <li><code>li-progress-bar</code> recebe <code>[value]</code>, <code>label</code> e <code>[showValueLabel]</code>.</li>
+                  <li>Barras empilhadas são úteis para composição de capacidade por grupo.</li>
+                </ul>
+
+                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-progress [height]="'1rem'" [striped]="true" [animated]="true"&gt;
+  &lt;li-progress-bar class="bg-success" [value]="42" label="Produto"&gt;&lt;/li-progress-bar&gt;
+  &lt;li-progress-bar class="bg-info" [value]="28" label="UX"&gt;&lt;/li-progress-bar&gt;
+&lt;/li-progress&gt;</code></pre>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

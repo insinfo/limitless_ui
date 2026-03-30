@@ -1,0 +1,202 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.datePicker.title }} <span class="fw-normal">{{ t.pages.datePicker.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.datePicker.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.datePicker.cardTitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx [header]="t.pages.datePicker.tabOverview" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.datePicker.intro }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.datePicker.descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ t.pages.datePicker.descriptionBody }}</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.datePicker.featuresTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ t.pages.datePicker.featureOne }}</li>
+                    <li>{{ t.pages.datePicker.featureTwo }}</li>
+                    <li>{{ t.pages.datePicker.featureThree }}</li>
+                    <li>{{ t.pages.datePicker.featureFour }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.datePicker.limitsTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ t.pages.datePicker.limitOne }}</li>
+                    <li>{{ t.pages.datePicker.limitTwo }}</li>
+                    <li>{{ t.pages.datePicker.limitThree }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ t.pages.datePicker.ngModelTitle }}</h6>
+                  <li-date-picker
+                      [(ngModel)]="selectedDate"
+                      [placeholder]="t.pages.datePicker.placeholder">
+                  </li-date-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>{{ t.pages.datePicker.currentDateLabel }}:</strong> {{ selectedDateLabel }}</div>
+                    <div class="text-muted">{{ t.pages.datePicker.defaultHelp }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ t.pages.datePicker.restrictedTitle }}</h6>
+                  <li-date-picker
+                      [(ngModel)]="restrictedDate"
+                      [minDate]="minDate"
+                      [maxDate]="maxDate"
+                      [placeholder]="t.pages.datePicker.restrictedPlaceholder">
+                  </li-date-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>{{ t.pages.datePicker.restrictedLabel }}:</strong> {{ restrictedDateLabel }}</div>
+                    <div class="text-muted">{{ t.pages.datePicker.restrictedHelp }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-4 mt-1">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ t.pages.datePicker.englishLocaleTitle }}</h6>
+                  <li-date-picker
+                      [(ngModel)]="englishDate"
+                      locale="en_US"
+                      [placeholder]="t.pages.datePicker.englishPlaceholder">
+                  </li-date-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>{{ t.pages.datePicker.englishLabel }}:</strong> {{ englishDateLabel }}</div>
+                    <div class="text-muted">{{ t.pages.datePicker.englishHelp }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ t.pages.datePicker.disabledTitle }}</h6>
+                  <li-date-picker
+                      [value]="disabledDate"
+                      [disabled]="true"
+                      [placeholder]="t.pages.datePicker.disabledPlaceholder">
+                  </li-date-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>{{ t.pages.datePicker.disabledLabel }}:</strong> {{ disabledDateLabel }}</div>
+                    <div class="text-muted">{{ t.pages.datePicker.disabledHelp }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-primary border-primary-subtle mt-4 mb-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+              <div>
+                <div class="fw-semibold">Precisa selecionar um período?</div>
+                <div class="text-muted">A demo dedicada do Date Range continua disponível com exemplos de início, fim e restrições.</div>
+              </div>
+              <a class="btn btn-primary" [routerLink]="DemoRoutePaths.dateRange.toUrl()">
+                Abrir demo de Date Range
+              </a>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.pages.datePicker.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.datePicker.apiIntro }}</p>
+            <div class="row g-3 mb-3">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.datePicker.apiInputsTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ t.pages.datePicker.apiInputOne }}</li>
+                    <li>{{ t.pages.datePicker.apiInputTwo }}</li>
+                    <li>{{ t.pages.datePicker.apiInputThree }}</li>
+                    <li>{{ t.pages.datePicker.apiInputFour }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.datePicker.apiBehaviorTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ t.pages.datePicker.apiBehaviorOne }}</li>
+                    <li>{{ t.pages.datePicker.apiBehaviorTwo }}</li>
+                    <li>{{ t.pages.datePicker.apiBehaviorThree }}</li>
+                    <li>{{ t.pages.datePicker.apiBehaviorFour }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-date-picker
+  [(ngModel)]="selectedDate"
+  [minDate]="minDate"
+  [maxDate]="maxDate"
+  [placeholder]="placeholder"
+  locale="en_US"&gt;
+&lt;/li-date-picker&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>{{ t.pages.datePicker.apiUsageExample }}</code></pre>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.pages.datePicker.tabVariations">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-lg-4">
+                <div class="date-picker-feature-card border border-primary-subtle bg-primary bg-opacity-10">
+                  <div class="date-picker-feature-title">{{ t.pages.datePicker.variationStandardTitle }}</div>
+                  <p class="mb-0 text-muted">{{ t.pages.datePicker.variationStandardBody }}</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="date-picker-feature-card border border-success-subtle bg-success bg-opacity-10">
+                  <div class="date-picker-feature-title">{{ t.pages.datePicker.variationLocaleTitle }}</div>
+                  <p class="mb-0 text-muted">{{ t.pages.datePicker.variationLocaleBody }}</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="date-picker-feature-card border border-warning-subtle bg-warning bg-opacity-10">
+                  <div class="date-picker-feature-title">{{ t.pages.datePicker.variationDisabledTitle }}</div>
+                  <p class="mb-0 text-muted">{{ t.pages.datePicker.variationDisabledBody }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

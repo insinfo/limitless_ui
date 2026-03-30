@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr" class="custom-scrollbars">
+
+<head>
+  <title>Limitless UI - Example</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css"
+    rel="stylesheet" type="text/css">
+  <link href="https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/fonts/inter/inter.min.css" rel="stylesheet"
+    type="text/css">
+  <link href="https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css" rel="stylesheet" type="text/css">
+
+  <link href="style.css" rel="stylesheet" type="text/css">
+  <script defer src="main.dart.js"></script>
+
+</head>
+
+<body>
+  <my-app>
+    <style>
+      .progress-container.indeterminate {
+
+        background-color: #c6dafc;
+
+      }
+
+
+      .progress-container {
+
+        position: relative;
+
+        height: 100%;
+
+        background-color: #e0e0e0;
+
+        overflow: hidden;
+
+      }
+
+
+      .progress-container.indeterminate.fallback>.secondary-progress {
+
+        animation-name: indeterminate-secondary-progress;
+
+        animation-duration: 2000ms;
+
+        animation-iteration-count: infinite;
+
+        animation-timing-function: linear;
+
+      }
+
+
+      .progress-container.indeterminate>.secondary-progress {
+
+        background-color: #4285f4;
+
+      }
+
+
+      .secondary-progress {
+
+        background-color: #a1c2fa;
+
+      }
+
+
+      .active-progress,
+
+      .secondary-progress {
+
+        transform-origin: left center;
+
+        transform: scaleX(0);
+
+        position: absolute;
+
+        top: 0;
+
+        transition: transform 218ms cubic-bezier(0.4, 0, 0.2, 1);
+
+        right: 0;
+
+        bottom: 0;
+
+        left: 0;
+
+        will-change: transform;
+
+      }
+
+
+      .progress-container {
+
+        position: relative;
+
+        height: 100%;
+
+        background-color: #e0e0e0;
+
+        overflow: hidden
+      }
+
+
+      .progress-container.indeterminate {
+
+        background-color: #c6dafc
+      }
+
+
+      .progress-container.indeterminate>.secondary-progress {
+
+        background-color: #4285f4
+      }
+
+
+      .active-progress,
+
+      .secondary-progress {
+
+        transform-origin: left center;
+
+        transform: scaleX(0);
+
+        position: absolute;
+
+        top: 0;
+
+        transition: transform 218ms cubic-bezier(0.4, 0, 0.2, 1);
+
+        right: 0;
+
+        bottom: 0;
+
+        left: 0;
+
+        will-change: transform
+      }
+
+
+      .active-progress {
+
+        background-color: #4285f4
+      }
+
+
+      .secondary-progress {
+
+        background-color: #a1c2fa
+      }
+
+
+      .progress-container.indeterminate.fallback>.active-progress {
+
+        animation-name: indeterminate-active-progress;
+
+        animation-duration: 2000ms;
+
+        animation-iteration-count: infinite;
+
+        animation-timing-function: linear
+      }
+
+
+      .progress-container.indeterminate.fallback>.secondary-progress {
+
+        animation-name: indeterminate-secondary-progress;
+
+        animation-duration: 2000ms;
+
+        animation-iteration-count: infinite;
+
+        animation-timing-function: linear
+      }
+
+
+      @keyframes indeterminate-active-progress {
+
+        0% {
+
+          transform: translate(0%) scaleX(0)
+        }
+
+
+        25% {
+
+          transform: translate(0%) scaleX(0.5)
+        }
+
+
+        50% {
+
+          transform: translate(25%) scaleX(0.75)
+        }
+
+
+        75% {
+
+          transform: translate(100%) scaleX(0)
+        }
+
+
+        100% {
+
+          transform: translate(100%) scaleX(0)
+        }
+
+      }
+
+      @keyframes indeterminate-secondary-progress {
+        0% {
+          transform: translate(0%) scaleX(0)
+        }
+
+        60% {
+          transform: translate(0%) scaleX(0)
+        }
+
+        80% {
+          transform: translate(0%) scaleX(0.6)
+        }
+
+        100% {
+          transform: translate(100%) scaleX(0.1)
+        }
+
+      }
+
+      .loadContainer {
+        display: inline-block;
+        width: 100%;
+        height: calc(100vh - 40vh);
+        padding-top: 40vh;
+        text-align: center;
+        vertical-align: middle;
+      }
+
+
+      .loadingC {
+        display: inline-block;
+        vertical-align: middle;
+        width: 30%;
+        height: 4px
+      }
+    </style>
+    <div class="loadContainer">
+      <div class="loadingC">
+        <span>Carregando...</span>
+        <div class="progress-container _ngcontent-xao-51 indeterminate fallback" role="progressbar" aria-label="loading"
+          aria-valuemin="0" aria-valuemax="100">
+          <div class="secondary-progress _ngcontent-xao-51" aria-label="active progress 0 secondary progress 0"
+            style="transform: scaleX(0);"></div>
+          <div class="active-progress _ngcontent-xao-51" style="transform: scaleX(0);"></div>
+        </div>
+      </div>
+    </div>
+
+
+  </my-app>
+</body>
+
+</html>

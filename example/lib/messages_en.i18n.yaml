@@ -1,0 +1,580 @@
+app:
+  brand: Limitless UI Example
+  searchPlaceholder: Live package documentation
+  badge: AngularDart + Limitless
+  navigation: Navigation
+  navigationHelp: Example with ngrouter and real package components.
+  components: Components
+  language: Language
+  portuguese: Portuguese
+  english: English
+  theme: Theme
+  light: Light
+  dark: Dark
+  auto: Auto
+
+nav:
+  overview: Overview
+  alerts: Alerts
+  progress: Progress
+  accordion: Accordion
+  tabs: Tabs
+  modal: Modal
+  select: Select
+  multiSelect: Multi Select
+  currency: Currency
+  datePicker: Date Picker
+  timePicker: Time Picker
+  dateRange: Date Range
+  carousel: Carousel
+  tooltip: Tooltip
+  datatable: Datatable
+  datatableSelect: Datatable Select
+  notification: Notification
+  treeview: Treeview
+  helpers: Helpers
+  button: Buttons
+
+common:
+  restoreAlert: Restore alert
+  none: None
+  open: Open
+  close: Close
+  status: Status
+  currentPeriod: Current period
+  restrictedWindow: Restricted window
+
+pages:
+  overview:
+    title: Components
+    subtitle: Overview
+    breadcrumb: Library overview
+    heroTitle: Executable gallery to document components and configurations
+    heroLead: This example uses the Limitless theme in index.html, navigates with ngrouter, and renders real package components in scenarios closer to the product.
+    statComponentsLabel: Components
+    statComponentsHelp: Executable examples using the real package API.
+    statThemeLabel: Theme
+    statThemeHelp: Layout and classes aligned with Limitless CSS.
+    statNavigationLabel: Navigation
+    statNavigationHelp: Explicit routes for each showcase section.
+    organizationTitle: How the demo is organized
+    feedbackTitle: Feedback
+    feedbackBody: Alerts and progress with visual variations and states.
+    disclosureTitle: Disclosure
+    disclosureBody: Accordion, tabs, and modal for expandable structures.
+    inputsTitle: Inputs
+    inputsBody: Selects, date picker, time picker, and date range picker bound to real state.
+    showcaseTitle: Showcase
+    showcaseBody: Carousel, tooltip, and datatable in an editorial layout.
+    featureSectionTitle: Featured pages
+    featureSectionBody: Direct links to real showcase pages instead of placeholder cards.
+    featureDatePickerTitle: Date Picker
+    featureDatePickerBody: Dedicated page with variations, API, and locale support for single-date selection.
+    featureTimePickerTitle: Time Picker
+    featureTimePickerBody: Time selection with dial, AM/PM, and ngModel integration.
+    featureDateRangeTitle: Date Range
+    featureDateRangeBody: Period flows with constraints, locale, and an API centered on start and end dates.
+    featureCarouselTitle: Carousel
+    featureCarouselBody: Transitions, grid, captions, and examples closer to the original Limitless behavior.
+    featureDatatableTitle: Datatable
+    featureDatatableBody: Search, selection, export, and view switching with real data interactions.
+    featureSelectTitle: Select
+    featureSelectBody: Simple select with projected-content and data-source examples.
+    featureTabsTitle: Tabs
+    featureTabsBody: Tabs and pills for organizing documentation and interface states.
+    featureAccordionTitle: Accordion
+    featureAccordionBody: Expandable items with lazy, destroyOnCollapse, and custom headers.
+    featureHelpersTitle: Helpers
+    featureHelpersBody: Loading, dialogs, toasts, and popovers ready to use.
+  alerts:
+    title: Components
+    subtitle: Alerts
+    breadcrumb: Alert variations
+    cardTitle: Visual range and states
+    intro: This page demonstrates solid, dismissible, roundedPill, truncated, alertClass, iconContainerClass, textClass, closeButtonWhite, and events.
+    releaseDone: Deploy completed.
+    releaseBody: The package is ready for validation.
+    attention: Attention.
+    solidHelp: Use solid=true when you need maximum contrast.
+    borderlessHelp: This example combines borderless, roundedPill, and an icon at the end of the text.
+    customHelp: This alert demonstrates custom classes on the container and icon block to match more editorial layouts without changing the base component markup.
+    waiting: Waiting for interaction with alerts.
+    restored: Main alert restored.
+    dismissed: Main alert dismissed by the user.
+    visible: "visibleChange: alert visible."
+    hidden: "visibleChange: alert hidden."
+  accordion:
+    title: Components
+    subtitle: Accordion
+    breadcrumb: Expandable items
+    cardTitle: Accordion settings
+    intro: This page covers allowMultipleOpen, flush, lazy, destroyOnCollapse, disabled item, icons, and custom header.
+    collapsedHeader: Collapsed state
+    collapsedDescription: Starts closed and expands on demand.
+    collapsedBody: Ideal for long lists that need to preserve visual focus.
+    expandedHeader: Expanded state
+    expandedDescription: Initially open item.
+    expandedBody: Set expanded=true on the item that must open on load.
+    disabledHeader: Disabled
+    disabledDescription: Does not react to clicks.
+    disabledBody: This item demonstrates the disabled state.
+    customHeader: Custom header
+    customDescription: Template with li-accordion-header.
+    customBody: The header can be fully customized without losing the accordion structure.
+    templateBadge: template
+    idle: No accordion changed.
+    expandedState: expanded
+    collapsedState: collapsed
+  progress:
+    title: Components
+    subtitle: Progress
+    breadcrumb: Simple and stacked bars
+    cardTitle: Progress states
+    releasePipeline: Release pipeline
+    releaseConfig: "Config: height, rounded, showValueLabel"
+    squadCapacity: Squad capacity
+    squadConfig: "Config: striped, animated, stacked bars"
+    teamProduct: Product
+    customRange: Custom range
+    customConfig: "Config: min, max and text label"
+  tabs:
+    title: Components
+    subtitle: Tabs
+    breadcrumb: Horizontal and vertical tabs
+    cardTitle: Pills with custom header
+    tokens: Tokens
+    flow: Flow
+    blocked: Blocked
+    tokensBody: Use tabs to separate documentation, examples, and API notes.
+    flowBody: The component respects Bootstrap and Limitless composition.
+    blockedBody: Disabled tab.
+  modal:
+    title: Components
+    subtitle: Modal
+    breadcrumb: Dialogs and layout variations
+    cardTitle: Modal examples
+    openModal: Open modal
+    scrollableModal: Scrollable modal
+    modalTitle: Modal example
+    modalHeading: Standardized composition
+    modalBody: The modal reuses the Limitless visual layer and can host short forms, confirmations, or detailed views.
+    scrollableTitle: Scrollable modal
+    scrollableBody: This example uses dialogScrollable, fullScreenOnMobile, and disables backdrop close.
+    scrollableLine(int index): "Line $index to demonstrate internal modal scrolling while keeping the header fixed in the component standard structure."
+    understood: Understood
+  select:
+    title: Components
+    subtitle: Select
+    breadcrumb: Simple select
+    cardTitle: Data source and content projection
+    deliveryStatus: Delivery status
+    projectedTitle: Select with li-option
+    projectedPlaceholder: Choose a level
+    projectedStatus: Projected status
+    tabOverview: Overview
+    tabApi: API
+    tabTroubleshooting: Troubleshooting
+    apiInputs: Most used inputs
+    troubleshootingIntro: Common issues seen in this component and how to avoid them
+    optionDraft: Draft
+    optionReview: In review
+    optionApproved: Approved
+    optionArchived: Archived
+    optionPriority: Priority
+    optionBacklog: Backlog
+  multiSelect:
+    title: Components
+    subtitle: Multi Select
+    breadcrumb: Multiple selection
+    cardTitle: Data source and li-multi-option
+    channels: Notification channels
+    projectedTargets: Projected targets
+    projectedPlaceholder: Select targets
+    projectedLabel: Projected
+    tabOverview: Overview
+    tabApi: API
+    tabTroubleshooting: Troubleshooting
+    apiInputs: Most used inputs
+    troubleshootingIntro: Important precautions to avoid regressions
+    optionEmail: E-mail
+    optionPush: Push
+    optionSms: SMS
+    optionWebhook: Webhook
+    optionPortal: Portal
+    optionApi: API
+    optionBatch: Batch process
+  currency:
+    title: Components
+    subtitle: Currency Input
+    breadcrumb: Monetary input in minor units
+    cardTitle: Brazilian format
+    budget: Budget
+    minorUnits: Minor units
+    help: The value bound to ngModel is always emitted as an integer in cents.
+  dateRange:
+    title: Components
+    subtitle: Date Range
+    breadcrumb: Period selection
+    cardTitle: Free and constrained ranges
+    sprintPlaceholder: Select the sprint period
+    publicationPlaceholder: Publication window
+    partial: Partial or undefined period
+    unfinished: Window not completed yet
+    constrainedHelp: The second example constrains the selection with minDate and maxDate.
+    between: to
+  timePicker:
+    title: Components
+    subtitle: Time Picker
+    breadcrumb: Time selection
+    cardTitle: Time Picker API and variations
+    tabOverview: Overview
+    tabApi: API
+    intro: The time picker uses a Limitless-inspired dial for hour and minute selection with ngModel integration.
+    descriptionTitle: Description
+    descriptionBody: The component fits scheduling, review, publishing, and operating-hour flows with a light, direct overlay.
+    featuresTitle: Features
+    featureOne: Direct ngModel binding with Duration?.
+    featureTwo: Clock-based selection switching between hour and minute.
+    featureThree: Integrated AM/PM toggle inside the panel.
+    limitsTitle: Limitations
+    limitOne: The component currently works in a 12-hour AM/PM format.
+    limitTwo: It does not apply business window rules on its own.
+    limitThree: The returned value carries only hour and minute.
+    defaultTitle: Default time picker
+    englishTitle: English time picker
+    disabledTitle: Disabled time picker
+    placeholder: Select time
+    englishPlaceholder: Select time
+    disabledPlaceholder: Locked time
+    currentLabel: Current time
+    reviewLabel: Review time
+    disabledLabel: Locked time
+    defaultHelp: Click the hour block first and the minute block next to refine the selection.
+    englishHelp: Locale switches the placeholder and helper texts used by the panel.
+    disabledHelp: The field keeps displaying the value without opening the overlay.
+    notesTitle: Usage notes
+    notesBody: The component returns a Duration normalized to the minutes of the day, which fits forms and filters without carrying a full date.
+    noneSelected: No time selected
+    apiIntro: Use li-time-picker when the form needs only a time value, without an associated date, while keeping ngModel integration.
+    apiInputsTitle: Main inputs
+    apiInputOne: The ngModel binding works with Duration?.
+    apiInputTwo: locale adjusts the placeholder and panel labels.
+    apiInputThree: disabled prevents opening the clock.
+    apiBehaviorTitle: Behavior
+    apiBehaviorOne: Click the clock to select the hour and then the minute.
+    apiBehaviorTwo: The OK button confirms the selection and emits valueChange and ngModel.
+    apiBehaviorThree: AM and PM switch the half of the day without rebuilding the value manually.
+    apiUsageExample: |
+      // Usage example
+      selectedTime = const Duration(hours: 10, minutes: 48);
+
+      <li-time-picker
+        [(ngModel)]="selectedTime"
+        locale="en_US">
+      </li-time-picker>
+  datePicker:
+    title: Components
+    subtitle: Date Picker
+    breadcrumb: Single date selection
+    cardTitle: Date Picker API and variations
+    tabOverview: Overview
+    tabApi: API
+    tabVariations: Variations
+    intro: This page is dedicated to li-date-picker, focusing on single-date flows, quick month/year navigation, locale, and common field states.
+    descriptionTitle: Description
+    descriptionBody: The date picker fits single-date flows such as scheduling, publication, due dates, and punctual filters without mixing responsibilities with the range selector.
+    featuresTitle: Features
+    featureOne: Direct ngModel binding with DateTime?.
+    featureTwo: Restriction through minDate and maxDate.
+    featureThree: Immediate apply on day click.
+    featureFour: Direct month and year navigation inside the overlay.
+    limitsTitle: Limitations
+    limitOne: It does not replace specific business calendar rules.
+    limitTwo: Special rules such as holidays and blocked dates still belong in the parent component.
+    limitThree: Special dates and messages remain the parent component's responsibility.
+    ngModelTitle: Date picker with ngModel
+    restrictedTitle: Restricted date picker
+    englishLocaleTitle: Date picker in English
+    disabledTitle: Disabled date picker
+    placeholder: Select a date
+    restrictedPlaceholder: Allowed window
+    englishPlaceholder: Choose a date
+    disabledPlaceholder: Locked field
+    currentDateLabel: Current date
+    restrictedLabel: Restricted date
+    englishLabel: EN date
+    disabledLabel: Locked value
+    defaultHelp: Click the calendar header to jump quickly between month and year.
+    restrictedHelp: This example limits selection between minDate and maxDate.
+    englishHelp: Locale switches calendar labels and the displayed date format.
+    disabledHelp: The field keeps the current value readable without opening the overlay.
+    noneSelected: No date selected
+    partialRange: Partial or undefined period
+    apiIntro: Use li-date-picker when the flow depends on a single date with a light overlay, ngModel, locale, and basic constraints.
+    apiInputsTitle: Main inputs
+    apiInputOne: The [(ngModel)] binding works with DateTime?.
+    apiInputTwo: "[minDate] and [maxDate] constrain the navigable and selectable window."
+    apiInputThree: "locale adjusts labels and the visual date format."
+    apiInputFour: "[disabled] prevents opening and selection."
+    apiBehaviorTitle: Behavior
+    apiBehaviorOne: Clicking a day applies immediately and closes the overlay.
+    apiBehaviorTwo: Clicking the calendar title cycles between day, month, and year views.
+    apiBehaviorThree: clear() remains available in the footer to reset the current value.
+    apiBehaviorFour: valueChange and ngModel receive the normalized date without time.
+    apiUsageExample: |
+      // Usage example
+      selectedDate = DateTime(2026, 3, 20);
+
+      <li-date-picker
+        [(ngModel)]="selectedDate"
+        [minDate]="DateTime(2026, 3, 1)"
+        [maxDate]="DateTime(2026, 3, 31)"
+        locale="en_US">
+      </li-date-picker>
+    variationStandardTitle: Default flow
+    variationStandardBody: Best fit for forms where the user picks a date and moves on without extra confirmation.
+    variationLocaleTitle: Visual locale
+    variationLocaleBody: The same API switches labels, months, and displayed format between Portuguese and English.
+    variationDisabledTitle: Locked state
+    variationDisabledBody: Preserves the rendered value when the date is informative and cannot be edited.
+  carousel:
+    title: Components
+    subtitle: Carousel
+    breadcrumb: Carousel with transitions, captions, and grid
+    cardTitle: Carousel variations
+    exampleLabel: Example
+    standardTitle: Carousel with Caption
+    standardSubtitle: Indicators and controls in the Limitless style, with a centered white caption inside each slide.
+    gridTitle: Carousel in Grid
+    gridSubtitle: You can have up to 12 items per slide using the Bootstrap grid, with row and col-* inside each carousel-item.
+    slideOneLabel: Architecture
+    slideOneTitle: First slide
+    slideOneBody: Small indicators at the bottom and side navigation in the Bootstrap/Limitless style.
+    slideTwoLabel: Composition
+    slideTwoTitle: Second slide
+    slideTwoBody: The caption uses the correct component class and respects the theme's centered positioning.
+    slideThreeLabel: Delivery
+    slideThreeTitle: Third slide
+    slideThreeBody: Navigation stays consistent even with autoplay and manual changes.
+    slideFourLabel: Reference
+    slideFourTitle: Fourth slide
+    slideFourBody: Structure equivalent to the classic example from components_carousel.html.
+    gridSlideOneLabel: Collection 1
+    gridSlideTwoLabel: Collection 2
+    gridSlideThreeLabel: Collection 3
+    gridCardOneTitle: Editorial workspace
+    gridCardOneBody: Visual board for documents, highlights, and more narrative layouts.
+    gridCardTwoTitle: Featured product
+    gridCardTwoBody: Structure ready for card showcases, media, or campaigns.
+    gridCardThreeTitle: User journey
+    gridCardThreeBody: A slide can gather multiple entries without losing readability.
+    gridCardFourTitle: Visual identity
+    gridCardFourBody: Larger images help validate contrast, crop, and overlay behavior.
+    gridCardFiveTitle: Composable modules
+    gridCardFiveBody: Carousel, Caption, and Grid work together without coupled markup.
+    gridCardSixTitle: Executable demo
+    gridCardSixBody: The showcase stops being static and starts showing real behavior.
+    gridCardSevenTitle: Expanded collection
+    gridCardSevenBody: One more slide to validate indicators and continuous transition in the grid.
+    gridCardEightTitle: Stable navigation
+    gridCardEightBody: Side controls stay predictable because the row lives inside the item.
+    gridCardNineTitle: Correct structure
+    gridCardNineBody: The item remains the real slide; the grid is only internal content.
+    fadeTitle: Carousel with Fade
+    fadeSubtitle: Switches slides through opacity instead of lateral movement, useful for hero banners and caption-heavy content.
+    fadeSlideOneLabel: Fade 1
+    fadeSlideOneTitle: Editorial fade
+    fadeSlideOneBody: The slide enters through opacity without competing for attention with horizontal movement.
+    fadeSlideTwoLabel: Fade 2
+    fadeSlideTwoTitle: Cleaner reading
+    fadeSlideTwoBody: Works well when the image already has a lot of texture and you want a more discreet transition.
+    fadeSlideThreeLabel: Fade 3
+    fadeSlideThreeTitle: Smooth transition
+    fadeSlideThreeBody: Controls, indicators, and autoplay stay the same; only the visual language of the transition changes.
+    zoomTitle: Carousel with Zoom
+    zoomSubtitle: Scale and opacity on entry for a more cinematic feeling without changing the component structure.
+    zoomSlideOneLabel: Zoom 1
+    zoomSlideOneTitle: Zoom in
+    zoomSlideOneBody: The next slide enters at a larger scale and settles into the main plane by the end of the transition.
+    zoomSlideTwoLabel: Zoom 2
+    zoomSlideTwoTitle: Visual emphasis
+    zoomSlideTwoBody: A good variation for campaign showcases, portfolios, or more editorial screens.
+    zoomSlideThreeLabel: Zoom 3
+    zoomSlideThreeTitle: Same markup
+    zoomSlideThreeBody: "The API remains the same: the effect changes through input, without alternate item markup."
+    verticalTitle: Vertical Carousel
+    verticalSubtitle: The transition happens on the Y axis, useful when the page composition already has a lot of horizontal movement.
+    verticalSlideOneLabel: Vertical 1
+    verticalSlideOneTitle: Vertical displacement
+    verticalSlideOneBody: The carousel behavior stays the same, but the perception changes completely.
+    verticalSlideTwoLabel: Vertical 2
+    verticalSlideTwoTitle: Alternate flow
+    verticalSlideTwoBody: This mode can pair better with column-based layouts and more documentary content.
+    verticalSlideThreeLabel: Vertical 3
+    verticalSlideThreeTitle: Consistent API
+    verticalSlideThreeBody: Just like zoom, the change is encapsulated in the component and can be reused on other screens.
+    blurTitle: Carousel with Blur
+    blurSubtitle: A transition with blur and opacity that softens the exchange between more detailed images.
+    blurSlideOneLabel: Blur 1
+    blurSlideOneTitle: Diffused entry
+    blurSlideOneBody: The slide emerges with reduced blur and growing opacity, creating a more atmospheric change.
+    blurSlideTwoLabel: Blur 2
+    blurSlideTwoTitle: Texture under control
+    blurSlideTwoBody: This mode works well when the photography has a lot of detail and pure fade feels too subtle.
+    blurSlideThreeLabel: Blur 3
+    blurSlideThreeTitle: Reusable variation
+    blurSlideThreeBody: The effect remains encapsulated in the component and can be applied to any carousel through input.
+    parallaxTitle: Carousel with Parallax
+    parallaxSubtitle: Shifts the image with apparent depth, creating a more spatial transition between slides.
+    parallaxSlideOneLabel: Parallax 1
+    parallaxSlideOneTitle: Lateral depth
+    parallaxSlideOneBody: The slide enters with displacement and slightly larger scale, suggesting a moving background plane.
+    parallaxSlideTwoLabel: Parallax 2
+    parallaxSlideTwoTitle: Editorial motion
+    parallaxSlideTwoBody: This mode works well in visual showcases and pages where the image change should feel more physical.
+    parallaxSlideThreeLabel: Parallax 3
+    parallaxSlideThreeTitle: Subtle layers
+    parallaxSlideThreeBody: The parallax feel stays subtle and reusable without requiring special item markup.
+  tooltip:
+    title: Components
+    subtitle: Tooltip
+    breadcrumb: Hover, click, and manual mode
+    cardTitle: Triggers and placement
+    hoverText: Shows hints on hover.
+    hoverButton: Hover tooltip
+    clickText: <strong>HTML</strong> also works with click trigger.
+    clickButton: Click tooltip
+    manualText: Manual tooltip with programmatic control.
+    manualButton: Manual tooltip
+    idle: No tooltip events yet.
+    event(String label): "Tooltip: $label"
+  datatable:
+    title: Components
+    subtitle: Datatable
+    breadcrumb: Search, selection, and export
+    cardTitle: Table operations
+    toggleGrid: Toggle grid
+    singleSelection: Single selection
+    searchLabel: Search sprint
+    searchPlaceholder: Type delivery, squad, or status
+    featureCol: Delivery
+    ownerCol: Squad
+    statusCol: Status
+    healthCol: Health
+    featureRow1: Executive dashboard
+    featureRow2: PDF export
+    featureRow3: Approval flow
+    featureRow4: Real-time alerts
+    ownerProduct: Product
+    ownerBackoffice: Backoffice
+    ownerOperations: Operations
+    ownerInfra: Infra
+    statusInProgress: In progress
+    statusDone: Completed
+    statusPlanned: Planned
+    statusBlocked: Blocked
+    healthWarning: Attention
+    healthOk: OK
+    healthCritical: Critical
+    ready: Table ready for interaction.
+    gridMode: Datatable switched to grid mode.
+    tableMode: Datatable switched to table mode.
+    singleMode: Single selection enabled.
+    multiMode: Multiple selection enabled.
+    exportXlsx: XLSX export triggered.
+    exportPdf: PDF export triggered.
+    rowClicked(String feature): "Row clicked: $feature."
+    selectedItems(int count): "Selected items: $count."
+  notification:
+    title: Components
+    subtitle: Notification Outlet
+    breadcrumb: Fixed viewport toasts
+    cardTitle: Trigger notifications
+    withLink: With link
+    idle: No notification triggered.
+    successMessage: Synchronization completed successfully.
+    successTitle: Event queue
+    successState: Success notification triggered.
+    warningMessage: There are items waiting for manual validation.
+    warningTitle: Attention
+    warningState: Warning notification triggered.
+    linkMessage: Click to open the datatable demo.
+    linkTitle: Shortcut
+    linkState: Notification with datatable link triggered.
+  treeview:
+    title: Components
+    subtitle: Treeview
+    breadcrumb: Hierarchical structure
+    cardTitle: Search, expand, and select
+    intro: The treeview includes search, expand/collapse, and cascade selection.
+    searchPlaceholder: Search by module or status
+    nodeService: Service
+    nodeTriage: Triage
+    nodeReferrals: Referrals
+    nodeBenefits: Benefits
+    nodeFoodBasket: Food basket
+    nodeReview: Under review
+    nodeApproved: Approved
+    nodeRentAid: Rent aid
+  helpers:
+    title: Components
+    subtitle: Helpers
+    breadcrumb: Loading, dialogs, popovers, and toasts
+    loadingTitle: SimpleLoading
+    showOverlay: Show overlay
+    loadingTarget: Loading target area
+    loadingTargetHelp: The overlay stays attached to the container.
+    actionTitle: Dialogs, toasts, and popovers
+    dialogAlert: Dialog alert
+    dialogConfirm: Dialog confirm
+    simplePopover: Simple popover
+    sweetPopover: Sweet popover
+    simpleSuccessToast: Simple success toast
+    simpleWarningToast: Simple warning toast
+    sweetSuccessToast: Sweet success toast
+    sweetWarningToast: Sweet warning toast
+    idle: Use the buttons to trigger the static helpers.
+    loadingShown: Loading overlay shown for 2 seconds.
+    loadingHidden: Loading overlay finished.
+    dialogAlertBody: The operation has started and will be monitored in the background.
+    dialogAlertTitle: Execution started
+    dialogAlertState: SimpleDialog.showAlert executed.
+    dialogConfirmBody: Do you want to continue publishing this configuration?
+    dialogConfirmTitle: Confirmation
+    dialogConfirmOk: Publish
+    dialogConfirmCancel: Cancel
+    dialogConfirmTrue: Positive confirmation returned true.
+    dialogConfirmFalse: Confirmation returned false.
+    simplePopoverBody: Simple popover anchored to the button using Bootstrap/Limitless markup.
+    simplePopoverState: SimplePopover shown.
+    sweetPopoverBody: SweetAlert-based version with Popper overlay.
+    sweetPopoverTitle: Sweet popover
+    sweetPopoverState: SweetAlertPopover shown.
+    simpleSuccessBody: Simple success toast shown.
+    simpleSuccessState: SimpleToast.showSuccess executed.
+    simpleWarningBody: Simple warning toast shown.
+    simpleWarningState: SimpleToast.showWarning executed.
+    sweetSuccessBody: SweetAlert success toast shown.
+    sweetSuccessState: SweetAlertSimpleToast.showSuccessToast executed.
+    sweetWarningBody: SweetAlert warning toast shown.
+    sweetWarningState: SweetAlertSimpleToast.showWarningToast executed.
+  button:
+    title: Components
+    subtitle: Buttons
+    breadcrumb: Button styles and variations
+    colorsTitle: Button colors
+    colorsSubtitle: Preset color options for buttons
+    solidTitle: Solid buttons
+    solidSubtitle: Buttons with a solid background color
+    outlineTitle: Outline buttons
+    outlineSubtitle: Buttons with a transparent background by default
+    flatTitle: Flat buttons
+    flatSubtitle: Buttons with a semi-transparent background
+    linkTitle: Link buttons
+    linkSubtitle: Buttons with text link styling
+    sizesTitle: Button sizes
+    sizesSubtitle: Buttons in large, default, and small sizes
+    alignTitle: Icon alignment
+    alignSubtitle: Examples of left and right icon alignment
+    disabledTitle: Disabled buttons
+    disabledSubtitle: Buttons in the disabled state

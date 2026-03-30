@@ -1,0 +1,12 @@
+:host {
+  display: block;
+}
+
+:host-context(.accordion-flush) .accordion-button:focus {
+  z-index: 3;
+}
+
+.accordion-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}

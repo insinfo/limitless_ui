@@ -1,0 +1,13 @@
+<div [class]="resolvedGroupClasses()" role="group" [attr.aria-label]="ariaLabel">
+  <button
+      *ngFor="let option of options"
+      type="button"
+      [class]="resolvedButtonClasses(option)"
+      [disabled]="option.disabled"
+      [attr.title]="option.title.isNotEmpty ? option.title : null"
+      [attr.aria-pressed]="isSelected(option) ? 'true' : 'false'"
+      (click)="select(option)">
+    <i *ngIf="option.iconClass.trim().isNotEmpty" [class]="resolvedIconClasses(option)"></i>
+    <span>{{ option.label }}</span>
+  </button>
+</div>

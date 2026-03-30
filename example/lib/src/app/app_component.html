@@ -1,0 +1,128 @@
+<div class="navbar navbar-dark navbar-expand-lg navbar-static border-bottom border-bottom-white border-opacity-10 demo-navbar">
+  <div class="container-fluid demo-navbar-shell" [class.mobile-search-open]="isMobileSearchOpen">
+    <div class="demo-navbar-primary-row">
+      <div class="d-flex d-lg-none me-2">
+      <button type="button" class="navbar-toggler sidebar-mobile-main-toggle rounded-pill"
+              (click)="toggleMobileSidebar()" [attr.aria-expanded]="isMobileSidebarOpen.toString()"
+              aria-controls="demo_mobile_sidebar" aria-label="Toggle navigation sidebar">
+        <i class="ph-list"></i>
+      </button>
+    </div>
+
+    <div class="navbar-brand demo-navbar-brand flex-1 flex-lg-0">
+      <a [routerLink]="DemoRoutePaths.overview.toUrl()" class="d-inline-flex align-items-center text-white text-decoration-none">
+        <span class="demo-brand-mark me-2"><i class="ph-squares-four"></i></span>
+        <span class="fw-semibold d-none d-md-inline-block">{{ t.app.brand }}</span>
+      </a>
+    </div>
+
+    <ul class="nav flex-row justify-content-end order-1 order-lg-2 demo-navbar-actions">
+      <li class="nav-item d-lg-none">
+        <button type="button" class="navbar-nav-link navbar-nav-link-icon rounded-pill border-0 bg-transparent"
+                (click)="toggleMobileSearch()" [attr.aria-expanded]="isMobileSearchOpen.toString()"
+                aria-controls="navbar_search" aria-label="Toggle search">
+          <i class="ph-magnifying-glass"></i>
+        </button>
+      </li>
+      <li class="nav-item me-2 d-flex align-items-center">
+        <li-dropdown-menu
+            ariaLabel="{{ t.app.theme }}"
+            triggerClass="navbar-nav-link navbar-nav-link-icon rounded-pill"
+            triggerIconClass="ph-palette"
+            [showCaret]="false"
+            menuClass="dropdown-menu-end wmin-sm-200"
+            [options]="themeOptions"
+            [value]="selectedThemeMode"
+            (valueChange)="onThemeChange($event)">
+        </li-dropdown-menu>
+      </li>
+      <li class="nav-item me-2 d-flex align-items-center">
+        <li-dropdown-menu
+            ariaLabel="{{ t.app.language }}"
+            triggerClass="navbar-nav-link navbar-nav-link-icon rounded-pill"
+            triggerIconClass="ph-translate"
+            [showCaret]="false"
+            menuClass="dropdown-menu-end wmin-sm-200"
+            [options]="languageOptions"
+            [value]="selectedLanguage"
+            (valueChange)="onLanguageChange($event)">
+        </li-dropdown-menu>
+      </li>
+      <li class="nav-item">
+        <span class="navbar-nav-link rounded-pill text-white-50 demo-navbar-badge" title="{{ t.app.badge }}">
+          <span class="demo-navbar-badge-text">{{ t.app.badge }}</span>
+        </span>
+      </li>
+    </ul>
+    </div>
+
+    <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse demo-navbar-search"
+         id="navbar_search" [class.show]="isMobileSearchOpen">
+      <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
+        <div class="form-control-feedback form-control-feedback-start flex-grow-1" [attr.data-color-theme]="'dark'">
+          <input type="text" class="form-control bg-transparent rounded-pill" [placeholder]="t.app.searchPlaceholder" readonly>
+          <div class="form-control-feedback-icon">
+            <i class="ph-magnifying-glass"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-content" [class.demo-mobile-sidebar-open]="isMobileSidebarOpen">
+
+  <button *ngIf="isMobileSidebarOpen" type="button" class="demo-sidebar-backdrop d-lg-none"
+          (click)="closeMobileSidebar()" aria-label="Close navigation sidebar"></button>
+
+  <div id="demo_mobile_sidebar"
+       class="sidebar sidebar-dark sidebar-main sidebar-expand-lg"
+       [class.sidebar-mobile-expanded]="isMobileSidebarOpen"
+       [class.sidebar-collapsed]="isSidebarCollapsed">
+    <div class="sidebar-content">
+      <div class="sidebar-section">
+        <div class="sidebar-section-body d-flex justify-content-center">
+          <h5 class="sidebar-resize-hide flex-grow-1 my-auto">{{ t.app.navigation }}</h5>
+
+          <div>
+            <button type="button" (click)="toggleSidebarCollapsed()"
+                    class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-control sidebar-main-resize d-none d-lg-inline-flex"
+                    [attr.aria-expanded]="(!isSidebarCollapsed).toString()" aria-label="Toggle compact sidebar">
+              <i class="ph-arrows-left-right"></i>
+            </button>
+
+            <button type="button" (click)="closeMobileSidebar()"
+                    class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-mobile-main-toggle d-lg-none"
+                    aria-label="Close navigation sidebar">
+              <i class="ph-x"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <ul class="nav nav-sidebar" [attr.data-nav-type]="'accordion'">
+          <li class="nav-item-header pt-0">
+            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">{{ t.app.components }}</div>
+            <i class="ph-dots-three sidebar-resize-show"></i>
+          </li>
+          <li *ngFor="let item of navItems" class="nav-item">
+            <a [routerLink]="item.url"
+               (click)="onNavItemActivate()"
+               routerLinkActive="active"
+               class="nav-link">
+              <i [class]="item.iconClass"></i>
+              <span>{{ item.label }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="content-inner">
+      <router-outlet [routes]="DemoRoutes.all"></router-outlet>
+    </div>
+  </div>
+</div>

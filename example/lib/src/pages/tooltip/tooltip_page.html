@@ -1,0 +1,113 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.tooltip.title }} <span class="fw-normal">{{ t.pages.tooltip.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.tooltip.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.tooltip.cardTitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.tooltip.hoverText }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">Tooltips exibem informação contextual breve sem deslocar o usuário para outro bloco da tela.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Triggers por hover, click e modo manual.</li>
+                    <li>Posicionamento em múltiplas direções.</li>
+                    <li>Suporte a HTML e eventos de ciclo de vida.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Tooltips não devem carregar conteúdo extenso.</li>
+                    <li>Uso excessivo gera ruído e dependência de hover.</li>
+                    <li>Fluxos mobile pedem cuidado com trigger e leitura.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="demo-tooltip-row">
+              <li-tooltip
+                  [text]="t.pages.tooltip.hoverText"
+                  placement="top"
+                  (show)="onTooltipEvent('show')"
+                  (shown)="onTooltipEvent('shown')"
+                  (hide)="onTooltipEvent('hide')"
+                  (hidden)="onTooltipEvent('hidden')">
+                <button class="btn btn-outline-primary" type="button">{{ t.pages.tooltip.hoverButton }}</button>
+              </li-tooltip>
+
+              <li-tooltip
+                  [text]="t.pages.tooltip.clickText"
+                  trigger="click"
+                  placement="right"
+                  [html]="true">
+                <button class="btn btn-outline-dark" type="button">{{ t.pages.tooltip.clickButton }}</button>
+              </li-tooltip>
+
+              <li-tooltip
+                  #manualTooltip
+                  [text]="t.pages.tooltip.manualText"
+                  trigger="manual"
+                  placement="bottom"
+                  [showDelayMs]="120"
+                  [hideDelayMs]="120">
+                <button class="btn btn-outline-indigo" type="button" (click)="toggleManualTooltip()">
+                  {{ t.pages.tooltip.manualButton }}
+                </button>
+              </li-tooltip>
+            </div>
+
+            <div class="demo-summary-box mt-3">{{ tooltipEventLog.isEmpty ? t.pages.tooltip.idle : tooltipEventLog }}</div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">O componente envolve qualquer gatilho visual e adiciona exibição contextual com configuração declarativa.</p>
+            <ul class="mb-3 ps-3">
+              <li><code>[text]</code> define o conteúdo do tooltip.</li>
+              <li><code>placement</code> aceita topo, direita, base e esquerda.</li>
+              <li><code>trigger</code> pode ser <code>hover</code>, <code>click</code> ou <code>manual</code>.</li>
+              <li><code>[html]</code> habilita renderização rica quando necessário.</li>
+              <li><code>[showDelayMs]</code> e <code>[hideDelayMs]</code> refinam o timing.</li>
+              <li><code>(show)</code>, <code>(shown)</code>, <code>(hide)</code> e <code>(hidden)</code> expõem o ciclo de vida.</li>
+            </ul>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-tooltip
+  [text]="'Mostra dicas ao passar o mouse.'"
+  placement="top"
+  trigger="hover"&gt;
+  &lt;button class="btn btn-outline-primary" type="button"&gt;Hover tooltip&lt;/button&gt;
+&lt;/li-tooltip&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

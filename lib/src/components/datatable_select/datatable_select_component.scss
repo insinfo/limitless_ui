@@ -1,0 +1,74 @@
+$accent-color: #0c83ff;
+
+:host {
+    display: block;
+}
+
+.datatable-select-wrapper {
+    position: relative;
+}
+
+.datatable-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+    text-align: start;
+    background-color: #fff;
+    min-height: calc(1.5em + 0.75rem + 2px);
+    background-image: none;
+    padding-right: 0.75rem;
+}
+
+.datatable-select-trigger:focus-visible {
+    border-color: $accent-color;
+    outline: 0;
+    box-shadow: 0 0 0 0.125rem rgba(12, 131, 255, 0.25);
+}
+
+.datatable-select-trigger:disabled {
+    background-color: #e9ecef;
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.datatable-select-value {
+    flex: 1 1 auto;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-weight: 400;
+}
+
+.datatable-select-placeholder {
+    color: #6c757d;
+}
+
+.datatable-select-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+}
+
+.datatable-select-clear {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #6c757d;
+    padding: 0.125rem;
+    border-radius: 50%;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+
+    &:hover {
+        color: #dc3545;
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+}
+
+.datatable-select-arrow {
+    font-size: 0.75rem;
+    color: #6c757d;
+    pointer-events: none;
+}

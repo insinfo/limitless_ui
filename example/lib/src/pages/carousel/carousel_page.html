@@ -1,0 +1,323 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.carousel.title }} <span class="fw-normal">{{ t.pages.carousel.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.carousel.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.carousel.title }} {{ t.pages.carousel.subtitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-0">A página do carousel reúne modos padrão, grid e transições adicionais, mantendo a mesma API do componente base.</p>
+          </div>
+        </li-tabx>
+        <li-tabx header="Exemplos">
+          <div class="card-body p-0 border-0">
+    <div class="card border-0 shadow-none">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.carousel.standardTitle }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-4">{{ t.pages.carousel.standardSubtitle }}</p>
+        <div class="fw-bold border-bottom pb-2 mb-3">{{ t.pages.carousel.exampleLabel }}</div>
+        <li-carousel
+            [showIndicators]="true"
+            [showControls]="true"
+            [autoPlay]="true"
+            [fade]="false"
+            [dark]="false"
+            [intervalMs]="4500"
+            [initialIndex]="0">
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.slideOneLabel">
+            <img src="assets/images/carousel/slide-01.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.slideOneTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.slideOneTitle }}</h5>
+              <p>{{ t.pages.carousel.slideOneBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.slideTwoLabel">
+            <img src="assets/images/carousel/slide-02.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.slideTwoTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.slideTwoTitle }}</h5>
+              <p>{{ t.pages.carousel.slideTwoBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.slideThreeLabel">
+            <img src="assets/images/carousel/slide-03.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.slideThreeTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.slideThreeTitle }}</h5>
+              <p>{{ t.pages.carousel.slideThreeBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.slideFourLabel">
+            <img src="assets/images/carousel/slide-04.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.slideFourTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.slideFourTitle }}</h5>
+              <p>{{ t.pages.carousel.slideFourBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+        </li-carousel>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.carousel.gridTitle }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-4">{{ t.pages.carousel.gridSubtitle }}</p>
+        <div class="fw-bold border-bottom pb-2 mb-3">{{ t.pages.carousel.exampleLabel }}</div>
+        <li-carousel
+            [gridMode]="true"
+            [showIndicators]="true"
+            [showControls]="true"
+            [autoPlay]="false"
+            [dark]="false"
+            [initialIndex]="1">
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.gridSlideOneLabel">
+            <div class="row">
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-04.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardOneTitle }}">
+              </div>
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-05.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardTwoTitle }}">
+              </div>
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-06.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardThreeTitle }}">
+              </div>
+            </div>
+          </li-carousel-item>
+
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.gridSlideTwoLabel">
+            <div class="row">
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-07.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardFourTitle }}">
+              </div>
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-08.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardFiveTitle }}">
+              </div>
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-09.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardSixTitle }}">
+              </div>
+            </div>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.gridSlideThreeLabel">
+            <div class="row">
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-02.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardSevenTitle }}">
+              </div>
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-03.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardEightTitle }}">
+              </div>
+              <div class="col-4">
+                <img src="assets/images/carousel/slide-01.jpg" class="d-block w-100" alt="{{ t.pages.carousel.gridCardNineTitle }}">
+              </div>
+            </div>
+          </li-carousel-item>
+        </li-carousel>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.carousel.fadeTitle }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-4">{{ t.pages.carousel.fadeSubtitle }}</p>
+        <div class="fw-bold border-bottom pb-2 mb-3">{{ t.pages.carousel.exampleLabel }}</div>
+        <li-carousel
+            [showIndicators]="true"
+            [showControls]="true"
+            [autoPlay]="true"
+            [fade]="true"
+            [intervalMs]="3800">
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.fadeSlideOneLabel">
+            <img src="assets/images/carousel/slide-07.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.fadeSlideOneTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.fadeSlideOneTitle }}</h5>
+              <p>{{ t.pages.carousel.fadeSlideOneBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.fadeSlideTwoLabel">
+            <img src="assets/images/carousel/slide-08.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.fadeSlideTwoTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.fadeSlideTwoTitle }}</h5>
+              <p>{{ t.pages.carousel.fadeSlideTwoBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.fadeSlideThreeLabel">
+            <img src="assets/images/carousel/slide-09.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.fadeSlideThreeTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.fadeSlideThreeTitle }}</h5>
+              <p>{{ t.pages.carousel.fadeSlideThreeBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+        </li-carousel>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.carousel.zoomTitle }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-4">{{ t.pages.carousel.zoomSubtitle }}</p>
+        <div class="fw-bold border-bottom pb-2 mb-3">{{ t.pages.carousel.exampleLabel }}</div>
+        <li-carousel
+            transition="zoom"
+            [showIndicators]="true"
+            [showControls]="true"
+            [autoPlay]="false">
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.zoomSlideOneLabel">
+            <img src="assets/images/carousel/slide-05.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.zoomSlideOneTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.zoomSlideOneTitle }}</h5>
+              <p>{{ t.pages.carousel.zoomSlideOneBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.zoomSlideTwoLabel">
+            <img src="assets/images/carousel/slide-06.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.zoomSlideTwoTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.zoomSlideTwoTitle }}</h5>
+              <p>{{ t.pages.carousel.zoomSlideTwoBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.zoomSlideThreeLabel">
+            <img src="assets/images/carousel/slide-04.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.zoomSlideThreeTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.zoomSlideThreeTitle }}</h5>
+              <p>{{ t.pages.carousel.zoomSlideThreeBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+        </li-carousel>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.carousel.verticalTitle }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-4">{{ t.pages.carousel.verticalSubtitle }}</p>
+        <div class="fw-bold border-bottom pb-2 mb-3">{{ t.pages.carousel.exampleLabel }}</div>
+        <li-carousel
+            transition="vertical"
+            [showIndicators]="true"
+            [showControls]="true"
+            [autoPlay]="false">
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.verticalSlideOneLabel">
+            <img src="assets/images/carousel/slide-03.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.verticalSlideOneTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.verticalSlideOneTitle }}</h5>
+              <p>{{ t.pages.carousel.verticalSlideOneBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.verticalSlideTwoLabel">
+            <img src="assets/images/carousel/slide-02.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.verticalSlideTwoTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.verticalSlideTwoTitle }}</h5>
+              <p>{{ t.pages.carousel.verticalSlideTwoBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.verticalSlideThreeLabel">
+            <img src="assets/images/carousel/slide-01.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.verticalSlideThreeTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.verticalSlideThreeTitle }}</h5>
+              <p>{{ t.pages.carousel.verticalSlideThreeBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+        </li-carousel>
+      </div>
+    </div>
+
+    <div class="card mt-4 mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.carousel.blurTitle }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-4">{{ t.pages.carousel.blurSubtitle }}</p>
+        <div class="fw-bold border-bottom pb-2 mb-3">{{ t.pages.carousel.exampleLabel }}</div>
+        <li-carousel
+            transition="blur"
+            [showIndicators]="true"
+            [showControls]="true"
+            [autoPlay]="false">
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.blurSlideOneLabel">
+            <img src="assets/images/carousel/slide-08.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.blurSlideOneTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.blurSlideOneTitle }}</h5>
+              <p>{{ t.pages.carousel.blurSlideOneBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.blurSlideTwoLabel">
+            <img src="assets/images/carousel/slide-06.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.blurSlideTwoTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.blurSlideTwoTitle }}</h5>
+              <p>{{ t.pages.carousel.blurSlideTwoBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.blurSlideThreeLabel">
+            <img src="assets/images/carousel/slide-05.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.blurSlideThreeTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.blurSlideThreeTitle }}</h5>
+              <p>{{ t.pages.carousel.blurSlideThreeBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+        </li-carousel>
+      </div>
+    </div>
+
+    <div class="card mt-4 mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.carousel.parallaxTitle }}</h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-4">{{ t.pages.carousel.parallaxSubtitle }}</p>
+        <div class="fw-bold border-bottom pb-2 mb-3">{{ t.pages.carousel.exampleLabel }}</div>
+        <li-carousel
+            transition="parallax"
+            [showIndicators]="true"
+            [showControls]="true"
+            [autoPlay]="false">
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.parallaxSlideOneLabel">
+            <img src="assets/images/carousel/slide-09.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.parallaxSlideOneTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.parallaxSlideOneTitle }}</h5>
+              <p>{{ t.pages.carousel.parallaxSlideOneBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.parallaxSlideTwoLabel">
+            <img src="assets/images/carousel/slide-07.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.parallaxSlideTwoTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.parallaxSlideTwoTitle }}</h5>
+              <p>{{ t.pages.carousel.parallaxSlideTwoBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+          <li-carousel-item [indicatorLabel]="t.pages.carousel.parallaxSlideThreeLabel">
+            <img src="assets/images/carousel/slide-04.jpg" class="d-block w-100 demo-hero-image" alt="{{ t.pages.carousel.parallaxSlideThreeTitle }}">
+            <li-carousel-caption>
+              <h5>{{ t.pages.carousel.parallaxSlideThreeTitle }}</h5>
+              <p>{{ t.pages.carousel.parallaxSlideThreeBody }}</p>
+            </li-carousel-caption>
+          </li-carousel-item>
+        </li-carousel>
+      </div>
+    </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

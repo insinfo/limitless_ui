@@ -1,0 +1,12 @@
+targets:
+  $default:
+    sources:
+      include:
+        - $package$
+        - pubspec.*
+        - lib/**
+        - test/**
+      exclude:
+        - example/**
+        - build/**
+        - .dart_tool/**

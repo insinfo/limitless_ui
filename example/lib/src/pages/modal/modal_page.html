@@ -1,0 +1,69 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.modal.title }} <span class="fw-normal">{{ t.pages.modal.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.modal.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.modal.cardTitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-0">{{ t.pages.modal.modalBody }}</p>
+          </div>
+        </li-tabx>
+        <li-tabx header="Exemplos">
+          <div class="card-body">
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-primary" type="button" (click)="openModal()">{{ t.pages.modal.openModal }}</button>
+              <button class="btn btn-outline-primary" type="button" (click)="openScrollableModal()">
+                {{ t.pages.modal.scrollableModal }}
+              </button>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+
+  <li-modal #demoModal
+            [title-text]="t.pages.modal.modalTitle"
+            headerColor="indigo"
+            [enableShadow]="true"
+            [verticalCenter]="true">
+    <h5>{{ t.pages.modal.modalHeading }}</h5>
+    <p>{{ t.pages.modal.modalBody }}</p>
+    <div class="text-end">
+      <button class="btn btn-light" type="button" (click)="demoModal?.close()">{{ t.common.close }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #scrollableModal
+            [title-text]="t.pages.modal.scrollableTitle"
+            headerColor="info"
+            size="large"
+            [dialogScrollable]="true"
+            [fullScreenOnMobile]="true"
+            [closeOnBackdropClick]="false">
+    <p class="mb-3">
+      {{ t.pages.modal.scrollableBody }}
+    </p>
+    <p *ngFor="let index of scrollLines">
+      {{ t.pages.modal.scrollableLine(index) }}
+    </p>
+    <div class="text-end">
+      <button class="btn btn-primary" type="button" (click)="scrollableModal?.close()">{{ t.pages.modal.understood }}</button>
+    </div>
+  </li-modal>
+</div>

@@ -1,0 +1,27 @@
+<button [type]="type" [class]="resolvedButtonClasses" [disabled]="disabled || loading">
+  <!-- Labeled mode: icon before text -->
+  <span *ngIf="isLabeledStart && (hasIcon || loading)" [class]="resolvedLabeledIconClasses">
+    <i [class]="resolvedLabeledInnerIconClasses"></i>
+  </span>
+
+  <!-- Loading state for non-labeled buttons -->
+  <i *ngIf="loading && !isLabeled && !iconOnly" [class]="resolvedLoadingInlineIconClasses"></i>
+
+  <!-- Inline start icon -->
+  <i *ngIf="showInlineStartIcon" [class]="resolvedStartIconClasses"></i>
+
+  <!-- Icon-only mode -->
+  <i *ngIf="showIconOnly" [class]="resolvedIconOnlyClasses"></i>
+  <i *ngIf="iconOnly && loading" [class]="resolvedLoadingIconOnlyClasses"></i>
+
+  <!-- Text content (hidden when icon-only) -->
+  <span [class.d-none]="iconOnly"><ng-content></ng-content></span>
+
+  <!-- Inline end icon -->
+  <i *ngIf="showInlineEndIcon" [class]="resolvedEndIconClasses"></i>
+
+  <!-- Labeled mode: icon after text -->
+  <span *ngIf="isLabeledEnd && (hasIcon || loading)" [class]="resolvedLabeledIconClasses">
+    <i [class]="resolvedLabeledInnerIconClasses"></i>
+  </span>
+</button>

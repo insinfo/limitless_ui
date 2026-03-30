@@ -1,0 +1,37 @@
+<div [attr.data-label]="'custom_select'" class="dropdown-collection">
+    <button type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
+        class="form-select dropdown-button"
+        role="combobox"
+        [attr.aria-expanded]="dropdownOpen.toString()"
+        [attr.aria-controls]="listboxId"
+        [attr.aria-activedescendant]="activeDescendantId"
+        aria-haspopup="listbox"
+        (click)="toggleDropdown()" tabindex="0" [disabled]="isDisabled">
+
+        <span class="dropdown-value">{{currentValue?.text ?? placeholder}}</span>
+
+    </button>
+    <div #dropdownContainer [attr.data-id]="'dropdown_'+ id" class="dropdown-container dropdown-menu"
+        [class.dropdown-open]="dropdownOpen">
+        <div *ngIf="searchable" class="dropdown-search" (click)="$event.stopPropagation()">
+            <div class="form-control-feedback form-control-feedback-start m-2">
+                <input #inputSearch type="text" class="form-control" placeholder="Buscar"
+                    (input)="searchHandle($event.target.value)"
+                    [attr.data-label]="'custom_select_input_search'"
+                    tabindex="-1" aria-label="Buscar opções">
+                <div class="form-control-feedback-icon">
+                    <i class="ph-magnifying-glass"></i>
+                </div>
+            </div>
+        </div>
+        <ul [attr.id]="listboxId" role="listbox" [attr.data-label]="'custom_select_options'">
+            <li class="dropdown-item" *ngFor="let o of options; let idx = index" [class.active]="currentValue == o"
+                [class.dropdown-item-disabled]="o.disabled"
+                [attr.id]="optionId(idx)"
+                [attr.aria-selected]="(currentValue == o).toString()"
+                [attr.aria-disabled]="o.disabled ? 'true' : null"
+                tabindex="-1" (click)="select(o)" role="option" [hidden]="o.visible == false"
+                [attr.data-label]="'custom_select_item_'+ idx.toString()">{{o.text}}</li>
+        </ul>
+    </div>
+</div>

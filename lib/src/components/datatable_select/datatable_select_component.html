@@ -1,0 +1,45 @@
+<div class="datatable-select-wrapper">
+    <button type="button" #triggerButton class="form-select datatable-select-trigger"
+        [disabled]="isDisabled" (click)="openModal()" tabindex="0"
+        role="combobox" aria-haspopup="dialog"
+        [attr.aria-expanded]="modal?.isOpen == true ? 'true' : 'false'">
+        <span class="datatable-select-value"
+            [class.datatable-select-placeholder]="selectedLabel.isEmpty">
+            {{selectedLabel.isEmpty ? placeholder : selectedLabel}}
+        </span>
+        <span class="datatable-select-icons">
+            <i *ngIf="selectedValue != null" class="ph ph-x datatable-select-clear"
+                (click)="onClearClick($event)" title="Limpar seleção"></i>
+            <i class="ph ph-caret-down datatable-select-arrow"></i>
+        </span>
+    </button>
+</div>
+
+<li-modal #modal
+    [title-text]="titleText"
+    [size]="modalSize"
+    [fullScreenOnMobile]="fullScreenOnMobile"
+    [dialogScrollable]="false"
+    [enableModalBodyClass]="false"
+    [closeOnBackdropClick]="true"
+    [enableRoundedCorners]="true">
+
+    <li-datatable #datatable
+        [dataTableFilter]="dataTableFilter"
+        [settings]="settings"
+        [data]="data"
+        [searchInFields]="searchInFields"
+        [limitPerPageOptions]="limitPerPageOptions"
+        [showCheckboxToSelectRow]="showCheckboxToSelectRow"
+        [showExportMenu]="showExportMenu"
+        [searchPlaceholder]="searchPlaceholder"
+        [gridMode]="gridMode"
+        [responsiveCollapse]="responsiveCollapse"
+        [disableRowClick]="false"
+        (onRowClick)="onDatatableRowClick($event)"
+        (dataRequest)="onDatatableDataRequest($event)"
+        (limitChange)="onDatatableLimitChange($event)"
+        (searchRequest)="onDatatableSearchRequest($event)">
+    </li-datatable>
+
+</li-modal>

@@ -1,0 +1,112 @@
+my-app {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.demo-navbar-shell {
+  gap: 0;
+}
+
+.demo-navbar-primary-row {
+  display: contents;
+}
+
+.demo-navbar-brand {
+  min-width: 0;
+}
+
+.demo-navbar-brand a {
+  min-width: 0;
+}
+
+.demo-navbar-actions {
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.demo-navbar-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-navbar-search {
+  width: 100%;
+}
+
+.demo-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+  border: 0;
+  background: rgba(15, 23, 42, 0.38);
+}
+
+@media (max-width: 991.98px) {
+  .demo-navbar-shell {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.75rem 1rem;
+  }
+
+  .demo-navbar-primary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .demo-navbar-search {
+    display: none;
+    flex-basis: 100%;
+    padding-top: 0;
+  }
+
+  .demo-navbar-search.show {
+    display: block;
+  }
+
+  .demo-navbar-search .navbar-search {
+    margin: 0 !important;
+  }
+
+  .demo-navbar-search .form-control {
+    min-height: 2.75rem;
+  }
+
+  .demo-navbar-badge-text {
+    display: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .demo-navbar-primary-row {
+    gap: 0.5rem;
+  }
+
+  .demo-navbar-actions {
+    gap: 0;
+  }
+
+  .demo-navbar .navbar-nav-link {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .demo-navbar-brand {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .demo-brand-mark {
+    margin-right: 0 !important;
+  }
+}
+

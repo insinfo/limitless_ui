@@ -1,0 +1,97 @@
+import 'package:ngdart/angular.dart';
+
+import 'accordion_body_directive.dart';
+import 'accordion_item_component.dart';
+
+/// Public directives used by the accordion component suite.
+const liAccordionDirectives = <Object>[
+  LiAccordionComponent,
+  LiAccordionBodyDirective,
+  LiAccordionItemComponent,
+];
+
+/// Limitless/Bootstrap accordion container.
+@Component(
+  selector: 'li-accordion',
+  templateUrl: 'accordion_component.html',
+  styleUrls: ['accordion_component.css'],
+  directives: [coreDirectives, LiAccordionItemComponent],
+  changeDetection: ChangeDetectionStrategy.onPush,
+)
+class LiAccordionComponent implements AfterContentInit {
+  @ContentChildren(LiAccordionItemComponent)
+  List<LiAccordionItemComponent> items = <LiAccordionItemComponent>[];
+
+  /// Allows multiple items to stay open simultaneously.
+  @Input()
+  bool allowMultipleOpen = false;
+
+  /// Applies the Limitless/Bootstrap flush style.
+  @Input()
+  bool flush = false;
+
+  /// Defers body rendering until the item is opened for the first time.
+  @Input()
+  bool lazy = false;
+
+  /// If `true`, removes the body from the DOM whenever the item closes.
+  @Input()
+  bool destroyOnCollapse = false;
+
+  @HostBinding('class.accordion')
+  bool hostAccordionClass = true;
+
+  @HostBinding('class.accordion-flush')
+  bool get hostFlushClass => flush;
+
+  @HostBinding('class.open')
+  bool get hostOpenClass => items.any((item) => item.isExpanded);
+
+  @override
+  void ngAfterContentInit() {
+    for (final item in items) {
+      item.parent = this;
+      item.syncInitialState();
+    }
+
+    _normalizeExpandedState();
+  }
+
+  void toggleItem(LiAccordionItemComponent item) {
+    if (item.disabled) {
+      return;
+    }
+
+    if (allowMultipleOpen) {
+      item.setExpanded(!item.isExpanded);
+      return;
+    }
+
+    if (item.isExpanded) {
+      item.setExpanded(false);
+      return;
+    }
+
+    for (final currentItem in items) {
+      currentItem.setExpanded(identical(currentItem, item));
+    }
+  }
+
+  void _normalizeExpandedState() {
+    if (allowMultipleOpen) {
+      return;
+    }
+
+    LiAccordionItemComponent? expandedItem;
+    for (final item in items) {
+      if (!item.isExpanded) {
+        continue;
+      }
+
+      expandedItem ??= item;
+      if (!identical(expandedItem, item)) {
+        item.setExpanded(false);
+      }
+    }
+  }
+}

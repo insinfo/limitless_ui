@@ -1,0 +1,74 @@
+<div class="demo-page">
+  <!-- Page header -->
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">
+          {{ t.pages.overview.title }}
+          <span class="fw-normal">{{ t.pages.overview.subtitle }}</span>
+        </h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.overview.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Hero card -->
+    <div class="card bg-primary text-white border-0 shadow-lg mb-4">
+      <div class="card-body p-4 p-lg-5">
+        <div class="d-flex align-items-center mb-3">
+          <i class="ph-squares-four ph-2x me-3 opacity-75"></i>
+          <span class="badge bg-white text-primary fw-600 fs-sm">{{ t.app.brand }}</span>
+        </div>
+        <h1 class="mb-3 text-white fw-bold">{{ t.pages.overview.heroTitle }}</h1>
+        <p class="fs-lg mb-0 opacity-85">{{ t.pages.overview.heroLead }}</p>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="row g-3 mb-4">
+      <div *ngFor="let stat of stats; trackBy: trackByStat" class="col-lg-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <h2 class="mb-0 text-primary fw-bold">{{ stat.value }}</h2>
+            </div>
+            <h6 class="fw-600 text-uppercase mb-1">{{ stat.label }}</h6>
+            <span class="text-muted fs-sm">{{ stat.help }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center">
+          <i class="ph-compass-tool ph-lg me-2 text-primary"></i>
+          <h5 class="mb-0">{{ t.pages.overview.featureSectionTitle }}</h5>
+        </div>
+        <span class="text-muted fs-sm">{{ t.pages.overview.featureSectionBody }}</span>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div *ngFor="let item of featureCards; trackBy: trackByFeatureCard" class="col-md-6 col-xl-3">
+            <a [routerLink]="item.url" [class]="featureCardClass(item)">
+              <div class="overview-feature-icon">
+                <i [class]="item.iconClass"></i>
+              </div>
+              <div class="overview-feature-content">
+                <div class="overview-feature-title">{{ item.title }}</div>
+                <p class="overview-feature-body">{{ item.body }}</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

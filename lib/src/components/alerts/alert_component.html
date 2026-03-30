@@ -1,0 +1,19 @@
+<div [attr.role]="role" [class]="resolvedAlertClasses" [hidden]="!visible">
+  <span *ngIf="showBlockIcon" [class]="resolvedBlockIconClasses">
+    <i [class]="normalizedIconClass"></i>
+  </span>
+
+  <i *ngIf="showInlineStartIcon" [class]="resolvedInlineStartIconClasses"></i>
+
+  <ng-content></ng-content>
+
+  <i *ngIf="showInlineEndIcon" [class]="resolvedInlineEndIconClasses"></i>
+
+  <button
+    *ngIf="dismissible"
+    (click)="dismiss()"
+    type="button"
+    [class]="resolvedCloseButtonClasses"
+    aria-label="Close">
+  </button>
+</div>

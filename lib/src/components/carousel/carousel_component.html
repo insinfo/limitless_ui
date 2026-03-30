@@ -1,0 +1,37 @@
+<div *ngIf="showIndicators && items.length > 1" class="carousel-indicators">
+  <button
+      *ngFor="let item of items; let index = index"
+      type="button"
+  [attr.data-bs-target]="carouselTargetSelector"
+      [attr.data-bs-slide-to]="index.toString()"
+      [class.active]="index == activeIndex"
+      [attr.aria-current]="index == activeIndex ? 'true' : null"
+      [attr.aria-label]="indicatorLabelFor(index)"
+      (click)="goTo(index)"></button>
+</div>
+
+<div class="carousel-inner" [class.row]="gridMode">
+  <ng-content></ng-content>
+</div>
+
+<button
+    *ngIf="showControls && canNavigate"
+    class="carousel-control-prev"
+    type="button"
+    [attr.data-bs-target]="carouselTargetSelector"
+    [attr.data-bs-slide]="'prev'"
+    (click)="previous()">
+  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+  <span class="visually-hidden">{{previousLabel}}</span>
+</button>
+
+<button
+    *ngIf="showControls && canNavigate"
+    class="carousel-control-next"
+    type="button"
+    [attr.data-bs-target]="carouselTargetSelector"
+    [attr.data-bs-slide]="'next'"
+    (click)="next()">
+  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+  <span class="visually-hidden">{{nextLabel}}</span>
+</button>

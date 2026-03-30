@@ -1,0 +1,133 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.select.title }} <span class="fw-normal">{{ t.pages.select.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.select.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.select.cardTitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">A demo de select mostra uso com <code>dataSource</code> estável e com projeção manual de opções, reunindo descrição, recursos, limitações e exemplos visíveis no mesmo fluxo.</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">O componente resolve seleção simples com overlay, opção projetada e ligação direta ao <code>ngModel</code>.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Fonte externa com <code>dataSource</code>.</li>
+                    <li>Projeção manual com <code>li-option</code>.</li>
+                    <li>Placeholder, itens desabilitados e binding simples.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Evite recriar o <code>dataSource</code> em getters reativos.</li>
+                    <li>O overlay depende de opções consistentes para navegação e altura.</li>
+                    <li>Para lógica pesada de filtro, mantenha a orquestração no componente pai.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ t.pages.select.deliveryStatus }}</label>
+              <li-select
+                  [dataSource]="statusOptions"
+                  labelKey="label"
+                  valueKey="id"
+                  disabledKey="disabled"
+                  [(ngModel)]="selectedStatus">
+              </li-select>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ t.pages.select.projectedTitle }}</label>
+              <li-select [(ngModel)]="projectedStatus" [placeholder]="t.pages.select.projectedPlaceholder">
+                <li-option value="priority">{{ t.pages.select.optionPriority }}</li-option>
+                <li-option value="backlog">{{ t.pages.select.optionBacklog }}</li-option>
+                <li-option value="archived">{{ t.pages.select.optionArchived }}</li-option>
+              </li-select>
+            </div>
+
+            <div class="demo-summary-box">
+              <div><strong>{{ t.common.status }}:</strong> {{ selectedStatusLabel }}</div>
+              <div><strong>{{ t.pages.select.projectedStatus }}:</strong> {{ projectedStatusLabel }}</div>
+            </div>
+          </div>
+        </li-tabx>
+        <li-tabx header="API">
+          <div class="card-body">
+            <div class="row g-4">
+              <div class="col-xl-6">
+                <h6 class="mb-2">Como utilizar</h6>
+                <p>
+                  <code>li-select</code> aceita tanto <code>[dataSource]</code>
+                  quanto projeção com <code>li-option</code>.
+                </p>
+                <p class="mb-3">
+                  Para evitar travamentos e ciclos de renderização desnecessários,
+                  prefira fornecer listas estáveis no componente pai, em vez de
+                  getters que recriam o array a cada mudança de estado.
+                </p>
+
+                <ul class="mb-3 ps-3">
+                  <li><code>[dataSource]</code>: lista de opções externas.</li>
+                  <li><code>labelKey</code>: chave usada para o texto visível.</li>
+                  <li><code>valueKey</code>: chave usada como valor do ngModel.</li>
+                  <li><code>disabledKey</code>: chave booleana para desabilitar itens.</li>
+                  <li><code>[(ngModel)]</code>: valor selecionado.</li>
+                  <li><code>[placeholder]</code>: texto exibido quando vazio.</li>
+                </ul>
+
+                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  disabledKey="disabled"
+  [(ngModel)]="selectedStatus"&gt;
+&lt;/li-select&gt;</code></pre>
+              </div>
+
+              <div class="col-xl-6">
+                <h6 class="mb-2">Observações e limites</h6>
+                <ul class="mb-3 ps-3">
+                  <li>Não recrie o <code>dataSource</code> em getters.</li>
+                  <li>O overlay não deve calcular altura com base no próprio painel renderizado.</li>
+                  <li>Eventos globais de teclado devem tratar apenas navegação e escape.</li>
+                </ul>
+
+                <pre class="bg-light border rounded p-3 mb-0"><code>// Bom: lista estável criada uma vez
+late final List&lt;Map&lt;String, dynamic&gt;&gt; statusOptions;
+
+// Evite: getter que recria a lista a cada change detection
+// List&lt;Map&lt;String, dynamic&gt;&gt; get statusOptions =&gt; [...];</code></pre>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">Components <span class="fw-normal">Disclosure</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">Accordion, tabs e modal</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Disclosure</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-0">Disclosure reúne padrões de revelar conteúdo sob demanda, combinando accordion, tabs e modal em um único fluxo.</p>
+          </div>
+        </li-tabx>
+        <li-tabx header="Exemplos">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-xl-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Accordion</h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="text-muted">
+                      Exemplos com `allowMultipleOpen`, item expandido por padrao e
+                      estrutura parecida com a documentacao do Limitless.
+                    </p>
+
+                    <li-accordion [allowMultipleOpen]="true">
+                      <li-accordion-item
+                          header="Collapsed state"
+                          description="Comeca fechado e expande sob demanda.">
+                        Ideal para listas longas que precisam manter foco visual.
+                      </li-accordion-item>
+                      <li-accordion-item
+                          header="Expanded state"
+                          description="Item inicial aberto."
+                          [expanded]="true">
+                        Defina `expanded=true` no item que precisa abrir ao carregar.
+                      </li-accordion-item>
+                      <li-accordion-item
+                          header="Always open"
+                          description="Permite comparar secoes ao mesmo tempo.">
+                        Ative `allowMultipleOpen=true` no container principal.
+                      </li-accordion-item>
+                    </li-accordion>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Tabs e modal</h5>
+                  </div>
+                  <div class="card-body">
+                    <li-tabsx type="pills">
+                      <li-tabx header="Tokens" [active]="true">
+                        <div class="p-3">
+                          Use tabs para separar documentação, exemplos e notas de API no
+                          mesmo card.
+                        </div>
+                      </li-tabx>
+                      <li-tabx header="Fluxo">
+                        <div class="p-3">
+                          O componente respeita a composicao do Bootstrap/Limitless e se
+                          encaixa bem em layouts administrativos.
+                        </div>
+                      </li-tabx>
+                      <li-tabx header="Acoes">
+                        <div class="p-3">
+                          <button class="btn btn-primary" type="button" (click)="openModal()">
+                            Abrir modal
+                          </button>
+                        </div>
+                      </li-tabx>
+                    </li-tabsx>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+
+  <li-modal #demoModal
+            title-text="Exemplo de modal"
+            headerColor="indigo"
+            [enableShadow]="true"
+            [verticalCenter]="true">
+    <h5>Composicao padronizada</h5>
+    <p>
+      O modal reaproveita a camada visual do Limitless e pode hospedar
+      formulários curtos, confirmações ou visualizações detalhadas.
+    </p>
+    <div class="text-end">
+      <button class="btn btn-light" type="button" (click)="demoModal?.close()">Fechar</button>
+    </div>
+  </li-modal>
+</div>

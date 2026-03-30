@@ -1,0 +1,93 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.currency.title }} <span class="fw-normal">{{ t.pages.currency.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.currency.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.currency.cardTitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.currency.help }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">O campo monetário resolve formatação visual e conversão para unidades menores sem lógica adicional no template.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Prefixo configurável.</li>
+                    <li>Conversão automática para centavos.</li>
+                    <li>Integração com formulários AngularDart.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>O campo não substitui regras fiscais de negócio.</li>
+                    <li>Máscaras muito específicas exigem extensão adicional.</li>
+                    <li>O valor persistido continua sendo numérico.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ t.pages.currency.budget }}</label>
+              <li-currency-input
+                  [(ngModel)]="amountMinorUnits"
+                  [required]="true"
+                  prefix="R$"
+                  inputClass="form-control form-control-lg">
+              </li-currency-input>
+            </div>
+
+            <div class="demo-summary-box">
+              <div><strong>{{ t.pages.currency.minorUnits }}:</strong> {{ amountMinorUnitsLabel }}</div>
+              <div class="text-muted">
+                {{ t.pages.currency.help }}
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">Use o componente para exibir o valor formatado ao usuário e manter no estado um número consistente em unidades menores.</p>
+            <ul class="mb-3 ps-3">
+              <li><code>[(ngModel)]</code> trabalha com o valor em centavos.</li>
+              <li><code>prefix</code> define o símbolo monetário.</li>
+              <li><code>[required]</code> integra validação ao formulário.</li>
+              <li><code>inputClass</code> permite aplicar classes utilitárias no campo.</li>
+            </ul>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-currency-input
+  [(ngModel)]="amountMinorUnits"
+  prefix="R$"
+  [required]="true"&gt;
+&lt;/li-currency-input&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

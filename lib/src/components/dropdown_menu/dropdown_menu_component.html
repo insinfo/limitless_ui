@@ -1,0 +1,33 @@
+<div [class]="resolvedHostClasses">
+  <button
+      type="button"
+      [class]="resolvedTriggerClasses"
+      [attr.aria-label]="ariaLabel.isNotEmpty ? ariaLabel : null"
+      [attr.aria-expanded]="isOpen ? 'true' : 'false'"
+      (click)="toggleDropdown($event)">
+    <i *ngIf="triggerIconClass.trim().isNotEmpty" [class]="resolvedTriggerIconClasses"></i>
+    <span *ngIf="triggerLabel.isNotEmpty">{{ triggerLabel }}</span>
+  </button>
+
+  <div [class]="resolvedMenuClasses">
+    <template ngFor let-option [ngForOf]="options">
+      <div *ngIf="option.divider" class="dropdown-divider"></div>
+
+      <button
+          *ngIf="!option.divider"
+          type="button"
+          [class]="resolvedItemClasses(option)"
+          [disabled]="option.disabled"
+          (click)="selectOption(option, $event)">
+        <i *ngIf="option.iconClass.trim().isNotEmpty" [class]="resolvedItemIconClasses(option)"></i>
+
+        <span class="flex-fill">
+          <span class="d-block">{{ option.label }}</span>
+          <small *ngIf="option.description.isNotEmpty" class="d-block text-muted">
+            {{ option.description }}
+          </small>
+        </span>
+      </button>
+    </template>
+  </div>
+</div>

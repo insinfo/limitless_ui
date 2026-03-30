@@ -1,0 +1,105 @@
+
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.progress.title }} <span class="fw-normal">{{ t.pages.progress.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.progress.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+     
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.progress.releaseConfig }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">O componente de progresso cobre indicadores lineares simples, barras empilhadas e intervalos customizados para dashboards operacionais.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Altura configurável e cantos arredondados.</li>
+                    <li>Faixas com stripes, animação e labels.</li>
+                    <li>Escalas customizadas com <code>min</code> e <code>max</code>.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>O componente não calcula progresso automaticamente.</li>
+                    <li>Escalas muito complexas exigem legenda adicional.</li>
+                    <li>Barras empilhadas pedem curadoria de contraste.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="demo-progress-block">
+              <div>
+                <div class="fw-semibold">{{ t.pages.progress.releasePipeline }}</div>
+                <small class="text-muted">{{ t.pages.progress.releaseConfig }}</small>
+              </div>
+              <li-progress [height]="'1rem'" [rounded]="true">
+                <li-progress-bar class="bg-primary" [value]="78" [showValueLabel]="true"></li-progress-bar>
+              </li-progress>
+            </div>
+
+            <div class="demo-progress-block">
+              <div>
+                <div class="fw-semibold">{{ t.pages.progress.squadCapacity }}</div>
+                <small class="text-muted">{{ t.pages.progress.squadConfig }}</small>
+              </div>
+              <li-progress [height]="'1rem'" [striped]="true" [animated]="true">
+                <li-progress-bar class="bg-success" [value]="42" [label]="t.pages.progress.teamProduct"></li-progress-bar>
+                <li-progress-bar class="bg-info" [value]="28" label="UX"></li-progress-bar>
+                <li-progress-bar class="bg-warning" [value]="16" label="QA"></li-progress-bar>
+              </li-progress>
+            </div>
+
+            <div class="demo-progress-block mb-0">
+              <div>
+                <div class="fw-semibold">{{ t.pages.progress.customRange }}</div>
+                <small class="text-muted">{{ t.pages.progress.customConfig }}</small>
+              </div>
+              <li-progress [min]="0" [max]="200" [height]="'0.875rem'">
+                <li-progress-bar class="bg-pink" [value]="120" label="120 de 200"></li-progress-bar>
+              </li-progress>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">Use o container <code>li-progress</code> para definir contexto visual e os filhos <code>li-progress-bar</code> para cada faixa de progresso.</p>
+            <ul class="mb-3 ps-3">
+              <li><code>[height]</code> controla a espessura da barra.</li>
+              <li><code>[rounded]</code>, <code>[striped]</code> e <code>[animated]</code> ajustam a aparência.</li>
+              <li><code>[min]</code> e <code>[max]</code> permitem escalas além de 0-100.</li>
+              <li><code>[value]</code>, <code>label</code> e <code>[showValueLabel]</code> controlam o conteúdo de cada faixa.</li>
+            </ul>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-progress [height]="'1rem'" [striped]="true" [animated]="true"&gt;
+  &lt;li-progress-bar class="bg-success" [value]="42" label="Produto"&gt;&lt;/li-progress-bar&gt;
+  &lt;li-progress-bar class="bg-info" [value]="28" label="UX"&gt;&lt;/li-progress-bar&gt;
+&lt;/li-progress&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+

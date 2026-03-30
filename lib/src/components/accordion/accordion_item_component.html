@@ -1,0 +1,34 @@
+<h2 class="accordion-header" [attr.id]="headerId">
+  <button
+      [attr.aria-controls]="contentId"
+      [attr.aria-expanded]="isExpanded.toString()"
+      [attr.disabled]="disabled ? '' : null"
+      [class]="buttonClassName"
+      type="button"
+      (click)="toggle()">
+    <span *ngIf="hasIcon" class="me-2 d-inline-flex align-items-center">
+      <i [class]="resolvedIconClass"></i>
+    </span>
+
+    <span class="flex-fill text-start">
+      <span *ngIf="headerTemplate == null">{{header}}</span>
+      <small *ngIf="headerTemplate == null && hasDescription" class="d-block fw-normal text-muted mt-1">
+        {{description}}
+      </small>
+      <template [ngTemplateOutlet]="headerTemplate?.templateRef"></template>
+    </span>
+  </button>
+</h2>
+
+<div
+    [attr.aria-labelledby]="headerId"
+    [attr.id]="contentId"
+    class="accordion-collapse collapse"
+    [class.show]="isExpanded">
+  <div class="accordion-body">
+    <template [ngTemplateOutlet]="shouldRenderLazyTemplate ? bodyTemplate?.templateRef : null"></template>
+    <div *ngIf="shouldRenderProjectedBody && !hasLazyBodyTemplate">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

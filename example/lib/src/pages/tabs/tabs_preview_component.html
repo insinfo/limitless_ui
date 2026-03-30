@@ -1,0 +1,25 @@
+<div class="card border-0 shadow-none mb-0">
+  <div class="card-body p-0">
+    <li-tabsx type="pills" placement="left" [justified]="true">
+      <li-tabx [header]="t.pages.tabs.tokens" [active]="true">
+        <template li-tabx-header>
+          <span class="d-inline-flex align-items-center gap-2">
+            <i class="ph-paint-brush"></i>
+            <span>{{ t.pages.tabs.tokens }}</span>
+          </span>
+        </template>
+        <div class="p-3">
+          {{ t.pages.tabs.tokensBody }}
+        </div>
+      </li-tabx>
+      <li-tabx [header]="t.pages.tabs.flow">
+        <div class="p-3">
+          {{ t.pages.tabs.flowBody }}
+        </div>
+      </li-tabx>
+      <li-tabx [header]="t.pages.tabs.blocked" [disabled]="true">
+        <div class="p-3">{{ t.pages.tabs.blockedBody }}</div>
+      </li-tabx>
+    </li-tabsx>
+  </div>
+</div>

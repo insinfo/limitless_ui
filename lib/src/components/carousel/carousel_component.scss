@@ -1,0 +1,174 @@
+:host {
+  display: block;
+}
+
+$carousel-transition-duration: 0.6s;
+
+:host(:focus) {
+  outline: none;
+}
+
+.carousel-indicators button {
+  cursor: pointer;
+}
+
+.carousel-inner.row > li-carousel-item {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+:host(.carousel-fade) ::ng-deep li-carousel-item.carousel-item {
+  opacity: 0;
+  transform: none;
+  transition: opacity $carousel-transition-duration ease-in-out;
+}
+
+:host(.carousel-fade) ::ng-deep li-carousel-item.carousel-item.active,
+:host(.carousel-fade) ::ng-deep li-carousel-item.carousel-item.carousel-item-next.carousel-item-start,
+:host(.carousel-fade) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev.carousel-item-end {
+  z-index: 1;
+  opacity: 1;
+}
+
+:host(.carousel-fade) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-start,
+:host(.carousel-fade) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-end {
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0s $carousel-transition-duration;
+}
+
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item,
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item,
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item,
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item {
+  transition-duration: $carousel-transition-duration;
+  transition-timing-function: ease-in-out;
+}
+
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item {
+  opacity: 0;
+  transform: scale(0.92);
+  transition-property: transform, opacity;
+}
+
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.active,
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.carousel-item-next,
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev {
+  display: block;
+}
+
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.active,
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.carousel-item-next.carousel-item-start,
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev.carousel-item-end {
+  opacity: 1;
+  transform: scale(1);
+}
+
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.carousel-item-next:not(.carousel-item-start) {
+  transform: scale(1.08);
+}
+
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev:not(.carousel-item-end) {
+  transform: scale(0.86);
+}
+
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-start {
+  opacity: 0;
+  transform: scale(0.88);
+}
+
+:host(.carousel-zoom) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-end {
+  opacity: 0;
+  transform: scale(1.08);
+}
+
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item {
+  transition-property: transform;
+}
+
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item.active,
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item.carousel-item-next,
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev {
+  display: block;
+}
+
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-end,
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item.carousel-item-next:not(.carousel-item-start) {
+  transform: translateY(100%);
+}
+
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-start,
+:host(.carousel-vertical) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev:not(.carousel-item-end) {
+  transform: translateY(-100%);
+}
+
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item {
+  opacity: 0;
+  filter: blur(18px);
+  transform: scale(1.03);
+  transition-property: opacity, filter, transform;
+}
+
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item.active,
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item.carousel-item-next,
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev {
+  display: block;
+}
+
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item.active,
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item.carousel-item-next.carousel-item-start,
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev.carousel-item-end {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}
+
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-start,
+:host(.carousel-blur) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-end {
+  opacity: 0;
+  filter: blur(18px);
+  transform: scale(0.98);
+}
+
+:host(.carousel-parallax) ::ng-deep .carousel-inner {
+  overflow: hidden;
+}
+
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item {
+  opacity: 0;
+  transform: translateX(14%) scale(1.08);
+  transition-property: transform, opacity;
+}
+
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.active,
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.carousel-item-next,
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev {
+  display: block;
+}
+
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.active,
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.carousel-item-next.carousel-item-start,
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev.carousel-item-end {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.carousel-item-next:not(.carousel-item-start) {
+  opacity: 0;
+  transform: translateX(18%) scale(1.1);
+}
+
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.carousel-item-prev:not(.carousel-item-end) {
+  opacity: 0;
+  transform: translateX(-18%) scale(1.1);
+}
+
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-start {
+  opacity: 0;
+  transform: translateX(-10%) scale(0.96);
+}
+
+:host(.carousel-parallax) ::ng-deep li-carousel-item.carousel-item.active.carousel-item-end {
+  opacity: 0;
+  transform: translateX(10%) scale(0.96);
+}

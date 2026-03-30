@@ -1,0 +1,138 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.timePicker.title }} <span class="fw-normal">{{ t.pages.timePicker.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.timePicker.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.timePicker.cardTitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx [header]="t.pages.timePicker.tabOverview" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.timePicker.intro }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.timePicker.descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ t.pages.timePicker.descriptionBody }}</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.timePicker.featuresTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ t.pages.timePicker.featureOne }}</li>
+                    <li>{{ t.pages.timePicker.featureTwo }}</li>
+                    <li>{{ t.pages.timePicker.featureThree }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.timePicker.limitsTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ t.pages.timePicker.limitOne }}</li>
+                    <li>{{ t.pages.timePicker.limitTwo }}</li>
+                    <li>{{ t.pages.timePicker.limitThree }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ t.pages.timePicker.defaultTitle }}</h6>
+                  <li-time-picker [(ngModel)]="selectedTime" [placeholder]="t.pages.timePicker.placeholder">
+                  </li-time-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>{{ t.pages.timePicker.currentLabel }}:</strong> {{ selectedTimeLabel }}</div>
+                    <div class="text-muted">{{ t.pages.timePicker.defaultHelp }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ t.pages.timePicker.englishTitle }}</h6>
+                  <li-time-picker [(ngModel)]="reviewTime" locale="en_US" [placeholder]="t.pages.timePicker.englishPlaceholder">
+                  </li-time-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>{{ t.pages.timePicker.reviewLabel }}:</strong> {{ reviewTimeLabel }}</div>
+                    <div class="text-muted">{{ t.pages.timePicker.englishHelp }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-4 mt-1">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ t.pages.timePicker.disabledTitle }}</h6>
+                  <li-time-picker [value]="disabledTime" [disabled]="true" [placeholder]="t.pages.timePicker.disabledPlaceholder">
+                  </li-time-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>{{ t.pages.timePicker.disabledLabel }}:</strong> {{ disabledTimeLabel }}</div>
+                    <div class="text-muted">{{ t.pages.timePicker.disabledHelp }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="time-picker-notes-card h-100">
+                  <div class="time-picker-notes-title">{{ t.pages.timePicker.notesTitle }}</div>
+                  <p class="mb-0 text-muted">{{ t.pages.timePicker.notesBody }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.pages.timePicker.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ t.pages.timePicker.apiIntro }}</p>
+            <div class="row g-3 mb-3">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.timePicker.apiInputsTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ t.pages.timePicker.apiInputOne }}</li>
+                    <li>{{ t.pages.timePicker.apiInputTwo }}</li>
+                    <li>{{ t.pages.timePicker.apiInputThree }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.pages.timePicker.apiBehaviorTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ t.pages.timePicker.apiBehaviorOne }}</li>
+                    <li>{{ t.pages.timePicker.apiBehaviorTwo }}</li>
+                    <li>{{ t.pages.timePicker.apiBehaviorThree }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>{{ t.pages.timePicker.apiUsageExample }}</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,650 @@
+import 'dart:async';
+import 'dart:html' as html;
+import 'dart:math' as math;
+
+import 'package:ngdart/angular.dart';
+import 'package:ngforms/ngforms.dart'
+    show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
+import 'package:popper/popper.dart';
+
+enum TimePickerDialMode { hour, minute }
+
+class TimePickerDialLabel {
+  final int value;
+  final String label;
+  final double leftPercent;
+  final double topPercent;
+  final bool isInnerRing;
+
+  const TimePickerDialLabel({
+    required this.value,
+    required this.label,
+    required this.leftPercent,
+    required this.topPercent,
+    this.isInnerRing = false,
+  });
+}
+
+/// Limitless-inspired time picker with a clock dial overlay.
+///
+/// The component exposes `Duration?` through both `[value]`/`(valueChange)` and
+/// AngularDart forms with `[(ngModel)]`.
+@Component(
+  selector: 'li-time-picker',
+  styleUrls: ['time_picker_component.css'],
+  templateUrl: 'time_picker_component.html',
+  directives: [coreDirectives],
+  providers: [
+    ExistingProvider.forToken(ngValueAccessor, LiTimePickerComponent),
+  ],
+  changeDetection: ChangeDetectionStrategy.onPush,
+)
+class LiTimePickerComponent
+    implements ControlValueAccessor<Duration?>, OnDestroy {
+  LiTimePickerComponent(this._changeDetectorRef);
+
+  final ChangeDetectorRef _changeDetectorRef;
+  final StreamController<Duration?> _valueChangeController =
+      StreamController<Duration?>.broadcast();
+
+  PopperAnchoredOverlay? _overlay;
+  StreamSubscription<html.Event>? _documentClickSubscription;
+  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<html.MouseEvent>? _documentMouseMoveSubscription;
+  StreamSubscription<html.MouseEvent>? _documentMouseUpSubscription;
+  StreamSubscription<html.TouchEvent>? _documentTouchMoveSubscription;
+  StreamSubscription<html.TouchEvent>? _documentTouchEndSubscription;
+
+  @Input()
+  Duration? value;
+
+  @Input('disabled')
+  bool isDisabled = false;
+
+  @Input()
+  String? placeholder;
+
+  @Input()
+  String locale = 'pt_BR';
+
+  @Input()
+  bool use24Hour = false;
+
+  @Output()
+  Stream<Duration?> get valueChange => _valueChangeController.stream;
+
+  @ViewChild('triggerElement')
+  html.Element? triggerElement;
+
+  @ViewChild('panelElement')
+  html.Element? panelElement;
+
+  @ViewChild('clockFaceElement')
+  html.Element? clockFaceElement;
+
+  bool isOpen = false;
+  TimePickerDialMode dialMode = TimePickerDialMode.hour;
+  int draftHour24 = 0;
+  int draftMinute = 0;
+  bool _isDraggingClock = false;
+  int? _dragAnimationFrameId;
+  double? _pendingPointerX;
+  double? _pendingPointerY;
+
+  ChangeFunction<Duration?> _onChange =
+      (Duration? _, {String? rawValue}) {};
+  TouchFunction _onTouched = () {};
+
+  bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  bool get isHourMode => dialMode == TimePickerDialMode.hour;
+
+  bool get isMinuteMode => dialMode == TimePickerDialMode.minute;
+
+  bool get isPm => draftHour24 >= 12;
+
+  bool get showMeridiem => !use24Hour;
+
+  bool get _isInnerHourSelection => use24Hour && (draftHour24 == 0 || draftHour24 >= 13);
+
+  int get displayHour12 {
+    final hour = draftHour24 % 12;
+    return hour == 0 ? 12 : hour;
+  }
+
+  String get displayHourText => use24Hour
+      ? _twoDigits(draftHour24)
+      : _twoDigits(displayHour12);
+
+  String get displayMinuteText => _twoDigits(draftMinute);
+
+  String get displayValue => _formatDuration(value);
+
+  String get effectivePlaceholder =>
+      placeholder ?? (_isEnglishLocale ? 'Select time' : 'Selecione o horario');
+
+  String get titleLabel =>
+      _isEnglishLocale ? 'Select time' : 'Selecionar horario';
+
+  String get cancelLabel => _isEnglishLocale ? 'Cancel' : 'Cancelar';
+
+  String get okLabel => _isEnglishLocale ? 'OK' : 'OK';
+
+  String get amLabel => 'AM';
+
+  String get pmLabel => 'PM';
+
+  double get handDegrees =>
+      isHourMode
+        ? ((use24Hour ? draftHour24 % 12 : displayHour12 % 12) * 30)
+          .toDouble()
+        : draftMinute * 6.0;
+
+  double get handTransformDegrees => handDegrees;
+
+  double get handLengthPercent {
+    if (isMinuteMode) {
+      return 31;
+    }
+
+    if (_isInnerHourSelection) {
+      return 21.5;
+    }
+
+    return 31;
+  }
+
+  bool get showFloatingSelector => true;
+
+  bool get selectorHasText => isMinuteMode && draftMinute % 5 != 0;
+
+  bool get useCompactSelector => isHourMode && _isInnerHourSelection;
+
+  String get floatingSelectorText =>
+      isHourMode ? displayHourText : displayMinuteText;
+
+  String get floatingSelectorLabelTransform =>
+      'rotate(${(-handTransformDegrees).toString()}deg)';
+
+  List<TimePickerDialLabel> get visibleDialLabels =>
+      isHourMode
+        ? (use24Hour ? _hourDialLabels24 : _hourDialLabels)
+        : _minuteDialLabels;
+
+  List<TimePickerDialLabel> get _hourDialLabels => _buildDialLabels(
+        const <int>[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        (int value) => '$value',
+        radiusPercent: 40,
+      );
+
+  List<TimePickerDialLabel> get _hourDialLabels24 => <TimePickerDialLabel>[
+        ..._buildDialLabels(
+          const <int>[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          (int value) => _twoDigits(value),
+          radiusPercent: 40,
+        ),
+        ..._buildDialLabels(
+          const <int>[0, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+          (int value) => _twoDigits(value),
+          radiusPercent: 24,
+          isInnerRing: true,
+        ),
+      ];
+
+  List<TimePickerDialLabel> get _minuteDialLabels => _buildDialLabels(
+        List<int>.generate(12, (int index) => index * 5),
+        (int value) => _twoDigits(value),
+      radiusPercent: 40,
+      );
+
+  void toggleOpen() {
+    if (isDisabled) {
+      return;
+    }
+
+    if (isOpen) {
+      close();
+      return;
+    }
+
+    _open();
+  }
+
+  void _open() {
+    _ensureOverlay();
+    _syncDraftFromValue();
+    dialMode = TimePickerDialMode.hour;
+    isOpen = true;
+    _overlay?.startAutoUpdate();
+    _overlay?.update();
+    _bindDocumentListeners();
+    _markForCheck();
+  }
+
+  void setHourMode() {
+    dialMode = TimePickerDialMode.hour;
+    _markForCheck();
+  }
+
+  void setMinuteMode() {
+    dialMode = TimePickerDialMode.minute;
+    _markForCheck();
+  }
+
+  void setMeridiem(bool pm) {
+    if (use24Hour) {
+      return;
+    }
+
+    if (pm == isPm) {
+      return;
+    }
+
+    if (pm) {
+      draftHour24 = draftHour24 < 12 ? draftHour24 + 12 : draftHour24;
+    } else {
+      draftHour24 = draftHour24 >= 12 ? draftHour24 - 12 : draftHour24;
+    }
+
+    _markForCheck();
+  }
+
+  void onClockMouseDown(html.MouseEvent event) {
+    event.preventDefault();
+    _beginClockDrag(event.client.x.toDouble(), event.client.y.toDouble());
+  }
+
+  void onClockTouchStart(html.TouchEvent event) {
+    final touches = event.touches;
+    if (touches == null || touches.isEmpty) {
+      return;
+    }
+
+    event.preventDefault();
+    final touch = touches.first;
+    _beginClockDrag(touch.client.x.toDouble(), touch.client.y.toDouble());
+  }
+
+  void onDialLabelClick(TimePickerDialLabel label, html.MouseEvent event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (isHourMode) {
+      if (use24Hour) {
+        draftHour24 = label.value;
+      } else {
+        _setHourFrom12Hour(label.value);
+      }
+    } else {
+      draftMinute = label.value;
+    }
+
+    _markForCheck();
+  }
+
+  void apply() {
+    value = _normalizeDuration(
+      Duration(hours: draftHour24, minutes: draftMinute),
+    );
+    _valueChangeController.add(value);
+    _onChange(value);
+    _onTouched();
+    close();
+  }
+
+  void close() {
+    _unbindDocumentListeners();
+    _stopClockDrag();
+    _overlay?.stopAutoUpdate();
+    isOpen = false;
+    dialMode = TimePickerDialMode.hour;
+    _onTouched();
+    _markForCheck();
+  }
+
+  @override
+  void writeValue(Duration? value) {
+    this.value = _normalizeDuration(value);
+    _syncDraftFromValue();
+    _markForCheck();
+  }
+
+  @override
+  void registerOnChange(ChangeFunction<Duration?> fn) {
+    _onChange = fn;
+  }
+
+  @override
+  void registerOnTouched(TouchFunction fn) {
+    _onTouched = fn;
+  }
+
+  @override
+  void onDisabledChanged(bool isDisabled) {
+    this.isDisabled = isDisabled;
+    if (isDisabled && isOpen) {
+      close();
+    }
+    _markForCheck();
+  }
+
+  bool isDialLabelActive(TimePickerDialLabel label) {
+    if (isHourMode) {
+      return label.value == displayHour12;
+    }
+
+    return label.value == draftMinute;
+  }
+
+  Object? trackByDialLabel(int index, dynamic label) =>
+      (label as TimePickerDialLabel).value;
+
+  String dialLabelClass(TimePickerDialLabel label) {
+    final isActive = isDialLabelActive(label);
+
+    final classes = <String>['time-picker-dial-label'];
+    if (label.isInnerRing) {
+      classes.add('time-picker-dial-label-inner');
+    }
+
+    if (isActive) {
+      classes.add('active');
+    }
+
+    return classes.join(' ');
+  }
+
+  void _ensureOverlay() {
+    final reference = triggerElement;
+    final floating = panelElement;
+
+    if (_overlay != null || reference == null || floating == null) {
+      return;
+    }
+
+    _overlay = PopperAnchoredOverlay.attach(
+      referenceElement: reference,
+      floatingElement: floating,
+      portalOptions: const PopperPortalOptions(
+        hostClassName: 'LiTimePickerComponent',
+        hostZIndex: '1085',
+        floatingZIndex: '1086',
+      ),
+      popperOptions: const PopperOptions(
+        placement: 'bottom-start',
+        fallbackPlacements: <String>[
+          'top-start',
+          'bottom-end',
+          'top-end',
+        ],
+        strategy: PopperStrategy.fixed,
+        padding: PopperInsets.all(8),
+        offset: PopperOffset(mainAxis: 8),
+      ),
+    );
+  }
+
+  void _bindDocumentListeners() {
+    _documentClickSubscription ??= html.document.onClick.listen((event) {
+      if (!isOpen) {
+        return;
+      }
+
+      final target = event.target;
+      if (target is! html.Node) {
+        close();
+        return;
+      }
+
+      final clickedTrigger = triggerElement?.contains(target) ?? false;
+      final clickedPanel = panelElement?.contains(target) ?? false;
+      if (!clickedTrigger && !clickedPanel) {
+        close();
+      }
+    });
+
+    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+      if (isOpen && event.key == 'Escape') {
+        event.preventDefault();
+        close();
+      }
+    });
+  }
+
+  void _unbindDocumentListeners() {
+    _documentClickSubscription?.cancel();
+    _documentClickSubscription = null;
+    _documentKeySubscription?.cancel();
+    _documentKeySubscription = null;
+    _detachClockDragListeners();
+  }
+
+  void _beginClockDrag(double clientX, double clientY) {
+    _isDraggingClock = true;
+    _attachClockDragListeners();
+    _updateSelectionFromClientOffset(clientX, clientY);
+  }
+
+  void _attachClockDragListeners() {
+    _documentMouseMoveSubscription ??=
+        html.document.onMouseMove.listen((html.MouseEvent event) {
+      if (!_isDraggingClock) {
+        return;
+      }
+
+      event.preventDefault();
+      _queuePointerUpdate(event.client.x.toDouble(), event.client.y.toDouble());
+    });
+
+    _documentMouseUpSubscription ??=
+        html.document.onMouseUp.listen((html.MouseEvent event) {
+      if (!_isDraggingClock) {
+        return;
+      }
+
+      event.preventDefault();
+      _stopClockDrag();
+    });
+
+    _documentTouchMoveSubscription ??=
+        html.document.onTouchMove.listen((html.TouchEvent event) {
+      if (!_isDraggingClock) {
+        return;
+      }
+
+      final touches = event.touches;
+      if (touches == null || touches.isEmpty) {
+        return;
+      }
+
+      event.preventDefault();
+      final touch = touches.first;
+      _queuePointerUpdate(touch.client.x.toDouble(), touch.client.y.toDouble());
+    });
+
+    _documentTouchEndSubscription ??=
+        html.document.onTouchEnd.listen((html.TouchEvent event) {
+      if (!_isDraggingClock) {
+        return;
+      }
+
+      event.preventDefault();
+      _stopClockDrag();
+    });
+  }
+
+  void _detachClockDragListeners() {
+    _documentMouseMoveSubscription?.cancel();
+    _documentMouseMoveSubscription = null;
+    _documentMouseUpSubscription?.cancel();
+    _documentMouseUpSubscription = null;
+    _documentTouchMoveSubscription?.cancel();
+    _documentTouchMoveSubscription = null;
+    _documentTouchEndSubscription?.cancel();
+    _documentTouchEndSubscription = null;
+  }
+
+  void _queuePointerUpdate(double clientX, double clientY) {
+    _pendingPointerX = clientX;
+    _pendingPointerY = clientY;
+
+    if (_dragAnimationFrameId != null) {
+      return;
+    }
+
+    _dragAnimationFrameId = html.window.requestAnimationFrame((_) {
+      _dragAnimationFrameId = null;
+
+      final pendingX = _pendingPointerX;
+      final pendingY = _pendingPointerY;
+      if (pendingX == null || pendingY == null) {
+        return;
+      }
+
+      _updateSelectionFromClientOffset(pendingX, pendingY);
+    });
+  }
+
+  void _stopClockDrag() {
+    _isDraggingClock = false;
+    _pendingPointerX = null;
+    _pendingPointerY = null;
+
+    if (_dragAnimationFrameId != null) {
+      html.window.cancelAnimationFrame(_dragAnimationFrameId!);
+      _dragAnimationFrameId = null;
+    }
+
+    _detachClockDragListeners();
+  }
+
+  void _updateSelectionFromClientOffset(double clientX, double clientY) {
+    final face = clockFaceElement;
+    if (face == null) {
+      return;
+    }
+
+    final rect = face.getBoundingClientRect();
+    final dx = clientX - rect.left - (rect.width / 2);
+    final dy = clientY - rect.top - (rect.height / 2);
+    final angleDegrees = math.atan2(dy, dx) * 180 / math.pi;
+    final normalizedDegrees = (angleDegrees + 90 + 360) % 360;
+    final distance = math.sqrt(dx * dx + dy * dy);
+    final isInnerCircle = distance < (rect.width / 2) * 0.72;
+
+    if (isHourMode) {
+      final rawHour = (normalizedDegrees / 30).round() % 12;
+
+      if (use24Hour) {
+        draftHour24 = _hour24FromDialIndex(rawHour, isInnerCircle);
+      } else {
+        final selectedHour = rawHour == 0 ? 12 : rawHour;
+        _setHourFrom12Hour(selectedHour);
+      }
+    } else {
+      draftMinute = (normalizedDegrees / 6).round() % 60;
+    }
+
+    _markForCheck();
+  }
+
+  void _syncDraftFromValue() {
+    final currentValue = _normalizeDuration(value);
+    if (currentValue == null) {
+      final now = DateTime.now();
+      draftHour24 = now.hour;
+      draftMinute = now.minute;
+      return;
+    }
+
+    draftHour24 = currentValue.inHours % 24;
+    draftMinute = currentValue.inMinutes % 60;
+  }
+
+  void _setHourFrom12Hour(int hour12) {
+    if (hour12 == 12) {
+      draftHour24 = isPm ? 12 : 0;
+      return;
+    }
+
+    draftHour24 = isPm ? hour12 + 12 : hour12;
+  }
+
+  List<TimePickerDialLabel> _buildDialLabels(
+    List<int> values,
+    String Function(int value) labelBuilder,
+    {
+    double radiusPercent = 38,
+    bool isInnerRing = false,
+    }
+  ) {
+    final count = values.length;
+
+    return values.asMap().entries.map((entry) {
+      final angleDegrees = (entry.key * (360 / count)) - 90;
+      final radians = angleDegrees * math.pi / 180;
+      return TimePickerDialLabel(
+        value: entry.value,
+        label: labelBuilder(entry.value),
+        leftPercent: 50 + math.cos(radians) * radiusPercent,
+        topPercent: 50 + math.sin(radians) * radiusPercent,
+        isInnerRing: isInnerRing,
+      );
+    }).toList(growable: false);
+  }
+
+  int _hour24FromDialIndex(int rawHour, bool isInnerCircle) {
+    if (isInnerCircle) {
+      return rawHour == 0 ? 0 : rawHour + 12;
+    }
+
+    return rawHour == 0 ? 12 : rawHour;
+  }
+
+  Duration? _normalizeDuration(Duration? value) {
+    if (value == null) {
+      return null;
+    }
+
+    final totalMinutes = value.inMinutes % (24 * 60);
+    final normalizedMinutes = totalMinutes < 0 ? totalMinutes + (24 * 60) : totalMinutes;
+    return Duration(minutes: normalizedMinutes);
+  }
+
+  String _formatDuration(Duration? value) {
+    final normalized = _normalizeDuration(value);
+    if (normalized == null) {
+      return '';
+    }
+
+    final hours = normalized.inHours % 24;
+    final minutes = normalized.inMinutes % 60;
+
+    if (use24Hour) {
+      return '${_twoDigits(hours)}:${_twoDigits(minutes)}';
+    }
+
+    final period = hours >= 12 ? 'PM' : 'AM';
+    final hour12 = hours % 12 == 0 ? 12 : hours % 12;
+    return '${_twoDigits(hour12)}:${_twoDigits(minutes)} $period';
+  }
+
+  String _twoDigits(int value) {
+    if (value < 10) {
+      return '0$value';
+    }
+    return '$value';
+  }
+
+  void _markForCheck() {
+    _changeDetectorRef.markForCheck();
+  }
+
+  @override
+  void ngOnDestroy() {
+    _unbindDocumentListeners();
+    _stopClockDrag();
+    _overlay?.dispose();
+    _valueChangeController.close();
+  }
+}

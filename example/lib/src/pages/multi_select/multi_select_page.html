@@ -1,0 +1,131 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ t.pages.multiSelect.title }} <span class="fw-normal">{{ t.pages.multiSelect.subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ t.pages.multiSelect.breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ t.pages.multiSelect.cardTitle }}</h5>
+      </div>
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">A demo de multiseleção mostra seleção múltipla com <code>dataSource</code> estável, projeção manual e documentação organizada entre visão geral e API.</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">O componente mantém uma coleção de valores selecionados e projeta o resultado diretamente no trigger.</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Seleção múltipla com badges e placeholder.</li>
+                    <li>Integração com <code>dataSource</code> ou <code>li-multi-option</code>.</li>
+                    <li>Binding direto com listas no <code>ngModel</code>.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>Evite recriar listas de opções em getters reativos.</li>
+                    <li>O overlay precisa de atualização consistente ao mudar a seleção.</li>
+                    <li>Para coleções muito grandes, mantenha paginação ou busca no pai.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ t.pages.multiSelect.channels }}</label>
+              <li-multi-select
+                  [dataSource]="channelOptions"
+                  labelKey="label"
+                  valueKey="id"
+                  [(ngModel)]="selectedChannels">
+              </li-multi-select>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ t.pages.multiSelect.projectedTargets }}</label>
+              <li-multi-select [(ngModel)]="projectedChannels" [placeholder]="t.pages.multiSelect.projectedPlaceholder">
+                <li-multi-option value="portal">{{ t.pages.multiSelect.optionPortal }}</li-multi-option>
+                <li-multi-option value="api">{{ t.pages.multiSelect.optionApi }}</li-multi-option>
+                <li-multi-option value="batch">{{ t.pages.multiSelect.optionBatch }}</li-multi-option>
+              </li-multi-select>
+            </div>
+
+            <div class="demo-summary-box">
+              <div><strong>{{ t.pages.multiSelect.channels }}:</strong> {{ selectedChannelsLabel }}</div>
+              <div><strong>{{ t.pages.multiSelect.projectedLabel }}:</strong> {{ projectedChannelsLabel }}</div>
+            </div>
+          </div>
+        </li-tabx>
+        <li-tabx header="API">
+          <div class="card-body">
+            <div class="row g-4">
+              <div class="col-xl-6">
+                <h6 class="mb-2">Como utilizar</h6>
+                <p>
+                  <code>li-multi-select</code> segue a mesma estratégia do
+                  <code>li-select</code>, mas mantém múltiplos valores
+                  selecionados e renderiza badges no trigger.
+                </p>
+                <p class="mb-3">
+                  O padrão recomendado para o demo e para produção é manter
+                  <code>dataSource</code> estável e atualizar apenas a coleção de
+                  valores selecionados.
+                </p>
+
+                <ul class="mb-3 ps-3">
+                  <li><code>[dataSource]</code>: lista de opções externas.</li>
+                  <li><code>labelKey</code>: chave usada para o texto visível.</li>
+                  <li><code>valueKey</code>: chave usada no array do ngModel.</li>
+                  <li><code>[(ngModel)]</code>: lista de valores selecionados.</li>
+                  <li><code>[placeholder]</code>: texto quando nada está marcado.</li>
+                </ul>
+
+                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-multi-select
+  [dataSource]="channelOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="selectedChannels"&gt;
+&lt;/li-multi-select&gt;</code></pre>
+              </div>
+
+              <div class="col-xl-6">
+                <h6 class="mb-2">Observações e limites</h6>
+                <ul class="mb-3 ps-3">
+                  <li>Não recrie a lista de opções em getters reativos.</li>
+                  <li>Agende <code>overlay.update()</code> em frame futuro ao mudar a seleção.</li>
+                  <li>Calcule <code>maxHeight</code> pelo viewport, não pela altura atual do painel.</li>
+                </ul>
+
+                <pre class="bg-light border rounded p-3 mb-0"><code>// Bom: opções criadas uma única vez
+late final List&lt;Map&lt;String, dynamic&gt;&gt; channelOptions;
+
+// O ngModel muda, mas o dataSource continua estável
+List&lt;dynamic&gt; selectedChannels = &lt;dynamic&gt;['email', 'push'];</code></pre>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

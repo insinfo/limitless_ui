@@ -1,0 +1,65 @@
+.grid-container {
+    padding: 1.25rem;
+    background: var(--body-bg);
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.grid-item {
+    min-width: 0;
+    width: auto;
+    margin: 0;
+}
+
+.grid-item.card {
+    overflow: hidden;
+}
+
+.grid-item .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: .625rem;
+
+    > div {
+        width: 100%;
+        margin: 0;
+        min-width: 0;
+        padding: 0;
+    }
+
+    h6 {
+        margin: 0;
+    }
+}
+
+.grid-item .card-footer {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.datatable-custom-card {
+    display: block;
+    width: 100%;
+}
+
+.datatable-custom-card > * {
+    width: 100%;
+}
+
+.content-divider {
+    width: auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    grid-column: 1 / -1;
+}
+
+.content-divider>span {
+    background-color: #f1f4f9 !important;
+}

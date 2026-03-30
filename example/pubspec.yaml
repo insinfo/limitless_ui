@@ -1,0 +1,23 @@
+name: limitless_ui_example
+description: Showcase application for limitless_ui components.
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  essential_core:
+    path: ../../essential_core
+  
+  i18n: ^4.2.1
+  limitless_ui:
+    path: ..
+  ngdart: 8.0.0-dev.4
+  ngforms: 5.0.0-dev.3
+  ngrouter: 4.0.0-dev.3
+
+dev_dependencies:
+  build_runner: ^2.4.12
+  build_web_compilers: ^4.0.11
+  lints: ^5.0.0
+  sass_builder: ^2.2.1
