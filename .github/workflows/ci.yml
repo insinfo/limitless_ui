@@ -39,20 +39,22 @@ jobs:
 
       - name: Run browser and AngularDart tests
         env:
-          CHROME_EXECUTABLE: ${{ steps.setup-chrome.outputs.chrome-path }}
-        run: >
-          dart run build_runner test -- -p chrome -j 1
-          test/alerts/alert_component_test.dart
-          test/alerts/li_alert_component_test.dart
-          test/progress_component_test.dart
-          test/datatable/li_datatable_component_test.dart
-          test/accordion/li_accordion_directive_test.dart
-          test/dropdown/li_dropdown_directive_test.dart
-          test/modal/li_modal_component_test.dart
-          test/nav/li_nav_directive_test.dart
-          test/popover/li_popover_component_test.dart
-          test/scrollspy/li_scrollspy_directive_test.dart
-          test/tooltip/li_tooltip_directive_test.dart
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: |
+          printf '#!/usr/bin/env bash\nexec "%s" --no-sandbox "$@"\n' "$CHROME_BIN" > /tmp/chrome-no-sandbox
+          chmod +x /tmp/chrome-no-sandbox
+          CHROME_EXECUTABLE=/tmp/chrome-no-sandbox dart run build_runner test -- -p chrome -j 1 \
+            test/alerts/alert_component_test.dart \
+            test/alerts/li_alert_component_test.dart \
+            test/progress_component_test.dart \
+            test/datatable/li_datatable_component_test.dart \
+            test/accordion/li_accordion_directive_test.dart \
+            test/dropdown/li_dropdown_directive_test.dart \
+            test/modal/li_modal_component_test.dart \
+            test/nav/li_nav_directive_test.dart \
+            test/popover/li_popover_component_test.dart \
+            test/scrollspy/li_scrollspy_directive_test.dart \
+            test/tooltip/li_tooltip_directive_test.dart
 
       - name: Validate pub package
         run: dart pub publish --dry-run
