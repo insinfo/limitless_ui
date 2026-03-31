@@ -30,6 +30,19 @@ encaminhado para o `build_runner`. Já `dart run webdev ...` só funciona se o
 pacote `webdev` estiver listado nas dependências do projeto, o que não é o caso
 deste `example`.
 
+## GitHub Pages
+
+O repositório inclui um workflow em
+[pages.yml](/c:/MyDartProjects/limitless_ui/.github/workflows/pages.yml) que
+gera uma versão estática do `example` com:
+
+```bash
+dart run build_runner build --release --delete-conflicting-outputs --output web:build
+```
+
+Como a demo usa `routerProvidersHash`, ela funciona bem em subcaminhos do
+GitHub Pages sem precisar de fallback de rota no servidor.
+
 ## Estilos obrigatórios
 
 A biblioteca **só funciona corretamente** se os estilos abaixo estiverem

@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml/badge.svg)](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml)
 
-Reusable AngularDart UI components, directives and small browser helpers for applications built on the Limitless visual language.
+Reusable AngularDart UI components, directives and small browser helpers for applications built on the Limitless visual language https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css.
 
 This package is browser-only. It depends on `dart:html`, `ngdart`, `ngforms` and `ngrouter`.
 
