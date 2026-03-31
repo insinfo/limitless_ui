@@ -1,3 +1,5 @@
+// ignore_for_file: uri_has_not_been_generated
+
 import 'package:ngdart/angular.dart';
 import 'package:ngrouter/ngrouter.dart';
 

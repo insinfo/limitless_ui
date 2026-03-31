@@ -1,16 +1,34 @@
 # limitless_ui example
 
 Aplicacao demo para explorar os componentes do pacote `limitless_ui`.
-
+use  webdev serve --auto refresh --hostname localhost -v -- --delete-conflicting-outputs
 ## Executar
 
 ```bash
 cd packages/limitless_ui/example
 dart pub get
-dart run build_runner serve web:8080
+webdev serve --auto refresh --hostname localhost
 ```
 
 Abra `http://localhost:8080`.
+
+O `example` mantém os arquivos `lib/messages.i18n.dart` e
+`lib/messages_en.i18n.dart` versionados e desabilita o builder automático do
+`i18n` em [build.yaml](/c:/MyDartProjects/limitless_ui/example/build.yaml),
+então o comando acima deve funcionar sozinho, sem etapa prévia.
+
+Se você reativar a geração automática do `i18n` ou alterar manualmente a
+configuração de builders, o `webdev` também aceita repassar flags para o
+`build_runner` usando `--`:
+
+```bash
+webdev serve --auto refresh --hostname localhost -- --delete-conflicting-outputs
+```
+
+Esse `--delete-conflicting-outputs` não é uma opção nativa do `webdev`; ele é
+encaminhado para o `build_runner`. Já `dart run webdev ...` só funciona se o
+pacote `webdev` estiver listado nas dependências do projeto, o que não é o caso
+deste `example`.
 
 ## Estilos obrigatórios
 

@@ -14,7 +14,11 @@ class DemoRoutePaths {
   static final timePicker = RoutePath(path: 'time-picker');
   static final dateRange = RoutePath(path: 'date-range');
   static final carousel = RoutePath(path: 'carousel');
+  static final scrollSpy = RoutePath(path: 'scrollspy');
   static final tooltip = RoutePath(path: 'tooltip');
+  static final popover = RoutePath(path: 'popover');
+  static final nav = RoutePath(path: 'nav');
+  static final dropdown = RoutePath(path: 'dropdown');
   static final datatable = RoutePath(path: 'datatable');
   static final datatableSelect = RoutePath(path: 'datatable-select');
   static final notification = RoutePath(path: 'notification');

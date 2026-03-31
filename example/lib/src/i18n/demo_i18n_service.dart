@@ -1,5 +1,6 @@
-import '../../messages.i18n.dart';
-import '../../messages_en.i18n.dart' as en;
+
+import 'package:limitless_ui_example/messages.i18n.dart';
+import 'package:limitless_ui_example/messages_en.i18n.dart' as en;
 
 enum DemoLocale { pt, en }
 

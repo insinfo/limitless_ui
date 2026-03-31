@@ -84,7 +84,7 @@ void main() {
       final content = _content(doc.build());
 
       expect(content, contains('(Hello) Tj'));
-      expect(content, contains('/F1 24.0 Tf'));
+      expect(content, contains(RegExp(r'/F1 24(?:\.0)? Tf')));
       expect(content, contains('100.00 500.00 Td'));
     });
 
@@ -390,11 +390,11 @@ Paragraph line.
       expect(bytes, isA<Uint8List>());
       expect(content, contains('%PDF-1.4'));
       expect(content, contains('(Title) Tj'));
-      expect(content, contains('/F1 22.0 Tf'));
+      expect(content, contains(RegExp(r'/F1 22(?:\.0)? Tf')));
       expect(content, contains('(Subtitle) Tj'));
-      expect(content, contains('/F1 16.0 Tf'));
+      expect(content, contains(RegExp(r'/F1 16(?:\.0)? Tf')));
       expect(content, contains('(Section) Tj'));
-      expect(content, contains('/F1 13.0 Tf'));
+      expect(content, contains(RegExp(r'/F1 13(?:\.0)? Tf')));
       expect(content, contains('(Paragraph line.) Tj'));
       expect(content, contains('(- item one) Tj'));
       expect(content, contains('(- item two) Tj'));
@@ -418,7 +418,7 @@ Paragraph line.
       expect(content, contains('(Subsection) Tj'));
       expect(content, contains('(Deep) Tj'));
       expect(content, contains('(Deepest) Tj'));
-      expect(content, contains('/F1 13.0 Tf'));
+      expect(content, contains(RegExp(r'/F1 13(?:\.0)? Tf')));
       expect(textOps, greaterThan(3));
       expect(content, isNot(contains('NaN')));
     });

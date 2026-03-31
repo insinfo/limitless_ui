@@ -1,536 +1,140 @@
 # limitless_ui
 
-`limitless_ui` is a reusable AngularDart UI package for web applications.
-created in top of https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css 
-and https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css
+Reusable AngularDart UI components, directives and small browser helpers for applications built on the Limitless visual language.
 
+This package is browser-only. It depends on `dart:html`, `ngdart`, `ngforms` and `ngrouter`.
 
-check ./example for demo
+## Publication status
 
-It groups generic components, directives, pipes, and small UI helpers that can
-be shared across multiple frontend projects.
+The package is prepared for publication and currently versioned as `1.0.0-dev.1`, because it still depends on AngularDart pre-release packages:
 
-## Scope
+- `ngdart: ^8.0.0-dev.4`
+- `ngforms: ^5.0.0-dev.3`
+- `ngrouter: ^4.0.0-dev.3`
 
-The package currently includes:
+Publication metadata is configured in [pubspec.yaml](/c:/MyDartProjects/limitless_ui/pubspec.yaml) and CI is defined in [ci.yml](/c:/MyDartProjects/limitless_ui/.github/workflows/ci.yml).
 
-- data entry components such as `li-currency-input`, custom select, custom
-  multi-select, and a date range picker
-- data presentation components such as the datatable and tree view
-- structural components such as accordions, carousels, dynamic tabs, and
-  progress bars
-- feedback helpers such as loading overlays, notification toasts, dialogs,
-  popovers, tooltips, and toast utilities
-- layout/navigation helpers such as dynamic tabs
-- shared AngularDart directives and value accessors
-- utility pipes and DOM extensions
+## Installation
 
-## Main exports
-
-Import the public barrel:
-
-```dart
-import 'package:limitless_ui/limitless_ui.dart';
+```yaml
+dependencies:
+  limitless_ui: ^1.0.0-dev.1
 ```
 
-The public API includes exports for:
-
-- `LiAccordionComponent`, `LiAccordionItemComponent`, and
-  `LiAccordionHeaderDirective`
-- `LiAlertComponent`
-- `LiCarouselComponent` and `LiCarouselItemComponent`
-- `LiCurrencyInputComponent`
-- `LiCurrencyInputFormatter`
-- `LiSelectComponent` and `LiOptionComponent`
-- `LiMultiSelectComponent` and `LiMultiOptionComponent`
-- `LiDataTableComponent`, `DatatableCol`, `DatatableRow`, `DatatableSettings`
-- `LiDateRangePickerComponent`
-- `LiTabsComponent`, `LiTabxDirective`, and `LiTabxHeaderDirective`
-- `SimpleLoading`
-- `LiNotificationOutletComponent` and `NotificationToastService`
-- `LiProgressComponent` and `LiProgressBarComponent`
-- `SimpleDialogComponent`
-- `SimplePopover`
-- `SimpleToast`
-- `SweetAlertPopover` and `SweetAlertSimpleToast`
-- `LiTooltipComponent`
-- `LiTreeViewComponent` and `TreeViewNode`
-- `ClickOutsideDirective`, `DropdownMenuDirective`,
-  `SafeHtmlDirective`, `SafeAppendHtmlDirective`, `SafeInnerHtmlDirective`,
-  `IndexedNameDirective`, and `limitlessFormDirectives`
-- `CustomDatePipe` and `HideStringPipe`
-
-## Local development
-
-Inside this monorepo, add the package as a path dependency:
+For local development:
 
 ```yaml
 dependencies:
   limitless_ui:
-    path: ../packages/limitless_ui
+    path: ../limitless_ui
 ```
 
-When the package is published, this can be replaced with a hosted dependency
-from `pub.dev`.
-
-## Testing
-
-## AngularDart template notes
-
-For custom HTML attributes in AngularDart templates, always bind them with the
-attribute syntax instead of writing the attribute name directly.
-
-Correct:
-
-```html
-<button [attr.data-bs-toggle]="'dropdown'"></button>
-<div [attr.aria-expanded]="isOpen.toString()"></div>
-```
-
-Incorrect:
-
-```html
-<button data-bs-toggle="dropdown"></button>
-<div aria-expanded="true"></div>
-```
-
-When the value must be static in the template, still prefer the AngularDart
-attribute form:
-
-```html
-[attr.nome-atributo]="'valor'"
-```
-
-This avoids AngularDart template validation issues and keeps attribute binding
-behavior explicit.
-
-## AngularDart template syntax rules
-
-### Never use multiple statements in event bindings
-
-The AngularDart template parser does **not** support semicolons (`;`) inside
-`(event)="..."` expressions. Writing two statements in the same binding will
-fail at compile time with:
-
-> Parser Error: A function body must be provided.
-
-**Bad — compile error:**
-
-```html
-<my-component
-    (ngModelChange)="ngModelValue = $event; onNgModelChanged()">
-</my-component>
-```
-
-**Good — delegate to a single method:**
-
-```html
-<my-component
-    [ngModel]="ngModelValue"
-    (ngModelChange)="onNgModelValueChanged($event)">
-</my-component>
-```
-
-```dart
-void onNgModelValueChanged(dynamic value) {
-  ngModelValue = value?.toString();
-  onNgModelChanged();
-}
-```
-
-This applies to **all** event bindings, not just `ngModelChange`.
-
-## Performance notes
-
-### Never use `[attr.style]` for CSS layout properties
-
-Using `[attr.style]="someString"` in AngularDart templates causes the entire
-style string to pass through the DOM attribute sanitizer on **every** change
-detection cycle.  When the string contains complex geometry rules such as
-`grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))`, the browser's
-layout engine enters a reflow loop (layout thrashing) that can freeze the tab
-for 5–20 seconds.
-
-**Bad — causes layout thrashing:**
-
-```html
-<div class="grid-layout" [attr.style]="gridLayoutStyle">
-```
-
-**Good — binds directly to the style API (`element.style.*`), no sanitizer:**
-
-```html
-<div class="grid-layout"
-     [style.grid-template-columns]="settings.gridTemplateColumns"
-     [style.gap]="settings.gridGap">
-```
-
-Use `[style.<property>]` for any CSS property that may change at runtime.
-Reserve `[attr.style]` only for non-layout attributes or static values.
-
-### Use `trackBy` on every `*ngFor`
-
-Without `trackBy`, Angular destroys and recreates every DOM element whenever
-the backing list is reassigned — even if the data is identical.  Combined with
-heavy directives like `[safeHtml]` / `[safeHtmlNode]`, this causes severe
-rendering stalls when switching between list and grid views.
-
-Always provide a `trackBy` function:
-
-```html
-<div *ngFor="let row of rows; trackBy: trackByRow">
-```
-
-### Prefer `SafeHtmlDirective` over separate inner/append directives
-
-The old pattern of combining `[safeInnerHtml]` + `[safeAppendHtml]` on the
-same element caused a double-render race condition: the first directive wrote
-HTML, then the second one appended a node, triggering two separate reflows.
-
-The unified `SafeHtmlDirective` (`[safeHtml]` + `[safeHtmlNode]`) resolves
-both inputs in a single pass — if a DOM node is provided it wins; otherwise
-the HTML string is written.  The old directives are kept for backwards
-compatibility but should not be used in new code.
-
-### Prefer `[class.hide]` over `*ngIf` for view mode toggling
-
-`*ngIf` destroys and recreates the entire subtree each time it toggles.  For
-sections that switch frequently (e.g. table ↔ grid), prefer hiding via CSS:
-
-```html
-<div class="datatable-scroll" [class.hide]="gridMode">
-```
-
-This keeps the DOM intact and lets the browser toggle `display: none`
-instantly.
-
-Run analyzer checks from the package root:
-
-```bash
-dart analyze
-```
-
-Run pure Dart unit tests from the package root:
-
-```bash
-dart test
-```
-
-Run AngularDart browser tests with `build_runner`, since those files depend on
-generated `.template.dart` artifacts and will not compile correctly with plain
-`dart test`:
-
-```bash
-dart run build_runner test -- -p chrome -j 1 test/datatable/li_datatable_component_test.dart
-```
-
-When running browser tests from the library package root, keep the root
-`build.yaml` scoped to the package sources only. This repository intentionally
-includes:
-
-```yaml
-targets:
-  $default:
-    sources:
-      include:
-        - $package$
-        - pubspec.*
-        - lib/**
-        - test/**
-      exclude:
-        - example/**
-        - build/**
-        - .dart_tool/**
-```
-
-That prevents `build_runner` from trying to compile the demo app under
-`example/` while executing the package test suite.
-
-If you need to build or test the demo app itself, switch into `example/` and
-run its own build there:
-
-```bash
-cd example
-dart pub get
-dart run build_runner build --delete-conflicting-outputs
-```
-
-If you hit stale resolver or asset graph issues, clear both caches before
-rerunning browser tests:
-
-```powershell
-Remove-Item -Recurse -Force .dart_tool, build -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force example/.dart_tool, example/build -ErrorAction SilentlyContinue
-dart pub get
-cd example
-dart pub get
-```
-
-## Quick start
+## Import
 
 ```dart
 import 'package:limitless_ui/limitless_ui.dart';
+```
 
-@Component(
-  selector: 'demo-page',
-  template: '''
-    <li-notification-outlet [service]="notifications"></li-notification-outlet>
+## Theme and icons
 
-    <li-currency-input
-      [(ngModel)]="amountMinorUnits"
-      [required]="true">
-    </li-currency-input>
-  ''',
-  directives: [
-    coreDirectives,
-    formDirectives,
-    LiNotificationOutletComponent,
-    LiCurrencyInputComponent,
-  ],
-)
-class DemoPage {
-  final notifications = NotificationToastService();
+The package follows the Limitless visual language, but some visual affordances are provided by the theme CSS instead of component Dart code.
 
-  int? amountMinorUnits;
+For the demo application we load Limitless CSS plus the Phosphor icon font in [example/web/index.html](/c:/MyDartProjects/limitless_ui/example/web/index.html). One practical detail is the dropdown caret: if your theme renders `.dropdown-toggle::after` with a glyph that does not exist in the loaded icon font, the caret will appear broken.
 
-  void save() {
-    notifications.notify('Saved successfully.');
-  }
+In the example this is fixed with a global override in [example/web/style.scss](/c:/MyDartProjects/limitless_ui/example/web/style.scss):
+
+```scss
+.dropdown-toggle::after {
+  font-family: var(--icon-font-family), "Phosphor" !important;
+  content: "\e9fe";
 }
 ```
 
-Toast sounds are opt-in. The library does not ship with a built-in audio asset.
+`\e9fe` is the `ph-caret-down` glyph from the Phosphor font bundle used by the demo.
 
-```dart
-final notifications = NotificationToastService.withSound(
-  audioSrc: 'assets/audio/toast.mp3',
-);
+## Included modules
 
-// Or provide your own player callback.
-final notificationsWithCustomPlayer = NotificationToastService(
-  soundController: ToastSoundController(
-    customPlayer: () async {
-      // trigger your own audio pipeline here
-    },
-  ),
-);
-```
+- Inputs: currency input, date picker, time picker, date range picker, select, multi-select.
+- Data display: datatable, datatable select, tree view.
+- Structure: accordion, collapse, buttons, carousel, modal, tabs, nav.
+- Overlay and menus: dropdown, tooltip, popover, sweet alert, notification toast.
+- Navigation helpers: scrollspy service and directives.
+- Utilities: HTML directives, form value accessors, pipes, PDF generator and XLSX generator.
 
-## Currency input
+## Public API highlights
 
-`li-currency-input` stores values as minor units (`int?`), which makes it easy
-to keep currency calculations consistent in forms and API payloads.
+The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/limitless_ui.dart) now exposes these families of APIs:
 
-```dart
-final text = BrazilianCurrencyInputFormatter.formatForDisplay(123456);
-// 1.234,56
+- Accordion:
+  `LiAccordionComponent`, `LiAccordionItemComponent`, `LiAccordionDirective`,
+  `LiAccordionItemDirective`, `LiAccordionBodyDirective`,
+  `LiAccordionBodyTemplateDirective`, `LiAccordionButtonDirective`,
+  `LiAccordionToggleDirective`, `LiAccordionCollapseDirective`,
+  `LiAccordionHeaderDirective`, `LiAccordionHeaderHostDirective`.
+- Collapse:
+  `LiCollapseDirective`, `LiCollapseController`, `LiCollapseConfig`.
+- Dropdown:
+  `LiDropdownDirective`, `LiDropdownMenuDirective`, `LiDropdownAnchorDirective`,
+  `LiDropdownToggleDirective`, `LiDropdownItemDirective`,
+  `LiDropdownButtonItemDirective`, `LiDropdownConfig`.
+- Nav:
+  `LiNavDirective`, `LiNavItemDirective`, `LiNavLinkDirective`,
+  `LiNavOutletDirective`, `LiNavContentDirective`, `LiNavConfig`.
+- Popover and tooltip:
+  `LiPopoverComponent`, `LiPopoverDirective`, `LiPopoverConfig`,
+  `LiTooltipComponent`, `LiTooltipDirective`, `LiTooltipConfig`.
+- Scrollspy:
+  `LiScrollSpyService`, `LiScrollSpyDirective`,
+  `LiScrollSpyFragmentDirective`, `LiScrollSpyItemDirective`,
+  `LiScrollSpyMenuDirective`, `LiScrollSpyConfig`.
+- Modal:
+  `LiModalComponent` with lazy content support.
 
-final minorUnits =
-    BrazilianCurrencyInputFormatter.minorUnitsFromText('R\$ 1.234,56');
-// 123456
-```
+## Recent additions in `1.0.0-dev.1`
 
-## Select and multi-select
+- Added first-class dropdown, nav, popover and scrollspy modules to the public API.
+- Expanded accordion into a fuller directive set for host-driven and template-driven compositions.
+- Added collapse as a reusable directive/config pair.
+- Added injectable config objects for tooltip, popover, dropdown, nav and scrollspy.
+- Added `lazyContent` support to `li-modal` so heavy projected content can be created only while the modal is open.
+- Expanded the demo app with pages for dropdown, nav, popover and scrollspy, plus richer modal, tooltip, accordion and datatable examples.
+- Added tests for the new surface area, including accordion lazy rendering, modal lazy content and overlay/navigation components.
 
-`li-select` and `li-multi-select` support both projected options and external
-collections passed through `dataSource`.
+## Quick examples
 
-```dart
-@Component(
-  selector: 'demo-selects',
-  template: '''
-    <li-select
-      [dataSource]="statusOptions"
-      labelKey="label"
-      valueKey="id"
-      disabledKey="disabled"
-      [(ngModel)]="selectedStatus">
-    </li-select>
-
-    <li-multi-select
-      class="mt-3"
-      [dataSource]="channelOptions"
-      labelKey="label"
-      valueKey="id"
-      [(ngModel)]="selectedChannels">
-    </li-multi-select>
-  ''',
-  directives: [
-    coreDirectives,
-    formDirectives,
-    LiSelectComponent,
-    LiMultiSelectComponent,
-  ],
-)
-class DemoSelectsComponent {
-  final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
-    <String, dynamic>{'id': 'draft', 'label': 'Draft'},
-    <String, dynamic>{'id': 'review', 'label': 'In review'},
-    <String, dynamic>{'id': 'approved', 'label': 'Approved'},
-    <String, dynamic>{'id': 'archived', 'label': 'Archived', 'disabled': true},
-  ];
-
-  final List<Map<String, dynamic>> channelOptions = <Map<String, dynamic>>[
-    <String, dynamic>{'id': 'email', 'label': 'E-mail'},
-    <String, dynamic>{'id': 'push', 'label': 'Push'},
-    <String, dynamic>{'id': 'sms', 'label': 'SMS'},
-  ];
-
-  String selectedStatus = 'review';
-  List<dynamic> selectedChannels = <dynamic>['email', 'push'];
-}
-```
-
-### Important usage notes
-
-- Keep `dataSource` stable. Prefer `final` or `late final` lists created once in
-  the parent component.
-- Avoid getters that recreate the option list on every change detection pass.
-- Use `disabledKey` only when the option source has an explicit boolean field.
-- Prefer projected `li-option` or `li-multi-option` when the option list is
-  static in the template.
-
-### Troubleshooting
-
-If a select appears to freeze the page, check these points first:
-
-- The parent page must not rebuild equivalent `dataSource` arrays from getters.
-- Overlay sizing must be based on viewport and trigger geometry, not on the
-  dropdown panel's current rendered height.
-- Global keyboard listeners should only handle navigation keys such as `Escape`,
-  `Enter`, `ArrowUp`, and `ArrowDown`.
-
-## Accordion
-
-`li-accordion` follows the Limitless/Bootstrap accordion markup and supports
-lazy body rendering so expensive DOM trees are only created when the user opens
-an item.
+### Alert
 
 ```dart
 @Component(
-  selector: 'demo-accordion',
+  selector: 'demo-alert',
   template: '''
-    <li-accordion [lazy]="true" [destroyOnCollapse]="false">
-      <li-accordion-item header="Filtros avançados" description="Conteúdo pesado só aparece ao abrir">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">Nome</label>
-            <input class="form-control" type="text">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">CPF</label>
-            <input class="form-control" type="text">
-          </div>
-        </div>
-      </li-accordion-item>
-
-      <li-accordion-item [expanded]="true" header="Resumo">
-        <template li-accordion-header>
-          <span class="d-flex align-items-center gap-2">
-            <i class="ph ph-chart-bar"></i>
-            <span>Resumo</span>
-          </span>
-        </template>
-
-        <p class="mb-0">Item aberto por padrão.</p>
-      </li-accordion-item>
-    </li-accordion>
+    <li-alert
+      variant="warning"
+      iconMode="block"
+      iconClass="ph-warning-circle"
+      [dismissible]="true">
+      Conteudo do alerta
+    </li-alert>
   ''',
-  directives: [
-    coreDirectives,
-    LiAccordionComponent,
-    LiAccordionItemComponent,
-    LiAccordionHeaderDirective,
-  ],
+  directives: [coreDirectives, LiAlertComponent],
 )
-class DemoAccordionComponent {}
+class DemoAlertComponent {}
 ```
 
-## Carousel
-
-`li-carousel` follows the Limitless/Bootstrap carousel structure and supports
-controls, indicators, autoplay, keyboard navigation, dark mode, optional touch
-swipe navigation, and configurable transitions through the `transition` input.
-
-Supported transition values:
-
-- `slide` (default)
-- `fade`
-- `zoom`
-- `vertical`
-- `blur`
-- `parallax`
-
-```dart
-@Component(
-  selector: 'demo-carousel',
-  template: '''
-    <li-carousel
-      transition="zoom"
-      [showIndicators]="true"
-      [showControls]="true"
-      [autoPlay]="true"
-      [intervalMs]="4000">
-      <li-carousel-item indicatorLabel="Slide 1" [active]="true">
-        <img src="assets/images/demo/carousel/1.jpg" class="d-block w-100" alt="Primeiro slide">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Primeiro slide</h5>
-          <p>Conteúdo de exemplo.</p>
-        </div>
-      </li-carousel-item>
-
-      <li-carousel-item indicatorLabel="Slide 2">
-        <img src="assets/images/demo/carousel/2.jpg" class="d-block w-100" alt="Segundo slide">
-      </li-carousel-item>
-
-      <li-carousel-item indicatorLabel="Slide 3" [intervalMs]="7000">
-        <div class="row g-0">
-          <div class="col-4"><img src="assets/images/demo/carousel/5.jpg" class="d-block w-100" alt=""></div>
-          <div class="col-4"><img src="assets/images/demo/carousel/6.jpg" class="d-block w-100" alt=""></div>
-          <div class="col-4"><img src="assets/images/demo/carousel/7.jpg" class="d-block w-100" alt=""></div>
-        </div>
-      </li-carousel-item>
-    </li-carousel>
-  ''',
-  directives: [
-    coreDirectives,
-    LiCarouselComponent,
-    LiCarouselItemComponent,
-  ],
-)
-class DemoCarouselComponent {}
-```
-
-If you still use `[fade]="true"`, it remains supported and takes precedence
-over `transition` for backward compatibility.
-
-## Datatable
-
-`li-datatable` supports server-driven pagination, sorting, search, exports,
-card/grid mode, row selection, and responsive mobile collapse.
-
-Use `DatatableCol.hideOnMobile` to move secondary columns into an expandable
-child row on small screens. The component keeps table mode on desktop and
-switches to a DataTables-style details row pattern on mobile.
+### Datatable
 
 ```dart
 final settings = DatatableSettings(
   colsDefinitions: <DatatableCol>[
     DatatableCol(
-      key: 'feature',
-      title: 'Feature',
+      key: 'name',
+      title: 'Name',
+      sortingBy: 'name',
       enableSorting: true,
-      sortingBy: 'feature',
     ),
     DatatableCol(
-      key: 'owner',
-      title: 'Owner',
-      hideOnMobile: true,
-    ),
-    DatatableCol(
-      key: 'status',
-      title: 'Status',
-      hideOnMobile: true,
+      key: 'email',
+      title: 'Email',
     ),
   ],
 );
@@ -538,151 +142,131 @@ final settings = DatatableSettings(
 
 ```html
 <li-datatable
-  [dataTableFilter]="filters"
-  [data]="tableData"
+  [data]="usersFrame"
   [settings]="settings"
-  [searchInFields]="searchFields"
-  [responsiveCollapse]="true"
-  (dataRequest)="loadPage($event)">
+  [dataTableFilter]="filters"
+  (dataRequest)="loadUsers($event)">
 </li-datatable>
 ```
 
-Performance notes:
+### Modal with lazy content
 
-- The component uses `ChangeDetectionStrategy.onPush`.
-- Table rows and columns expose `trackBy` hooks internally to reduce DOM churn.
-- Date formatters are cached instead of being instantiated inside the render loop.
-- Prefer stable `DataFrame` and `DatatableSettings` instances from the parent when possible.
-
-## Alerts
-
-`li-alert` follows the Limitless/Bootstrap alert markup and supports contextual
-variants, solid mode, dismiss buttons, rounded pills, truncation, and block or
-inline icons on either side.
-
-```dart
-@Component(
-  selector: 'demo-alerts',
-  template: '''
-    <li-alert
-      variant="success"
-      [dismissible]="true"
-      iconMode="block"
-      iconClass="ph-check-circle">
-      <span class="fw-semibold">Well done!</span>
-      You successfully read <a href="#" class="alert-link">this important</a> alert message.
-    </li-alert>
-
-    <li-alert
-      class="mt-3"
-      variant="indigo"
-      [solid]="true"
-      [dismissible]="true"
-      [roundedPill]="true"
-      iconMode="inline"
-      iconPosition="end"
-      iconClass="ph-gear">
-      <span class="fw-semibold">Surprise!</span>
-      This is a super-duper nice looking <a href="#" class="alert-link text-reset">alert</a> with custom color.
-    </li-alert>
-  ''',
-  directives: [
-    coreDirectives,
-    LiAlertComponent,
-  ],
-)
-class DemoAlertsComponent {}
+```html
+<li-modal
+  title-text="Heavy report"
+  size="xtra-large"
+  [lazyContent]="true"
+  [dialogScrollable]="true">
+  <li-datatable
+    [data]="reportFrame"
+    [settings]="reportSettings"
+    [dataTableFilter]="filters"
+    (dataRequest)="loadReport($event)">
+  </li-datatable>
+</li-modal>
 ```
 
-## Tooltip
+This pattern is useful for expensive content such as datatables, forms with many controls, or projected content that should not exist in the DOM until the dialog opens.
 
-`li-tooltip` follows the Limitless/Bootstrap tooltip markup and renders the
-floating element on demand using the local popper overlay, with support for
-`top`, `right`, `bottom`, `left`, and `auto` placement plus hover, focus,
-click, or manual triggers.
+### Scrollspy
 
-```dart
-@Component(
-  selector: 'demo-tooltip',
-  template: '''
-    <li-tooltip text="Tooltip no topo">
-      <button type="button" class="btn btn-primary">Hover me</button>
-    </li-tooltip>
+```html
+<div liScrollSpy [spyOn]="scrollContainer">
+  <section liScrollSpyFragment="overview">...</section>
+  <section liScrollSpyFragment="api">...</section>
+</div>
 
-    <li-tooltip
-      placement="right"
-      trigger="click"
-      tooltipClass="tooltip-info"
-      title="<strong>Tooltip</strong> com <em>HTML</em>"
-      [html]="true">
-      <button type="button" class="btn btn-light ms-2">Click me</button>
-    </li-tooltip>
-  ''',
-  directives: [
-    coreDirectives,
-    LiTooltipComponent,
-  ],
-)
-class DemoTooltipComponent {}
+<nav liScrollSpyMenu>
+  <a liScrollSpyItem="overview">Overview</a>
+  <a liScrollSpyItem="api">API</a>
+</nav>
 ```
 
-## Progress
+Use `LiScrollSpyService` directly when you need imperative control over fragment observation or scrolling.
 
-`li-progress` and `li-progress-bar` follow the Limitless/Bootstrap progress
-markup and support stacked bars, inherited min/max ranges, rounded tracks,
-striped or animated bars, and inline labels.
+### Currency formatting
 
 ```dart
-@Component(
-  selector: 'demo-progress',
-  template: '''
-    <li-progress [rounded]="true" height="0.75rem">
-      <li-progress-bar value="25" class="bg-success"></li-progress-bar>
-      <li-progress-bar value="35" class="bg-danger"></li-progress-bar>
-      <li-progress-bar
-        value="20"
-        class="bg-info"
-        [striped]="true"
-        [animated]="true"
-        [showValueLabel]="true">
-      </li-progress-bar>
-    </li-progress>
-
-    <li-progress class="mt-3">
-      <li-progress-bar
-        value="85"
-        class="bg-teal"
-        label="85% complete">
-      </li-progress-bar>
-    </li-progress>
-  ''',
-  directives: [
-    coreDirectives,
-    LiProgressComponent,
-    LiProgressBarComponent,
-  ],
-)
-class DemoProgressComponent {}
+final cents = BrazilianCurrencyInputFormatter.minorUnitsFromText('1.234,56');
+final display = BrazilianCurrencyInputFormatter.formatForDisplay(cents);
 ```
 
-## Loading overlay
+## Development
 
-`SimpleLoading` can be used as a lightweight overlay for any element or for the
-whole page.
+Install dependencies:
 
-```dart
-final loading = SimpleLoading();
-
-try {
-  loading.show(target: hostElement);
-  // async work
-} finally {
-  loading.hide();
-}
+```bash
+dart pub get
 ```
+
+Run static analysis:
+
+```bash
+dart analyze
+```
+
+Run VM-safe tests:
+
+```bash
+dart test test/br_currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart
+```
+
+Run browser and AngularDart tests in Chrome:
+
+```bash
+dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/tooltip/li_tooltip_directive_test.dart
+```
+
+Validate the package before publishing:
+
+```bash
+dart pub publish --dry-run
+```
+
+## AngularDart Template Performance
+
+- Do not expose getters used by templates that recreate lists, maps, style objects, or view models on every change-detection pass.
+- In particular, avoid patterns like a getter returning a fresh collection consumed by `*ngFor`, because AngularDart will treat the result as changed and can rebuild rich component trees continuously.
+- Prefer stable references: `final` fields, cached lazy fields, or explicit recomputation only when the source input actually changes.
+- Avoid binding dynamically recreated objects in templates such as `[style]="..."`, inline maps, or other expressions that allocate on every pass unless the value is intentionally memoized.
+- The popover example hit this exact failure mode when `palettePopovers` recreated 11 items in a getter, which caused the page to churn and freeze the browser.
+
+## AngularDart Change Detection Notes
+
+- In this repository, do not treat `ChangeDetectorRef.markForCheck()` as a generic fix for async rendering bugs on components using the default `ChangeDetectionStrategy.checkAlways`.
+- Practical rule: `markForCheck()` is dependable mainly when the relevant host tree is `ChangeDetectionStrategy.onPush`. On default-strategy pages, it may not resolve lazy async rendering by itself.
+- For async content inside deferred UI such as accordion bodies, tabs, and modals, prefer one of these options:
+  - use `ChangeDetectionStrategy.onPush` intentionally and then rely on `markForCheck()`;
+  - force a synchronous refresh only in a narrow, justified point;
+  - or change the flow so data is available before the deferred child component is created.
+- Always validate the rendered DOM after the async update. If the UI still only refreshes after an extra click, the change-detection issue is not solved.
+- Specific lesson learned in this repository: a lazy accordion body that projects async content from the host must not be wrapped by an `onPush` accordion item unless that projection path is explicitly handled. The datatable demo only started rendering correctly after removing `ChangeDetectionStrategy.onPush` from [accordion_item_component.dart](/c:/MyDartProjects/limitless_ui/lib/src/components/accordion/accordion_item_component.dart), because the projected lazy body needed to receive host-side async updates after first render.
+
+## Demo application
+
+The demo app under [example](/c:/MyDartProjects/limitless_ui/example) now includes dedicated routes for:
+
+- accordion
+- datatable
+- dropdown
+- modal
+- nav
+- popover
+- scrollspy
+- tooltip
+
+Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, and overlay components that depend on browser geometry.
+
+## Release checklist
+
+- `dart analyze`
+- VM-safe tests
+- Chrome/browser tests
+- `dart pub publish --dry-run`
+- clean git state before publishing
 
 ## Notes
 
-- This package is designed for AngularDart web applications.
-- It uses `dart:html`, so it is not intended for Flutter or server-side Dart.
-- Some components depend on `essential_core` models and the `popper` package.
+- The demo application is in [example](/c:/MyDartProjects/limitless_ui/example).
+- The package is not intended for Flutter or server-side Dart.
+- Some components depend on data structures from `essential_core`.

@@ -1,0 +1,22 @@
+.scrollspy-demo-page .scrollspy-demo-surface {
+  height: 34rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.scrollspy-demo-page .scrollspy-demo-section {
+  min-height: 18rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+
+.scrollspy-demo-page .nav-link.active {
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.14);
+}

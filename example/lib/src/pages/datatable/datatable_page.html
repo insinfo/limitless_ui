@@ -23,7 +23,7 @@
           <div class="card-body demo-doc-body">
             <p class="text-muted mb-3">
               A datatable desta biblioteca cobre o fluxo administrativo mais comum: busca por campo,
-              seleção de linhas, exportação, paginação, ordenação, colapso responsivo e uma camada de customização visual por coluna e por card.
+              seleção de linhas, exportação, paginação, ordenação, colapso responsivo e uma camada de customização visual por coluna, por linha e por card.
             </p>
 
             <div class="demo-doc-grid">
@@ -40,7 +40,7 @@
                   <li>Busca direcionada por coluna com campo e operador configuráveis.</li>
                   <li>Exportação para XLSX e PDF usando a própria API do componente.</li>
                   <li>Modo tabela e modo grade com a mesma fonte de dados.</li>
-                  <li>Largura, alinhamento, classes e estilos por coluna.</li>
+                  <li>Largura, alinhamento, classes e estilos por coluna e por linha.</li>
                   <li>Cards customizados com <code>customCardBuilder</code> em grid mode.</li>
                 </ul>
               </div>
@@ -104,7 +104,7 @@
               <li-accordion [lazy]="true" [destroyOnCollapse]="true">
                 <li-accordion-item header="Exemplo somente leitura" description="Busca e ordenação sem clique de linha nem seleção." (expandedChange)="onReadonlyDemoExpanded($event)">
                   <template li-accordion-body>
-                    <li-datatable *ngIf="showReadonlyDemo"
+                    <li-datatable #readonlyDemoTable *ngIf="showReadonlyDemo"
                         [dataTableFilter]="readonlyFilters"
                         [data]="readonlyTableData"
                         [settings]="tableSettings"
@@ -122,7 +122,7 @@
 
                 <li-accordion-item header="Exemplo em modo grade" description="Mesmo dataset reaproveitado como cartões." (expandedChange)="onGridPreviewDemoExpanded($event)">
                   <template li-accordion-body>
-                    <li-datatable *ngIf="showGridPreviewDemo"
+                    <li-datatable #gridPreviewDemoTable *ngIf="showGridPreviewDemo"
                         [dataTableFilter]="gridPreviewFilters"
                         [data]="gridPreviewTableData"
                         [settings]="tableSettings"
@@ -138,9 +138,9 @@
                   </template>
                 </li-accordion-item>
 
-                <li-accordion-item header="Tabela com width fixa e cellStyleResolver" description="Largura fixa por coluna com destaque visual por célula." (expandedChange)="onCustomTableDemoExpanded($event)">
+                <li-accordion-item header="Tabela com width, cor por coluna e cor por linha" description="Combina width fixa, cellStyleResolver e rowStyleResolver no mesmo cenário." (expandedChange)="onCustomTableDemoExpanded($event)">
                   <template li-accordion-body>
-                    <li-datatable *ngIf="showCustomTableDemo"
+                    <li-datatable #customTableDemoTable *ngIf="showCustomTableDemo"
                         [dataTableFilter]="customTableFilters"
                         [data]="customTableData"
                         [settings]="advancedTableSettings"
@@ -157,7 +157,7 @@
 
                 <li-accordion-item header="Grid com customCardBuilder" description="Card montado manualmente só quando o item é aberto." (expandedChange)="onCustomGridDemoExpanded($event)">
                   <template li-accordion-body>
-                    <li-datatable *ngIf="showCustomGridDemo"
+                    <li-datatable #customGridDemoTable *ngIf="showCustomGridDemo"
                         [dataTableFilter]="customGridFilters"
                         [data]="customGridData"
                         [settings]="advancedGridSettings"
@@ -173,6 +173,52 @@
                   </template>
                 </li-accordion-item>
               </li-accordion>
+            </div>
+
+            <div class="demo-doc-section">
+              <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+                <div>
+                  <h6 class="mb-2">Modal lazy loading com datatable</h6>
+                  <p class="text-muted mb-0">
+                    Este cenário abre um <code>li-modal</code> com <code>lazyContent</code> e instancia o <code>li-datatable</code> somente depois da abertura.
+                  </p>
+                </div>
+                <button class="btn btn-sm btn-primary" type="button" (click)="openLazyDatatableModal()">
+                  Abrir modal lazy
+                </button>
+              </div>
+
+              <li-modal #lazyDatatableModal
+                  title-text="Modal lazy com datatable"
+                  size="xtra-large"
+                  [lazyContent]="true"
+                  [dialogScrollable]="true"
+                  [enableShadow]="true">
+                <div class="p-1">
+                  <p class="text-muted mb-3">
+                    O conteúdo do modal só entra no DOM quando ele abre. O datatable reutiliza o mesmo dataset da página para verificar se o primeiro render funciona corretamente.
+                  </p>
+
+                  <li-datatable
+                      [dataTableFilter]="modalTableFilters"
+                      [data]="modalTableData"
+                      [settings]="advancedTableSettings"
+                      [searchInFields]="searchFields"
+                      [disableRowClick]="true"
+                      [showCheckboxToSelectRow]="false"
+                      [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                      (dataRequest)="onModalTableRequest($event)"
+                      (limitChange)="onModalTableRequest($event)"
+                      (searchRequest)="onModalTableRequest($event)">
+                  </li-datatable>
+
+                  <div class="d-flex justify-content-end mt-3">
+                    <button class="btn btn-light" type="button" (click)="lazyDatatableModal?.close()">
+                      Fechar
+                    </button>
+                  </div>
+                </div>
+              </li-modal>
             </div>
           </div>
         </li-tabx>
@@ -213,7 +259,8 @@
                 <ul class="mb-3 ps-3">
                   <li><code>width</code>, <code>minWidth</code> e <code>maxWidth</code> controlam a largura efetiva da coluna.</li>
                   <li><code>headerClass</code> e <code>cellClass</code> adicionam classes sem mexer no template.</li>
-                  <li><code>cellStyleResolver</code> devolve uma string CSS por linha para destacar células com base nos dados.</li>
+                  <li><code>styleCss</code> e <code>cellStyleResolver</code> controlam cor e estilo por coluna.</li>
+                  <li><code>rowStyleResolver</code> devolve uma string CSS por linha inteira com base nos dados.</li>
                   <li><code>textAlign</code> e <code>nowrap</code> ajustam leitura para colunas curtas ou status.</li>
                 </ul>
 
@@ -233,8 +280,9 @@
               </div>
 
               <div class="col-xl-6">
-                <h6 class="mb-2">Grid e customCardBuilder</h6>
+                <h6 class="mb-2">RowStyleResolver e grid</h6>
                 <ul class="mb-3 ps-3">
+                  <li><code>rowStyleResolver</code> permite destacar uma linha inteira sem alterar o template.</li>
                   <li><code>gridTemplateColumns</code> define a malha do grid.</li>
                   <li><code>gridGap</code> controla o espaçamento entre cartões.</li>
                   <li><code>customCardBuilder</code> recebe <code>itemMap</code>, <code>itemInstance</code> e <code>row</code> para montar um <code>Element</code> completo.</li>
@@ -242,6 +290,12 @@
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>DatatableSettings(
   colsDefinitions: cols,
+  rowStyleResolver: (itemMap, itemInstance) {
+    if (itemMap['health'] == 'Crítica') {
+      return 'background-color: rgba(239, 68, 68, 0.08);';
+    }
+    return null;
+  },
   gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
   gridGap: '1rem',
   customCardBuilder: (itemMap, itemInstance, row) {

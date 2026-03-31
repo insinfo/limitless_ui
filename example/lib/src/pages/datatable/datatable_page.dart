@@ -14,19 +14,28 @@ import 'datatable_demo_service.dart';
     LiAccordionComponent,
     LiAccordionBodyDirective,
     LiAccordionItemComponent,
+    LiModalComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiDataTableComponent,
   ],
 )
 class DatatablePageComponent implements OnInit {
-  DatatablePageComponent(this.i18n)
-      : _datatableDemoService = DatatableDemoService(_buildSeedRecords(i18n.t)) {
-    tableData = DataFrame<Map<String, dynamic>>(items: <Map<String, dynamic>>[], totalRecords: 0);
-    readonlyTableData = DataFrame<Map<String, dynamic>>(items: <Map<String, dynamic>>[], totalRecords: 0);
-    gridPreviewTableData = DataFrame<Map<String, dynamic>>(items: <Map<String, dynamic>>[], totalRecords: 0);
-    customTableData = DataFrame<Map<String, dynamic>>(items: <Map<String, dynamic>>[], totalRecords: 0);
-    customGridData = DataFrame<Map<String, dynamic>>(items: <Map<String, dynamic>>[], totalRecords: 0);
+  DatatablePageComponent(this.i18n, this._changeDetectorRef)
+      : _datatableDemoService =
+            DatatableDemoService(_buildSeedRecords(i18n.t)) {
+    tableData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
+    readonlyTableData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
+    gridPreviewTableData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
+    customTableData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
+    customGridData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
+    modalTableData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
 
     tableSettings = DatatableSettings(
       colsDefinitions: <DatatableCol>[
@@ -94,6 +103,7 @@ class DatatablePageComponent implements OnInit {
           cellStyleResolver: _healthCellStyleResolver,
         ),
       ],
+      rowStyleResolver: _advancedRowStyleResolver,
     );
 
     advancedGridSettings = DatatableSettings(
@@ -136,6 +146,7 @@ class DatatablePageComponent implements OnInit {
   }
 
   final DemoI18nService i18n;
+  final ChangeDetectorRef _changeDetectorRef;
   final DatatableDemoService _datatableDemoService;
   Messages get t => i18n.t;
 
@@ -147,11 +158,27 @@ class DatatablePageComponent implements OnInit {
   @ViewChild('demoTable')
   LiDataTableComponent? demoTable;
 
+  @ViewChild('readonlyDemoTable')
+  LiDataTableComponent? readonlyDemoTable;
+
+  @ViewChild('gridPreviewDemoTable')
+  LiDataTableComponent? gridPreviewDemoTable;
+
+  @ViewChild('customTableDemoTable')
+  LiDataTableComponent? customTableDemoTable;
+
+  @ViewChild('customGridDemoTable')
+  LiDataTableComponent? customGridDemoTable;
+
+  @ViewChild('lazyDatatableModal')
+  LiModalComponent? lazyDatatableModal;
+
   final Filters filters = Filters(limit: 5, offset: 0);
   final Filters readonlyFilters = Filters(limit: 3, offset: 0);
   final Filters gridPreviewFilters = Filters(limit: 4, offset: 0);
   final Filters customTableFilters = Filters(limit: 4, offset: 0);
   final Filters customGridFilters = Filters(limit: 4, offset: 0);
+  final Filters modalTableFilters = Filters(limit: 4, offset: 0);
   bool showReadonlyDemo = false;
   bool showGridPreviewDemo = false;
   bool showCustomTableDemo = false;
@@ -164,6 +191,7 @@ class DatatablePageComponent implements OnInit {
   late DataFrame<Map<String, dynamic>> gridPreviewTableData;
   late DataFrame<Map<String, dynamic>> customTableData;
   late DataFrame<Map<String, dynamic>> customGridData;
+  late DataFrame<Map<String, dynamic>> modalTableData;
   late final DatatableSettings tableSettings;
   late final DatatableSettings advancedTableSettings;
   late final DatatableSettings advancedGridSettings;
@@ -211,31 +239,59 @@ class DatatablePageComponent implements OnInit {
   }
 
   Future<void> onReadonlyDemoExpanded(bool expanded) async {
-    showReadonlyDemo = expanded;
     if (expanded) {
+      showReadonlyDemo = true;
+      _flushView();
+      await Future<void>.delayed(Duration.zero);
       await _loadReadonlyTable();
+      _flushView();
+      return;
     }
+
+    showReadonlyDemo = false;
+    _flushView();
   }
 
   Future<void> onGridPreviewDemoExpanded(bool expanded) async {
-    showGridPreviewDemo = expanded;
     if (expanded) {
+      showGridPreviewDemo = true;
+      _flushView();
+      await Future<void>.delayed(Duration.zero);
       await _loadGridPreviewTable();
+      _flushView();
+      return;
     }
+
+    showGridPreviewDemo = false;
+    _flushView();
   }
 
   Future<void> onCustomTableDemoExpanded(bool expanded) async {
-    showCustomTableDemo = expanded;
     if (expanded) {
+      showCustomTableDemo = true;
+      _flushView();
+      await Future<void>.delayed(Duration.zero);
       await _loadCustomTable();
+      _flushView();
+      return;
     }
+
+    showCustomTableDemo = false;
+    _flushView();
   }
 
   Future<void> onCustomGridDemoExpanded(bool expanded) async {
-    showCustomGridDemo = expanded;
     if (expanded) {
+      showCustomGridDemo = true;
+      _flushView();
+      await Future<void>.delayed(Duration.zero);
       await _loadCustomGrid();
+      _flushView();
+      return;
     }
+
+    showCustomGridDemo = false;
+    _flushView();
   }
 
   Future<void> onReadonlyTableRequest(Filters nextFilters) async {
@@ -258,6 +314,19 @@ class DatatablePageComponent implements OnInit {
     await _loadCustomGrid();
   }
 
+  Future<void> onModalTableRequest(Filters nextFilters) async {
+    modalTableFilters.fillFromFilters(nextFilters);
+    await _loadModalTable();
+  }
+
+  Future<void> openLazyDatatableModal() async {
+    lazyDatatableModal?.open();
+    _flushView();
+    await Future<void>.delayed(Duration.zero);
+    await _loadModalTable();
+    _flushView();
+  }
+
   Future<void> _loadMainTable() async {
     demoTable?.showLoading();
     try {
@@ -269,18 +338,46 @@ class DatatablePageComponent implements OnInit {
 
   Future<void> _loadReadonlyTable() async {
     readonlyTableData = await _datatableDemoService.query(readonlyFilters);
+    _syncAccordionTable(readonlyDemoTable, readonlyTableData);
+    _flushView();
   }
 
   Future<void> _loadGridPreviewTable() async {
     gridPreviewTableData = await _datatableDemoService.query(gridPreviewFilters);
+    _syncAccordionTable(gridPreviewDemoTable, gridPreviewTableData);
+    _flushView();
   }
 
   Future<void> _loadCustomTable() async {
     customTableData = await _datatableDemoService.query(customTableFilters);
+    _syncAccordionTable(customTableDemoTable, customTableData);
+    _flushView();
   }
 
   Future<void> _loadCustomGrid() async {
     customGridData = await _datatableDemoService.query(customGridFilters);
+    _syncAccordionTable(customGridDemoTable, customGridData);
+    _flushView();
+  }
+
+  Future<void> _loadModalTable() async {
+    modalTableData = await _datatableDemoService.query(modalTableFilters);
+    _flushView();
+  }
+
+  // ignore: deprecated_member_use
+  void _flushView() => _changeDetectorRef.detectChanges();
+
+  void _syncAccordionTable(
+    LiDataTableComponent? table,
+    DataFrame<Map<String, dynamic>> frame,
+  ) {
+    if (table == null) {
+      return;
+    }
+
+    table.data = frame;
+    table.update();
   }
 
   static List<Map<String, dynamic>> _buildSeedRecords(Messages t) {
@@ -343,6 +440,22 @@ class DatatablePageComponent implements OnInit {
     return 'color: $color; font-weight: 600;';
   }
 
+  String? _advancedRowStyleResolver(
+    Map<String, dynamic> itemMap,
+    dynamic itemInstance,
+  ) {
+    switch (itemMap['health']?.toString() ?? '') {
+      case 'Crítica':
+        return 'background-color: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444;';
+      case 'Atenção':
+        return 'background-color: rgba(245, 134, 70, 0.08); border-left: 3px solid #f58646;';
+      case 'Saudável':
+        return 'background-color: rgba(5, 150, 105, 0.06); border-left: 3px solid #059669;';
+      default:
+        return null;
+    }
+  }
+
   Element _buildCustomCard(
     Map<String, dynamic> itemMap,
     dynamic itemInstance,
@@ -380,7 +493,8 @@ class DatatablePageComponent implements OnInit {
 
     final summary = ParagraphElement()
       ..classes.add('datatable-api-card__summary')
-      ..text = 'O card foi montado manualmente para combinar título, estado e metadados sem depender do layout padrão.';
+      ..text =
+          'O card foi montado manualmente para combinar título, estado e metadados sem depender do layout padrão.';
 
     badgeRow.children.addAll(<Element>[statusBadge, healthBadge]);
     root.children.addAll(<Element>[eyebrow, title, owner, badgeRow, summary]);

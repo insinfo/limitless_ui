@@ -1,0 +1,130 @@
+<div class="demo-page scrollspy-demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">Componentes <span class="fw-normal">Scrollspy</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">Service, diretivas e menu ativo</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">
+              O scrollspy acompanha a rolagem de um container, atualiza o fragmento ativo e sincroniza menus simples ou hierárquicos.
+            </p>
+
+            <div class="row g-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Menu sincronizado</h6>
+                  <p class="text-muted mb-3">Os itens usam <code>liScrollSpyItem</code> e herdam o estado ativo do menu.</p>
+
+                  <nav [liScrollSpyMenu]="demoSpy" class="nav nav-pills flex-column gap-1">
+                    <button class="nav-link text-start" type="button" liScrollSpyItem="overview">Overview</button>
+                    <button class="nav-link text-start" type="button" liScrollSpyItem="service">Service</button>
+                    <button class="nav-link text-start" type="button" liScrollSpyItem="directive">Directive</button>
+                    <div class="ps-3 d-flex flex-column gap-1">
+                      <button class="nav-link text-start" type="button" [liScrollSpyItem]="demoSpy" fragment="items" parent="directive">Highlighting items</button>
+                      <button class="nav-link text-start" type="button" [liScrollSpyItem]="demoSpy" fragment="customization" parent="directive">Customization</button>
+                    </div>
+                  </nav>
+
+                  <div class="alert alert-primary mt-3 mb-0 py-2 px-3">
+                    Ativo agora: <strong>{{ activeSection }}</strong>
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-2 mt-3">
+                    <button class="btn btn-outline-primary btn-sm" type="button" (click)="scrollToFragment('service')">Ir para service</button>
+                    <button class="btn btn-outline-dark btn-sm" type="button" (click)="scrollToFragment('customization')">Ir para customization</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-8">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Container observado</h6>
+                  <p class="text-muted mb-3">A diretiva abaixo observa a rolagem local do painel e emite <code>activeChange</code>.</p>
+
+                  <div
+                      class="scrollspy-demo-surface"
+                      liScrollSpy
+                      #demoSpy="liScrollSpy"
+                      scrollBehavior="auto"
+                      rootMargin="16px 0px 0px 0px"
+                      (activeChange)="onActiveChange($event)">
+                    <section liScrollSpyFragment="overview" class="scrollspy-demo-section">
+                      <span class="badge bg-primary mb-3">Overview</span>
+                      <h5>Basic service</h5>
+                      <p>O serviço pode observar fragments por id, iniciar quando o container estiver pronto e publicar o fragmento ativo para qualquer menu ou painel auxiliar.</p>
+                      <p>Essa versão usa um algoritmo configurável e leve, adequado para containers locais em dashboards, sidebars de documentação e áreas de preview.</p>
+                    </section>
+
+                    <section liScrollSpyFragment="service" class="scrollspy-demo-section">
+                      <span class="badge bg-secondary mb-3">Service</span>
+                      <h5>Imperative API</h5>
+                      <p><code>scrollTo()</code> permite navegar programaticamente para um fragmento, enquanto <code>observe()</code> e <code>unobserve()</code> controlam quais seções participam do cálculo.</p>
+                      <p>Isso cobre o caso de páginas com conteúdo montado dinamicamente ou quando você quer integrar o scrollspy com botões externos ao menu.</p>
+                    </section>
+
+                    <section liScrollSpyFragment="directive" class="scrollspy-demo-section">
+                      <span class="badge bg-dark mb-3">Directive</span>
+                      <h5>Directive sugar</h5>
+                      <p><code>liScrollSpy</code> instancia o serviço no container, registra fragments filhos e faz o cleanup automaticamente quando a view some.</p>
+                      <p>O fragmento ativo também pode ser refletido via <code>active</code>, <code>active$</code> e <code>(activeChange)</code>.</p>
+                    </section>
+
+                    <section liScrollSpyFragment="items" class="scrollspy-demo-section">
+                      <span class="badge bg-success mb-3">Items</span>
+                      <h5>Highlighting active items</h5>
+                      <p>Itens ligados por <code>liScrollSpyItem</code> recebem <code>.active</code> automaticamente e podem disparar a navegação do próprio fragmento ao clique.</p>
+                      <p>Menus simples e aninhados usam a mesma base, então a API fica consistente para pills, listas laterais e índices de documentação.</p>
+                    </section>
+
+                    <section liScrollSpyFragment="customization" class="scrollspy-demo-section mb-0">
+                      <span class="badge bg-warning text-dark mb-3">Customization</span>
+                      <h5>Customization</h5>
+                      <p>Você pode trocar o algoritmo com <code>processChanges</code>, ajustar <code>rootMargin</code> e definir o comportamento padrão de rolagem via <code>LiScrollSpyConfig</code>.</p>
+                      <p>Isso é útil quando o topo visual da área observada não coincide com o topo físico do container ou quando a página tem header fixo.</p>
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">A API pública segue a mesma ideia do ng-bootstrap: container, fragments, items, menu hierárquico e um serviço compartilhado.</p>
+            <ul class="mb-3 ps-3">
+              <li><code>liScrollSpy</code> instancia e exporta o controller do container.</li>
+              <li><code>liScrollSpyFragment</code> define seções observadas com id único.</li>
+              <li><code>liScrollSpyItem</code> sincroniza navegação e classe <code>active</code>.</li>
+              <li><code>liScrollSpyMenu</code> propaga o ativo para a branch inteira em menus aninhados.</li>
+              <li><code>LiScrollSpyConfig</code> fornece defaults para algoritmo e comportamento de rolagem.</li>
+            </ul>
+
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;nav [liScrollSpyMenu]="spy" class="nav nav-pills flex-column"&gt;
+  &lt;button class="nav-link" type="button" liScrollSpyItem="overview"&gt;Overview&lt;/button&gt;
+  &lt;button class="nav-link" type="button" [liScrollSpyItem]="[spy, 'items', 'directive']"&gt;Items&lt;/button&gt;
+&lt;/nav&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;div liScrollSpy #spy="liScrollSpy" (activeChange)="onActiveChange($event)"&gt;
+  &lt;section liScrollSpyFragment="overview"&gt;...&lt;/section&gt;
+  &lt;section liScrollSpyFragment="service"&gt;...&lt;/section&gt;
+  &lt;section liScrollSpyFragment="directive"&gt;...&lt;/section&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

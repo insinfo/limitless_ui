@@ -1,13 +1,27 @@
 import 'package:ngdart/angular.dart';
 
+import 'accordion_body_component.dart';
 import 'accordion_body_directive.dart';
+import 'accordion_button_directive.dart';
+import 'accordion_collapse_directive.dart';
+import 'accordion_directive.dart';
+import 'accordion_header_host_directive.dart';
 import 'accordion_item_component.dart';
+import 'accordion_item_directive.dart';
+import 'accordion_toggle_directive.dart';
 
 /// Public directives used by the accordion component suite.
 const liAccordionDirectives = <Object>[
   LiAccordionComponent,
+  LiAccordionDirective,
+  LiAccordionBodyComponent,
   LiAccordionBodyDirective,
+  LiAccordionButtonDirective,
+  LiAccordionCollapseDirective,
+  LiAccordionHeaderHostDirective,
   LiAccordionItemComponent,
+  LiAccordionItemDirective,
+  LiAccordionToggleDirective,
 ];
 
 /// Limitless/Bootstrap accordion container.

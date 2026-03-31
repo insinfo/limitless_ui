@@ -1,5 +1,5 @@
 // Run this browser test from the package root with:
-// dart run build_runner test -- -p chrome test/datatable/li_datatable_component_test.dart
+// dart run build_runner test -- -p chrome -j 1 test/datatable/li_datatable_component_test.dart
 // ignore_for_file: uri_has_not_been_generated
 
 @TestOn('browser')
@@ -123,6 +123,7 @@ void main() {
 
   test('renderiza cabecalhos e linhas iniciais', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
 
     expect(fixture.text, contains('Nome'));
     expect(fixture.text, contains('Idade'));
@@ -132,6 +133,7 @@ void main() {
 
   test('seleciona automaticamente o primeiro campo de busca', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     expect(host.table, isNotNull);
@@ -143,6 +145,7 @@ void main() {
 
   test('emite dataRequest ao ir para a proxima pagina', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -156,6 +159,7 @@ void main() {
 
   test('configura ordenacao e emite dataRequest', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -169,11 +173,13 @@ void main() {
 
   test('mantem apenas uma linha selecionada em modo single selection', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
       component.allowSingleSelectionOnly = true;
     });
+    await _settleTable(fixture);
 
     await fixture.update((component) {
       component.table!.onSelect(MouseEvent('click'), component.table!.rows[0]);
@@ -191,6 +197,7 @@ void main() {
 
   test('dispara busca ao pressionar Enter no campo de pesquisa', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -211,6 +218,7 @@ void main() {
 
   test('permite selecionar varias linhas quando single selection esta desabilitado', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -227,6 +235,7 @@ void main() {
 
   test('seleção individual atualiza a lista agregada de selecionados', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -247,6 +256,7 @@ void main() {
 
   test('toggle de visibilidade propaga para definicoes e linhas renderizadas', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
     final nomeCol = host.settings.colsDefinitions.first;
 
@@ -265,12 +275,14 @@ void main() {
 
   test('expande linha filha para colunas ocultas no mobile', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
       component.responsiveCollapse = true;
       component.table!.responsiveCollapseMaxWidth = 100000;
     });
+    await _settleTable(fixture);
 
     final toggleCell = fixture.rootElement.querySelector(
       'tbody tr td.dtr-control',
@@ -287,7 +299,7 @@ void main() {
     expect(host.table!.rows.first.isExpanded, isTrue);
     expect(fixture.text, contains('Idade'));
     expect(fixture.text, contains('30'));
-    expect(document.querySelector('tbody tr.child'), isNotNull);
+    expect(fixture.rootElement.querySelector('tbody tr.child'), isNotNull);
   });
 
   test('não expande linha quando não há colunas configuradas para mobile', () async {
@@ -310,12 +322,14 @@ void main() {
         ],
       );
     });
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
       component.responsiveCollapse = true;
       component.table!.responsiveCollapseMaxWidth = 100000;
     });
+    await _settleTable(fixture);
 
     final toggleCell = fixture.rootElement.querySelector('tbody tr td.dtr-control');
 
@@ -330,13 +344,14 @@ void main() {
     });
 
     expect(host.table!.rows.first.isExpanded, isFalse);
-    expect(document.querySelector('tbody tr.child'), isNull);
+    expect(fixture.rootElement.querySelector('tbody tr.child'), isNull);
   });
 
   test('onSelectAll marca e desmarca todas as linhas pelo checkbox do header', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
-    final selectAllCheckbox = document.querySelector(
+    final selectAllCheckbox = fixture.rootElement.querySelector(
       'thead .datatable-first-col input.form-check-input',
     ) as CheckboxInputElement?;
 
@@ -360,6 +375,7 @@ void main() {
 
   test('unSelectAll limpa selecao existente', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -374,6 +390,7 @@ void main() {
 
   test('handleSearchFieldSelectChange atualiza o campo pesquisado', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -388,6 +405,7 @@ void main() {
 
   test('ordenação multi-coluna acumula criterios distintos', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -406,6 +424,7 @@ void main() {
 
   test('changeItemsPerPageHandler atualiza limit e emite limitChange', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
     final select = SelectElement()
       ..append(OptionElement(data: '20', value: '20')..selected = true);
@@ -423,6 +442,7 @@ void main() {
 
   test('prevPage, primeira e ultima pagina atualizam offset corretamente', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
@@ -450,6 +470,7 @@ void main() {
 
   test('changeViewMode alterna gridMode', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     expect(host.table!.gridMode, isFalse);
@@ -469,20 +490,23 @@ void main() {
 
   test('renderiza layout de grid quando gridMode esta ativo', () async {
     final fixture = await testBed.create();
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
       component.table!.changeViewMode();
     });
+    await _settleTable(fixture);
 
-    final gridContainer = document.querySelector('.grid-container');
-    final gridItems = document.querySelectorAll('.grid-layout .grid-item');
-    final tableContainer = document.querySelector('.datatable-scroll');
+    final gridContainer = fixture.rootElement.querySelector('.grid-container');
+    final gridItems = fixture.rootElement.querySelectorAll('.grid-layout .grid-item');
+    final tableContainer = fixture.rootElement.querySelector('.datatable-scroll');
 
     expect(host.table!.gridMode, isTrue);
     expect(gridContainer, isNotNull);
     expect(gridItems.length, 2);
-    expect(tableContainer, isNull);
+    expect(tableContainer, isNotNull);
+    expect((tableContainer as HtmlElement).classes.contains('hide'), isTrue);
     expect(fixture.text, contains('Ana'));
     expect(fixture.text, contains('Bruno'));
   });
@@ -508,6 +532,7 @@ void main() {
         ],
       );
     });
+    await _settleTable(fixture);
 
     final headerCell = fixture.rootElement.querySelector(
       'thead th[data-key="nome"]',
@@ -545,11 +570,13 @@ void main() {
         },
       );
     });
+    await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((component) {
       component.table!.changeViewMode();
     });
+    await _settleTable(fixture);
 
     final customCards = fixture.rootElement.querySelectorAll('.custom-grid-card');
     final customCardWrappers = fixture.rootElement.querySelectorAll('.datatable-custom-card');
@@ -565,4 +592,9 @@ void main() {
     expect(fixture.text, contains('Ana (30)'));
     expect(fixture.text, contains('Bruno (40)'));
   });
+}
+
+Future<void> _settleTable(NgTestFixture<TestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 20));
+  await fixture.update((_) {});
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: uri_has_not_been_generated
+
 import 'package:ngrouter/ngrouter.dart';
 
 import 'package:limitless_ui_example/src/pages/accordion/accordion_page.template.dart'
@@ -13,7 +15,7 @@ import 'package:limitless_ui_example/src/pages/datatable/datatable_page.template
 import 'package:limitless_ui_example/src/pages/datatable_select/datatable_select_page.template.dart'
     as datatable_select_page;
 import 'package:limitless_ui_example/src/pages/date_picker/date_picker_page.template.dart'
-  as date_picker_page;
+    as date_picker_page;
 import 'package:limitless_ui_example/src/pages/date_range/date_range_page.template.dart'
     as date_range_page;
 import 'package:limitless_ui_example/src/pages/time_picker/time_picker_page.template.dart'
@@ -26,14 +28,22 @@ import 'package:limitless_ui_example/src/pages/modal/modal_page.template.dart'
     as modal_page;
 import 'package:limitless_ui_example/src/pages/multi_select/multi_select_page.template.dart'
     as multi_select_page;
+import 'package:limitless_ui_example/src/pages/nav/nav_page.template.dart'
+    as nav_page;
 import 'package:limitless_ui_example/src/pages/notification/notification_page.template.dart'
     as notification_page;
 import 'package:limitless_ui_example/src/pages/overview/overview_page.template.dart'
     as overview_page;
+import 'package:limitless_ui_example/src/pages/popover/popover_page.template.dart'
+    as popover_page;
 import 'package:limitless_ui_example/src/pages/progress/progress_page.template.dart'
     as progress_page;
+import 'package:limitless_ui_example/src/pages/scrollspy/scrollspy_page.template.dart'
+    as scrollspy_page;
 import 'package:limitless_ui_example/src/pages/select/select_page.template.dart'
     as select_page;
+import 'package:limitless_ui_example/src/pages/dropdown/dropdown_page.template.dart'
+    as dropdown_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
     as tabs_page;
 import 'package:limitless_ui_example/src/pages/tooltip/tooltip_page.template.dart'
@@ -109,9 +119,29 @@ class DemoRoutes {
     component: carousel_page.CarouselPageComponentNgFactory,
   );
 
+  static final scrollSpy = RouteDefinition(
+    routePath: DemoRoutePaths.scrollSpy,
+    component: scrollspy_page.ScrollspyPageComponentNgFactory,
+  );
+
   static final tooltip = RouteDefinition(
     routePath: DemoRoutePaths.tooltip,
     component: tooltip_page.TooltipPageComponentNgFactory,
+  );
+
+  static final popover = RouteDefinition(
+    routePath: DemoRoutePaths.popover,
+    component: popover_page.PopoverPageComponentNgFactory,
+  );
+
+  static final nav = RouteDefinition(
+    routePath: DemoRoutePaths.nav,
+    component: nav_page.NavPageComponentNgFactory,
+  );
+
+  static final dropdown = RouteDefinition(
+    routePath: DemoRoutePaths.dropdown,
+    component: dropdown_page.DropdownPageComponentNgFactory,
   );
 
   static final datatable = RouteDefinition(
@@ -158,7 +188,11 @@ class DemoRoutes {
     timePicker,
     dateRange,
     carousel,
+    scrollSpy,
     tooltip,
+    popover,
+    nav,
+    dropdown,
     datatable,
     datatableSelect,
     notification,

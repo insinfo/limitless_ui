@@ -17,7 +17,11 @@ import 'package:ngdart/angular.dart';
   encapsulation: ViewEncapsulation.none,
 )
 class LiModalComponent implements OnInit, OnDestroy {
-  late Element rootElement;
+  LiModalComponent(this.rootElement, this._changeDetectorRef);
+
+  final Element rootElement;
+  final ChangeDetectorRef _changeDetectorRef;
+  bool _isOpen = false;
 
   @Input()
   bool enableHeader = true;
@@ -73,8 +77,6 @@ class LiModalComponent implements OnInit, OnDestroy {
   @Input()
   String headerColor = 'primary';
 
-  LiModalComponent(this.rootElement);
-
   @Input('title-text')
   String titleText = '';
 
@@ -86,6 +88,13 @@ class LiModalComponent implements OnInit, OnDestroy {
 
   @Input()
   bool fullScreenOnMobile = false;
+
+  /// When `true`, the projected body content is only rendered while the modal
+  /// is open.
+  ///
+  /// Use this for heavy content that should not be created eagerly in the DOM.
+  @Input()
+  bool lazyContent = false;
 
   @ViewChild('modalRootElement')
   DivElement? modalRootElement;
@@ -110,7 +119,7 @@ class LiModalComponent implements OnInit, OnDestroy {
     });
 
     if (startOpen) {
-      open();
+      Future<void>.microtask(open);
     }
   }
 
@@ -120,11 +129,16 @@ class LiModalComponent implements OnInit, OnDestroy {
 
   DivElement backdropDiv = DivElement();
 
+  bool get shouldRenderContent => !lazyContent || _isOpen;
+
   /// Opens the modal.
   void open() {
     if (isOpen) {
       return;
     }
+
+    _isOpen = true;
+    _changeDetectorRef.markForCheck();
 
     backdropDiv.remove();
     backdropDiv = DivElement()
@@ -148,7 +162,7 @@ class LiModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  bool get isOpen => modalRootElement?.style.display == 'block';
+  bool get isOpen => _isOpen;
 
   final _onCloseCtrl = StreamController<void>.broadcast();
 
@@ -157,6 +171,11 @@ class LiModalComponent implements OnInit, OnDestroy {
 
   /// Closes the modal.
   void close() {
+    if (!isOpen) {
+      return;
+    }
+
+    _isOpen = false;
     backdropDiv.remove();
     modalRootElement?.style.display = 'none';
     modalRootElement?.attributes['data-status'] = 'close';
@@ -164,6 +183,7 @@ class LiModalComponent implements OnInit, OnDestroy {
       document.body?.classes.remove('modal-open');
     }
     showError = false;
+    _changeDetectorRef.markForCheck();
     _onCloseCtrl.add(null);
   }
 

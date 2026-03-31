@@ -1,0 +1,39 @@
+.demo-summary-box {
+  padding: 0.875rem 1rem;
+  border-radius: var(--border-radius-lg);
+  background: var(--gray-100);
+}
+
+.demo-popover-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.popover-clipping-shell {
+  overflow: hidden;
+  border-radius: 1rem;
+  padding: 1rem;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-rgb), 0.16),
+    rgba(var(--primary-rgb), 0.06)
+  );
+}
+
+.popover-notes-card {
+  border-radius: var(--border-radius-lg);
+  border: 1px solid rgba(var(--primary-rgb), 0.14);
+  background: linear-gradient(
+    180deg,
+    rgba(var(--primary-rgb), 0.08),
+    rgba(var(--primary-rgb), 0.02)
+  );
+  padding: 1rem;
+}
+
+.popover-notes-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}

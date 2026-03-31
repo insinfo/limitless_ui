@@ -1,4 +1,4 @@
-<div class="demo-page">
+<div class="demo-page tooltip-demo-page">
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
@@ -14,9 +14,7 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">{{ t.pages.tooltip.cardTitle }}</h5>
-      </div>
+    
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
@@ -70,20 +68,171 @@
                 <button class="btn btn-outline-dark" type="button">{{ t.pages.tooltip.clickButton }}</button>
               </li-tooltip>
 
-              <li-tooltip
-                  #manualTooltip
-                  [text]="t.pages.tooltip.manualText"
-                  trigger="manual"
+              <button
+                  #manualTooltip="liTooltip"
+                  class="btn btn-outline-indigo"
+                  type="button"
+                  [liTooltip]="t.pages.tooltip.manualText"
+                  triggers="manual"
                   placement="bottom"
-                  [showDelayMs]="120"
-                  [hideDelayMs]="120">
-                <button class="btn btn-outline-indigo" type="button" (click)="toggleManualTooltip()">
-                  {{ t.pages.tooltip.manualButton }}
-                </button>
-              </li-tooltip>
+                  [openDelay]="120"
+                  [closeDelay]="120"
+                  tooltipClass="tooltip-info"
+                  (shown)="onTooltipEvent('shown')"
+                  (hidden)="onTooltipEvent('hidden')"
+                  (click)="toggleManualTooltip()">
+                {{ t.pages.tooltip.manualButton }}
+              </button>
             </div>
 
             <div class="demo-summary-box mt-3">{{ tooltipEventLog.isEmpty ? t.pages.tooltip.idle : tooltipEventLog }}</div>
+
+            <div class="row g-3 mt-1">
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Automatic closing</h6>
+                  <p class="text-muted mb-3">Os exemplos abaixo continuam fechando com Escape e variam apenas o clique que dispara o fechamento.</p>
+                  <div class="demo-tooltip-row">
+                    <button
+                        class="btn btn-outline-primary"
+                        type="button"
+                        [liTooltip]="'Fecha ao clicar dentro do próprio tooltip.'"
+                        triggers="click"
+                        autoClose="inside"
+                        placement="top">
+                      click inside
+                    </button>
+
+                    <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        [liTooltip]="'Fecha ao clicar fora do tooltip.'"
+                        triggers="click"
+                        autoClose="outside"
+                        placement="top">
+                      click outside
+                    </button>
+
+                    <button
+                        class="btn btn-outline-dark"
+                        type="button"
+                        [liTooltip]="'Fecha em qualquer clique.'"
+                        triggers="click"
+                        [autoClose]="true"
+                        placement="top">
+                      all clicks
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Append tooltip in the body</h6>
+                  <p class="text-muted mb-3">Quando o gatilho vive dentro de uma área com clipping, <code>container="body"</code> tira o balão desse contexto local.</p>
+                  <div class="tooltip-clipped-shell">
+                    <button
+                        class="btn btn-outline-primary"
+                        type="button"
+                        [liTooltip]="'Este tooltip foi anexado ao body para escapar do clipping local.'"
+                        triggers="click"
+                        container="body"
+                        placement="right">
+                      Tooltip no body
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Custom target</h6>
+                  <p class="text-muted mb-3">O gatilho continua neste botão, mas o balão é posicionado em outro elemento do layout.</p>
+                  <div class="tooltip-demo-target-stage">
+                    <button
+                        #targetedTooltip="liTooltip"
+                        class="btn btn-outline-success"
+                        type="button"
+                        [liTooltip]="'O tooltip está ancorado no chip à direita.'"
+                        triggers="manual"
+                        [positionTarget]="'#tooltip-target-anchor'"
+                        placement="right"
+                        (click)="toggleTargetedTooltip()">
+                      Abrir target customizado
+                    </button>
+
+                    <span class="tooltip-target-anchor" id="tooltip-target-anchor">Âncora visual do tooltip</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">HTML and bindings via TemplateRef</h6>
+                  <p class="text-muted mb-3">O tooltip também pode receber um <code>TemplateRef</code> com bindings do componente hospedeiro.</p>
+                  <template #richTooltipTemplate>
+                    <div class="fw-semibold mb-1">TemplateRef dentro do tooltip</div>
+                    <div class="small text-white-50">Os bindings continuam vivos porque a view AngularDart segue ativa.</div>
+                  </template>
+                  <div class="demo-tooltip-row">
+                    <button
+                        class="btn btn-outline-indigo"
+                        type="button"
+                        [liTooltip]="richTooltipTemplate"
+                        triggers="click"
+                        placement="bottom"
+                        tooltipClass="tooltip-aurora">
+                      Tooltip com template
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Open and close delays</h6>
+                  <p class="text-muted mb-3">O hover pode esperar um pouco para abrir e continuar disponível enquanto o ponteiro entra no próprio balão.</p>
+                  <div class="demo-tooltip-row">
+                    <button
+                        class="btn btn-outline-warning"
+                        type="button"
+                        [liTooltip]="'openDelay 300ms e closeDelay 600ms.'"
+                        triggers="hover"
+                        [openDelay]="300"
+                        [closeDelay]="600"
+                        placement="bottom">
+                      Tooltip com delay
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Custom class</h6>
+                  <p class="text-muted mb-3">Uma classe adicional permite trocar o tratamento visual sem criar outro componente.</p>
+                  <div class="demo-tooltip-row">
+                    <button
+                        class="btn btn-outline-info"
+                        type="button"
+                        [liTooltip]="'Tooltip com classe visual própria.'"
+                        triggers="click"
+                        tooltipClass="tooltip-aurora"
+                        placement="bottom">
+                      Tooltip customizado
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="card card-body">
+                  <h6 class="mb-2">Global configuration</h6>
+                  <p class="text-muted mb-3">Os defaults podem ser escopados por subtree usando <code>LiTooltipConfig</code> como provider local.</p>
+                  <tooltip-global-config-demo></tooltip-global-config-demo>
+                </div>
+              </div>
+            </div>
           </div>
         </li-tabx>
 
@@ -91,13 +240,62 @@
           <div class="card-body">
             <p class="text-muted mb-3">O componente envolve qualquer gatilho visual e adiciona exibição contextual com configuração declarativa.</p>
             <ul class="mb-3 ps-3">
+              <li><code>[liTooltip]</code> aplica a API por diretiva diretamente no elemento gatilho.</li>
               <li><code>[text]</code> define o conteúdo do tooltip.</li>
               <li><code>placement</code> aceita topo, direita, base e esquerda.</li>
-              <li><code>trigger</code> pode ser <code>hover</code>, <code>click</code> ou <code>manual</code>.</li>
+              <li><code>trigger</code> ou <code>triggers</code> aceitam <code>hover</code>, <code>click</code> e <code>manual</code>.</li>
+              <li><code>autoClose</code> aceita <code>true</code>, <code>false</code>, <code>inside</code> e <code>outside</code>.</li>
+              <li><code>container="body"</code> tira o balão do contexto local e evita clipping por overflow.</li>
+              <li><code>positionTarget</code> permite posicionar o tooltip contra outro seletor ou elemento.</li>
+              <li><code>tooltipClass</code> aplica uma classe extra ao balão renderizado.</li>
+              <li><code>[liTooltip]</code> também aceita <code>TemplateRef</code> para conteúdo rico com bindings.</li>
               <li><code>[html]</code> habilita renderização rica quando necessário.</li>
-              <li><code>[showDelayMs]</code> e <code>[hideDelayMs]</code> refinam o timing.</li>
+              <li><code>[showDelayMs]</code>, <code>[hideDelayMs]</code>, <code>[openDelay]</code> e <code>[closeDelay]</code> refinam o timing.</li>
+              <li><code>LiTooltipConfig</code> fornece defaults injetáveis para uma subtree inteira.</li>
               <li><code>(show)</code>, <code>(shown)</code>, <code>(hide)</code> e <code>(hidden)</code> expõem o ciclo de vida.</li>
             </ul>
+
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;button
+  [liTooltip]="'Tooltip direto no botão'"
+  placement="top"
+  triggers="hover focus"&gt;
+  Hover tooltip
+&lt;/button&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;button
+  [liTooltip]="tooltipTemplate"
+  triggers="click"
+  container="body"
+  tooltipClass="tooltip-aurora"&gt;
+  Tooltip com template
+&lt;/button&gt;
+
+&lt;template #tooltipTemplate&gt;
+  &lt;div class="fw-semibold mb-1"&gt;TemplateRef dentro do tooltip&lt;/div&gt;
+  &lt;div class="small text-white-50"&gt;Bindings continuam vivos.&lt;/div&gt;
+&lt;/template&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;button
+  #tooltip="liTooltip"
+  [liTooltip]="'Ancorado em outro elemento'"
+  triggers="manual"
+  [positionTarget]="'#target-anchor'"
+  (click)="tooltip.toggle()"&gt;
+  Abrir tooltip manual
+&lt;/button&gt;
+
+&lt;span id="target-anchor"&gt;Âncora visual&lt;/span&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-3"><code>@Component(
+  providers: [ClassProvider(LiTooltipConfig)],
+)
+class DemoTooltipDefaults {
+  DemoTooltipDefaults(LiTooltipConfig config) {
+    config.triggers = 'click';
+    config.placement = 'right';
+    config.tooltipClass = 'tooltip-config-demo';
+  }
+}</code></pre>
 
             <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-tooltip
   [text]="'Mostra dicas ao passar o mouse.'"

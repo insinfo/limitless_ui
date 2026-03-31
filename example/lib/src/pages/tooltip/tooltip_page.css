@@ -1,0 +1,50 @@
+.tooltip-demo-page .demo-tooltip-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+.tooltip-demo-page .tooltip-demo-target-stage {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.tooltip-demo-page .tooltip-target-anchor {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.55rem 0.9rem;
+	min-height: 2.5rem;
+	border: 1px dashed #94a3b8;
+	border-radius: 999px;
+	background: #f8fafc;
+	color: #334155;
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
+.tooltip-demo-page .tooltip-clipped-shell {
+	overflow: hidden;
+	padding: 1rem;
+	border-radius: 1rem;
+	background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+}
+
+.tooltip-info {
+	--tooltip-bg: #1d4ed8;
+	--tooltip-color: #eff6ff;
+}
+
+.tooltip-aurora {
+	--tooltip-bg: #0f766e;
+	--tooltip-color: #ecfeff;
+}
+
+.tooltip-config-demo {
+	--tooltip-bg: #7c2d12;
+	--tooltip-color: #ffedd5;
+}

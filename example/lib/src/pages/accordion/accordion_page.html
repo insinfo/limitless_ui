@@ -84,6 +84,92 @@
 
             <div class="demo-summary-box mt-3">{{ accordionEventLog.isEmpty ? initialAccordionEventLog :
               accordionEventLog }}</div>
+
+            <div class="card card-body mt-4">
+              <h6 class="mb-2">API declarativa por diretivas</h6>
+              <p class="text-muted mb-3">
+                Esta versão mantém o markup Bootstrap acessível no DOM e expõe uma API parecida com ng-bootstrap.
+              </p>
+              <p class="text-muted small mb-3">
+                Para <code>destroyOnHide</code> físico de verdade, use <code>&lt;template liAccordionBody&gt;</code>. O wrapper simples com <code>&lt;div liAccordionBody&gt;</code> mantém o conteúdo no DOM para casos em que a referência precisa permanecer estável.
+              </p>
+
+              <div liAccordion #directiveAccordion="liAccordion" [closeOthers]="true" [destroyOnHide]="true"
+                (show)="onDeclarativeAccordionEvent('show', $event)"
+                (shown)="onDeclarativeAccordionEvent('shown', $event)"
+                (hide)="onDeclarativeAccordionEvent('hide', $event)"
+                (hidden)="onDeclarativeAccordionEvent('hidden', $event)">
+
+                <div liAccordionItem="overview" #overviewItem="liAccordionItem" [collapsed]="false">
+                  <h2 liAccordionHeader>
+                    <button liAccordionButton>Visão geral</button>
+                  </h2>
+                  <div liAccordionCollapse>
+                    <div liAccordionBody>
+                      Conteúdo básico com header e body declarativos, mantendo classes e atributos de acessibilidade.
+                    </div>
+                  </div>
+                </div>
+
+                <div liAccordionItem="custom">
+                  <div liAccordionHeader class="accordion-button d-flex align-items-center gap-2">
+                    <span class="fw-semibold">Header customizado</span>
+                    <span class="badge bg-primary ms-auto">directive</span>
+                    <button liAccordionToggle class="btn btn-sm btn-outline-primary">Alternar</button>
+                  </div>
+                  <div liAccordionCollapse>
+                    <template liAccordionBody>
+                      <div liAccordionBody>
+                        O header pode ser totalmente customizado sem perder o controle por id, collapse e eventos.
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <div liAccordionItem="disabled" [disabled]="true">
+                  <h2 liAccordionHeader>
+                    <button liAccordionButton>Item desabilitado</button>
+                  </h2>
+                  <div liAccordionCollapse>
+                    <div liAccordionBody>
+                      Este conteúdo continua acessível via API, mas não reage ao clique do usuário.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <button class="btn btn-outline-primary" type="button"
+                  (click)="directiveAccordion.expand('overview')">Expandir overview</button>
+                <button class="btn btn-outline-secondary" type="button"
+                  (click)="directiveAccordion.toggle('custom')">Alternar custom</button>
+                <button class="btn btn-outline-dark" type="button"
+                  (click)="directiveAccordion.collapseAll()">Fechar todos</button>
+                <button class="btn btn-outline-indigo" type="button"
+                  (click)="overviewItem.toggle()">API do item</button>
+              </div>
+
+              <div class="demo-summary-box mt-3">{{ declarativeAccordionEventLog.isEmpty ? 'Nenhum evento da API declarativa.' : declarativeAccordionEventLog }}</div>
+            </div>
+
+            <div class="card card-body mt-4">
+              <h6 class="mb-2">liCollapse</h6>
+              <p class="text-muted mb-3">
+                Diretiva genérica para esconder e mostrar blocos com as classes <code>collapse</code>, <code>show</code> e <code>collapsing</code>.
+              </p>
+
+              <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button class="btn btn-outline-primary" type="button" (click)="toggleStandaloneCollapse()">
+                  {{ standaloneCollapsed ? 'Abrir painel' : 'Fechar painel' }}
+                </button>
+              </div>
+
+              <div [liCollapse]="standaloneCollapsed" class="mt-3">
+                <div class="border rounded p-3 bg-light">
+                  Este bloco usa a diretiva genérica de collapse, sem depender do accordion.
+                </div>
+              </div>
+            </div>
           </div>
         </li-tabx>
 
@@ -97,13 +183,30 @@
               <li><code>[destroyOnCollapse]</code> remove o conteúdo do DOM quando o item fecha.</li>
               <li><code>[expanded]</code> e <code>(expandedChange)</code> controlam abertura por item.</li>
             </ul>
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-accordion [allowMultipleOpen]="true"&gt;
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-accordion [allowMultipleOpen]="true"&gt;
   &lt;li-accordion-item
     [header]="'Título'"
     [expanded]="true"
     (expandedChange)="onChange($event)"&gt;
   &lt;/li-accordion-item&gt;
 &lt;/li-accordion&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;div liAccordion [closeOthers]="true" [destroyOnHide]="true" #accordion="liAccordion"&gt;
+  &lt;div liAccordionItem="first" #first="liAccordionItem" [collapsed]="false"&gt;
+    &lt;h2 liAccordionHeader&gt;
+      &lt;button liAccordionButton&gt;Primeiro&lt;/button&gt;
+    &lt;/h2&gt;
+    &lt;div liAccordionCollapse&gt;
+      &lt;template liAccordionBody&gt;
+        &lt;div liAccordionBody&gt;Conteúdo do primeiro item&lt;/div&gt;
+      &lt;/template&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;div [liCollapse]="isCollapsed"&gt;
+  &lt;div class="border rounded p-3"&gt;Conteúdo colapsável&lt;/div&gt;
+&lt;/div&gt;</code></pre>
           </div>
         </li-tabx>
       </li-tabsx>

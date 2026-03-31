@@ -50,8 +50,10 @@ class AppComponent {
   bool isSidebarCollapsed = false;
 
   List<LiDropdownMenuOption> get languageOptions => <LiDropdownMenuOption>[
-        LiDropdownMenuOption(value: 'pt', label: 'PT', description: t.app.portuguese),
-        LiDropdownMenuOption(value: 'en', label: 'EN', description: t.app.english),
+        LiDropdownMenuOption(
+            value: 'pt', label: 'PT', description: t.app.portuguese),
+        LiDropdownMenuOption(
+            value: 'en', label: 'EN', description: t.app.english),
       ];
 
   List<LiDropdownMenuOption> get themeOptions => <LiDropdownMenuOption>[
@@ -198,9 +200,29 @@ class AppComponent {
           url: DemoRoutePaths.carousel.toUrl(),
         ),
         DemoNavItem(
+          label: 'Scrollspy',
+          iconClass: 'ph-crosshair',
+          url: DemoRoutePaths.scrollSpy.toUrl(),
+        ),
+        DemoNavItem(
           label: t.nav.tooltip,
           iconClass: 'ph-chat-centered-text',
           url: DemoRoutePaths.tooltip.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Popover',
+          iconClass: 'ph-chat-circle-text',
+          url: DemoRoutePaths.popover.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Nav',
+          iconClass: 'ph-rows',
+          url: DemoRoutePaths.nav.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Dropdown',
+          iconClass: 'ph-caret-circle-down',
+          url: DemoRoutePaths.dropdown.toUrl(),
         ),
         DemoNavItem(
           label: t.nav.datatable,

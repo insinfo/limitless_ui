@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Dart 3.6.2
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.6.2
+
+      - name: Set up Chrome
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Analyze
+        run: dart analyze
+
+      - name: Build example application
+        working-directory: example
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Run VM-safe tests
+        run: dart test test/br_currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart
+
+      - name: Run browser and AngularDart tests
+        env:
+          CHROME_EXECUTABLE: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: >
+          dart run build_runner test -- -p chrome -j 1
+          test/alerts/alert_component_test.dart
+          test/alerts/li_alert_component_test.dart
+          test/progress_component_test.dart
+          test/datatable/li_datatable_component_test.dart
+          test/accordion/li_accordion_directive_test.dart
+          test/dropdown/li_dropdown_directive_test.dart
+          test/modal/li_modal_component_test.dart
+          test/nav/li_nav_directive_test.dart
+          test/popover/li_popover_component_test.dart
+          test/scrollspy/li_scrollspy_directive_test.dart
+          test/tooltip/li_tooltip_directive_test.dart
+
+      - name: Validate pub package
+        run: dart pub publish --dry-run

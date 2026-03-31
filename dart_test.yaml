@@ -1,2 +1,4 @@
-platforms:
-  - chrome
+# Intentionally left without a default platform.
+# VM-safe tests should run with `dart test`.
+# Browser/AngularDart tests should run with
+# `dart run build_runner test -- -p chrome -j 1 ...`.

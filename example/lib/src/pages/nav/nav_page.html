@@ -1,0 +1,197 @@
+<div class="demo-page nav-demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">Componentes <span class="fw-normal">Nav</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">Seleção, outlet e atalhos de teclado</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">
+              O helper de nav entrega seleção controlada, outlet desacoplado, suporte a abas desabilitadas e atalhos de teclado como
+              <code>Home</code>, <code>End</code> e setas.
+            </p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Descrição</h6>
+                  <p class="mb-0 text-muted">
+                    Use <code>liNav</code> no container, <code>liNavItem</code> nas abas, <code>liNavLink</code> no gatilho e
+                    <code>liNavOutlet</code> para renderizar o conteúdo ativo em qualquer parte da página.
+                  </p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Recursos</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>activeId</code> com binding e seleção programática.</li>
+                    <li><code>navChange.preventDefault()</code> para bloquear trocas específicas.</li>
+                    <li>Suporte a nav horizontal, vertical e outlet fora do markup principal.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Limitações</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>O demo cobre o fluxo essencial, não animação complexa.</li>
+                    <li>O conteúdo é renderizado a partir de <code>template[liNavContent]</code>.</li>
+                    <li>Para navegação com URL, continue usando router normalmente.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-xl-7">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Basic navs</h6>
+                  <p class="text-muted mb-3">A seleção abaixo usa <code>[(activeId)]</code> e mantém o outlet fora da lista.</p>
+
+                  <ul
+                      liNav
+                      #navRef="liNav"
+                      class="nav nav-tabs"
+                      [activeId]="activeId"
+                      (activeIdChange)="onActiveIdChange($event)"
+                      (navChange)="onNavPrevented($event)">
+                    <li
+                        *ngFor="let item of dynamicItems"
+                        [liNavItem]="item.id"
+                      [disabled]="item.disabled">
+                      <button liNavLink>{{ item.title }}</button>
+                      <template liNavContent>
+                        <div class="pt-3">
+                          <h6 class="mb-2">{{ item.title }}</h6>
+                          <p class="mb-0 text-muted">{{ item.body }}</p>
+                        </div>
+                      </template>
+                    </li>
+                  </ul>
+
+                  <div class="d-flex flex-wrap gap-2 mt-3">
+                    <button class="btn btn-outline-primary btn-sm" type="button" (click)="selectSecond()">Selecionar aba 2</button>
+                    <button class="btn btn-outline-dark btn-sm" type="button" (click)="selectDisabled()">Selecionar aba desabilitada</button>
+                  </div>
+
+                  <div class="tab-content mt-3">
+                    <div [liNavOutlet]="navRef"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-5">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Vertical pills</h6>
+                  <p class="text-muted mb-3">Com <code>orientation="vertical"</code> o nav se comporta como uma coluna de pills.</p>
+
+                  <div class="row g-3 align-items-start">
+                    <div class="col-sm-5">
+                      <div
+                          liNav
+                          #verticalNav="liNav"
+                          class="nav nav-pills"
+                          orientation="vertical"
+                          keyboard="changeWithArrows"
+                          [activeId]="verticalActiveId"
+                          (activeIdChange)="verticalActiveId = $event">
+                        <div liNavItem="overview">
+                          <button liNavLink>Overview</button>
+                          <template liNavContent>
+                            <div class="pt-3 pt-sm-0">
+                              <strong>Overview</strong>
+                              <p class="mb-0 text-muted">Entrada inicial para uma stack vertical de conteúdo contextual.</p>
+                            </div>
+                          </template>
+                        </div>
+                        <div liNavItem="settings">
+                          <button liNavLink>Settings</button>
+                          <template liNavContent>
+                            <div class="pt-3 pt-sm-0">
+                              <strong>Settings</strong>
+                              <p class="mb-0 text-muted">Mostra que o outlet pode permanecer ao lado da coluna de pills.</p>
+                            </div>
+                          </template>
+                        </div>
+                        <div liNavItem="history">
+                          <button liNavLink>History</button>
+                          <template liNavContent>
+                            <div class="pt-3 pt-sm-0">
+                              <strong>History</strong>
+                              <p class="mb-0 text-muted">Setas, Home e End trocam a aba porque o keyboard está em changeWithArrows.</p>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-sm-7">
+                      <div class="card card-body bg-light border rounded-4 h-100" [liNavOutlet]="verticalNav"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="card card-body">
+                  <h6 class="mb-2">Estado atual</h6>
+                  <div class="bg-light border rounded-3 p-3">{{ eventLog }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">A API pública segue a divisão clássica de container, item, link, conteúdo e outlet.</p>
+            <ul class="mb-3 ps-3">
+              <li><code>liNav</code> controla estado, teclado, roles e eventos.</li>
+              <li><code>liNavItem</code> define id, estado disabled e destroyOnHide por item.</li>
+              <li><code>liNavLink</code> aplica classes Bootstrap e atributos ARIA no botão ou link.</li>
+              <li><code>template[liNavContent]</code> descreve o conteúdo da aba.</li>
+              <li><code>[liNavOutlet]</code> renderiza o conteúdo ativo em outro ponto do DOM.</li>
+            </ul>
+
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;ul liNav #nav="liNav" class="nav nav-tabs" [(activeId)]="activeId"&gt;
+  &lt;li [liNavItem]="1"&gt;
+    &lt;button liNavLink&gt;First&lt;/button&gt;
+    &lt;template liNavContent&gt;First content&lt;/template&gt;
+  &lt;/li&gt;
+  &lt;li [liNavItem]="2"&gt;
+    &lt;button liNavLink&gt;Second&lt;/button&gt;
+    &lt;template liNavContent&gt;Second content&lt;/template&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div [liNavOutlet]="nav"&gt;&lt;/div&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;div
+  liNav
+  orientation="vertical"
+  keyboard="changeWithArrows"
+  [activeId]="verticalActiveId"
+  (activeIdChange)="verticalActiveId = $event"&gt;
+  &lt;div liNavItem="overview"&gt;
+    &lt;button liNavLink&gt;Overview&lt;/button&gt;
+    &lt;template liNavContent&gt;...&lt;/template&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

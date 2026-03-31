@@ -12,7 +12,6 @@ import 'accordion_header_directive.dart';
   templateUrl: 'accordion_item_component.html',
   styleUrls: ['accordion_item_component.css'],
   directives: [coreDirectives],
-  changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiAccordionItemComponent implements AfterContentInit, OnDestroy {
   LiAccordionItemComponent(this._changeDetectorRef) {

@@ -39,7 +39,9 @@
                     <!-- <span class="fw-semibold"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button> -->
                 </div>
-                <ng-content></ng-content>
+                <ng-container *ngIf="shouldRenderContent">
+                    <ng-content></ng-content>
+                </ng-container>
             </div>
         </div>
 

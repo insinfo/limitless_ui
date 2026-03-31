@@ -6,9 +6,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  essential_core:
-    path: ../../essential_core
-  
+  essential_core: ^1.0.0  
   i18n: ^4.2.1
   limitless_ui:
     path: ..
