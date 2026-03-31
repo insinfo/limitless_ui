@@ -52,13 +52,15 @@
                   <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                     <div>
                       <h6 class="mb-1">Rounded toast</h6>
-                      <p class="mb-0 text-muted">Mantém a estrutura Bootstrap e aplica <code>rounded-pill</code> no container.</p>
+                      <p class="mb-0 text-muted">A variação pill funciona melhor em mensagens curtas, compactas e sem muito chrome visual.</p>
                     </div>
                     <button class="btn btn-sm btn-outline-primary" type="button" (click)="reopenRoundedToast()">Reabrir</button>
                   </div>
 
                   <li-toast #roundedToast
-                      body="Fully rounded toast for smaller, denser notifications."
+                      body="Saved successfully"
+                      toastClass="toast-demo-pill"
+                      bodyClass="toast-demo-pill__body"
                       [rounded]="true"
                       [autohide]="false">
                   </li-toast>

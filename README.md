@@ -10,7 +10,7 @@ demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.1`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.2`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -22,7 +22,7 @@ Publication metadata is configured in [pubspec.yaml](/c:/MyDartProjects/limitles
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.1
+  limitless_ui: ^1.0.0-dev.2
 ```
 
 For local development:
@@ -103,7 +103,7 @@ The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/lim
 - Toast:
   `LiToastComponent`, `LiToastStackComponent`, `LiToastService`.
 
-## Recent additions in `1.0.0-dev.1`
+## Recent additions in `1.0.0-dev.2`
 
 - Added first-class dropdown, nav, popover and scrollspy modules to the public API.
 - Expanded accordion into a fuller directive set for host-driven and template-driven compositions.
@@ -112,6 +112,8 @@ The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/lim
 - Added `lazyContent` support to `li-modal` so heavy projected content can be created only while the modal is open.
 - Expanded the demo app with pages for dropdown, nav, popover and scrollspy, plus richer modal, tooltip, accordion and datatable examples.
 - Added tests for the new surface area, including accordion lazy rendering, modal lazy content and overlay/navigation components.
+- Added the new toast component family, toast stack service flow and a dedicated demo page.
+- Added CI coverage for toast browser tests and documented the AngularDart `.scss` to `.css` stylesheet convention used in this repository.
 
 ## Quick examples
 
@@ -658,7 +660,7 @@ dart test test/br_currency_input_formatter_test.dart test/lite_xlsx_test.dart te
 Run browser and AngularDart tests in Chrome:
 
 ```bash
-dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/tooltip/li_tooltip_directive_test.dart
+dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart
 ```
 
 Validate the package before publishing:

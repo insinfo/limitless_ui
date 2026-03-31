@@ -5,3 +5,15 @@
 .demo-page .demo-action-grid {
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
 }
+
+.demo-page .toast-demo-pill {
+  min-width: 0;
+  max-width: 18rem;
+  box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.12);
+}
+
+.demo-page .toast-demo-pill__body {
+  padding: 0.85rem 1.1rem;
+  white-space: nowrap;
+  font-weight: 500;
+}
