@@ -1,9 +1,9 @@
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 @Component(
-  selector: 'notification-page',
-  templateUrl: 'notification_page.html',
-  styleUrls: ['notification_page.css'],
+  selector: 'toast-page',
+  templateUrl: 'toast_page.html',
+  styleUrls: ['toast_page.css'],
   directives: [
     coreDirectives,
     LiTabsComponent,
@@ -12,8 +12,8 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiToastStackComponent,
   ],
 )
-class NotificationPageComponent {
-  NotificationPageComponent(this.i18n);
+class ToastPageComponent {
+  ToastPageComponent(this.i18n);
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
@@ -40,7 +40,8 @@ class NotificationPageComponent {
   void showSuccess() {
     toastService.show(
       header: 'Processamento concluído',
-      body: 'A operação foi concluída com sucesso e o toast vai desaparecer sozinho.',
+      body:
+          'A operação foi concluída com sucesso e o toast vai desaparecer sozinho.',
       iconClass: 'ph-check-circle',
       toastClass: 'bg-success text-white border-0',
       headerClass: 'bg-black bg-opacity-10 text-white',
@@ -53,7 +54,8 @@ class NotificationPageComponent {
   void showWarning() {
     toastService.show(
       header: 'Atenção',
-      body: 'Existe uma pendência aguardando revisão humana antes da próxima etapa.',
+      body:
+          'Existe uma pendência aguardando revisão humana antes da próxima etapa.',
       iconClass: 'ph-warning-circle',
       toastClass: 'border-warning',
       headerClass: 'bg-warning text-white border-warning',
@@ -62,10 +64,11 @@ class NotificationPageComponent {
     lastAction = 'Toast global de alerta enviado para a pilha.';
   }
 
-  void showWithLink() {
+  void showPersistent() {
     toastService.show(
       header: 'Atualização disponível',
-      body: 'Este exemplo usa badge, helper text e autohide desativado para toasts persistentes.',
+      body:
+          'Este exemplo usa badge, helper text e autohide desativado para toasts persistentes.',
       helperText: 'agora',
       badgeText: 'Update',
       iconClass: 'ph-bell-ringing',

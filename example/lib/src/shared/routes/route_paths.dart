@@ -21,6 +21,7 @@ class DemoRoutePaths {
   static final dropdown = RoutePath(path: 'dropdown');
   static final datatable = RoutePath(path: 'datatable');
   static final datatableSelect = RoutePath(path: 'datatable-select');
+  static final toast = RoutePath(path: 'toast');
   static final notification = RoutePath(path: 'notification');
   static final treeview = RoutePath(path: 'treeview');
   static final helpers = RoutePath(path: 'helpers');

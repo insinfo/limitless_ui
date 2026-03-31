@@ -1,0 +1,13 @@
+.toast {
+  min-width: 18rem;
+  max-width: min(26rem, calc(100vw - 2rem));
+  box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.15);
+}
+
+.toast-header .badge {
+  flex-shrink: 0;
+}
+
+.toast-body + .toast-body {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}

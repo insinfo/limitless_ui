@@ -1,0 +1,22 @@
+<div [class]="resolvedContainerClasses" aria-live="polite" aria-atomic="true">
+  <div *ngFor="let toast of service?.toasts" class="li-toast-stack__item">
+    <li-toast
+        [header]="toast.header"
+        [body]="toast.body"
+        [helperText]="toast.helperText"
+        [badgeText]="toast.badgeText"
+        [iconClass]="toast.iconClass"
+        [toastClass]="toast.toastClass"
+        [headerClass]="toast.headerClass"
+        [bodyClass]="toast.bodyClass"
+        [ariaLive]="toast.ariaLive"
+        [delay]="toast.delay"
+        [animation]="toast.animation"
+        [autohide]="toast.autohide"
+        [dismissible]="toast.dismissible"
+        [pauseOnHover]="toast.pauseOnHover"
+        [rounded]="toast.rounded"
+        (hidden)="removeToast(toast)">
+    </li-toast>
+  </div>
+</div>

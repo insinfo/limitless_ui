@@ -6,6 +6,8 @@ Reusable AngularDart UI components, directives and small browser helpers for app
 
 This package is browser-only. It depends on `dart:html`, `ngdart`, `ngforms` and `ngrouter`.
 
+demo page: https://insinfo.github.io/limitless_ui/
+
 ## Publication status
 
 The package is prepared for publication and currently versioned as `1.0.0-dev.1`, because it still depends on AngularDart pre-release packages:
@@ -54,6 +56,13 @@ In the example this is fixed with a global override in [example/web/style.scss](
 
 `\e9fe` is the `ph-caret-down` glyph from the Phosphor font bundle used by the demo.
 
+## AngularDart stylesheets
+
+- In this repository, component styles are authored in `.scss` and compiled by `sass_builder`.
+- In `@Component(styleUrls: ...)`, always reference the generated `.css` path, not `.scss`.
+- Do not create or commit manual duplicate `.css` files next to component `.scss` sources just to satisfy `styleUrls`.
+- If a component has `toast_component.scss`, the correct AngularDart annotation is `styleUrls: ['toast_component.css']`.
+
 ## Included modules
 
 - Inputs: currency input, date picker, time picker, date range picker, select, multi-select.
@@ -91,6 +100,8 @@ The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/lim
   `LiScrollSpyMenuDirective`, `LiScrollSpyConfig`.
 - Modal:
   `LiModalComponent` with lazy content support.
+- Toast:
+  `LiToastComponent`, `LiToastStackComponent`, `LiToastService`.
 
 ## Recent additions in `1.0.0-dev.1`
 
@@ -473,6 +484,60 @@ campo desabilitado. Referências:
 
 This pattern is useful for expensive content such as datatables, forms with many controls, or projected content that should not exist in the DOM until the dialog opens.
 
+### Toast
+
+`li-toast` cobre o caso declarativo inline. Ele renderiza o markup do toast,
+expõe `show()`, `hide()` e `isOpen`, e suporta `header`, `body`,
+`helperText`, `badgeText`, `iconClass`, `autohide`, `delay`, `dismissible`,
+`pauseOnHover` e `rounded`.
+
+```html
+<li-toast
+  header="Processamento concluído"
+  body="A operação foi concluída com sucesso."
+  helperText="agora"
+  iconClass="ph-check-circle"
+  [autohide]="false">
+</li-toast>
+```
+
+Para notificações globais em overlay, o pacote também expõe
+`LiToastService` + `li-toast-stack`:
+
+```html
+<li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
+```
+
+```dart
+final toastService = LiToastService();
+
+toastService.show(
+  header: 'Atualização disponível',
+  body: 'Há uma nova ação aguardando revisão.',
+  badgeText: 'Update',
+  iconClass: 'ph-bell-ringing',
+  toastClass: 'border-primary',
+  headerClass: 'bg-primary text-white border-primary',
+  autohide: false,
+);
+```
+
+`placement` do stack aceita `top-end`, `top-start`, `bottom-end`,
+`bottom-start`, `top-center` e `bottom-center`.
+
+Boas práticas:
+
+- use `li-toast` quando o toast fizer parte do layout da própria página;
+- use `LiToastService` + `li-toast-stack` para mensagens globais;
+- mantenha `autohide: false` apenas para mensagens que exigem ação humana;
+- quando precisar de layout mais rico, projete markup próprio dentro de
+  `li-toast`.
+
+O demo dedicado está em
+[toast_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/toast/toast_page.dart)
+e
+[toast_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/toast/toast_page.html).
+
 ### Popover
 
 O pacote expõe duas camadas de popover:
@@ -632,6 +697,7 @@ The demo app under [example](/c:/MyDartProjects/limitless_ui/example) now includ
 - nav
 - popover
 - scrollspy
+- toast
 - tooltip
 
 Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, and overlay components that depend on browser geometry.

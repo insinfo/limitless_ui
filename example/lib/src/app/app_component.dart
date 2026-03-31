@@ -235,9 +235,9 @@ class AppComponent {
           url: DemoRoutePaths.datatableSelect.toUrl(),
         ),
         DemoNavItem(
-          label: t.nav.notification,
+          label: 'Toast',
           iconClass: 'ph-notification',
-          url: DemoRoutePaths.notification.toUrl(),
+          url: DemoRoutePaths.toast.toUrl(),
         ),
         DemoNavItem(
           label: t.nav.treeview,

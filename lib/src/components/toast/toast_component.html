@@ -1,0 +1,23 @@
+<div *ngIf="isMounted"
+     [class]="resolvedToastClasses"
+     role="alert"
+     [attr.aria-live]="ariaLive"
+     aria-atomic="true">
+  <div *ngIf="hasHeader" [class]="resolvedHeaderClasses">
+    <i *ngIf="hasIcon" [class]="resolvedIconClasses"></i>
+    <div *ngIf="header.trim().isNotEmpty" class="fw-semibold me-auto">{{ header }}</div>
+    <span *ngIf="hasBadge" class="badge bg-primary text-white me-2">{{ badgeText }}</span>
+    <small *ngIf="hasHelperText" class="text-muted me-2">{{ helperText }}</small>
+    <button *ngIf="dismissible"
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="hide()"></button>
+  </div>
+
+  <div *ngIf="hasBody" [class]="resolvedBodyClasses">
+    {{ body }}
+  </div>
+
+  <ng-content></ng-content>
+</div>

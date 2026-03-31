@@ -7,6 +7,13 @@
 - Avoid patterns equivalent to `[style]="valor"` or any other binding that recreates object-like values on each change-detection pass unless the value is memoized.
 - When a template needs localized or mode-specific demo data, cache one stable collection per variant instead of rebuilding it every time a getter runs.
 
+## AngularDart stylesheets
+
+- In this repository, component styles are authored in `.scss` and compiled by `sass_builder`.
+- In `@Component(styleUrls: ...)`, always reference the generated `.css` path, not `.scss`.
+- Do not create or commit manual duplicate `.css` files next to component `.scss` sources just to satisfy `styleUrls`.
+- If a component has `toast_component.scss`, the correct AngularDart annotation is `styleUrls: ['toast_component.css']`.
+
 ## AngularDart change-detection rules
 
 - Do not assume `ChangeDetectorRef.markForCheck()` will fix async rendering issues on pages using the default `ChangeDetectionStrategy.checkAlways`.

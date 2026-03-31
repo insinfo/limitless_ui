@@ -54,6 +54,7 @@ jobs:
             test/nav/li_nav_directive_test.dart \
             test/popover/li_popover_component_test.dart \
             test/scrollspy/li_scrollspy_directive_test.dart \
+            test/toast/li_toast_component_test.dart \
             test/tooltip/li_tooltip_directive_test.dart
 
       - name: Validate pub package

@@ -41,6 +41,8 @@ import 'package:limitless_ui_example/src/pages/select/select_page.template.dart'
     as select_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
     as tabs_page;
+import 'package:limitless_ui_example/src/pages/toast/toast_page.template.dart'
+    as toast_page;
 import 'package:limitless_ui_example/src/pages/tooltip/tooltip_page.template.dart'
     as tooltip_page;
 import 'package:limitless_ui_example/src/pages/treeview/treeview_page.template.dart'
@@ -143,6 +145,11 @@ class DemoRoutes {
     component: notification_page.NotificationPageComponentNgFactory,
   );
 
+  static final toast = RouteDefinition(
+    routePath: DemoRoutePaths.toast,
+    component: toast_page.ToastPageComponentNgFactory,
+  );
+
   static final treeview = RouteDefinition(
     routePath: DemoRoutePaths.treeview,
     component: treeview_page.TreeviewPageComponentNgFactory,
@@ -172,6 +179,7 @@ class DemoRoutes {
     popover,
     datatable,
     datatableSelect,
+    toast,
     notification,
     treeview,
     helpers,
