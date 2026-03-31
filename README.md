@@ -125,21 +125,63 @@ class DemoAlertComponent {}
 
 ### Datatable
 
+`li-datatable` cobre o fluxo administrativo mais comum da biblioteca: busca por
+campo, paginação, ordenação, seleção de linhas, exportação, colapso responsivo
+em mobile e alternância entre tabela e grade sem duplicar fonte de dados.
+
+O componente gira em torno de três objetos:
+
+- `Filters`: limite, offset, busca e ordenação da requisição atual.
+- `DataFrame<T>`: coleção retornada pela fonte de dados mais `totalRecords`.
+- `DatatableSettings`: colunas e comportamento visual da tabela ou grade.
+
+Recursos mais úteis:
+
+- busca direcionada por coluna com `searchInFields`;
+- eventos como `(dataRequest)`, `(searchRequest)` e `(limitChange)` para fluxo server-driven;
+- colunas com `enableSorting`, `sortingBy`, `hideOnMobile`, `textAlign`, `nowrap`, `width` e classes;
+- estilos por célula com `cellStyleResolver` e por linha com `rowStyleResolver`;
+- modo grade com `gridMode`, `gridTemplateColumns`, `gridGap` e `customCardBuilder`;
+- exportação para XLSX e PDF pela própria API do componente.
+
 ```dart
+final filters = Filters(limit: 10, offset: 0);
+
 final settings = DatatableSettings(
   colsDefinitions: <DatatableCol>[
     DatatableCol(
-      key: 'name',
-      title: 'Name',
-      sortingBy: 'name',
+      key: 'feature',
+      title: 'Feature',
+      sortingBy: 'feature',
       enableSorting: true,
     ),
     DatatableCol(
-      key: 'email',
-      title: 'Email',
+      key: 'owner',
+      title: 'Owner',
+      hideOnMobile: true,
+    ),
+    DatatableCol(
+      key: 'status',
+      title: 'Status',
+      enableSorting: true,
+      sortingBy: 'status',
+      hideOnMobile: true,
     ),
   ],
 );
+
+final searchFields = <DatatableSearchField>[
+  DatatableSearchField(
+    label: 'Feature',
+    field: 'feature',
+    operator: 'like',
+  ),
+  DatatableSearchField(
+    label: 'Status',
+    field: 'status',
+    operator: '=',
+  ),
+];
 ```
 
 ```html
@@ -147,9 +189,270 @@ final settings = DatatableSettings(
   [data]="usersFrame"
   [settings]="settings"
   [dataTableFilter]="filters"
-  (dataRequest)="loadUsers($event)">
+  [searchInFields]="searchFields"
+  [responsiveCollapse]="true"
+  [searchPlaceholder]="'Type to search'"
+  (dataRequest)="loadUsers($event)"
+  (limitChange)="loadUsers($event)"
+  (searchRequest)="loadUsers($event)">
 </li-datatable>
 ```
+
+Para cenários visuais mais densos, o mesmo dataset pode ser reaproveitado em
+modo grade:
+
+```dart
+final gridSettings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'feature', title: 'Feature', width: '240px'),
+    DatatableCol(key: 'owner', title: 'Owner'),
+    DatatableCol(key: 'status', title: 'Status'),
+  ],
+  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+  gridGap: '1rem',
+);
+```
+
+```html
+<li-datatable
+  [data]="usersFrame"
+  [settings]="gridSettings"
+  [dataTableFilter]="filters"
+  [gridMode]="true"
+  [showCheckboxToSelectRow]="false"
+  [disableRowClick]="true">
+</li-datatable>
+```
+
+Customização de coluna, linha e grid:
+
+```dart
+final advancedSettings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(
+      key: 'status',
+      title: 'Status',
+      width: '160px',
+      textAlign: 'center',
+      nowrap: true,
+      cellStyleResolver: (itemMap, itemInstance) {
+        final status = itemMap['status']?.toString() ?? '';
+        return status == 'Blocked'
+            ? 'color: #b91c1c; font-weight: 700;'
+            : 'color: #0f766e; font-weight: 700;';
+      },
+    ),
+  ],
+  rowStyleResolver: (itemMap, itemInstance) {
+    if (itemMap['health'] == 'Critical') {
+      return 'background-color: rgba(239, 68, 68, 0.08);';
+    }
+    return null;
+  },
+  customCardBuilder: (itemMap, itemInstance, row) {
+    final root = DivElement()..classes.add('my-card');
+    root.text = itemMap['feature']?.toString() ?? '';
+    return root;
+  },
+);
+```
+
+Boas práticas:
+
+- mantenha `Filters`, `DatatableSettings` e `searchInFields` estáveis, em vez
+  de recriá-los em getters;
+- use `hideOnMobile` nas colunas secundárias para alimentar o colapso
+  responsivo;
+- reserve `customCardBuilder` para grids que realmente precisam fugir do layout
+  padrão;
+- em conteúdos pesados, prefira carregar o datatable sob demanda em accordion
+  lazy ou modal com `lazyContent`.
+
+O demo mais completo está em
+[datatable_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/datatable/datatable_page.dart)
+e
+[datatable_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/datatable/datatable_page.html).
+
+### Datatable Select
+
+`li-datatable-select` é o componente mais indicado quando um `select` simples não
+resolve porque o usuário precisa pesquisar, paginar e ordenar antes de escolher
+um item. Ele combina um trigger no estilo `form-select` com um `li-modal`
+interno que hospeda um `li-datatable`.
+
+Fluxo principal:
+
+- o host fornece `Filters`, `DataFrame<T>` e `DatatableSettings`;
+- o componente emite `(dataRequest)` sempre que a tabela interna pede dados;
+- ao clicar em uma linha, o item é selecionado, o label é atualizado no trigger
+  e o modal fecha;
+- o valor pode ser controlado por `[(ngModel)]` ou por
+  `(currentValueChange)`.
+
+Entradas e recursos mais relevantes:
+
+- `labelKey` e `valueKey` para separar o texto visível do valor persistido;
+- `searchInFields` para o seletor de busca dentro do modal;
+- `modalSize`, `title`, `placeholder`, `disabled` e `fullScreenOnMobile`;
+- métodos públicos como `clear()`, `setSelectedItem(...)` e `selectedLabel`.
+
+```html
+<li-datatable-select
+  [settings]="personSettings"
+  [dataTableFilter]="personFilter"
+  [data]="personFrame"
+  [searchInFields]="personSearchFields"
+  labelKey="name"
+  valueKey="id"
+  title="Selecionar pessoa"
+  placeholder="Clique para selecionar..."
+  (dataRequest)="loadPeople($event)"
+  (currentValueChange)="onPersonChanged($event)">
+</li-datatable-select>
+```
+
+```html
+<li-datatable-select
+  [settings]="personSettings"
+  [dataTableFilter]="personFilter"
+  [data]="personFrame"
+  [searchInFields]="personSearchFields"
+  labelKey="name"
+  valueKey="id"
+  [(ngModel)]="selectedPersonId"
+  (dataRequest)="loadPeople($event)">
+</li-datatable-select>
+```
+
+Boas práticas:
+
+- mantenha `Filters`, `DatatableSettings` e `searchInFields` estáveis;
+- trate o carregamento de dados no pai, como num datatable comum;
+- use `valueKey` para persistir apenas IDs, e não o mapa inteiro, quando o
+  campo fizer parte de formulários;
+- use `@ViewChild` apenas para ações programáticas pontuais, como
+  `clear()` ou `setSelectedItem(...)`.
+
+O demo de referência está em
+[datatable_select_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/datatable_select/datatable_select_page.dart)
+e
+[datatable_select_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/datatable_select/datatable_select_page.html).
+
+### Select and Multi-Select
+
+`li-select` e `li-multi-select` cobrem dois cenários próximos, mas com contratos
+diferentes:
+
+- `li-select`: uma única escolha com busca inline, suporte a `dataSource` ou
+  opções projetadas e integração com `ngModel`;
+- `li-multi-select`: múltiplos valores selecionados, normalmente renderizados
+  como badges no trigger.
+
+`li-select` aceita `List<Map<String, dynamic>>` ou `DataFrame` em
+`[dataSource]`, além de projeção manual com `li-option`. As chaves principais
+são `labelKey`, `valueKey` e `disabledKey`. O componente é pesquisável por
+padrão, usa overlay com Popper e já evita loops ignorando `dataSource`
+semanticamente idêntico.
+
+```html
+<li-select
+  [dataSource]="users"
+  labelKey="name"
+  valueKey="id"
+  placeholder="Selecione"
+  [(ngModel)]="selectedUserId">
+</li-select>
+```
+
+`li-multi-select` segue a mesma ideia, mas o `ngModel` passa a ser uma
+`List<dynamic>`:
+
+```html
+<li-multi-select
+  [dataSource]="channelOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="selectedChannels">
+</li-multi-select>
+```
+
+Também é possível projetar as opções manualmente:
+
+```html
+<li-multi-select [(ngModel)]="targets">
+  <li-multi-option value="portal">Portal</li-multi-option>
+  <li-multi-option value="api">API</li-multi-option>
+  <li-multi-option value="batch">Batch</li-multi-option>
+</li-multi-select>
+```
+
+Boas práticas:
+
+- não recrie `dataSource` em getters usados no template;
+- mantenha listas estáveis e atualize apenas o `ngModel`;
+- para coleções muito grandes, trate busca/paginação no componente pai;
+- prefira `li-datatable-select` quando a escolha exigir tabela, colunas e
+  busca estruturada.
+
+Referências:
+
+- [custom_select.dart](/c:/MyDartProjects/limitless_ui/lib/src/components/custom_select/custom_select.dart)
+- [multi_select_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/multi_select/multi_select_page.dart)
+- [multi_select_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/multi_select/multi_select_page.html)
+
+### Tabs
+
+`li-tabsx` organiza conteúdo por seções sem trocar de rota. Ele suporta
+`type="tabs"` ou `type="pills"`, posicionamento horizontal ou lateral,
+`[justified]`, abas desabilitadas e cabeçalhos projetados com
+`template li-tabx-header`.
+
+```html
+<li-tabsx type="pills" placement="left" [justified]="true">
+  <li-tabx header="Tokens" [active]="true">
+    <div class="p-3">Conteúdo</div>
+  </li-tabx>
+
+  <li-tabx [disabled]="true" header="Bloqueada"></li-tabx>
+</li-tabsx>
+```
+
+Use tabs para documentação, formulários segmentados e painéis administrativos.
+Quando o conteúdo da aba ficar pesado ou muito aninhado, isole-o em
+subcomponentes.
+
+O demo mostra pills laterais, abas desabilitadas e cabeçalho customizado em
+[tabs_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/tabs/tabs_page.dart)
+e
+[tabs_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/tabs/tabs_page.html).
+
+### Date Picker
+
+`li-date-picker` cobre seleção simples de data com integração direta a
+`[(ngModel)]`, além de restrições por intervalo e mudança de locale.
+
+Recursos principais:
+
+- `minDate` e `maxDate` para limitar o intervalo permitido;
+- `locale` para formatos como `pt_BR` e `en_US`;
+- `placeholder`, `value` e `disabled`;
+- bom encaixe com formulários AngularDart sem precisar de wrapper extra.
+
+```html
+<li-date-picker
+  [(ngModel)]="selectedDate"
+  [minDate]="minDate"
+  [maxDate]="maxDate"
+  locale="en_US"
+  [placeholder]="'Select a date'">
+</li-date-picker>
+```
+
+O demo cobre quatro cenários úteis: uso padrão, data restrita, locale inglês e
+campo desabilitado. Referências:
+
+- [date_picker_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/date_picker/date_picker_page.dart)
+- [date_picker_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/date_picker/date_picker_page.html)
 
 ### Modal with lazy content
 
@@ -169,6 +472,80 @@ final settings = DatatableSettings(
 ```
 
 This pattern is useful for expensive content such as datatables, forms with many controls, or projected content that should not exist in the DOM until the dialog opens.
+
+### Popover
+
+O pacote expõe duas camadas de popover:
+
+- helpers imperativos, como `SimplePopover.showWarning(...)` e
+  `SweetAlertPopover.showPopover(...)`;
+- API declarativa com `LiPopoverComponent` e `LiPopoverDirective`.
+
+Use popover quando o conteúdo precisa ser mais rico que um tooltip, mas ainda
+não justifica um modal. O componente declarativo suporta `click`, `hover` e
+controle manual via `@ViewChild`, além de `TemplateRef`, `container="body"` e
+hooks de posicionamento.
+
+```html
+<button
+  class="btn btn-outline-primary"
+  [liPopover]="'Mais contexto sem sair da tela'"
+  popoverTitle="Detalhes"
+  triggers="click">
+  Abrir popover
+</button>
+```
+
+Quando o conteúdo crescer demais, migre para modal, drawer ou card expansível.
+O demo mais rico está em
+[popover_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/popover/popover_page.dart).
+
+### Dropdown Menu
+
+`li-dropdown-menu` é um menu de ações compacto orientado por lista de opções.
+Ele serve bem para botões de overflow, ações por card e menus pequenos de
+toolbar, sem a complexidade do módulo dropdown completo.
+
+Cada item é um `LiDropdownMenuOption` com:
+
+- `value`
+- `label`
+- `iconClass`
+- `description`
+- `disabled`
+- `divider`
+
+O componente também suporta `triggerLabel`, `triggerIconClass`, `triggerClass`,
+`menuClass`, `placement`, `rounded`, `showCaret` e `closeOnSelect`.
+
+```dart
+final options = <LiDropdownMenuOption>[
+  const LiDropdownMenuOption(
+    value: 'edit',
+    label: 'Editar',
+    iconClass: 'ph-pencil-simple',
+  ),
+  const LiDropdownMenuOption(
+    value: 'archive',
+    label: 'Arquivar',
+    description: 'Remove da listagem principal',
+  ),
+];
+```
+
+```html
+<li-dropdown-menu
+  [options]="options"
+  value="edit"
+  triggerLabel="Ações"
+  placement="dropend"
+  (valueChange)="onAction($event)">
+</li-dropdown-menu>
+```
+
+O menu fecha em clique externo, `Escape` ou seleção, conforme `closeOnSelect`.
+Referência principal:
+[dropdown_menu_component.dart](/c:/MyDartProjects/limitless_ui/lib/src/components/dropdown_menu/dropdown_menu_component.dart).
 
 ### Scrollspy
 
