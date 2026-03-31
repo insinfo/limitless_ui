@@ -82,17 +82,26 @@ class LiTimePickerComponent
   @ViewChild('clockFaceElement')
   html.Element? clockFaceElement;
 
+  @ViewChild('hourInput')
+  html.InputElement? hourInputElement;
+
+  @ViewChild('minuteInput')
+  html.InputElement? minuteInputElement;
+
   bool isOpen = false;
   TimePickerDialMode dialMode = TimePickerDialMode.hour;
   int draftHour24 = 0;
   int draftMinute = 0;
+  String _hourInputText = '';
+  String _minuteInputText = '';
+  bool _isEditingHour = false;
+  bool _isEditingMinute = false;
   bool _isDraggingClock = false;
   int? _dragAnimationFrameId;
   double? _pendingPointerX;
   double? _pendingPointerY;
 
-  ChangeFunction<Duration?> _onChange =
-      (Duration? _, {String? rawValue}) {};
+  ChangeFunction<Duration?> _onChange = (Duration? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
@@ -105,18 +114,24 @@ class LiTimePickerComponent
 
   bool get showMeridiem => !use24Hour;
 
-  bool get _isInnerHourSelection => use24Hour && (draftHour24 == 0 || draftHour24 >= 13);
+  bool get _isInnerHourSelection =>
+      use24Hour && (draftHour24 == 0 || draftHour24 >= 13);
 
   int get displayHour12 {
     final hour = draftHour24 % 12;
     return hour == 0 ? 12 : hour;
   }
 
-  String get displayHourText => use24Hour
-      ? _twoDigits(draftHour24)
-      : _twoDigits(displayHour12);
+  String get displayHourText =>
+      use24Hour ? _twoDigits(draftHour24) : _twoDigits(displayHour12);
 
   String get displayMinuteText => _twoDigits(draftMinute);
+
+  String get editableHourText =>
+      _isEditingHour ? _hourInputText : displayHourText;
+
+  String get editableMinuteText =>
+      _isEditingMinute ? _minuteInputText : displayMinuteText;
 
   String get displayValue => _formatDuration(value);
 
@@ -134,11 +149,9 @@ class LiTimePickerComponent
 
   String get pmLabel => 'PM';
 
-  double get handDegrees =>
-      isHourMode
-        ? ((use24Hour ? draftHour24 % 12 : displayHour12 % 12) * 30)
-          .toDouble()
-        : draftMinute * 6.0;
+  double get handDegrees => isHourMode
+      ? ((use24Hour ? draftHour24 % 12 : displayHour12 % 12) * 30).toDouble()
+      : draftMinute * 6.0;
 
   double get handTransformDegrees => handDegrees;
 
@@ -148,7 +161,7 @@ class LiTimePickerComponent
     }
 
     if (_isInnerHourSelection) {
-      return 21.5;
+      return 18;
     }
 
     return 31;
@@ -166,10 +179,9 @@ class LiTimePickerComponent
   String get floatingSelectorLabelTransform =>
       'rotate(${(-handTransformDegrees).toString()}deg)';
 
-  List<TimePickerDialLabel> get visibleDialLabels =>
-      isHourMode
-        ? (use24Hour ? _hourDialLabels24 : _hourDialLabels)
-        : _minuteDialLabels;
+  List<TimePickerDialLabel> get visibleDialLabels => isHourMode
+      ? (use24Hour ? _hourDialLabels24 : _hourDialLabels)
+      : _minuteDialLabels;
 
   List<TimePickerDialLabel> get _hourDialLabels => _buildDialLabels(
         const <int>[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
@@ -194,7 +206,7 @@ class LiTimePickerComponent
   List<TimePickerDialLabel> get _minuteDialLabels => _buildDialLabels(
         List<int>.generate(12, (int index) => index * 5),
         (int value) => _twoDigits(value),
-      radiusPercent: 40,
+        radiusPercent: 40,
       );
 
   void toggleOpen() {
@@ -213,6 +225,7 @@ class LiTimePickerComponent
   void _open() {
     _ensureOverlay();
     _syncDraftFromValue();
+    _syncInputTexts();
     dialMode = TimePickerDialMode.hour;
     isOpen = true;
     _overlay?.startAutoUpdate();
@@ -231,6 +244,90 @@ class LiTimePickerComponent
     _markForCheck();
   }
 
+  void onHourFocus() {
+    _isEditingHour = true;
+    _hourInputText = displayHourText;
+    setHourMode();
+    _selectAllText(hourInputElement);
+  }
+
+  void onMinuteFocus() {
+    _isEditingMinute = true;
+    _minuteInputText = displayMinuteText;
+    setMinuteMode();
+    _selectAllText(minuteInputElement);
+  }
+
+  void onHourInput(String? rawValue) {
+    _isEditingHour = true;
+    _hourInputText = _sanitizeNumericInput(rawValue);
+
+    final parsed = int.tryParse(_hourInputText);
+    if (parsed == null) {
+      _markForCheck();
+      return;
+    }
+
+    if (use24Hour) {
+      if (parsed <= 23) {
+        draftHour24 = parsed;
+      }
+    } else if (parsed >= 1 && parsed <= 12) {
+      _setHourFrom12Hour(parsed);
+    }
+
+    if (_hourInputText.length == 2) {
+      _moveFocusToMinute();
+    }
+
+    _markForCheck();
+  }
+
+  void onMinuteInput(String? rawValue) {
+    _isEditingMinute = true;
+    _minuteInputText = _sanitizeNumericInput(rawValue);
+
+    final parsed = int.tryParse(_minuteInputText);
+    if (parsed == null) {
+      _markForCheck();
+      return;
+    }
+
+    if (parsed <= 59) {
+      draftMinute = parsed;
+    }
+
+    _markForCheck();
+  }
+
+  void onHourBlur() {
+    _commitHourInput();
+  }
+
+  void onMinuteBlur() {
+    _commitMinuteInput();
+  }
+
+  void onChipKeyDown(html.KeyboardEvent event, bool isHourField) {
+    if (event.key == 'Enter') {
+      event.preventDefault();
+      if (isHourField) {
+        _commitHourInput();
+      } else {
+        _commitMinuteInput();
+      }
+      return;
+    }
+
+    if (event.key == 'Escape') {
+      event.preventDefault();
+      _syncInputTexts();
+      _isEditingHour = false;
+      _isEditingMinute = false;
+      _markForCheck();
+    }
+  }
+
   void setMeridiem(bool pm) {
     if (use24Hour) {
       return;
@@ -246,6 +343,7 @@ class LiTimePickerComponent
       draftHour24 = draftHour24 >= 12 ? draftHour24 - 12 : draftHour24;
     }
 
+    _syncInputTexts();
     _markForCheck();
   }
 
@@ -279,6 +377,7 @@ class LiTimePickerComponent
       draftMinute = label.value;
     }
 
+    _syncInputTexts();
     _markForCheck();
   }
 
@@ -298,6 +397,9 @@ class LiTimePickerComponent
     _overlay?.stopAutoUpdate();
     isOpen = false;
     dialMode = TimePickerDialMode.hour;
+    _syncInputTexts();
+    _isEditingHour = false;
+    _isEditingMinute = false;
     _onTouched();
     _markForCheck();
   }
@@ -306,6 +408,7 @@ class LiTimePickerComponent
   void writeValue(Duration? value) {
     this.value = _normalizeDuration(value);
     _syncDraftFromValue();
+    _syncInputTexts();
     _markForCheck();
   }
 
@@ -325,12 +428,13 @@ class LiTimePickerComponent
     if (isDisabled && isOpen) {
       close();
     }
+    _syncInputTexts();
     _markForCheck();
   }
 
   bool isDialLabelActive(TimePickerDialLabel label) {
     if (isHourMode) {
-      return label.value == displayHour12;
+      return label.value == (use24Hour ? draftHour24 : displayHour12);
     }
 
     return label.value == draftMinute;
@@ -545,6 +649,7 @@ class LiTimePickerComponent
       draftMinute = (normalizedDegrees / 6).round() % 60;
     }
 
+    _syncInputTexts();
     _markForCheck();
   }
 
@@ -554,11 +659,13 @@ class LiTimePickerComponent
       final now = DateTime.now();
       draftHour24 = now.hour;
       draftMinute = now.minute;
+      _syncInputTexts();
       return;
     }
 
     draftHour24 = currentValue.inHours % 24;
     draftMinute = currentValue.inMinutes % 60;
+    _syncInputTexts();
   }
 
   void _setHourFrom12Hour(int hour12) {
@@ -570,14 +677,77 @@ class LiTimePickerComponent
     draftHour24 = isPm ? hour12 + 12 : hour12;
   }
 
+  void _commitHourInput() {
+    final parsed = int.tryParse(_hourInputText);
+    if (parsed != null) {
+      if (use24Hour) {
+        draftHour24 = parsed.clamp(0, 23);
+      } else {
+        final normalized = parsed.clamp(1, 12);
+        _setHourFrom12Hour(normalized);
+      }
+    }
+
+    _isEditingHour = false;
+    _hourInputText = displayHourText;
+    _markForCheck();
+  }
+
+  void _commitMinuteInput() {
+    final parsed = int.tryParse(_minuteInputText);
+    if (parsed != null) {
+      draftMinute = parsed.clamp(0, 59);
+    }
+
+    _isEditingMinute = false;
+    _minuteInputText = displayMinuteText;
+    _markForCheck();
+  }
+
+  void _syncInputTexts() {
+    _hourInputText = displayHourText;
+    _minuteInputText = displayMinuteText;
+  }
+
+  void _moveFocusToMinute() {
+    Future<void>.microtask(() {
+      setMinuteMode();
+      final minuteInput = minuteInputElement;
+      if (minuteInput == null) {
+        _markForCheck();
+        return;
+      }
+
+      minuteInput.focus();
+      _selectAllText(minuteInput);
+      _markForCheck();
+    });
+  }
+
+  void _selectAllText(html.InputElement? input) {
+    if (input == null) {
+      return;
+    }
+
+    final valueLength = input.value?.length ?? 0;
+    input.setSelectionRange(0, valueLength);
+  }
+
+  String _sanitizeNumericInput(String? rawValue) {
+    final normalizedRawValue = rawValue ?? '';
+    final digitsOnly = normalizedRawValue.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.length <= 2) {
+      return digitsOnly;
+    }
+    return digitsOnly.substring(0, 2);
+  }
+
   List<TimePickerDialLabel> _buildDialLabels(
     List<int> values,
-    String Function(int value) labelBuilder,
-    {
+    String Function(int value) labelBuilder, {
     double radiusPercent = 38,
     bool isInnerRing = false,
-    }
-  ) {
+  }) {
     final count = values.length;
 
     return values.asMap().entries.map((entry) {
@@ -607,7 +777,8 @@ class LiTimePickerComponent
     }
 
     final totalMinutes = value.inMinutes % (24 * 60);
-    final normalizedMinutes = totalMinutes < 0 ? totalMinutes + (24 * 60) : totalMinutes;
+    final normalizedMinutes =
+        totalMinutes < 0 ? totalMinutes + (24 * 60) : totalMinutes;
     return Duration(minutes: normalizedMinutes);
   }
 

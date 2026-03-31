@@ -5,6 +5,11 @@
 - Expanded the package documentation with toast usage, stack placement, AngularDart stylesheet guidance and richer component coverage.
 - Added browser test coverage for toast behavior and included it in CI.
 - Refined the toast demo presentation, including a more compact rounded toast variant.
+- Added `li-typeahead` with local filtering, keyboard navigation, `ngModel` support and a dedicated demo page.
+- Expanded `li-typeahead` with async search callbacks, rich result markup, reusable text highlighting and `LiTypeaheadConfig` defaults.
+- Added `li-treeview-select` for dropdown selection over hierarchical data.
+- Expanded `li-treeview-select` with lazy page loading, remote search term forwarding through `TreeViewLoadRequest.searchTerm`, multiple selection and projected templates for trigger and node rendering.
+- Added `labelBuilder` and `canSelectNode` hooks so host applications can customize labels and selection rules without forking the component.
 
 ## 1.0.0-dev.1
 

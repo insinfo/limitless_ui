@@ -41,12 +41,14 @@ class SimpleToast {
       document.body?.classes.removeAll(['swal2-toast-shown', 'swal2-shown']);
     }
 
-    root.onClick.listen((_) => closeToast());
-
     final popup = DivElement()
       ..className = 'swal2-popup swal2-toast swal2-icon-$type swal2-show'
       ..attributes['role'] = 'alert'
       ..attributes['aria-live'] = 'polite';
+
+    popup.onClick.listen((event) {
+      event.stopPropagation();
+    });
 
     final icon = DivElement()
       ..className = 'swal2-icon swal2-$type swal2-icon-show';
@@ -86,6 +88,18 @@ class SimpleToast {
     root.append(popup);
     document.body?.append(root);
     document.body?.classes.addAll(['swal2-toast-shown', 'swal2-shown']);
+
+    Timer.run(() {
+      if (root.isConnected != true) {
+        return;
+      }
+
+      root.onClick.listen((event) {
+        if (identical(event.target, root)) {
+          closeToast();
+        }
+      });
+    });
 
     final start = DateTime.now();
     Timer.periodic(const Duration(milliseconds: 30), (timer) {

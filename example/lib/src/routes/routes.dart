@@ -7,6 +7,8 @@ import 'package:limitless_ui_example/src/pages/accordion/accordion_page.template
     as accordion_page;
 import 'package:limitless_ui_example/src/pages/alert/alert_page.template.dart'
     as alert_page;
+import 'package:limitless_ui_example/src/pages/breadcrumbs/breadcrumbs_page.template.dart'
+    as breadcrumbs_page;
 import 'package:limitless_ui_example/src/pages/carousel/carousel_page.template.dart'
     as carousel_page;
 import 'package:limitless_ui_example/src/pages/currency/currency_page.template.dart'
@@ -29,8 +31,12 @@ import 'package:limitless_ui_example/src/pages/nav/nav_page.template.dart'
     as nav_page;
 import 'package:limitless_ui_example/src/pages/notification/notification_page.template.dart'
     as notification_page;
+import 'package:limitless_ui_example/src/pages/offcanvas/offcanvas_page.template.dart'
+    as offcanvas_page;
 import 'package:limitless_ui_example/src/pages/overview/overview_page.template.dart'
     as overview_page;
+import 'package:limitless_ui_example/src/pages/pagination/pagination_page.template.dart'
+    as pagination_page;
 import 'package:limitless_ui_example/src/pages/popover/popover_page.template.dart'
     as popover_page;
 import 'package:limitless_ui_example/src/pages/progress/progress_page.template.dart'
@@ -39,6 +45,8 @@ import 'package:limitless_ui_example/src/pages/dropdown/dropdown_page.template.d
     as dropdown_page;
 import 'package:limitless_ui_example/src/pages/select/select_page.template.dart'
     as select_page;
+import 'package:limitless_ui_example/src/pages/typeahead/typeahead_page.template.dart'
+    as typeahead_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
     as tabs_page;
 import 'package:limitless_ui_example/src/pages/toast/toast_page.template.dart'
@@ -80,9 +88,29 @@ class DemoRoutes {
     component: modal_page.ModalPageComponentNgFactory,
   );
 
+  static final offcanvas = RouteDefinition(
+    routePath: DemoRoutePaths.offcanvas,
+    component: offcanvas_page.OffcanvasPageComponentNgFactory,
+  );
+
+  static final breadcrumbs = RouteDefinition(
+    routePath: DemoRoutePaths.breadcrumbs,
+    component: breadcrumbs_page.BreadcrumbsPageComponentNgFactory,
+  );
+
+  static final pagination = RouteDefinition(
+    routePath: DemoRoutePaths.pagination,
+    component: pagination_page.PaginationPageComponentNgFactory,
+  );
+
   static final select = RouteDefinition(
     routePath: DemoRoutePaths.select,
     component: select_page.SelectPageComponentNgFactory,
+  );
+
+  static final typeahead = RouteDefinition(
+    routePath: DemoRoutePaths.typeahead,
+    component: typeahead_page.TypeaheadPageComponentNgFactory,
   );
 
   static final multiSelect = RouteDefinition(
@@ -167,7 +195,11 @@ class DemoRoutes {
     accordion,
     tabs,
     modal,
+    offcanvas,
+    breadcrumbs,
+    pagination,
     select,
+    typeahead,
     multiSelect,
     currency,
     datePicker,

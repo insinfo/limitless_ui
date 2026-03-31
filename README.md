@@ -65,7 +65,7 @@ In the example this is fixed with a global override in [example/web/style.scss](
 
 ## Included modules
 
-- Inputs: currency input, date picker, time picker, date range picker, select, multi-select.
+- Inputs: currency input, date picker, time picker, date range picker, select, multi-select, typeahead.
 - Data display: datatable, datatable select, tree view.
 - Structure: accordion, collapse, buttons, carousel, modal, tabs, nav.
 - Overlay and menus: dropdown, tooltip, popover, sweet alert, notification toast.
@@ -102,6 +102,12 @@ The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/lim
   `LiModalComponent` with lazy content support.
 - Toast:
   `LiToastComponent`, `LiToastStackComponent`, `LiToastService`.
+- Typeahead:
+  `LiTypeaheadComponent`, `LiTypeaheadItem`, `LiTypeaheadSelectItemEvent`, `LiTypeaheadConfig`, `LiTypeaheadHighlightComponent`.
+- Treeview:
+  `LiTreeViewComponent`, `LiTreeviewSelectComponent`,
+  `LiTreeViewPageLoader`, `TreeViewLoadRequest`, `TreeViewLoadResult`,
+  `LiTreeviewSelectNodeDirective`, `LiTreeviewSelectTriggerDirective`.
 
 ## Recent additions in `1.0.0-dev.2`
 
@@ -114,6 +120,10 @@ The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/lim
 - Added tests for the new surface area, including accordion lazy rendering, modal lazy content and overlay/navigation components.
 - Added the new toast component family, toast stack service flow and a dedicated demo page.
 - Added CI coverage for toast browser tests and documented the AngularDart `.scss` to `.css` stylesheet convention used in this repository.
+- Added `li-typeahead` for autocomplete-style selection with local filtering, keyboard navigation and `ngModel`.
+- Expanded `li-typeahead` with async search, rich result markup, a separate highlight component and injectable defaults via `LiTypeaheadConfig`.
+- Added `li-treeview-select` for dropdown selection over hierarchical data.
+- Expanded `li-treeview-select` with lazy page loading, remote search via `pageLoader(searchTerm)`, `multiple`, `labelBuilder`, `canSelectNode` and projected templates for trigger and node rendering.
 
 ## Quick examples
 
@@ -413,6 +423,128 @@ Referências:
 - [multi_select_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/multi_select/multi_select_page.dart)
 - [multi_select_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/multi_select/multi_select_page.html)
 
+### Typeahead
+
+`li-typeahead` cobre o espaço entre `li-select` e `li-datatable-select`: busca local ou assíncrona com sugestões, highlight configurável, navegação por teclado e integração com `[(ngModel)]`.
+
+Recursos principais:
+
+- `dataSource` com `List` estável ou `DataFrame`
+- `searchCallback` para busca remota retornando `Future` ou lista imediata
+- `minLength`, `maxResults` e `debounceMs`
+- `openOnFocus`, `editable`, `selectOnExact` e `showHint`
+- `inputFormatter` e `resultFormatter` para listas de objetos
+- `resultMarkupBuilder` para itens com markup rico
+- `LiTypeaheadConfig` para defaults locais e `LiTypeaheadHighlightComponent` para highlight reutilizável
+
+```html
+<li-typeahead
+  [searchCallback]="remoteCitySearch"
+  [inputFormatter]="cityInputFormatter"
+  [resultMarkupBuilder]="remoteResultMarkup"
+  [debounceMs]="220"
+  placeholder="Search for a city"
+  [(ngModel)]="selectedCity">
+</li-typeahead>
+```
+
+Para listas de mapas:
+
+```html
+<li-typeahead
+  [dataSource]="cities"
+  labelKey="name"
+  valueKey="code"
+  [inputFormatter]="cityInputFormatter"
+  [resultFormatter]="cityResultFormatter"
+  [(ngModel)]="selectedCityCode">
+</li-typeahead>
+```
+
+Para defaults locais via config:
+
+```dart
+@Component(
+  selector: 'typeahead-config-host',
+  providers: [ClassProvider(LiTypeaheadConfig)],
+  template: '''
+    <li-typeahead [dataSource]="options"></li-typeahead>
+  ''',
+)
+class TypeaheadConfigHostComponent {
+  TypeaheadConfigHostComponent(LiTypeaheadConfig config) {
+    config.minLength = 0;
+    config.openOnFocus = true;
+    config.showHint = true;
+  }
+}
+```
+
+Boas práticas:
+
+- mantenha o `dataSource` estável no componente pai
+- prefira `searchCallback` quando a API remota já expõe busca filtrada
+- use `editable=false` quando o valor final precisar vir apenas da lista
+- prefira `li-datatable-select` quando a escolha exigir tabela, paginação ou ordenação
+
+O demo dedicado está em
+[typeahead_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/typeahead/typeahead_page.dart)
+e
+[typeahead_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/typeahead/typeahead_page.html).
+
+### Treeview Select
+
+`li-treeview-select` cobre seleção hierárquica em dropdown quando um `select`
+plano perde contexto. Ele funciona com árvore estática via `[data]` ou com
+carregamento em partes via `[pageLoader]`.
+
+Recursos principais:
+
+- seleção única ou múltipla com `[(ngModel)]`
+- `pageLoader` com `TreeViewLoadRequest(parent, offset, limit, searchTerm)`
+- `labelBuilder` para customizar o rótulo padrão
+- `canSelectNode` para impor regra de seleção por item
+- `template[liTreeviewSelectNode]` e `template[liTreeviewSelectTrigger]`
+  para custom render
+- `closeOnSelect`, `showClearButton`, `searchable` e `openOnFocus`
+
+```html
+<li-treeview-select
+  [pageLoader]="loadTreeChunk"
+  [pageSize]="20"
+  [multiple]="true"
+  [closeOnSelect]="false"
+  [labelBuilder]="buildNodeLabel"
+  [canSelectNode]="canSelectLeafNode"
+  [(ngModel)]="selectedValues">
+
+  <template liTreeviewSelectTrigger let-ctx>
+    <span *ngIf="ctx.selectedNodes.isEmpty">{{ ctx.placeholder }}</span>
+    <span *ngIf="ctx.selectedNodes.isNotEmpty">
+      {{ ctx.selectedNodes.length }} item(ns)
+    </span>
+  </template>
+
+  <template liTreeviewSelectNode let-ctx>
+    <strong>{{ ctx.node.treeViewNodeLabel }}</strong>
+    <small>{{ ctx.node.value }}</small>
+  </template>
+</li-treeview-select>
+```
+
+Boas práticas:
+
+- use `[data]` quando a árvore já estiver carregada em memória
+- use `[pageLoader]` para catálogos grandes ou organogramas profundos
+- deixe a busca remota no backend usando `request.searchTerm`
+- use `canSelectNode` para regras como “somente folhas” ou “somente recebe processo”
+
+Referências:
+
+- [treeview_select_component.dart](/c:/MyDartProjects/limitless_ui/lib/src/components/treeview/treeview_select_component.dart)
+- [treeview_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/treeview/treeview_page.dart)
+- [treeview_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/treeview/treeview_page.html)
+
 ### Tabs
 
 `li-tabsx` organiza conteúdo por seções sem trocar de rota. Ele suporta
@@ -633,8 +765,18 @@ Use `LiScrollSpyService` directly when you need imperative control over fragment
 ### Currency formatting
 
 ```dart
-final cents = BrazilianCurrencyInputFormatter.minorUnitsFromText('1.234,56');
-final display = BrazilianCurrencyInputFormatter.formatForDisplay(cents);
+final brFormatter = CurrencyInputFormatter(
+  locale: 'pt_BR',
+  currencyCode: 'BRL',
+);
+final usdFormatter = CurrencyInputFormatter(
+  locale: 'en_US',
+  currencyCode: 'USD',
+);
+
+final cents = brFormatter.minorUnitsFromText('1.234,56');
+final displayBr = brFormatter.formatForDisplay(cents);
+final displayUsd = usdFormatter.formatForDisplay(123456);
 ```
 
 ## Development
@@ -660,7 +802,7 @@ dart test test/br_currency_input_formatter_test.dart test/lite_xlsx_test.dart te
 Run browser and AngularDart tests in Chrome:
 
 ```bash
-dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart
+dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/typeahead/li_typeahead_component_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart
 ```
 
 Validate the package before publishing:
@@ -700,6 +842,7 @@ The demo app under [example](/c:/MyDartProjects/limitless_ui/example) now includ
 - popover
 - scrollspy
 - toast
+- typeahead
 - tooltip
 
 Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, and overlay components that depend on browser geometry.

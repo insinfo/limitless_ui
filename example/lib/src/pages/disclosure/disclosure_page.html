@@ -14,13 +14,12 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">Disclosure</h5>
-      </div>
+     
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-0">Disclosure reúne padrões de revelar conteúdo sob demanda, combinando accordion, tabs e modal em um único fluxo.</p>
+            <p class="text-muted mb-0">Disclosure reúne padrões de revelar conteúdo sob demanda, combinando accordion,
+              tabs e modal em um único fluxo.</p>
           </div>
         </li-tabx>
         <li-tabx header="Exemplos">
@@ -38,20 +37,13 @@
                     </p>
 
                     <li-accordion [allowMultipleOpen]="true">
-                      <li-accordion-item
-                          header="Collapsed state"
-                          description="Comeca fechado e expande sob demanda.">
+                      <li-accordion-item header="Collapsed state" description="Comeca fechado e expande sob demanda.">
                         Ideal para listas longas que precisam manter foco visual.
                       </li-accordion-item>
-                      <li-accordion-item
-                          header="Expanded state"
-                          description="Item inicial aberto."
-                          [expanded]="true">
+                      <li-accordion-item header="Expanded state" description="Item inicial aberto." [expanded]="true">
                         Defina `expanded=true` no item que precisa abrir ao carregar.
                       </li-accordion-item>
-                      <li-accordion-item
-                          header="Always open"
-                          description="Permite comparar secoes ao mesmo tempo.">
+                      <li-accordion-item header="Always open" description="Permite comparar secoes ao mesmo tempo.">
                         Ative `allowMultipleOpen=true` no container principal.
                       </li-accordion-item>
                     </li-accordion>
@@ -96,11 +88,7 @@
     </div>
   </div>
 
-  <li-modal #demoModal
-            title-text="Exemplo de modal"
-            headerColor="indigo"
-            [enableShadow]="true"
-            [verticalCenter]="true">
+  <li-modal #demoModal title-text="Exemplo de modal" headerColor="indigo" [enableShadow]="true" [verticalCenter]="true">
     <h5>Composicao padronizada</h5>
     <p>
       O modal reaproveita a camada visual do Limitless e pode hospedar

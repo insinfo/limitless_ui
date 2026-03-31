@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+.li-breadcrumb-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.li-breadcrumb-wrap {
+  flex-wrap: wrap;
+}
+
+.li-breadcrumb-nowrap {
+  flex-wrap: nowrap;
+}
+
+.li-breadcrumb-main {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.li-breadcrumb-start,
+.li-breadcrumb-end {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.li-breadcrumb-end {
+  margin-left: auto;
+}
+
+.li-breadcrumb .breadcrumb {
+  margin-bottom: 0;
+  flex-wrap: wrap;
+}

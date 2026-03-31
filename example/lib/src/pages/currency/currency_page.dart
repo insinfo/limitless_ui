@@ -19,7 +19,15 @@ class CurrencyPageComponent {
   Messages get t => i18n.t;
 
   int? amountMinorUnits = 154250;
+  int? amountMinorUnitsUsd = 98765;
+  int? amountMinorUnitsEur = 73540;
 
   String get amountMinorUnitsLabel =>
       amountMinorUnits == null ? 'null' : '$amountMinorUnits';
+
+  String get amountMinorUnitsUsdLabel =>
+      amountMinorUnitsUsd == null ? 'null' : '$amountMinorUnitsUsd';
+
+  String get amountMinorUnitsEurLabel =>
+      amountMinorUnitsEur == null ? 'null' : '$amountMinorUnitsEur';
 }

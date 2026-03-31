@@ -26,7 +26,7 @@
                 tabindex="-1" (click)="onLiClickHandle($event,o)"
                 role="option" [hidden]="o.visible == false">
                 <input (click)="onCheckboxClickHandle($event,o)" [checked]="o.selected" class="form-check-input m-0 me-3" type="checkbox" tabindex="-1">
-                <span>{{o.text}}</span>
+                <span class="dropdown-item-label">{{o.text}}</span>
             </li>
         </ul>
     </div>

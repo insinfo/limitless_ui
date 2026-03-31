@@ -1,7 +1,8 @@
 <div class="page-header page-header-light shadow-sm rounded-0 border">
   <div class="page-header-content d-lg-flex">
     <div class="d-flex">
-      <h4 class="page-title mb-0">{{ t.pages.button.title }} <span class="fw-normal">{{ t.pages.button.subtitle }}</span></h4>
+      <h4 class="page-title mb-0">{{ t.pages.button.title }} <span class="fw-normal">{{ t.pages.button.subtitle
+          }}</span></h4>
     </div>
   </div>
   <div class="page-header-content d-lg-flex border-top">
@@ -13,492 +14,510 @@
 
 <div class="content">
   <div class="card mb-4">
- 
+
     <li-tabsx type="tabs">
       <li-tabx header="Visão geral" [active]="true">
         <div class="card-body">
-          <p class="text-muted mb-0">Esta página reúne variações de cor, estilo, tamanho, alinhamento e estados do componente de botão.</p>
-       
-
-  <!-- Button colors -->
-  <div class="mb-3">
-    <h6 class="mb-0">{{ t.pages.button.colorsTitle }}</h6>
-    <span class="text-muted d-block">{{ t.pages.button.colorsSubtitle }}</span>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Light button</h6>
-        <p class="mb-3">Use <code>.btn-[light|outline-light|flat-light]</code></p>
-        <div>
-          <li-button variant="light" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="light" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="light" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Dark button</h6>
-        <p class="mb-3">Use <code>.btn-[dark|outline-dark|flat-dark]</code></p>
-        <div>
-          <li-button variant="dark" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="dark" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="dark" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Primary button</h6>
-        <p class="mb-3">Use <code>.btn-[primary|outline-primary|flat-primary]</code></p>
-        <div>
-          <li-button variant="primary" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="primary" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="primary" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Secondary button</h6>
-        <p class="mb-3">Use <code>.btn-[secondary|outline-secondary|flat-secondary]</code></p>
-        <div>
-          <li-button variant="secondary" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="secondary" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="secondary" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Danger button</h6>
-        <p class="mb-3">Use <code>.btn-[danger|outline-danger|flat-danger]</code></p>
-        <div>
-          <li-button variant="danger" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="danger" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="danger" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Success button</h6>
-        <p class="mb-3">Use <code>.btn-[success|outline-success|flat-success]</code></p>
-        <div>
-          <li-button variant="success" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="success" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="success" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Warning button</h6>
-        <p class="mb-3">Use <code>.btn-[warning|outline-warning|flat-warning]</code></p>
-        <div>
-          <li-button variant="warning" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="warning" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="warning" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Info button</h6>
-        <p class="mb-3">Use <code>.btn-[info|outline-info|flat-info]</code></p>
-        <div>
-          <li-button variant="info" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="info" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="info" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Indigo button</h6>
-        <p class="mb-3">Use <code>.btn-[indigo|outline-indigo|flat-indigo]</code></p>
-        <div>
-          <li-button variant="indigo" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="indigo" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-          <li-button variant="indigo" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
+          <p class="text-muted mb-0">Esta página reúne variações de cor, estilo, tamanho, alinhamento e estados do
+            componente de botão.</p>
 
 
-  <!-- Solid buttons -->
-  <div class="mb-3 py-2">
-    <h6 class="mb-0">{{ t.pages.button.solidTitle }}</h6>
-    <span class="text-muted d-block">{{ t.pages.button.solidSubtitle }}</span>
-  </div>
+          <!-- Button colors -->
+          <div class="mb-3">
+            <h6 class="mb-0">{{ t.pages.button.colorsTitle }}</h6>
+            <span class="text-muted d-block">{{ t.pages.button.colorsSubtitle }}</span>
+          </div>
 
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Solid button</h6>
-        <p class="mb-3">Botao padrao com cor de fundo solida.</p>
-        <div>
-          <li-button variant="primary">Default button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Solid with icon</h6>
-        <p class="mb-3">Botao com icone e texto.</p>
-        <div>
-          <li-button variant="primary" iconClass="ph-check-square-offset">With icon</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Rounded button</h6>
-        <p class="mb-3">Botao com <code>rounded-pill</code>.</p>
-        <div>
-          <li-button variant="primary" [rounded]="true">Rounded button</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Labeled button</h6>
-        <p class="mb-3">Icone separado com fundo mais escuro.</p>
-        <div>
-          <li-button variant="primary" iconClass="ph-check-square-offset" labeledMode="start">Labeled</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Rounded labeled</h6>
-        <p class="mb-3">Labeled com <code>rounded-pill</code>.</p>
-        <div>
-          <li-button variant="primary" iconClass="ph-check-square-offset" labeledMode="start" [rounded]="true">Rounded</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Icon button</h6>
-        <p class="mb-3">Somente icone com <code>btn-icon</code>.</p>
-        <div>
-          <li-button variant="primary" iconClass="ph-link" [iconOnly]="true"></li-button>
-          <li-button variant="primary" iconClass="ph-link" [iconOnly]="true" [rounded]="true" buttonClass="ms-2"></li-button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Outline buttons -->
-  <div class="mb-3 py-2">
-    <h6 class="mb-0">{{ t.pages.button.outlineTitle }}</h6>
-    <span class="text-muted d-block">{{ t.pages.button.outlineSubtitle }}</span>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Outline button</h6>
-        <p class="mb-3">Fundo transparente no estado padrao.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="outline">Default button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Outline with icon</h6>
-        <p class="mb-3">Outline com icone.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="outline" iconClass="ph-check-square-offset">With icon</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Rounded outline</h6>
-        <p class="mb-3">Outline com <code>rounded-pill</code>.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="outline" [rounded]="true">Default button</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Labeled outline</h6>
-        <p class="mb-3">Outline labeled com icone separado.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="outline" iconClass="ph-check-square-offset" labeledMode="start">Default button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Icon outline</h6>
-        <p class="mb-3">Somente icone no estilo outline.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="outline" iconClass="ph-link" [iconOnly]="true"></li-button>
-          <li-button variant="primary" buttonStyle="outline" iconClass="ph-link" [iconOnly]="true" [rounded]="true" buttonClass="ms-2"></li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Border options</h6>
-        <p class="mb-3">Borda transparente, padrao e grossa.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="outline" [borderTransparent]="true" buttonClass="me-2">Transparent</li-button>
-          <li-button variant="primary" buttonStyle="outline" buttonClass="me-2">Default</li-button>
-          <li-button variant="primary" buttonStyle="outline" [borderWidth]="2">Thick</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Light button</h6>
+                <p class="mb-3">Use <code>.btn-[light|outline-light|flat-light]</code></p>
+                <div>
+                  <li-button variant="light" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="light" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="light" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Dark button</h6>
+                <p class="mb-3">Use <code>.btn-[dark|outline-dark|flat-dark]</code></p>
+                <div>
+                  <li-button variant="dark" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="dark" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="dark" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Primary button</h6>
+                <p class="mb-3">Use <code>.btn-[primary|outline-primary|flat-primary]</code></p>
+                <div>
+                  <li-button variant="primary" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="primary" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="primary" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Secondary button</h6>
+                <p class="mb-3">Use <code>.btn-[secondary|outline-secondary|flat-secondary]</code></p>
+                <div>
+                  <li-button variant="secondary" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="secondary" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="secondary" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Danger button</h6>
+                <p class="mb-3">Use <code>.btn-[danger|outline-danger|flat-danger]</code></p>
+                <div>
+                  <li-button variant="danger" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="danger" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="danger" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Success button</h6>
+                <p class="mb-3">Use <code>.btn-[success|outline-success|flat-success]</code></p>
+                <div>
+                  <li-button variant="success" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="success" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="success" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Warning button</h6>
+                <p class="mb-3">Use <code>.btn-[warning|outline-warning|flat-warning]</code></p>
+                <div>
+                  <li-button variant="warning" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="warning" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="warning" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Info button</h6>
+                <p class="mb-3">Use <code>.btn-[info|outline-info|flat-info]</code></p>
+                <div>
+                  <li-button variant="info" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="info" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="info" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Indigo button</h6>
+                <p class="mb-3">Use <code>.btn-[indigo|outline-indigo|flat-indigo]</code></p>
+                <div>
+                  <li-button variant="indigo" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="indigo" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="indigo" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
 
 
-  <!-- Flat buttons -->
-  <div class="mb-3 py-2">
-    <h6 class="mb-0">{{ t.pages.button.flatTitle }}</h6>
-    <span class="text-muted d-block">{{ t.pages.button.flatSubtitle }}</span>
-  </div>
+          <!-- Solid buttons -->
+          <div class="mb-3 py-2">
+            <h6 class="mb-0">{{ t.pages.button.solidTitle }}</h6>
+            <span class="text-muted d-block">{{ t.pages.button.solidSubtitle }}</span>
+          </div>
 
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Flat button</h6>
-        <p class="mb-3">Fundo semi-transparente.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="flat">Flat button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Flat with icon</h6>
-        <p class="mb-3">Flat com icone.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="flat" iconClass="ph-check-square-offset">With icon</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Rounded flat</h6>
-        <p class="mb-3">Flat com <code>rounded-pill</code>.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="flat" [rounded]="true">Rounded button</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Solid button</h6>
+                <p class="mb-3">Botao padrao com cor de fundo solida.</p>
+                <div>
+                  <li-button variant="primary">Default button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Solid with icon</h6>
+                <p class="mb-3">Botao com icone e texto.</p>
+                <div>
+                  <li-button variant="primary" iconClass="ph-check-square-offset">With icon</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Rounded button</h6>
+                <p class="mb-3">Botao com <code>rounded-pill</code>.</p>
+                <div>
+                  <li-button variant="primary" [rounded]="true">Rounded button</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Labeled flat</h6>
-        <p class="mb-3">Flat labeled com icone separado.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="flat" iconClass="ph-check-square-offset" labeledMode="start">Labeled</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Icon flat</h6>
-        <p class="mb-3">Somente icone no estilo flat.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="flat" iconClass="ph-link" [iconOnly]="true"></li-button>
-          <li-button variant="primary" buttonStyle="flat" iconClass="ph-link" [iconOnly]="true" [rounded]="true" buttonClass="ms-2"></li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Flat border options</h6>
-        <p class="mb-3">Bordas no estilo flat.</p>
-        <div>
-          <li-button variant="primary" buttonStyle="flat" [borderTransparent]="true" buttonClass="me-2">Transparent</li-button>
-          <li-button variant="primary" buttonStyle="flat" borderClass="border-primary" buttonClass="me-2">Default</li-button>
-          <li-button variant="primary" buttonStyle="flat" borderClass="border-primary" [borderWidth]="2">Thick</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Link buttons -->
-  <div class="mb-3 py-2">
-    <h6 class="mb-0">{{ t.pages.button.linkTitle }}</h6>
-    <span class="text-muted d-block">{{ t.pages.button.linkSubtitle }}</span>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Link button</h6>
-        <p class="mb-3">Estilo de link textual.</p>
-        <div>
-          <li-button buttonStyle="link">Link button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Link with icon</h6>
-        <p class="mb-3">Link com icone.</p>
-        <div>
-          <li-button buttonStyle="link" iconClass="ph-check-square-offset">With icon</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Labeled link</h6>
-        <p class="mb-3">Link com label de icone.</p>
-        <div>
-          <li-button buttonStyle="link" iconClass="ph-check-square-offset" labeledMode="start" labeledIconClass="bg-primary text-white rounded">Labeled</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Labeled button</h6>
+                <p class="mb-3">Icone separado com fundo mais escuro.</p>
+                <div>
+                  <li-button variant="primary" iconClass="ph-check-square-offset"
+                    labeledMode="start">Labeled</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Rounded labeled</h6>
+                <p class="mb-3">Labeled com <code>rounded-pill</code>.</p>
+                <div>
+                  <li-button variant="primary" iconClass="ph-check-square-offset" labeledMode="start"
+                    [rounded]="true">Rounded</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Icon button</h6>
+                <p class="mb-3">Somente icone com <code>btn-icon</code>.</p>
+                <div>
+                  <li-button variant="primary" iconClass="ph-link" [iconOnly]="true"></li-button>
+                  <li-button variant="primary" iconClass="ph-link" [iconOnly]="true" [rounded]="true"
+                    buttonClass="ms-2"></li-button>
+                </div>
+              </div>
+            </div>
+          </div>
 
 
-  <!-- Button sizes -->
-  <div class="mb-3 py-2">
-    <h6 class="mb-0">{{ t.pages.button.sizesTitle }}</h6>
-    <span class="text-muted d-block">{{ t.pages.button.sizesSubtitle }}</span>
-  </div>
+          <!-- Outline buttons -->
+          <div class="mb-3 py-2">
+            <h6 class="mb-0">{{ t.pages.button.outlineTitle }}</h6>
+            <span class="text-muted d-block">{{ t.pages.button.outlineSubtitle }}</span>
+          </div>
 
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Solid button sizes</h6>
-        <p class="mb-3">Large, default e small.</p>
-        <div class="mb-2">
-          <li-button variant="primary" size="lg" iconClass="ph-chats">Large button</li-button>
-        </div>
-        <div class="mb-2">
-          <li-button variant="danger" iconClass="ph-chats">Default button</li-button>
-        </div>
-        <div>
-          <li-button variant="success" size="sm" iconClass="ph-chats">Small button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Labeled button sizes</h6>
-        <p class="mb-3">Labeled em diferentes tamanhos.</p>
-        <div class="mb-2">
-          <li-button variant="primary" size="lg" iconClass="ph-map-pin" labeledMode="start">Large button</li-button>
-        </div>
-        <div class="mb-2">
-          <li-button variant="danger" iconClass="ph-map-pin" labeledMode="start">Default button</li-button>
-        </div>
-        <div>
-          <li-button variant="success" size="sm" iconClass="ph-map-pin" labeledMode="start">Small button</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Rounded button sizes</h6>
-        <p class="mb-3">Rounded em diferentes tamanhos.</p>
-        <div class="mb-2">
-          <li-button variant="primary" size="lg" [rounded]="true" iconClass="ph-at">Large button</li-button>
-        </div>
-        <div class="mb-2">
-          <li-button variant="danger" [rounded]="true" iconClass="ph-at">Default button</li-button>
-        </div>
-        <div>
-          <li-button variant="success" size="sm" [rounded]="true" iconClass="ph-at">Small button</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Outline button</h6>
+                <p class="mb-3">Fundo transparente no estado padrao.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="outline">Default button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Outline with icon</h6>
+                <p class="mb-3">Outline com icone.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="outline" iconClass="ph-check-square-offset">With
+                    icon</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Rounded outline</h6>
+                <p class="mb-3">Outline com <code>rounded-pill</code>.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="outline" [rounded]="true">Default button</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-
-  <!-- Icon alignment -->
-  <div class="mb-3 py-2">
-    <h6 class="mb-0">{{ t.pages.button.alignTitle }}</h6>
-    <span class="text-muted d-block">{{ t.pages.button.alignSubtitle }}</span>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Left icon alignment</h6>
-        <p class="mb-3">Icone antes do texto.</p>
-        <div>
-          <li-button variant="primary" iconClass="ph-lock">Left alignment</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Right icon alignment</h6>
-        <p class="mb-3">Icone depois do texto.</p>
-        <div>
-          <li-button variant="primary" iconClass="ph-lock" iconPosition="end">Right alignment</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Label positions</h6>
-        <p class="mb-3">Labeled start e end.</p>
-        <div>
-          <li-button variant="primary" iconClass="ph-lock" labeledMode="start" buttonClass="me-2">Left</li-button>
-          <li-button variant="primary" iconClass="ph-lock" labeledMode="end">Right</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Labeled outline</h6>
+                <p class="mb-3">Outline labeled com icone separado.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="outline" iconClass="ph-check-square-offset"
+                    labeledMode="start">Default button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Icon outline</h6>
+                <p class="mb-3">Somente icone no estilo outline.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="outline" iconClass="ph-link" [iconOnly]="true"></li-button>
+                  <li-button variant="primary" buttonStyle="outline" iconClass="ph-link" [iconOnly]="true"
+                    [rounded]="true" buttonClass="ms-2"></li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Border options</h6>
+                <p class="mb-3">Borda transparente, padrao e grossa.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="outline" [borderTransparent]="true"
+                    buttonClass="me-2">Transparent</li-button>
+                  <li-button variant="primary" buttonStyle="outline" buttonClass="me-2">Default</li-button>
+                  <li-button variant="primary" buttonStyle="outline" [borderWidth]="2">Thick</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
 
 
-  <!-- Disabled -->
-  <div class="mb-3 py-2">
-    <h6 class="mb-0">{{ t.pages.button.disabledTitle }}</h6>
-    <span class="text-muted d-block">{{ t.pages.button.disabledSubtitle }}</span>
-  </div>
+          <!-- Flat buttons -->
+          <div class="mb-3 py-2">
+            <h6 class="mb-0">{{ t.pages.button.flatTitle }}</h6>
+            <span class="text-muted d-block">{{ t.pages.button.flatSubtitle }}</span>
+          </div>
 
-  <div class="row">
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Disabled solid</h6>
-        <div>
-          <li-button variant="primary" [disabled]="true">Disabled</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Disabled outline</h6>
-        <div>
-          <li-button variant="primary" buttonStyle="outline" [disabled]="true">Disabled</li-button>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="card card-body">
-        <h6 class="fw-semibold">Disabled flat</h6>
-        <div>
-          <li-button variant="primary" buttonStyle="flat" [disabled]="true">Disabled</li-button>
-        </div>
-      </div>
-    </div>
-  </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Flat button</h6>
+                <p class="mb-3">Fundo semi-transparente.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="flat">Flat button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Flat with icon</h6>
+                <p class="mb-3">Flat com icone.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="flat" iconClass="ph-check-square-offset">With
+                    icon</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Rounded flat</h6>
+                <p class="mb-3">Flat com <code>rounded-pill</code>.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="flat" [rounded]="true">Rounded button</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Labeled flat</h6>
+                <p class="mb-3">Flat labeled com icone separado.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="flat" iconClass="ph-check-square-offset"
+                    labeledMode="start">Labeled</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Icon flat</h6>
+                <p class="mb-3">Somente icone no estilo flat.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="flat" iconClass="ph-link" [iconOnly]="true"></li-button>
+                  <li-button variant="primary" buttonStyle="flat" iconClass="ph-link" [iconOnly]="true" [rounded]="true"
+                    buttonClass="ms-2"></li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Flat border options</h6>
+                <p class="mb-3">Bordas no estilo flat.</p>
+                <div>
+                  <li-button variant="primary" buttonStyle="flat" [borderTransparent]="true"
+                    buttonClass="me-2">Transparent</li-button>
+                  <li-button variant="primary" buttonStyle="flat" borderClass="border-primary"
+                    buttonClass="me-2">Default</li-button>
+                  <li-button variant="primary" buttonStyle="flat" borderClass="border-primary"
+                    [borderWidth]="2">Thick</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Link buttons -->
+          <div class="mb-3 py-2">
+            <h6 class="mb-0">{{ t.pages.button.linkTitle }}</h6>
+            <span class="text-muted d-block">{{ t.pages.button.linkSubtitle }}</span>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Link button</h6>
+                <p class="mb-3">Estilo de link textual.</p>
+                <div>
+                  <li-button buttonStyle="link">Link button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Link with icon</h6>
+                <p class="mb-3">Link com icone.</p>
+                <div>
+                  <li-button buttonStyle="link" iconClass="ph-check-square-offset">With icon</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Labeled link</h6>
+                <p class="mb-3">Link com label de icone.</p>
+                <div>
+                  <li-button buttonStyle="link" iconClass="ph-check-square-offset" labeledMode="start"
+                    labeledIconClass="bg-primary text-white rounded">Labeled</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Button sizes -->
+          <div class="mb-3 py-2">
+            <h6 class="mb-0">{{ t.pages.button.sizesTitle }}</h6>
+            <span class="text-muted d-block">{{ t.pages.button.sizesSubtitle }}</span>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Solid button sizes</h6>
+                <p class="mb-3">Large, default e small.</p>
+                <div class="mb-2">
+                  <li-button variant="primary" size="lg" iconClass="ph-chats">Large button</li-button>
+                </div>
+                <div class="mb-2">
+                  <li-button variant="danger" iconClass="ph-chats">Default button</li-button>
+                </div>
+                <div>
+                  <li-button variant="success" size="sm" iconClass="ph-chats">Small button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Labeled button sizes</h6>
+                <p class="mb-3">Labeled em diferentes tamanhos.</p>
+                <div class="mb-2">
+                  <li-button variant="primary" size="lg" iconClass="ph-map-pin" labeledMode="start">Large
+                    button</li-button>
+                </div>
+                <div class="mb-2">
+                  <li-button variant="danger" iconClass="ph-map-pin" labeledMode="start">Default button</li-button>
+                </div>
+                <div>
+                  <li-button variant="success" size="sm" iconClass="ph-map-pin" labeledMode="start">Small
+                    button</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Rounded button sizes</h6>
+                <p class="mb-3">Rounded em diferentes tamanhos.</p>
+                <div class="mb-2">
+                  <li-button variant="primary" size="lg" [rounded]="true" iconClass="ph-at">Large button</li-button>
+                </div>
+                <div class="mb-2">
+                  <li-button variant="danger" [rounded]="true" iconClass="ph-at">Default button</li-button>
+                </div>
+                <div>
+                  <li-button variant="success" size="sm" [rounded]="true" iconClass="ph-at">Small button</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Icon alignment -->
+          <div class="mb-3 py-2">
+            <h6 class="mb-0">{{ t.pages.button.alignTitle }}</h6>
+            <span class="text-muted d-block">{{ t.pages.button.alignSubtitle }}</span>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Left icon alignment</h6>
+                <p class="mb-3">Icone antes do texto.</p>
+                <div>
+                  <li-button variant="primary" iconClass="ph-lock">Left alignment</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Right icon alignment</h6>
+                <p class="mb-3">Icone depois do texto.</p>
+                <div>
+                  <li-button variant="primary" iconClass="ph-lock" iconPosition="end">Right alignment</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Label positions</h6>
+                <p class="mb-3">Labeled start e end.</p>
+                <div>
+                  <li-button variant="primary" iconClass="ph-lock" labeledMode="start"
+                    buttonClass="me-2">Left</li-button>
+                  <li-button variant="primary" iconClass="ph-lock" labeledMode="end">Right</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Disabled -->
+          <div class="mb-3 py-2">
+            <h6 class="mb-0">{{ t.pages.button.disabledTitle }}</h6>
+            <span class="text-muted d-block">{{ t.pages.button.disabledSubtitle }}</span>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Disabled solid</h6>
+                <div>
+                  <li-button variant="primary" [disabled]="true">Disabled</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Disabled outline</h6>
+                <div>
+                  <li-button variant="primary" buttonStyle="outline" [disabled]="true">Disabled</li-button>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card card-body">
+                <h6 class="fw-semibold">Disabled flat</h6>
+                <div>
+                  <li-button variant="primary" buttonStyle="flat" [disabled]="true">Disabled</li-button>
+                </div>
+              </div>
+            </div>
+          </div>
 
         </div>
       </li-tabx>

@@ -2,7 +2,8 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ t.pages.helpers.title }} <span class="fw-normal">{{ t.pages.helpers.subtitle }}</span></h4>
+        <h4 class="page-title mb-0">{{ t.pages.helpers.title }} <span class="fw-normal">{{ t.pages.helpers.subtitle
+            }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
@@ -14,17 +15,13 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">{{ t.pages.helpers.title }} {{ t.pages.helpers.subtitle }}</h5>
-      </div>
+
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-0">Helpers cobrem overlays, diálogos, popovers e notificações rápidas reutilizáveis no app administrativo.</p>
-          </div>
-        </li-tabx>
-        <li-tabx header="Exemplos">
-          <div class="card-body">
+            <p class="text-muted mb-0">Helpers cobrem overlays, diálogos, popovers e notificações rápidas reutilizáveis
+              no app administrativo.</p>
+         
             <div class="row">
               <div class="col-xl-6">
                 <div class="card">
@@ -53,14 +50,22 @@
                   </div>
                   <div class="card-body">
                     <div class="demo-action-grid">
-                      <button class="btn btn-primary" type="button" (click)="showDialogAlert()">{{ t.pages.helpers.dialogAlert }}</button>
-                      <button class="btn btn-outline-primary" type="button" (click)="showDialogConfirm()">{{ t.pages.helpers.dialogConfirm }}</button>
-                      <button #simplePopoverButton class="btn btn-light" type="button" (click)="showSimplePopover(simplePopoverButton)">{{ t.pages.helpers.simplePopover }}</button>
-                      <button #sweetPopoverButton class="btn btn-light" type="button" (click)="showSweetPopover(sweetPopoverButton)">{{ t.pages.helpers.sweetPopover }}</button>
-                      <button class="btn btn-success" type="button" (click)="showSimpleSuccessToast()">{{ t.pages.helpers.simpleSuccessToast }}</button>
-                      <button class="btn btn-warning" type="button" (click)="showSimpleWarningToast()">{{ t.pages.helpers.simpleWarningToast }}</button>
-                      <button class="btn btn-outline-success" type="button" (click)="showSweetSuccessToast()">{{ t.pages.helpers.sweetSuccessToast }}</button>
-                      <button class="btn btn-outline-warning" type="button" (click)="showSweetWarningToast()">{{ t.pages.helpers.sweetWarningToast }}</button>
+                      <button class="btn btn-primary" type="button" (click)="showDialogAlert()">{{
+                        t.pages.helpers.dialogAlert }}</button>
+                      <button class="btn btn-outline-primary" type="button" (click)="showDialogConfirm()">{{
+                        t.pages.helpers.dialogConfirm }}</button>
+                      <button #simplePopoverButton class="btn btn-light" type="button"
+                        (click)="showSimplePopover(simplePopoverButton)">{{ t.pages.helpers.simplePopover }}</button>
+                      <button #sweetPopoverButton class="btn btn-light" type="button"
+                        (click)="showSweetPopover(sweetPopoverButton)">{{ t.pages.helpers.sweetPopover }}</button>
+                      <button class="btn btn-success" type="button" (click)="showSimpleSuccessToast()">{{
+                        t.pages.helpers.simpleSuccessToast }}</button>
+                      <button class="btn btn-warning" type="button" (click)="showSimpleWarningToast()">{{
+                        t.pages.helpers.simpleWarningToast }}</button>
+                      <button class="btn btn-outline-success" type="button" (click)="showSweetSuccessToast()">{{
+                        t.pages.helpers.sweetSuccessToast }}</button>
+                      <button class="btn btn-outline-warning" type="button" (click)="showSweetWarningToast()">{{
+                        t.pages.helpers.sweetWarningToast }}</button>
                     </div>
                   </div>
                 </div>

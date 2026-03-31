@@ -16,9 +16,7 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">Toast component</h5>
-      </div>
+
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
@@ -35,14 +33,13 @@
                       <h6 class="mb-1">Toast declarativo básico</h6>
                       <p class="mb-0 text-muted">Header, body e dismiss button controlados pelo componente.</p>
                     </div>
-                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="reopenManualToast()">Reabrir</button>
+                    <button class="btn btn-sm btn-outline-primary" type="button"
+                      (click)="reopenManualToast()">Reabrir</button>
                   </div>
 
-                  <li-toast #manualToast
-                      header="Hello"
-                      body="I am a declarative toast that can be shown again via ViewChild."
-                      helperText="inline"
-                      [autohide]="false">
+                  <li-toast #manualToast header="Hello"
+                    body="I am a declarative toast that can be shown again via ViewChild." helperText="inline"
+                    [autohide]="false">
                   </li-toast>
                 </div>
               </div>
@@ -52,17 +49,15 @@
                   <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                     <div>
                       <h6 class="mb-1">Rounded toast</h6>
-                      <p class="mb-0 text-muted">A variação pill funciona melhor em mensagens curtas, compactas e sem muito chrome visual.</p>
+                      <p class="mb-0 text-muted">A variação pill funciona melhor em mensagens curtas, compactas e sem
+                        muito chrome visual.</p>
                     </div>
-                    <button class="btn btn-sm btn-outline-primary" type="button" (click)="reopenRoundedToast()">Reabrir</button>
+                    <button class="btn btn-sm btn-outline-primary" type="button"
+                      (click)="reopenRoundedToast()">Reabrir</button>
                   </div>
 
-                  <li-toast #roundedToast
-                      body="Saved successfully"
-                      toastClass="toast-demo-pill"
-                      bodyClass="toast-demo-pill__body"
-                      [rounded]="true"
-                      [autohide]="false">
+                  <li-toast #roundedToast body="Saved successfully" toastClass="toast-demo-pill"
+                    bodyClass="toast-demo-pill__body" [rounded]="true" [autohide]="false">
                   </li-toast>
                 </div>
               </div>
@@ -72,13 +67,9 @@
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-3">Custom header background</h6>
-                  <li-toast
-                      header="Toast header"
-                      body="A contextual toast with colored header and close button."
-                      iconClass="ph-check-circle"
-                      toastClass="border-success"
-                      headerClass="bg-success text-white border-success"
-                      [autohide]="false">
+                  <li-toast header="Toast header" body="A contextual toast with colored header and close button."
+                    iconClass="ph-check-circle" toastClass="border-success"
+                    headerClass="bg-success text-white border-success" [autohide]="false">
                   </li-toast>
                 </div>
               </div>
@@ -86,10 +77,7 @@
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-3">Custom markup with action panel</h6>
-                  <li-toast
-                      header="Toast header"
-                      helperText="1 hour ago"
-                      [autohide]="false">
+                  <li-toast header="Toast header" helperText="1 hour ago" [autohide]="false">
                     <div class="toast-body">
                       Hello, world! This toast uses projected markup for a second action row.
                     </div>
@@ -117,9 +105,11 @@
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Como utilizar</h6>
                   <ul class="mb-0 ps-3">
-                    <li><code>li-toast</code> renderiza o markup do toast e expõe <code>show()</code>, <code>hide()</code> e <code>isOpen</code>.</li>
+                    <li><code>li-toast</code> renderiza o markup do toast e expõe <code>show()</code>,
+                      <code>hide()</code> e <code>isOpen</code>.</li>
                     <li><code>li-toast-stack</code> posiciona notificações globais no canto da tela.</li>
-                    <li><code>LiToastService</code> mantém a coleção para casos disparados de qualquer ponto da aplicação.</li>
+                    <li><code>LiToastService</code> mantém a coleção para casos disparados de qualquer ponto da
+                      aplicação.</li>
                   </ul>
                 </div>
               </div>
@@ -128,8 +118,10 @@
                   <h6 class="mb-2">Entradas principais</h6>
                   <ul class="mb-0 ps-3">
                     <li><code>header</code>, <code>body</code>, <code>helperText</code> e <code>badgeText</code>.</li>
-                    <li><code>toastClass</code>, <code>headerClass</code> e <code>bodyClass</code> para contextualização visual.</li>
-                    <li><code>autohide</code>, <code>delay</code>, <code>animation</code>, <code>dismissible</code> e <code>pauseOnHover</code>.</li>
+                    <li><code>toastClass</code>, <code>headerClass</code> e <code>bodyClass</code> para contextualização
+                      visual.</li>
+                    <li><code>autohide</code>, <code>delay</code>, <code>animation</code>, <code>dismissible</code> e
+                      <code>pauseOnHover</code>.</li>
                     <li><code>rounded</code> para o estilo pill do Limitless.</li>
                   </ul>
                 </div>
@@ -147,7 +139,8 @@ toastService.show(
   delay: 3500,
 );</code></pre>
 
-            <div class="demo-summary-box mt-3">{{ lastAction.isEmpty ? 'Toast: aguardando interação' : lastAction }}</div>
+            <div class="demo-summary-box mt-3">{{ lastAction.isEmpty ? 'Toast: aguardando interação' : lastAction }}
+            </div>
           </div>
         </li-tabx>
       </li-tabsx>

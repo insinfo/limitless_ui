@@ -1,0 +1,99 @@
+.li-offcanvas-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    pointer-events: none;
+}
+
+.li-offcanvas-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    opacity: 0;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+    z-index: 1199;
+}
+
+.li-offcanvas-backdrop.show {
+    opacity: 1;
+}
+
+.offcanvas {
+    z-index: 1201;
+    display: block;
+    pointer-events: auto;
+}
+
+.offcanvas.li-offcanvas-no-animation,
+.offcanvas.li-offcanvas-no-animation + .li-offcanvas-backdrop,
+.li-offcanvas-no-animation {
+    transition: none !important;
+}
+
+.li-offcanvas-no-backdrop .offcanvas {
+    pointer-events: auto;
+}
+
+.offcanvas-header .btn-close {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    padding: 0.625rem;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[liOffcanvasFooter] {
+    display: block;
+}
+
+.li-offcanvas-size-sm.offcanvas-start,
+.li-offcanvas-size-sm.offcanvas-end {
+    --bs-offcanvas-width: 20rem;
+}
+
+.li-offcanvas-size-lg.offcanvas-start,
+.li-offcanvas-size-lg.offcanvas-end {
+    --bs-offcanvas-width: 34rem;
+}
+
+.li-offcanvas-size-xl.offcanvas-start,
+.li-offcanvas-size-xl.offcanvas-end {
+    --bs-offcanvas-width: 42rem;
+}
+
+.li-offcanvas-size-full.offcanvas-start,
+.li-offcanvas-size-full.offcanvas-end {
+    --bs-offcanvas-width: min(100vw, 52rem);
+}
+
+.li-offcanvas-size-sm.offcanvas-top,
+.li-offcanvas-size-sm.offcanvas-bottom {
+    --bs-offcanvas-height: 12rem;
+}
+
+.li-offcanvas-size-lg.offcanvas-top,
+.li-offcanvas-size-lg.offcanvas-bottom {
+    --bs-offcanvas-height: 24rem;
+}
+
+.li-offcanvas-size-xl.offcanvas-top,
+.li-offcanvas-size-xl.offcanvas-bottom {
+    --bs-offcanvas-height: 30rem;
+}
+
+.li-offcanvas-size-full.offcanvas-top,
+.li-offcanvas-size-full.offcanvas-bottom {
+    --bs-offcanvas-height: min(100vh, 36rem);
+}
+
+@media (max-width: 767.98px) {
+    .offcanvas-header .btn-close {
+        min-width: 2.75rem;
+        min-height: 2.75rem;
+        padding: 0.625rem;
+        margin: -0.375rem -0.375rem -0.375rem auto;
+    }
+}

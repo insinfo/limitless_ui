@@ -1,0 +1,12 @@
+.offcanvas-top-banner {
+  --bs-offcanvas-height: auto;
+}
+
+.offcanvas-bottom-sheet {
+  --bs-offcanvas-height: 18rem;
+}
+
+.service-demo-stack {
+  display: grid;
+  gap: 1rem;
+}

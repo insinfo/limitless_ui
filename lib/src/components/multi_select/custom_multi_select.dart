@@ -272,12 +272,12 @@ class LiMultiSelectComponent
   }
 
   void onLiClickHandle(dynamic event, CustomMultiSelectItem value) {
-    // currentValue = value;
-    // closeDropdown();
-    // _changeController.add(currentValue?.value);
-    // if (_callback != null) {
-    //   _callback!(currentValue?.value);
-    // }
+    if (isDisabled) {
+      return;
+    }
+
+    event.preventDefault();
+    _toggleOptionSelection(value);
   }
 
   void onCheckboxClickHandle(dynamic event, CustomMultiSelectItem option) {
@@ -286,14 +286,7 @@ class LiMultiSelectComponent
     }
 
     event.stopPropagation();
-    option.selected = !option.selected;
-
-    _changeController.add(selectedValues);
-    if (_callback != null) {
-      _callback!(selectedValues);
-    }
-    _markForCheck();
-    _scheduleOverlayUpdate();
+    _toggleOptionSelection(option);
   }
 
   void toggleDropdown() {
@@ -321,6 +314,17 @@ class LiMultiSelectComponent
     for (final element in options) {
       element.selected = false;
     }
+    _changeController.add(selectedValues);
+    if (_callback != null) {
+      _callback!(selectedValues);
+    }
+    _markForCheck();
+    _scheduleOverlayUpdate();
+  }
+
+  void _toggleOptionSelection(CustomMultiSelectItem option) {
+    option.selected = !option.selected;
+
     _changeController.add(selectedValues);
     if (_callback != null) {
       _callback!(selectedValues);

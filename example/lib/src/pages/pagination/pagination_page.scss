@@ -1,0 +1,15 @@
+.pagination-demo-meta {
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: 0.875rem;
+}
+
+.pagination-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+}
+
+.pagination-chip-active {
+  font-weight: 600;
+}

@@ -1,0 +1,36 @@
+<div *ngIf="isRendered"
+     class="li-offcanvas-shell"
+     [class.li-offcanvas-open]="isOpen"
+     [class.li-offcanvas-has-backdrop]="enableBackdrop"
+     [class.li-offcanvas-no-backdrop]="!enableBackdrop">
+  <div *ngIf="enableBackdrop"
+       [class]="backdropClasses"
+       (mousedown)="onBackdropMouseDown($event)"></div>
+
+  <div #panel
+       [class]="panelClasses"
+       tabindex="-1"
+       role="dialog"
+       aria-modal="true"
+       [attr.aria-labelledby]="ariaLabelledBy"
+       [attr.aria-describedby]="ariaDescribedBy"
+       (mousedown)="stopPropagation($event)">
+    <ng-content select="[liOffcanvasHeader]"></ng-content>
+
+    <div *ngIf="!hasCustomHeader && enableHeader" [class]="defaultHeaderClasses">
+      <h5 class="offcanvas-title fw-semibold">{{ titleText }}</h5>
+      <button *ngIf="enableCloseBtn"
+              type="button"
+              class="btn-close"
+              (click)="close()"></button>
+    </div>
+
+    <div [class]="defaultBodyClasses">
+      <ng-container *ngIf="shouldRenderContent">
+        <ng-content></ng-content>
+      </ng-container>
+    </div>
+
+    <ng-content select="[liOffcanvasFooter]"></ng-content>
+  </div>
+</div>

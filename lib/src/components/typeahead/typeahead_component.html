@@ -1,0 +1,52 @@
+<div class="li-typeahead" [class.open]="popupOpen">
+  <input
+      #inputElement
+      type="text"
+      class="form-control"
+      [disabled]="isDisabled"
+      [placeholder]="placeholder"
+      [attr.autocomplete]="autocomplete"
+      role="combobox"
+      aria-haspopup="listbox"
+      [attr.aria-expanded]="popupOpen.toString()"
+      [attr.aria-controls]="popupOpen ? popupId : null"
+      [attr.aria-activedescendant]="activeDescendantId"
+      (focus)="handleFocus()"
+      (blur)="handleBlur()"
+      (input)="handleInput(inputElement.value)"
+      (keydown)="handleKeydown($event)">
+
+  <div
+      #popupElement
+      [class]="popupClass == null || popupClass!.isEmpty ? (popupOpen ? 'dropdown-menu li-typeahead__popup show' : 'dropdown-menu li-typeahead__popup') : (popupOpen ? 'dropdown-menu li-typeahead__popup show ' + popupClass! : 'dropdown-menu li-typeahead__popup ' + popupClass!)"
+      [attr.id]="popupId"
+      role="listbox"
+      (mousedown)="preventPopupBlur($event)">
+    <div #resultsList class="li-typeahead__results">
+      <div *ngIf="hasStatusRow" class="li-typeahead__status">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+        <span>{{ statusText }}</span>
+      </div>
+
+      <button
+          *ngFor="let item of visibleItems; let idx = index"
+          type="button"
+          class="dropdown-item li-typeahead__item"
+          role="option"
+          [attr.id]="optionId(idx)"
+          [class.active]="idx == activeIndex"
+          [attr.aria-selected]="(idx == activeIndex).toString()"
+          (mouseenter)="markActive(idx)"
+          (click)="select(item)">
+        <span *ngIf="resultMarkupBuilder != null" [safeInnerHtml]="renderResultMarkup(item)"></span>
+        <li-typeahead-highlight
+            *ngIf="resultMarkupBuilder == null"
+            [result]="renderResultLabel(item)"
+            [term]="searchTerm"
+            [highlightClass]="highlightClass"
+            [accentSensitive]="highlightAccentSensitive">
+        </li-typeahead-highlight>
+      </button>
+    </div>
+  </div>
+</div>

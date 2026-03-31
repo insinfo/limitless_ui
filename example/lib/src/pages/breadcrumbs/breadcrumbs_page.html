@@ -1,0 +1,95 @@
+<div class="page-header page-header-light shadow-sm rounded-0 border">
+  <div class="page-header-content d-lg-flex">
+    <div class="d-flex">
+      <h4 class="page-title mb-0">Navigation <span class="fw-normal">Breadcrumbs</span></h4>
+    </div>
+  </div>
+  <div class="page-header-content d-lg-flex border-top">
+    <div class="breadcrumb py-2">
+      <span class="breadcrumb-item active">Hierarquia contextual e trilhas de navegação</span>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="card">
+    <li-tabsx type="tabs">
+      <li-tabx header="Visão geral" [active]="true">
+        <div class="card-body">
+          <p class="text-muted mb-4">
+            <code>li-breadcrumb</code> organiza trilhas de navegação com divisores, helper text e slots laterais para ações rápidas ou contexto adicional.
+          </p>
+
+          <div class="row g-3">
+            <div class="col-xl-6">
+              <div class="card card-body h-100 mb-0">
+                <h6 class="mb-2">Básico</h6>
+                <p class="text-muted mb-3">Caminho enxuto para páginas internas, mantendo o último item como contexto atual.</p>
+
+                <li-breadcrumb>
+                  <ng-container *ngFor="let item of accountTrail">
+                    <a *ngIf="!item.active" liBreadcrumbItem [attr.href]="item.href">{{ item.label }}</a>
+                    <span *ngIf="item.active" liBreadcrumbItem [active]="true">{{ item.label }}</span>
+                  </ng-container>
+                </li-breadcrumb>
+              </div>
+            </div>
+
+            <div class="col-xl-6">
+              <div class="card card-body h-100 mb-0">
+                <h6 class="mb-2">Helper text e ações</h6>
+                <p class="text-muted mb-3">O slot inicial segura metadados; o slot final encaixa atalhos ou ações sem quebrar a linha principal.</p>
+
+                <li-breadcrumb divider="dash" helperText="Library" breadcrumbClass="breadcrumb-demo-surface">
+                  <span liBreadcrumbStart class="badge bg-primary-subtle text-primary">v2.0</span>
+
+                  <ng-container *ngFor="let item of catalogTrail">
+                    <a *ngIf="!item.active" liBreadcrumbItem [attr.href]="item.href">{{ item.label }}</a>
+                    <span *ngIf="item.active" liBreadcrumbItem [active]="true">{{ item.label }}</span>
+                  </ng-container>
+
+                  <div liBreadcrumbEnd class="breadcrumb-demo-actions">
+                    <button type="button" class="btn btn-sm btn-light">Duplicate</button>
+                    <button type="button" class="btn btn-sm btn-primary">Publish</button>
+                  </div>
+                </li-breadcrumb>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card card-body mb-0">
+                <h6 class="mb-2">Estados ativos e bloqueados</h6>
+                <p class="text-muted mb-3">Itens desabilitados continuam visíveis na trilha, mas sem semântica de interação.</p>
+
+                <li-breadcrumb divider="arrows" [wrap]="false" lineClass="overflow-auto" breadcrumbClass="text-nowrap">
+                  <ng-container *ngFor="let item of checkoutTrail">
+                    <a *ngIf="!item.active && !item.disabled" liBreadcrumbItem [attr.href]="item.href">{{ item.label }}</a>
+                    <button *ngIf="item.disabled" type="button" liBreadcrumbItem [disabled]="true">{{ item.label }}</button>
+                    <span *ngIf="item.active" liBreadcrumbItem [active]="true">{{ item.label }}</span>
+                  </ng-container>
+                </li-breadcrumb>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li-tabx>
+
+      <li-tabx header="API">
+        <div class="card-body">
+          <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-breadcrumb divider="dash" helperText="Library"&gt;
+  &lt;span liBreadcrumbStart class="badge bg-primary-subtle text-primary"&gt;v2.0&lt;/span&gt;
+
+  &lt;a liBreadcrumbItem href="#library"&gt;Library&lt;/a&gt;
+  &lt;a liBreadcrumbItem href="#components"&gt;Components&lt;/a&gt;
+  &lt;span liBreadcrumbItem [active]="true"&gt;Breadcrumbs&lt;/span&gt;
+
+  &lt;div liBreadcrumbEnd class="d-flex gap-2"&gt;
+    &lt;button class="btn btn-sm btn-light"&gt;Duplicate&lt;/button&gt;
+    &lt;button class="btn btn-sm btn-primary"&gt;Publish&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/li-breadcrumb&gt;</code></pre>
+        </div>
+      </li-tabx>
+    </li-tabsx>
+  </div>
+</div>

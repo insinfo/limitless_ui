@@ -18,7 +18,8 @@
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-3">
-              O dropdown declarativo cobre abertura controlada, fechamento interno ou externo, navegação por setas, <code>Home</code>,
+              O dropdown declarativo cobre abertura controlada, fechamento interno ou externo, navegação por setas,
+              <code>Home</code>,
               <code>End</code> e suporte a <code>container="body"</code>.
             </p>
 
@@ -27,7 +28,8 @@
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Descrição</h6>
                   <p class="mb-0 text-muted">
-                    Use <code>liDropdown</code> no host, <code>liDropdownToggle</code> no gatilho, <code>liDropdownMenu</code> no menu e
+                    Use <code>liDropdown</code> no host, <code>liDropdownToggle</code> no gatilho,
+                    <code>liDropdownMenu</code> no menu e
                     <code>liDropdownItem</code> nos itens focáveis.
                   </p>
                 </div>
@@ -37,7 +39,8 @@
                   <h6 class="mb-2">Recursos</h6>
                   <ul class="mb-0 ps-3">
                     <li><code>open()</code>, <code>close()</code> e <code>toggle()</code> via API.</li>
-                    <li><code>autoClose</code> com modos <code>true</code>, <code>false</code>, <code>inside</code> e <code>outside</code>.</li>
+                    <li><code>autoClose</code> com modos <code>true</code>, <code>false</code>, <code>inside</code> e
+                      <code>outside</code>.</li>
                     <li>Posicionamento com Popper e fallback para navbar estática.</li>
                   </ul>
                 </div>
@@ -75,11 +78,13 @@
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Manual and custom triggers</h6>
-                  <p class="text-muted mb-3">A âncora visual pode ser separada do fluxo de toggle quando você quer controlar a abertura por API.</p>
+                  <p class="text-muted mb-3">A âncora visual pode ser separada do fluxo de toggle quando você quer
+                    controlar a abertura por API.</p>
 
                   <div liDropdown #manualDrop="liDropdown" [autoClose]="false">
                     <button class="btn btn-outline-secondary" liDropdownAnchor>Anchor only</button>
-                    <button class="btn btn-outline-primary ms-2" type="button" (click)="manualDrop.toggle()">Toggle by API</button>
+                    <button class="btn btn-outline-primary ms-2" type="button" (click)="manualDrop.toggle()">Toggle by
+                      API</button>
                     <div liDropdownMenu>
                       <button liDropdownItem (click)="manualDrop.close()">Close from item</button>
                       <button liDropdownItem>Persistent menu</button>
@@ -91,7 +96,8 @@
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">autoClose inside</h6>
-                  <p class="text-muted mb-3">O menu abaixo ignora clique externo e só fecha quando o clique acontece dentro do próprio menu.</p>
+                  <p class="text-muted mb-3">O menu abaixo ignora clique externo e só fecha quando o clique acontece
+                    dentro do próprio menu.</p>
 
                   <div liDropdown autoClose="inside">
                     <button class="btn btn-outline-dark" liDropdownToggle>Inside close</button>
@@ -106,7 +112,8 @@
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Container body</h6>
-                  <p class="text-muted mb-3">Quando existe clipping local, o menu pode ser anexado diretamente ao <code>body</code>.</p>
+                  <p class="text-muted mb-3">Quando existe clipping local, o menu pode ser anexado diretamente ao
+                    <code>body</code>.</p>
 
                   <div class="overflow-hidden rounded-4 border bg-light p-3">
                     <div liDropdown container="body">
@@ -123,7 +130,8 @@
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Dropup</h6>
-                  <p class="text-muted mb-3">A primeira placement começando por <code>top</code> troca a classe do host para <code>dropup</code>.</p>
+                  <p class="text-muted mb-3">A primeira placement começando por <code>top</code> troca a classe do host
+                    para <code>dropup</code>.</p>
 
                   <div liDropdown placement="top-start top-end">
                     <button class="btn btn-outline-teal" liDropdownToggle>Dropup menu</button>
@@ -138,7 +146,8 @@
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Static display in navbar</h6>
-                  <p class="text-muted mb-3">Dentro de navbar, o display padrão vira estático para preservar o comportamento responsivo.</p>
+                  <p class="text-muted mb-3">Dentro de navbar, o display padrão vira estático para preservar o
+                    comportamento responsivo.</p>
 
                   <nav class="navbar navbar-light bg-light border rounded-3 px-3 py-2">
                     <div liDropdown class="nav-item">

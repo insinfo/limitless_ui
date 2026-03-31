@@ -2,7 +2,8 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ t.pages.multiSelect.title }} <span class="fw-normal">{{ t.pages.multiSelect.subtitle }}</span></h4>
+        <h4 class="page-title mb-0">{{ t.pages.multiSelect.title }} <span class="fw-normal">{{
+            t.pages.multiSelect.subtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
@@ -14,19 +15,19 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">{{ t.pages.multiSelect.cardTitle }}</h5>
-      </div>
+
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">A demo de multiseleção mostra seleção múltipla com <code>dataSource</code> estável, projeção manual e documentação organizada entre visão geral e API.</p>
+            <p class="text-muted mb-3">A demo de multiseleção mostra seleção múltipla com <code>dataSource</code>
+              estável, projeção manual e documentação organizada entre visão geral e API.</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">O componente mantém uma coleção de valores selecionados e projeta o resultado diretamente no trigger.</p>
+                  <p class="mb-0 text-muted">O componente mantém uma coleção de valores selecionados e projeta o
+                    resultado diretamente no trigger.</p>
                 </div>
               </div>
               <div class="col-lg-4">
@@ -53,11 +54,8 @@
 
             <div class="mb-4">
               <label class="form-label fw-semibold">{{ t.pages.multiSelect.channels }}</label>
-              <li-multi-select
-                  [dataSource]="channelOptions"
-                  labelKey="label"
-                  valueKey="id"
-                  [(ngModel)]="selectedChannels">
+              <li-multi-select [dataSource]="channelOptions" labelKey="label" valueKey="id"
+                [(ngModel)]="selectedChannels">
               </li-multi-select>
             </div>
 

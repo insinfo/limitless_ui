@@ -240,10 +240,8 @@ class DatatablePageComponent implements OnInit {
 
   Future<void> onReadonlyDemoExpanded(bool expanded) async {
     if (expanded) {
-      showReadonlyDemo = true;
-      _flushView();
-      await Future<void>.delayed(Duration.zero);
       await _loadReadonlyTable();
+      showReadonlyDemo = true;
       _flushView();
       return;
     }
@@ -254,10 +252,8 @@ class DatatablePageComponent implements OnInit {
 
   Future<void> onGridPreviewDemoExpanded(bool expanded) async {
     if (expanded) {
-      showGridPreviewDemo = true;
-      _flushView();
-      await Future<void>.delayed(Duration.zero);
       await _loadGridPreviewTable();
+      showGridPreviewDemo = true;
       _flushView();
       return;
     }
@@ -268,10 +264,8 @@ class DatatablePageComponent implements OnInit {
 
   Future<void> onCustomTableDemoExpanded(bool expanded) async {
     if (expanded) {
-      showCustomTableDemo = true;
-      _flushView();
-      await Future<void>.delayed(Duration.zero);
       await _loadCustomTable();
+      showCustomTableDemo = true;
       _flushView();
       return;
     }
@@ -282,10 +276,8 @@ class DatatablePageComponent implements OnInit {
 
   Future<void> onCustomGridDemoExpanded(bool expanded) async {
     if (expanded) {
-      showCustomGridDemo = true;
-      _flushView();
-      await Future<void>.delayed(Duration.zero);
       await _loadCustomGrid();
+      showCustomGridDemo = true;
       _flushView();
       return;
     }
@@ -343,7 +335,8 @@ class DatatablePageComponent implements OnInit {
   }
 
   Future<void> _loadGridPreviewTable() async {
-    gridPreviewTableData = await _datatableDemoService.query(gridPreviewFilters);
+    gridPreviewTableData =
+        await _datatableDemoService.query(gridPreviewFilters);
     _syncAccordionTable(gridPreviewDemoTable, gridPreviewTableData);
     _flushView();
   }

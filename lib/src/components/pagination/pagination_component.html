@@ -1,0 +1,122 @@
+<template #defaultFirstTemplate>
+  <span aria-hidden="true">&laquo;&laquo;</span>
+</template>
+
+<template #defaultPreviousTemplate>
+  <span aria-hidden="true">&laquo;</span>
+</template>
+
+<template #defaultNextTemplate>
+  <span aria-hidden="true">&raquo;</span>
+</template>
+
+<template #defaultLastTemplate>
+  <span aria-hidden="true">&raquo;&raquo;</span>
+</template>
+
+<template #defaultEllipsisTemplate>
+  <span aria-hidden="true">...</span>
+</template>
+
+<template #defaultNumberTemplate let-page>
+  {{ page }}
+</template>
+
+<nav class="li-pagination" [attr.aria-label]="ariaLabel">
+  <ul [class]="paginationClasses">
+    <li *ngIf="boundaryLinks" class="page-item" [class.disabled]="previousDisabled">
+      <a class="{{ pageLinkClasses }}"
+         href=""
+         aria-label="First"
+         [attr.tabindex]="previousDisabled ? '-1' : null"
+         [attr.aria-disabled]="previousDisabled ? 'true' : null"
+         (click)="selectPage(1, $event)">
+        <template [liPaginationOutlet]="resolvedFirstTemplate"
+                  [liPaginationOutletCurrentPage]="page"
+                  [liPaginationOutletDisabled]="previousDisabled"
+                  [liPaginationOutletRevision]="renderRevision"></template>
+      </a>
+    </li>
+
+    <li *ngIf="directionLinks" class="page-item" [class.disabled]="previousDisabled">
+      <a class="{{ pageLinkClasses }}"
+         href=""
+         aria-label="Previous"
+         [attr.tabindex]="previousDisabled ? '-1' : null"
+         [attr.aria-disabled]="previousDisabled ? 'true' : null"
+         (click)="selectPage(page - 1, $event)">
+        <template [liPaginationOutlet]="resolvedPreviousTemplate"
+                  [liPaginationOutletCurrentPage]="page"
+                  [liPaginationOutletDisabled]="previousDisabled"
+                  [liPaginationOutletRevision]="renderRevision"></template>
+      </a>
+    </li>
+
+    <template [ngIf]="hasPagesTemplate">
+      <template [liPaginationOutlet]="pagesTemplate?.templateRef"
+                [liPaginationOutletImplicit]="page"
+                [liPaginationOutletCurrentPage]="page"
+                [liPaginationOutletDisabled]="disabled"
+                [liPaginationOutletPages]="pagesContext.pages"
+                [liPaginationOutletRevision]="renderRevision"></template>
+    </template>
+
+    <template [ngIf]="!hasPagesTemplate">
+      <li *ngFor="let item of pageItems"
+          class="page-item"
+          [class.active]="item.active"
+          [class.disabled]="item.disabled">
+        <a class="{{ pageLinkClasses }}"
+           href=""
+           [attr.tabindex]="item.disabled ? '-1' : null"
+           [attr.aria-disabled]="item.disabled ? 'true' : null"
+           [attr.aria-current]="item.active ? 'page' : null"
+           (click)="item.ellipsis ? $event.preventDefault() : selectPage(item.value, $event)">
+          <template [ngIf]="item.ellipsis">
+            <template [liPaginationOutlet]="resolvedEllipsisTemplate"
+                      [liPaginationOutletCurrentPage]="page"
+                      [liPaginationOutletDisabled]="true"
+                      [liPaginationOutletRevision]="renderRevision"></template>
+          </template>
+
+          <template [ngIf]="!item.ellipsis">
+            <template [liPaginationOutlet]="resolvedNumberTemplate"
+                      [liPaginationOutletImplicit]="item.value"
+                      [liPaginationOutletPage]="item.value"
+                      [liPaginationOutletCurrentPage]="page"
+                      [liPaginationOutletDisabled]="disabled"
+                      [liPaginationOutletRevision]="renderRevision"></template>
+          </template>
+        </a>
+      </li>
+    </template>
+
+    <li *ngIf="directionLinks" class="page-item" [class.disabled]="nextDisabled">
+      <a class="{{ pageLinkClasses }}"
+         href=""
+         aria-label="Next"
+         [attr.tabindex]="nextDisabled ? '-1' : null"
+         [attr.aria-disabled]="nextDisabled ? 'true' : null"
+         (click)="selectPage(page + 1, $event)">
+        <template [liPaginationOutlet]="resolvedNextTemplate"
+                  [liPaginationOutletCurrentPage]="page"
+                  [liPaginationOutletDisabled]="nextDisabled"
+                  [liPaginationOutletRevision]="renderRevision"></template>
+      </a>
+    </li>
+
+    <li *ngIf="boundaryLinks" class="page-item" [class.disabled]="nextDisabled">
+      <a class="{{ pageLinkClasses }}"
+         href=""
+         aria-label="Last"
+         [attr.tabindex]="nextDisabled ? '-1' : null"
+         [attr.aria-disabled]="nextDisabled ? 'true' : null"
+         (click)="selectPage(pageCount, $event)">
+        <template [liPaginationOutlet]="resolvedLastTemplate"
+                  [liPaginationOutletCurrentPage]="page"
+                  [liPaginationOutletDisabled]="nextDisabled"
+                  [liPaginationOutletRevision]="renderRevision"></template>
+      </a>
+    </li>
+  </ul>
+</nav>

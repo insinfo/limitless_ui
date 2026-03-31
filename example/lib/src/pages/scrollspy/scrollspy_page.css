@@ -4,7 +4,11 @@
   padding-right: 0.5rem;
   border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: 1rem;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--body-bg) 96%, var(--body-color) 4%) 0%,
+    color-mix(in srgb, var(--body-bg) 90%, var(--body-color) 10%) 100%
+  );
 }
 
 .scrollspy-demo-page .scrollspy-demo-section {
@@ -13,7 +17,7 @@
   margin-bottom: 1rem;
   border-radius: 1rem;
   border: 1px solid rgba(148, 163, 184, 0.16);
-  background: #ffffff;
+  background: color-mix(in srgb, var(--body-bg) 94%, var(--body-color) 6%);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
 }
 

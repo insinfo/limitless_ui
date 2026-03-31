@@ -4,6 +4,7 @@
 
 .date-range-field[readonly] {
     background-color: var(--white);
+    color: var(--body-color);
 }
 
 .date-range-wrapper {
@@ -14,6 +15,25 @@
 .date-range-wrapper .input-group.disabled {
     opacity: 0.65;
     cursor: not-allowed;
+}
+
+.date-range-trigger-button {
+    background-color: var(--white);
+    color: var(--body-color);
+    border-color: var(--border-color);
+}
+
+.date-range-trigger-button:hover,
+.date-range-trigger-button:focus {
+    background-color: var(--white);
+    color: var(--body-color);
+    border-color: var(--border-color);
+}
+
+.date-range-trigger-button:disabled {
+    background-color: color-mix(in srgb, var(--body-bg) 88%, var(--body-color) 12%);
+    color: var(--text-muted);
+    border-color: var(--border-color);
 }
 
 .daterangepicker.date-range-open {

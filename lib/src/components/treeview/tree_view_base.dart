@@ -1,6 +1,29 @@
-
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/src/core/equality.dart';
+
+class TreeViewLoadRequest {
+  const TreeViewLoadRequest({
+    required this.offset,
+    required this.limit,
+    this.parent,
+    this.searchTerm = '',
+  });
+
+  final TreeViewNode? parent;
+  final int offset;
+  final int limit;
+  final String searchTerm;
+}
+
+class TreeViewLoadResult {
+  const TreeViewLoadResult({
+    required this.nodes,
+    this.hasMore = false,
+  });
+
+  final List<TreeViewNode> nodes;
+  final bool hasMore;
+}
 
 class TreeViewNode {
   //late int id;
@@ -11,6 +34,10 @@ class TreeViewNode {
   TreeViewNode? parent;
   bool treeViewNodeIsCollapse;
   bool treeViewNodeIsSelected;
+  bool treeViewNodeHasLazyChildren;
+  bool treeViewNodeChildrenLoaded;
+  bool treeViewNodeIsLoadingChildren;
+  bool treeViewNodeHasMoreChildren;
   dynamic value;
 
   /// Children
@@ -19,6 +46,10 @@ class TreeViewNode {
   void addChild(TreeViewNode child) {
     child.parent = this;
     _children.add(child);
+  }
+
+  void clearChildren() {
+    _children.clear();
   }
 
   /// não adicione filhos diretamente a treeViewNodes adicione usando o addChild
@@ -30,6 +61,10 @@ class TreeViewNode {
     this.treeViewNodeFilter = true,
     this.treeViewNodeIsCollapse = true,
     this.treeViewNodeIsSelected = false,
+    this.treeViewNodeHasLazyChildren = false,
+    this.treeViewNodeChildrenLoaded = false,
+    this.treeViewNodeIsLoadingChildren = false,
+    this.treeViewNodeHasMoreChildren = false,
     this.value,
   }) {
     //id = 1;
@@ -39,6 +74,8 @@ class TreeViewNode {
   bool hasChilds() {
     return treeViewNodes.isNotEmpty;
   }
+
+  bool get canExpand => hasChilds() || treeViewNodeHasLazyChildren;
 
   /// se todos os filhos estão selecionados
   bool get isAllChildrenSelected {
@@ -100,6 +137,10 @@ class TreeViewNode {
         other.treeViewNodeFilter == treeViewNodeFilter &&
         other.treeViewNodeIsCollapse == treeViewNodeIsCollapse &&
         other.treeViewNodeIsSelected == treeViewNodeIsSelected &&
+        other.treeViewNodeHasLazyChildren == treeViewNodeHasLazyChildren &&
+        other.treeViewNodeChildrenLoaded == treeViewNodeChildrenLoaded &&
+        other.treeViewNodeIsLoadingChildren == treeViewNodeIsLoadingChildren &&
+        other.treeViewNodeHasMoreChildren == treeViewNodeHasMoreChildren &&
         other.value == value;
   }
 
@@ -111,6 +152,10 @@ class TreeViewNode {
         treeViewNodeFilter.hashCode ^
         treeViewNodeIsCollapse.hashCode ^
         treeViewNodeIsSelected.hashCode ^
+        treeViewNodeHasLazyChildren.hashCode ^
+        treeViewNodeChildrenLoaded.hashCode ^
+        treeViewNodeIsLoadingChildren.hashCode ^
+        treeViewNodeHasMoreChildren.hashCode ^
         value.hashCode;
   }
 }

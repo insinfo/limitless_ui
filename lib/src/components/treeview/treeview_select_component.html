@@ -1,0 +1,150 @@
+<div class="treeview-dropdown-select">
+    <button type="button"
+        #triggerButton
+        class="form-select treeview-dropdown-select__trigger"
+        [disabled]="isDisabled"
+        [attr.aria-expanded]="dropdownOpen.toString()"
+        [attr.aria-controls]="listboxId"
+        role="combobox"
+        aria-haspopup="tree"
+        (click)="toggleDropdown()"
+        (focus)="handleFocus()">
+        <span class="treeview-dropdown-select__value"
+            [class.treeview-dropdown-select__placeholder]="selectedLabel.isEmpty">
+            <span *ngIf="triggerTemplate != null">
+                <template [ngTemplateOutlet]="triggerTemplate?.templateRef"
+                    [ngTemplateOutletValue]="triggerContext">
+                </template>
+            </span>
+
+            <span *ngIf="triggerTemplate == null">
+                <span *ngIf="!multiple">
+                    {{ selectedLabel.isEmpty ? placeholder : selectedLabel }}
+                </span>
+
+                <span *ngIf="multiple && selectedNodes.isEmpty">
+                    {{ placeholder }}
+                </span>
+
+                <span *ngIf="multiple && selectedNodes.isNotEmpty" class="treeview-dropdown-select__chips">
+                    <span *ngFor="let node of selectedNodes; let i = index"
+                        class="treeview-dropdown-select__chip"
+                        [hidden]="i > 1">
+                        {{ resolvedNodeLabel(node) }}
+                    </span>
+                    <span *ngIf="selectedNodes.length > 2" class="treeview-dropdown-select__chip treeview-dropdown-select__chip--muted">
+                        +{{ selectedNodes.length - 2 }} {{ summarySuffix }}
+                    </span>
+                </span>
+            </span>
+        </span>
+
+        <span *ngIf="showClearButton && hasSelection && !isDisabled"
+            class="treeview-dropdown-select__clear"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="clearButtonLabel"
+            (click)="clearSelection($event)">
+            <i class="ph ph-x"></i>
+        </span>
+    </button>
+
+    <div #dropdownPanel
+        class="treeview-dropdown-select__panel dropdown-menu"
+        [class.show]="dropdownOpen">
+        <div class="treeview-dropdown-select__search" *ngIf="searchable">
+            <div class="form-control-feedback form-control-feedback-start">
+                <input #searchInput
+                    type="text"
+                    class="form-control"
+                    [value]="searchTerm"
+                    [placeholder]="searchPlaceholder"
+                    (input)="handleSearchInput(searchInput.value)">
+                <div class="form-control-feedback-icon">
+                    <i class="ph-magnifying-glass"></i>
+                </div>
+            </div>
+        </div>
+
+        <div #scrollContainer class="treeview-dropdown-select__scroll">
+            <div *ngIf="loadingRootNodes" class="treeview-dropdown-select__status">
+                <i class="ph-spinner spinner me-2"></i>{{ loadingLabel }}
+            </div>
+
+            <div *ngIf="isEmptyStateVisible" class="treeview-dropdown-select__status">
+                {{ emptyLabel }}
+            </div>
+
+            <ul *ngIf="visibleRootNodes.isNotEmpty" [attr.id]="listboxId" class="treeview-dropdown-select__tree" role="tree">
+                <template #recursiveList let-nodes>
+                    <li *ngFor="let node of nodes"
+                        [hidden]="!node.treeViewNodeFilter"
+                        class="treeview-dropdown-select__node"
+                        role="treeitem"
+                        [attr.aria-expanded]="node.canExpand ? (!node.treeViewNodeIsCollapse).toString() : null">
+                        <div class="treeview-dropdown-select__row"
+                            [class.is-selected]="isNodeSelected(node) || selectedNode == node"
+                            [class.is-disabled]="!isSelectable(node)"
+                            [style.padding-left.px]="12 + (node.treeViewNodeLevel * 18)">
+                            <button type="button"
+                                class="treeview-dropdown-select__expander"
+                                [class.is-placeholder]="!node.canExpand"
+                                (click)="toggleNode(node)">
+                                <i *ngIf="node.treeViewNodeIsLoadingChildren" class="ph-spinner spinner"></i>
+                                <i *ngIf="!node.treeViewNodeIsLoadingChildren && node.canExpand"
+                                    class="ph"
+                                    [class.ph-caret-right]="node.treeViewNodeIsCollapse"
+                                    [class.ph-caret-down]="!node.treeViewNodeIsCollapse"></i>
+                            </button>
+                            <button *ngIf="multiple"
+                                type="button"
+                                class="treeview-dropdown-select__checkbox"
+                                [class.is-selected]="isNodeSelected(node)"
+                                [disabled]="!isSelectable(node)"
+                                (click)="selectNode(node)">
+                                <i class="ph"
+                                    [class.ph-square]="!isNodeSelected(node)"
+                                    [class.ph-check-square]="isNodeSelected(node)"></i>
+                            </button>
+                            <button type="button"
+                                class="treeview-dropdown-select__label"
+                                [class.is-selected]="isNodeSelected(node) || selectedNode == node"
+                                [disabled]="!isSelectable(node)"
+                                (click)="selectNode(node)">
+                                <span *ngIf="nodeTemplate != null">
+                                    <template [ngTemplateOutlet]="nodeTemplate?.templateRef"
+                                        [ngTemplateOutletValue]="nodeContext(node)">
+                                    </template>
+                                </span>
+                                <span *ngIf="nodeTemplate == null">
+                                    {{ resolvedNodeLabel(node) }}
+                                </span>
+                            </button>
+                        </div>
+
+                        <ul *ngIf="node.canExpand && !node.treeViewNodeIsCollapse" class="treeview-dropdown-select__branch" role="group">
+                            <template [ngTemplateOutlet]="recursiveList" [ngTemplateOutletValue]="node.treeViewNodes"></template>
+                            <li *ngIf="showLoadMoreForNode(node)" class="treeview-dropdown-select__more">
+                                <button type="button"
+                                    class="btn btn-link btn-sm treeview-dropdown-select__load-more"
+                                    (click)="loadMoreChildren(node)">
+                                    {{ loadMoreLabel }}
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
+                </template>
+
+                <template [ngTemplateOutlet]="recursiveList" [ngTemplateOutletValue]="visibleRootNodes"></template>
+            </ul>
+
+            <div *ngIf="hasMoreRootNodes && !loadingRootNodes" class="treeview-dropdown-select__footer">
+                <button type="button"
+                    class="btn btn-link btn-sm treeview-dropdown-select__load-more"
+                    (click)="loadMoreRootNodes()">
+                    {{ loadMoreLabel }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

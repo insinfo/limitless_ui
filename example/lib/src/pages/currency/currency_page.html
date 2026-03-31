@@ -14,9 +14,7 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">{{ t.pages.currency.cardTitle }}</h5>
-      </div>
+     
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
@@ -33,8 +31,8 @@
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Recursos</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Prefixo configurável.</li>
-                    <li>Conversão automática para centavos.</li>
+                    <li>Suporte a <code>locale</code> e <code>currencyCode</code>.</li>
+                    <li>Conversão automática para minor units.</li>
                     <li>Integração com formulários AngularDart.</li>
                   </ul>
                 </div>
@@ -51,20 +49,45 @@
               </div>
             </div>
 
-            <div class="mb-4">
-              <label class="form-label fw-semibold">{{ t.pages.currency.budget }}</label>
-              <li-currency-input
-                  [(ngModel)]="amountMinorUnits"
-                  [required]="true"
-                  prefix="R$"
-                  inputClass="form-control form-control-lg">
-              </li-currency-input>
+            <div class="row g-4 mb-4">
+              <div class="col-xl-4">
+                <label class="form-label fw-semibold">{{ t.pages.currency.budget }} BRL</label>
+                <li-currency-input
+                    [(ngModel)]="amountMinorUnits"
+                    [required]="true"
+                    currencyCode="BRL"
+                    locale="pt_BR"
+                    inputClass="form-control form-control-lg">
+                </li-currency-input>
+              </div>
+
+              <div class="col-xl-4">
+                <label class="form-label fw-semibold">{{ t.pages.currency.budget }} USD</label>
+                <li-currency-input
+                    [(ngModel)]="amountMinorUnitsUsd"
+                    currencyCode="USD"
+                    locale="en_US"
+                    inputClass="form-control form-control-lg">
+                </li-currency-input>
+              </div>
+
+              <div class="col-xl-4">
+                <label class="form-label fw-semibold">{{ t.pages.currency.budget }} EUR</label>
+                <li-currency-input
+                    [(ngModel)]="amountMinorUnitsEur"
+                    currencyCode="EUR"
+                    locale="de_DE"
+                    inputClass="form-control form-control-lg">
+                </li-currency-input>
+              </div>
             </div>
 
             <div class="demo-summary-box">
-              <div><strong>{{ t.pages.currency.minorUnits }}:</strong> {{ amountMinorUnitsLabel }}</div>
+              <div><strong>BRL {{ t.pages.currency.minorUnits }}:</strong> {{ amountMinorUnitsLabel }}</div>
+              <div><strong>USD {{ t.pages.currency.minorUnits }}:</strong> {{ amountMinorUnitsUsdLabel }}</div>
+              <div><strong>EUR {{ t.pages.currency.minorUnits }}:</strong> {{ amountMinorUnitsEurLabel }}</div>
               <div class="text-muted">
-                {{ t.pages.currency.help }}
+                O mesmo componente agora aceita BRL, USD e EUR trocando apenas <code>currencyCode</code> e <code>locale</code>.
               </div>
             </div>
           </div>
@@ -74,15 +97,17 @@
           <div class="card-body">
             <p class="text-muted mb-3">Use o componente para exibir o valor formatado ao usuário e manter no estado um número consistente em unidades menores.</p>
             <ul class="mb-3 ps-3">
-              <li><code>[(ngModel)]</code> trabalha com o valor em centavos.</li>
-              <li><code>prefix</code> define o símbolo monetário.</li>
+              <li><code>[(ngModel)]</code> trabalha com o valor em minor units.</li>
+              <li><code>currencyCode</code> e <code>locale</code> controlam símbolo e separadores.</li>
+              <li><code>prefix</code> continua disponível para sobrescrever o símbolo automaticamente resolvido.</li>
               <li><code>[required]</code> integra validação ao formulário.</li>
               <li><code>inputClass</code> permite aplicar classes utilitárias no campo.</li>
             </ul>
 
             <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-currency-input
   [(ngModel)]="amountMinorUnits"
-  prefix="R$"
+  currencyCode="USD"
+  locale="en_US"
   [required]="true"&gt;
 &lt;/li-currency-input&gt;</code></pre>
           </div>

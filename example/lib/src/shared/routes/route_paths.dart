@@ -7,7 +7,11 @@ class DemoRoutePaths {
   static final accordion = RoutePath(path: 'accordion');
   static final tabs = RoutePath(path: 'tabs');
   static final modal = RoutePath(path: 'modal');
+  static final offcanvas = RoutePath(path: 'offcanvas');
+  static final breadcrumbs = RoutePath(path: 'breadcrumbs');
+  static final pagination = RoutePath(path: 'pagination');
   static final select = RoutePath(path: 'select');
+  static final typeahead = RoutePath(path: 'typeahead');
   static final multiSelect = RoutePath(path: 'multi-select');
   static final currency = RoutePath(path: 'currency');
   static final datePicker = RoutePath(path: 'date-picker');

@@ -14,10 +14,6 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">Datatable Select</h5>
-      </div>
-
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
@@ -81,25 +77,19 @@
                 <p class="text-muted mb-0">Uso básico com <code>currentValueChange</code> e controle programático.</p>
                 <div class="d-flex flex-wrap gap-2">
                   <button class="btn btn-sm btn-outline-secondary" type="button" (click)="clearBasic()">Limpar</button>
-                  <button class="btn btn-sm btn-outline-primary" type="button" (click)="setBasicProgrammatically()">Selecionar "Maria Silva"</button>
+                  <button class="btn btn-sm btn-outline-primary" type="button"
+                    (click)="setBasicProgrammatically()">Selecionar "Maria Silva"</button>
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Selecionar pessoa</label>
-                  <li-datatable-select #basicSelect
-                      [settings]="basicSettings"
-                      [dataTableFilter]="basicFilter"
-                      [data]="basicData"
-                      [searchInFields]="basicSearchFields"
-                      [labelKey]="'name'"
-                      [valueKey]="'id'"
-                      [title]="'Selecionar pessoa'"
-                      [placeholder]="'Clique para selecionar...'"
-                      [searchPlaceholder]="'Buscar por nome, e-mail...'"
-                      (dataRequest)="onBasicDataRequest($event)"
-                      (currentValueChange)="onBasicValueChanged($event)">
+                  <li-datatable-select #basicSelect [settings]="basicSettings" [dataTableFilter]="basicFilter"
+                    [data]="basicData" [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
+                    [title]="'Selecionar pessoa'" [placeholder]="'Clique para selecionar...'"
+                    [searchPlaceholder]="'Buscar por nome, e-mail...'" (dataRequest)="onBasicDataRequest($event)"
+                    (currentValueChange)="onBasicValueChanged($event)">
                   </li-datatable-select>
                 </div>
               </div>
@@ -117,16 +107,9 @@
               <div class="row">
                 <div class="col-md-6">
                   <label class="form-label">Pessoa (desabilitado)</label>
-                  <li-datatable-select
-                      [settings]="basicSettings"
-                      [dataTableFilter]="basicFilter"
-                      [data]="basicData"
-                      [searchInFields]="basicSearchFields"
-                      [labelKey]="'name'"
-                      [valueKey]="'id'"
-                      [disabled]="true"
-                      [placeholder]="'Campo desabilitado'"
-                      (dataRequest)="onBasicDataRequest($event)">
+                  <li-datatable-select [settings]="basicSettings" [dataTableFilter]="basicFilter" [data]="basicData"
+                    [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'" [disabled]="true"
+                    [placeholder]="'Campo desabilitado'" (dataRequest)="onBasicDataRequest($event)">
                   </li-datatable-select>
                 </div>
               </div>
@@ -134,23 +117,16 @@
 
             <!-- Demo: ngModel -->
             <div class="demo-doc-section">
-              <p class="text-muted mb-3">Binding com <code>ngModel</code> — o valor é sincronizado via <code>ControlValueAccessor</code>.</p>
+              <p class="text-muted mb-3">Binding com <code>ngModel</code> — o valor é sincronizado via
+                <code>ControlValueAccessor</code>.</p>
 
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Selecionar pessoa (ngModel)</label>
-                  <li-datatable-select #ngModelSelect
-                      [settings]="basicSettings"
-                      [dataTableFilter]="ngModelFilter"
-                      [data]="ngModelData"
-                      [searchInFields]="basicSearchFields"
-                      [labelKey]="'name'"
-                      [valueKey]="'id'"
-                      [title]="'Selecionar pessoa'"
-                      [modalSize]="'xtra-large'"
-                      [ngModel]="ngModelValue"
-                      (ngModelChange)="onNgModelValueChanged($event)"
-                      (dataRequest)="onNgModelDataRequest($event)">
+                  <li-datatable-select #ngModelSelect [settings]="basicSettings" [dataTableFilter]="ngModelFilter"
+                    [data]="ngModelData" [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
+                    [title]="'Selecionar pessoa'" [modalSize]="'xtra-large'" [ngModel]="ngModelValue"
+                    (ngModelChange)="onNgModelValueChanged($event)" (dataRequest)="onNgModelDataRequest($event)">
                   </li-datatable-select>
                 </div>
               </div>

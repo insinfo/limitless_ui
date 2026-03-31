@@ -14,9 +14,7 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">Feedback</h5>
-      </div>
+
 
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
@@ -30,7 +28,8 @@
               <div class="col-lg-4">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">A tela reúne componentes úteis para mensagens imediatas, estados de atenção, acompanhamento de progresso e comunicação de status.</p>
+                  <p class="mb-0 text-muted">A tela reúne componentes úteis para mensagens imediatas, estados de
+                    atenção, acompanhamento de progresso e comunicação de status.</p>
                 </div>
               </div>
               <div class="col-lg-4">
@@ -69,31 +68,19 @@
                 </p>
 
                 <div class="demo-component-stack">
-                  <li-alert
-                      variant="primary"
-                      iconClass="ph-rocket-launch"
-                      iconMode="inline"
-                      [visible]="releaseAlertVisible"
-                      [dismissible]="true"
-                      (dismissed)="dismissReleaseAlert()">
+                  <li-alert variant="primary" iconClass="ph-rocket-launch" iconMode="inline"
+                    [visible]="releaseAlertVisible" [dismissible]="true" (dismissed)="dismissReleaseAlert()">
                     <strong>Deploy concluído.</strong> O pacote já está pronto para ser validado no navegador.
                   </li-alert>
 
-                  <li-alert
-                      variant="warning"
-                      [solid]="true"
-                      iconClass="ph-warning-circle"
-                      [dismissible]="true">
+                  <li-alert variant="warning" [solid]="true" iconClass="ph-warning-circle" [dismissible]="true">
                     <strong>Atenção.</strong> Use solid=true quando quiser mais contraste em avisos importantes.
                   </li-alert>
 
-                  <li-alert
-                      variant="indigo"
-                      iconClass="ph-info"
-                      iconMode="inline"
-                      iconPosition="end"
-                      [borderless]="true">
-                    Borderless, roundedPill e alertClass permitem compor estilos mais específicos sem criar variantes novas.
+                  <li-alert variant="indigo" iconClass="ph-info" iconMode="inline" iconPosition="end"
+                    [borderless]="true">
+                    Borderless, roundedPill e alertClass permitem compor estilos mais específicos sem criar variantes
+                    novas.
                   </li-alert>
                 </div>
               </div>
@@ -139,9 +126,12 @@
                 <ul class="mb-3 ps-3">
                   <li><code>variant</code> define a cor sem criar classes manuais.</li>
                   <li><code>[solid]</code> aumenta contraste em avisos importantes.</li>
-                  <li><code>[dismissible]</code> e <code>[visible]</code> permitem ciclo controlado pelo componente pai.</li>
-                  <li><code>iconClass</code>, <code>iconMode</code> e <code>iconPosition</code> ajustam a leitura visual.</li>
-                  <li><code>[borderless]</code>, <code>[roundedPill]</code> e <code>alertClass</code> refinam o acabamento.</li>
+                  <li><code>[dismissible]</code> e <code>[visible]</code> permitem ciclo controlado pelo componente pai.
+                  </li>
+                  <li><code>iconClass</code>, <code>iconMode</code> e <code>iconPosition</code> ajustam a leitura
+                    visual.</li>
+                  <li><code>[borderless]</code>, <code>[roundedPill]</code> e <code>alertClass</code> refinam o
+                    acabamento.</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-alert
@@ -157,8 +147,10 @@
                 <h6 class="mb-2">Como utilizar progress</h6>
                 <ul class="mb-3 ps-3">
                   <li><code>[height]</code> controla a espessura da barra.</li>
-                  <li><code>[rounded]</code>, <code>[striped]</code> e <code>[animated]</code> ajustam o tratamento visual.</li>
-                  <li><code>li-progress-bar</code> recebe <code>[value]</code>, <code>label</code> e <code>[showValueLabel]</code>.</li>
+                  <li><code>[rounded]</code>, <code>[striped]</code> e <code>[animated]</code> ajustam o tratamento
+                    visual.</li>
+                  <li><code>li-progress-bar</code> recebe <code>[value]</code>, <code>label</code> e
+                    <code>[showValueLabel]</code>.</li>
                   <li>Barras empilhadas são úteis para composição de capacidade por grupo.</li>
                 </ul>
 

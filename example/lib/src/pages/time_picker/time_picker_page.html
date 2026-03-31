@@ -2,7 +2,8 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ t.pages.timePicker.title }} <span class="fw-normal">{{ t.pages.timePicker.subtitle }}</span></h4>
+        <h4 class="page-title mb-0">{{ t.pages.timePicker.title }} <span class="fw-normal">{{
+            t.pages.timePicker.subtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
@@ -14,9 +15,7 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">{{ t.pages.timePicker.cardTitle }}</h5>
-      </div>
+
       <li-tabsx type="tabs">
         <li-tabx [header]="t.pages.timePicker.tabOverview" [active]="true">
           <div class="card-body">
@@ -33,9 +32,9 @@
                 <div class="card card-body h-100">
                   <h6 class="mb-2">{{ t.pages.timePicker.featuresTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>{{ t.pages.timePicker.featureOne }}</li>
-                    <li>{{ t.pages.timePicker.featureTwo }}</li>
-                    <li>{{ t.pages.timePicker.featureThree }}</li>
+                    <li>Binding direto com ngModel em Duration?.</li>
+                    <li>Seleção por relógio com alternância entre hora e minuto.</li>
+                    <li>Suporte aos formatos 12h com AM/PM e 24 horas.</li>
                   </ul>
                 </div>
               </div>
@@ -43,15 +42,28 @@
                 <div class="card card-body h-100">
                   <h6 class="mb-2">{{ t.pages.timePicker.limitsTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>{{ t.pages.timePicker.limitOne }}</li>
-                    <li>{{ t.pages.timePicker.limitTwo }}</li>
-                    <li>{{ t.pages.timePicker.limitThree }}</li>
+                    <li>O formato exibido depende de <code>use24Hour</code> e do locale configurado.</li>
+                    <li>Não aplica regras de janela de negócio por conta própria.</li>
+                    <li>O valor retornado considera apenas hora e minuto.</li>
                   </ul>
                 </div>
               </div>
             </div>
 
             <div class="row g-4">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">Time picker 24 horas</h6>
+                  <li-time-picker [(ngModel)]="selectedTime24h" [use24Hour]="true" placeholder="Selecione o horario">
+                  </li-time-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>Horário atual:</strong> {{ selectedTime24hLabel }}</div>
+                    <div class="text-muted">Use <code>use24Hour</code> para exibir e editar o valor sem AM/PM.</div>
+                  </div>
+                </div>
+              </div>
+
               <div class="col-lg-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-3">{{ t.pages.timePicker.defaultTitle }}</h6>
@@ -64,11 +76,14 @@
                   </div>
                 </div>
               </div>
+            </div>
 
+            <div class="row g-4 mt-1">
               <div class="col-lg-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-3">{{ t.pages.timePicker.englishTitle }}</h6>
-                  <li-time-picker [(ngModel)]="reviewTime" locale="en_US" [placeholder]="t.pages.timePicker.englishPlaceholder">
+                  <li-time-picker [(ngModel)]="reviewTime" locale="en_US"
+                    [placeholder]="t.pages.timePicker.englishPlaceholder">
                   </li-time-picker>
 
                   <div class="demo-summary-box mt-3">
@@ -77,13 +92,11 @@
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="row g-4 mt-1">
               <div class="col-lg-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-3">{{ t.pages.timePicker.disabledTitle }}</h6>
-                  <li-time-picker [value]="disabledTime" [disabled]="true" [placeholder]="t.pages.timePicker.disabledPlaceholder">
+                  <li-time-picker [value]="disabledTime" [disabled]="true"
+                    [placeholder]="t.pages.timePicker.disabledPlaceholder">
                   </li-time-picker>
 
                   <div class="demo-summary-box mt-3">

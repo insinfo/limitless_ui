@@ -6,7 +6,7 @@
 	padding: 1rem;
 	border-radius: var(--border-radius-lg);
 	text-decoration: none;
-	background: var(--white);
+	background: color-mix(in srgb, var(--body-bg) 92%, var(--body-color) 8%);
 	border: 1px solid var(--border-color);
 	box-shadow: 0 0.125rem 0.25rem rgba(15, 23, 42, 0.04);
 	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;

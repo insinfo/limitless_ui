@@ -1,0 +1,118 @@
+<div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+        <div class="d-flex">
+            <h4 class="page-title mb-0">Navigation <span class="fw-normal">Pagination</span></h4>
+        </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+        <div class="breadcrumb py-2">
+            <span class="breadcrumb-item active">Paginação de coleções, listas e resultados segmentados</span>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="card">
+        <li-tabsx type="tabs">
+            <li-tabx header="Visão geral" [active]="true">
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        <code>li-pagination</code> cobre paginação padrão, versões compactas, links de borda,
+                        alinhamento e templates para números ou grupos completos.
+                    </p>
+
+                    <div class="row g-3">
+                        <div class="col-xl-6">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Resultado padrão</h6>
+                                <p class="text-muted mb-3">Combinação comum para tabelas e listagens com muitos
+                                    registros.</p>
+
+                                <li-pagination [collectionSize]="96" [pageSize]="10" [page]="basicPage" [maxSize]="5"
+                                    [boundaryLinks]="true" (pageChange)="onBasicPageChange($event)">
+                                </li-pagination>
+
+                                <div class="pagination-demo-meta mt-3">Página atual: {{ basicPage }} de 10</div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Compacta e centralizada</h6>
+                                <p class="text-muted mb-3">Boa para cards e grids onde a paginação precisa ocupar menos
+                                    espaço visual.</p>
+
+                                <li-pagination [collectionSize]="240" [pageSize]="10" [page]="compactPage" [maxSize]="5"
+                                    [rotate]="true" size="sm" alignment="center" variant="spaced"
+                                    (pageChange)="onCompactPageChange($event)">
+                                </li-pagination>
+
+                                <div class="pagination-demo-meta mt-3">Janela ativa: {{ compactPage }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card card-body mb-0">
+                                <h6 class="mb-2">Template customizado para números</h6>
+                                <p class="text-muted mb-3">A diretiva <code>liPaginationNumber</code> deixa o conteúdo
+                                    de cada página alinhado ao visual da aplicação.</p>
+
+                                <li-pagination [collectionSize]="84" [pageSize]="7" [page]="customPage" [maxSize]="6"
+                                    variant="flat" paginationClass="gap-1 flex-wrap" linkClass="rounded-pill"
+                                    (pageChange)="onCustomPageChange($event)">
+                                    <template liPaginationNumber let-page let-currentPage="currentPage">
+                                        <span class="pagination-chip"
+                                            [class.pagination-chip-active]="page == currentPage">
+                                            Pg {{ page }}
+                                        </span>
+                                    </template>
+                                </li-pagination>
+
+                                <div class="pagination-demo-meta mt-3">Template ativo na página {{ customPage }}.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card card-body mb-0">
+                                <h6 class="mb-2">Desabilitada</h6>
+                                <p class="text-muted mb-3">Quando a coleção está carregando ou sincronizando filtros, a
+                                    navegação pode ficar bloqueada sem desmontar o componente.</p>
+
+                                <li-pagination [collectionSize]="40" [pageSize]="10" [page]="disabledPage"
+                                    [disabled]="true" variant="linked">
+                                </li-pagination>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info alert-icon-start mt-4 mb-0">
+                        <span class="alert-icon bg-info text-white">
+                            <i class="ph-info"></i>
+                        </span>
+                        {{ eventLog }}
+                    </div>
+                </div>
+            </li-tabx>
+
+            <li-tabx header="API">
+                <div class="card-body">
+                    <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-pagination
+  [collectionSize]="96"
+  [pageSize]="10"
+  [page]="page"
+  [maxSize]="5"
+  [boundaryLinks]="true"
+  variant="flat"
+  alignment="center"
+  (pageChange)="page = $event"&gt;
+  &lt;template liPaginationNumber let-page let-currentPage="currentPage"&gt;
+    &lt;span class="pagination-chip" [class.pagination-chip-active]="page == currentPage"&gt;
+      Pg &#123;&#123; page &#125;&#125;
+    &lt;/span&gt;
+  &lt;/template&gt;
+&lt;/li-pagination&gt;</code></pre>
+                </div>
+            </li-tabx>
+        </li-tabsx>
+    </div>
+</div>

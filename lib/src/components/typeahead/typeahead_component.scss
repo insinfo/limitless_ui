@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.li-typeahead {
+  position: relative;
+}
+
+.li-typeahead__popup {
+  display: none;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  min-width: 14rem;
+  border-radius: 0.75rem;
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 0.75rem 2rem rgba(15, 23, 42, 0.16);
+}
+
+.li-typeahead__popup.show {
+  display: block;
+}
+
+.li-typeahead__results {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.35rem 0;
+}
+
+.li-typeahead__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-size: 0.875rem;
+  padding: 0.9rem 1rem;
+}
+
+.li-typeahead__item {
+  white-space: normal;
+  overflow-wrap: break-word;
+  padding: 0.65rem 1rem;
+}
+
+.li-typeahead__highlight {
+  color: #0c83ff;
+  font-weight: 700;
+}

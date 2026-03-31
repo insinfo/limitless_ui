@@ -14,7 +14,7 @@
 
   <div class="content">
     <div class="card">
-    
+
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
@@ -52,48 +52,26 @@
                   <p class="text-muted mb-3">{{ declarativeBody }}</p>
 
                   <div class="demo-popover-row">
-                    <li-popover
-                        [popoverTitle]="clickTitle"
-                        [popover]="clickText"
-                        trigger="click"
-                        placement="bottom"
-                        (shown)="onDeclarativeShown()"
-                        (hidden)="onDeclarativeHidden()">
+                    <li-popover [popoverTitle]="clickTitle" [popover]="clickText" trigger="click" placement="bottom"
+                      (shown)="onDeclarativeShown()" (hidden)="onDeclarativeHidden()">
                       <button class="btn btn-outline-primary" type="button">{{ clickButton }}</button>
                     </li-popover>
 
-                    <li-popover
-                        [popoverTitle]="hoverTitle"
-                        [popover]="hoverText"
-                        trigger="hover focus"
-                        placement="top"
-                        autoClose="outside"
-                        (shown)="onDeclarativeShown()"
-                        (hidden)="onDeclarativeHidden()">
+                    <li-popover [popoverTitle]="hoverTitle" [popover]="hoverText" trigger="hover focus" placement="top"
+                      autoClose="outside" (shown)="onDeclarativeShown()" (hidden)="onDeclarativeHidden()">
                       <button class="btn btn-outline-dark" type="button">{{ hoverButton }}</button>
                     </li-popover>
 
-                    <li-popover
-                        #manualPopover
-                        [popoverTitle]="manualTitle"
-                        [popover]="manualText"
-                        trigger="manual"
-                        placement="top"
-                        popoverClass="popover-custom bg-primary text-white border-primary"
-                        (shown)="onDeclarativeShown()"
-                        (hidden)="onDeclarativeHidden()">
-                      <button class="btn btn-outline-indigo" type="button" (click)="toggleManualPopover()">{{ manualButton }}</button>
+                    <li-popover #manualPopover [popoverTitle]="manualTitle" [popover]="manualText" trigger="manual"
+                      placement="top" popoverClass="popover-custom bg-primary text-white border-primary"
+                      (shown)="onDeclarativeShown()" (hidden)="onDeclarativeHidden()">
+                      <button class="btn btn-outline-indigo" type="button" (click)="toggleManualPopover()">{{
+                        manualButton }}</button>
                     </li-popover>
 
-                    <button
-                        class="btn btn-outline-teal"
-                        type="button"
-                        [liPopover]="directivePopoverText"
-                        [popoverTitle]="directivePopoverTitle"
-                        trigger="click"
-                        placement="bottom"
-                        (shown)="onDeclarativeShown()"
-                        (hidden)="onDeclarativeHidden()">
+                    <button class="btn btn-outline-teal" type="button" [liPopover]="directivePopoverText"
+                      [popoverTitle]="directivePopoverTitle" trigger="click" placement="bottom"
+                      (shown)="onDeclarativeShown()" (hidden)="onDeclarativeHidden()">
                       {{ directiveButton }}
                     </button>
                   </div>
@@ -108,15 +86,9 @@
                   <p class="text-muted mb-3">{{ paletteBody }}</p>
 
                   <div class="demo-popover-row">
-                    <li-popover
-                        *ngFor="let demo of palettePopovers"
-                        [popoverTitle]="demo.title"
-                        [popover]="demo.message"
-                        [popoverClass]="demo.popoverClass"
-                        trigger="click"
-                        [placement]="demo.placement"
-                        (shown)="onDeclarativeShown()"
-                        (hidden)="onDeclarativeHidden()">
+                    <li-popover *ngFor="let demo of palettePopovers" [popoverTitle]="demo.title"
+                      [popover]="demo.message" [popoverClass]="demo.popoverClass" trigger="click"
+                      [placement]="demo.placement" (shown)="onDeclarativeShown()" (hidden)="onDeclarativeHidden()">
                       <button [class]="demo.buttonClass" type="button">{{ demo.label }}</button>
                     </li-popover>
                   </div>
@@ -128,7 +100,8 @@
                   <h6 class="mb-2">{{ quickTitle }}</h6>
                   <p class="text-muted mb-3">{{ quickBody }}</p>
                   <div>
-                    <button #quickPopoverButton class="btn btn-outline-primary" type="button" (click)="showQuickPopover(quickPopoverButton)">
+                    <button #quickPopoverButton class="btn btn-outline-primary" type="button"
+                      (click)="showQuickPopover(quickPopoverButton)">
                       {{ quickButton }}
                     </button>
                   </div>
@@ -140,7 +113,8 @@
                   <h6 class="mb-2">{{ anchoredTitle }}</h6>
                   <p class="text-muted mb-3">{{ anchoredBody }}</p>
                   <div>
-                    <button #anchoredPopoverButton class="btn btn-primary" type="button" (click)="showAnchoredPopover(anchoredPopoverButton)">
+                    <button #anchoredPopoverButton class="btn btn-primary" type="button"
+                      (click)="showAnchoredPopover(anchoredPopoverButton)">
                       {{ anchoredButton }}
                     </button>
                   </div>
@@ -152,14 +126,9 @@
                   <h6 class="mb-2">{{ bodyContainerTitle }}</h6>
                   <p class="text-muted mb-3">{{ bodyContainerBody }}</p>
                   <div class="popover-clipping-shell">
-                    <li-popover
-                        [popoverTitle]="bodyContainerPopoverTitle"
-                        [popover]="bodyContainerPopoverText"
-                        trigger="click"
-                        placement="bottom"
-                        container="body"
-                        (shown)="onDeclarativeShown()"
-                        (hidden)="onDeclarativeHidden()">
+                    <li-popover [popoverTitle]="bodyContainerPopoverTitle" [popover]="bodyContainerPopoverText"
+                      trigger="click" placement="bottom" container="body" (shown)="onDeclarativeShown()"
+                      (hidden)="onDeclarativeHidden()">
                       <button class="btn btn-outline-primary" type="button">{{ bodyContainerPopoverTitle }}</button>
                     </li-popover>
                   </div>
@@ -181,15 +150,10 @@
                   </template>
 
                   <div class="demo-popover-row">
-                    <li-popover
-                        [popoverTitle]="richPopoverTitle"
-                        [popover]="richPopoverBody"
-                        [popoverContext]="richPopoverContext"
-                        trigger="click"
-                        placement="right"
-                        popoverClass="popover-custom bg-teal text-white border-teal"
-                        (shown)="onDeclarativeShown()"
-                        (hidden)="onDeclarativeHidden()">
+                    <li-popover [popoverTitle]="richPopoverTitle" [popover]="richPopoverBody"
+                      [popoverContext]="richPopoverContext" trigger="click" placement="right"
+                      popoverClass="popover-custom bg-teal text-white border-teal" (shown)="onDeclarativeShown()"
+                      (hidden)="onDeclarativeHidden()">
                       <button class="btn btn-outline-teal" type="button">{{ richTemplateButton }}</button>
                     </li-popover>
                   </div>

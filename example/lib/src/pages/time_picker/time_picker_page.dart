@@ -19,10 +19,12 @@ class TimePickerPageComponent {
   Messages get t => i18n.t;
 
   Duration? selectedTime = const Duration(hours: 10, minutes: 48);
+  Duration? selectedTime24h = const Duration(hours: 18, minutes: 30);
   Duration? reviewTime = const Duration(hours: 12, minutes: 0);
   Duration? disabledTime = const Duration(hours: 21, minutes: 15);
 
   String get selectedTimeLabel => _formatTime(selectedTime);
+  String get selectedTime24hLabel => _formatTime24(selectedTime24h);
 
   String get reviewTimeLabel => _formatTime(reviewTime);
 
@@ -34,7 +36,8 @@ class TimePickerPageComponent {
     }
 
     final totalMinutes = value.inMinutes % (24 * 60);
-    final normalizedMinutes = totalMinutes < 0 ? totalMinutes + (24 * 60) : totalMinutes;
+    final normalizedMinutes =
+        totalMinutes < 0 ? totalMinutes + (24 * 60) : totalMinutes;
     final hour24 = normalizedMinutes ~/ 60;
     final minute = normalizedMinutes % 60;
     final period = hour24 >= 12 ? 'PM' : 'AM';
@@ -42,5 +45,20 @@ class TimePickerPageComponent {
     final hourText = hour12.toString().padLeft(2, '0');
     final minuteText = minute.toString().padLeft(2, '0');
     return '$hourText:$minuteText $period';
+  }
+
+  String _formatTime24(Duration? value) {
+    if (value == null) {
+      return t.pages.timePicker.noneSelected;
+    }
+
+    final totalMinutes = value.inMinutes % (24 * 60);
+    final normalizedMinutes =
+        totalMinutes < 0 ? totalMinutes + (24 * 60) : totalMinutes;
+    final hour24 = normalizedMinutes ~/ 60;
+    final minute = normalizedMinutes % 60;
+    final hourText = hour24.toString().padLeft(2, '0');
+    final minuteText = minute.toString().padLeft(2, '0');
+    return '$hourText:$minuteText';
   }
 }

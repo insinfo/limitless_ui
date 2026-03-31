@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+.treeview-demo-note {
+  padding: 0.875rem 1rem;
+  border: 1px solid rgba(var(--primary-rgb), 0.22);
+  border-radius: var(--border-radius);
+  background: rgba(var(--primary-rgb), 0.08);
+}
+
+.treeview-custom-node {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.treeview-trigger-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.treeview-trigger-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--body-color);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.treeview-trigger-chip--muted {
+  background: color-mix(in srgb, var(--white) 90%, var(--body-color) 10%);
+  color: var(--text-muted);
+}

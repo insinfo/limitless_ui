@@ -2,7 +2,8 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ t.pages.tabs.title }} <span class="fw-normal">{{ t.pages.tabs.subtitle }}</span></h4>
+        <h4 class="page-title mb-0">{{ t.pages.tabs.title }} <span class="fw-normal">{{ t.pages.tabs.subtitle }}</span>
+        </h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
@@ -14,17 +15,19 @@
 
   <div class="content">
     <div class="card">
-    
+
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">A página de tabs demonstra composição horizontal, vertical, cabeçalhos customizados e estados desabilitados.</p>
+            <p class="text-muted mb-3">A página de tabs demonstra composição horizontal, vertical, cabeçalhos
+              customizados e estados desabilitados.</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e funcionam bem para documentação, formulários segmentados e painéis administrativos.</p>
+                  <p class="mb-0 text-muted">Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e
+                    funcionam bem para documentação, formulários segmentados e painéis administrativos.</p>
                 </div>
               </div>
               <div class="col-lg-4">
@@ -54,7 +57,8 @@
                 <h5 class="mb-0">Exemplo visível</h5>
               </div>
               <div class="card-body">
-                <p class="text-muted mb-3">O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba desabilitada, sem contaminar a navegação da página de documentação.</p>
+                <p class="text-muted mb-3">O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba
+                  desabilitada, sem contaminar a navegação da página de documentação.</p>
                 <tabs-preview-component></tabs-preview-component>
               </div>
             </div>
@@ -63,7 +67,8 @@
 
         <li-tabx header="API">
           <div class="card-body">
-            <p class="text-muted mb-3">Use o componente para agrupar conteúdo relacionado quando a navegação por seções fizer mais sentido do que empilhar cards ou abrir novas rotas.</p>
+            <p class="text-muted mb-3">Use o componente para agrupar conteúdo relacionado quando a navegação por seções
+              fizer mais sentido do que empilhar cards ou abrir novas rotas.</p>
             <ul class="mb-3 ps-3">
               <li><code>type</code> aceita <code>tabs</code> ou <code>pills</code>.</li>
               <li><code>placement</code> controla a posição das abas, como topo ou lateral.</li>

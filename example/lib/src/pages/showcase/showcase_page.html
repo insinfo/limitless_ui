@@ -20,7 +20,8 @@
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-0">Esta página combina vários componentes na mesma composição para validar convivência visual e integração entre APIs.</p>
+            <p class="text-muted mb-0">Esta página combina vários componentes na mesma composição para validar
+              convivência visual e integração entre APIs.</p>
           </div>
         </li-tabx>
         <li-tabx header="Exemplos">
@@ -32,12 +33,8 @@
                     <h5 class="mb-0">Carousel e tooltip</h5>
                   </div>
                   <div class="card-body">
-                    <li-carousel
-                        [showIndicators]="true"
-                        [showControls]="true"
-                        [autoPlay]="true"
-                        [intervalMs]="4500"
-                        [initialIndex]="1">
+                    <li-carousel [showIndicators]="true" [showControls]="true" [autoPlay]="true" [intervalMs]="4500"
+                      [initialIndex]="1">
                       <li-carousel-item indicatorLabel="Arquitetura">
                         <div class="demo-slide slide-one">
                           <span class="demo-slide-tag">Setup</span>
@@ -80,16 +77,10 @@
                     <h5 class="mb-0">Datatable</h5>
                   </div>
                   <div class="card-body">
-                    <li-datatable
-                        [dataTableFilter]="filters"
-                        [data]="tableData"
-                        [settings]="tableSettings"
-                        [searchInFields]="searchFields"
-                        searchLabel="Buscar sprint"
-                        searchPlaceholder="Digite para buscar"
-                        (dataRequest)="onTableRequest($event)"
-                        (limitChange)="onTableRequest($event)"
-                        (searchRequest)="onTableRequest($event)">
+                    <li-datatable [dataTableFilter]="filters" [data]="tableData" [settings]="tableSettings"
+                      [searchInFields]="searchFields" searchLabel="Buscar sprint" searchPlaceholder="Digite para buscar"
+                      (dataRequest)="onTableRequest($event)" (limitChange)="onTableRequest($event)"
+                      (searchRequest)="onTableRequest($event)">
                     </li-datatable>
                   </div>
                 </div>

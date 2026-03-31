@@ -2,7 +2,7 @@
     <div #triggerElement class="input-group" [class.disabled]="isDisabled" (click)="toggleOpen()">
         <input type="text" class="form-control date-picker-field" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled">
-        <button type="button" class="btn btn-light border" tabindex="-1" [disabled]="isDisabled">
+        <button type="button" class="btn date-picker-trigger-button" tabindex="-1" [disabled]="isDisabled">
             <i class="ph ph-calendar-blank"></i>
         </button>
     </div>

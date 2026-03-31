@@ -165,9 +165,29 @@ class AppComponent {
           url: DemoRoutePaths.modal.toUrl(),
         ),
         DemoNavItem(
+          label: 'Offcanvas',
+          iconClass: 'ph-sidebar',
+          url: DemoRoutePaths.offcanvas.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Breadcrumbs',
+          iconClass: 'ph-path',
+          url: DemoRoutePaths.breadcrumbs.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Pagination',
+          iconClass: 'ph-dots-three-outline',
+          url: DemoRoutePaths.pagination.toUrl(),
+        ),
+        DemoNavItem(
           label: t.nav.select,
           iconClass: 'ph-caret-down',
           url: DemoRoutePaths.select.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Typeahead',
+          iconClass: 'ph-magnifying-glass',
+          url: DemoRoutePaths.typeahead.toUrl(),
         ),
         DemoNavItem(
           label: t.nav.multiSelect,

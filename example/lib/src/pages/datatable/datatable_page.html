@@ -2,7 +2,8 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ t.pages.datatable.title }} <span class="fw-normal">{{ t.pages.datatable.subtitle }}</span></h4>
+        <h4 class="page-title mb-0">{{ t.pages.datatable.title }} <span class="fw-normal">{{ t.pages.datatable.subtitle
+            }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
@@ -14,23 +15,23 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">{{ t.pages.datatable.cardTitle }}</h5>
-      </div>
+
 
       <li-tabsx type="tabs" [lazyLoad]="true" [destroyOnHide]="true">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body demo-doc-body">
             <p class="text-muted mb-3">
               A datatable desta biblioteca cobre o fluxo administrativo mais comum: busca por campo,
-              seleção de linhas, exportação, paginação, ordenação, colapso responsivo e uma camada de customização visual por coluna, por linha e por card.
+              seleção de linhas, exportação, paginação, ordenação, colapso responsivo e uma camada de customização
+              visual por coluna, por linha e por card.
             </p>
 
             <div class="demo-doc-grid">
               <div class="demo-doc-card">
                 <h6 class="mb-2">Descrição</h6>
                 <p class="mb-0 text-muted">
-                  O componente atende listagens operacionais que precisam alternar entre tabela e grade sem duplicar fonte de dados, regras de ordenação ou comportamento de busca.
+                  O componente atende listagens operacionais que precisam alternar entre tabela e grade sem duplicar
+                  fonte de dados, regras de ordenação ou comportamento de busca.
                 </p>
               </div>
 
@@ -50,7 +51,8 @@
                 <ul class="mb-0 ps-3">
                   <li><code>cellStyleResolver</code> trabalha com CSS inline, então não substitui um tema completo.</li>
                   <li><code>customCardBuilder</code> é ideal para cards ricos, mas exige montagem manual do markup.</li>
-                  <li>O colapso mobile continua orientado a colunas, então layouts muito densos pedem curadoria das colunas secundárias.</li>
+                  <li>O colapso mobile continua orientado a colunas, então layouts muito densos pedem curadoria das
+                    colunas secundárias.</li>
                 </ul>
               </div>
             </div>
@@ -66,109 +68,92 @@
 
             <div class="demo-doc-section">
               <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
-                <p class="text-muted mb-0">Demo principal com busca, seleção, exportação e alternância entre tabela e grade.</p>
+                <p class="text-muted mb-0">Demo principal com busca, seleção, exportação e alternância entre tabela e
+                  grade.</p>
                 <div class="d-flex flex-wrap gap-2">
-                  <button class="btn btn-sm btn-light" type="button" (click)="toggleGridMode()">{{ t.pages.datatable.toggleGrid }}</button>
-                  <button class="btn btn-sm btn-light" type="button" (click)="toggleSingleSelection()">{{ t.pages.datatable.singleSelection }}</button>
+                  <button class="btn btn-sm btn-light" type="button" (click)="toggleGridMode()">{{
+                    t.pages.datatable.toggleGrid }}</button>
+                  <button class="btn btn-sm btn-light" type="button" (click)="toggleSingleSelection()">{{
+                    t.pages.datatable.singleSelection }}</button>
                   <button class="btn btn-sm btn-primary" type="button" (click)="exportXlsx()">XLSX</button>
                   <button class="btn btn-sm btn-outline-primary" type="button" (click)="exportPdf()">PDF</button>
                 </div>
               </div>
 
-              <li-datatable #demoTable
-                  [dataTableFilter]="filters"
-                  [data]="tableData"
-                  [settings]="tableSettings"
-                  [responsiveCollapse]="true"
-                  [gridMode]="datatableGridMode"
-                  [allowSingleSelectionOnly]="singleSelectionOnly"
-                  [searchInFields]="searchFields"
-                  [searchLabel]="t.pages.datatable.searchLabel"
-                  [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                  (dataRequest)="onTableRequest($event)"
-                  (limitChange)="onTableRequest($event)"
-                  (searchRequest)="onTableRequest($event)"
-                  (onRowClick)="onRowClick($event)"
-                  (selectAll)="onSelectionChange($event)">
+              <li-datatable #demoTable [dataTableFilter]="filters" [data]="tableData" [settings]="tableSettings"
+                [responsiveCollapse]="true" [gridMode]="datatableGridMode"
+                [allowSingleSelectionOnly]="singleSelectionOnly" [searchInFields]="searchFields"
+                [searchLabel]="t.pages.datatable.searchLabel" [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                (dataRequest)="onTableRequest($event)" (limitChange)="onTableRequest($event)"
+                (searchRequest)="onTableRequest($event)" (onRowClick)="onRowClick($event)"
+                (selectAll)="onSelectionChange($event)">
               </li-datatable>
 
-              <div class="demo-summary-box mt-3">{{ datatableEventLog.isEmpty ? initialEventLog : datatableEventLog }}</div>
+              <div class="demo-summary-box mt-3">{{ datatableEventLog.isEmpty ? initialEventLog : datatableEventLog }}
+              </div>
             </div>
 
             <div class="demo-doc-section">
               <h6 class="mb-2">Demos sob demanda</h6>
               <p class="text-muted mb-3">
-                Os exemplos abaixo usam <code>li-accordion</code> com carregamento tardio para evitar que todos os datatables entrem no DOM ao abrir a rota.
+                Os exemplos abaixo usam <code>li-accordion</code> com carregamento tardio para evitar que todos os
+                datatables entrem no DOM ao abrir a rota.
               </p>
 
               <li-accordion [lazy]="true" [destroyOnCollapse]="true">
-                <li-accordion-item header="Exemplo somente leitura" description="Busca e ordenação sem clique de linha nem seleção." (expandedChange)="onReadonlyDemoExpanded($event)">
+                <li-accordion-item header="Exemplo somente leitura"
+                  description="Busca e ordenação sem clique de linha nem seleção."
+                  (expandedChange)="onReadonlyDemoExpanded($event)">
                   <template li-accordion-body>
-                    <li-datatable #readonlyDemoTable *ngIf="showReadonlyDemo"
-                        [dataTableFilter]="readonlyFilters"
-                        [data]="readonlyTableData"
-                        [settings]="tableSettings"
-                        [responsiveCollapse]="true"
-                        [disableRowClick]="true"
-                        [showCheckboxToSelectRow]="false"
-                        [searchInFields]="readonlySearchFields"
-                        [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                        (dataRequest)="onReadonlyTableRequest($event)"
-                        (limitChange)="onReadonlyTableRequest($event)"
-                        (searchRequest)="onReadonlyTableRequest($event)">
+                    <li-datatable #readonlyDemoTable *ngIf="showReadonlyDemo" [dataTableFilter]="readonlyFilters"
+                      [data]="readonlyTableData" [settings]="tableSettings" [responsiveCollapse]="true"
+                      [disableRowClick]="true" [showCheckboxToSelectRow]="false" [searchInFields]="readonlySearchFields"
+                      [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                      (dataRequest)="onReadonlyTableRequest($event)" (limitChange)="onReadonlyTableRequest($event)"
+                      (searchRequest)="onReadonlyTableRequest($event)">
                     </li-datatable>
                   </template>
                 </li-accordion-item>
 
-                <li-accordion-item header="Exemplo em modo grade" description="Mesmo dataset reaproveitado como cartões." (expandedChange)="onGridPreviewDemoExpanded($event)">
+                <li-accordion-item header="Exemplo em modo grade"
+                  description="Mesmo dataset reaproveitado como cartões."
+                  (expandedChange)="onGridPreviewDemoExpanded($event)">
                   <template li-accordion-body>
                     <li-datatable #gridPreviewDemoTable *ngIf="showGridPreviewDemo"
-                        [dataTableFilter]="gridPreviewFilters"
-                        [data]="gridPreviewTableData"
-                        [settings]="tableSettings"
-                        [gridMode]="true"
-                        [disableRowClick]="true"
-                        [showCheckboxToSelectRow]="false"
-                        [searchInFields]="searchFields"
-                        [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                        (dataRequest)="onGridPreviewTableRequest($event)"
-                        (limitChange)="onGridPreviewTableRequest($event)"
-                        (searchRequest)="onGridPreviewTableRequest($event)">
+                      [dataTableFilter]="gridPreviewFilters" [data]="gridPreviewTableData" [settings]="tableSettings"
+                      [gridMode]="true" [disableRowClick]="true" [showCheckboxToSelectRow]="false"
+                      [searchInFields]="searchFields" [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                      (dataRequest)="onGridPreviewTableRequest($event)"
+                      (limitChange)="onGridPreviewTableRequest($event)"
+                      (searchRequest)="onGridPreviewTableRequest($event)">
                     </li-datatable>
                   </template>
                 </li-accordion-item>
 
-                <li-accordion-item header="Tabela com width, cor por coluna e cor por linha" description="Combina width fixa, cellStyleResolver e rowStyleResolver no mesmo cenário." (expandedChange)="onCustomTableDemoExpanded($event)">
+                <li-accordion-item header="Tabela com width, cor por coluna e cor por linha"
+                  description="Combina width fixa, cellStyleResolver e rowStyleResolver no mesmo cenário."
+                  (expandedChange)="onCustomTableDemoExpanded($event)">
                   <template li-accordion-body>
                     <li-datatable #customTableDemoTable *ngIf="showCustomTableDemo"
-                        [dataTableFilter]="customTableFilters"
-                        [data]="customTableData"
-                        [settings]="advancedTableSettings"
-                        [searchInFields]="searchFields"
-                        [disableRowClick]="true"
-                        [showCheckboxToSelectRow]="false"
-                        [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                        (dataRequest)="onCustomTableRequest($event)"
-                        (limitChange)="onCustomTableRequest($event)"
-                        (searchRequest)="onCustomTableRequest($event)">
+                      [dataTableFilter]="customTableFilters" [data]="customTableData" [settings]="advancedTableSettings"
+                      [searchInFields]="searchFields" [disableRowClick]="true" [showCheckboxToSelectRow]="false"
+                      [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                      (dataRequest)="onCustomTableRequest($event)" (limitChange)="onCustomTableRequest($event)"
+                      (searchRequest)="onCustomTableRequest($event)">
                     </li-datatable>
                   </template>
                 </li-accordion-item>
 
-                <li-accordion-item header="Grid com customCardBuilder" description="Card montado manualmente só quando o item é aberto." (expandedChange)="onCustomGridDemoExpanded($event)">
+                <li-accordion-item header="Grid com customCardBuilder"
+                  description="Card montado manualmente só quando o item é aberto."
+                  (expandedChange)="onCustomGridDemoExpanded($event)">
                   <template li-accordion-body>
-                    <li-datatable #customGridDemoTable *ngIf="showCustomGridDemo"
-                        [dataTableFilter]="customGridFilters"
-                        [data]="customGridData"
-                        [settings]="advancedGridSettings"
-                        [gridMode]="true"
-                        [disableRowClick]="true"
-                        [showCheckboxToSelectRow]="false"
-                        [searchInFields]="searchFields"
-                        [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                        (dataRequest)="onCustomGridRequest($event)"
-                        (limitChange)="onCustomGridRequest($event)"
-                        (searchRequest)="onCustomGridRequest($event)">
+                    <li-datatable #customGridDemoTable *ngIf="showCustomGridDemo" [dataTableFilter]="customGridFilters"
+                      [data]="customGridData" [settings]="advancedGridSettings" [gridMode]="true"
+                      [disableRowClick]="true" [showCheckboxToSelectRow]="false" [searchInFields]="searchFields"
+                      [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                      (dataRequest)="onCustomGridRequest($event)" (limitChange)="onCustomGridRequest($event)"
+                      (searchRequest)="onCustomGridRequest($event)">
                     </li-datatable>
                   </template>
                 </li-accordion-item>
@@ -180,7 +165,8 @@
                 <div>
                   <h6 class="mb-2">Modal lazy loading com datatable</h6>
                   <p class="text-muted mb-0">
-                    Este cenário abre um <code>li-modal</code> com <code>lazyContent</code> e instancia o <code>li-datatable</code> somente depois da abertura.
+                    Este cenário abre um <code>li-modal</code> com <code>lazyContent</code> e instancia o
+                    <code>li-datatable</code> somente depois da abertura.
                   </p>
                 </div>
                 <button class="btn btn-sm btn-primary" type="button" (click)="openLazyDatatableModal()">
@@ -188,28 +174,19 @@
                 </button>
               </div>
 
-              <li-modal #lazyDatatableModal
-                  title-text="Modal lazy com datatable"
-                  size="xtra-large"
-                  [lazyContent]="true"
-                  [dialogScrollable]="true"
-                  [enableShadow]="true">
+              <li-modal #lazyDatatableModal title-text="Modal lazy com datatable" size="xtra-large" [lazyContent]="true"
+                [dialogScrollable]="true" [enableShadow]="true">
                 <div class="p-1">
                   <p class="text-muted mb-3">
-                    O conteúdo do modal só entra no DOM quando ele abre. O datatable reutiliza o mesmo dataset da página para verificar se o primeiro render funciona corretamente.
+                    O conteúdo do modal só entra no DOM quando ele abre. O datatable reutiliza o mesmo dataset da página
+                    para verificar se o primeiro render funciona corretamente.
                   </p>
 
-                  <li-datatable
-                      [dataTableFilter]="modalTableFilters"
-                      [data]="modalTableData"
-                      [settings]="advancedTableSettings"
-                      [searchInFields]="searchFields"
-                      [disableRowClick]="true"
-                      [showCheckboxToSelectRow]="false"
-                      [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                      (dataRequest)="onModalTableRequest($event)"
-                      (limitChange)="onModalTableRequest($event)"
-                      (searchRequest)="onModalTableRequest($event)">
+                  <li-datatable [dataTableFilter]="modalTableFilters" [data]="modalTableData"
+                    [settings]="advancedTableSettings" [searchInFields]="searchFields" [disableRowClick]="true"
+                    [showCheckboxToSelectRow]="false" [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                    (dataRequest)="onModalTableRequest($event)" (limitChange)="onModalTableRequest($event)"
+                    (searchRequest)="onModalTableRequest($event)">
                   </li-datatable>
 
                   <div class="d-flex justify-content-end mt-3">
@@ -229,7 +206,9 @@
               <div class="demo-doc-card">
                 <h6 class="mb-2">Como utilizar</h6>
                 <p class="mb-0 text-muted">
-                  O componente é controlado por três peças: <code>Filters</code> para paginação e busca, <code>DataFrame</code> para os dados e <code>DatatableSettings</code> para as colunas e o comportamento visual.
+                  O componente é controlado por três peças: <code>Filters</code> para paginação e busca,
+                  <code>DataFrame</code> para os dados e <code>DatatableSettings</code> para as colunas e o
+                  comportamento visual.
                 </p>
               </div>
 
@@ -248,7 +227,8 @@
                 <ul class="mb-0 ps-3">
                   <li>Mantenha o <code>DataFrame</code> estável e atualize apenas filtros e seleção.</li>
                   <li>Use <code>hideOnMobile</code> nas colunas secundárias.</li>
-                  <li>Reserve <code>customCardBuilder</code> para grids que realmente precisam fugir do layout padrão.</li>
+                  <li>Reserve <code>customCardBuilder</code> para grids que realmente precisam fugir do layout padrão.
+                  </li>
                 </ul>
               </div>
             </div>
@@ -257,7 +237,8 @@
               <div class="col-xl-6">
                 <h6 class="mb-2">Colunas e estilos</h6>
                 <ul class="mb-3 ps-3">
-                  <li><code>width</code>, <code>minWidth</code> e <code>maxWidth</code> controlam a largura efetiva da coluna.</li>
+                  <li><code>width</code>, <code>minWidth</code> e <code>maxWidth</code> controlam a largura efetiva da
+                    coluna.</li>
                   <li><code>headerClass</code> e <code>cellClass</code> adicionam classes sem mexer no template.</li>
                   <li><code>styleCss</code> e <code>cellStyleResolver</code> controlam cor e estilo por coluna.</li>
                   <li><code>rowStyleResolver</code> devolve uma string CSS por linha inteira com base nos dados.</li>
@@ -285,7 +266,8 @@
                   <li><code>rowStyleResolver</code> permite destacar uma linha inteira sem alterar o template.</li>
                   <li><code>gridTemplateColumns</code> define a malha do grid.</li>
                   <li><code>gridGap</code> controla o espaçamento entre cartões.</li>
-                  <li><code>customCardBuilder</code> recebe <code>itemMap</code>, <code>itemInstance</code> e <code>row</code> para montar um <code>Element</code> completo.</li>
+                  <li><code>customCardBuilder</code> recebe <code>itemMap</code>, <code>itemInstance</code> e
+                    <code>row</code> para montar um <code>Element</code> completo.</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>DatatableSettings(
@@ -310,14 +292,17 @@
             <div class="demo-doc-section">
               <h6 class="mb-2">Fluxo mínimo full stack com Product</h6>
               <p class="text-muted mb-3">
-                Abaixo está um fluxo mínimo, baseado no padrão real de <strong>backend</strong> e <strong>frontend</strong> deste repositório. Os snippets ficam estáticos no próprio template para evitar sobrecarga dinâmica.
+                Abaixo está um fluxo mínimo, baseado no padrão real de <strong>backend</strong> e
+                <strong>frontend</strong> deste repositório. Os snippets ficam estáticos no próprio template para evitar
+                sobrecarga dinâmica.
               </p>
 
               <div class="row g-4">
                 <div class="col-xl-6">
                   <div class="demo-code-card">
                     <h6 class="mb-2">1. Model Product</h6>
-                    <p class="text-muted mb-3">Estrutura mínima seguindo o padrão de models do core com <code>SerializeBase</code>.</p>
+                    <p class="text-muted mb-3">Estrutura mínima seguindo o padrão de models do core com
+                      <code>SerializeBase</code>.</p>
                     <pre class="demo-code-block mb-0"><code>import 'serialize_base.dart';
 
 class Product implements SerializeBase {
@@ -369,7 +354,8 @@ class Product implements SerializeBase {
                 <div class="col-xl-6">
                   <div class="demo-code-card">
                     <h6 class="mb-2">2. Backend com Eloquent + DataFrame</h6>
-                    <p class="text-muted mb-3">O repositório consulta a tabela, aplica filtros, paginação e ordenação, e retorna um <code>DataFrame</code> pronto para serialização.</p>
+                    <p class="text-muted mb-3">O repositório consulta a tabela, aplica filtros, paginação e ordenação, e
+                      retorna um <code>DataFrame</code> pronto para serialização.</p>
                     <pre class="demo-code-block mb-0"><code>class ProductRepository {
   final Connection db;
 
@@ -421,7 +407,8 @@ class ProductController {
                 <div class="col-xl-6">
                   <div class="demo-code-card">
                     <h6 class="mb-2">3. Service no frontend</h6>
-                    <p class="text-muted mb-3">O service consome a rota e transforma o JSON em <code>DataFrame&lt;Product&gt;</code> usando o builder.</p>
+                    <p class="text-muted mb-3">O service consome a rota e transforma o JSON em
+                      <code>DataFrame&lt;Product&gt;</code> usando o builder.</p>
                     <pre class="demo-code-block mb-0"><code>class ProductService extends RestServiceBase {
   ProductService(RestConfig conf) : super(conf);
 
@@ -441,7 +428,8 @@ class ProductController {
                 <div class="col-xl-6">
                   <div class="demo-code-card">
                     <h6 class="mb-2">4. Page AngularDart</h6>
-                    <p class="text-muted mb-3">A page mantém <code>Filters</code>, <code>DatatableSettings</code> e chama o service sempre que o datatable emite <code>dataRequest</code>.</p>
+                    <p class="text-muted mb-3">A page mantém <code>Filters</code>, <code>DatatableSettings</code> e
+                      chama o service sempre que o datatable emite <code>dataRequest</code>.</p>
                     <pre class="demo-code-block mb-0"><code>class ListaProdutoPage implements OnActivate {
   ListaProdutoPage(this.hostElement, this.productService);
 
@@ -481,7 +469,8 @@ class ProductController {
                 <div class="col-12">
                   <div class="demo-code-card">
                     <h6 class="mb-2">5. Template com li-datatable</h6>
-                    <p class="text-muted mb-3">No template, o datatable recebe o filtro, os dados e as definições de coluna, reproduzindo o padrão das páginas reais do frontend.</p>
+                    <p class="text-muted mb-3">No template, o datatable recebe o filtro, os dados e as definições de
+                      coluna, reproduzindo o padrão das páginas reais do frontend.</p>
                     <pre class="demo-code-block mb-0"><code>&lt;div class="card"&gt;
   &lt;li-datatable
       [dataTableFilter]="filtro"

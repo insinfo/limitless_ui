@@ -4,28 +4,48 @@ import 'dart:html';
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 
-import 'br_currency_input_formatter.dart';
+import 'currency_input_formatter.dart';
 
 @Component(
   selector: 'li-currency-input',
-  templateUrl: 'br_currency_input_component.html',
-  styleUrls: ['br_currency_input_component.css'],
+  templateUrl: 'currency_input_component.html',
+  styleUrls: ['currency_input_component.css'],
   directives: [coreDirectives],
   providers: [
     ExistingProvider.forToken(ngValueAccessor, LiCurrencyInputComponent),
   ],
 )
 class LiCurrencyInputComponent
-    implements ControlValueAccessor<int?>, AfterViewInit, OnDestroy {
+    implements
+        ControlValueAccessor<int?>,
+        AfterViewInit,
+        OnDestroy,
+        AfterChanges {
   final HtmlElement _hostElement;
 
   LiCurrencyInputComponent(this._hostElement);
 
-  @Input()
-  String placeholder = '0,00';
+  String? _customPlaceholder;
+  String? _customPrefix;
 
   @Input()
-  String prefix = 'R\$';
+  set placeholder(String? value) {
+    _customPlaceholder = value?.trim().isEmpty ?? true ? null : value!.trim();
+  }
+
+  @Input()
+  set prefix(String? value) {
+    _customPrefix = value?.trim().isEmpty ?? true ? null : value!.trim();
+  }
+
+  @Input()
+  String locale = 'pt_BR';
+
+  @Input()
+  String currencyCode = 'BRL';
+
+  @Input()
+  int decimalDigits = 2;
 
   @Input()
   bool disabled = false;
@@ -47,6 +67,22 @@ class LiCurrencyInputComponent
   MutationObserver? _hostClassObserver;
 
   String get resolvedInputClass => '$inputClass br-currency-input__field';
+
+  String get resolvedPlaceholder =>
+      _customPlaceholder ?? formatter.formatForEditing(0);
+
+  String get resolvedPrefix =>
+      _customPrefix ??
+      CurrencyInputFormatter.currencySymbol(
+        currencyCode,
+        locale: locale,
+      );
+
+  CurrencyInputFormatter get formatter => CurrencyInputFormatter(
+        locale: locale,
+        currencyCode: currencyCode,
+        decimalDigits: decimalDigits,
+      );
 
   ChangeFunction<int?> onChange = (int? _, {String? rawValue}) {};
   TouchFunction onTouched = () {};
@@ -70,10 +106,15 @@ class LiCurrencyInputComponent
 
     _minorUnits = parsedValue;
     displayValue = _isFocused
-        ? BrazilianCurrencyInputFormatter.formatForEditing(_minorUnits)
-        : BrazilianCurrencyInputFormatter.formatForDisplay(_minorUnits);
+        ? formatter.formatForEditing(_minorUnits)
+        : formatter.formatForDisplay(_minorUnits);
     _syncInputValue();
     _syncRequiredValidationState();
+  }
+
+  @override
+  void ngAfterChanges() {
+    writeValue(_minorUnits);
   }
 
   @override
@@ -107,12 +148,8 @@ class LiCurrencyInputComponent
   }
 
   void handleInput(String rawValue) {
-    final sanitized = BrazilianCurrencyInputFormatter.sanitizeForEditing(
-      rawValue,
-    );
-    final minorUnits = BrazilianCurrencyInputFormatter.minorUnitsFromText(
-      sanitized,
-    );
+    final sanitized = formatter.sanitizeForEditing(rawValue);
+    final minorUnits = formatter.minorUnitsFromText(sanitized);
 
     _minorUnits = minorUnits;
     displayValue = sanitized;
@@ -131,8 +168,7 @@ class LiCurrencyInputComponent
 
   void handleInputFocus() {
     _isFocused = true;
-    final editingValue =
-        BrazilianCurrencyInputFormatter.formatForEditing(_minorUnits);
+    final editingValue = formatter.formatForEditing(_minorUnits);
     if (editingValue != displayValue) {
       displayValue = editingValue;
       _syncInputValue();
@@ -142,9 +178,7 @@ class LiCurrencyInputComponent
 
   void handleInputBlur() {
     _isFocused = false;
-    displayValue = BrazilianCurrencyInputFormatter.formatForDisplay(
-      _minorUnits,
-    );
+    displayValue = formatter.formatForDisplay(_minorUnits);
     _syncInputValue();
     _syncRequiredValidationState();
     onTouched();

@@ -2,7 +2,8 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ t.pages.treeview.title }} <span class="fw-normal">{{ t.pages.treeview.subtitle }}</span></h4>
+        <h4 class="page-title mb-0">{{ t.pages.treeview.title }} <span class="fw-normal">{{ t.pages.treeview.subtitle
+            }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
@@ -14,9 +15,7 @@
 
   <div class="content">
     <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">{{ t.pages.treeview.cardTitle }}</h5>
-      </div>
+
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
@@ -26,7 +25,8 @@
               <div class="col-lg-4">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">O treeview organiza estruturas hierárquicas como módulos, permissões, pastas e mapas de navegação em uma única área de leitura.</p>
+                  <p class="mb-0 text-muted">O treeview organiza estruturas hierárquicas como módulos, permissões,
+                    pastas e mapas de navegação em uma única área de leitura.</p>
                 </div>
               </div>
               <div class="col-lg-4">
@@ -51,24 +51,141 @@
               </div>
             </div>
 
-            <li-treeview [data]="treeNodes" [searchPlaceholder]="t.pages.treeview.searchPlaceholder"></li-treeview>
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="card card-body">
+                  <h6 class="mb-2">Treeview clássico</h6>
+                  <p class="text-muted mb-3">Mantém a leitura hierárquica completa na própria página, com busca local,
+                    expandir/recolher e seleção em cascata.</p>
+                  <li-treeview [data]="treeNodes"
+                    [searchPlaceholder]="t.pages.treeview.searchPlaceholder"></li-treeview>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Dropdown select com árvore estática</h6>
+                  <p class="text-muted mb-3">Usa <code>ngModel</code> para retornar o <code>value</code> do nó
+                    selecionado sem abrir a árvore inteira fora do fluxo do formulário.</p>
+
+                  <label class="form-label fw-semibold">Módulo ou status</label>
+                  <li-treeview-select [data]="staticDropdownNodes"
+                    [searchPlaceholder]="'Buscar por módulo ou status'"
+                    placeholder="Selecione um nó da árvore"
+                    [(ngModel)]="selectedStaticTreeValue">
+                  </li-treeview-select>
+
+                  <div class="treeview-demo-note mt-3">
+                    <strong>Valor atual:</strong> {{ selectedStaticTreeValueText }}<br>
+                    <strong>Rótulo:</strong> {{ selectedStaticTreeLabel }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">Dropdown select com carregamento em partes</h6>
+                  <p class="text-muted mb-3">O <code>pageLoader</code> busca apenas páginas da raiz e dos filhos
+                    expandidos. O mesmo contrato recebe <code>searchTerm</code>, então a busca remota já pode ser
+                    resolvida pelo backend sem materializar a árvore inteira no cliente.</p>
+
+                  <label class="form-label fw-semibold">Catálogo grande</label>
+                  <li-treeview-select [pageLoader]="loadTreeChunk"
+                    [pageSize]="2"
+                    [searchPlaceholder]="'Buscar no catálogo lazy'"
+                    placeholder="Carregar catálogo por páginas"
+                    [(ngModel)]="selectedLazyTreeValue">
+                  </li-treeview-select>
+
+                  <div class="treeview-demo-note mt-3">
+                    <strong>Valor atual:</strong> {{ selectedLazyTreeValueText }}<br>
+                    <strong>Rótulo:</strong> {{ selectedLazyTreeLabel }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="card card-body">
+                  <h6 class="mb-2">Custom render + múltipla seleção</h6>
+                  <p class="text-muted mb-3">A API aceita <code>TemplateRef</code> para o trigger e para cada nó,
+                    além de <code>labelBuilder</code> e <code>canSelectNode</code> para regras de exibição e seleção.</p>
+
+                  <label class="form-label fw-semibold">Nós finais do catálogo</label>
+                  <li-treeview-select [data]="staticDropdownNodes"
+                    [multiple]="true"
+                    [closeOnSelect]="false"
+                    [labelBuilder]="customNodeLabel"
+                    [canSelectNode]="canSelectOnlyLeafNodes"
+                    placeholder="Selecione um ou mais nós finais"
+                    [(ngModel)]="selectedMultiTreeValues">
+
+                    <template liTreeviewSelectTrigger let-ctx>
+                      <span *ngIf="!ctx.hasSelection" class="text-muted">
+                        {{ ctx.placeholder }}
+                      </span>
+                      <span *ngIf="ctx.hasSelection" class="treeview-trigger-chips">
+                        <span *ngFor="let label of ctx.labels; let i = index"
+                          class="treeview-trigger-chip"
+                          [hidden]="i > 1">
+                          {{ label }}
+                        </span>
+                        <span *ngIf="ctx.labels.length > 2"
+                          class="treeview-trigger-chip treeview-trigger-chip--muted">
+                          +{{ ctx.labels.length - 2 }}
+                        </span>
+                      </span>
+                    </template>
+
+                    <template liTreeviewSelectNode let-ctx>
+                      <div class="treeview-custom-node">
+                        <span>{{ ctx.node.treeViewNodeLabel }}</span>
+                        <small class="text-muted ms-2">{{ ctx.node.value ?? 'grupo' }}</small>
+                        <span *ngIf="ctx.disabled" class="badge bg-light text-muted border ms-2">Somente leitura</span>
+                      </div>
+                    </template>
+                  </li-treeview-select>
+
+                  <div class="treeview-demo-note mt-3">
+                    <strong>Valores atuais:</strong> {{ selectedMultiTreeValueText }}<br>
+                    <strong>Rótulos:</strong> {{ selectedMultiTreeLabel }}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </li-tabx>
 
         <li-tabx header="API">
           <div class="card-body">
-            <p class="text-muted mb-3">Use o componente para representar relações hierárquicas quando a leitura por níveis for mais clara do que uma tabela simples.</p>
+            <p class="text-muted mb-3">Use o componente para representar relações hierárquicas quando a leitura por
+              níveis for mais clara do que uma tabela simples.</p>
             <ul class="mb-3 ps-3">
               <li><code>[data]</code> recebe a lista hierárquica de nós.</li>
               <li><code>[searchPlaceholder]</code> ajusta o texto da busca.</li>
               <li>A expansão e o recolhimento são controlados pela estrutura da árvore.</li>
               <li>O componente é indicado para navegação técnica, permissões e catálogos.</li>
+              <li><code>li-treeview-select</code> oferece seleção única em dropdown com
+                <code>ngModel</code>.</li>
+              <li><code>[multiple]</code> troca o modelo para <code>List&lt;dynamic&gt;</code> e mantém o dropdown aberto
+                se <code>[closeOnSelect]="false"</code>.</li>
+              <li><code>[pageLoader]</code> permite carregar páginas da raiz e dos filhos sob demanda.</li>
+              <li><code>[labelBuilder]</code> e <code>[canSelectNode]</code> customizam rótulo e regra de seleção.</li>
+              <li><code>template[liTreeviewSelectNode]</code> e <code>template[liTreeviewSelectTrigger]</code>
+                permitem custom render.</li>
+              <li><code>[pageSize]</code> controla quantos nós entram por lote em cada expansão.</li>
             </ul>
 
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-treeview
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-treeview
   [data]="treeNodes"
   [searchPlaceholder]="'Buscar nó'"&gt;
 &lt;/li-treeview&gt;</code></pre>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-treeview-select
+  [pageLoader]="loadTreeChunk"
+  [pageSize]="20"
+  placeholder="Selecione um nó"
+  [(ngModel)]="selectedValue"&gt;
+&lt;/li-treeview-select&gt;</code></pre>
           </div>
         </li-tabx>
       </li-tabsx>

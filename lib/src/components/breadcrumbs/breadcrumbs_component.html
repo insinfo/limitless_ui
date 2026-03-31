@@ -1,0 +1,18 @@
+<nav class="li-breadcrumb" [attr.aria-label]="ariaLabel">
+  <div [class]="shellClasses">
+    <div *ngIf="hasStart" class="li-breadcrumb-slot li-breadcrumb-start">
+      <ng-content select="[liBreadcrumbStart]"></ng-content>
+    </div>
+
+    <div class="li-breadcrumb-main">
+      <div [class]="breadcrumbClasses">
+        <span *ngIf="helperText.isNotEmpty" [class]="helperTextClass">{{ helperText }}</span>
+        <ng-content select="[liBreadcrumbItem]"></ng-content>
+      </div>
+    </div>
+
+    <div *ngIf="hasEnd" class="li-breadcrumb-slot li-breadcrumb-end">
+      <ng-content select="[liBreadcrumbEnd]"></ng-content>
+    </div>
+  </div>
+</nav>
