@@ -4,7 +4,7 @@
         [attr.aria-expanded]="dropdownOpen.toString()"
         [attr.aria-controls]="listboxId"
         aria-haspopup="listbox"
-        (click)="toggleDropdown()" (clickOutside)="closeDropdown()" tabindex="0"
+        (click)="toggleDropdown()" (clickOutside)="closeDropdown(restoreFocus: false)" tabindex="0"
         [disabled]="isDisabled">
 
         <span class="dropdown-value" *ngIf="selectedValues.isEmpty == true">{{ placeholder}}</span>
@@ -13,6 +13,14 @@
             <span class="badge text-teal bg-teal bg-opacity-20 me-2" *ngFor="let selVal of selectedLabels">
                 {{ selVal }} 
             </span>
+        </span>
+
+        <span *ngIf="showClearButton && hasSelection && !isDisabled"
+            class="dropdown-clear"
+            role="button"
+            [attr.aria-label]="clearButtonLabel"
+            (click)="clearSelection($event)">
+            <i class="ph ph-x"></i>
         </span>
 
     </button>

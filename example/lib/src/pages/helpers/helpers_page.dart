@@ -96,6 +96,67 @@ class HelpersPageComponent implements OnDestroy {
     helperState = t.pages.helpers.sweetWarningState;
   }
 
+  Future<void> showSweetModal() async {
+    final result = await SweetAlert.show(
+      title: t.pages.helpers.sweetModalTitle,
+      message: t.pages.helpers.sweetModalBody,
+      type: SweetAlertType.success,
+      confirmButtonText: 'OK',
+      showCloseButton: true,
+      footer: t.pages.helpers.sweetSuccessState,
+    );
+
+    helperState = result.isConfirmed
+        ? t.pages.helpers.sweetModalState
+        : t.pages.helpers.sweetModalDismissed;
+  }
+
+  Future<void> showSweetConfirm() async {
+    final result = await SweetAlert.confirm(
+      title: t.pages.helpers.sweetConfirmTitle,
+      message: t.pages.helpers.sweetConfirmBody,
+      type: SweetAlertType.question,
+      confirmButtonText: t.pages.helpers.sweetConfirmOk,
+      cancelButtonText: t.pages.helpers.sweetConfirmCancel,
+      showCloseButton: true,
+    );
+
+    helperState = result.isConfirmed
+        ? t.pages.helpers.sweetConfirmTrue
+        : t.pages.helpers.sweetConfirmFalse;
+  }
+
+  Future<void> showSweetPrompt() async {
+    final result = await SweetAlert.prompt(
+      title: t.pages.helpers.sweetPromptTitle,
+      message: t.pages.helpers.sweetPromptBody,
+      type: SweetAlertType.info,
+      inputPlaceholder: t.pages.helpers.sweetPromptPlaceholder,
+      confirmButtonText: t.pages.helpers.sweetPromptOk,
+      cancelButtonText: t.pages.helpers.sweetPromptCancel,
+      inputValidator: (value) {
+        if (value.trim().isEmpty) {
+          return t.pages.helpers.sweetPromptValidation;
+        }
+        return null;
+      },
+    );
+
+    helperState = result.isConfirmed
+        ? '${t.pages.helpers.sweetPromptFilledPrefix}: ${result.value}'
+        : t.pages.helpers.sweetPromptDismissed;
+  }
+
+  void showSweetErrorToast() {
+    SweetAlertSimpleToast.showToast(
+      t.pages.helpers.sweetErrorBody,
+      type: SweetAlertType.error,
+      position: SweetAlertPosition.bottomEnd,
+      duration: 4000,
+    );
+    helperState = t.pages.helpers.sweetErrorState;
+  }
+
   @override
   void ngOnDestroy() {
     _loading.hide();

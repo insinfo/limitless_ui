@@ -6,7 +6,7 @@
   </div>
   <div class="page-header-content d-lg-flex border-top">
     <div class="breadcrumb py-2">
-      <span class="breadcrumb-item active">Hierarquia contextual e trilhas de navegação</span>
+      <span class="breadcrumb-item active">Layouts, divisores, ações laterais e superfícies no estilo Limitless</span>
     </div>
   </div>
 </div>
@@ -17,57 +17,503 @@
       <li-tabx header="Visão geral" [active]="true">
         <div class="card-body">
           <p class="text-muted mb-4">
-            <code>li-breadcrumb</code> organiza trilhas de navegação com divisores, helper text e slots laterais para ações rápidas ou contexto adicional.
+            <code>li-breadcrumb</code> agora cobre mais cenários de cabeçalho e linha de ações, com exemplos próximos
+            dos layouts mostrados no Limitless.
           </p>
 
-          <div class="row g-3">
-            <div class="col-xl-6">
-              <div class="card card-body h-100 mb-0">
-                <h6 class="mb-2">Básico</h6>
-                <p class="text-muted mb-3">Caminho enxuto para páginas internas, mantendo o último item como contexto atual.</p>
+          <div class="mb-3">
+            <h6 class="mb-0">Breadcrumb location</h6>
+            <span class="text-muted d-block">Variações de posição no topo, rodapé do header e como componente
+              isolado.</span>
+          </div>
 
+          <div class="card mb-3">
+            <div class="page-header page-header-content d-lg-flex">
+              <div class="page-title">
+                <h5 class="mb-0">Header <span class="fw-normal">Breadcrumb</span></h5>
+                <div class="text-muted">Breadcrumb dentro do bloco de título.</div>
+              </div>
+
+              <div class="mb-3 my-lg-auto ms-lg-auto">
                 <li-breadcrumb>
-                  <ng-container *ngFor="let item of accountTrail">
-                    <a *ngIf="!item.active" liBreadcrumbItem [attr.href]="item.href">{{ item.label }}</a>
-                    <span *ngIf="item.active" liBreadcrumbItem [active]="true">{{ item.label }}</span>
-                  </ng-container>
+                  <a liBreadcrumbItem href="#home">Home</a>
+                  <a liBreadcrumbItem href="#components">Components</a>
+                  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
                 </li-breadcrumb>
               </div>
             </div>
+          </div>
 
-            <div class="col-xl-6">
-              <div class="card card-body h-100 mb-0">
-                <h6 class="mb-2">Helper text e ações</h6>
-                <p class="text-muted mb-3">O slot inicial segura metadados; o slot final encaixa atalhos ou ações sem quebrar a linha principal.</p>
-
-                <li-breadcrumb divider="dash" helperText="Library" breadcrumbClass="breadcrumb-demo-surface">
-                  <span liBreadcrumbStart class="badge bg-primary-subtle text-primary">v2.0</span>
-
-                  <ng-container *ngFor="let item of catalogTrail">
-                    <a *ngIf="!item.active" liBreadcrumbItem [attr.href]="item.href">{{ item.label }}</a>
-                    <span *ngIf="item.active" liBreadcrumbItem [active]="true">{{ item.label }}</span>
-                  </ng-container>
+          <div class="card mb-3">
+            <div class="page-header">
+              <div class="page-header-content border-bottom">
+                <li-breadcrumb breadcrumbClass="py-2">
+                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                  <a liBreadcrumbItem href="#components">Components</a>
+                  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
 
                   <div liBreadcrumbEnd class="breadcrumb-demo-actions">
-                    <button type="button" class="btn btn-sm btn-light">Duplicate</button>
-                    <button type="button" class="btn btn-sm btn-primary">Publish</button>
+                    <a href="#support" class="d-flex align-items-center text-body py-2">
+                      <i class="ph-lifebuoy me-2"></i>
+                      Support
+                    </a>
+                    <button type="button" class="btn btn-sm btn-light">
+                      <i class="ph-gear me-2"></i>
+                      Settings
+                    </button>
+                  </div>
+                </li-breadcrumb>
+              </div>
+
+              <div class="page-header-content d-lg-flex flex-lg-wrap">
+                <div class="page-title">
+                  <h5 class="mb-0">Breadcrumb <span class="fw-normal">Top Full Width</span></h5>
+                  <div class="text-muted">Posicionado antes do conteúdo principal do cabeçalho.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <div class="page-header page-header-content d-lg-flex flex-lg-wrap">
+              <div class="pt-3">
+                <li-breadcrumb>
+                  <a liBreadcrumbItem href="#home">Home</a>
+                  <a liBreadcrumbItem href="#components">Components</a>
+                  <span liBreadcrumbItem [active]="true">Breadcrumb</span>
+                </li-breadcrumb>
+
+                <div class="page-title mt-2">
+                  <h5 class="mb-0">Breadcrumb <span class="fw-normal">Top Transparent</span></h5>
+                  <div class="text-muted">Sem borda extra nem superfície destacada.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <div class="page-header">
+              <div class="page-header-content d-lg-flex flex-lg-wrap">
+                <div class="page-title">
+                  <h5 class="mb-0">Breadcrumb <span class="fw-normal">Bottom Full Width</span></h5>
+                  <div class="text-muted">Posição inferior padrão com ações no lado direito.</div>
+                </div>
+              </div>
+
+              <div class="page-header-content border-top">
+                <li-breadcrumb breadcrumbClass="py-2">
+                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                  <a liBreadcrumbItem href="#components">Components</a>
+                  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+
+                  <div liBreadcrumbEnd class="breadcrumb-demo-actions">
+                    <a href="#support" class="d-flex align-items-center text-body py-2">
+                      <i class="ph-lifebuoy me-2"></i>
+                      Support
+                    </a>
+                    <button type="button" class="btn btn-sm btn-light">
+                      <i class="ph-gear me-2"></i>
+                      Settings
+                    </button>
                   </div>
                 </li-breadcrumb>
               </div>
             </div>
+          </div>
 
-            <div class="col-12">
-              <div class="card card-body mb-0">
-                <h6 class="mb-2">Estados ativos e bloqueados</h6>
-                <p class="text-muted mb-3">Itens desabilitados continuam visíveis na trilha, mas sem semântica de interação.</p>
+          <div class="card mb-4">
+            <div class="page-header page-header-content pb-3">
+              <div class="page-title">
+                <h5 class="mb-0">Breadcrumb <span class="fw-normal">Bottom Component</span></h5>
+                <div class="text-muted">Usando o breadcrumb como barra independente no rodapé do header.</div>
+              </div>
 
-                <li-breadcrumb divider="arrows" [wrap]="false" lineClass="overflow-auto" breadcrumbClass="text-nowrap">
-                  <ng-container *ngFor="let item of checkoutTrail">
-                    <a *ngIf="!item.active && !item.disabled" liBreadcrumbItem [attr.href]="item.href">{{ item.label }}</a>
-                    <button *ngIf="item.disabled" type="button" liBreadcrumbItem [disabled]="true">{{ item.label }}</button>
-                    <span *ngIf="item.active" liBreadcrumbItem [active]="true">{{ item.label }}</span>
-                  </ng-container>
+              <div class="card flex-lg-row flex-lg-wrap px-3 mt-3 mb-0">
+                <li-breadcrumb breadcrumbClass="py-2">
+                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                  <a liBreadcrumbItem href="#components">Components</a>
+                  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+
+                  <div liBreadcrumbEnd class="breadcrumb-demo-actions">
+                    <a href="#support" class="d-flex align-items-center text-body py-2">
+                      <i class="ph-lifebuoy me-2"></i>
+                      Support
+                    </a>
+                    <button type="button" class="btn btn-sm btn-light">
+                      <i class="ph-gear me-2"></i>
+                      Settings
+                    </button>
+                  </div>
                 </li-breadcrumb>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <h6 class="mb-0">Page title breadcrumb</h6>
+            <span class="text-muted d-block">Exemplos condensados acima e abaixo do título.</span>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="page-header page-header-content">
+                  <div class="page-title">
+                    <li-breadcrumb breadcrumbClass="mb-1">
+                      <a liBreadcrumbItem href="#home">Home</a>
+                      <a liBreadcrumbItem href="#components">Components</a>
+                      <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                    </li-breadcrumb>
+
+                    <h5 class="mb-0">Breadcrumb <span class="fw-normal">Top Condensed</span></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="page-header page-header-content">
+                  <div class="page-title d-flex">
+                    <i class="ph-arrow-circle-left align-self-end lh-lg me-2"></i>
+                    <div>
+                      <li-breadcrumb breadcrumbClass="mb-1">
+                        <a liBreadcrumbItem href="#home">Home</a>
+                        <a liBreadcrumbItem href="#components">Components</a>
+                        <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                      </li-breadcrumb>
+
+                      <h5 class="mb-0">Breadcrumb <span class="fw-normal">Top Condensed Spaced</span></h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="page-header page-header-content">
+                  <div class="page-title">
+                    <h5 class="mb-0">Breadcrumb <span class="fw-normal">Bottom Condensed</span></h5>
+
+                    <li-breadcrumb breadcrumbClass="mt-1">
+                      <a liBreadcrumbItem href="#home">Home</a>
+                      <a liBreadcrumbItem href="#components">Components</a>
+                      <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="page-header page-header-content">
+                  <div class="page-title d-flex">
+                    <i class="ph-arrow-circle-left lh-lg me-2"></i>
+                    <div>
+                      <h5 class="mb-0">Breadcrumb <span class="fw-normal">Bottom Condensed Spaced</span></h5>
+
+                      <li-breadcrumb breadcrumbClass="mt-1">
+                        <a liBreadcrumbItem href="#home">Home</a>
+                        <a liBreadcrumbItem href="#components">Components</a>
+                        <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                      </li-breadcrumb>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <h6 class="mb-0">Breadcrumb options</h6>
+            <span class="text-muted d-block">Divisores, helper text, ícones e ações laterais.</span>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Default breadcrumb</h5>
+                      <div class="text-muted">Estilo base.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home">Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Helper text</h5>
+                      <div class="text-muted">Texto auxiliar antes da trilha.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb helperText="You are here:" breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home">Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Icons only</h5>
+                      <div class="text-muted">Primeiro nível em forma de ícone.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house"></i></a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-lg-0">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Icons with labels</h5>
+                      <div class="text-muted">Ícones aplicados em toda a trilha.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current"><i class="ph-folders me-2"></i>Current</a>
+                      <span liBreadcrumbItem [active]="true"><i class="ph-file me-2"></i>Location</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Dash divider</h5>
+                      <div class="text-muted">Usando <code>divider="dash"</code>.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb divider="dash" breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Arrows divider</h5>
+                      <div class="text-muted">Usando <code>divider="arrows"</code>.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb divider="arrows" breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Caret divider</h5>
+                      <div class="text-muted">Usando <code>divider="caret"</code>.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb divider="caret" breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Arrow divider</h5>
+                      <div class="text-muted">Usando <code>divider="arrow"</code>.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb divider="arrow" breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-lg-0">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Buttons and badge</h5>
+                      <div class="text-muted">Ações extras na mesma linha do breadcrumb.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content border-top">
+                    <li-breadcrumb breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+
+                      <div liBreadcrumbEnd class="breadcrumb-demo-actions">
+                        <a href="#button" class="d-flex align-items-center text-body py-2">
+                          <span class="flex-1">Button with badge</span>
+                          <span class="badge bg-primary rounded-pill ms-2">6</span>
+                        </a>
+                      </div>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 mt-4">
+            <h6 class="mb-0">Breadcrumb colors</h6>
+            <span class="text-muted d-block">Superfícies claras e sólidas, como no kit original.</span>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content bg-secondary bg-opacity-10 rounded-top border-bottom">
+                    <li-breadcrumb breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+
+                      <div liBreadcrumbEnd class="breadcrumb-demo-actions">
+                        <button type="button" class="btn btn-sm btn-light">Menu</button>
+                      </div>
+                    </li-breadcrumb>
+                  </div>
+
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Top light</h5>
+                      <div class="text-muted">Breadcrumb sobre fundo claro.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-lg-0">
+                <div class="page-header">
+                  <div class="page-header-content bg-secondary rounded-top">
+                    <li-breadcrumb breadcrumbClass="py-2 text-white">
+                      <a liBreadcrumbItem href="#home" class="text-white"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current" class="text-white">Current</a>
+                      <span liBreadcrumbItem [active]="true" class="text-white opacity-75">Location</span>
+
+                      <div liBreadcrumbEnd class="breadcrumb-demo-actions">
+                        <button type="button" class="btn btn-sm btn-outline-light">Menu</button>
+                      </div>
+                    </li-breadcrumb>
+                  </div>
+
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Top solid</h5>
+                      <div class="text-muted">Breadcrumb sobre fundo sólido.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Bottom light</h5>
+                      <div class="text-muted">Versão inferior com fundo claro.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content bg-secondary bg-opacity-10 rounded-bottom border-top">
+                    <li-breadcrumb breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current">Current</a>
+                      <span liBreadcrumbItem [active]="true">Location</span>
+
+                      <div liBreadcrumbEnd class="breadcrumb-demo-actions">
+                        <button type="button" class="btn btn-sm btn-light">Menu</button>
+                      </div>
+                    </li-breadcrumb>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-lg-0">
+                <div class="page-header">
+                  <div class="page-header-content">
+                    <div class="page-title">
+                      <h5 class="mb-0">Bottom solid</h5>
+                      <div class="text-muted">Versão inferior com fundo sólido.</div>
+                    </div>
+                  </div>
+
+                  <div class="page-header-content bg-secondary rounded-bottom">
+                    <li-breadcrumb breadcrumbClass="py-2 text-white">
+                      <a liBreadcrumbItem href="#home" class="text-white"><i class="ph-house me-2"></i>Home</a>
+                      <a liBreadcrumbItem href="#current" class="text-white">Current</a>
+                      <span liBreadcrumbItem [active]="true" class="text-white opacity-75">Location</span>
+
+                      <div liBreadcrumbEnd class="breadcrumb-demo-actions">
+                        <button type="button" class="btn btn-sm btn-outline-light">Menu</button>
+                      </div>
+                    </li-breadcrumb>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -76,10 +522,8 @@
 
       <li-tabx header="API">
         <div class="card-body">
-          <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-breadcrumb divider="dash" helperText="Library"&gt;
-  &lt;span liBreadcrumbStart class="badge bg-primary-subtle text-primary"&gt;v2.0&lt;/span&gt;
-
-  &lt;a liBreadcrumbItem href="#library"&gt;Library&lt;/a&gt;
+          <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-breadcrumb divider="dash" helperText="You are here:"&gt;
+  &lt;a liBreadcrumbItem href="#home"&gt;Home&lt;/a&gt;
   &lt;a liBreadcrumbItem href="#components"&gt;Components&lt;/a&gt;
   &lt;span liBreadcrumbItem [active]="true"&gt;Breadcrumbs&lt;/span&gt;
 

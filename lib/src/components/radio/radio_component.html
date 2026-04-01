@@ -1,0 +1,17 @@
+<label [class]="resolvedContainerClass">
+  <input
+      type="radio"
+      #input
+      [id]="resolvedId"
+      [attr.name]="resolvedName"
+      [attr.aria-label]="resolvedAriaLabel"
+      [class]="resolvedInputClass"
+      [checked]="checked"
+      [disabled]="disabled"
+      [required]="required"
+      (change)="handleChange(input.checked ?? false)"
+      (click)="handleClick($event)"
+      (blur)="handleBlur()">
+  <span [class]="resolvedLabelClass">{{ label }}</span>
+</label>
+<div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>

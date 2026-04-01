@@ -1,0 +1,71 @@
+:host {
+  display: block;
+}
+
+.li-input {
+  width: 100%;
+}
+
+.li-input__field-shell {
+  position: relative;
+}
+
+.li-input__field-shell--group {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.li-input__field-shell--group > .form-control {
+  width: 100%;
+}
+
+.li-input .input-group-text i + span,
+.li-input .input-group-text span + i {
+  margin-left: 0.35rem;
+}
+
+.li-input .li-input__suffix {
+  gap: 0.35rem;
+}
+
+.li-input__password-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.li-input__password-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.li-input__password-toggle--overlay {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  padding: 0.2rem;
+  color: var(--gray-700);
+  z-index: 2;
+}
+
+.li-input__control--with-overlay-toggle {
+  padding-right: 2.75rem;
+}
+
+.li-input__floating-shell {
+  position: relative;
+}
+
+.li-input__floating-shell--toggle > label {
+  padding-right: 2.75rem;
+}
+
+.li-input__textarea-floating {
+  min-height: 8.5rem;
+}

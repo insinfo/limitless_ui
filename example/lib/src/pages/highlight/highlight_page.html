@@ -1,0 +1,84 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ intro }}</p>
+
+            <div class="row g-4 mb-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ strengthsTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ strengthsBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ limitsTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ limitsBody }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-body mb-3">
+              <h6 class="mb-2">{{ pickerTitle }}</h6>
+              <p class="text-muted mb-3">{{ pickerBody }}</p>
+
+              <div class="demo-action-grid mb-3">
+                <button class="btn btn-outline-primary" type="button" (click)="selectSnippet('dart')">Dart</button>
+                <button class="btn btn-outline-dark" type="button" (click)="selectSnippet('html')">HTML</button>
+                <button class="btn btn-outline-success" type="button" (click)="selectSnippet('css')">CSS</button>
+              </div>
+
+              <h6 class="mb-3">{{ activeSnippetTitle }}</h6>
+              <li-highlight [code]="activeSnippetCode" [language]="activeSnippetLanguage"></li-highlight>
+            </div>
+
+            <div class="demo-summary-box">{{ summaryText }}</div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
+
+            <div class="row g-4">
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">Template</h6>
+                  <li-highlight [code]="componentSnippet" language="html"></li-highlight>
+                </div>
+              </div>
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">Componente</h6>
+                  <li-highlight [code]="dartSnippet" language="dart"></li-highlight>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

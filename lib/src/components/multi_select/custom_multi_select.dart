@@ -58,6 +58,12 @@ class LiMultiSelectComponent
   @Input('disabled')
   bool isDisabled = false;
 
+  @Input()
+  bool showClearButton = true;
+
+  @Input()
+  String clearButtonLabel = 'Limpar seleção';
+
   LiMultiSelectComponent(this.nativeElement, this._changeDetectorRef) {
     final seq = _nextSequence++;
     listboxId = 'li-multi-select-listbox-$seq';
@@ -141,6 +147,8 @@ class LiMultiSelectComponent
 
   List<String> get selectedLabels =>
       options.where((opt) => opt.selected).map((e) => e.text).toList();
+
+  bool get hasSelection => options.any((option) => option.selected);
 
   bool dropdownOpen = false;
 
@@ -227,7 +235,10 @@ class LiMultiSelectComponent
     }
   }
 
-  void closeDropdown({bool markForCheck = true}) {
+  void closeDropdown({
+    bool markForCheck = true,
+    bool restoreFocus = false,
+  }) {
     for (final element in dropdownContainerEle!.querySelectorAll('li')) {
       if (element.classes.contains('dropdown-item-hover')) {
         element.classes.remove('dropdown-item-hover');
@@ -244,7 +255,9 @@ class LiMultiSelectComponent
 
     _overlay?.stopAutoUpdate();
 
-    dropdownButtonElement?.focus();
+    if (restoreFocus) {
+      dropdownButtonElement?.focus();
+    }
 
     if (markForCheck) {
       _markForCheck();
@@ -299,7 +312,7 @@ class LiMultiSelectComponent
     if (dropdownOpen) {
       openDropdown();
     } else {
-      closeDropdown();
+      closeDropdown(restoreFocus: true);
     }
   }
 
@@ -320,6 +333,17 @@ class LiMultiSelectComponent
     }
     _markForCheck();
     _scheduleOverlayUpdate();
+  }
+
+  void clearSelection(html.Event event) {
+    if (isDisabled || !hasSelection) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    reset();
+    dropdownButtonElement?.focus();
   }
 
   void _toggleOptionSelection(CustomMultiSelectItem option) {

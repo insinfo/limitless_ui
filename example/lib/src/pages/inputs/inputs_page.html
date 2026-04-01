@@ -2,12 +2,12 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">Components <span class="fw-normal">Inputs</span></h4>
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
       <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">Selects e intervalo de datas</span>
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
       </div>
     </div>
   </div>
@@ -18,8 +18,7 @@
       <li-tabsx type="tabs">
         <li-tabx header="Visão geral" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-0">Esta página agrupa selects simples, multiseleção e intervalo de datas numa mesma
-              vitrine de formulários.</p>
+            <p class="text-muted mb-0">{{ intro }}</p>
           </div>
         </li-tabx>
         <li-tabx header="Exemplos">
@@ -27,6 +26,107 @@
             <div class="row">
               <div class="col-xl-6">
                 <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">LiInput</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-4">
+                      <li-input label="Cliente" helperText="Campo conectado ao ngModel do AngularDart."
+                        [(ngModel)]="customerName">
+                      </li-input>
+                    </div>
+
+                    <div class="mb-4">
+                      <li-input label="Release e-mail" type="email" [floatingLabel]="true"
+                        helperText="Floating label com estilo do Limitless." [(ngModel)]="releaseEmail">
+                      </li-input>
+                    </div>
+
+                    <div class="mb-4">
+                      <li-input label="Lote" prefixText="#" suffixIconClass="ph-hash" helperText="Addon de prefixo e sufixo."
+                        [(ngModel)]="amount">
+                      </li-input>
+                    </div>
+
+                    <div class="mb-4">
+                      <li-input label="Observações" [multiline]="true" [rows]="4"
+                        helperText="Textarea declarativa usando o mesmo componente." [(ngModel)]="notes">
+                      </li-input>
+                    </div>
+
+                    <div class="demo-summary-box">
+                      <div><strong>Inputs:</strong> {{ currentInputSummary }}</div>
+                      <div><strong>Notas:</strong> {{ notes }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card mt-4">
+                  <div class="card-header">
+                    <h5 class="mb-0">LiInput avançado</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <li-input label="CPF do responsável" mask="xxx.xxx.xxx-xx" inputMode="numeric"
+                          [maxLength]="14" helperText="Máscara declarativa aplicada no próprio LiInput."
+                          [(ngModel)]="cpf">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-input label="Telefone de plantão" type="tel" mask="(xx) xxxxx-xxxx" inputMode="tel"
+                          [maxLength]="15" prefixIconClass="ph-phone" autocomplete="tel"
+                          helperText="Útil para contatos de incidente ou suporte." [(ngModel)]="phone">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-input label="Quantidade de assentos" type="number" inputMode="numeric" min="1" max="500"
+                          step="1" suffixText="vagas" inputClass="text-end" helperText="Exemplo numérico com min, max e step."
+                          [(ngModel)]="seats">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-input label="Busca operacional" type="search" prefixIconClass="ph-magnifying-glass"
+                          helperText="Busca rápida dentro da documentação ou de incidentes." [(ngModel)]="searchTerm">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-input label="Senha de administração" type="password" [passwordToggle]="true"
+                          [passwordToggleOverlay]="true" autocomplete="current-password"
+                          autocorrect="off" autocapitalize="off" spellcheck="false"
+                          dataLpignore="true" data1pIgnore="true" dataBwignore="true"
+                          helperText="Demonstra o modo overlay do olho dentro do campo, mais próximo do padrão usado em fluxos sensíveis como autenticação e assinatura."
+                          [(ngModel)]="adminPassword">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-input label="Token da release" [readonly]="true" suffixIconClass="ph-lock-key"
+                          helperText="Campo somente leitura para referências imutáveis." [(ngModel)]="readonlyToken">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-input label="Resumo curto" [maxLength]="60" helperText="Combina maxlength com textarea curta."
+                          [multiline]="true" [rows]="3" [(ngModel)]="notes">
+                        </li-input>
+                      </div>
+                    </div>
+
+                    <div class="demo-summary-box mt-4">
+                      <div><strong>Entradas avançadas:</strong> {{ advancedInputSummary }}</div>
+                      <div><strong>Token:</strong> {{ readonlyToken }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card mb-4">
                   <div class="card-header">
                     <h5 class="mb-0">Selects</h5>
                   </div>
@@ -45,15 +145,29 @@
                       </li-multi-select>
                     </div>
 
+                    <div class="mb-4">
+                      <label class="form-label fw-semibold">Prioridade operacional</label>
+                      <li-select [dataSource]="priorityOptions" labelKey="label" valueKey="id"
+                        [(ngModel)]="selectedPriority">
+                      </li-select>
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="form-label fw-semibold">Escalações automáticas</label>
+                      <li-multi-select [dataSource]="channelOptions" labelKey="label" valueKey="id"
+                        [(ngModel)]="selectedEscalationChannels">
+                      </li-multi-select>
+                    </div>
+
                     <div class="demo-summary-box">
                       <div><strong>Status:</strong> {{ selectedStatusLabel }}</div>
                       <div><strong>Canais:</strong> {{ selectedChannelsLabel }}</div>
+                      <div><strong>Prioridade:</strong> {{ selectedPriorityLabel }}</div>
+                      <div><strong>Escalações:</strong> {{ selectedEscalationChannelsLabel }}</div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="col-xl-6">
                 <div class="card">
                   <div class="card-header">
                     <h5 class="mb-0">Date range picker</h5>
@@ -70,6 +184,19 @@
                         Configure `minDate`, `maxDate`, `placeholder` e `locale`
                         conforme o fluxo.
                       </div>
+                    </div>
+
+                    <hr>
+
+                    <li-date-range-picker [inicio]="contractStart" [fim]="contractEnd" locale="en_US"
+                      placeholder="Contract review window" (inicioChange)="onContractStartChange($event)"
+                      (fimChange)="onContractEndChange($event)">
+                    </li-date-range-picker>
+
+                    <div class="demo-summary-box mt-3">
+                      <div><strong>Janela paralela:</strong>
+                        {{ contractStart != null && contractEnd != null ? formatDate(contractStart!) + ' ate ' + formatDate(contractEnd!) : 'Nao definida' }}</div>
+                      <div class="text-muted">Segundo range com locale em inglês para validar a API em contextos distintos.</div>
                     </div>
                   </div>
                 </div>

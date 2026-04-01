@@ -10,6 +10,8 @@ import 'package:limitless_ui_example/src/pages/breadcrumbs/breadcrumbs_page.temp
     as breadcrumbs_page;
 import 'package:limitless_ui_example/src/pages/pagination/pagination_page.template.dart'
     as pagination_page;
+import 'package:limitless_ui_example/src/pages/selection_controls/selection_controls_page.template.dart'
+    as selection_controls_page;
 import 'package:limitless_ui_example/src/pages/carousel/carousel_page.template.dart'
     as carousel_page;
 import 'package:limitless_ui_example/src/pages/currency/currency_page.template.dart'
@@ -26,8 +28,12 @@ import 'package:limitless_ui_example/src/pages/time_picker/time_picker_page.temp
     as time_picker_page;
 import 'package:limitless_ui_example/src/pages/button/button_page.template.dart'
     as button_page;
+import 'package:limitless_ui_example/src/pages/file_upload/file_upload_page.template.dart'
+    as file_upload_page;
 import 'package:limitless_ui_example/src/pages/helpers/helpers_page.template.dart'
     as helpers_page;
+import 'package:limitless_ui_example/src/pages/inputs/inputs_page.template.dart'
+  as inputs_page;
 import 'package:limitless_ui_example/src/pages/modal/modal_page.template.dart'
     as modal_page;
 import 'package:limitless_ui_example/src/pages/multi_select/multi_select_page.template.dart'
@@ -48,6 +54,14 @@ import 'package:limitless_ui_example/src/pages/scrollspy/scrollspy_page.template
     as scrollspy_page;
 import 'package:limitless_ui_example/src/pages/select/select_page.template.dart'
     as select_page;
+import 'package:limitless_ui_example/src/pages/rating/rating_page.template.dart'
+    as rating_page;
+import 'package:limitless_ui_example/src/pages/highlight/highlight_page.template.dart'
+  as highlight_page;
+import 'package:limitless_ui_example/src/pages/fab/fab_page.template.dart'
+    as fab_page;
+import 'package:limitless_ui_example/src/pages/sweet_alert/sweet_alert_page.template.dart'
+  as sweet_alert_page;
 import 'package:limitless_ui_example/src/pages/typeahead/typeahead_page.template.dart'
     as typeahead_page;
 import 'package:limitless_ui_example/src/pages/dropdown/dropdown_page.template.dart'
@@ -109,9 +123,19 @@ class DemoRoutes {
     component: pagination_page.PaginationPageComponentNgFactory,
   );
 
+  static final selectionControls = RouteDefinition(
+    routePath: DemoRoutePaths.selectionControls,
+    component: selection_controls_page.SelectionControlsPageComponentNgFactory,
+  );
+
   static final select = RouteDefinition(
     routePath: DemoRoutePaths.select,
     component: select_page.SelectPageComponentNgFactory,
+  );
+
+  static final rating = RouteDefinition(
+    routePath: DemoRoutePaths.rating,
+    component: rating_page.RatingPageComponentNgFactory,
   );
 
   static final typeahead = RouteDefinition(
@@ -189,6 +213,11 @@ class DemoRoutes {
     component: notification_page.NotificationPageComponentNgFactory,
   );
 
+  static final fileUpload = RouteDefinition(
+    routePath: DemoRoutePaths.fileUpload,
+    component: file_upload_page.FileUploadPageComponentNgFactory,
+  );
+
   static final toast = RouteDefinition(
     routePath: DemoRoutePaths.toast,
     component: toast_page.ToastPageComponentNgFactory,
@@ -204,9 +233,29 @@ class DemoRoutes {
     component: helpers_page.HelpersPageComponentNgFactory,
   );
 
+  static final sweetAlert = RouteDefinition(
+    routePath: DemoRoutePaths.sweetAlert,
+    component: sweet_alert_page.SweetAlertPageComponentNgFactory,
+  );
+
+  static final highlight = RouteDefinition(
+    routePath: DemoRoutePaths.highlight,
+    component: highlight_page.HighlightPageComponentNgFactory,
+  );
+
   static final button = RouteDefinition(
     routePath: DemoRoutePaths.button,
     component: button_page.ButtonPageComponentNgFactory,
+  );
+
+  static final inputs = RouteDefinition(
+    routePath: DemoRoutePaths.inputs,
+    component: inputs_page.InputsPageComponentNgFactory,
+  );
+
+  static final fab = RouteDefinition(
+    routePath: DemoRoutePaths.fab,
+    component: fab_page.FabPageComponentNgFactory,
   );
 
   static final all = <RouteDefinition>[
@@ -219,7 +268,9 @@ class DemoRoutes {
     offcanvas,
     breadcrumbs,
     pagination,
+    selectionControls,
     select,
+    rating,
     typeahead,
     multiSelect,
     currency,
@@ -236,9 +287,14 @@ class DemoRoutes {
     datatableSelect,
     toast,
     notification,
+    fileUpload,
     treeview,
     helpers,
+    sweetAlert,
+    highlight,
     button,
+    inputs,
+    fab,
     RouteDefinition.redirect(
       path: '.+',
       redirectTo: DemoRoutePaths.overview.path,

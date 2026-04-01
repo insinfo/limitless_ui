@@ -214,23 +214,34 @@
             {{numPages}} paginas
         </div>
         <div class="dataTables_paginate paging_simple_numbers" style="overflow-x:auto;">
-            <ul class="pagination pagination-flat">
-                <li (click)="irParaPrimeiraPagina()" *ngIf="getCurrentPage > 2" class="page-item">
-                    <a title="ir para a primeira página" class="cursor-pointer page-link rounded" tabindex="0">
-                        <i class="ph ph-arrow-line-left"></i>
-                    </a>
-                </li>
-                <li *ngFor="let pagPrevBtn of paginationItems" class="page-item" [class]="pagPrevBtn.cssClass">
-                    <a class="cursor-pointer page-link rounded" (click)="pagPrevBtn.action()" tabindex="0">
-                        {{pagPrevBtn.label}}
-                    </a>
-                </li>
-                <li (click)="irParaUltimaPagina()" *ngIf="numPages > 1" class="page-item">
-                    <a title="ir para a última página" class="cursor-pointer page-link rounded" tabindex="0">
-                        <i class="ph ph-arrow-line-right"></i>
-                    </a>
-                </li>
-            </ul>
+            <li-pagination
+                appearance="datatable"
+                variant="flat"
+                linkClass="rounded"
+                [collectionSize]="totalRecords"
+                [pageSize]="dataTableFilter.limit ?? 0"
+                [page]="getCurrentPage"
+                [maxSize]="paginationButtonQuantity"
+                [rotate]="true"
+                [ellipses]="false"
+                [boundaryLinks]="numPages > 1"
+                (pageChange)="changePage($event)">
+                <template liPaginationFirst>
+                    <i class="ph ph-arrow-line-left"></i>
+                </template>
+
+                <template liPaginationPrevious>
+                    <i class="ph ph-caret-left"></i>
+                </template>
+
+                <template liPaginationNext>
+                    <i class="ph ph-caret-right"></i>
+                </template>
+
+                <template liPaginationLast>
+                    <i class="ph ph-arrow-line-right"></i>
+                </template>
+            </li-pagination>
         </div>
     </div>
 </div>

@@ -198,6 +198,7 @@ class LiPaginationPageItem {
   styleUrls: ['pagination_component.css'],
   directives: [coreDirectives, LiPaginationOutletDirective],
   encapsulation: ViewEncapsulation.none,
+  changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiPaginationComponent implements AfterChanges, AfterViewInit, OnDestroy {
   LiPaginationComponent();
@@ -301,6 +302,9 @@ class LiPaginationComponent implements AfterChanges, AfterViewInit, OnDestroy {
   @Input()
   String alignment = 'start';
 
+  @Input()
+  String appearance = 'default';
+
   int pageCount = 0;
 
   TemplateRef? get resolvedEllipsisTemplate =>
@@ -359,11 +363,20 @@ class LiPaginationComponent implements AfterChanges, AfterViewInit, OnDestroy {
       classes.addAll(extraClasses.split(RegExp(r'\s+')));
     }
 
+    if (appearance.trim() == 'datatable') {
+      classes.add('li-pagination-datatable');
+    }
+
     return classes.join(' ');
   }
 
   String get pageLinkClasses {
     final classes = <String>['page-link'];
+
+    if (appearance.trim() == 'datatable') {
+      classes.add('li-pagination-datatable__link');
+    }
+
     final extraClasses = linkClass.trim();
     if (extraClasses.isNotEmpty) {
       classes.addAll(extraClasses.split(RegExp(r'\s+')));

@@ -3,13 +3,74 @@
   font-size: 0.875rem;
 }
 
-.pagination-chip {
+.pagination-demo-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.pagination-toolbar-demo {
+  border: 1px dashed rgba(var(--bs-primary-rgb, 13, 110, 253), 0.2);
+  background:
+    linear-gradient(180deg, rgba(var(--bs-primary-rgb, 13, 110, 253), 0.03), transparent),
+    var(--card-bg, var(--body-bg, #fff));
+}
+
+.pagination-demo-toolbar-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pagination-toolbar-spacer {
+  margin-right: auto;
+}
+
+.pagination-demo-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+.pagination-demo-scroll .li-pagination {
+  min-width: max-content;
+}
+
+.pagination-dotted .page-link.pagination-dot-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 3.25rem;
+  min-width: 0.75rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  padding: 0;
+  border-width: 0;
 }
 
-.pagination-chip-active {
-  font-weight: 600;
+.pagination-dotted .page-item:first-child .page-link.pagination-dot-link,
+.pagination-dotted .page-item:last-child .page-link.pagination-dot-link {
+  min-width: 2.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.pagination-dotted .page-item:not(:first-child):not(:last-child) .page-link.pagination-dot-link {
+  background: rgba(var(--bs-body-color-rgb, 31, 41, 55), 0.16);
+}
+
+.pagination-dotted .page-item.active .page-link.pagination-dot-link {
+  transform: scale(1.35);
+}
+
+.pagination-dot-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

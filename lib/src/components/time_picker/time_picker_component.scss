@@ -7,8 +7,8 @@
     cursor: pointer;
 }
 
-.time-picker-field[readonly] {
-    background-color: var(--body-bg);
+.time-picker-field[readonly]:not(:disabled) {
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
 }
 
@@ -18,14 +18,14 @@
 }
 
 .time-picker-trigger-button {
-    background-color: var(--body-bg);
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
     border-color: var(--border-color);
 }
 
-.time-picker-trigger-button:hover,
-.time-picker-trigger-button:focus {
-    background-color: color-mix(in srgb, var(--body-bg) 86%, var(--body-color) 14%);
+.time-picker-trigger-button:not(:disabled):hover,
+.time-picker-trigger-button:not(:disabled):focus {
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
     border-color: var(--border-color);
 }

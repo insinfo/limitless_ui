@@ -1,0 +1,171 @@
+<div class="page-header page-header-light shadow-sm rounded-0 border">
+  <div class="page-header-content d-lg-flex">
+    <div class="d-flex">
+      <h4 class="page-title mb-0">Extensions <span class="fw-normal">File upload</span></h4>
+    </div>
+  </div>
+  <div class="page-header-content d-lg-flex border-top">
+    <div class="breadcrumb py-2">
+      <span class="breadcrumb-item active">Uploader</span>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="card card-body mb-4">
+    <h5 class="mb-2">Upload com drag and drop, preview e diretivas utilitárias</h5>
+    <p class="text-muted mb-0">
+      O `li-file-upload` cobre cenários inspirados na demo do Limitless: múltiplos anexos, arquivo único,
+      pré-visualização opcional, filtros por tipo, estado desabilitado e diretivas de baixo nível.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-xl-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">General attachments</h5>
+        </div>
+        <div class="card-body">
+          <li-file-upload
+              [(ngModel)]="attachments"
+              helperText="Use `maxFiles`, `accept`, `showPreview` e `[(ngModel)]` no componente principal."
+              browseLabel="Selecionar anexos">
+          </li-file-upload>
+
+          <div class="upload-summary-box mt-3">
+            <div class="fw-semibold mb-1">Resumo</div>
+            <div>{{ attachmentsSummary }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Single cover image</h5>
+        </div>
+        <div class="card-body">
+          <li-file-upload
+              [(ngModel)]="coverFiles"
+              accept="image/*"
+              [multiple]="false"
+              [maxFiles]="1"
+              title="Solte uma imagem de capa"
+              subtitle="Aceita uma única imagem para a página ou card."
+              browseLabel="Selecionar capa">
+          </li-file-upload>
+
+          <div class="upload-summary-box mt-3">
+            <div class="fw-semibold mb-1">Resumo</div>
+            <div>{{ coverSummary }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Hidden preview</h5>
+        </div>
+        <div class="card-body">
+          <li-file-upload
+              [(ngModel)]="compactFiles"
+              [showPreview]="false"
+              [maxFiles]="5"
+              title="Seleção rápida sem preview"
+              subtitle="Ideal para fluxos em que a lista final aparece em outro lugar da tela."
+              browseLabel="Escolher documentos"
+              helperText="Pré-visualização desligada; o resumo abaixo recebe os nomes selecionados.">
+          </li-file-upload>
+
+          <div class="upload-summary-box mt-3">
+            <div class="fw-semibold mb-1">Resumo</div>
+            <div>{{ compactSummary }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Accepted file types</h5>
+        </div>
+        <div class="card-body">
+          <li-file-upload
+              [(ngModel)]="mediaFiles"
+              accept="image/*,video/*"
+              [maxFiles]="3"
+              title="Imagens e vídeos"
+              subtitle="Aceita apenas mídia para prévia de campanha, banner ou card."
+              browseLabel="Selecionar mídia"
+              helperText="Combina `accept` com `maxFiles` para um fluxo mais controlado.">
+          </li-file-upload>
+
+          <div class="upload-summary-box mt-3">
+            <div class="fw-semibold mb-1">Resumo</div>
+            <div>{{ mediaSummary }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Disabled state</h5>
+        </div>
+        <div class="card-body">
+          <li-file-upload
+              [disabled]="true"
+              [multiple]="false"
+              title="Uploader desabilitado"
+              subtitle="Útil quando a permissão do usuário ainda não foi concedida."
+              browseLabel="Aguardando liberação"
+              helperText="O botão e a área de drop ficam indisponíveis sem exigir tratamento extra no host.">
+          </li-file-upload>
+
+          <div class="upload-summary-box mt-3">
+            <div class="fw-semibold mb-1">Observação</div>
+            <div>Esse card reproduz o estado bloqueado, semelhante aos exemplos de componentes desabilitados do Limitless.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Low-level directives</h5>
+        </div>
+        <div class="card-body">
+          <div
+              liFileDrop
+              class="upload-directive-zone"
+              [class.is-over]="directiveDragOver"
+              (fileOver)="directiveDragOver = $event"
+              (filesChange)="onDirectiveFiles($event)">
+            <input
+                liFileSelect
+                type="file"
+                class="form-control mb-3"
+                multiple
+                (filesChange)="onDirectiveFiles($event)">
+            <div class="text-muted">
+              Arraste arquivos para esta área ou use o input acima. Esse bloco mostra o uso manual das diretivas sem o
+              wrapper `li-file-upload`.
+            </div>
+          </div>
+
+          <div class="upload-summary-box mt-3">
+            <div class="fw-semibold mb-1">Arquivos recebidos</div>
+            <div>{{ directiveSummary }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

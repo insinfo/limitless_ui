@@ -2,11 +2,26 @@
 
 [![CI](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml/badge.svg)](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml)
 
-Reusable AngularDart UI components, directives and small browser helpers for applications built on the Limitless visual language https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css.
+Reusable AngularDart UI components, directives, and browser helpers for applications built on the Limitless visual language and Bootstrap-based CSS: https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css.
 
 This package is browser-only. It depends on `dart:html`, `ngdart`, `ngforms` and `ngrouter`.
 
-demo page: https://insinfo.github.io/limitless_ui/
+## Contract overview
+
+`limitless_ui` is a generic AngularDart UI library, but part of its higher-level data UI is built on top of `essential_core`, which was extracted as a reusable and framework-agnostic foundation.
+
+This means the package remains generic, but it is not fully standalone for every component family.
+
+This library has two explicit usage layers:
+
+- Generic UI layer: components such as alerts, buttons, modals, tabs, toast, tooltip, popover, checkbox, radio, toggle, rating, file upload and the base `li-input` can be consumed with `limitless_ui` alone.
+- Shared-foundation layer: `li-datatable`, `li-datatable-select`, `li-select`, `li-multi-select`, `li-typeahead` and treeview-related components were designed to reuse generic models and utilities from `essential_core`. This is part of the documented contract of the library, not an accidental implementation detail.
+
+For consumers using the data-oriented components above, `essential_core` should be understood as shared infrastructure, not as an application-specific dependency.
+
+Some form value accessors in this package rely on internal `ngforms` APIs and behavior because AngularDart does not expose all hooks needed by the library through stable public APIs. Because of that, keep `ngdart`, `ngforms` and `ngrouter` tightly pinned, prefer exact or very narrow version constraints in consuming apps, avoid automatic upgrades, and always run focused tests for the value accessors first during framework upgrades.
+
+Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
@@ -16,13 +31,32 @@ The package is prepared for publication and currently versioned as `1.0.0-dev.2`
 - `ngforms: ^5.0.0-dev.3`
 - `ngrouter: ^4.0.0-dev.3`
 
-Publication metadata is configured in [pubspec.yaml](/c:/MyDartProjects/limitless_ui/pubspec.yaml) and CI is defined in [ci.yml](/c:/MyDartProjects/limitless_ui/.github/workflows/ci.yml).
+For applications consuming `limitless_ui`, treat these versions as compatibility-critical. In particular:
+
+- keep `ngdart`, `ngforms` and `ngrouter` well pinned in the application;
+- prefer exact versions or very narrow ranges for these packages in consumers of `limitless_ui`;
+- do not enable automated dependency upgrades for these packages without manual validation;
+- when testing an upgrade, run the value accessor tests first, because they are usually the first area to break.
+
+Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is defined in [.github/workflows/ci.yml](.github/workflows/ci.yml).
 
 ## Installation
+
+### Generic usage
 
 ```yaml
 dependencies:
   limitless_ui: ^1.0.0-dev.2
+```
+
+### When using data-oriented components backed by `essential_core`
+
+If the application will use `li-datatable`, `li-datatable-select`, `li-select`, `li-multi-select`, `li-typeahead` or treeview components, install both packages. In this setup, `essential_core` is the shared data/model foundation reused by the UI layer:
+
+```yaml
+dependencies:
+  limitless_ui: ^1.0.0-dev.2
+  essential_core: ^1.0.0
 ```
 
 For local development:
@@ -31,21 +65,34 @@ For local development:
 dependencies:
   limitless_ui:
     path: ../limitless_ui
+  essential_core:
+    path: ../essential_core
 ```
 
 ## Import
+
+### Generic UI imports
 
 ```dart
 import 'package:limitless_ui/limitless_ui.dart';
 ```
 
+### Imports for data-oriented APIs
+
+Use `limitless_ui` for the widgets and `essential_core` for the shared data structures used by the higher-level components:
+
+```dart
+import 'package:limitless_ui/limitless_ui.dart';
+import 'package:essential_core/essential_core.dart';
+```
+
 ## Theme and icons
 
-The package follows the Limitless visual language, but some visual affordances are provided by the theme CSS instead of component Dart code.
+The package follows the Limitless visual language, but some visual affordances are provided by the theme CSS rather than component Dart code.
 
-For the demo application we load Limitless CSS plus the Phosphor icon font in [example/web/index.html](/c:/MyDartProjects/limitless_ui/example/web/index.html). One practical detail is the dropdown caret: if your theme renders `.dropdown-toggle::after` with a glyph that does not exist in the loaded icon font, the caret will appear broken.
+The demo application loads Limitless CSS plus the Phosphor icon font in [example/web/index.html](example/web/index.html). One practical detail is the dropdown caret: if your theme renders `.dropdown-toggle::after` with a glyph that does not exist in the loaded icon font, the caret will appear broken.
 
-In the example this is fixed with a global override in [example/web/style.scss](/c:/MyDartProjects/limitless_ui/example/web/style.scss):
+The demo fixes that with a global override in [example/web/style.scss](example/web/style.scss):
 
 ```scss
 .dropdown-toggle::after {
@@ -65,16 +112,25 @@ In the example this is fixed with a global override in [example/web/style.scss](
 
 ## Included modules
 
-- Inputs: currency input, date picker, time picker, date range picker, select, multi-select, typeahead.
+- Inputs: checkbox, radio, toggle, rating, file upload, currency input, date picker, time picker, date range picker, select, multi-select, typeahead.
 - Data display: datatable, datatable select, tree view.
 - Structure: accordion, collapse, buttons, carousel, modal, tabs, nav.
 - Overlay and menus: dropdown, tooltip, popover, sweet alert, notification toast.
 - Navigation helpers: scrollspy service and directives.
 - Utilities: HTML directives, form value accessors, pipes, PDF generator and XLSX generator.
 
+## Generic vs `essential_core`-backed components
+
+Use these groups as the practical adoption boundary:
+
+- Generic components: alerts, buttons, accordion, collapse, modal, tabs, nav, tooltip, popover, toast, scrollspy, checkbox, radio, toggle, rating, file upload, date picker, date range picker, currency helpers and the base `li-input`.
+- `essential_core`-backed components: `li-datatable`, `li-datatable-select`, `li-select`, `li-multi-select`, `li-typeahead`, `li-treeview-select`, `LiTreeViewComponent` and related data/selection helpers.
+
+The second group reuses `Filters`, `DataFrame`, tree data structures, and related contracts from `essential_core`.
+
 ## Public API highlights
 
-The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/limitless_ui.dart) now exposes these families of APIs:
+The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes these API families:
 
 - Accordion:
   `LiAccordionComponent`, `LiAccordionItemComponent`, `LiAccordionDirective`,
@@ -104,6 +160,10 @@ The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/lim
   `LiToastComponent`, `LiToastStackComponent`, `LiToastService`.
 - Typeahead:
   `LiTypeaheadComponent`, `LiTypeaheadItem`, `LiTypeaheadSelectItemEvent`, `LiTypeaheadConfig`, `LiTypeaheadHighlightComponent`.
+- Selection controls and upload:
+  `LiCheckboxComponent`, `LiRadioComponent`, `LiToggleComponent`,
+  `LiRatingComponent`, `LiRatingConfig`, `LiFileUploadComponent`,
+  `LiFileSelectDirective`, `LiFileDropDirective`, `LiFileType`.
 - Treeview:
   `LiTreeViewComponent`, `LiTreeviewSelectComponent`,
   `LiTreeViewPageLoader`, `TreeViewLoadRequest`, `TreeViewLoadResult`,
@@ -122,6 +182,8 @@ The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/lim
 - Added CI coverage for toast browser tests and documented the AngularDart `.scss` to `.css` stylesheet convention used in this repository.
 - Added `li-typeahead` for autocomplete-style selection with local filtering, keyboard navigation and `ngModel`.
 - Expanded `li-typeahead` with async search, rich result markup, a separate highlight component and injectable defaults via `LiTypeaheadConfig`.
+- Added `li-checkbox`, `li-radio`, `li-toggle`, `li-rating` and `li-file-upload`, plus low-level file select/drop directives.
+- Expanded the demo app with pages for selection controls, rating and file upload.
 - Added `li-treeview-select` for dropdown selection over hierarchical data.
 - Expanded `li-treeview-select` with lazy page loading, remote search via `pageLoader(searchTerm)`, `multiple`, `labelBuilder`, `canSelectNode` and projected templates for trigger and node rendering.
 
@@ -138,7 +200,7 @@ The barrel export in [limitless_ui.dart](/c:/MyDartProjects/limitless_ui/lib/lim
       iconMode="block"
       iconClass="ph-warning-circle"
       [dismissible]="true">
-      Conteudo do alerta
+      Alert content
     </li-alert>
   ''',
   directives: [coreDirectives, LiAlertComponent],
@@ -148,24 +210,22 @@ class DemoAlertComponent {}
 
 ### Datatable
 
-`li-datatable` cobre o fluxo administrativo mais comum da biblioteca: busca por
-campo, paginação, ordenação, seleção de linhas, exportação, colapso responsivo
-em mobile e alternância entre tabela e grade sem duplicar fonte de dados.
+`li-datatable` covers the library's most common administrative data flow: field search, pagination, sorting, row selection, export, responsive mobile collapse, and switching between table and grid views without duplicating the data source.
 
-O componente gira em torno de três objetos:
+The component revolves around three objects:
 
-- `Filters`: limite, offset, busca e ordenação da requisição atual.
-- `DataFrame<T>`: coleção retornada pela fonte de dados mais `totalRecords`.
-- `DatatableSettings`: colunas e comportamento visual da tabela ou grade.
+- `Filters`: limit, offset, search, and sorting for the current request.
+- `DataFrame<T>`: the returned collection plus `totalRecords`.
+- `DatatableSettings`: columns and visual behavior for the table or grid.
 
-Recursos mais úteis:
+Most useful features:
 
-- busca direcionada por coluna com `searchInFields`;
-- eventos como `(dataRequest)`, `(searchRequest)` e `(limitChange)` para fluxo server-driven;
-- colunas com `enableSorting`, `sortingBy`, `hideOnMobile`, `textAlign`, `nowrap`, `width` e classes;
-- estilos por célula com `cellStyleResolver` e por linha com `rowStyleResolver`;
-- modo grade com `gridMode`, `gridTemplateColumns`, `gridGap` e `customCardBuilder`;
-- exportação para XLSX e PDF pela própria API do componente.
+- column-targeted search with `searchInFields`;
+- events such as `(dataRequest)`, `(searchRequest)`, and `(limitChange)` for server-driven flows;
+- columns with `enableSorting`, `sortingBy`, `hideOnMobile`, `textAlign`, `nowrap`, `width`, and custom classes;
+- per-cell styling with `cellStyleResolver` and per-row styling with `rowStyleResolver`;
+- grid mode with `gridMode`, `gridTemplateColumns`, `gridGap`, and `customCardBuilder`;
+- built-in XLSX and PDF export support.
 
 ```dart
 final filters = Filters(limit: 10, offset: 0);
@@ -221,8 +281,7 @@ final searchFields = <DatatableSearchField>[
 </li-datatable>
 ```
 
-Para cenários visuais mais densos, o mesmo dataset pode ser reaproveitado em
-modo grade:
+For denser visual layouts, the same dataset can be reused in grid mode:
 
 ```dart
 final gridSettings = DatatableSettings(
@@ -247,7 +306,7 @@ final gridSettings = DatatableSettings(
 </li-datatable>
 ```
 
-Customização de coluna, linha e grid:
+Column, row, and grid customization:
 
 ```dart
 final advancedSettings = DatatableSettings(
@@ -280,44 +339,32 @@ final advancedSettings = DatatableSettings(
 );
 ```
 
-Boas práticas:
+Best practices:
 
-- mantenha `Filters`, `DatatableSettings` e `searchInFields` estáveis, em vez
-  de recriá-los em getters;
-- use `hideOnMobile` nas colunas secundárias para alimentar o colapso
-  responsivo;
-- reserve `customCardBuilder` para grids que realmente precisam fugir do layout
-  padrão;
-- em conteúdos pesados, prefira carregar o datatable sob demanda em accordion
-  lazy ou modal com `lazyContent`.
+- keep `Filters`, `DatatableSettings`, and `searchInFields` stable instead of recreating them in getters;
+- use `hideOnMobile` on secondary columns to feed the responsive collapse path;
+- reserve `customCardBuilder` for grids that genuinely need to diverge from the default layout;
+- for heavy content, prefer loading the datatable on demand inside a lazy accordion body or modal with `lazyContent`.
 
-O demo mais completo está em
-[datatable_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/datatable/datatable_page.dart)
-e
-[datatable_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/datatable/datatable_page.html).
+The most complete demo is in [example/lib/src/pages/datatable/datatable_page.dart](example/lib/src/pages/datatable/datatable_page.dart) and [example/lib/src/pages/datatable/datatable_page.html](example/lib/src/pages/datatable/datatable_page.html).
 
 ### Datatable Select
 
-`li-datatable-select` é o componente mais indicado quando um `select` simples não
-resolve porque o usuário precisa pesquisar, paginar e ordenar antes de escolher
-um item. Ele combina um trigger no estilo `form-select` com um `li-modal`
-interno que hospeda um `li-datatable`.
+`li-datatable-select` is the right fit when a simple select is not enough because users need to search, paginate, and sort before choosing an item. It combines a `form-select`-style trigger with an internal `li-modal` that hosts a `li-datatable`.
 
-Fluxo principal:
+Main flow:
 
-- o host fornece `Filters`, `DataFrame<T>` e `DatatableSettings`;
-- o componente emite `(dataRequest)` sempre que a tabela interna pede dados;
-- ao clicar em uma linha, o item é selecionado, o label é atualizado no trigger
-  e o modal fecha;
-- o valor pode ser controlado por `[(ngModel)]` ou por
-  `(currentValueChange)`.
+- the host provides `Filters`, `DataFrame<T>`, and `DatatableSettings`;
+- the component emits `(dataRequest)` whenever the internal table needs data;
+- clicking a row selects the item, updates the trigger label, and closes the modal;
+- the value can be controlled with `[(ngModel)]` or `(currentValueChange)`.
 
-Entradas e recursos mais relevantes:
+Most relevant inputs and features:
 
-- `labelKey` e `valueKey` para separar o texto visível do valor persistido;
-- `searchInFields` para o seletor de busca dentro do modal;
-- `modalSize`, `title`, `placeholder`, `disabled` e `fullScreenOnMobile`;
-- métodos públicos como `clear()`, `setSelectedItem(...)` e `selectedLabel`.
+- `labelKey` and `valueKey` to separate the visible label from the persisted value;
+- `searchInFields` for the search selector inside the modal;
+- `modalSize`, `title`, `placeholder`, `disabled`, and `fullScreenOnMobile`;
+- public methods such as `clear()`, `setSelectedItem(...)`, and `selectedLabel`.
 
 ```html
 <li-datatable-select
@@ -347,35 +394,23 @@ Entradas e recursos mais relevantes:
 </li-datatable-select>
 ```
 
-Boas práticas:
+Best practices:
 
-- mantenha `Filters`, `DatatableSettings` e `searchInFields` estáveis;
-- trate o carregamento de dados no pai, como num datatable comum;
-- use `valueKey` para persistir apenas IDs, e não o mapa inteiro, quando o
-  campo fizer parte de formulários;
-- use `@ViewChild` apenas para ações programáticas pontuais, como
-  `clear()` ou `setSelectedItem(...)`.
+- keep `Filters`, `DatatableSettings`, and `searchInFields` stable;
+- handle data loading in the parent, just as you would for a regular datatable;
+- use `valueKey` to persist only IDs instead of the full map when the field belongs to a form;
+- use `@ViewChild` only for focused programmatic actions such as `clear()` or `setSelectedItem(...)`.
 
-O demo de referência está em
-[datatable_select_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/datatable_select/datatable_select_page.dart)
-e
-[datatable_select_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/datatable_select/datatable_select_page.html).
+The reference demo is in [example/lib/src/pages/datatable_select/datatable_select_page.dart](example/lib/src/pages/datatable_select/datatable_select_page.dart) and [example/lib/src/pages/datatable_select/datatable_select_page.html](example/lib/src/pages/datatable_select/datatable_select_page.html).
 
 ### Select and Multi-Select
 
-`li-select` e `li-multi-select` cobrem dois cenários próximos, mas com contratos
-diferentes:
+`li-select` and `li-multi-select` cover adjacent but distinct scenarios:
 
-- `li-select`: uma única escolha com busca inline, suporte a `dataSource` ou
-  opções projetadas e integração com `ngModel`;
-- `li-multi-select`: múltiplos valores selecionados, normalmente renderizados
-  como badges no trigger.
+- `li-select`: a single choice with inline search, support for `dataSource` or projected options, and `ngModel` integration;
+- `li-multi-select`: multiple selected values, typically rendered as badges in the trigger.
 
-`li-select` aceita `List<Map<String, dynamic>>` ou `DataFrame` em
-`[dataSource]`, além de projeção manual com `li-option`. As chaves principais
-são `labelKey`, `valueKey` e `disabledKey`. O componente é pesquisável por
-padrão, usa overlay com Popper e já evita loops ignorando `dataSource`
-semanticamente idêntico.
+`li-select` accepts `List<Map<String, dynamic>>` or `DataFrame` through `[dataSource]`, and it also supports manual projection with `li-option`. The main keys are `labelKey`, `valueKey`, and `disabledKey`. The component is searchable by default, uses a Popper-based overlay, and already avoids loops by ignoring semantically identical `dataSource` updates.
 
 ```html
 <li-select
@@ -387,8 +422,7 @@ semanticamente idêntico.
 </li-select>
 ```
 
-`li-multi-select` segue a mesma ideia, mas o `ngModel` passa a ser uma
-`List<dynamic>`:
+`li-multi-select` follows the same idea, but `ngModel` becomes a `List<dynamic>`:
 
 ```html
 <li-multi-select
@@ -399,7 +433,7 @@ semanticamente idêntico.
 </li-multi-select>
 ```
 
-Também é possível projetar as opções manualmente:
+You can also project options manually:
 
 ```html
 <li-multi-select [(ngModel)]="targets">
@@ -409,33 +443,32 @@ Também é possível projetar as opções manualmente:
 </li-multi-select>
 ```
 
-Boas práticas:
+Best practices:
 
-- não recrie `dataSource` em getters usados no template;
-- mantenha listas estáveis e atualize apenas o `ngModel`;
-- para coleções muito grandes, trate busca/paginação no componente pai;
-- prefira `li-datatable-select` quando a escolha exigir tabela, colunas e
-  busca estruturada.
+- do not recreate `dataSource` in getters used by the template;
+- keep lists stable and update only `ngModel`;
+- for very large collections, handle search and pagination in the parent component;
+- prefer `li-datatable-select` when the choice requires a table, columns, and structured search.
 
-Referências:
+References:
 
-- [custom_select.dart](/c:/MyDartProjects/limitless_ui/lib/src/components/custom_select/custom_select.dart)
-- [multi_select_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/multi_select/multi_select_page.dart)
-- [multi_select_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/multi_select/multi_select_page.html)
+- [lib/src/components/select/custom_select.dart](lib/src/components/select/custom_select.dart)
+- [example/lib/src/pages/multi_select/multi_select_page.dart](example/lib/src/pages/multi_select/multi_select_page.dart)
+- [example/lib/src/pages/multi_select/multi_select_page.html](example/lib/src/pages/multi_select/multi_select_page.html)
 
 ### Typeahead
 
-`li-typeahead` cobre o espaço entre `li-select` e `li-datatable-select`: busca local ou assíncrona com sugestões, highlight configurável, navegação por teclado e integração com `[(ngModel)]`.
+`li-typeahead` sits between `li-select` and `li-datatable-select`: local or async search with suggestions, configurable highlighting, keyboard navigation, and `[(ngModel)]` integration.
 
-Recursos principais:
+Main features:
 
-- `dataSource` com `List` estável ou `DataFrame`
-- `searchCallback` para busca remota retornando `Future` ou lista imediata
-- `minLength`, `maxResults` e `debounceMs`
-- `openOnFocus`, `editable`, `selectOnExact` e `showHint`
-- `inputFormatter` e `resultFormatter` para listas de objetos
-- `resultMarkupBuilder` para itens com markup rico
-- `LiTypeaheadConfig` para defaults locais e `LiTypeaheadHighlightComponent` para highlight reutilizável
+- `dataSource` with a stable `List` or `DataFrame`
+- `searchCallback` for remote search returning a `Future` or immediate list
+- `minLength`, `maxResults`, and `debounceMs`
+- `openOnFocus`, `editable`, `selectOnExact`, and `showHint`
+- `inputFormatter` and `resultFormatter` for object lists
+- `resultMarkupBuilder` for rich result markup
+- `LiTypeaheadConfig` for local defaults and `LiTypeaheadHighlightComponent` for reusable highlighting
 
 ```html
 <li-typeahead
@@ -448,7 +481,7 @@ Recursos principais:
 </li-typeahead>
 ```
 
-Para listas de mapas:
+For map-based lists:
 
 ```html
 <li-typeahead
@@ -461,7 +494,7 @@ Para listas de mapas:
 </li-typeahead>
 ```
 
-Para defaults locais via config:
+For local defaults via config:
 
 ```dart
 @Component(
@@ -480,33 +513,27 @@ class TypeaheadConfigHostComponent {
 }
 ```
 
-Boas práticas:
+Best practices:
 
-- mantenha o `dataSource` estável no componente pai
-- prefira `searchCallback` quando a API remota já expõe busca filtrada
-- use `editable=false` quando o valor final precisar vir apenas da lista
-- prefira `li-datatable-select` quando a escolha exigir tabela, paginação ou ordenação
+- keep `dataSource` stable in the parent component
+- prefer `searchCallback` when the remote API already exposes filtered search
+- use `editable=false` when the final value must come only from the list
+- prefer `li-datatable-select` when the choice requires a table, pagination, or sorting
 
-O demo dedicado está em
-[typeahead_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/typeahead/typeahead_page.dart)
-e
-[typeahead_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/typeahead/typeahead_page.html).
+The dedicated demo is in [example/lib/src/pages/typeahead/typeahead_page.dart](example/lib/src/pages/typeahead/typeahead_page.dart) and [example/lib/src/pages/typeahead/typeahead_page.html](example/lib/src/pages/typeahead/typeahead_page.html).
 
 ### Treeview Select
 
-`li-treeview-select` cobre seleção hierárquica em dropdown quando um `select`
-plano perde contexto. Ele funciona com árvore estática via `[data]` ou com
-carregamento em partes via `[pageLoader]`.
+`li-treeview-select` covers hierarchical selection in a dropdown when a flat select loses too much context. It works with a static tree via `[data]` or incremental loading via `[pageLoader]`.
 
-Recursos principais:
+Main features:
 
-- seleção única ou múltipla com `[(ngModel)]`
-- `pageLoader` com `TreeViewLoadRequest(parent, offset, limit, searchTerm)`
-- `labelBuilder` para customizar o rótulo padrão
-- `canSelectNode` para impor regra de seleção por item
-- `template[liTreeviewSelectNode]` e `template[liTreeviewSelectTrigger]`
-  para custom render
-- `closeOnSelect`, `showClearButton`, `searchable` e `openOnFocus`
+- single or multiple selection with `[(ngModel)]`
+- `pageLoader` with `TreeViewLoadRequest(parent, offset, limit, searchTerm)`
+- `labelBuilder` to customize the default label
+- `canSelectNode` to enforce per-item selection rules
+- `template[liTreeviewSelectNode]` and `template[liTreeviewSelectTrigger]` for custom rendering
+- `closeOnSelect`, `showClearButton`, `searchable`, and `openOnFocus`
 
 ```html
 <li-treeview-select
@@ -521,7 +548,7 @@ Recursos principais:
   <template liTreeviewSelectTrigger let-ctx>
     <span *ngIf="ctx.selectedNodes.isEmpty">{{ ctx.placeholder }}</span>
     <span *ngIf="ctx.selectedNodes.isNotEmpty">
-      {{ ctx.selectedNodes.length }} item(ns)
+      {{ ctx.selectedNodes.length }} item(s)
     </span>
   </template>
 
@@ -532,56 +559,47 @@ Recursos principais:
 </li-treeview-select>
 ```
 
-Boas práticas:
+Best practices:
 
-- use `[data]` quando a árvore já estiver carregada em memória
-- use `[pageLoader]` para catálogos grandes ou organogramas profundos
-- deixe a busca remota no backend usando `request.searchTerm`
-- use `canSelectNode` para regras como “somente folhas” ou “somente recebe processo”
+- use `[data]` when the tree is already loaded in memory
+- use `[pageLoader]` for large catalogs or deep hierarchies
+- keep remote search on the backend through `request.searchTerm`
+- use `canSelectNode` for rules such as leaf-only selection
 
-Referências:
+References:
 
-- [treeview_select_component.dart](/c:/MyDartProjects/limitless_ui/lib/src/components/treeview/treeview_select_component.dart)
-- [treeview_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/treeview/treeview_page.dart)
-- [treeview_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/treeview/treeview_page.html)
+- [lib/src/components/treeview/treeview_select_component.dart](lib/src/components/treeview/treeview_select_component.dart)
+- [example/lib/src/pages/treeview/treeview_page.dart](example/lib/src/pages/treeview/treeview_page.dart)
+- [example/lib/src/pages/treeview/treeview_page.html](example/lib/src/pages/treeview/treeview_page.html)
 
 ### Tabs
 
-`li-tabsx` organiza conteúdo por seções sem trocar de rota. Ele suporta
-`type="tabs"` ou `type="pills"`, posicionamento horizontal ou lateral,
-`[justified]`, abas desabilitadas e cabeçalhos projetados com
-`template li-tabx-header`.
+`li-tabsx` organizes content into sections without changing routes. It supports `type="tabs"` or `type="pills"`, horizontal or side placement, `[justified]`, disabled tabs, and projected headers with `template li-tabx-header`.
 
 ```html
 <li-tabsx type="pills" placement="left" [justified]="true">
   <li-tabx header="Tokens" [active]="true">
-    <div class="p-3">Conteúdo</div>
+    <div class="p-3">Content</div>
   </li-tabx>
 
-  <li-tabx [disabled]="true" header="Bloqueada"></li-tabx>
+  <li-tabx [disabled]="true" header="Disabled"></li-tabx>
 </li-tabsx>
 ```
 
-Use tabs para documentação, formulários segmentados e painéis administrativos.
-Quando o conteúdo da aba ficar pesado ou muito aninhado, isole-o em
-subcomponentes.
+Use tabs for documentation, segmented forms, and administrative panels. When tab content becomes heavy or deeply nested, move it into subcomponents.
 
-O demo mostra pills laterais, abas desabilitadas e cabeçalho customizado em
-[tabs_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/tabs/tabs_page.dart)
-e
-[tabs_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/tabs/tabs_page.html).
+The demo shows side pills, disabled tabs, and custom headers in [example/lib/src/pages/tabs/tabs_page.dart](example/lib/src/pages/tabs/tabs_page.dart) and [example/lib/src/pages/tabs/tabs_page.html](example/lib/src/pages/tabs/tabs_page.html).
 
 ### Date Picker
 
-`li-date-picker` cobre seleção simples de data com integração direta a
-`[(ngModel)]`, além de restrições por intervalo e mudança de locale.
+`li-date-picker` covers simple date selection with direct `[(ngModel)]` integration, plus range constraints and locale switching.
 
-Recursos principais:
+Main features:
 
-- `minDate` e `maxDate` para limitar o intervalo permitido;
-- `locale` para formatos como `pt_BR` e `en_US`;
-- `placeholder`, `value` e `disabled`;
-- bom encaixe com formulários AngularDart sem precisar de wrapper extra.
+- `minDate` and `maxDate` to constrain the allowed range;
+- `locale` for formats such as `pt_BR` and `en_US`;
+- `placeholder`, `value`, and `disabled`;
+- straightforward integration into AngularDart forms without an extra wrapper.
 
 ```html
 <li-date-picker
@@ -593,11 +611,10 @@ Recursos principais:
 </li-date-picker>
 ```
 
-O demo cobre quatro cenários úteis: uso padrão, data restrita, locale inglês e
-campo desabilitado. Referências:
+The demo covers four useful scenarios: default usage, restricted date ranges, English locale, and a disabled field. References:
 
-- [date_picker_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/date_picker/date_picker_page.dart)
-- [date_picker_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/date_picker/date_picker_page.html)
+- [example/lib/src/pages/date_picker/date_picker_page.dart](example/lib/src/pages/date_picker/date_picker_page.dart)
+- [example/lib/src/pages/date_picker/date_picker_page.html](example/lib/src/pages/date_picker/date_picker_page.html)
 
 ### Modal with lazy content
 
@@ -616,27 +633,23 @@ campo desabilitado. Referências:
 </li-modal>
 ```
 
-This pattern is useful for expensive content such as datatables, forms with many controls, or projected content that should not exist in the DOM until the dialog opens.
+This pattern is useful for expensive content such as datatables, large forms, or projected content that should not exist in the DOM until the dialog opens.
 
 ### Toast
 
-`li-toast` cobre o caso declarativo inline. Ele renderiza o markup do toast,
-expõe `show()`, `hide()` e `isOpen`, e suporta `header`, `body`,
-`helperText`, `badgeText`, `iconClass`, `autohide`, `delay`, `dismissible`,
-`pauseOnHover` e `rounded`.
+`li-toast` covers the inline declarative case. It renders the toast markup, exposes `show()`, `hide()`, and `isOpen`, and supports `header`, `body`, `helperText`, `badgeText`, `iconClass`, `autohide`, `delay`, `dismissible`, `pauseOnHover`, and `rounded`.
 
 ```html
 <li-toast
-  header="Processamento concluído"
-  body="A operação foi concluída com sucesso."
-  helperText="agora"
+  header="Processing completed"
+  body="The operation completed successfully."
+  helperText="now"
   iconClass="ph-check-circle"
   [autohide]="false">
 </li-toast>
 ```
 
-Para notificações globais em overlay, o pacote também expõe
-`LiToastService` + `li-toast-stack`:
+For global overlay notifications, the package also exposes `LiToastService` plus `li-toast-stack`:
 
 ```html
 <li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
@@ -646,8 +659,8 @@ Para notificações globais em overlay, o pacote também expõe
 final toastService = LiToastService();
 
 toastService.show(
-  header: 'Atualização disponível',
-  body: 'Há uma nova ação aguardando revisão.',
+  header: 'Update available',
+  body: 'A new item is waiting for review.',
   badgeText: 'Update',
   iconClass: 'ph-bell-ringing',
   toastClass: 'border-primary',
@@ -656,56 +669,43 @@ toastService.show(
 );
 ```
 
-`placement` do stack aceita `top-end`, `top-start`, `bottom-end`,
-`bottom-start`, `top-center` e `bottom-center`.
+`placement` accepts `top-end`, `top-start`, `bottom-end`, `bottom-start`, `top-center`, and `bottom-center`.
 
-Boas práticas:
+Best practices:
 
-- use `li-toast` quando o toast fizer parte do layout da própria página;
-- use `LiToastService` + `li-toast-stack` para mensagens globais;
-- mantenha `autohide: false` apenas para mensagens que exigem ação humana;
-- quando precisar de layout mais rico, projete markup próprio dentro de
-  `li-toast`.
+- use `li-toast` when the toast is part of the page layout itself;
+- use `LiToastService` plus `li-toast-stack` for global messages;
+- keep `autohide: false` only for messages that require human action;
+- when you need richer layout, project custom markup inside `li-toast`.
 
-O demo dedicado está em
-[toast_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/toast/toast_page.dart)
-e
-[toast_page.html](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/toast/toast_page.html).
+The dedicated demo is in [example/lib/src/pages/toast/toast_page.dart](example/lib/src/pages/toast/toast_page.dart) and [example/lib/src/pages/toast/toast_page.html](example/lib/src/pages/toast/toast_page.html).
 
 ### Popover
 
-O pacote expõe duas camadas de popover:
+The package exposes two popover layers:
 
-- helpers imperativos, como `SimplePopover.showWarning(...)` e
-  `SweetAlertPopover.showPopover(...)`;
-- API declarativa com `LiPopoverComponent` e `LiPopoverDirective`.
+- imperative helpers such as `SimplePopover.showWarning(...)` and `SweetAlertPopover.showPopover(...)`;
+- a declarative API with `LiPopoverComponent` and `LiPopoverDirective`.
 
-Use popover quando o conteúdo precisa ser mais rico que um tooltip, mas ainda
-não justifica um modal. O componente declarativo suporta `click`, `hover` e
-controle manual via `@ViewChild`, além de `TemplateRef`, `container="body"` e
-hooks de posicionamento.
+Use a popover when the content needs to be richer than a tooltip but still does not justify a modal. The declarative component supports `click`, `hover`, manual control via `@ViewChild`, `TemplateRef`, `container="body"`, and positioning hooks.
 
 ```html
 <button
   class="btn btn-outline-primary"
-  [liPopover]="'Mais contexto sem sair da tela'"
-  popoverTitle="Detalhes"
+  [liPopover]="'More context without leaving the screen'"
+  popoverTitle="Details"
   triggers="click">
-  Abrir popover
+  Open popover
 </button>
 ```
 
-Quando o conteúdo crescer demais, migre para modal, drawer ou card expansível.
-O demo mais rico está em
-[popover_page.dart](/c:/MyDartProjects/limitless_ui/example/lib/src/pages/popover/popover_page.dart).
+When the content grows too large, move to a modal, drawer, or expandable card. The richest demo is in [example/lib/src/pages/popover/popover_page.dart](example/lib/src/pages/popover/popover_page.dart).
 
 ### Dropdown Menu
 
-`li-dropdown-menu` é um menu de ações compacto orientado por lista de opções.
-Ele serve bem para botões de overflow, ações por card e menus pequenos de
-toolbar, sem a complexidade do módulo dropdown completo.
+`li-dropdown-menu` is a compact action menu driven by an option list. It fits overflow buttons, per-card actions, and small toolbar menus without the complexity of the full dropdown module.
 
-Cada item é um `LiDropdownMenuOption` com:
+Each item is a `LiDropdownMenuOption` with:
 
 - `value`
 - `label`
@@ -714,20 +714,20 @@ Cada item é um `LiDropdownMenuOption` com:
 - `disabled`
 - `divider`
 
-O componente também suporta `triggerLabel`, `triggerIconClass`, `triggerClass`,
-`menuClass`, `placement`, `rounded`, `showCaret` e `closeOnSelect`.
+The component also supports `triggerLabel`, `triggerIconClass`, `triggerClass`,
+`menuClass`, `placement`, `rounded`, `showCaret`, and `closeOnSelect`.
 
 ```dart
 final options = <LiDropdownMenuOption>[
   const LiDropdownMenuOption(
     value: 'edit',
-    label: 'Editar',
+    label: 'Edit',
     iconClass: 'ph-pencil-simple',
   ),
   const LiDropdownMenuOption(
     value: 'archive',
-    label: 'Arquivar',
-    description: 'Remove da listagem principal',
+    label: 'Archive',
+    description: 'Remove from the main listing',
   ),
 ];
 ```
@@ -736,15 +736,13 @@ final options = <LiDropdownMenuOption>[
 <li-dropdown-menu
   [options]="options"
   value="edit"
-  triggerLabel="Ações"
+  triggerLabel="Actions"
   placement="dropend"
   (valueChange)="onAction($event)">
 </li-dropdown-menu>
 ```
 
-O menu fecha em clique externo, `Escape` ou seleção, conforme `closeOnSelect`.
-Referência principal:
-[dropdown_menu_component.dart](/c:/MyDartProjects/limitless_ui/lib/src/components/dropdown_menu/dropdown_menu_component.dart).
+The menu closes on outside click, `Escape`, or selection depending on `closeOnSelect`. Main reference: [lib/src/components/dropdown_menu/dropdown_menu_component.dart](lib/src/components/dropdown_menu/dropdown_menu_component.dart).
 
 ### Scrollspy
 
@@ -796,13 +794,21 @@ dart analyze
 Run VM-safe tests:
 
 ```bash
-dart test test/br_currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart
+dart test test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart
 ```
 
 Run browser and AngularDart tests in Chrome:
 
 ```bash
 dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/typeahead/li_typeahead_component_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart
+```
+
+When validating dependency upgrades for `ngdart`, `ngforms`, or `ngrouter`, add focused runs for the form value accessors and input bindings before broader test suites. Those accessors depend on internal `ngforms` APIs and behavior due to framework limitations, and they are usually the first compatibility boundary to break.
+
+Recommended first-pass upgrade command:
+
+```bash
+dart run build_runner test -- -p chrome -j 1 test/input/li_input_component_test.dart test/multi_select/li_multi_select_focus_test.dart
 ```
 
 Validate the package before publishing:
@@ -828,11 +834,11 @@ dart pub publish --dry-run
   - force a synchronous refresh only in a narrow, justified point;
   - or change the flow so data is available before the deferred child component is created.
 - Always validate the rendered DOM after the async update. If the UI still only refreshes after an extra click, the change-detection issue is not solved.
-- Specific lesson learned in this repository: a lazy accordion body that projects async content from the host must not be wrapped by an `onPush` accordion item unless that projection path is explicitly handled. The datatable demo only started rendering correctly after removing `ChangeDetectionStrategy.onPush` from [accordion_item_component.dart](/c:/MyDartProjects/limitless_ui/lib/src/components/accordion/accordion_item_component.dart), because the projected lazy body needed to receive host-side async updates after first render.
+- Specific lesson learned in this repository: a lazy accordion body that projects async content from the host must not be wrapped by an `onPush` accordion item unless that projection path is explicitly handled. The datatable demo only started rendering correctly after removing `ChangeDetectionStrategy.onPush` from [lib/src/components/accordion/accordion_item_component.dart](lib/src/components/accordion/accordion_item_component.dart), because the projected lazy body needed to receive host-side async updates after first render.
 
 ## Demo application
 
-The demo app under [example](/c:/MyDartProjects/limitless_ui/example) now includes dedicated routes for:
+The demo app under [example](example) now includes dedicated routes for:
 
 - accordion
 - datatable
@@ -857,6 +863,7 @@ Use the demo app as the reference for real template usage, especially for lazy a
 
 ## Notes
 
-- The demo application is in [example](/c:/MyDartProjects/limitless_ui/example).
+- The demo application is in [example](example).
 - The package is not intended for Flutter or server-side Dart.
-- Some components depend on data structures from `essential_core`.
+- `essential_core` is the shared generic foundation reused by the data-oriented component family of this package: `li-datatable`, `li-datatable-select`, `li-select`, `li-multi-select`, `li-typeahead` and treeview-related components.
+- Some value accessors are intentionally coupled to internal `ngforms` APIs and behavior due to framework limitations, so framework package upgrades must be deliberate, pinned, and test-driven.

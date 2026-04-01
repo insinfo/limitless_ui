@@ -1,0 +1,145 @@
+<div [class]="resolvedContainerClass">
+  <label *ngIf="showTopLabel" [attr.for]="resolvedId" [class]="resolvedLabelClass">
+    {{ label }}
+  </label>
+
+  <div *ngIf="hasAddons" [class]="resolvedInputGroupClass">
+    <span *ngIf="hasPrefix" class="input-group-text">
+      <i *ngIf="prefixIconClass.trim().isNotEmpty" [class]="prefixIconClass"></i>
+      <span *ngIf="prefixText.trim().isNotEmpty">{{ prefixText }}</span>
+    </span>
+
+    <div *ngIf="!multiline && usesOverlayPasswordToggle" class="li-input__field-shell li-input__field-shell--group">
+      <input #inputElement [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
+        [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+        [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
+        [attr.inputmode]="resolvedInputMode" [attr.enterkeyhint]="resolvedEnterKeyHint"
+        [attr.autocorrect]="resolvedAutocorrect" [attr.autocapitalize]="resolvedAutocapitalize"
+        [attr.spellcheck]="resolvedSpellcheck" [attr.data-lpignore]="resolvedDataLpignore"
+        [attr.data-1p-ignore]="resolvedData1pIgnore" [attr.data-bwignore]="resolvedDataBwignore"
+        [attr.min]="resolvedMin" [attr.max]="resolvedMax" [attr.step]="resolvedStep"
+        [attr.minlength]="resolvedMinLength?.toString()" [attr.maxlength]="resolvedMaxLength?.toString()"
+        [attr.pattern]="resolvedPattern" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
+        (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()">
+
+      <button type="button" class="li-input__password-toggle li-input__password-toggle--overlay"
+        [attr.aria-label]="passwordToggleAriaLabel" [attr.aria-pressed]="passwordVisible.toString()"
+        [disabled]="disabled" (mousedown)="handlePasswordToggleMouseDown($event)" (click)="togglePasswordVisibility()">
+        <i [class]="passwordToggleIconClass"></i>
+      </button>
+    </div>
+
+    <input *ngIf="!multiline && !usesOverlayPasswordToggle" #inputElement [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
+      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+      [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
+      [attr.inputmode]="resolvedInputMode" [attr.enterkeyhint]="resolvedEnterKeyHint"
+      [attr.autocorrect]="resolvedAutocorrect" [attr.autocapitalize]="resolvedAutocapitalize"
+      [attr.spellcheck]="resolvedSpellcheck" [attr.data-lpignore]="resolvedDataLpignore"
+      [attr.data-1p-ignore]="resolvedData1pIgnore" [attr.data-bwignore]="resolvedDataBwignore"
+      [attr.min]="resolvedMin" [attr.max]="resolvedMax" [attr.step]="resolvedStep"
+      [attr.minlength]="resolvedMinLength?.toString()" [attr.maxlength]="resolvedMaxLength?.toString()"
+      [attr.pattern]="resolvedPattern" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()">
+
+    <textarea *ngIf="multiline" #inputElement [id]="resolvedId" [class]="resolvedInputClass" [rows]="resolvedRows"
+      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+      [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
+      [attr.enterkeyhint]="resolvedEnterKeyHint" [attr.autocorrect]="resolvedAutocorrect"
+      [attr.autocapitalize]="resolvedAutocapitalize" [attr.spellcheck]="resolvedSpellcheck"
+      [attr.data-lpignore]="resolvedDataLpignore" [attr.data-1p-ignore]="resolvedData1pIgnore"
+      [attr.data-bwignore]="resolvedDataBwignore" [attr.minlength]="resolvedMinLength?.toString()"
+      [attr.maxlength]="resolvedMaxLength?.toString()" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()"></textarea>
+
+    <span *ngIf="hasSuffix" class="input-group-text li-input__suffix">
+      <span *ngIf="suffixText.trim().isNotEmpty">{{ suffixText }}</span>
+      <i *ngIf="suffixIconClass.trim().isNotEmpty" [class]="suffixIconClass"></i>
+      <button *ngIf="showsAddonPasswordToggle" type="button" class="li-input__password-toggle"
+        [attr.aria-label]="passwordToggleAriaLabel" [attr.aria-pressed]="passwordVisible.toString()"
+        [disabled]="disabled" (mousedown)="handlePasswordToggleMouseDown($event)" (click)="togglePasswordVisibility()">
+        <i [class]="passwordToggleIconClass"></i>
+      </button>
+    </span>
+  </div>
+
+  <div *ngIf="usesFloatingLabel" class="form-floating li-input__floating-shell"
+    [class.li-input__floating-shell--toggle]="usesOverlayPasswordToggle">
+    <input *ngIf="!multiline" #inputElement [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
+      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+      [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
+      [attr.inputmode]="resolvedInputMode" [attr.enterkeyhint]="resolvedEnterKeyHint"
+      [attr.autocorrect]="resolvedAutocorrect" [attr.autocapitalize]="resolvedAutocapitalize"
+      [attr.spellcheck]="resolvedSpellcheck" [attr.data-lpignore]="resolvedDataLpignore"
+      [attr.data-1p-ignore]="resolvedData1pIgnore" [attr.data-bwignore]="resolvedDataBwignore"
+      [attr.min]="resolvedMin" [attr.max]="resolvedMax" [attr.step]="resolvedStep"
+      [attr.minlength]="resolvedMinLength?.toString()" [attr.maxlength]="resolvedMaxLength?.toString()"
+      [attr.pattern]="resolvedPattern" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()">
+
+    <button *ngIf="usesOverlayPasswordToggle" type="button"
+      class="li-input__password-toggle li-input__password-toggle--overlay"
+      [attr.aria-label]="passwordToggleAriaLabel" [attr.aria-pressed]="passwordVisible.toString()"
+      [disabled]="disabled" (mousedown)="handlePasswordToggleMouseDown($event)" (click)="togglePasswordVisibility()">
+      <i [class]="passwordToggleIconClass"></i>
+    </button>
+
+    <textarea *ngIf="multiline" #inputElement [id]="resolvedId" [class]="resolvedInputClass"
+      [class.li-input__textarea-floating]="true"
+      [rows]="resolvedRows" [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+      [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
+      [attr.enterkeyhint]="resolvedEnterKeyHint" [attr.autocorrect]="resolvedAutocorrect"
+      [attr.autocapitalize]="resolvedAutocapitalize" [attr.spellcheck]="resolvedSpellcheck"
+      [attr.data-lpignore]="resolvedDataLpignore" [attr.data-1p-ignore]="resolvedData1pIgnore"
+      [attr.data-bwignore]="resolvedDataBwignore" [attr.minlength]="resolvedMinLength?.toString()"
+      [attr.maxlength]="resolvedMaxLength?.toString()" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()"></textarea>
+
+    <label [attr.for]="resolvedId">{{ label }}</label>
+  </div>
+
+  <div *ngIf="!hasAddons && !usesFloatingLabel && !multiline"
+    [class.li-input__field-shell]="usesOverlayPasswordToggle">
+    <input #inputElement [id]="resolvedId" [type]="resolvedType"
+      [class]="resolvedInputClass" [value]="currentValue" [disabled]="disabled" [readOnly]="readonly"
+      [required]="required" [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel"
+      [attr.autocomplete]="resolvedAutocomplete" [attr.enterkeyhint]="resolvedEnterKeyHint"
+      [attr.autocorrect]="resolvedAutocorrect" [attr.autocapitalize]="resolvedAutocapitalize"
+      [attr.spellcheck]="resolvedSpellcheck" [attr.data-lpignore]="resolvedDataLpignore"
+      [attr.data-1p-ignore]="resolvedData1pIgnore" [attr.data-bwignore]="resolvedDataBwignore"
+      [placeholder]="resolvedPlaceholder" [attr.inputmode]="resolvedInputMode"
+      [attr.min]="resolvedMin" [attr.max]="resolvedMax" [attr.step]="resolvedStep"
+      [attr.minlength]="resolvedMinLength?.toString()" [attr.maxlength]="resolvedMaxLength?.toString()"
+      [attr.pattern]="resolvedPattern" [attr.title]="resolvedTitleText"
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()">
+
+    <button *ngIf="usesOverlayPasswordToggle" type="button"
+      class="li-input__password-toggle li-input__password-toggle--overlay"
+      [attr.aria-label]="passwordToggleAriaLabel" [attr.aria-pressed]="passwordVisible.toString()"
+      [disabled]="disabled" (mousedown)="handlePasswordToggleMouseDown($event)" (click)="togglePasswordVisibility()">
+      <i [class]="passwordToggleIconClass"></i>
+    </button>
+  </div>
+
+  <textarea *ngIf="!hasAddons && !usesFloatingLabel && multiline" #inputElement [id]="resolvedId"
+    [class]="resolvedInputClass" [rows]="resolvedRows" [value]="currentValue" [disabled]="disabled"
+    [readOnly]="readonly" [required]="required" [attr.name]="resolvedName"
+    [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
+    [attr.enterkeyhint]="resolvedEnterKeyHint" [attr.autocorrect]="resolvedAutocorrect"
+    [attr.autocapitalize]="resolvedAutocapitalize" [attr.spellcheck]="resolvedSpellcheck"
+    [attr.data-lpignore]="resolvedDataLpignore" [attr.data-1p-ignore]="resolvedData1pIgnore"
+    [attr.data-bwignore]="resolvedDataBwignore" [attr.minlength]="resolvedMinLength?.toString()"
+    [attr.maxlength]="resolvedMaxLength?.toString()" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
+    (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()"></textarea>
+
+  <div *ngIf="showInvalidFeedback" [class]="resolvedInvalidFeedbackClass">
+    {{ invalidFeedbackText }}
+  </div>
+
+  <div *ngIf="showValidFeedback" [class]="resolvedValidFeedbackClass">
+    {{ validFeedbackText }}
+  </div>
+
+  <div *ngIf="showHelperText" [class]="resolvedHelperClass">
+    {{ helperText }}
+  </div>
+</div>

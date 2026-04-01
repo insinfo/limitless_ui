@@ -533,6 +533,10 @@ pages:
     simpleWarningToast: Simple warning toast
     sweetSuccessToast: Sweet success toast
     sweetWarningToast: Sweet warning toast
+    sweetModal: Sweet modal
+    sweetConfirm: Sweet confirm
+    sweetPrompt: Sweet prompt
+    sweetErrorToast: Sweet error toast
     idle: Use os botões para acionar os helpers estáticos.
     loadingShown: Overlay de loading exibida por 2 segundos.
     loadingHidden: Overlay de loading finalizada.
@@ -558,6 +562,26 @@ pages:
     sweetSuccessState: SweetAlertSimpleToast.showSuccessToast executado.
     sweetWarningBody: Toast SweetAlert de alerta exibido.
     sweetWarningState: SweetAlertSimpleToast.showWarningToast executado.
+    sweetModalBody: O pipeline terminou com sucesso e gerou um resumo pronto para revisão.
+    sweetModalTitle: Build concluído
+    sweetModalState: SweetAlert.show confirmado.
+    sweetModalDismissed: SweetAlert.show foi fechado sem confirmação.
+    sweetConfirmBody: Deseja promover este release para produção agora?
+    sweetConfirmTitle: Promover release
+    sweetConfirmOk: Promover
+    sweetConfirmCancel: Revisar
+    sweetConfirmTrue: SweetAlert.confirm retornou confirmação positiva.
+    sweetConfirmFalse: SweetAlert.confirm foi cancelado.
+    sweetPromptBody: Informe o identificador do lote que deve receber monitoramento prioritário.
+    sweetPromptTitle: Prioridade do lote
+    sweetPromptPlaceholder: 'Ex.: lote-42'
+    sweetPromptOk: Salvar prioridade
+    sweetPromptCancel: Agora não
+    sweetPromptValidation: Informe um identificador antes de continuar.
+    sweetPromptFilledPrefix: SweetAlert.prompt confirmou com valor
+    sweetPromptDismissed: SweetAlert.prompt foi cancelado.
+    sweetErrorBody: Toast SweetAlert de erro exibido no canto inferior.
+    sweetErrorState: SweetAlert.toast executado com tipo error.
   button:
     title: Componentes
     subtitle: Botões

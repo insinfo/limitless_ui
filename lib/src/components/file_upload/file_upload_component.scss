@@ -1,0 +1,103 @@
+:host {
+  display: block;
+}
+
+.li-file-upload__dropzone {
+  border: 2px dashed rgba(var(--body-color-rgb), 0.18);
+  border-radius: var(--border-radius-lg);
+  background: var(--card-bg, var(--white));
+  transition: border-color 0.15s ease, background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.li-file-upload__dropzone.is-over {
+  border-color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.05);
+  transform: translateY(-1px);
+}
+
+.li-file-upload__dropzone.is-disabled {
+  opacity: 0.6;
+}
+
+.li-file-upload__content {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.li-file-upload__icon {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--primary);
+}
+
+.li-file-upload__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--body-color);
+}
+
+.li-file-upload__subtitle {
+  max-width: 30rem;
+  margin: 0.5rem auto 1rem;
+  color: rgba(var(--body-color-rgb), 0.72);
+}
+
+.li-file-upload__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--card-bg, var(--white));
+}
+
+.li-file-upload__meta {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.li-file-upload__kind {
+  min-width: 3rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: var(--border-radius-pill);
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: rgba(var(--body-color-rgb), 0.08);
+  color: rgba(var(--body-color-rgb), 0.72);
+}
+
+.li-file-upload__kind-image {
+  background: rgba(var(--primary-rgb), 0.12);
+  color: var(--primary);
+}
+
+.li-file-upload__kind-video {
+  background: rgba(var(--info-rgb), 0.12);
+  color: var(--info);
+}
+
+.li-file-upload__kind-audio {
+  background: rgba(var(--warning-rgb), 0.16);
+  color: var(--warning);
+}
+
+.li-file-upload__kind-pdf,
+.li-file-upload__kind-doc,
+.li-file-upload__kind-xls,
+.li-file-upload__kind-ppt {
+  background: rgba(var(--danger-rgb), 0.12);
+  color: var(--danger);
+}
+
+.li-file-upload__kind-compress {
+  background: rgba(var(--secondary-rgb), 0.16);
+  color: var(--secondary);
+}

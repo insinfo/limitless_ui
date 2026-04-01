@@ -180,9 +180,19 @@ class AppComponent {
           url: DemoRoutePaths.pagination.toUrl(),
         ),
         DemoNavItem(
+          label: 'Checkbox e radios',
+          iconClass: 'ph-check-square-offset',
+          url: DemoRoutePaths.selectionControls.toUrl(),
+        ),
+        DemoNavItem(
           label: t.nav.select,
           iconClass: 'ph-caret-down',
           url: DemoRoutePaths.select.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Rating',
+          iconClass: 'ph-star',
+          url: DemoRoutePaths.rating.toUrl(),
         ),
         DemoNavItem(
           label: 'Typeahead',
@@ -260,6 +270,11 @@ class AppComponent {
           url: DemoRoutePaths.toast.toUrl(),
         ),
         DemoNavItem(
+          label: 'File upload',
+          iconClass: 'ph-upload-simple',
+          url: DemoRoutePaths.fileUpload.toUrl(),
+        ),
+        DemoNavItem(
           label: t.nav.treeview,
           iconClass: 'ph-tree-structure',
           url: DemoRoutePaths.treeview.toUrl(),
@@ -270,9 +285,29 @@ class AppComponent {
           url: DemoRoutePaths.helpers.toUrl(),
         ),
         DemoNavItem(
+          label: 'SweetAlert',
+          iconClass: 'ph-sparkle',
+          url: DemoRoutePaths.sweetAlert.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Highlight',
+          iconClass: 'ph-code-block',
+          url: DemoRoutePaths.highlight.toUrl(),
+        ),
+        DemoNavItem(
           label: t.nav.button,
           iconClass: 'ph-cursor-click',
           url: DemoRoutePaths.button.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'Inputs',
+          iconClass: 'ph-textbox',
+          url: DemoRoutePaths.inputs.toUrl(),
+        ),
+        DemoNavItem(
+          label: 'FAB',
+          iconClass: 'ph-plus-circle',
+          url: DemoRoutePaths.fab.toUrl(),
         ),
       ];
 }

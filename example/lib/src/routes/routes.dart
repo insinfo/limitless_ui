@@ -37,14 +37,20 @@ import 'package:limitless_ui_example/src/pages/overview/overview_page.template.d
     as overview_page;
 import 'package:limitless_ui_example/src/pages/pagination/pagination_page.template.dart'
     as pagination_page;
+import 'package:limitless_ui_example/src/pages/selection_controls/selection_controls_page.template.dart'
+    as selection_controls_page;
 import 'package:limitless_ui_example/src/pages/popover/popover_page.template.dart'
     as popover_page;
 import 'package:limitless_ui_example/src/pages/progress/progress_page.template.dart'
     as progress_page;
 import 'package:limitless_ui_example/src/pages/dropdown/dropdown_page.template.dart'
     as dropdown_page;
+import 'package:limitless_ui_example/src/pages/file_upload/file_upload_page.template.dart'
+    as file_upload_page;
 import 'package:limitless_ui_example/src/pages/select/select_page.template.dart'
     as select_page;
+import 'package:limitless_ui_example/src/pages/rating/rating_page.template.dart'
+    as rating_page;
 import 'package:limitless_ui_example/src/pages/typeahead/typeahead_page.template.dart'
     as typeahead_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
@@ -103,9 +109,19 @@ class DemoRoutes {
     component: pagination_page.PaginationPageComponentNgFactory,
   );
 
+  static final selectionControls = RouteDefinition(
+    routePath: DemoRoutePaths.selectionControls,
+    component: selection_controls_page.SelectionControlsPageComponentNgFactory,
+  );
+
   static final select = RouteDefinition(
     routePath: DemoRoutePaths.select,
     component: select_page.SelectPageComponentNgFactory,
+  );
+
+  static final rating = RouteDefinition(
+    routePath: DemoRoutePaths.rating,
+    component: rating_page.RatingPageComponentNgFactory,
   );
 
   static final typeahead = RouteDefinition(
@@ -173,6 +189,11 @@ class DemoRoutes {
     component: notification_page.NotificationPageComponentNgFactory,
   );
 
+  static final fileUpload = RouteDefinition(
+    routePath: DemoRoutePaths.fileUpload,
+    component: file_upload_page.FileUploadPageComponentNgFactory,
+  );
+
   static final toast = RouteDefinition(
     routePath: DemoRoutePaths.toast,
     component: toast_page.ToastPageComponentNgFactory,
@@ -198,7 +219,9 @@ class DemoRoutes {
     offcanvas,
     breadcrumbs,
     pagination,
+    selectionControls,
     select,
+    rating,
     typeahead,
     multiSelect,
     currency,
@@ -213,6 +236,7 @@ class DemoRoutes {
     datatableSelect,
     toast,
     notification,
+    fileUpload,
     treeview,
     helpers,
     RouteDefinition.redirect(

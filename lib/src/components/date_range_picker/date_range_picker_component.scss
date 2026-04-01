@@ -2,8 +2,8 @@
     cursor: pointer;
 }
 
-.date-range-field[readonly] {
-    background-color: var(--white);
+.date-range-field[readonly]:not(:disabled) {
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
 }
 
@@ -18,14 +18,14 @@
 }
 
 .date-range-trigger-button {
-    background-color: var(--white);
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
     border-color: var(--border-color);
 }
 
-.date-range-trigger-button:hover,
-.date-range-trigger-button:focus {
-    background-color: var(--white);
+.date-range-trigger-button:not(:disabled):hover,
+.date-range-trigger-button:not(:disabled):focus {
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
     border-color: var(--border-color);
 }

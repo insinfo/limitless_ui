@@ -1,0 +1,26 @@
+<div
+    [class]="resolvedRootClass"
+    role="slider"
+    [attr.aria-label]="ariaLabel"
+    aria-valuemin="0"
+    [attr.aria-valuemax]="max.toString()"
+    [attr.aria-valuenow]="rate.toString()"
+    [attr.aria-disabled]="disabled ? 'true' : null"
+    [attr.aria-readonly]="readonly ? 'true' : null"
+    [attr.tabindex]="disabled ? '-1' : '0'"
+    (mouseleave)="resetPreview()"
+    (blur)="handleBlur()"
+    (keydown)="handleKeyDown($event)">
+  <button
+      *ngFor="let index of starIndexes; trackBy: trackByIndex"
+      type="button"
+      [class]="starClass(index)"
+      [disabled]="disabled"
+      tabindex="-1"
+      [attr.aria-label]="'Rate ' + (index + 1).toString()"
+      (mouseenter)="preview(index + 1)"
+      (click)="select(index + 1)">
+    <span class="li-rating__star-shell">★</span>
+    <span class="li-rating__star-fill" [style.width.%]="fillPercentage(index)">★</span>
+  </button>
+</div>

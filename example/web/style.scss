@@ -2,3 +2,41 @@
   font-family: var(--icon-font-family), "Phosphor" !important;
   content: "\e9fe";
 }
+
+
+
+/* Scrollbar moderna */
+@media (min-width: 768px) {
+  .custom-scrollbars {
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-600) var(--gray-300);
+  }
+
+  /* fallback Blink/WebKit */
+  .custom-scrollbars::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .custom-scrollbars::-webkit-scrollbar-track {
+    background: var(--gray-300);
+  }
+
+  .custom-scrollbars::-webkit-scrollbar-thumb {
+    background-color: var(--gray-600);
+    border-radius: 0.5rem;
+  }
+}
+
+/* Esconder scrollbar */
+.nav-tabs-responsive,
+.scrollbar-hidden {
+  scrollbar-width: none;
+  /* Firefox e navegadores modernos */
+}
+
+.nav-tabs-responsive::-webkit-scrollbar,
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+  /* Chromium / Safari */
+}

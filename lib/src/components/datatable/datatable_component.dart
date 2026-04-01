@@ -10,6 +10,7 @@ import '../../directives/dropdown_menu_directive.dart';
 import '../../directives/form_directives.dart';
 import '../../directives/css_style_directive.dart';
 import '../../directives/safe_html_directive.dart';
+import '../pagination/pagination_component.dart';
 import '../loading/loading.dart';
 import 'datatable_col.dart';
 import 'datatable_row.dart';
@@ -17,9 +18,7 @@ import 'datatable_settings.dart';
 export 'datatable_models.dart';
 import 'datatable_exporter.dart';
 import 'datatable_models.dart';
-import 'datatable_pagination_helper.dart';
 import 'datatable_row_builder.dart';
-import 'pagination_item.dart';
 
 @Component(
   selector: 'li-datatable',
@@ -31,6 +30,7 @@ import 'pagination_item.dart';
     DropdownMenuDirective,
     SafeHtmlDirective,
     CssStyleDirective,
+    ...liPaginationDirectives,
   ],
   changeDetection: ChangeDetectionStrategy.onPush,
   exports: [DatatableRowType],
@@ -448,33 +448,21 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return totalPages <= 0 ? 1 : totalPages;
   }
 
-  final int _btnQuantity = 5;
-  PaginationType paginationType = PaginationType.carousel;
-  List<PaginationItem> paginationItems = <PaginationItem>[];
-
+  final int paginationButtonQuantity = 5;
+  
   void _syncCurrentPageFromOffset() {
-    _currentPage = DatatablePaginationHelper.syncCurrentPageFromOffset(
-      limit: dataTableFilter.limit,
-      offset: dataTableFilter.offset,
-    );
+    final resolvedLimit = dataTableFilter.limit ?? 1;
+    final resolvedOffset = dataTableFilter.offset ?? 0;
+    if (resolvedLimit <= 0) {
+      _currentPage = 1;
+      return;
+    }
+
+    final currentPage = (resolvedOffset ~/ resolvedLimit) + 1;
+    _currentPage = currentPage <= 0 ? 1 : currentPage;
   }
 
   void drawPagination() {
-    paginationItems = DatatablePaginationHelper.buildPaginationItems(
-      totalRecords: totalRecords,
-      limit: dataTableFilter.limit,
-      currentPage: _currentPage,
-      buttonQuantity: _btnQuantity,
-      paginationType: paginationType,
-      onPrev: prevPage,
-      onNext: nextPage,
-      onPageSelected: (page) {
-        if (_currentPage != page) {
-          _currentPage = page;
-          changePage(_currentPage);
-        }
-      },
-    );
     _changeDetectorRef.markForCheck();
   }
 
@@ -493,10 +481,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void changePage(int page) {
-    onRequestData();
     if (page != _currentPage) {
       _currentPage = page;
     }
+    onRequestData();
     _changeDetectorRef.markForCheck();
   }
 

@@ -5,3 +5,43 @@
 .li-pagination .pagination {
   margin-bottom: 0;
 }
+
+.li-pagination .pagination.li-pagination-datatable {
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.li-pagination .pagination.li-pagination-datatable .page-link.li-pagination-datatable__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.375rem 0.625rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--pagination-color, var(--bs-body-color, #1f2937));
+  font-weight: 500;
+  box-shadow: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.li-pagination .pagination.li-pagination-datatable .page-link.li-pagination-datatable__link:hover {
+  background: var(--pagination-hover-bg, rgba(var(--bs-primary-rgb, 13, 110, 253), 0.08));
+  color: var(--pagination-hover-color, var(--bs-primary, #0d6efd));
+}
+
+.li-pagination .pagination.li-pagination-datatable .page-item.active .page-link.li-pagination-datatable__link {
+  background: var(--pagination-active-bg, var(--bs-primary, #0d6efd));
+  color: var(--pagination-active-color, var(--bs-white, #fff));
+}
+
+.li-pagination .pagination.li-pagination-datatable .page-item.disabled .page-link.li-pagination-datatable__link {
+  color: var(--pagination-disabled-color, currentColor);
+  opacity: 0.45;
+  pointer-events: none;
+}

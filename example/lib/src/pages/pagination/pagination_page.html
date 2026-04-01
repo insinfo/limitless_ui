@@ -6,7 +6,7 @@
     </div>
     <div class="page-header-content d-lg-flex border-top">
         <div class="breadcrumb py-2">
-            <span class="breadcrumb-item active">Paginação de coleções, listas e resultados segmentados</span>
+            <span class="breadcrumb-item active">Paginação para listas, grids e rodapés de datatable</span>
         </div>
     </div>
 </div>
@@ -17,71 +17,366 @@
             <li-tabx header="Visão geral" [active]="true">
                 <div class="card-body">
                     <p class="text-muted mb-4">
-                        <code>li-pagination</code> cobre paginação padrão, versões compactas, links de borda,
-                        alinhamento e templates para números ou grupos completos.
+                        <code>li-pagination</code> cobre layouts inspirados no Limitless, templates customizados e a
+                        nova variação <code>appearance="datatable"</code> usada no rodapé do
+                        <code>li-datatable</code>.
                     </p>
 
+                    <div class="mb-3">
+                        <h6 class="mb-0">Pagination layouts</h6>
+                        <span class="text-muted d-block">Versões bordered, flat, spaced e arredondadas.</span>
+                    </div>
+
                     <div class="row g-3">
-                        <div class="col-xl-6">
+                        <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Resultado padrão</h6>
-                                <p class="text-muted mb-3">Combinação comum para tabelas e listagens com muitos
-                                    registros.</p>
+                                <h6 class="mb-2">Bordered pagination</h6>
+                                <p class="text-muted mb-3">Base para listagens tradicionais com números e links de
+                                    navegação.</p>
 
-                                <li-pagination [collectionSize]="96" [pageSize]="10" [page]="basicPage" [maxSize]="5"
-                                    [boundaryLinks]="true" (pageChange)="onBasicPageChange($event)">
+                                <li-pagination [collectionSize]="96" [pageSize]="10" [page]="borderedPage"
+                                    [maxSize]="5" [boundaryLinks]="true"
+                                    (pageChange)="updatePage('bordered', $event)">
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Página atual: {{ basicPage }} de 10</div>
+                                <div class="pagination-demo-meta mt-3">Página atual: {{ borderedPage }} de 10</div>
                             </div>
                         </div>
 
-                        <div class="col-xl-6">
+                        <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Compacta e centralizada</h6>
-                                <p class="text-muted mb-3">Boa para cards e grids onde a paginação precisa ocupar menos
-                                    espaço visual.</p>
+                                <h6 class="mb-2">Flat rounded</h6>
+                                <p class="text-muted mb-3">Versão mais limpa, com bordas suaves e foco visual no item
+                                    ativo.</p>
 
-                                <li-pagination [collectionSize]="240" [pageSize]="10" [page]="compactPage" [maxSize]="5"
-                                    [rotate]="true" size="sm" alignment="center" variant="spaced"
-                                    (pageChange)="onCompactPageChange($event)">
+                                <li-pagination [collectionSize]="120" [pageSize]="10" [page]="flatPage" [maxSize]="5"
+                                    [rotate]="true" variant="flat" linkClass="rounded-pill"
+                                    (pageChange)="updatePage('flat', $event)">
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Janela ativa: {{ compactPage }}</div>
+                                <div class="pagination-demo-meta mt-3">Janela ativa: {{ flatPage }}</div>
                             </div>
                         </div>
 
-                        <div class="col-12">
-                            <div class="card card-body mb-0">
-                                <h6 class="mb-2">Template customizado para números</h6>
-                                <p class="text-muted mb-3">A diretiva <code>liPaginationNumber</code> deixa o conteúdo
-                                    de cada página alinhado ao visual da aplicação.</p>
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Spaced compact</h6>
+                                <p class="text-muted mb-3">Boa para cards, grids e áreas densas com menos espaço
+                                    horizontal.</p>
 
-                                <li-pagination [collectionSize]="84" [pageSize]="7" [page]="customPage" [maxSize]="6"
-                                    variant="flat" paginationClass="gap-1 flex-wrap" linkClass="rounded-pill"
-                                    (pageChange)="onCustomPageChange($event)">
-                                    <template liPaginationNumber let-page let-currentPage="currentPage">
-                                        <span class="pagination-chip"
-                                            [class.pagination-chip-active]="page == currentPage">
-                                            Pg {{ page }}
-                                        </span>
+                                <div class="pagination-demo-scroll">
+                                    <li-pagination [collectionSize]="180" [pageSize]="10" [page]="spacedPage"
+                                        [maxSize]="5" [rotate]="true" size="sm" variant="spaced"
+                                        linkClass="rounded-pill" (pageChange)="updatePage('spaced', $event)">
+                                    </li-pagination>
+                                </div>
+
+                                <div class="pagination-demo-meta mt-3">Página atual: {{ spacedPage }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Rounded with icons</h6>
+                                <p class="text-muted mb-3">Templates substituem os controles padrão por ícones do
+                                    tema, mantendo o item ativo bem destacado.</p>
+
+                                <li-pagination [collectionSize]="140" [pageSize]="10" [page]="roundedPage"
+                                    [maxSize]="5" [boundaryLinks]="true" variant="flat" linkClass="rounded-pill"
+                                    (pageChange)="updatePage('rounded', $event)">
+                                    <template liPaginationFirst>
+                                        <i class="ph ph-arrow-line-left"></i>
+                                    </template>
+                                    <template liPaginationPrevious>
+                                        <i class="ph ph-caret-left"></i>
+                                    </template>
+                                    <template liPaginationNext>
+                                        <i class="ph ph-caret-right"></i>
+                                    </template>
+                                    <template liPaginationLast>
+                                        <i class="ph ph-arrow-line-right"></i>
                                     </template>
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Template ativo na página {{ customPage }}.</div>
+                                <div class="pagination-demo-meta mt-3">Página atual: {{ roundedPage }}</div>
                             </div>
                         </div>
 
-                        <div class="col-12">
-                            <div class="card card-body mb-0">
-                                <h6 class="mb-2">Desabilitada</h6>
-                                <p class="text-muted mb-3">Quando a coleção está carregando ou sincronizando filtros, a
-                                    navegação pode ficar bloqueada sem desmontar o componente.</p>
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Toolbar compact</h6>
+                                <p class="text-muted mb-3">Combina paginação minimalista com resumo de registros,
+                                    próximo ao layout do Limitless.</p>
 
-                                <li-pagination [collectionSize]="40" [pageSize]="10" [page]="disabledPage"
-                                    [disabled]="true" variant="linked">
+                                <div class="pagination-demo-toolbar-inline">
+                                    <span class="text-muted pagination-toolbar-spacer">
+                                        Mostrando {{ toolbarStart }} a {{ toolbarEnd }} de 120 itens
+                                    </span>
+                                    <span class="text-muted">{{ toolbarPage }} de 12</span>
+
+                                    <li-pagination [collectionSize]="120" [pageSize]="10" [page]="toolbarPage"
+                                        [maxSize]="1" variant="flat" linkClass="rounded-pill px-0"
+                                        paginationClass="gap-1" (pageChange)="updatePage('toolbar', $event)">
+                                        <template liPaginationPages></template>
+                                        <template liPaginationPrevious>
+                                            <i class="ph ph-caret-left"></i>
+                                        </template>
+                                        <template liPaginationNext>
+                                            <i class="ph ph-caret-right"></i>
+                                        </template>
+                                    </li-pagination>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Borderless pagination</h6>
+                                <p class="text-muted mb-3">Links sem borda deixam o componente mais leve em toolbars e
+                                    rodapés visuais.</p>
+
+                                <li-pagination [collectionSize]="50" [pageSize]="10" [page]="borderlessPage"
+                                    [maxSize]="5" linkClass="border-transparent mx-0 rounded-pill"
+                                    (pageChange)="updatePage('borderless', $event)">
+                                </li-pagination>
+
+                                <div class="pagination-demo-meta mt-3">Página atual: {{ borderlessPage }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 mt-4">
+                        <h6 class="mb-0">Pagination styles</h6>
+                        <span class="text-muted d-block">Pagers, dots e links com aparência próxima às demos do
+                            Limitless.</span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Simple pager</h6>
+                                <p class="text-muted mb-3">Versão com apenas dois botões, útil para timelines, feeds
+                                    ou histórico paginado.</p>
+
+                                <li-pagination [collectionSize]="120" [pageSize]="10" [page]="simplePagerPage"
+                                    [maxSize]="1" paginationClass="gap-2"
+                                    (pageChange)="updatePage('simplePager', $event)">
+                                    <template liPaginationPages></template>
+                                    <template liPaginationPrevious>
+                                        <span aria-hidden="true">&larr;</span>&nbsp; Anterior
+                                    </template>
+                                    <template liPaginationNext>
+                                        Próxima &nbsp;<span aria-hidden="true">&rarr;</span>
+                                    </template>
+                                </li-pagination>
+
+                                <div class="pagination-demo-meta mt-3">Página atual: {{ simplePagerPage }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Linked pager</h6>
+                                <p class="text-muted mb-3">Usa a variação <code>linked</code> para um pager leve com
+                                    hover mais explícito.</p>
+
+                                <li-pagination [collectionSize]="120" [pageSize]="10" [page]="linkedPagerPage"
+                                    [maxSize]="1" variant="linked" linkClass="rounded" paginationClass="gap-1"
+                                    (pageChange)="updatePage('linkedPager', $event)">
+                                    <template liPaginationPages></template>
+                                    <template liPaginationPrevious>
+                                        <span aria-hidden="true">&larr;</span>&nbsp; Older
+                                    </template>
+                                    <template liPaginationNext>
+                                        Newer &nbsp;<span aria-hidden="true">&rarr;</span>
+                                    </template>
+                                </li-pagination>
+
+                                <div class="pagination-demo-meta mt-3">Página atual: {{ linkedPagerPage }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Dotted pagination</h6>
+                                <p class="text-muted mb-3">Ícones de navegação com dots compactos para carrosséis,
+                                    onboarding e etapas visuais.</p>
+
+                                <li-pagination [collectionSize]="90" [pageSize]="10" [page]="dottedPage"
+                                    [maxSize]="5" [rotate]="true" [ellipses]="false" variant="spaced"
+                                    linkClass="pagination-dot-link rounded-pill"
+                                    paginationClass="align-items-center pagination-dotted"
+                                    (pageChange)="updatePage('dotted', $event)">
+                                    <template liPaginationPrevious>
+                                        <i class="ph ph-caret-left"></i>
+                                    </template>
+                                    <template liPaginationNext>
+                                        <i class="ph ph-caret-right"></i>
+                                    </template>
+                                    <template liPaginationNumber let-page>
+                                        <span class="pagination-dot-label">Página {{ page }}</span>
+                                    </template>
+                                </li-pagination>
+
+                                <div class="pagination-demo-meta mt-3">Página atual: {{ dottedPage }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 mt-4">
+                        <h6 class="mb-0">Pagination options</h6>
+                        <span class="text-muted d-block">Tamanhos e alinhamentos seguindo o mesmo padrão do
+                            Limitless.</span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Bordered sizes</h6>
+                                <p class="text-muted mb-3">A versão padrão suporta `lg`, default e `sm` sem precisar de
+                                    classes extras fora da API do componente.</p>
+
+                                <div class="pagination-demo-stack">
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedBorderedPage"
+                                        [maxSize]="4" size="lg" (pageChange)="updatePage('sizedBordered', $event)">
+                                    </li-pagination>
+
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedBorderedPage"
+                                        [maxSize]="4" (pageChange)="updatePage('sizedBordered', $event)">
+                                    </li-pagination>
+
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedBorderedPage"
+                                        [maxSize]="4" size="sm" (pageChange)="updatePage('sizedBordered', $event)">
+                                    </li-pagination>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Flat sizes</h6>
+                                <p class="text-muted mb-3">A combinação `variant="flat"` com tamanhos diferentes
+                                    resolve cenários de páginas compactas e cabeçalhos limpos.</p>
+
+                                <div class="pagination-demo-stack">
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedFlatPage"
+                                        [maxSize]="4" size="lg" variant="flat" linkClass="rounded"
+                                        (pageChange)="updatePage('sizedFlat', $event)">
+                                    </li-pagination>
+
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedFlatPage"
+                                        [maxSize]="4" variant="flat" linkClass="rounded"
+                                        (pageChange)="updatePage('sizedFlat', $event)">
+                                    </li-pagination>
+
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedFlatPage"
+                                        [maxSize]="4" size="sm" variant="flat" linkClass="rounded"
+                                        (pageChange)="updatePage('sizedFlat', $event)">
+                                    </li-pagination>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Spaced sizes</h6>
+                                <p class="text-muted mb-3">A variação `spaced` funciona melhor com pills arredondadas e
+                                    áreas de navegação mais respiradas.</p>
+
+                                <div class="pagination-demo-stack">
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedSpacedPage"
+                                        [maxSize]="4" size="lg" variant="spaced" linkClass="rounded-pill"
+                                        (pageChange)="updatePage('sizedSpaced', $event)">
+                                    </li-pagination>
+
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedSpacedPage"
+                                        [maxSize]="4" variant="spaced" linkClass="rounded-pill"
+                                        (pageChange)="updatePage('sizedSpaced', $event)">
+                                    </li-pagination>
+
+                                    <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedSpacedPage"
+                                        [maxSize]="4" size="sm" variant="spaced" linkClass="rounded-pill"
+                                        (pageChange)="updatePage('sizedSpaced', $event)">
+                                    </li-pagination>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Left alignment</h6>
+                                <p class="text-muted mb-3">Alinhamento padrão para listas e blocos de conteúdo
+                                    tradicionais.</p>
+
+                                <li-pagination [collectionSize]="100" [pageSize]="10" [page]="leftAlignedPage"
+                                    [maxSize]="4" (pageChange)="updatePage('leftAligned', $event)">
                                 </li-pagination>
                             </div>
+                        </div>
+
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Center alignment</h6>
+                                <p class="text-muted mb-3">Usa a API de alinhamento do componente para centralizar a
+                                    navegação sem classes extras no template.</p>
+
+                                <li-pagination [collectionSize]="100" [pageSize]="10" [page]="centerAlignedPage"
+                                    [maxSize]="4" alignment="center"
+                                    (pageChange)="updatePage('centerAligned', $event)">
+                                </li-pagination>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4">
+                            <div class="card card-body h-100 mb-0">
+                                <h6 class="mb-2">Right alignment</h6>
+                                <p class="text-muted mb-3">Adequado para footers e barras auxiliares em cards mais
+                                    densos.</p>
+
+                                <li-pagination [collectionSize]="100" [pageSize]="10" [page]="rightAlignedPage"
+                                    [maxSize]="4" alignment="end"
+                                    (pageChange)="updatePage('rightAligned', $event)">
+                                </li-pagination>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 mt-4">
+                        <h6 class="mb-0">Datatable variation</h6>
+                        <span class="text-muted d-block">Mesmo componente, com aparência específica para rodapés de
+                            tabela.</span>
+                    </div>
+
+                    <div class="card card-body mb-0 pagination-toolbar-demo">
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <span class="text-muted me-auto">Mostrando {{ datatableStart }} a {{ datatableEnd }} de 96
+                                registros</span>
+
+                            <li-pagination appearance="datatable" variant="flat" linkClass="rounded"
+                                [collectionSize]="96" [pageSize]="10" [page]="datatablePage" [maxSize]="5"
+                                [rotate]="true" [ellipses]="false" [boundaryLinks]="true"
+                                (pageChange)="updatePage('datatable', $event)">
+                                <template liPaginationFirst>
+                                    <i class="ph ph-arrow-line-left"></i>
+                                </template>
+                                <template liPaginationPrevious>
+                                    <i class="ph ph-caret-left"></i>
+                                </template>
+                                <template liPaginationNext>
+                                    <i class="ph ph-caret-right"></i>
+                                </template>
+                                <template liPaginationLast>
+                                    <i class="ph ph-arrow-line-right"></i>
+                                </template>
+                            </li-pagination>
+                        </div>
+
+                        <div class="pagination-demo-meta mt-3">
+                            A demo acima replica a paginação agora usada dentro do <code>li-datatable</code>.
                         </div>
                     </div>
 
@@ -97,18 +392,28 @@
             <li-tabx header="API">
                 <div class="card-body">
                     <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-pagination
-  [collectionSize]="96"
+  appearance="datatable"
+  variant="flat"
+  linkClass="rounded"
+  [collectionSize]="totalRecords"
   [pageSize]="10"
   [page]="page"
   [maxSize]="5"
+  [rotate]="true"
+  [ellipses]="false"
   [boundaryLinks]="true"
-  variant="flat"
-  alignment="center"
   (pageChange)="page = $event"&gt;
-  &lt;template liPaginationNumber let-page let-currentPage="currentPage"&gt;
-    &lt;span class="pagination-chip" [class.pagination-chip-active]="page == currentPage"&gt;
-      Pg &#123;&#123; page &#125;&#125;
-    &lt;/span&gt;
+  &lt;template liPaginationFirst&gt;
+    &lt;i class="ph ph-arrow-line-left"&gt;&lt;/i&gt;
+  &lt;/template&gt;
+  &lt;template liPaginationPrevious&gt;
+    &lt;i class="ph ph-caret-left"&gt;&lt;/i&gt;
+  &lt;/template&gt;
+  &lt;template liPaginationNext&gt;
+    &lt;i class="ph ph-caret-right"&gt;&lt;/i&gt;
+  &lt;/template&gt;
+  &lt;template liPaginationLast&gt;
+    &lt;i class="ph ph-arrow-line-right"&gt;&lt;/i&gt;
   &lt;/template&gt;
 &lt;/li-pagination&gt;</code></pre>
                 </div>

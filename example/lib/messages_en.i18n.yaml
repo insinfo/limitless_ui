@@ -533,6 +533,10 @@ pages:
     simpleWarningToast: Simple warning toast
     sweetSuccessToast: Sweet success toast
     sweetWarningToast: Sweet warning toast
+    sweetModal: Sweet modal
+    sweetConfirm: Sweet confirm
+    sweetPrompt: Sweet prompt
+    sweetErrorToast: Sweet error toast
     idle: Use the buttons to trigger the static helpers.
     loadingShown: Loading overlay shown for 2 seconds.
     loadingHidden: Loading overlay finished.
@@ -558,6 +562,26 @@ pages:
     sweetSuccessState: SweetAlertSimpleToast.showSuccessToast executed.
     sweetWarningBody: SweetAlert warning toast shown.
     sweetWarningState: SweetAlertSimpleToast.showWarningToast executed.
+    sweetModalBody: The pipeline finished successfully and generated a summary ready for review.
+    sweetModalTitle: Build complete
+    sweetModalState: SweetAlert.show confirmed.
+    sweetModalDismissed: SweetAlert.show was closed without confirmation.
+    sweetConfirmBody: Do you want to promote this release to production now?
+    sweetConfirmTitle: Promote release
+    sweetConfirmOk: Promote
+    sweetConfirmCancel: Review
+    sweetConfirmTrue: SweetAlert.confirm returned a positive confirmation.
+    sweetConfirmFalse: SweetAlert.confirm was cancelled.
+    sweetPromptBody: Enter the batch identifier that should receive priority monitoring.
+    sweetPromptTitle: Batch priority
+    sweetPromptPlaceholder: 'e.g. batch-42'
+    sweetPromptOk: Save priority
+    sweetPromptCancel: Not now
+    sweetPromptValidation: Enter an identifier before continuing.
+    sweetPromptFilledPrefix: SweetAlert.prompt confirmed with value
+    sweetPromptDismissed: SweetAlert.prompt was cancelled.
+    sweetErrorBody: SweetAlert error toast shown in the bottom corner.
+    sweetErrorState: SweetAlert.toast executed with error type.
   button:
     title: Components
     subtitle: Buttons

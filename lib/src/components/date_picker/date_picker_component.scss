@@ -2,8 +2,8 @@
     cursor: pointer;
 }
 
-.date-picker-field[readonly] {
-    background-color: var(--white);
+.date-picker-field[readonly]:not(:disabled) {
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
 }
 
@@ -18,14 +18,14 @@
 }
 
 .date-picker-trigger-button {
-    background-color: var(--white);
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
     border-color: var(--border-color);
 }
 
-.date-picker-trigger-button:hover,
-.date-picker-trigger-button:focus {
-    background-color: var(--white);
+.date-picker-trigger-button:not(:disabled):hover,
+.date-picker-trigger-button:not(:disabled):focus {
+    background-color: var(--card-bg, var(--white));
     color: var(--body-color);
     border-color: var(--border-color);
 }

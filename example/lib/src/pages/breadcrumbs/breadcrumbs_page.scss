@@ -7,3 +7,16 @@
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+
+.breadcrumb-demo-strip {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.breadcrumb-demo-strip-light {
+  background: rgba(var(--bs-secondary-rgb, 108, 117, 125), 0.08);
+}
+
+.breadcrumb-demo-strip-solid {
+  background: var(--bs-secondary, #6c757d);
+}

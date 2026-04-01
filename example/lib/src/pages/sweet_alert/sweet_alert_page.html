@@ -1,0 +1,261 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ intro }}</p>
+
+            <div class="row g-4 mb-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ angularTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ angularBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ guidanceTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ guidanceBody }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-body">
+              <h6 class="mb-2">{{ serviceActionsTitle }}</h6>
+              <p class="text-muted mb-3">{{ serviceActionsBody }}</p>
+
+              <div class="demo-action-grid">
+                <button class="btn btn-success" type="button" (click)="showServiceModal()">Service modal</button>
+                <button class="btn btn-outline-dark" type="button" (click)="showServiceConfirm()">Service confirm</button>
+                <button class="btn btn-info" type="button" (click)="showServicePrompt()">Service prompt</button>
+                <button class="btn btn-outline-success" type="button" (click)="showServiceToast()">Service toast</button>
+                <button class="btn btn-outline-warning" type="button" (click)="showStaticToast()">Static toast</button>
+                <button class="btn btn-light" type="button" (click)="dismissAll()">Dismiss all</button>
+              </div>
+            </div>
+
+            <div class="card card-body mt-3">
+              <h6 class="mb-2">Directive trigger</h6>
+              <p class="text-muted mb-3">{{ directiveIntro }}</p>
+
+              <div class="demo-action-grid">
+                <button class="btn btn-outline-primary" type="button" liSweetAlert="A diretiva abriu um modal padrão."
+                  liSweetAlertTitle="Directive modal" liSweetAlertType="info" [liSweetAlertShowCloseButton]="true"
+                  (liSweetAlertResult)="handleDirectiveResult($event)">
+                  Directive modal
+                </button>
+
+                <button class="btn btn-outline-dark" type="button" liSweetAlert="Publicar alterações agora?"
+                  liSweetAlertTitle="Directive confirm" liSweetAlertMode="confirm" liSweetAlertType="question"
+                  liSweetAlertConfirmText="Publicar" liSweetAlertCancelText="Revisar" [liSweetAlertReverseButtons]="true"
+                  (liSweetAlertResult)="handleDirectiveResult($event)">
+                  Directive confirm
+                </button>
+
+                <button class="btn btn-outline-info" type="button" liSweetAlert="Informe o nome da versão."
+                  liSweetAlertTitle="Directive prompt" liSweetAlertMode="prompt" liSweetAlertType="info"
+                  liSweetAlertPromptPlaceholder="release-2026.04" liSweetAlertConfirmText="Salvar"
+                  liSweetAlertCancelText="Cancelar" liSweetAlertWidth="36rem"
+                  (liSweetAlertResult)="handleDirectiveResult($event)">
+                  Directive prompt
+                </button>
+
+                <button class="btn btn-outline-success" type="button" liSweetAlert="Trigger declarativo concluído."
+                  liSweetAlertTitle="Directive toast" liSweetAlertMode="toast" liSweetAlertType="success"
+                  liSweetAlertPosition="bottom-right" [liSweetAlertTimerMs]="2400"
+                  (liSweetAlertResult)="handleDirectiveResult($event)">
+                  Directive toast
+                </button>
+              </div>
+            </div>
+
+            <div class="card card-body mt-3">
+              <h6 class="mb-2">{{ visualActionsTitle }}</h6>
+              <p class="text-muted mb-3">{{ visualActionsBody }}</p>
+
+              <div class="demo-action-grid">
+                <button class="btn btn-outline-primary" type="button" (click)="showNoBackdropModal()">No backdrop modal</button>
+                <button class="btn btn-outline-success" type="button" (click)="showHtmlModal()">HTML modal</button>
+                <button class="btn btn-outline-warning" type="button" (click)="showTimedModal()">Timed modal</button>
+                <button class="btn btn-outline-info" type="button" (click)="showBottomToast()">Bottom toast</button>
+              </div>
+            </div>
+
+            <div class="demo-summary-box mt-3">{{ summaryText }}</div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="Tipos e básicos">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ notificationIntro }}</p>
+
+            <div class="card card-body mb-3">
+              <h6 class="mb-2">Notification types</h6>
+              <p class="text-muted mb-3">Versões de sucesso, erro, aviso, informação, pergunta e fluxo combinado.</p>
+              <div class="demo-action-grid">
+                <button class="btn btn-success" type="button" (click)="showTypedAlert('success')">Success type</button>
+                <button class="btn btn-danger" type="button" (click)="showTypedAlert('error')">Error type</button>
+                <button class="btn btn-warning" type="button" (click)="showTypedAlert('warning')">Warning type</button>
+                <button class="btn btn-info" type="button" (click)="showTypedAlert('info')">Info type</button>
+                <button class="btn btn-dark" type="button" (click)="showTypedAlert('question')">Question type</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showCombinedFlow()">Combine messages</button>
+              </div>
+            </div>
+
+            <div class="card card-body mb-3">
+              <h6 class="mb-2">Basic examples</h6>
+              <p class="text-muted mb-3">Casos base próximos da vitrine original, incluindo validação assíncrona, imagem e fluxo encadeado.</p>
+              <div class="demo-action-grid">
+                <button class="btn btn-light" type="button" (click)="showBasicAlert()">Basic alert</button>
+                <button class="btn btn-light" type="button" (click)="showTitleTextAlert()">Title with text</button>
+                <button class="btn btn-light" type="button" (click)="showCloseButtonExample()">Close button</button>
+                <button class="btn btn-light" type="button" (click)="showPaddingAlert()">Custom padding</button>
+                <button class="btn btn-light" type="button" (click)="showWidthAlert()">Custom width</button>
+                <button class="btn btn-light" type="button" (click)="showAjaxValidationAlert()">Async validation</button>
+                <button class="btn btn-light" type="button" (click)="showHtmlModal()">With HTML message</button>
+                <button class="btn btn-light" type="button" (click)="showImageAlert()">With custom image</button>
+                <button class="btn btn-light" type="button" (click)="showBackgroundAlert()">Background image</button>
+                <button class="btn btn-light" type="button" (click)="showChainedAlerts()">Chaining notifications</button>
+              </div>
+            </div>
+
+            <div class="card card-body">
+              <h6 class="mb-2">Visual and interaction options</h6>
+              <p class="text-muted mb-3">Botões invertidos, grow modes e restrições de fechamento.</p>
+              <div class="demo-action-grid">
+                <button class="btn btn-outline-dark" type="button" (click)="showReverseButtonsAlert()">Reversed buttons</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showGrowExample('fullscreen')">Fullscreen</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showGrowExample('column')">Stretched vertically</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showGrowExample('row')">Stretched horizontally</button>
+                <button class="btn btn-outline-warning" type="button" (click)="showDisabledKeyboardAlert()">Disabled keyboard</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showDisabledAnimationAlert()">Disabled animation</button>
+                <button class="btn btn-outline-info" type="button" (click)="showDisabledBackdropAlert()">Disabled backdrop</button>
+                <button class="btn btn-outline-danger" type="button" (click)="showDisabledOutsideClickAlert()">Disabled outside click</button>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="Inputs e posições">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ inputIntro }}</p>
+
+            <div class="card card-body mb-3">
+              <h6 class="mb-2">Input types</h6>
+              <p class="text-muted mb-3">Inputs nativos suportados pelo wrapper atual.</p>
+              <div class="demo-action-grid">
+                <button class="btn btn-light" type="button" (click)="showInputExample('text')">Text input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('email')">Email input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('url')">URL input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('password')">Password input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('textarea')">Textarea input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('select')">Select input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('radio')">Radio input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('checkbox')">Checkbox input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('range')">Range input</button>
+              </div>
+            </div>
+
+            <div class="card card-body mb-3">
+              <h6 class="mb-2">Positions</h6>
+              <p class="text-muted mb-3">Posições suportadas para modal/toast, incluindo centro lateral.</p>
+              <div class="demo-action-grid">
+                <button class="btn btn-light" type="button" (click)="showPositionExample('top')">Top</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('top-left')">Top left</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('top-right')">Top right</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('center-left')">Center left</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('center-right')">Center right</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom')">Bottom</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom-left')">Bottom left</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom-right')">Bottom right</button>
+              </div>
+            </div>
+
+            <div class="card card-body mb-3">
+              <h6 class="mb-2">Toasts</h6>
+              <p class="text-muted mb-3">Tipos de toast e distribuição por posição, como na página original.</p>
+              <div class="demo-action-grid mb-3">
+                <button class="btn btn-success" type="button" (click)="showTypedToast('success')">Success toast</button>
+                <button class="btn btn-danger" type="button" (click)="showTypedToast('error')">Error toast</button>
+                <button class="btn btn-warning" type="button" (click)="showTypedToast('warning')">Warning toast</button>
+                <button class="btn btn-info" type="button" (click)="showTypedToast('info')">Info toast</button>
+                <button class="btn btn-dark" type="button" (click)="showTypedToast('question')">Question toast</button>
+              </div>
+              <div class="demo-action-grid">
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('top')">Top</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('top-left')">Top left</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center-left')">Center left</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center')">Center</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center-right')">Center right</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom')">Bottom</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom-left')">Bottom left</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom-right')">Bottom right</button>
+              </div>
+            </div>
+
+            <div class="card card-body">
+              <h6 class="mb-2">Callbacks</h6>
+              <p class="text-muted mb-3">Validação dos callbacks de abertura e fechamento.</p>
+              <div class="demo-action-grid">
+                <button class="btn btn-outline-primary" type="button" (click)="showOnOpenCallbackAlert()">onOpen</button>
+                <button class="btn btn-outline-dark" type="button" (click)="showOnCloseCallbackAlert()">onClose</button>
+              </div>
+            </div>
+
+            <div class="demo-summary-box mt-3">{{ summaryText }}</div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API AngularDart">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
+            <li-highlight [code]="providerSnippet" language="dart"></li-highlight>
+            <div class="mt-4">
+              <li-highlight [code]="angularServiceSnippet" language="dart"></li-highlight>
+            </div>
+            <div class="mt-4">
+              <li-highlight [code]="advancedServiceSnippet" language="dart"></li-highlight>
+            </div>
+            <div class="mt-4">
+              <li-highlight [code]="callbackSnippet" language="dart"></li-highlight>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API estática">
+          <div class="card-body">
+            <p class="text-muted mb-3">SweetAlert também continua disponível diretamente para chamadas imperativas fora do ciclo de DI.</p>
+            <li-highlight [code]="staticSnippet" language="dart"></li-highlight>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="Diretiva">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ directiveIntro }}</p>
+            <li-highlight [code]="directiveSnippet" language="html"></li-highlight>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

@@ -10,7 +10,9 @@ class DemoRoutePaths {
   static final offcanvas = RoutePath(path: 'offcanvas');
   static final breadcrumbs = RoutePath(path: 'breadcrumbs');
   static final pagination = RoutePath(path: 'pagination');
+  static final selectionControls = RoutePath(path: 'selection-controls');
   static final select = RoutePath(path: 'select');
+  static final rating = RoutePath(path: 'rating');
   static final typeahead = RoutePath(path: 'typeahead');
   static final multiSelect = RoutePath(path: 'multi-select');
   static final currency = RoutePath(path: 'currency');
@@ -27,7 +29,12 @@ class DemoRoutePaths {
   static final datatableSelect = RoutePath(path: 'datatable-select');
   static final toast = RoutePath(path: 'toast');
   static final notification = RoutePath(path: 'notification');
+  static final fileUpload = RoutePath(path: 'file-upload');
   static final treeview = RoutePath(path: 'treeview');
   static final helpers = RoutePath(path: 'helpers');
+  static final sweetAlert = RoutePath(path: 'sweet-alert');
+  static final highlight = RoutePath(path: 'highlight');
   static final button = RoutePath(path: 'button');
+  static final inputs = RoutePath(path: 'inputs');
+  static final fab = RoutePath(path: 'fab');
 }

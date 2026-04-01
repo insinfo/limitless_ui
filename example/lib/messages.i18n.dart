@@ -2813,6 +2813,26 @@ class HelpersPagesMessages {
   String get sweetWarningToast => """Sweet warning toast""";
 
   /// ```dart
+  /// "Sweet modal"
+  /// ```
+  String get sweetModal => """Sweet modal""";
+
+  /// ```dart
+  /// "Sweet confirm"
+  /// ```
+  String get sweetConfirm => """Sweet confirm""";
+
+  /// ```dart
+  /// "Sweet prompt"
+  /// ```
+  String get sweetPrompt => """Sweet prompt""";
+
+  /// ```dart
+  /// "Sweet error toast"
+  /// ```
+  String get sweetErrorToast => """Sweet error toast""";
+
+  /// ```dart
   /// "Use os botões para acionar os helpers estáticos."
   /// ```
   String get idle => """Use os botões para acionar os helpers estáticos.""";
@@ -2942,6 +2962,115 @@ class HelpersPagesMessages {
   /// ```
   String get sweetWarningState =>
       """SweetAlertSimpleToast.showWarningToast executado.""";
+
+  /// ```dart
+  /// "O pipeline terminou com sucesso e gerou um resumo pronto para revisão."
+  /// ```
+  String get sweetModalBody =>
+      """O pipeline terminou com sucesso e gerou um resumo pronto para revisão.""";
+
+  /// ```dart
+  /// "Build concluído"
+  /// ```
+  String get sweetModalTitle => """Build concluído""";
+
+  /// ```dart
+  /// "SweetAlert.show confirmado."
+  /// ```
+  String get sweetModalState => """SweetAlert.show confirmado.""";
+
+  /// ```dart
+  /// "SweetAlert.show foi fechado sem confirmação."
+  /// ```
+  String get sweetModalDismissed =>
+      """SweetAlert.show foi fechado sem confirmação.""";
+
+  /// ```dart
+  /// "Deseja promover este release para produção agora?"
+  /// ```
+  String get sweetConfirmBody =>
+      """Deseja promover este release para produção agora?""";
+
+  /// ```dart
+  /// "Promover release"
+  /// ```
+  String get sweetConfirmTitle => """Promover release""";
+
+  /// ```dart
+  /// "Promover"
+  /// ```
+  String get sweetConfirmOk => """Promover""";
+
+  /// ```dart
+  /// "Revisar"
+  /// ```
+  String get sweetConfirmCancel => """Revisar""";
+
+  /// ```dart
+  /// "SweetAlert.confirm retornou confirmação positiva."
+  /// ```
+  String get sweetConfirmTrue =>
+      """SweetAlert.confirm retornou confirmação positiva.""";
+
+  /// ```dart
+  /// "SweetAlert.confirm foi cancelado."
+  /// ```
+  String get sweetConfirmFalse => """SweetAlert.confirm foi cancelado.""";
+
+  /// ```dart
+  /// "Informe o identificador do lote que deve receber monitoramento prioritário."
+  /// ```
+  String get sweetPromptBody =>
+      """Informe o identificador do lote que deve receber monitoramento prioritário.""";
+
+  /// ```dart
+  /// "Prioridade do lote"
+  /// ```
+  String get sweetPromptTitle => """Prioridade do lote""";
+
+  /// ```dart
+  /// "Ex.: lote-42"
+  /// ```
+  String get sweetPromptPlaceholder => """Ex.: lote-42""";
+
+  /// ```dart
+  /// "Salvar prioridade"
+  /// ```
+  String get sweetPromptOk => """Salvar prioridade""";
+
+  /// ```dart
+  /// "Agora não"
+  /// ```
+  String get sweetPromptCancel => """Agora não""";
+
+  /// ```dart
+  /// "Informe um identificador antes de continuar."
+  /// ```
+  String get sweetPromptValidation =>
+      """Informe um identificador antes de continuar.""";
+
+  /// ```dart
+  /// "SweetAlert.prompt confirmou com valor"
+  /// ```
+  String get sweetPromptFilledPrefix =>
+      """SweetAlert.prompt confirmou com valor""";
+
+  /// ```dart
+  /// "SweetAlert.prompt foi cancelado."
+  /// ```
+  String get sweetPromptDismissed => """SweetAlert.prompt foi cancelado.""";
+
+  /// ```dart
+  /// "Toast SweetAlert de erro exibido no canto inferior."
+  /// ```
+  String get sweetErrorBody =>
+      """Toast SweetAlert de erro exibido no canto inferior.""";
+
+  /// ```dart
+  /// "SweetAlert.toast executado com tipo error."
+  /// ```
+  String get sweetErrorState =>
+      """SweetAlert.toast executado com tipo error.""";
 }
 
 class ButtonPagesMessages {
@@ -3689,6 +3818,10 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.helpers.simpleWarningToast""": """Simple warning toast""",
       """pages.helpers.sweetSuccessToast""": """Sweet success toast""",
       """pages.helpers.sweetWarningToast""": """Sweet warning toast""",
+      """pages.helpers.sweetModal""": """Sweet modal""",
+      """pages.helpers.sweetConfirm""": """Sweet confirm""",
+      """pages.helpers.sweetPrompt""": """Sweet prompt""",
+      """pages.helpers.sweetErrorToast""": """Sweet error toast""",
       """pages.helpers.idle""":
           """Use os botões para acionar os helpers estáticos.""",
       """pages.helpers.loadingShown""":
@@ -3730,6 +3863,37 @@ selectedDate = DateTime(2026, 3, 20);
           """Toast SweetAlert de alerta exibido.""",
       """pages.helpers.sweetWarningState""":
           """SweetAlertSimpleToast.showWarningToast executado.""",
+      """pages.helpers.sweetModalBody""":
+          """O pipeline terminou com sucesso e gerou um resumo pronto para revisão.""",
+      """pages.helpers.sweetModalTitle""": """Build concluído""",
+      """pages.helpers.sweetModalState""": """SweetAlert.show confirmado.""",
+      """pages.helpers.sweetModalDismissed""":
+          """SweetAlert.show foi fechado sem confirmação.""",
+      """pages.helpers.sweetConfirmBody""":
+          """Deseja promover este release para produção agora?""",
+      """pages.helpers.sweetConfirmTitle""": """Promover release""",
+      """pages.helpers.sweetConfirmOk""": """Promover""",
+      """pages.helpers.sweetConfirmCancel""": """Revisar""",
+      """pages.helpers.sweetConfirmTrue""":
+          """SweetAlert.confirm retornou confirmação positiva.""",
+      """pages.helpers.sweetConfirmFalse""":
+          """SweetAlert.confirm foi cancelado.""",
+      """pages.helpers.sweetPromptBody""":
+          """Informe o identificador do lote que deve receber monitoramento prioritário.""",
+      """pages.helpers.sweetPromptTitle""": """Prioridade do lote""",
+      """pages.helpers.sweetPromptPlaceholder""": """Ex.: lote-42""",
+      """pages.helpers.sweetPromptOk""": """Salvar prioridade""",
+      """pages.helpers.sweetPromptCancel""": """Agora não""",
+      """pages.helpers.sweetPromptValidation""":
+          """Informe um identificador antes de continuar.""",
+      """pages.helpers.sweetPromptFilledPrefix""":
+          """SweetAlert.prompt confirmou com valor""",
+      """pages.helpers.sweetPromptDismissed""":
+          """SweetAlert.prompt foi cancelado.""",
+      """pages.helpers.sweetErrorBody""":
+          """Toast SweetAlert de erro exibido no canto inferior.""",
+      """pages.helpers.sweetErrorState""":
+          """SweetAlert.toast executado com tipo error.""",
       """pages.button.title""": """Componentes""",
       """pages.button.subtitle""": """Botões""",
       """pages.button.breadcrumb""": """Estilos e variações de botões""",

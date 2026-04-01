@@ -1,0 +1,67 @@
+<div class="li-file-upload">
+  <div
+      liFileDrop
+      [class]="resolvedDropzoneClass"
+      (fileOver)="onFileOver($event)"
+      (filesChange)="onFilesSelected($event)">
+    <input
+        #fileInput
+        liFileSelect
+        type="file"
+        class="d-none"
+        [disabled]="disabled"
+        [multiple]="multiple"
+        [attr.accept]="resolvedAccept.isEmpty ? null : resolvedAccept"
+        (filesChange)="onFilesSelected($event)">
+
+    <div class="li-file-upload__content">
+      <div class="li-file-upload__icon">
+        <i class="ph-upload-simple"></i>
+      </div>
+      <div class="li-file-upload__title">{{ title }}</div>
+      <p class="li-file-upload__subtitle">{{ subtitle }}</p>
+      <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="disabled"
+          (click)="openPicker()">
+        {{ browseLabel }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="hasHelperText" class="form-text mt-2">{{ helperText }}</div>
+
+  <div *ngIf="showPreview && hasFiles" class="mt-3">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h6 class="mb-0">Arquivos selecionados</h6>
+      <button
+          type="button"
+          class="btn btn-sm btn-light"
+          [disabled]="disabled"
+          (click)="clear()">
+        Limpar
+      </button>
+    </div>
+
+    <ul [class]="resolvedListClass">
+      <li
+          *ngFor="let item of previewItems; let i = index; trackBy: trackByPreview"
+          class="list-group-item li-file-upload__item">
+        <span [class]="kindClass(item)">{{ item.kindLabel }}</span>
+        <div class="li-file-upload__meta">
+          <div class="fw-semibold text-break">{{ item.file.name }}</div>
+          <div class="text-muted fs-sm">{{ item.sizeLabel }}</div>
+        </div>
+        <button
+            type="button"
+            class="btn btn-sm btn-light btn-icon rounded-pill"
+            [disabled]="disabled"
+            (click)="removeAt(i)"
+            [attr.aria-label]="'Remover ' + item.file.name">
+          <i class="ph-x"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>

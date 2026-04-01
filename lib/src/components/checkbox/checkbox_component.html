@@ -1,0 +1,16 @@
+<label [class]="resolvedContainerClass">
+  <input
+      #inputElement
+      type="checkbox"
+      [id]="resolvedId"
+      [attr.name]="resolvedName"
+      [attr.aria-label]="resolvedAriaLabel"
+      [class]="resolvedInputClass"
+      [checked]="checked"
+      [disabled]="disabled"
+      [required]="required"
+      (change)="handleChange(inputElement.checked)"
+      (blur)="handleBlur()">
+  <span [class]="resolvedLabelClass">{{ label }}</span>
+</label>
+<div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>

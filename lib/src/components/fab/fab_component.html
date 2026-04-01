@@ -1,0 +1,58 @@
+<div [class]="resolvedWrapperClass" [attr.data-fab-toggle]="resolvedToggleMode" [attr.data-fab-state]="resolvedFabState"
+  (mouseenter)="handleMouseEnter()" (mouseleave)="handleMouseLeave()">
+  <div *ngIf="backdrop && isExpanded" class="li-fab__backdrop" (click)="close()"></div>
+
+  <button type="button" [class]="resolvedTriggerClass" [disabled]="disabled"
+    [attr.aria-expanded]="hasActions ? isExpanded.toString() : null" [attr.aria-label]="resolvedTriggerLabel"
+    [attr.title]="resolvedTriggerLabel" (click)="handleTriggerClick()">
+    <template [ngIf]="usesCustomTriggerTemplate">
+      <span class="li-fab__trigger-template">
+        <template [ngTemplateOutlet]="resolvedTriggerTemplate" [ngTemplateOutletValue]="triggerTemplateContext"></template>
+      </span>
+    </template>
+
+    <template [ngIf]="!usesCustomTriggerTemplate">
+      <div class="m-1">
+        <i class="fab-icon-open" [class]="iconClass"></i>
+        <i class="fab-icon-close" [class]="openIconClass"></i>
+      </div>
+      <span *ngIf="showTextLabel" class="li-fab__trigger-label">{{ label }}</span>
+    </template>
+  </button>
+
+  <ul class="fab-menu-inner">
+    <li *ngFor="let action of actions; trackBy: trackByAction">
+      <div [class]="resolvedActionContainerClass(action)" [attr.data-fab-label]="resolvedActionTooltip(action)">
+        <a *ngIf="isLinkAction(action)" [class]="resolvedActionClass(action)" [attr.href]="resolvedActionHref(action)"
+          [attr.target]="resolvedActionTarget(action)" [attr.rel]="resolvedActionRel(action)"
+          [attr.aria-disabled]="action.disabled ? 'true' : null" [attr.aria-keyshortcuts]="resolvedShortcutAriaKey(action)"
+          [attr.tabindex]="action.disabled ? '-1' : null" [attr.title]="resolvedActionTitle(action)"
+          (click)="handleActionClick(action, $event)">
+          <template [ngIf]="usesCustomActionTemplate">
+            <span class="li-fab__action-template">
+              <template [ngTemplateOutlet]="resolvedActionTemplate" [ngTemplateOutletValue]="actionTemplateContext(action)"></template>
+            </span>
+          </template>
+
+          <template [ngIf]="!usesCustomActionTemplate">
+            <i [class]="action.iconClass + ' m-1'"></i>
+          </template>
+        </a>
+
+        <button *ngIf="!isLinkAction(action)" type="button" [class]="resolvedActionClass(action)"
+          [disabled]="action.disabled" [attr.aria-keyshortcuts]="resolvedShortcutAriaKey(action)"
+          [attr.title]="resolvedActionTitle(action)" (click)="handleActionClick(action)">
+          <template [ngIf]="usesCustomActionTemplate">
+            <span class="li-fab__action-template">
+              <template [ngTemplateOutlet]="resolvedActionTemplate" [ngTemplateOutletValue]="actionTemplateContext(action)"></template>
+            </span>
+          </template>
+
+          <template [ngIf]="!usesCustomActionTemplate">
+            <i [class]="action.iconClass + ' m-1'"></i>
+          </template>
+        </button>
+      </div>
+    </li>
+  </ul>
+</div>

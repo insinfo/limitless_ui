@@ -1,0 +1,387 @@
+<div class="demo-page fab-demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <div class="breadcrumb py-2">
+        <span class="breadcrumb-item">{{ breadcrumbParent }}</span>
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx header="Visão geral" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ intro }}</p>
+
+            <div class="mb-3">
+              <h6 class="mb-0">Basic examples</h6>
+              <span class="text-muted d-block">Demo of buttons and button lists</span>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Single floating button</h6>
+                  <p class="mb-3">Floating button uses regular button markup with <code>.fab-menu-btn</code> inside the <code>.fab-menu</code> container.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--compact">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="emptyActions"></li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Open menu on hover</h6>
+                  <p class="mb-3">Use <code>data-fab-toggle=&quot;hover&quot;</code> semantics for menus that should expand on hover.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="hoverActions" direction="down" toggleMode="hover"
+                      (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Open menu on click</h6>
+                  <p class="mb-3">The most common case is click-to-open with the default icon-only trigger.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="clickActions" direction="down" toggleMode="click"
+                      (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3 mt-4">
+              <h6 class="mb-0">FAB menu elements</h6>
+              <span class="text-muted d-block">Buttons, directions and fixed placement</span>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Simple buttons</h6>
+                  <p class="mb-3">The submenu usually contains rounded buttons with a single icon.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
+                      (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Side actions</h6>
+                  <p class="mb-3">Left direction keeps the main trigger compact while exposing contextual actions on the side.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--center fab-demo-slot--wide">
+                    <li-fab [fixed]="false" iconClass="ph-squares-four" [actions]="sideActions" direction="left"
+                      toggleMode="click" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <template #customFabTrigger let-trigger>
+                    <span class="d-inline-flex align-items-center gap-2">
+                      <i class="ph" [class.ph-plus]="!trigger.expanded" [class.ph-x]="trigger.expanded"></i>
+                      <span>{{ trigger.expanded ? 'Fechar' : 'Ações rápidas' }}</span>
+                    </span>
+                  </template>
+
+                  <template #customFabAction let-item>
+                    <span class="d-inline-flex align-items-center gap-2 px-1">
+                      <i [class]="item.iconClass"></i>
+                      <span>{{ item.label }}</span>
+                    </span>
+                  </template>
+
+                  <h6>Custom templates</h6>
+                  <p class="mb-3">Use <code>TemplateRef</code> to customize trigger and action content without replacing the FAB behavior, keyboard shortcuts, or link handling.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--center fab-demo-slot--wide">
+                    <li-fab [fixed]="false" [actions]="compactActions" direction="down" toggleMode="click"
+                      [triggerTemplate]="customFabTrigger" [actionTemplate]="customFabAction"
+                      (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>No-backdrop page action</h6>
+                  <p class="mb-3">The no-backdrop variant is previewed inside the card to avoid colliding with the left sidebar. The actual fixed FAB remains on the right edge.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--center">
+                    <li-fab [fixed]="false" iconClass="ph-rocket-launch" openIconClass="ph-x" [actions]="fixedNoBackdropActions"
+                      direction="up" toggleMode="click" (actionSelected)="handleNoBackdropAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3 mt-4">
+              <h6 class="mb-0">Inner button labels</h6>
+              <span class="text-muted d-block">Visible tooltips, light labels and label positions</span>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Visible labels</h6>
+                  <p class="mb-3">Use <code>.fab-label-visible</code> when labels should stay visible while the menu is expanded.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top fab-demo-slot--wide">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="visibleLabelActions" direction="down"
+                      toggleMode="click" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Light labels</h6>
+                  <p class="mb-3">All button types support light tooltips as an alternative to the default dark labels.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top fab-demo-slot--wide">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="lightLabelActions" direction="down"
+                      toggleMode="click" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Label positions</h6>
+                  <p class="mb-3">Left is default; use <code>.fab-label-end</code> to place labels on the right side.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top fab-demo-slot--wide">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="labelPositionActions" direction="down"
+                      toggleMode="click" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3 mt-4">
+              <h6 class="mb-0">Default button colors</h6>
+              <span class="text-muted d-block">Examples of predefined contextual colors</span>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Primary button color</h6>
+                  <p class="mb-3">Primary contextual color uses the standard <code>.btn-primary</code> main button.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
+                      variant="primary" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Success button color</h6>
+                  <p class="mb-3">Use <code>.btn-success</code> for a positive contextual variant.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
+                      variant="success" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Warning button color</h6>
+                  <p class="mb-3">Warning is a strong contextual alternative for attention-heavy actions.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
+                      variant="warning" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3 mt-4">
+              <h6 class="mb-0">Custom color options</h6>
+              <span class="text-muted d-block">Use custom colors in main and inner buttons</span>
+            </div>
+
+            <div class="row">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Custom main button color</h6>
+                  <p class="mb-3">Secondary palette colors can be applied directly to the main trigger.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
+                      variant="teal" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Custom inner button color</h6>
+                  <p class="mb-3">Inner actions can use any Limitless button color while keeping the light main trigger.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="indigoInnerActions" direction="down"
+                      toggleMode="click" variant="light" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6>Mixing button colors</h6>
+                  <p class="mb-3">The submenu supports mixed contextual colors without changing the structural markup.</p>
+
+                  <div class="fab-demo-slot fab-demo-slot--top">
+                    <li-fab [fixed]="false" iconClass="ph-plus" [actions]="mixedColorActions" direction="down"
+                      toggleMode="click" variant="indigo" (actionSelected)="handleDemoAction($event)">
+                    </li-fab>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-info mt-4 mb-0">{{ summaryText }}</div>
+          </div>
+        </li-tabx>
+
+        <li-tabx header="API">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
+            <p class="fw-semibold">{{ overviewLead }}</p>
+            <li-highlight [code]="markupSnippet" language="html"></li-highlight>
+
+            <div class="mt-4" id="fab-api-section"></div>
+            <li-highlight [code]="apiSnippet" language="dart"></li-highlight>
+
+            <div class="mt-4"></div>
+            <li-highlight [code]="templateSnippet" language="html"></li-highlight>
+
+            <div class="card mt-4 mb-0">
+              <div class="card-header">
+                <h5 class="mb-0">FAB menu classes</h5>
+              </div>
+
+              <div class="card-body">
+                FAB menu styling is driven by CSS classes and data attributes. The table below summarizes the classes used by this AngularDart wrapper while preserving the original Limitless contract.
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th style="width: 22%;">Class</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="table-active">
+                      <th colspan="2">Basic classes</th>
+                    </tr>
+                    <tr>
+                      <td><code>.fab-menu</code></td>
+                      <td>Main wrapper used by the component.</td>
+                    </tr>
+                    <tr>
+                      <td><code>.fab-menu-btn</code></td>
+                      <td>Main circular trigger button.</td>
+                    </tr>
+                    <tr>
+                      <td><code>.fab-menu-inner</code></td>
+                      <td>Inner action list container.</td>
+                    </tr>
+                    <tr>
+                      <td><code>.fab-icon-open</code> / <code>.fab-icon-close</code></td>
+                      <td>Icons rotated and faded by the Limitless CSS depending on menu state.</td>
+                    </tr>
+                    <tr class="table-border-double table-active">
+                      <th colspan="2">Directions and positioning</th>
+                    </tr>
+                    <tr>
+                      <td><code>.fab-menu-top</code></td>
+                      <td>Menu opens below the trigger.</td>
+                    </tr>
+                    <tr>
+                      <td><code>.fab-menu-bottom</code></td>
+                      <td>Menu opens above the trigger.</td>
+                    </tr>
+                    <tr>
+                      <td><code>.fab-menu-fixed</code></td>
+                      <td>Viewport-fixed FAB used for persistent page actions.</td>
+                    </tr>
+                    <tr>
+                      <td><code>.li-fab--dir-left</code> / <code>.li-fab--dir-right</code></td>
+                      <td>Horizontal extensions added by the AngularDart wrapper.</td>
+                    </tr>
+                    <tr class="table-border-double table-active">
+                      <th colspan="2">Visibility and labels</th>
+                    </tr>
+                    <tr>
+                      <td><code>data-fab-toggle=&quot;click&quot;</code></td>
+                      <td>Click-to-open behavior.</td>
+                    </tr>
+                    <tr>
+                      <td><code>data-fab-toggle=&quot;hover&quot;</code></td>
+                      <td>Hover-to-open behavior.</td>
+                    </tr>
+                    <tr>
+                      <td><code>data-fab-state=&quot;open&quot;</code></td>
+                      <td>Applied while the menu is expanded.</td>
+                    </tr>
+                    <tr>
+                      <td><code>data-fab-label</code></td>
+                      <td>Tooltip text for inner actions.</td>
+                    </tr>
+                    <tr>
+                      <td><code>.fab-label-end</code> / <code>.fab-label-light</code> / <code>.fab-label-visible</code></td>
+                      <td>Right-aligned, light, and persistent label modifiers.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+
+  <li-fab iconClass="ph-plus" openIconClass="ph-x" [actions]="fixedActions" position="bottom-end"
+    direction="up" [backdrop]="true" (actionSelected)="handleFixedAction($event)">
+  </li-fab>
+</div>

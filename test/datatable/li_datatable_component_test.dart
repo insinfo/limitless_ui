@@ -157,6 +157,21 @@ void main() {
     expect(host.lastDataRequest!.limit, 10);
   });
 
+  test('changePage usa a pagina nova ao calcular offset', () async {
+    final fixture = await testBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.table!.changePage(2);
+    });
+
+    expect(host.table!.getCurrentPage, 2);
+    expect(host.lastDataRequest, isNotNull);
+    expect(host.lastDataRequest!.offset, 10);
+    expect(host.lastDataRequest!.limit, 10);
+  });
+
   test('configura ordenacao e emite dataRequest', () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);

@@ -1,5 +1,8 @@
 ## 1.0.0-dev.2
 
+- Added `li-checkbox`, `li-radio`, `li-toggle`, `li-rating` and `li-file-upload`.
+- Added low-level upload helpers with `LiFileSelectDirective`, `LiFileDropDirective` and `LiFileType`.
+- Expanded the example app with dedicated pages for selection controls, rating and file upload.
 - Added the new toast module with `LiToastComponent`, `LiToastStackComponent` and `LiToastService`.
 - Added a dedicated toast demo page to the example application and routed it from the demo navigation.
 - Expanded the package documentation with toast usage, stack placement, AngularDart stylesheet guidance and richer component coverage.

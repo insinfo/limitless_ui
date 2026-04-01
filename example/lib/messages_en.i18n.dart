@@ -2817,6 +2817,26 @@ class HelpersPagesMessagesEn extends HelpersPagesMessages {
   String get sweetWarningToast => """Sweet warning toast""";
 
   /// ```dart
+  /// "Sweet modal"
+  /// ```
+  String get sweetModal => """Sweet modal""";
+
+  /// ```dart
+  /// "Sweet confirm"
+  /// ```
+  String get sweetConfirm => """Sweet confirm""";
+
+  /// ```dart
+  /// "Sweet prompt"
+  /// ```
+  String get sweetPrompt => """Sweet prompt""";
+
+  /// ```dart
+  /// "Sweet error toast"
+  /// ```
+  String get sweetErrorToast => """Sweet error toast""";
+
+  /// ```dart
   /// "Use the buttons to trigger the static helpers."
   /// ```
   String get idle => """Use the buttons to trigger the static helpers.""";
@@ -2946,6 +2966,115 @@ class HelpersPagesMessagesEn extends HelpersPagesMessages {
   /// ```
   String get sweetWarningState =>
       """SweetAlertSimpleToast.showWarningToast executed.""";
+
+  /// ```dart
+  /// "The pipeline finished successfully and generated a summary ready for review."
+  /// ```
+  String get sweetModalBody =>
+      """The pipeline finished successfully and generated a summary ready for review.""";
+
+  /// ```dart
+  /// "Build complete"
+  /// ```
+  String get sweetModalTitle => """Build complete""";
+
+  /// ```dart
+  /// "SweetAlert.show confirmed."
+  /// ```
+  String get sweetModalState => """SweetAlert.show confirmed.""";
+
+  /// ```dart
+  /// "SweetAlert.show was closed without confirmation."
+  /// ```
+  String get sweetModalDismissed =>
+      """SweetAlert.show was closed without confirmation.""";
+
+  /// ```dart
+  /// "Do you want to promote this release to production now?"
+  /// ```
+  String get sweetConfirmBody =>
+      """Do you want to promote this release to production now?""";
+
+  /// ```dart
+  /// "Promote release"
+  /// ```
+  String get sweetConfirmTitle => """Promote release""";
+
+  /// ```dart
+  /// "Promote"
+  /// ```
+  String get sweetConfirmOk => """Promote""";
+
+  /// ```dart
+  /// "Review"
+  /// ```
+  String get sweetConfirmCancel => """Review""";
+
+  /// ```dart
+  /// "SweetAlert.confirm returned a positive confirmation."
+  /// ```
+  String get sweetConfirmTrue =>
+      """SweetAlert.confirm returned a positive confirmation.""";
+
+  /// ```dart
+  /// "SweetAlert.confirm was cancelled."
+  /// ```
+  String get sweetConfirmFalse => """SweetAlert.confirm was cancelled.""";
+
+  /// ```dart
+  /// "Enter the batch identifier that should receive priority monitoring."
+  /// ```
+  String get sweetPromptBody =>
+      """Enter the batch identifier that should receive priority monitoring.""";
+
+  /// ```dart
+  /// "Batch priority"
+  /// ```
+  String get sweetPromptTitle => """Batch priority""";
+
+  /// ```dart
+  /// "e.g. batch-42"
+  /// ```
+  String get sweetPromptPlaceholder => """e.g. batch-42""";
+
+  /// ```dart
+  /// "Save priority"
+  /// ```
+  String get sweetPromptOk => """Save priority""";
+
+  /// ```dart
+  /// "Not now"
+  /// ```
+  String get sweetPromptCancel => """Not now""";
+
+  /// ```dart
+  /// "Enter an identifier before continuing."
+  /// ```
+  String get sweetPromptValidation =>
+      """Enter an identifier before continuing.""";
+
+  /// ```dart
+  /// "SweetAlert.prompt confirmed with value"
+  /// ```
+  String get sweetPromptFilledPrefix =>
+      """SweetAlert.prompt confirmed with value""";
+
+  /// ```dart
+  /// "SweetAlert.prompt was cancelled."
+  /// ```
+  String get sweetPromptDismissed => """SweetAlert.prompt was cancelled.""";
+
+  /// ```dart
+  /// "SweetAlert error toast shown in the bottom corner."
+  /// ```
+  String get sweetErrorBody =>
+      """SweetAlert error toast shown in the bottom corner.""";
+
+  /// ```dart
+  /// "SweetAlert.toast executed with error type."
+  /// ```
+  String get sweetErrorState =>
+      """SweetAlert.toast executed with error type.""";
 }
 
 class ButtonPagesMessagesEn extends ButtonPagesMessages {
@@ -3690,6 +3819,10 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.helpers.simpleWarningToast""": """Simple warning toast""",
       """pages.helpers.sweetSuccessToast""": """Sweet success toast""",
       """pages.helpers.sweetWarningToast""": """Sweet warning toast""",
+      """pages.helpers.sweetModal""": """Sweet modal""",
+      """pages.helpers.sweetConfirm""": """Sweet confirm""",
+      """pages.helpers.sweetPrompt""": """Sweet prompt""",
+      """pages.helpers.sweetErrorToast""": """Sweet error toast""",
       """pages.helpers.idle""":
           """Use the buttons to trigger the static helpers.""",
       """pages.helpers.loadingShown""":
@@ -3730,6 +3863,37 @@ selectedDate = DateTime(2026, 3, 20);
           """SweetAlert warning toast shown.""",
       """pages.helpers.sweetWarningState""":
           """SweetAlertSimpleToast.showWarningToast executed.""",
+      """pages.helpers.sweetModalBody""":
+          """The pipeline finished successfully and generated a summary ready for review.""",
+      """pages.helpers.sweetModalTitle""": """Build complete""",
+      """pages.helpers.sweetModalState""": """SweetAlert.show confirmed.""",
+      """pages.helpers.sweetModalDismissed""":
+          """SweetAlert.show was closed without confirmation.""",
+      """pages.helpers.sweetConfirmBody""":
+          """Do you want to promote this release to production now?""",
+      """pages.helpers.sweetConfirmTitle""": """Promote release""",
+      """pages.helpers.sweetConfirmOk""": """Promote""",
+      """pages.helpers.sweetConfirmCancel""": """Review""",
+      """pages.helpers.sweetConfirmTrue""":
+          """SweetAlert.confirm returned a positive confirmation.""",
+      """pages.helpers.sweetConfirmFalse""":
+          """SweetAlert.confirm was cancelled.""",
+      """pages.helpers.sweetPromptBody""":
+          """Enter the batch identifier that should receive priority monitoring.""",
+      """pages.helpers.sweetPromptTitle""": """Batch priority""",
+      """pages.helpers.sweetPromptPlaceholder""": """e.g. batch-42""",
+      """pages.helpers.sweetPromptOk""": """Save priority""",
+      """pages.helpers.sweetPromptCancel""": """Not now""",
+      """pages.helpers.sweetPromptValidation""":
+          """Enter an identifier before continuing.""",
+      """pages.helpers.sweetPromptFilledPrefix""":
+          """SweetAlert.prompt confirmed with value""",
+      """pages.helpers.sweetPromptDismissed""":
+          """SweetAlert.prompt was cancelled.""",
+      """pages.helpers.sweetErrorBody""":
+          """SweetAlert error toast shown in the bottom corner.""",
+      """pages.helpers.sweetErrorState""":
+          """SweetAlert.toast executed with error type.""",
       """pages.button.title""": """Components""",
       """pages.button.subtitle""": """Buttons""",
       """pages.button.breadcrumb""": """Button styles and variations""",

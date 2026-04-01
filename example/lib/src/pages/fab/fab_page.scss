@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+.fab-demo-slot {
+  min-height: 12rem;
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+}
+
+.fab-demo-slot--compact {
+  min-height: 5rem;
+  align-items: center;
+}
+
+.fab-demo-slot--top {
+  align-items: flex-start;
+  padding-top: 1rem;
+}
+
+.fab-demo-slot--center {
+  align-items: center;
+}
+
+.fab-demo-slot--wide {
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+@media (max-width: 767px) {
+  .fab-demo-slot {
+    min-height: 10rem;
+  }
+
+  .fab-demo-slot--wide {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
