@@ -126,36 +126,28 @@ class OverviewPageComponent {
         ),
         OverviewFeatureCard(
           title: 'SweetAlert',
-          body: i18n.isPortuguese
-              ? 'API unificada para modal, confirmação, prompt, toast e também gatilho declarativo.'
-              : 'Unified API for modals, confirmation, prompt, toast, and also a declarative trigger.',
+          body: t.pages.overview.featureSweetAlertBody,
           iconClass: 'ph-sparkle',
           url: DemoRoutePaths.sweetAlert.toUrl(),
           accentClass: 'overview-card-primary',
         ),
         OverviewFeatureCard(
           title: 'Highlight',
-          body: i18n.isPortuguese
-              ? 'Bloco leve para snippets de Dart, HTML e CSS na documentação do example.'
-              : 'Lightweight block for Dart, HTML, and CSS snippets in the example documentation.',
+          body: t.pages.overview.featureHighlightBody,
           iconClass: 'ph-code-block',
           url: DemoRoutePaths.highlight.toUrl(),
           accentClass: 'overview-card-info',
         ),
         OverviewFeatureCard(
           title: 'Inputs',
-          body: i18n.isPortuguese
-              ? 'Campo de texto com ngModel, floating label, textarea e addons de prefixo ou sufixo.'
-              : 'Text field with ngModel, floating label, textarea, and prefix or suffix addons.',
+          body: t.pages.overview.featureInputsFieldBody,
           iconClass: 'ph-textbox',
           url: DemoRoutePaths.inputs.toUrl(),
           accentClass: 'overview-card-success',
         ),
         OverviewFeatureCard(
           title: 'Floating action button',
-          body: i18n.isPortuguese
-              ? 'Speed dial compacto para ações rápidas globais ou inline.'
-              : 'Compact speed dial for quick global or inline actions.',
+          body: t.pages.overview.featureFabBody,
           iconClass: 'ph-plus-circle',
           url: DemoRoutePaths.fab.toUrl(),
           accentClass: 'overview-card-warning',

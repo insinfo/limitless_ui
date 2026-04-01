@@ -16,34 +16,34 @@
     <div class="card">
      
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.pages.currency.tabOverview" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-3">{{ t.pages.currency.help }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">O campo monetário resolve formatação visual e conversão para unidades menores sem lógica adicional no template.</p>
+                  <h6 class="mb-2">{{ t.pages.currency.descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ t.pages.currency.descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.pages.currency.featuresTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Suporte a <code>locale</code> e <code>currencyCode</code>.</li>
-                    <li>Conversão automática para minor units.</li>
-                    <li>Integração com formulários AngularDart.</li>
+                    <li>{{ t.pages.currency.featureOne }}</li>
+                    <li>{{ t.pages.currency.featureTwo }}</li>
+                    <li>{{ t.pages.currency.featureThree }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.pages.currency.limitsTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>O campo não substitui regras fiscais de negócio.</li>
-                    <li>Máscaras muito específicas exigem extensão adicional.</li>
-                    <li>O valor persistido continua sendo numérico.</li>
+                    <li>{{ t.pages.currency.limitOne }}</li>
+                    <li>{{ t.pages.currency.limitTwo }}</li>
+                    <li>{{ t.pages.currency.limitThree }}</li>
                   </ul>
                 </div>
               </div>
@@ -86,22 +86,20 @@
               <div><strong>BRL {{ t.pages.currency.minorUnits }}:</strong> {{ amountMinorUnitsLabel }}</div>
               <div><strong>USD {{ t.pages.currency.minorUnits }}:</strong> {{ amountMinorUnitsUsdLabel }}</div>
               <div><strong>EUR {{ t.pages.currency.minorUnits }}:</strong> {{ amountMinorUnitsEurLabel }}</div>
-              <div class="text-muted">
-                O mesmo componente agora aceita BRL, USD e EUR trocando apenas <code>currencyCode</code> e <code>locale</code>.
-              </div>
+              <div class="text-muted">{{ t.pages.currency.summaryHelp }}</div>
             </div>
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.pages.currency.tabApi">
           <div class="card-body">
-            <p class="text-muted mb-3">Use o componente para exibir o valor formatado ao usuário e manter no estado um número consistente em unidades menores.</p>
+            <p class="text-muted mb-3">{{ t.pages.currency.apiIntro }}</p>
             <ul class="mb-3 ps-3">
-              <li><code>[(ngModel)]</code> trabalha com o valor em minor units.</li>
-              <li><code>currencyCode</code> e <code>locale</code> controlam símbolo e separadores.</li>
-              <li><code>prefix</code> continua disponível para sobrescrever o símbolo automaticamente resolvido.</li>
-              <li><code>[required]</code> integra validação ao formulário.</li>
-              <li><code>inputClass</code> permite aplicar classes utilitárias no campo.</li>
+              <li>{{ t.pages.currency.apiOne }}</li>
+              <li>{{ t.pages.currency.apiTwo }}</li>
+              <li>{{ t.pages.currency.apiThree }}</li>
+              <li>{{ t.pages.currency.apiFour }}</li>
+              <li>{{ t.pages.currency.apiFive }}</li>
             </ul>
 
             <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-currency-input

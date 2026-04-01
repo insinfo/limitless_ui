@@ -2,8 +2,10 @@ import 'package:ngforms/ngforms.dart';
 
 import 'indexed_name_directive.dart';
 import 'value_accessors/custom_checkbox_control_value_accessor.dart';
+import 'value_accessors/custom_number_value_acessor.dart';
 import 'value_accessors/custom_select_control_value_acessor.dart';
 import 'value_accessors/date_value_accessor.dart';
+import 'value_accessors/datetime_value_acessor_diretive.dart';
 
 /// Convenience bundle of generic form directives and value accessors provided
 /// by `limitless_ui`.
@@ -15,7 +17,7 @@ const List<Type> limitlessFormDirectives = [
   NgFormModel,
   NgForm,
   DefaultValueAccessor,
-  NumberValueAccessor,
+  CustomNumberValueAccessor,
   CustomCheckboxControlValueAccessor,
   RadioControlValueAccessor,
   RequiredValidator,
@@ -25,5 +27,6 @@ const List<Type> limitlessFormDirectives = [
   CustomNgSelectOption,
   CustomSelectControlValueAccessor,
   DateValueAccessor,
+  DateTimeValueAccessor,
   IndexedNameDirective,
 ];

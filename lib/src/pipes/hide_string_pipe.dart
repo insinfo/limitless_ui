@@ -3,21 +3,19 @@ import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
 import '../exceptions/invalid_pipe_argument_exception.dart';
 
+/// Masks part of a string while keeping a visible prefix.
 ///
-///
-///
-/// ### Examples
-/// var str = 'How to truncate text in angular';
-///  {{ $pipe.hideString(str,2) }}             // output is 'how to...'
+/// This pipe delegates the masking logic to `EssentialCoreUtils` so the same
+/// behavior can be reused outside AngularDart templates.
 @Pipe('hideString', pure: true)
 class HideStringPipe {
+  const HideStringPipe();
+
+  /// Returns [value] with only [visibleCharacters] left untouched and the
+  /// remaining characters replaced by [trail].
   String? transform(dynamic value,
       [int visibleCharacters = 2, String trail = '*']) {
     if (value == null) return null;
-    // if (value != String?) {
-    //   throw InvalidPipeArgumentException(TruncatePipe, value);
-    // }
-    //static String hidePartsOfString(String string, {int visibleCharacters = 2,String trail = '*' }) {
     if (value is String) {
       if (value.isEmpty) {
         return '';
@@ -28,6 +26,4 @@ class HideStringPipe {
       throw InvalidPipeArgumentException(HideStringPipe, value);
     }
   }
-
-  const HideStringPipe();
 }

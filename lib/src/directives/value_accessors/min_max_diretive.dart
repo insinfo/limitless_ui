@@ -2,14 +2,20 @@ import 'dart:html';
 
 import 'package:ngdart/angular.dart';
 
+/// Clamps numeric input values to the configured `min` and `max` range.
+///
+/// The directive listens to keyboard input and normalizes out-of-range values
+/// back into the allowed interval.
 @Directive(selector: '[min]')
 class MinMaxDirective {
   late InputElement inputElement;
   final Element _el;
 
+  /// Minimum allowed numeric value.
   @Input('min')
   double? min;
 
+  /// Maximum allowed numeric value.
   @Input('max')
   double? max;
 

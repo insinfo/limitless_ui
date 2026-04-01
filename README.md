@@ -119,6 +119,45 @@ The demo fixes that with a global override in [example/web/style.scss](example/w
 - Navigation helpers: scrollspy service and directives.
 - Utilities: HTML directives, form value accessors, pipes, PDF generator and XLSX generator.
 
+## Utility directives and pipes
+
+Beyond visual components, the package also exposes small browser-oriented helpers that are now available from the public barrel in [lib/limitless_ui.dart](lib/limitless_ui.dart):
+
+- `CpfMaskDirective`: applies the `xxx.xxx.xxx-xx` mask while the user types.
+- `CnpjMaskDirective`: applies the `xx.xxx.xxx/xxxx-xx` mask while the user types.
+- `CpfFormatterPipe`: formats CPF values as `XXX.XXX.XXX-XX` or returns digits only.
+- `CpfHiddenPipe`: keeps only the first or last four CPF characters visible.
+- `HideStringPipe`: preserves a visible prefix and masks the rest of a string.
+- `TextMaskDirective`, `OnlyNumberDirective` and `CustomHrefDirective`: helpers for generic masked inputs, digit-only fields and attribute-driven href synchronization.
+- `CustomNumberValueAccessor`, `DateTimeValueAccessor` and `MinMaxDirective`: form helpers for `<input type="number">`, `<input type="datetime-local">` and constrained numeric inputs.
+
+Example:
+
+```dart
+import 'package:limitless_ui/limitless_ui.dart';
+
+@Component(
+  selector: 'demo-form-helpers',
+  template: '''
+    <input cpfMask [(ngModel)]="cpf">
+    <input type="number" min="1" max="10" [(ngModel)]="quantity">
+    <input type="datetime-local" [(ngModel)]="scheduledAt">
+
+    <p>{{ cpf | cpfFormatter }}</p>
+    <p>{{ cpf | cpfHidden:'asteriskStart' }}</p>
+    <p>{{ note | hideString:3:'#' }}</p>
+  ''',
+  directives: [coreDirectives, formDirectives, CpfMaskDirective],
+  pipes: [CpfFormatterPipe, CpfHiddenPipe, HideStringPipe],
+)
+class DemoFormHelpersComponent {
+  String cpf = '';
+  String quantity = '1';
+  DateTime? scheduledAt;
+  String note = 'abcdef';
+}
+```
+
 ## Generic vs `essential_core`-backed components
 
 Use these groups as the practical adoption boundary:

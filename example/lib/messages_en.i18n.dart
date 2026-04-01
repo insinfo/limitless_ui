@@ -536,6 +536,30 @@ class OverviewPagesMessagesEn extends OverviewPagesMessages {
   /// ```
   String get featureHelpersBody =>
       """Loading, dialogs, toasts, and popovers ready to use.""";
+
+  /// ```dart
+  /// "Unified API for modals, confirmation, prompt, toast, and also a declarative trigger."
+  /// ```
+  String get featureSweetAlertBody =>
+      """Unified API for modals, confirmation, prompt, toast, and also a declarative trigger.""";
+
+  /// ```dart
+  /// "Lightweight block for Dart, HTML, and CSS snippets in the example documentation."
+  /// ```
+  String get featureHighlightBody =>
+      """Lightweight block for Dart, HTML, and CSS snippets in the example documentation.""";
+
+  /// ```dart
+  /// "Text field with ngModel, floating label, textarea, and prefix or suffix addons."
+  /// ```
+  String get featureInputsFieldBody =>
+      """Text field with ngModel, floating label, textarea, and prefix or suffix addons.""";
+
+  /// ```dart
+  /// "Compact speed dial for quick global or inline actions."
+  /// ```
+  String get featureFabBody =>
+      """Compact speed dial for quick global or inline actions.""";
 }
 
 class AlertsPagesMessagesEn extends AlertsPagesMessages {
@@ -1001,6 +1025,129 @@ class SelectPagesMessagesEn extends SelectPagesMessages {
       """Common issues seen in this component and how to avoid them""";
 
   /// ```dart
+  /// "The select demo shows stable dataSource usage and manual option projection, bringing description, features, limitations, and visible examples together in the same flow."
+  /// ```
+  String get overviewIntro =>
+      """The select demo shows stable dataSource usage and manual option projection, bringing description, features, limitations, and visible examples together in the same flow.""";
+
+  /// ```dart
+  /// "Description"
+  /// ```
+  String get descriptionTitle => """Description""";
+
+  /// ```dart
+  /// "The component solves simple selection with overlay, projected options, and direct ngModel binding."
+  /// ```
+  String get descriptionBody =>
+      """The component solves simple selection with overlay, projected options, and direct ngModel binding.""";
+
+  /// ```dart
+  /// "Features"
+  /// ```
+  String get featuresTitle => """Features""";
+
+  /// ```dart
+  /// "External source through dataSource."
+  /// ```
+  String get featureOne => """External source through dataSource.""";
+
+  /// ```dart
+  /// "Manual projection with li-option."
+  /// ```
+  String get featureTwo => """Manual projection with li-option.""";
+
+  /// ```dart
+  /// "Placeholder, disabled items, and simple binding."
+  /// ```
+  String get featureThree =>
+      """Placeholder, disabled items, and simple binding.""";
+
+  /// ```dart
+  /// "Limitations"
+  /// ```
+  String get limitsTitle => """Limitations""";
+
+  /// ```dart
+  /// "Avoid recreating dataSource in reactive getters."
+  /// ```
+  String get limitOne => """Avoid recreating dataSource in reactive getters.""";
+
+  /// ```dart
+  /// "The overlay depends on consistent options for navigation and height."
+  /// ```
+  String get limitTwo =>
+      """The overlay depends on consistent options for navigation and height.""";
+
+  /// ```dart
+  /// "For heavy filtering logic, keep orchestration in the parent component."
+  /// ```
+  String get limitThree =>
+      """For heavy filtering logic, keep orchestration in the parent component.""";
+
+  /// ```dart
+  /// "How to use"
+  /// ```
+  String get apiTitle => """How to use""";
+
+  /// ```dart
+  /// "li-select accepts both [dataSource] and li-option projection. To avoid freezes and unnecessary render cycles, prefer providing stable lists from the parent component instead of getters that recreate the array whenever state changes."
+  /// ```
+  String get apiIntro =>
+      """li-select accepts both [dataSource] and li-option projection. To avoid freezes and unnecessary render cycles, prefer providing stable lists from the parent component instead of getters that recreate the array whenever state changes.""";
+
+  /// ```dart
+  /// "external option list."
+  /// ```
+  String get apiDataSource => """external option list.""";
+
+  /// ```dart
+  /// "key used for visible text."
+  /// ```
+  String get apiLabelKey => """key used for visible text.""";
+
+  /// ```dart
+  /// "key used as the ngModel value."
+  /// ```
+  String get apiValueKey => """key used as the ngModel value.""";
+
+  /// ```dart
+  /// "boolean key used to disable items."
+  /// ```
+  String get apiDisabledKey => """boolean key used to disable items.""";
+
+  /// ```dart
+  /// "selected value."
+  /// ```
+  String get apiNgModel => """selected value.""";
+
+  /// ```dart
+  /// "text shown when empty."
+  /// ```
+  String get apiPlaceholder => """text shown when empty.""";
+
+  /// ```dart
+  /// "Notes and limits"
+  /// ```
+  String get notesTitle => """Notes and limits""";
+
+  /// ```dart
+  /// "Do not recreate dataSource in getters."
+  /// ```
+  String get noteOne => """Do not recreate dataSource in getters.""";
+
+  /// ```dart
+  /// "The overlay should not calculate height from its own rendered panel."
+  /// ```
+  String get noteTwo =>
+      """The overlay should not calculate height from its own rendered panel.""";
+
+  /// ```dart
+  /// "Global keyboard events should handle only navigation and escape."
+  /// ```
+  String get noteThree =>
+      """Global keyboard events should handle only navigation and escape.""";
+
+  /// ```dart
   /// "Draft"
   /// ```
   String get optionDraft => """Draft""";
@@ -1102,6 +1249,145 @@ class MultiSelectPagesMessagesEn extends MultiSelectPagesMessages {
       """Important precautions to avoid regressions""";
 
   /// ```dart
+  /// "The multi-select demo shows multiple selection with a stable dataSource, manual projection, and documentation organized between overview and API."
+  /// ```
+  String get overviewIntro =>
+      """The multi-select demo shows multiple selection with a stable dataSource, manual projection, and documentation organized between overview and API.""";
+
+  /// ```dart
+  /// "Description"
+  /// ```
+  String get descriptionTitle => """Description""";
+
+  /// ```dart
+  /// "The component keeps a collection of selected values and projects the result directly in the trigger."
+  /// ```
+  String get descriptionBody =>
+      """The component keeps a collection of selected values and projects the result directly in the trigger.""";
+
+  /// ```dart
+  /// "Features"
+  /// ```
+  String get featuresTitle => """Features""";
+
+  /// ```dart
+  /// "Multiple selection with badges and placeholder."
+  /// ```
+  String get featureOne =>
+      """Multiple selection with badges and placeholder.""";
+
+  /// ```dart
+  /// "Clear-selection button next to the arrow when values are selected."
+  /// ```
+  String get featureTwo =>
+      """Clear-selection button next to the arrow when values are selected.""";
+
+  /// ```dart
+  /// "Integration with dataSource or li-multi-option."
+  /// ```
+  String get featureThree =>
+      """Integration with dataSource or li-multi-option.""";
+
+  /// ```dart
+  /// "Direct binding with ngModel lists."
+  /// ```
+  String get featureFour => """Direct binding with ngModel lists.""";
+
+  /// ```dart
+  /// "Limitations"
+  /// ```
+  String get limitsTitle => """Limitations""";
+
+  /// ```dart
+  /// "Avoid recreating option lists in reactive getters."
+  /// ```
+  String get limitOne =>
+      """Avoid recreating option lists in reactive getters.""";
+
+  /// ```dart
+  /// "The overlay needs a consistent refresh when the selection changes."
+  /// ```
+  String get limitTwo =>
+      """The overlay needs a consistent refresh when the selection changes.""";
+
+  /// ```dart
+  /// "For very large collections, keep pagination or search in the parent."
+  /// ```
+  String get limitThree =>
+      """For very large collections, keep pagination or search in the parent.""";
+
+  /// ```dart
+  /// "How to use"
+  /// ```
+  String get apiTitle => """How to use""";
+
+  /// ```dart
+  /// "li-multi-select follows the same strategy as li-select, but keeps multiple selected values and renders badges in the trigger."
+  /// ```
+  String get apiIntroOne =>
+      """li-multi-select follows the same strategy as li-select, but keeps multiple selected values and renders badges in the trigger.""";
+
+  /// ```dart
+  /// "The recommended pattern for the demo and production is to keep dataSource stable and update only the selected values collection."
+  /// ```
+  String get apiIntroTwo =>
+      """The recommended pattern for the demo and production is to keep dataSource stable and update only the selected values collection.""";
+
+  /// ```dart
+  /// "external option list."
+  /// ```
+  String get apiDataSource => """external option list.""";
+
+  /// ```dart
+  /// "key used for visible text."
+  /// ```
+  String get apiLabelKey => """key used for visible text.""";
+
+  /// ```dart
+  /// "key used in the ngModel array."
+  /// ```
+  String get apiValueKey => """key used in the ngModel array.""";
+
+  /// ```dart
+  /// "list of selected values."
+  /// ```
+  String get apiNgModel => """list of selected values.""";
+
+  /// ```dart
+  /// "text shown when nothing is selected."
+  /// ```
+  String get apiPlaceholder => """text shown when nothing is selected.""";
+
+  /// ```dart
+  /// "shows the X button to clear everything in the trigger."
+  /// ```
+  String get apiShowClearButton =>
+      """shows the X button to clear everything in the trigger.""";
+
+  /// ```dart
+  /// "Notes and limits"
+  /// ```
+  String get notesTitle => """Notes and limits""";
+
+  /// ```dart
+  /// "Do not recreate the option list in reactive getters."
+  /// ```
+  String get noteOne =>
+      """Do not recreate the option list in reactive getters.""";
+
+  /// ```dart
+  /// "Schedule overlay.update() on a future frame when the selection changes."
+  /// ```
+  String get noteTwo =>
+      """Schedule overlay.update() on a future frame when the selection changes.""";
+
+  /// ```dart
+  /// "Calculate maxHeight from the viewport, not from the current panel height."
+  /// ```
+  String get noteThree =>
+      """Calculate maxHeight from the viewport, not from the current panel height.""";
+
+  /// ```dart
   /// "E-mail"
   /// ```
   String get optionEmail => """E-mail""";
@@ -1176,6 +1462,109 @@ class CurrencyPagesMessagesEn extends CurrencyPagesMessages {
   /// ```
   String get help =>
       """The value bound to ngModel is always emitted as an integer in cents.""";
+
+  /// ```dart
+  /// "Overview"
+  /// ```
+  String get tabOverview => """Overview""";
+
+  /// ```dart
+  /// "API"
+  /// ```
+  String get tabApi => """API""";
+
+  /// ```dart
+  /// "Description"
+  /// ```
+  String get descriptionTitle => """Description""";
+
+  /// ```dart
+  /// "The monetary field handles visual formatting and conversion to minor units without extra template logic."
+  /// ```
+  String get descriptionBody =>
+      """The monetary field handles visual formatting and conversion to minor units without extra template logic.""";
+
+  /// ```dart
+  /// "Features"
+  /// ```
+  String get featuresTitle => """Features""";
+
+  /// ```dart
+  /// "Support for locale and currencyCode."
+  /// ```
+  String get featureOne => """Support for locale and currencyCode.""";
+
+  /// ```dart
+  /// "Automatic conversion to minor units."
+  /// ```
+  String get featureTwo => """Automatic conversion to minor units.""";
+
+  /// ```dart
+  /// "AngularDart forms integration."
+  /// ```
+  String get featureThree => """AngularDart forms integration.""";
+
+  /// ```dart
+  /// "Limitations"
+  /// ```
+  String get limitsTitle => """Limitations""";
+
+  /// ```dart
+  /// "The field does not replace fiscal business rules."
+  /// ```
+  String get limitOne =>
+      """The field does not replace fiscal business rules.""";
+
+  /// ```dart
+  /// "Very specific masks require additional extension."
+  /// ```
+  String get limitTwo =>
+      """Very specific masks require additional extension.""";
+
+  /// ```dart
+  /// "The persisted value remains numeric."
+  /// ```
+  String get limitThree => """The persisted value remains numeric.""";
+
+  /// ```dart
+  /// "The same component now accepts BRL, USD, and EUR by changing only currencyCode and locale."
+  /// ```
+  String get summaryHelp =>
+      """The same component now accepts BRL, USD, and EUR by changing only currencyCode and locale.""";
+
+  /// ```dart
+  /// "Use the component to display a formatted value to the user while keeping a consistent minor-unit number in state."
+  /// ```
+  String get apiIntro =>
+      """Use the component to display a formatted value to the user while keeping a consistent minor-unit number in state.""";
+
+  /// ```dart
+  /// "[(ngModel)] works with the value in minor units."
+  /// ```
+  String get apiOne => """[(ngModel)] works with the value in minor units.""";
+
+  /// ```dart
+  /// "currencyCode and locale control symbol and separators."
+  /// ```
+  String get apiTwo =>
+      """currencyCode and locale control symbol and separators.""";
+
+  /// ```dart
+  /// "prefix remains available to override the automatically resolved symbol."
+  /// ```
+  String get apiThree =>
+      """prefix remains available to override the automatically resolved symbol.""";
+
+  /// ```dart
+  /// "[required] integrates validation into the form."
+  /// ```
+  String get apiFour => """[required] integrates validation into the form.""";
+
+  /// ```dart
+  /// "inputClass lets you apply utility classes to the field."
+  /// ```
+  String get apiFive =>
+      """inputClass lets you apply utility classes to the field.""";
 }
 
 class DateRangePagesMessagesEn extends DateRangePagesMessages {
@@ -1201,6 +1590,69 @@ class DateRangePagesMessagesEn extends DateRangePagesMessages {
   /// "Free and constrained ranges"
   /// ```
   String get cardTitle => """Free and constrained ranges""";
+
+  /// ```dart
+  /// "Overview"
+  /// ```
+  String get tabOverview => """Overview""";
+
+  /// ```dart
+  /// "API"
+  /// ```
+  String get tabApi => """API""";
+
+  /// ```dart
+  /// "Description"
+  /// ```
+  String get descriptionTitle => """Description""";
+
+  /// ```dart
+  /// "The date range picker fits continuous period flows for filters, sprints, releases, and operational slices."
+  /// ```
+  String get descriptionBody =>
+      """The date range picker fits continuous period flows for filters, sprints, releases, and operational slices.""";
+
+  /// ```dart
+  /// "Features"
+  /// ```
+  String get featuresTitle => """Features""";
+
+  /// ```dart
+  /// "Separate start and end binding."
+  /// ```
+  String get featureOne => """Separate start and end binding.""";
+
+  /// ```dart
+  /// "Minimum and maximum interval restrictions."
+  /// ```
+  String get featureTwo => """Minimum and maximum interval restrictions.""";
+
+  /// ```dart
+  /// "Configurable placeholder and locale."
+  /// ```
+  String get featureThree => """Configurable placeholder and locale.""";
+
+  /// ```dart
+  /// "Limitations"
+  /// ```
+  String get limitsTitle => """Limitations""";
+
+  /// ```dart
+  /// "The component does not apply business-calendar rules on its own."
+  /// ```
+  String get limitOne =>
+      """The component does not apply business-calendar rules on its own.""";
+
+  /// ```dart
+  /// "More specific validations still belong in the parent."
+  /// ```
+  String get limitTwo =>
+      """More specific validations still belong in the parent.""";
+
+  /// ```dart
+  /// "Complex flows may require external presets."
+  /// ```
+  String get limitThree => """Complex flows may require external presets.""";
 
   /// ```dart
   /// "Select the sprint period"
@@ -1232,6 +1684,35 @@ class DateRangePagesMessagesEn extends DateRangePagesMessages {
   /// "to"
   /// ```
   String get between => """to""";
+
+  /// ```dart
+  /// "Use the component when the flow depends on a range with start and end dates clearly controlled by the parent component."
+  /// ```
+  String get apiIntro =>
+      """Use the component when the flow depends on a range with start and end dates clearly controlled by the parent component.""";
+
+  /// ```dart
+  /// "[inicio] and (inicioChange) control the start date."
+  /// ```
+  String get apiOne =>
+      """[inicio] and (inicioChange) control the start date.""";
+
+  /// ```dart
+  /// "[fim] and (fimChange) control the end date."
+  /// ```
+  String get apiTwo => """[fim] and (fimChange) control the end date.""";
+
+  /// ```dart
+  /// "[minDate] and [maxDate] restrict the selectable window."
+  /// ```
+  String get apiThree =>
+      """[minDate] and [maxDate] restrict the selectable window.""";
+
+  /// ```dart
+  /// "[placeholder] and locale adjust the field communication."
+  /// ```
+  String get apiFour =>
+      """[placeholder] and locale adjust the field communication.""";
 }
 
 class TimePickerPagesMessagesEn extends TimePickerPagesMessages {
@@ -1302,9 +1783,10 @@ class TimePickerPagesMessagesEn extends TimePickerPagesMessages {
       """Clock-based selection switching between hour and minute.""";
 
   /// ```dart
-  /// "Integrated AM/PM toggle inside the panel."
+  /// "Support for 12-hour AM/PM and 24-hour display modes."
   /// ```
-  String get featureThree => """Integrated AM/PM toggle inside the panel.""";
+  String get featureThree =>
+      """Support for 12-hour AM/PM and 24-hour display modes.""";
 
   /// ```dart
   /// "Limitations"
@@ -1312,10 +1794,10 @@ class TimePickerPagesMessagesEn extends TimePickerPagesMessages {
   String get limitsTitle => """Limitations""";
 
   /// ```dart
-  /// "The component currently works in a 12-hour AM/PM format."
+  /// "The displayed format depends on use24Hour and the configured locale."
   /// ```
   String get limitOne =>
-      """The component currently works in a 12-hour AM/PM format.""";
+      """The displayed format depends on use24Hour and the configured locale.""";
 
   /// ```dart
   /// "It does not apply business window rules on its own."
@@ -1328,6 +1810,27 @@ class TimePickerPagesMessagesEn extends TimePickerPagesMessages {
   /// ```
   String get limitThree =>
       """The returned value carries only hour and minute.""";
+
+  /// ```dart
+  /// "24-hour time picker"
+  /// ```
+  String get twentyFourHourTitle => """24-hour time picker""";
+
+  /// ```dart
+  /// "Select time"
+  /// ```
+  String get twentyFourHourPlaceholder => """Select time""";
+
+  /// ```dart
+  /// "Current time"
+  /// ```
+  String get twentyFourHourCurrentLabel => """Current time""";
+
+  /// ```dart
+  /// "Use use24Hour to display and edit the value without AM/PM."
+  /// ```
+  String get twentyFourHourHelp =>
+      """Use use24Hour to display and edit the value without AM/PM.""";
 
   /// ```dart
   /// "Default time picker"
@@ -3279,6 +3782,14 @@ Map<String, String> get messagesEnMap => {
       """pages.overview.featureHelpersTitle""": """Helpers""",
       """pages.overview.featureHelpersBody""":
           """Loading, dialogs, toasts, and popovers ready to use.""",
+      """pages.overview.featureSweetAlertBody""":
+          """Unified API for modals, confirmation, prompt, toast, and also a declarative trigger.""",
+      """pages.overview.featureHighlightBody""":
+          """Lightweight block for Dart, HTML, and CSS snippets in the example documentation.""",
+      """pages.overview.featureInputsFieldBody""":
+          """Text field with ngModel, floating label, textarea, and prefix or suffix addons.""",
+      """pages.overview.featureFabBody""":
+          """Compact speed dial for quick global or inline actions.""",
       """pages.alerts.title""": """Components""",
       """pages.alerts.subtitle""": """Alerts""",
       """pages.alerts.breadcrumb""": """Alert variations""",
@@ -3382,6 +3893,39 @@ Map<String, String> get messagesEnMap => {
       """pages.select.apiInputs""": """Most used inputs""",
       """pages.select.troubleshootingIntro""":
           """Common issues seen in this component and how to avoid them""",
+      """pages.select.overviewIntro""":
+          """The select demo shows stable dataSource usage and manual option projection, bringing description, features, limitations, and visible examples together in the same flow.""",
+      """pages.select.descriptionTitle""": """Description""",
+      """pages.select.descriptionBody""":
+          """The component solves simple selection with overlay, projected options, and direct ngModel binding.""",
+      """pages.select.featuresTitle""": """Features""",
+      """pages.select.featureOne""": """External source through dataSource.""",
+      """pages.select.featureTwo""": """Manual projection with li-option.""",
+      """pages.select.featureThree""":
+          """Placeholder, disabled items, and simple binding.""",
+      """pages.select.limitsTitle""": """Limitations""",
+      """pages.select.limitOne""":
+          """Avoid recreating dataSource in reactive getters.""",
+      """pages.select.limitTwo""":
+          """The overlay depends on consistent options for navigation and height.""",
+      """pages.select.limitThree""":
+          """For heavy filtering logic, keep orchestration in the parent component.""",
+      """pages.select.apiTitle""": """How to use""",
+      """pages.select.apiIntro""":
+          """li-select accepts both [dataSource] and li-option projection. To avoid freezes and unnecessary render cycles, prefer providing stable lists from the parent component instead of getters that recreate the array whenever state changes.""",
+      """pages.select.apiDataSource""": """external option list.""",
+      """pages.select.apiLabelKey""": """key used for visible text.""",
+      """pages.select.apiValueKey""": """key used as the ngModel value.""",
+      """pages.select.apiDisabledKey""":
+          """boolean key used to disable items.""",
+      """pages.select.apiNgModel""": """selected value.""",
+      """pages.select.apiPlaceholder""": """text shown when empty.""",
+      """pages.select.notesTitle""": """Notes and limits""",
+      """pages.select.noteOne""": """Do not recreate dataSource in getters.""",
+      """pages.select.noteTwo""":
+          """The overlay should not calculate height from its own rendered panel.""",
+      """pages.select.noteThree""":
+          """Global keyboard events should handle only navigation and escape.""",
       """pages.select.optionDraft""": """Draft""",
       """pages.select.optionReview""": """In review""",
       """pages.select.optionApproved""": """Approved""",
@@ -3402,6 +3946,47 @@ Map<String, String> get messagesEnMap => {
       """pages.multiSelect.apiInputs""": """Most used inputs""",
       """pages.multiSelect.troubleshootingIntro""":
           """Important precautions to avoid regressions""",
+      """pages.multiSelect.overviewIntro""":
+          """The multi-select demo shows multiple selection with a stable dataSource, manual projection, and documentation organized between overview and API.""",
+      """pages.multiSelect.descriptionTitle""": """Description""",
+      """pages.multiSelect.descriptionBody""":
+          """The component keeps a collection of selected values and projects the result directly in the trigger.""",
+      """pages.multiSelect.featuresTitle""": """Features""",
+      """pages.multiSelect.featureOne""":
+          """Multiple selection with badges and placeholder.""",
+      """pages.multiSelect.featureTwo""":
+          """Clear-selection button next to the arrow when values are selected.""",
+      """pages.multiSelect.featureThree""":
+          """Integration with dataSource or li-multi-option.""",
+      """pages.multiSelect.featureFour""":
+          """Direct binding with ngModel lists.""",
+      """pages.multiSelect.limitsTitle""": """Limitations""",
+      """pages.multiSelect.limitOne""":
+          """Avoid recreating option lists in reactive getters.""",
+      """pages.multiSelect.limitTwo""":
+          """The overlay needs a consistent refresh when the selection changes.""",
+      """pages.multiSelect.limitThree""":
+          """For very large collections, keep pagination or search in the parent.""",
+      """pages.multiSelect.apiTitle""": """How to use""",
+      """pages.multiSelect.apiIntroOne""":
+          """li-multi-select follows the same strategy as li-select, but keeps multiple selected values and renders badges in the trigger.""",
+      """pages.multiSelect.apiIntroTwo""":
+          """The recommended pattern for the demo and production is to keep dataSource stable and update only the selected values collection.""",
+      """pages.multiSelect.apiDataSource""": """external option list.""",
+      """pages.multiSelect.apiLabelKey""": """key used for visible text.""",
+      """pages.multiSelect.apiValueKey""": """key used in the ngModel array.""",
+      """pages.multiSelect.apiNgModel""": """list of selected values.""",
+      """pages.multiSelect.apiPlaceholder""":
+          """text shown when nothing is selected.""",
+      """pages.multiSelect.apiShowClearButton""":
+          """shows the X button to clear everything in the trigger.""",
+      """pages.multiSelect.notesTitle""": """Notes and limits""",
+      """pages.multiSelect.noteOne""":
+          """Do not recreate the option list in reactive getters.""",
+      """pages.multiSelect.noteTwo""":
+          """Schedule overlay.update() on a future frame when the selection changes.""",
+      """pages.multiSelect.noteThree""":
+          """Calculate maxHeight from the viewport, not from the current panel height.""",
       """pages.multiSelect.optionEmail""": """E-mail""",
       """pages.multiSelect.optionPush""": """Push""",
       """pages.multiSelect.optionSms""": """SMS""",
@@ -3417,10 +4002,60 @@ Map<String, String> get messagesEnMap => {
       """pages.currency.minorUnits""": """Minor units""",
       """pages.currency.help""":
           """The value bound to ngModel is always emitted as an integer in cents.""",
+      """pages.currency.tabOverview""": """Overview""",
+      """pages.currency.tabApi""": """API""",
+      """pages.currency.descriptionTitle""": """Description""",
+      """pages.currency.descriptionBody""":
+          """The monetary field handles visual formatting and conversion to minor units without extra template logic.""",
+      """pages.currency.featuresTitle""": """Features""",
+      """pages.currency.featureOne""":
+          """Support for locale and currencyCode.""",
+      """pages.currency.featureTwo""":
+          """Automatic conversion to minor units.""",
+      """pages.currency.featureThree""": """AngularDart forms integration.""",
+      """pages.currency.limitsTitle""": """Limitations""",
+      """pages.currency.limitOne""":
+          """The field does not replace fiscal business rules.""",
+      """pages.currency.limitTwo""":
+          """Very specific masks require additional extension.""",
+      """pages.currency.limitThree""":
+          """The persisted value remains numeric.""",
+      """pages.currency.summaryHelp""":
+          """The same component now accepts BRL, USD, and EUR by changing only currencyCode and locale.""",
+      """pages.currency.apiIntro""":
+          """Use the component to display a formatted value to the user while keeping a consistent minor-unit number in state.""",
+      """pages.currency.apiOne""":
+          """[(ngModel)] works with the value in minor units.""",
+      """pages.currency.apiTwo""":
+          """currencyCode and locale control symbol and separators.""",
+      """pages.currency.apiThree""":
+          """prefix remains available to override the automatically resolved symbol.""",
+      """pages.currency.apiFour""":
+          """[required] integrates validation into the form.""",
+      """pages.currency.apiFive""":
+          """inputClass lets you apply utility classes to the field.""",
       """pages.dateRange.title""": """Components""",
       """pages.dateRange.subtitle""": """Date Range""",
       """pages.dateRange.breadcrumb""": """Period selection""",
       """pages.dateRange.cardTitle""": """Free and constrained ranges""",
+      """pages.dateRange.tabOverview""": """Overview""",
+      """pages.dateRange.tabApi""": """API""",
+      """pages.dateRange.descriptionTitle""": """Description""",
+      """pages.dateRange.descriptionBody""":
+          """The date range picker fits continuous period flows for filters, sprints, releases, and operational slices.""",
+      """pages.dateRange.featuresTitle""": """Features""",
+      """pages.dateRange.featureOne""": """Separate start and end binding.""",
+      """pages.dateRange.featureTwo""":
+          """Minimum and maximum interval restrictions.""",
+      """pages.dateRange.featureThree""":
+          """Configurable placeholder and locale.""",
+      """pages.dateRange.limitsTitle""": """Limitations""",
+      """pages.dateRange.limitOne""":
+          """The component does not apply business-calendar rules on its own.""",
+      """pages.dateRange.limitTwo""":
+          """More specific validations still belong in the parent.""",
+      """pages.dateRange.limitThree""":
+          """Complex flows may require external presets.""",
       """pages.dateRange.sprintPlaceholder""": """Select the sprint period""",
       """pages.dateRange.publicationPlaceholder""": """Publication window""",
       """pages.dateRange.partial""": """Partial or undefined period""",
@@ -3428,6 +4063,16 @@ Map<String, String> get messagesEnMap => {
       """pages.dateRange.constrainedHelp""":
           """The second example constrains the selection with minDate and maxDate.""",
       """pages.dateRange.between""": """to""",
+      """pages.dateRange.apiIntro""":
+          """Use the component when the flow depends on a range with start and end dates clearly controlled by the parent component.""",
+      """pages.dateRange.apiOne""":
+          """[inicio] and (inicioChange) control the start date.""",
+      """pages.dateRange.apiTwo""":
+          """[fim] and (fimChange) control the end date.""",
+      """pages.dateRange.apiThree""":
+          """[minDate] and [maxDate] restrict the selectable window.""",
+      """pages.dateRange.apiFour""":
+          """[placeholder] and locale adjust the field communication.""",
       """pages.timePicker.title""": """Components""",
       """pages.timePicker.subtitle""": """Time Picker""",
       """pages.timePicker.breadcrumb""": """Time selection""",
@@ -3445,14 +4090,19 @@ Map<String, String> get messagesEnMap => {
       """pages.timePicker.featureTwo""":
           """Clock-based selection switching between hour and minute.""",
       """pages.timePicker.featureThree""":
-          """Integrated AM/PM toggle inside the panel.""",
+          """Support for 12-hour AM/PM and 24-hour display modes.""",
       """pages.timePicker.limitsTitle""": """Limitations""",
       """pages.timePicker.limitOne""":
-          """The component currently works in a 12-hour AM/PM format.""",
+          """The displayed format depends on use24Hour and the configured locale.""",
       """pages.timePicker.limitTwo""":
           """It does not apply business window rules on its own.""",
       """pages.timePicker.limitThree""":
           """The returned value carries only hour and minute.""",
+      """pages.timePicker.twentyFourHourTitle""": """24-hour time picker""",
+      """pages.timePicker.twentyFourHourPlaceholder""": """Select time""",
+      """pages.timePicker.twentyFourHourCurrentLabel""": """Current time""",
+      """pages.timePicker.twentyFourHourHelp""":
+          """Use use24Hour to display and edit the value without AM/PM.""",
       """pages.timePicker.defaultTitle""": """Default time picker""",
       """pages.timePicker.englishTitle""": """English time picker""",
       """pages.timePicker.disabledTitle""": """Disabled time picker""",

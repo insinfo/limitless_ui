@@ -14,28 +14,29 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   ],
 )
 class MultiSelectPageComponent {
-  MultiSelectPageComponent(this.i18n) {
-    // Keep demo data stable across change detection cycles so the page avoids
-    // recreating equivalent inputs on every render.
-    channelOptions = <Map<String, dynamic>>[
-      <String, dynamic>{'id': 'email', 'label': t.pages.multiSelect.optionEmail},
-      <String, dynamic>{'id': 'push', 'label': t.pages.multiSelect.optionPush},
-      <String, dynamic>{'id': 'sms', 'label': t.pages.multiSelect.optionSms},
-      <String, dynamic>{'id': 'webhook', 'label': t.pages.multiSelect.optionWebhook},
-    ];
-
-    projectedOptions = <Map<String, dynamic>>[
-      <String, dynamic>{'id': 'portal', 'label': t.pages.multiSelect.optionPortal},
-      <String, dynamic>{'id': 'api', 'label': t.pages.multiSelect.optionApi},
-      <String, dynamic>{'id': 'batch', 'label': t.pages.multiSelect.optionBatch},
-    ];
-  }
+  MultiSelectPageComponent(this.i18n);
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
 
-  late final List<Map<String, dynamic>> channelOptions;
-  late final List<Map<String, dynamic>> projectedOptions;
+  List<Map<String, dynamic>>? _channelOptionsPt;
+  List<Map<String, dynamic>>? _channelOptionsEn;
+  List<Map<String, dynamic>>? _projectedOptionsPt;
+  List<Map<String, dynamic>>? _projectedOptionsEn;
+
+  List<Map<String, dynamic>> get channelOptions {
+    if (i18n.isPortuguese) {
+      return _channelOptionsPt ??= _buildChannelOptions();
+    }
+    return _channelOptionsEn ??= _buildChannelOptions();
+  }
+
+  List<Map<String, dynamic>> get projectedOptions {
+    if (i18n.isPortuguese) {
+      return _projectedOptionsPt ??= _buildProjectedOptions();
+    }
+    return _projectedOptionsEn ??= _buildProjectedOptions();
+  }
 
   List<dynamic> selectedChannels = <dynamic>['email', 'push'];
   List<dynamic> projectedChannels = <dynamic>['portal', 'api'];
@@ -47,6 +48,20 @@ class MultiSelectPageComponent {
   String get projectedChannelsLabel => projectedChannels
       .map((dynamic id) => _labelFor(id.toString(), projectedOptions))
       .join(', ');
+
+  List<Map<String, dynamic>> _buildChannelOptions() => <Map<String, dynamic>>[
+        <String, dynamic>{'id': 'email', 'label': t.pages.multiSelect.optionEmail},
+        <String, dynamic>{'id': 'push', 'label': t.pages.multiSelect.optionPush},
+        <String, dynamic>{'id': 'sms', 'label': t.pages.multiSelect.optionSms},
+        <String, dynamic>{'id': 'webhook', 'label': t.pages.multiSelect.optionWebhook},
+      ];
+
+  List<Map<String, dynamic>> _buildProjectedOptions() =>
+      <Map<String, dynamic>>[
+        <String, dynamic>{'id': 'portal', 'label': t.pages.multiSelect.optionPortal},
+        <String, dynamic>{'id': 'api', 'label': t.pages.multiSelect.optionApi},
+        <String, dynamic>{'id': 'batch', 'label': t.pages.multiSelect.optionBatch},
+      ];
 
   String _labelFor(String id, List<Map<String, dynamic>> source) {
     for (final item in source) {

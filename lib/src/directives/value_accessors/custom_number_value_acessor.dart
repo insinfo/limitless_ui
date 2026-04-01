@@ -12,12 +12,13 @@ const numberValueAccessor2 = ExistingProvider.forToken(
   CustomNumberValueAccessor,
 );
 
-/// The accessor for writing a number value and listening to changes that is used by the
-/// [NgModel], [NgFormControl], and [NgControlName] directives.
+/// Writes `double` values to `<input type="number">` elements and listens to
+/// user changes for AngularDart forms.
 ///
-///  ### Example
-///
-///  <input type="number" [(ngModel)]="age">
+/// Example:
+/// ```html
+/// <input type="number" [(ngModel)]="age">
+/// ```
 @Directive(
   selector: 'input[type=number][ngControl],'
       'input[type=number][ngFormControl],'
@@ -34,14 +35,17 @@ class CustomNumberValueAccessor extends Object
 
   @HostListener('change', ['\$event.target.value'])
   @HostListener('input', ['\$event.target.value'])
+  /// Parses the raw input string and notifies AngularDart forms.
   void handleChange(String value) {
     onChange(value == '' ? null : double.parse(value), rawValue: value);
   }
 
+  /// Controls the significant digits used when [writeValue] renders doubles.
   @Input('precision')
   int? precision;
 
   @override
+  /// Writes the current model value into the native input element.
   void writeValue(value) {
     if (value is double) {
       final val = value;
@@ -57,6 +61,7 @@ class CustomNumberValueAccessor extends Object
   }
 
   @override
+  /// Enables or disables the backing input element.
   void onDisabledChanged(bool isDisabled) {
     _element.disabled = isDisabled;
   }

@@ -2,12 +2,31 @@ import 'dart:html';
 
 import 'package:ngdart/angular.dart';
 
-/// Applies a CPF mask to a text input as the user types.
+/// Immutable configuration object for [TextMaskDirective].
+class TextMaskConfig {
+  final String mask;
+  final int maxLength;
+  TextMaskConfig({this.mask = 'xxx.xxx.xxx-xx', this.maxLength = 14});
+}
+
+/// Applies an arbitrary character mask to a text input as the user types.
 ///
-/// The directive expects to run on an [InputElement] and formats the value
-/// using the `xxx.xxx.xxx-xx` pattern.
-@Directive(selector: '[cpfMask]')
-class CpfMaskDirective {
+/// The directive uses `x` as the editable placeholder character. Any other
+/// character in the mask is inserted automatically.
+@Directive(selector: '[textMask]')
+class TextMaskDirective {
+  Map<String, dynamic> _textMask = {};
+
+  @Input()
+  set textMask(Map<String, dynamic> val) {
+    _textMask = val;
+
+    mask = _textMask.containsKey('mask') ? _textMask['mask'] : 'xxx.xxx.xxx-xx';
+    maxLength = (_textMask.containsKey('maxLength')
+        ? int.parse(_textMask['maxLength'].toString())
+        : mask.length);
+  }
+
   String mask = 'xxx.xxx.xxx-xx';
   int maxLength = 14;
   String escapeCharacter = 'x';
@@ -16,11 +35,16 @@ class CpfMaskDirective {
   var lastTextSize = 0;
   var lastTextValue = '';
 
-  CpfMaskDirective(this._el) {
-    lastTextSize = 0;
+  TextMaskDirective(this._el) {
     if (_el is! InputElement) {
-      throw Exception('CpfMaskDirective has to be applied to an InputElement');
+      throw Exception('TextMaskDirective has to be applied to an InputElement');
     }
+    mask = _textMask.containsKey('mask') ? _textMask['mask'] : 'xxx.xxx.xxx-xx';
+    maxLength = (_textMask.containsKey('maxLength')
+        ? int.parse(_textMask['maxLength'].toString())
+        : mask.length);
+
+    lastTextSize = 0;
     inputElement = _el;
     inputElement.onInput.listen((e) {
       _onChange();

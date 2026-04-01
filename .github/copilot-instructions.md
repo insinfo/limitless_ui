@@ -1,5 +1,7 @@
 # Copilot Instructions
 
+responda sempre em portugues 
+
 ## AngularDart performance rules
 
 - Never return newly created lists, maps, style objects, or view-model objects from getters that are consumed directly by AngularDart templates.

@@ -17,37 +17,35 @@
     <div class="card">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.pages.multiSelect.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">A demo de multiseleção mostra seleção múltipla com <code>dataSource</code>
-              estável, projeção manual e documentação organizada entre visão geral e API.</p>
+            <p class="text-muted mb-3">{{ t.pages.multiSelect.overviewIntro }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">O componente mantém uma coleção de valores selecionados e projeta o
-                    resultado diretamente no trigger.</p>
+                  <h6 class="mb-2">{{ t.pages.multiSelect.descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ t.pages.multiSelect.descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.pages.multiSelect.featuresTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Seleção múltipla com badges e placeholder.</li>
-                    <li>Botão de limpar seleção ao lado da seta quando há valores marcados.</li>
-                    <li>Integração com <code>dataSource</code> ou <code>li-multi-option</code>.</li>
-                    <li>Binding direto com listas no <code>ngModel</code>.</li>
+                    <li>{{ t.pages.multiSelect.featureOne }}</li>
+                    <li>{{ t.pages.multiSelect.featureTwo }}</li>
+                    <li>{{ t.pages.multiSelect.featureThree }}</li>
+                    <li>{{ t.pages.multiSelect.featureFour }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.pages.multiSelect.limitsTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Evite recriar listas de opções em getters reativos.</li>
-                    <li>O overlay precisa de atualização consistente ao mudar a seleção.</li>
-                    <li>Para coleções muito grandes, mantenha paginação ou busca no pai.</li>
+                    <li>{{ t.pages.multiSelect.limitOne }}</li>
+                    <li>{{ t.pages.multiSelect.limitTwo }}</li>
+                    <li>{{ t.pages.multiSelect.limitThree }}</li>
                   </ul>
                 </div>
               </div>
@@ -75,29 +73,21 @@
             </div>
           </div>
         </li-tabx>
-        <li-tabx header="API">
+        <li-tabx [header]="t.pages.multiSelect.tabApi">
           <div class="card-body">
             <div class="row g-4">
               <div class="col-xl-6">
-                <h6 class="mb-2">Como utilizar</h6>
-                <p>
-                  <code>li-multi-select</code> segue a mesma estratégia do
-                  <code>li-select</code>, mas mantém múltiplos valores
-                  selecionados e renderiza badges no trigger.
-                </p>
-                <p class="mb-3">
-                  O padrão recomendado para o demo e para produção é manter
-                  <code>dataSource</code> estável e atualizar apenas a coleção de
-                  valores selecionados.
-                </p>
+                <h6 class="mb-2">{{ t.pages.multiSelect.apiTitle }}</h6>
+                <p>{{ t.pages.multiSelect.apiIntroOne }}</p>
+                <p class="mb-3">{{ t.pages.multiSelect.apiIntroTwo }}</p>
 
                 <ul class="mb-3 ps-3">
-                  <li><code>[dataSource]</code>: lista de opções externas.</li>
-                  <li><code>labelKey</code>: chave usada para o texto visível.</li>
-                  <li><code>valueKey</code>: chave usada no array do ngModel.</li>
-                  <li><code>[(ngModel)]</code>: lista de valores selecionados.</li>
-                  <li><code>[placeholder]</code>: texto quando nada está marcado.</li>
-                  <li><code>[showClearButton]</code>: mostra o X para limpar tudo no trigger.</li>
+                  <li><code>[dataSource]</code>: {{ t.pages.multiSelect.apiDataSource }}</li>
+                  <li><code>labelKey</code>: {{ t.pages.multiSelect.apiLabelKey }}</li>
+                  <li><code>valueKey</code>: {{ t.pages.multiSelect.apiValueKey }}</li>
+                  <li><code>[(ngModel)]</code>: {{ t.pages.multiSelect.apiNgModel }}</li>
+                  <li><code>[placeholder]</code>: {{ t.pages.multiSelect.apiPlaceholder }}</li>
+                  <li><code>[showClearButton]</code>: {{ t.pages.multiSelect.apiShowClearButton }}</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-multi-select
@@ -109,11 +99,11 @@
               </div>
 
               <div class="col-xl-6">
-                <h6 class="mb-2">Observações e limites</h6>
+                <h6 class="mb-2">{{ t.pages.multiSelect.notesTitle }}</h6>
                 <ul class="mb-3 ps-3">
-                  <li>Não recrie a lista de opções em getters reativos.</li>
-                  <li>Agende <code>overlay.update()</code> em frame futuro ao mudar a seleção.</li>
-                  <li>Calcule <code>maxHeight</code> pelo viewport, não pela altura atual do painel.</li>
+                  <li>{{ t.pages.multiSelect.noteOne }}</li>
+                  <li>{{ t.pages.multiSelect.noteTwo }}</li>
+                  <li>{{ t.pages.multiSelect.noteThree }}</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>// Bom: opções criadas uma única vez

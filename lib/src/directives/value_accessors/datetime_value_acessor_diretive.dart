@@ -3,18 +3,13 @@ import 'dart:html';
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/angular_forms.dart';
 
-
-
+/// Writes `DateTime` values to `<input type="datetime-local">` elements and
+/// reads them back into AngularDart form controls.
 ///
-///Essa classe permite definir um novo tipo de conversão entre um input text
-/// e um valor de modelo do tipo decimal
-///Como usar um tipo de dados personalizado com ngModel no Angular Dart
-/// The accessor for writing a DateTime value and listening to changes that is used by the
-/// [NgModel], [NgFormControl], and [NgControlName] directives.
-///
-///  ### Example
-///
-///  <input type="date" [(ngModel)]="age">
+/// Example:
+/// ```html
+/// <input type="datetime-local" [(ngModel)]="scheduledAt">
+/// ```
 @Directive(
   selector: 'input[type=datetime-local][ngControl],'
       'input[type=datetime-local][ngFormControl],'
@@ -31,12 +26,12 @@ class DateTimeValueAccessor implements ControlValueAccessor {
 
   @HostListener('change', ['\$event.target.value'])
   @HostListener('input', ['\$event.target.value'])
+  /// Parses the raw `datetime-local` string and reports model changes.
   void handleChange(String value) {
     DateTime? dec;
     try {
       dec = DateTime.tryParse(value);
-    } catch (e) {
-      //  mark feild as invalid
+    } catch (_) {
       return;
     }
     if (dec == null) return;
@@ -45,19 +40,21 @@ class DateTimeValueAccessor implements ControlValueAccessor {
   }
 
   @override
+  /// Writes the current model value to the native input in `yyyy-MM-ddTHH:mm`
+  /// format.
   void writeValue(value) {
     DateTime? dec;
     try {
       dec = value as DateTime?;
-    } catch (e) {
-      // mark feild as invalid
+    } catch (_) {
       return;
     }
-    var r = dec != null ? dec.toIso8601String().substring(0, 16) : '';
-    _element.value = r;
+    final rawValue = dec != null ? dec.toIso8601String().substring(0, 16) : '';
+    _element.value = rawValue;
   }
 
   @override
+  /// Enables or disables the backing input element.
   void onDisabledChanged(bool isDisabled) {
     _element.disabled = isDisabled;
   }
@@ -65,20 +62,21 @@ class DateTimeValueAccessor implements ControlValueAccessor {
   TouchFunction onTouched = () {};
 
   @HostListener('blur')
+  /// Marks the control as touched when the input loses focus.
   void touchHandler() {
     onTouched();
   }
 
-  /// Set the function to be called when the control receives a touch event.
   @override
+  /// Registers the callback used when the control becomes touched.
   void registerOnTouched(TouchFunction fn) {
     onTouched = fn;
   }
 
   ChangeFunction<DateTime?> onChange = (DateTime? _, {String? rawValue}) {};
 
-  /// Set the function to be called when the control receives a change event.
   @override
+  /// Registers the callback used when the control value changes.
   void registerOnChange(ChangeFunction<DateTime?> fn) {
     onChange = fn;
   }

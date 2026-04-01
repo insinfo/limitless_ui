@@ -17,35 +17,34 @@
     <div class="card">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.pages.dateRange.tabOverview" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-3">{{ t.pages.dateRange.constrainedHelp }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">O date range picker atende fluxos de período contínuo para filtros,
-                    sprints, publicações e recortes operacionais.</p>
+                  <h6 class="mb-2">{{ t.pages.dateRange.descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ t.pages.dateRange.descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.pages.dateRange.featuresTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Binding separado para início e fim.</li>
-                    <li>Restrições por intervalo mínimo e máximo.</li>
-                    <li>Placeholder e locale configuráveis.</li>
+                    <li>{{ t.pages.dateRange.featureOne }}</li>
+                    <li>{{ t.pages.dateRange.featureTwo }}</li>
+                    <li>{{ t.pages.dateRange.featureThree }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.pages.dateRange.limitsTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>O componente não aplica regras de calendário de negócio sozinho.</li>
-                    <li>Validações mais específicas continuam no pai.</li>
-                    <li>Fluxos complexos podem exigir presets externos.</li>
+                    <li>{{ t.pages.dateRange.limitOne }}</li>
+                    <li>{{ t.pages.dateRange.limitTwo }}</li>
+                    <li>{{ t.pages.dateRange.limitThree }}</li>
                   </ul>
                 </div>
               </div>
@@ -76,15 +75,14 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.pages.dateRange.tabApi">
           <div class="card-body">
-            <p class="text-muted mb-3">Use o componente quando o fluxo depender de um intervalo com datas inicial e
-              final claramente controladas pelo componente pai.</p>
+            <p class="text-muted mb-3">{{ t.pages.dateRange.apiIntro }}</p>
             <ul class="mb-3 ps-3">
-              <li><code>[inicio]</code> e <code>(inicioChange)</code> controlam a data inicial.</li>
-              <li><code>[fim]</code> e <code>(fimChange)</code> controlam a data final.</li>
-              <li><code>[minDate]</code> e <code>[maxDate]</code> restringem a janela selecionável.</li>
-              <li><code>[placeholder]</code> e <code>locale</code> ajustam a comunicação do campo.</li>
+              <li>{{ t.pages.dateRange.apiOne }}</li>
+              <li>{{ t.pages.dateRange.apiTwo }}</li>
+              <li>{{ t.pages.dateRange.apiThree }}</li>
+              <li>{{ t.pages.dateRange.apiFour }}</li>
             </ul>
 
             <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-date-range-picker

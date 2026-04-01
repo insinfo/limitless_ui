@@ -86,6 +86,10 @@ pages:
     featureAccordionBody: Itens expansíveis com lazy, destroyOnCollapse e headers customizados.
     featureHelpersTitle: Utilitários
     featureHelpersBody: Loading, dialogs, toasts e popovers prontos para uso.
+    featureSweetAlertBody: API unificada para modal, confirmação, prompt, toast e também gatilho declarativo.
+    featureHighlightBody: Bloco leve para snippets de Dart, HTML e CSS na documentação do example.
+    featureInputsFieldBody: Campo de texto com ngModel, floating label, textarea e addons de prefixo ou sufixo.
+    featureFabBody: Speed dial compacto para ações rápidas globais ou inline.
   alerts:
     title: Componentes
     subtitle: Alertas
@@ -176,6 +180,29 @@ pages:
     tabTroubleshooting: Solução de problemas
     apiInputs: Inputs mais usados
     troubleshootingIntro: Erros que já apareceram neste componente e como evitar
+    overviewIntro: A demo de select mostra uso com dataSource estável e com projeção manual de opções, reunindo descrição, recursos, limitações e exemplos visíveis no mesmo fluxo.
+    descriptionTitle: Descrição
+    descriptionBody: O componente resolve seleção simples com overlay, opção projetada e ligação direta ao ngModel.
+    featuresTitle: Recursos
+    featureOne: Fonte externa com dataSource.
+    featureTwo: Projeção manual com li-option.
+    featureThree: Placeholder, itens desabilitados e binding simples.
+    limitsTitle: Limitações
+    limitOne: Evite recriar o dataSource em getters reativos.
+    limitTwo: O overlay depende de opções consistentes para navegação e altura.
+    limitThree: Para lógica pesada de filtro, mantenha a orquestração no componente pai.
+    apiTitle: Como utilizar
+    apiIntro: li-select aceita tanto [dataSource] quanto projeção com li-option. Para evitar travamentos e ciclos de renderização desnecessários, prefira fornecer listas estáveis no componente pai, em vez de getters que recriam o array a cada mudança de estado.
+    apiDataSource: lista de opções externas.
+    apiLabelKey: chave usada para o texto visível.
+    apiValueKey: chave usada como valor do ngModel.
+    apiDisabledKey: chave booleana para desabilitar itens.
+    apiNgModel: valor selecionado.
+    apiPlaceholder: texto exibido quando vazio.
+    notesTitle: Observações e limites
+    noteOne: Não recrie o dataSource em getters.
+    noteTwo: O overlay não deve calcular altura com base no próprio painel renderizado.
+    noteThree: Eventos globais de teclado devem tratar apenas navegação e escape.
     optionDraft: Rascunho
     optionReview: Em revisão
     optionApproved: Aprovado
@@ -196,6 +223,31 @@ pages:
     tabTroubleshooting: Solução de problemas
     apiInputs: Inputs mais usados
     troubleshootingIntro: Cuidados importantes para evitar regressões
+    overviewIntro: A demo de multiseleção mostra seleção múltipla com dataSource estável, projeção manual e documentação organizada entre visão geral e API.
+    descriptionTitle: Descrição
+    descriptionBody: O componente mantém uma coleção de valores selecionados e projeta o resultado diretamente no trigger.
+    featuresTitle: Recursos
+    featureOne: Seleção múltipla com badges e placeholder.
+    featureTwo: Botão de limpar seleção ao lado da seta quando há valores marcados.
+    featureThree: Integração com dataSource ou li-multi-option.
+    featureFour: Binding direto com listas no ngModel.
+    limitsTitle: Limitações
+    limitOne: Evite recriar listas de opções em getters reativos.
+    limitTwo: O overlay precisa de atualização consistente ao mudar a seleção.
+    limitThree: Para coleções muito grandes, mantenha paginação ou busca no pai.
+    apiTitle: Como utilizar
+    apiIntroOne: li-multi-select segue a mesma estratégia do li-select, mas mantém múltiplos valores selecionados e renderiza badges no trigger.
+    apiIntroTwo: O padrão recomendado para o demo e para produção é manter dataSource estável e atualizar apenas a coleção de valores selecionados.
+    apiDataSource: lista de opções externas.
+    apiLabelKey: chave usada para o texto visível.
+    apiValueKey: chave usada no array do ngModel.
+    apiNgModel: lista de valores selecionados.
+    apiPlaceholder: texto quando nada está marcado.
+    apiShowClearButton: mostra o X para limpar tudo no trigger.
+    notesTitle: Observações e limites
+    noteOne: Não recrie a lista de opções em getters reativos.
+    noteTwo: Agende overlay.update() em frame futuro ao mudar a seleção.
+    noteThree: Calcule maxHeight pelo viewport, não pela altura atual do painel.
     optionEmail: E-mail
     optionPush: Push
     optionSms: SMS
@@ -211,17 +263,53 @@ pages:
     budget: Orçamento
     minorUnits: Minor units
     help: O valor ligado ao ngModel sempre sai como inteiro em centavos.
+    tabOverview: Visão geral
+    tabApi: API
+    descriptionTitle: Descrição
+    descriptionBody: O campo monetário resolve formatação visual e conversão para unidades menores sem lógica adicional no template.
+    featuresTitle: Recursos
+    featureOne: Suporte a locale e currencyCode.
+    featureTwo: Conversão automática para minor units.
+    featureThree: Integração com formulários AngularDart.
+    limitsTitle: Limitações
+    limitOne: O campo não substitui regras fiscais de negócio.
+    limitTwo: Máscaras muito específicas exigem extensão adicional.
+    limitThree: O valor persistido continua sendo numérico.
+    summaryHelp: O mesmo componente agora aceita BRL, USD e EUR trocando apenas currencyCode e locale.
+    apiIntro: Use o componente para exibir o valor formatado ao usuário e manter no estado um número consistente em unidades menores.
+    apiOne: "[(ngModel)] trabalha com o valor em minor units."
+    apiTwo: currencyCode e locale controlam símbolo e separadores.
+    apiThree: prefix continua disponível para sobrescrever o símbolo automaticamente resolvido.
+    apiFour: "[required] integra validação ao formulário."
+    apiFive: inputClass permite aplicar classes utilitárias no campo.
   dateRange:
     title: Componentes
     subtitle: Intervalo de datas
     breadcrumb: Seleção de período
     cardTitle: Intervalos livres e restritos
+    tabOverview: Visão geral
+    tabApi: API
+    descriptionTitle: Descrição
+    descriptionBody: O date range picker atende fluxos de período contínuo para filtros, sprints, publicações e recortes operacionais.
+    featuresTitle: Recursos
+    featureOne: Binding separado para início e fim.
+    featureTwo: Restrições por intervalo mínimo e máximo.
+    featureThree: Placeholder e locale configuráveis.
+    limitsTitle: Limitações
+    limitOne: O componente não aplica regras de calendário de negócio sozinho.
+    limitTwo: Validações mais específicas continuam no pai.
+    limitThree: Fluxos complexos podem exigir presets externos.
     sprintPlaceholder: Selecione o periodo da sprint
     publicationPlaceholder: Janela de publicação
     partial: Período parcial ou não definido
     unfinished: Janela ainda não concluída
     constrainedHelp: O segundo exemplo prende a seleção com minDate e maxDate.
     between: até
+    apiIntro: Use o componente quando o fluxo depender de um intervalo com datas inicial e final claramente controladas pelo componente pai.
+    apiOne: "[inicio] e (inicioChange) controlam a data inicial."
+    apiTwo: "[fim] e (fimChange) controlam a data final."
+    apiThree: "[minDate] e [maxDate] restringem a janela selecionável."
+    apiFour: "[placeholder] e locale ajustam a comunicação do campo."
   timePicker:
     title: Componentes
     subtitle: Time Picker
@@ -235,11 +323,15 @@ pages:
     featuresTitle: Recursos
     featureOne: Binding direto com ngModel em Duration?.
     featureTwo: Seleção por relógio com alternância entre hora e minuto.
-    featureThree: Toggle AM/PM integrado no próprio painel.
+    featureThree: Suporte aos formatos 12h com AM/PM e 24 horas.
     limitsTitle: Limitações
-    limitOne: O componente trabalha no formato de 12 horas com AM e PM.
+    limitOne: O formato exibido depende de use24Hour e do locale configurado.
     limitTwo: Não aplica regras de janela de negócio por conta própria.
     limitThree: O valor retornado considera apenas hora e minuto.
+    twentyFourHourTitle: Time picker 24 horas
+    twentyFourHourPlaceholder: Selecione o horário
+    twentyFourHourCurrentLabel: Horário atual
+    twentyFourHourHelp: Use use24Hour para exibir e editar o valor sem AM/PM.
     defaultTitle: Time picker padrão
     englishTitle: Time picker em inglês
     disabledTitle: Time picker desabilitado
