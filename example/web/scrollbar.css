@@ -1,0 +1,86 @@
+:root {
+  --app-scrollbar-size: 0.5rem;
+  --app-scrollbar-track: var(--gray-300);
+  --app-scrollbar-thumb: rgba(31, 41, 55, 0.28);
+  --app-scrollbar-thumb-hover: rgba(31, 41, 55, 0.48);
+  --app-scrollbar-sidebar-thumb: rgba(255, 255, 255, 0.28);
+  --app-scrollbar-sidebar-thumb-hover: rgba(255, 255, 255, 0.42);
+}
+
+html,
+body,
+.custom-scrollbars,
+.content-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-scrollbar-thumb) var(--app-scrollbar-track);
+}
+
+.sidebar-content,
+.nav-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-scrollbar-sidebar-thumb) transparent;
+}
+
+.nav-tabs-responsive,
+.scrollbar-hidden {
+  scrollbar-width: none;
+}
+
+.nav-tabs-responsive::-webkit-scrollbar,
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  .custom-scrollbars::-webkit-scrollbar,
+  .content-wrapper::-webkit-scrollbar {
+    width: var(--app-scrollbar-size);
+    height: var(--app-scrollbar-size);
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track,
+  .custom-scrollbars::-webkit-scrollbar-track,
+  .content-wrapper::-webkit-scrollbar-track {
+    background: var(--app-scrollbar-track);
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb,
+  .custom-scrollbars::-webkit-scrollbar-thumb,
+  .content-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--app-scrollbar-thumb);
+    border-radius: 999px;
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover,
+  .custom-scrollbars::-webkit-scrollbar-thumb:hover,
+  .content-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: var(--app-scrollbar-thumb-hover);
+  }
+
+  .sidebar-content::-webkit-scrollbar,
+  .nav-sidebar::-webkit-scrollbar {
+    width: 0.375rem;
+    height: 0.375rem;
+  }
+
+  .sidebar-content::-webkit-scrollbar-track,
+  .nav-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-content::-webkit-scrollbar-thumb,
+  .nav-sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--app-scrollbar-sidebar-thumb);
+    border-radius: 999px;
+  }
+
+  .sidebar-content::-webkit-scrollbar-thumb:hover,
+  .nav-sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--app-scrollbar-sidebar-thumb-hover);
+  }
+}

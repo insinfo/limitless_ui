@@ -1,88 +1,25 @@
-.dropdown-toggle::after {
+.dropdown-toggle::after,
+.dropup .dropdown-toggle::after,
+.dropend .dropdown-toggle::after,
+.dropstart .dropdown-toggle::before,
+.nav-item-submenu > .nav-link::after {
   font-family: var(--icon-font-family), "Phosphor" !important;
+}
+
+.dropdown-toggle::after {
   content: "\e9fe";
 }
 
-
-
-/* Scrollbar moderna */
-@media (min-width: 768px) {
-  .custom-scrollbars {
-    scrollbar-width: thin;
-    scrollbar-color: var(--gray-600) var(--gray-300);
-  }
-
-  /* fallback Blink/WebKit */
-  .custom-scrollbars::-webkit-scrollbar {
-    width: 0.5rem;
-    height: 0.5rem;
-  }
-
-  .custom-scrollbars::-webkit-scrollbar-track {
-    background: var(--gray-300);
-  }
-
-  .custom-scrollbars::-webkit-scrollbar-thumb {
-    background-color: var(--gray-600);
-    border-radius: 0.5rem;
-  }
+.dropup .dropdown-toggle::after {
+  content: "\ea01";
 }
 
-/* Esconder scrollbar */
-.nav-tabs-responsive,
-.scrollbar-hidden {
-  scrollbar-width: none;
-  /* Firefox e navegadores modernos */
+.dropend .dropdown-toggle::after,
+.nav-item-submenu > .nav-link::after {
+  content: "\ea00";
 }
 
-.nav-tabs-responsive::-webkit-scrollbar,
-.scrollbar-hidden::-webkit-scrollbar {
-  display: none;
-  /* Chromium / Safari */
+.dropstart .dropdown-toggle::before,
+[dir="rtl"] .nav-item-submenu > .nav-link::after {
+  content: "\e9ff";
 }
-
-/* fallback legado para Blink/WebKit */
-// @supports selector(::-webkit-scrollbar) {
-//   .custom-scrollbars::-webkit-scrollbar {
-//     width: 0.5rem;
-//     height: 0.5rem;
-//   }
-
-//   .custom-scrollbars::-webkit-scrollbar-track {
-//     background: var(--gray-300);
-//   }
-
-//   .custom-scrollbars::-webkit-scrollbar-thumb {
-//     background: var(--gray-600);
-//     border-radius: 999px;
-//     border: 2px solid var(--gray-300);
-//   }
-
-//   .custom-scrollbars::-webkit-scrollbar-thumb:hover {
-//     background: var(--gray-700);
-//   }
-// }
-
-// @supports selector(::-webkit-scrollbar) {
-
-//   .sidebar-content::-webkit-scrollbar,
-//   .nav-sidebar::-webkit-scrollbar {
-//     width: 0.375rem;
-//   }
-
-//   .sidebar-content::-webkit-scrollbar-track,
-//   .nav-sidebar::-webkit-scrollbar-track {
-//     background: transparent;
-//   }
-
-//   .sidebar-content::-webkit-scrollbar-thumb,
-//   .nav-sidebar::-webkit-scrollbar-thumb {
-//     background: rgba(255, 255, 255, 0.25);
-//     border-radius: 999px;
-//   }
-
-//   .sidebar-content::-webkit-scrollbar-thumb:hover,
-//   .nav-sidebar::-webkit-scrollbar-thumb:hover {
-//     background: rgba(255, 255, 255, 0.4);
-//   }
-// }
