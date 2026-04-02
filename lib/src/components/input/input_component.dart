@@ -434,7 +434,7 @@ class LiInputComponent
 
   @HostListener('focus')
   void handleHostFocus() {
-    _focusInput();
+    Future<void>.microtask(_focusInput);
   }
 
   void handlePasswordToggleMouseDown(html.MouseEvent event) {

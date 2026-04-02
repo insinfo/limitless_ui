@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:ngdart/angular.dart';
+import 'package:ngforms/ngforms.dart';
 import 'package:ngrouter/ngrouter.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 
@@ -37,13 +38,44 @@ class DemoNavSection {
   final List<DemoNavItem> items;
 }
 
+class DemoNavbarSearchEntry {
+  const DemoNavbarSearchEntry({
+    required this.label,
+    required this.url,
+    required this.iconClass,
+    required this.sectionLabel,
+    this.aliases = const <String>[],
+  });
+
+  final String label;
+  final String url;
+  final String iconClass;
+  final String sectionLabel;
+  final List<String> aliases;
+
+  String get searchText {
+    final routeSegment = url.replaceAll('/', ' ').trim();
+    return <String>[
+      label,
+      sectionLabel,
+      routeSegment,
+      ...aliases,
+    ].where((value) => value.trim().isNotEmpty).join(' ');
+  }
+
+  @override
+  String toString() => searchText;
+}
+
 @Component(
   selector: 'my-app',
   templateUrl: 'app_component.html',
   styleUrls: ['app_component.css'],
   directives: [
     coreDirectives,
+    formDirectives,
     LiDropdownMenuComponent,
+    LiTypeaheadComponent,
     RouterLink,
     RouterLinkActive,
     RouterOutlet,
@@ -57,6 +89,7 @@ class DemoNavSection {
 )
 class AppComponent implements OnDestroy {
   AppComponent(this.i18n, this.theme, this._ngZone) {
+    _rebuildViewModel();
     expandedSectionId = _resolveExpandedSectionId();
     _resizeSubscription = window.onResize.listen((_) {
       _ngZone.run(_syncViewportState);
@@ -73,6 +106,9 @@ class AppComponent implements OnDestroy {
   Timer? _sidebarHoverInTimer;
   Timer? _sidebarHoverOutTimer;
 
+    @ViewChild('sidebarSearchInput')
+    InputElement? sidebarSearchInput;
+
   Messages get t => i18n.t;
 
   bool isMobileSidebarOpen = false;
@@ -80,17 +116,49 @@ class AppComponent implements OnDestroy {
   bool isSidebarResized = false;
   bool isSidebarUnfolded = false;
   String? expandedSectionId;
+    String sidebarFilter = '';
+
+    List<LiDropdownMenuOption> languageOptions = const <LiDropdownMenuOption>[];
+    List<LiDropdownMenuOption> themeOptions = const <LiDropdownMenuOption>[];
+    List<DemoNavItem> primaryItems = const <DemoNavItem>[];
+    List<DemoNavSection> navSections = const <DemoNavSection>[];
+    List<DemoNavbarSearchEntry> navbarSearchEntries =
+      const <DemoNavbarSearchEntry>[];
+    List<DemoNavItem> filteredPrimaryItems = const <DemoNavItem>[];
+    List<DemoNavSection> filteredNavSections = const <DemoNavSection>[];
+    Set<String> _searchExpandedSectionIds = <String>{};
+    Object? navbarSearchSelection;
 
   bool get _isDesktopViewport => (window.innerWidth ?? 0) >= 992;
 
-  List<LiDropdownMenuOption> get languageOptions => <LiDropdownMenuOption>[
+    bool get hasSidebarFilter => sidebarFilter.trim().isNotEmpty;
+
+    bool get hasVisibleNavigation =>
+      filteredPrimaryItems.isNotEmpty || filteredNavSections.isNotEmpty;
+
+    bool get showMainHeader => hasVisibleNavigation;
+
+    String get sidebarSearchPlaceholder =>
+      i18n.isPortuguese ? 'Buscar no menu...' : 'Search menu...';
+
+    String get clearSidebarFilterLabel =>
+      i18n.isPortuguese ? 'Limpar busca do menu' : 'Clear menu search';
+
+    String get sidebarSearchEmptyState =>
+      i18n.isPortuguese ? 'Nenhum item encontrado.' : 'No menu items found.';
+
+    String get navbarSearchPlaceholder => i18n.isPortuguese
+      ? 'Buscar componentes, páginas ou palavras-chave'
+      : 'Search components, pages, or keywords';
+
+    List<LiDropdownMenuOption> _buildLanguageOptions() => <LiDropdownMenuOption>[
         LiDropdownMenuOption(
             value: 'pt', label: 'PT', description: t.app.portuguese),
         LiDropdownMenuOption(
             value: 'en', label: 'EN', description: t.app.english),
       ];
 
-  List<LiDropdownMenuOption> get themeOptions => <LiDropdownMenuOption>[
+    List<LiDropdownMenuOption> _buildThemeOptions() => <LiDropdownMenuOption>[
         LiDropdownMenuOption(
           value: 'light',
           label: t.app.light,
@@ -124,7 +192,7 @@ class AppComponent implements OnDestroy {
   String get checkboxRadioLabel =>
       i18n.isPortuguese ? 'Checkbox e radios' : 'Checkboxes and radios';
 
-  List<DemoNavItem> get primaryItems => <DemoNavItem>[
+  List<DemoNavItem> _buildPrimaryItems() => <DemoNavItem>[
         DemoNavItem(
           label: t.nav.overview,
           iconClass: 'ph-house',
@@ -132,7 +200,7 @@ class AppComponent implements OnDestroy {
         ),
       ];
 
-  List<DemoNavSection> get navSections => <DemoNavSection>[
+  List<DemoNavSection> _buildNavSections() => <DemoNavSection>[
         DemoNavSection(
           id: 'feedback',
           label: feedbackLabel,
@@ -345,6 +413,221 @@ class AppComponent implements OnDestroy {
         ),
       ];
 
+  static const Map<String, List<String>> _navbarSearchAliasesByUrl =
+      <String, List<String>>{
+    '/overview': <String>['inicio', 'home', 'visao geral', 'overview'],
+    '/alerts': <String>['alerta', 'alertas', 'feedback'],
+    '/progress': <String>['progresso', 'progress bar', 'loading'],
+    '/selection-controls': <String>['checkbox', 'radio', 'toggle', 'selecao'],
+    '/select': <String>['combobox', 'dropdown select', 'selecionar'],
+    '/multi-select': <String>['multiselect', 'seleção multipla', 'lista'],
+    '/currency': <String>['moeda', 'monetaria', 'money', 'monetary'],
+    '/inputs': <String>['input', 'campo', 'text field', 'formulario'],
+    '/file-upload': <String>['upload', 'arquivo', 'anexo'],
+    '/color-picker': <String>['cor', 'palette', 'picker'],
+    '/date-picker': <String>['data', 'calendario', 'date'],
+    '/time-picker': <String>['hora', 'relogio', 'time'],
+    '/date-range': <String>['periodo', 'intervalo', 'range'],
+    '/datatable': <String>['tabela', 'grid', 'table'],
+    '/datatable-select': <String>['tabela seletiva', 'grid select'],
+    '/treeview': <String>['arvore', 'tree', 'hierarquia'],
+    '/sweet-alert': <String>['sweetalert', 'dialog', 'popup'],
+    '/highlight': <String>['codigo', 'syntax', 'highlight'],
+    '/typeahead': <String>['autocomplete', 'busca', 'suggestions'],
+  };
+
+  List<DemoNavbarSearchEntry> _buildNavbarSearchEntries() {
+    final entries = <DemoNavbarSearchEntry>[
+      for (final item in primaryItems)
+        _createNavbarSearchEntry(item, sectionLabel: mainLabel),
+      for (final section in navSections)
+        for (final item in section.items)
+          _createNavbarSearchEntry(item, sectionLabel: section.label),
+    ];
+
+    entries.sort((left, right) => left.label.compareTo(right.label));
+    return entries;
+  }
+
+  DemoNavbarSearchEntry _createNavbarSearchEntry(
+    DemoNavItem item, {
+    required String sectionLabel,
+  }) {
+    return DemoNavbarSearchEntry(
+      label: item.label,
+      url: item.url,
+      iconClass: item.iconClass,
+      sectionLabel: sectionLabel,
+      aliases: _navbarSearchAliasesByUrl[item.url] ?? const <String>[],
+    );
+  }
+
+  void _rebuildViewModel() {
+    languageOptions = List<LiDropdownMenuOption>.unmodifiable(
+      _buildLanguageOptions(),
+    );
+    themeOptions = List<LiDropdownMenuOption>.unmodifiable(
+      _buildThemeOptions(),
+    );
+    primaryItems = List<DemoNavItem>.unmodifiable(_buildPrimaryItems());
+    navSections = List<DemoNavSection>.unmodifiable(_buildNavSections());
+    navbarSearchEntries = List<DemoNavbarSearchEntry>.unmodifiable(
+      _buildNavbarSearchEntries(),
+    );
+    _applySidebarFilter();
+  }
+
+  String navbarSearchInputFormatter(dynamic item) {
+    if (item is! DemoNavbarSearchEntry) {
+      return item?.toString() ?? '';
+    }
+
+    return item.label;
+  }
+
+  String navbarSearchResultFormatter(dynamic item) {
+    if (item is! DemoNavbarSearchEntry) {
+      return item?.toString() ?? '';
+    }
+
+    return '${item.label} · ${item.sectionLabel}';
+  }
+
+  void onNavbarSearchSelect(DemoNavbarSearchEntry entry) {
+    expandedSectionId = _resolveExpandedSectionIdForUrl(entry.url);
+    navbarSearchSelection = null;
+    closeMobileSidebar();
+    closeMobileSearch();
+
+    final targetHash = entry.url.startsWith('/') ? entry.url : '/${entry.url}';
+    window.location.hash = targetHash;
+  }
+
+  void onSidebarFilterInput(String value) {
+    sidebarFilter = value;
+    _applySidebarFilter();
+
+    if (hasSidebarFilter && _isDesktopViewport && isSidebarResized) {
+      isSidebarUnfolded = true;
+    }
+  }
+
+  void clearSidebarFilter() {
+    if (!hasSidebarFilter) {
+      return;
+    }
+
+    sidebarFilter = '';
+    _applySidebarFilter();
+
+    Future<void>.microtask(() {
+      sidebarSearchInput
+        ?..focus()
+        ..select();
+    });
+  }
+
+  void openSidebarSearch() {
+    if (_isDesktopViewport && isSidebarResized) {
+      isSidebarUnfolded = true;
+    }
+
+    Future<void>.microtask(() {
+      sidebarSearchInput
+        ?..focus()
+        ..select();
+    });
+  }
+
+  void _applySidebarFilter() {
+    final normalizedQuery = _normalizeSidebarSearch(sidebarFilter);
+
+    if (normalizedQuery.isEmpty) {
+      filteredPrimaryItems = primaryItems;
+      filteredNavSections = navSections;
+      _searchExpandedSectionIds = <String>{};
+      return;
+    }
+
+    filteredPrimaryItems = List<DemoNavItem>.unmodifiable(
+      primaryItems.where((item) => _matchesSidebarQuery(item.label, normalizedQuery)),
+    );
+
+    final filteredSections = <DemoNavSection>[];
+    final expandedSectionIds = <String>{};
+
+    for (final section in navSections) {
+      final sectionMatches =
+          _matchesSidebarQuery(section.label, normalizedQuery);
+      final visibleItems = sectionMatches
+          ? section.items
+          : List<DemoNavItem>.unmodifiable(
+              section.items.where(
+                (item) => _matchesSidebarQuery(item.label, normalizedQuery),
+              ),
+            );
+
+      if (visibleItems.isEmpty) {
+        continue;
+      }
+
+      filteredSections.add(
+        identical(visibleItems, section.items)
+            ? section
+            : DemoNavSection(
+                id: section.id,
+                label: section.label,
+                iconClass: section.iconClass,
+                items: visibleItems,
+              ),
+      );
+      expandedSectionIds.add(section.id);
+    }
+
+    filteredNavSections = List<DemoNavSection>.unmodifiable(filteredSections);
+    _searchExpandedSectionIds = expandedSectionIds;
+  }
+
+  bool _matchesSidebarQuery(String value, String normalizedQuery) {
+    return _normalizeSidebarSearch(value).contains(normalizedQuery);
+  }
+
+  String _normalizeSidebarSearch(String value) {
+    var normalized = value.trim().toLowerCase();
+
+    const replacements = <String, String>{
+      'á': 'a',
+      'à': 'a',
+      'ã': 'a',
+      'â': 'a',
+      'ä': 'a',
+      'é': 'e',
+      'è': 'e',
+      'ê': 'e',
+      'ë': 'e',
+      'í': 'i',
+      'ì': 'i',
+      'î': 'i',
+      'ï': 'i',
+      'ó': 'o',
+      'ò': 'o',
+      'õ': 'o',
+      'ô': 'o',
+      'ö': 'o',
+      'ú': 'u',
+      'ù': 'u',
+      'û': 'u',
+      'ü': 'u',
+      'ç': 'c',
+    };
+
+    replacements.forEach((source, target) {
+      normalized = normalized.replaceAll(source, target);
+    });
+
+    return normalized;
+  }
+
   void toggleMobileSidebar() {
     isMobileSidebarOpen = !isMobileSidebarOpen;
     if (isMobileSidebarOpen) {
@@ -408,10 +691,13 @@ class AppComponent implements OnDestroy {
     });
   }
 
-  bool isSectionExpanded(String sectionId) => expandedSectionId == sectionId;
-
   void toggleSection(Event event, String sectionId) {
     event.preventDefault();
+
+    if (hasSidebarFilter) {
+      return;
+    }
+
     expandedSectionId = expandedSectionId == sectionId ? null : sectionId;
   }
 
@@ -427,10 +713,14 @@ class AppComponent implements OnDestroy {
     closeMobileSearch();
     if (value == 'en') {
       i18n.useEnglish();
-      return;
+    } else {
+      i18n.usePortuguese();
     }
 
-    i18n.usePortuguese();
+    _rebuildViewModel();
+    if (!hasSidebarFilter) {
+      expandedSectionId = _resolveExpandedSectionId();
+    }
   }
 
   void onThemeChange(String value) {
@@ -446,6 +736,26 @@ class AppComponent implements OnDestroy {
     }
 
     theme.useLight();
+  }
+
+  bool isSectionExpanded(String sectionId) {
+    if (hasSidebarFilter) {
+      return _searchExpandedSectionIds.contains(sectionId);
+    }
+
+    return expandedSectionId == sectionId;
+  }
+
+  String? _resolveExpandedSectionIdForUrl(String url) {
+    for (final section in navSections) {
+      for (final item in section.items) {
+        if (item.url == url) {
+          return section.id;
+        }
+      }
+    }
+
+    return null;
   }
 
   String? _resolveExpandedSectionId() {

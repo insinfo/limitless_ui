@@ -10,12 +10,8 @@ class LiTypeaheadHighlightPart {
 @Component(
   selector: 'li-typeahead-highlight',
   changeDetection: ChangeDetectionStrategy.onPush,
-  template: '''
-    <ng-container *ngFor="let part of parts">
-      <span *ngIf="part.highlighted" [class]="highlightClass">{{ part.text }}</span>
-      <ng-container *ngIf="!part.highlighted">{{ part.text }}</ng-container>
-    </ng-container>
-  ''',
+  template:
+      '<ng-container *ngFor="let part of parts"><span *ngIf="part.highlighted" [class]="highlightClass">{{ part.text }}</span><ng-container *ngIf="!part.highlighted">{{ part.text }}</ng-container></ng-container>',
   directives: [coreDirectives],
 )
 class LiTypeaheadHighlightComponent implements AfterChanges {

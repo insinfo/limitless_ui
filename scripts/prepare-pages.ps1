@@ -2,6 +2,7 @@ param(
     [string]$ExampleBuildDir = "example/build",
     [string]$DocsDir = "site_ngdart",
     [string]$OutputDir = "dist",
+    [string]$PagesBasePath = "/",
     [string]$DocsMountPath = "/site_ngdart/"
 )
 
@@ -16,6 +17,35 @@ function Ensure-Directory([string]$Path) {
 function Copy-DirectoryContents([string]$Source, [string]$Destination) {
     Ensure-Directory $Destination
     Copy-Item -Path (Join-Path $Source "*") -Destination $Destination -Recurse -Force
+}
+
+function Normalize-MountPath([string]$Path) {
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return "/"
+    }
+
+    $normalized = $Path.Replace('\\', '/').Trim()
+
+    if (-not $normalized.StartsWith('/')) {
+        $normalized = "/$normalized"
+    }
+
+    if (-not $normalized.EndsWith('/')) {
+        $normalized = "$normalized/"
+    }
+
+    return $normalized
+}
+
+function Join-MountPath([string]$BasePath, [string]$ChildPath) {
+    $normalizedBasePath = Normalize-MountPath $BasePath
+    $normalizedChildPath = Normalize-MountPath $ChildPath
+
+    if ($normalizedBasePath -eq "/") {
+        return $normalizedChildPath
+    }
+
+    return "/$($normalizedBasePath.Trim('/'))/$($normalizedChildPath.Trim('/'))/"
 }
 
 function Rewrite-DocsPaths([string]$Root, [string]$MountPath) {
@@ -60,6 +90,9 @@ function Add-PrettyUrlCopies([string]$Root) {
     }
 }
 
+$pagesBasePath = Normalize-MountPath $PagesBasePath
+$docsMountPath = Join-MountPath $pagesBasePath $DocsMountPath
+
 if (-not (Test-Path -LiteralPath $ExampleBuildDir)) {
     throw "Example build directory not found: $ExampleBuildDir"
 }
@@ -77,7 +110,7 @@ Copy-DirectoryContents $ExampleBuildDir $OutputDir
 
 $docsOutput = Join-Path $OutputDir "site_ngdart"
 Copy-DirectoryContents $DocsDir $docsOutput
-Rewrite-DocsPaths -Root $docsOutput -MountPath $DocsMountPath
+Rewrite-DocsPaths -Root $docsOutput -MountPath $docsMountPath
 Add-PrettyUrlCopies -Root $docsOutput
 
 if (Test-Path -LiteralPath (Join-Path $OutputDir ".dart_tool")) {

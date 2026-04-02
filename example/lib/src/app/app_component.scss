@@ -38,12 +38,98 @@ my-app {
   width: 100%;
 }
 
+.demo-navbar-typeahead {
+  position: relative;
+}
+
+.demo-navbar-typeahead-icon {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.55);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.demo-navbar-typeahead .li-typeahead > .form-control {
+  min-height: 2.75rem;
+  padding-left: 2.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.96);
+  border-radius: 999px;
+}
+
+.demo-navbar-typeahead .li-typeahead > .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.demo-navbar-typeahead .li-typeahead > .form-control:focus {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-shadow: none;
+}
+
+.demo-navbar-typeahead-popup {
+  margin-top: 0.5rem;
+}
+
 .demo-sidebar-backdrop {
   position: fixed;
   inset: 0;
   z-index: 98;
   border: 0;
   background: rgba(15, 23, 42, 0.38);
+}
+
+.demo-sidebar-search-section {
+  padding-top: 0;
+}
+
+.demo-sidebar-search-body {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-sidebar-search-input {
+  flex: 1 1 auto;
+}
+
+.demo-sidebar-search-input .input-group-text,
+.demo-sidebar-search-input .form-control {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.demo-sidebar-search-input .input-group-text {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.demo-sidebar-search-input .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.demo-sidebar-search-input .form-control:focus {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-shadow: none;
+}
+
+.demo-sidebar-empty-state {
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: default;
+}
+
+.demo-sidebar-empty-state i {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 @media (max-width: 991.98px) {
@@ -83,6 +169,10 @@ my-app {
 
   .demo-navbar-badge-text {
     display: none;
+  }
+
+  .demo-sidebar-search-body {
+    gap: 0.75rem;
   }
 }
 

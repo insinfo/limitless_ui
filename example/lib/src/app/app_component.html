@@ -59,11 +59,25 @@
     <div class="navbar-collapse justify-content-center flex-lg-1 order-2 order-lg-1 collapse demo-navbar-search"
          id="navbar_search" [class.show]="isMobileSearchOpen">
       <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
-        <div class="form-control-feedback form-control-feedback-start flex-grow-1" [attr.data-color-theme]="'dark'">
-          <input type="text" class="form-control bg-transparent rounded-pill" [placeholder]="t.app.searchPlaceholder" readonly>
-          <div class="form-control-feedback-icon">
+        <div class="demo-navbar-typeahead" [attr.data-color-theme]="'dark'">
+          <span class="demo-navbar-typeahead-icon" aria-hidden="true">
             <i class="ph-magnifying-glass"></i>
-          </div>
+          </span>
+          <li-typeahead [dataSource]="navbarSearchEntries"
+                        [openOnFocus]="false"
+                        [minLength]="1"
+                        [maxResults]="10"
+                        [debounceMs]="80"
+                        [showHint]="false"
+                        [focusFirst]="true"
+                        [selectOnExact]="true"
+                        [placeholder]="navbarSearchPlaceholder"
+                        [inputFormatter]="navbarSearchInputFormatter"
+                        [resultFormatter]="navbarSearchResultFormatter"
+                        [popupClass]="'demo-navbar-typeahead-popup'"
+                        [(ngModel)]="navbarSearchSelection"
+                        (selectItem)="onNavbarSearchSelect($event.item)">
+          </li-typeahead>
         </div>
       </div>
     </div>
@@ -103,13 +117,47 @@
         </div>
       </div>
 
+      <div class="sidebar-section demo-sidebar-search-section">
+        <div class="sidebar-section-body demo-sidebar-search-body">
+          <div class="input-group input-group-sm demo-sidebar-search-input sidebar-resize-hide">
+            <span class="input-group-text">
+              <i class="ph-magnifying-glass"></i>
+            </span>
+            <input #sidebarSearchInput
+                   id="sidebar-search"
+                   type="search"
+                   class="form-control"
+                   autocomplete="off"
+                   [value]="sidebarFilter"
+                   [placeholder]="sidebarSearchPlaceholder"
+                   [attr.aria-label]="sidebarSearchPlaceholder"
+                   (input)="onSidebarFilterInput(sidebarSearchInput.value ?? '')">
+          </div>
+
+          <button *ngIf="hasSidebarFilter"
+                  type="button"
+                  class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-resize-hide"
+                  (click)="clearSidebarFilter()"
+                  [attr.aria-label]="clearSidebarFilterLabel">
+            <i class="ph-x"></i>
+          </button>
+
+          <button type="button"
+                  class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-resize-show"
+                  (click)="openSidebarSearch()"
+                  [attr.aria-label]="sidebarSearchPlaceholder">
+            <i class="ph-magnifying-glass"></i>
+          </button>
+        </div>
+      </div>
+
       <div class="sidebar-section">
         <ul class="nav nav-sidebar" [attr.data-nav-type]="'accordion'">
-          <li class="nav-item-header pt-0">
+          <li *ngIf="showMainHeader" class="nav-item-header pt-0">
             <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">{{ mainLabel }}</div>
             <i class="ph-dots-three sidebar-resize-show"></i>
           </li>
-          <li *ngFor="let item of primaryItems" class="nav-item">
+          <li *ngFor="let item of filteredPrimaryItems" class="nav-item">
             <a [routerLink]="item.url"
                (click)="onNavItemActivate()"
                routerLinkActive="active"
@@ -119,7 +167,7 @@
             </a>
           </li>
 
-          <li *ngFor="let section of navSections" class="nav-item nav-item-submenu"
+          <li *ngFor="let section of filteredNavSections" class="nav-item nav-item-submenu"
               [class.nav-item-open]="isSectionExpanded(section.id)">
             <a href="#"
                class="nav-link"
@@ -139,6 +187,13 @@
                 </a>
               </li>
             </ul>
+          </li>
+
+          <li *ngIf="!hasVisibleNavigation" class="nav-item">
+            <div class="nav-link disabled demo-sidebar-empty-state">
+              <i class="ph-magnifying-glass"></i>
+              <span>{{ sidebarSearchEmptyState }}</span>
+            </div>
           </li>
         </ul>
       </div>

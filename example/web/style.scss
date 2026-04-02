@@ -40,3 +40,49 @@
   display: none;
   /* Chromium / Safari */
 }
+
+/* fallback legado para Blink/WebKit */
+// @supports selector(::-webkit-scrollbar) {
+//   .custom-scrollbars::-webkit-scrollbar {
+//     width: 0.5rem;
+//     height: 0.5rem;
+//   }
+
+//   .custom-scrollbars::-webkit-scrollbar-track {
+//     background: var(--gray-300);
+//   }
+
+//   .custom-scrollbars::-webkit-scrollbar-thumb {
+//     background: var(--gray-600);
+//     border-radius: 999px;
+//     border: 2px solid var(--gray-300);
+//   }
+
+//   .custom-scrollbars::-webkit-scrollbar-thumb:hover {
+//     background: var(--gray-700);
+//   }
+// }
+
+// @supports selector(::-webkit-scrollbar) {
+
+//   .sidebar-content::-webkit-scrollbar,
+//   .nav-sidebar::-webkit-scrollbar {
+//     width: 0.375rem;
+//   }
+
+//   .sidebar-content::-webkit-scrollbar-track,
+//   .nav-sidebar::-webkit-scrollbar-track {
+//     background: transparent;
+//   }
+
+//   .sidebar-content::-webkit-scrollbar-thumb,
+//   .nav-sidebar::-webkit-scrollbar-thumb {
+//     background: rgba(255, 255, 255, 0.25);
+//     border-radius: 999px;
+//   }
+
+//   .sidebar-content::-webkit-scrollbar-thumb:hover,
+//   .nav-sidebar::-webkit-scrollbar-thumb:hover {
+//     background: rgba(255, 255, 255, 0.4);
+//   }
+// }

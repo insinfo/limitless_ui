@@ -304,6 +304,7 @@ class LiMultiSelectComponent
   void closeDropdown({
     bool markForCheck = true,
     bool restoreFocus = false,
+    html.Element? preserveFocusTarget,
   }) {
     for (final element in dropdownContainerEle!.querySelectorAll('li')) {
       if (element.classes.contains('dropdown-item-hover')) {
@@ -324,6 +325,13 @@ class LiMultiSelectComponent
 
     if (restoreFocus) {
       dropdownButtonElement?.focus();
+    } else if (_canPreserveFocus(preserveFocusTarget)) {
+      Future<void>.microtask(() {
+        final focusTarget = preserveFocusTarget;
+        if (focusTarget is html.HtmlElement && focusTarget.isConnected == true) {
+          focusTarget.focus();
+        }
+      });
     }
 
     if (markForCheck) {
@@ -424,6 +432,23 @@ class LiMultiSelectComponent
     _markTouched();
     _markForCheck();
     _scheduleOverlayUpdate();
+  }
+
+  bool _canPreserveFocus(html.Element? element) {
+    if (element is! html.HtmlElement || element.isConnected != true) {
+      return false;
+    }
+
+    final tabIndex = element.tabIndex;
+    if (tabIndex != null && tabIndex >= 0) {
+      return true;
+    }
+
+    return element is html.InputElement ||
+        element is html.ButtonElement ||
+        element is html.SelectElement ||
+        element is html.TextAreaElement ||
+        element.attributes.containsKey('contenteditable');
   }
 
   void searchHandle(String? searchString) {

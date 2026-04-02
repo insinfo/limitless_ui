@@ -45,7 +45,7 @@ jobs:
 
       - name: Prepare combined Pages artifact
         shell: pwsh
-        run: ./scripts/prepare-pages.ps1
+        run: ./scripts/prepare-pages.ps1 -PagesBasePath "/${{ github.event.repository.name }}/"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

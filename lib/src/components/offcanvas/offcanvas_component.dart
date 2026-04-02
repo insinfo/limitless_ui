@@ -125,7 +125,8 @@ class LiOffcanvasFooterDirective {}
   directives: [coreDirectives],
   encapsulation: ViewEncapsulation.none,
 )
-class LiOffcanvasComponent implements OnInit, AfterChanges, OnDestroy {
+class LiOffcanvasComponent
+  implements OnInit, AfterChanges, AfterViewChecked, OnDestroy {
   LiOffcanvasComponent(this.rootElement, this._changeDetectorRef);
 
   static const Duration _transitionDuration = Duration(milliseconds: 300);
@@ -147,6 +148,7 @@ class LiOffcanvasComponent implements OnInit, AfterChanges, OnDestroy {
   Timer? _hiddenTimer;
   html.Element? _previouslyFocusedElement;
   bool _lockedBodyScroll = false;
+  bool _pendingFocus = false;
   String? _registeredOffcanvasId;
 
   @Input()
@@ -329,6 +331,16 @@ class LiOffcanvasComponent implements OnInit, AfterChanges, OnDestroy {
     _syncServiceRegistration();
   }
 
+  @override
+  void ngAfterViewChecked() {
+    if (!_pendingFocus || !isOpen) {
+      return;
+    }
+
+    _pendingFocus = false;
+    Future<void>.microtask(_focusPanel);
+  }
+
   void open() {
     if (isOpen) {
       return;
@@ -338,12 +350,11 @@ class LiOffcanvasComponent implements OnInit, AfterChanges, OnDestroy {
     _previouslyFocusedElement = html.document.activeElement;
     isRendered = true;
     isOpen = true;
+    _pendingFocus = true;
     _lockBodyScrollIfNeeded();
     _bindKeyboardListener();
     _changeDetectorRef.markForCheck();
     _onOpenCtrl.add(null);
-
-    Future<void>.delayed(const Duration(milliseconds: 16), _focusPanel);
     _shownTimer?.cancel();
     _shownTimer = Timer(_effectiveTransitionDuration, () {
       if (isOpen) {
@@ -407,6 +418,7 @@ class LiOffcanvasComponent implements OnInit, AfterChanges, OnDestroy {
     }
 
     _shownTimer?.cancel();
+    _pendingFocus = false;
     isOpen = false;
     _unbindKeyboardListener();
     _changeDetectorRef.markForCheck();
