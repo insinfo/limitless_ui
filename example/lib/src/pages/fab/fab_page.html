@@ -2,13 +2,13 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+        <h4 class="page-title mb-0">{{ t.pages.fab.title }} <span class="fw-normal">{{ t.pages.fab.subtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
       <div class="breadcrumb py-2">
-        <span class="breadcrumb-item">{{ breadcrumbParent }}</span>
-        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
+        <span class="breadcrumb-item">{{ t.pages.fab.breadcrumbParent }}</span>
+        <span class="breadcrumb-item active">{{ t.pages.fab.breadcrumb }}</span>
       </div>
     </div>
   </div>
@@ -16,20 +16,20 @@
   <div class="content">
     <div class="card">
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-4">{{ intro }}</p>
+            <p class="text-muted mb-4">{{ t.pages.fab.intro }}</p>
 
             <div class="mb-3">
-              <h6 class="mb-0">Basic examples</h6>
-              <span class="text-muted d-block">Demo of buttons and button lists</span>
+              <h6 class="mb-0">{{ t.pages.fab.basicTitle }}</h6>
+              <span class="text-muted d-block">{{ t.pages.fab.basicSubtitle }}</span>
             </div>
 
             <div class="row">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Single floating button</h6>
-                  <p class="mb-3">Floating button uses regular button markup with <code>.fab-menu-btn</code> inside the <code>.fab-menu</code> container.</p>
+                  <h6>{{ t.pages.fab.singleTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.singleBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--compact">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="emptyActions"></li-fab>
@@ -39,8 +39,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Open menu on hover</h6>
-                  <p class="mb-3">Use <code>data-fab-toggle=&quot;hover&quot;</code> semantics for menus that should expand on hover.</p>
+                  <h6>{{ t.pages.fab.hoverTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.hoverBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="hoverActions" direction="down" toggleMode="hover"
@@ -52,8 +52,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Open menu on click</h6>
-                  <p class="mb-3">The most common case is click-to-open with the default icon-only trigger.</p>
+                  <h6>{{ t.pages.fab.clickTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.clickBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="clickActions" direction="down" toggleMode="click"
@@ -65,15 +65,15 @@
             </div>
 
             <div class="mb-3 mt-4">
-              <h6 class="mb-0">FAB menu elements</h6>
-              <span class="text-muted d-block">Buttons, directions and fixed placement</span>
+              <h6 class="mb-0">{{ t.pages.fab.elementsTitle }}</h6>
+              <span class="text-muted d-block">{{ t.pages.fab.elementsSubtitle }}</span>
             </div>
 
             <div class="row">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Simple buttons</h6>
-                  <p class="mb-3">The submenu usually contains rounded buttons with a single icon.</p>
+                  <h6>{{ t.pages.fab.simpleButtonsTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.simpleButtonsBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
@@ -85,8 +85,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Side actions</h6>
-                  <p class="mb-3">Left direction keeps the main trigger compact while exposing contextual actions on the side.</p>
+                  <h6>{{ t.pages.fab.sideActionsTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.sideActionsBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--center fab-demo-slot--wide">
                     <li-fab [fixed]="false" iconClass="ph-squares-four" [actions]="sideActions" direction="left"
@@ -101,7 +101,7 @@
                   <template #customFabTrigger let-trigger>
                     <span class="d-inline-flex align-items-center gap-2">
                       <i class="ph" [class.ph-plus]="!trigger.expanded" [class.ph-x]="trigger.expanded"></i>
-                      <span>{{ trigger.expanded ? 'Fechar' : 'Ações rápidas' }}</span>
+                      <span>{{ trigger.expanded ? t.pages.fab.customTriggerClose : t.pages.fab.customTriggerActions }}</span>
                     </span>
                   </template>
 
@@ -112,8 +112,8 @@
                     </span>
                   </template>
 
-                  <h6>Custom templates</h6>
-                  <p class="mb-3">Use <code>TemplateRef</code> to customize trigger and action content without replacing the FAB behavior, keyboard shortcuts, or link handling.</p>
+                  <h6>{{ t.pages.fab.customTemplatesTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.customTemplatesBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--center fab-demo-slot--wide">
                     <li-fab [fixed]="false" [actions]="compactActions" direction="down" toggleMode="click"
@@ -126,8 +126,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>No-backdrop page action</h6>
-                  <p class="mb-3">The no-backdrop variant is previewed inside the card to avoid colliding with the left sidebar. The actual fixed FAB remains on the right edge.</p>
+                  <h6>{{ t.pages.fab.noBackdropTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.noBackdropBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--center">
                     <li-fab [fixed]="false" iconClass="ph-rocket-launch" openIconClass="ph-x" [actions]="fixedNoBackdropActions"
@@ -139,15 +139,15 @@
             </div>
 
             <div class="mb-3 mt-4">
-              <h6 class="mb-0">Inner button labels</h6>
-              <span class="text-muted d-block">Visible tooltips, light labels and label positions</span>
+              <h6 class="mb-0">{{ t.pages.fab.innerLabelsTitle }}</h6>
+              <span class="text-muted d-block">{{ t.pages.fab.innerLabelsSubtitle }}</span>
             </div>
 
             <div class="row">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Visible labels</h6>
-                  <p class="mb-3">Use <code>.fab-label-visible</code> when labels should stay visible while the menu is expanded.</p>
+                  <h6>{{ t.pages.fab.visibleLabelsTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.visibleLabelsBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top fab-demo-slot--wide">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="visibleLabelActions" direction="down"
@@ -159,8 +159,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Light labels</h6>
-                  <p class="mb-3">All button types support light tooltips as an alternative to the default dark labels.</p>
+                  <h6>{{ t.pages.fab.lightLabelsTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.lightLabelsBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top fab-demo-slot--wide">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="lightLabelActions" direction="down"
@@ -172,8 +172,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Label positions</h6>
-                  <p class="mb-3">Left is default; use <code>.fab-label-end</code> to place labels on the right side.</p>
+                  <h6>{{ t.pages.fab.labelPositionsTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.labelPositionsBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top fab-demo-slot--wide">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="labelPositionActions" direction="down"
@@ -185,15 +185,15 @@
             </div>
 
             <div class="mb-3 mt-4">
-              <h6 class="mb-0">Default button colors</h6>
-              <span class="text-muted d-block">Examples of predefined contextual colors</span>
+              <h6 class="mb-0">{{ t.pages.fab.defaultColorsTitle }}</h6>
+              <span class="text-muted d-block">{{ t.pages.fab.defaultColorsSubtitle }}</span>
             </div>
 
             <div class="row">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Primary button color</h6>
-                  <p class="mb-3">Primary contextual color uses the standard <code>.btn-primary</code> main button.</p>
+                  <h6>{{ t.pages.fab.primaryColorTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.primaryColorBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
@@ -205,8 +205,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Success button color</h6>
-                  <p class="mb-3">Use <code>.btn-success</code> for a positive contextual variant.</p>
+                  <h6>{{ t.pages.fab.successColorTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.successColorBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
@@ -218,8 +218,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Warning button color</h6>
-                  <p class="mb-3">Warning is a strong contextual alternative for attention-heavy actions.</p>
+                  <h6>{{ t.pages.fab.warningColorTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.warningColorBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
@@ -231,15 +231,15 @@
             </div>
 
             <div class="mb-3 mt-4">
-              <h6 class="mb-0">Custom color options</h6>
-              <span class="text-muted d-block">Use custom colors in main and inner buttons</span>
+              <h6 class="mb-0">{{ t.pages.fab.customColorsTitle }}</h6>
+              <span class="text-muted d-block">{{ t.pages.fab.customColorsSubtitle }}</span>
             </div>
 
             <div class="row">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Custom main button color</h6>
-                  <p class="mb-3">Secondary palette colors can be applied directly to the main trigger.</p>
+                  <h6>{{ t.pages.fab.customMainColorTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.customMainColorBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="compactActions" direction="down" toggleMode="click"
@@ -251,8 +251,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Custom inner button color</h6>
-                  <p class="mb-3">Inner actions can use any Limitless button color while keeping the light main trigger.</p>
+                  <h6>{{ t.pages.fab.customInnerColorTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.customInnerColorBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="indigoInnerActions" direction="down"
@@ -264,8 +264,8 @@
 
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6>Mixing button colors</h6>
-                  <p class="mb-3">The submenu supports mixed contextual colors without changing the structural markup.</p>
+                  <h6>{{ t.pages.fab.mixedColorsTitle }}</h6>
+                  <p class="mb-3">{{ t.pages.fab.mixedColorsBody }}</p>
 
                   <div class="fab-demo-slot fab-demo-slot--top">
                     <li-fab [fixed]="false" iconClass="ph-plus" [actions]="mixedColorActions" direction="down"
@@ -280,7 +280,7 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
             <p class="text-muted mb-3">{{ apiIntro }}</p>
             <p class="fw-semibold">{{ overviewLead }}</p>
@@ -294,82 +294,82 @@
 
             <div class="card mt-4 mb-0">
               <div class="card-header">
-                <h5 class="mb-0">FAB menu classes</h5>
+                <h5 class="mb-0">{{ t.pages.fab.classesTitle }}</h5>
               </div>
 
               <div class="card-body">
-                FAB menu styling is driven by CSS classes and data attributes. The table below summarizes the classes used by this AngularDart wrapper while preserving the original Limitless contract.
+                {{ t.pages.fab.classesIntro }}
               </div>
 
               <div class="table-responsive">
                 <table class="table table-bordered">
                   <thead>
                     <tr>
-                      <th style="width: 22%;">Class</th>
-                      <th>Description</th>
+                      <th style="width: 22%;">{{ t.pages.fab.classHeader }}</th>
+                      <th>{{ t.pages.fab.descriptionHeader }}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr class="table-active">
-                      <th colspan="2">Basic classes</th>
+                      <th colspan="2">{{ t.pages.fab.basicClassesGroup }}</th>
                     </tr>
                     <tr>
                       <td><code>.fab-menu</code></td>
-                      <td>Main wrapper used by the component.</td>
+                      <td>{{ t.pages.fab.classMenuDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>.fab-menu-btn</code></td>
-                      <td>Main circular trigger button.</td>
+                      <td>{{ t.pages.fab.classMenuBtnDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>.fab-menu-inner</code></td>
-                      <td>Inner action list container.</td>
+                      <td>{{ t.pages.fab.classMenuInnerDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>.fab-icon-open</code> / <code>.fab-icon-close</code></td>
-                      <td>Icons rotated and faded by the Limitless CSS depending on menu state.</td>
+                      <td>{{ t.pages.fab.classIconsDesc }}</td>
                     </tr>
                     <tr class="table-border-double table-active">
-                      <th colspan="2">Directions and positioning</th>
+                      <th colspan="2">{{ t.pages.fab.directionsGroup }}</th>
                     </tr>
                     <tr>
                       <td><code>.fab-menu-top</code></td>
-                      <td>Menu opens below the trigger.</td>
+                      <td>{{ t.pages.fab.classMenuTopDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>.fab-menu-bottom</code></td>
-                      <td>Menu opens above the trigger.</td>
+                      <td>{{ t.pages.fab.classMenuBottomDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>.fab-menu-fixed</code></td>
-                      <td>Viewport-fixed FAB used for persistent page actions.</td>
+                      <td>{{ t.pages.fab.classMenuFixedDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>.li-fab--dir-left</code> / <code>.li-fab--dir-right</code></td>
-                      <td>Horizontal extensions added by the AngularDart wrapper.</td>
+                      <td>{{ t.pages.fab.classDirHorizontalDesc }}</td>
                     </tr>
                     <tr class="table-border-double table-active">
-                      <th colspan="2">Visibility and labels</th>
+                      <th colspan="2">{{ t.pages.fab.visibilityGroup }}</th>
                     </tr>
                     <tr>
                       <td><code>data-fab-toggle=&quot;click&quot;</code></td>
-                      <td>Click-to-open behavior.</td>
+                      <td>{{ t.pages.fab.toggleClickDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>data-fab-toggle=&quot;hover&quot;</code></td>
-                      <td>Hover-to-open behavior.</td>
+                      <td>{{ t.pages.fab.toggleHoverDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>data-fab-state=&quot;open&quot;</code></td>
-                      <td>Applied while the menu is expanded.</td>
+                      <td>{{ t.pages.fab.stateOpenDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>data-fab-label</code></td>
-                      <td>Tooltip text for inner actions.</td>
+                      <td>{{ t.pages.fab.dataFabLabelDesc }}</td>
                     </tr>
                     <tr>
                       <td><code>.fab-label-end</code> / <code>.fab-label-light</code> / <code>.fab-label-visible</code></td>
-                      <td>Right-aligned, light, and persistent label modifiers.</td>
+                      <td>{{ t.pages.fab.labelModifiersDesc }}</td>
                     </tr>
                   </tbody>
                 </table>

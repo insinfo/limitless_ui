@@ -1,0 +1,105 @@
+<div class="color-picker-wrapper" [class.sp-flat-host]="flat">
+    <div *ngIf="!flat" class="color-picker-trigger">
+        <button #triggerElement type="button" class="btn btn-light sp-replacer" [class.sp-active]="isOpen"
+            [class.sp-disabled]="isDisabled" [class.is-invalid]="effectiveInvalid" [class.is-valid]="effectiveValid"
+            [disabled]="isDisabled" [attr.title]="triggerTitle" [attr.aria-label]="resolvedTitleText"
+            [attr.aria-describedby]="resolvedDescribedBy" [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+            [attr.data-invalid]="effectiveInvalid ? 'true' : null" (click)="toggleOpen()">
+            <span class="sp-preview">
+                <span class="sp-preview-inner" [class.sp-clear-display]="isCommittedEmpty"
+                    [cssStyle]="triggerSwatchStyle"></span>
+            </span>
+            <span class="sp-dd"></span>
+            <span class="visually-hidden">{{ triggerTitle }}</span>
+        </button>
+        <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+        <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
+    </div>
+
+    <div #panelElement class="sp-container sp-hidden sp-light" [class.sp-hidden]="!(isOpen || flat)"
+        [class.sp-flat]="flat" [class.sp-input-disabled]="!showInput" [class.sp-alpha-enabled]="showAlpha"
+        [class.sp-clear-enabled]="allowEmpty" [class.sp-buttons-disabled]="!showButtons"
+        [class.sp-palette-buttons-disabled]="!showTogglePaletteButton" [class.sp-palette-disabled]="!hasPaletteContent"
+        [class.sp-palette-only]="isPaletteOnlyView" [class.sp-initial-disabled]="!(showInitial && hasInitialColor)"
+        [class.sp-dragging]="isDragging" (click)="onPanelClick($event)">
+        <div class="sp-palette-container">
+            <div *ngIf="hasPaletteContent" class="sp-palette sp-thumb sp-cf">
+                <div *ngFor="let row of resolvedPaletteRows; trackBy: trackByPaletteRow" [class]="row.rowClass">
+                    <span *ngFor="let swatch of row.swatches; trackBy: trackBySwatch" [class]="swatch.thumbClass"
+                        [attr.title]="swatch.colorText" [attr.data-color]="swatch.colorText"
+                        (click)="onPaletteSelect(swatch.colorText)">
+                        <span class="sp-thumb-inner" [cssStyle]="swatch.swatchStyle"></span>
+                    </span>
+                </div>
+
+                <div *ngFor="let row of selectionPaletteRows; trackBy: trackByPaletteRow" [class]="row.rowClass">
+                    <span *ngFor="let swatch of row.swatches; trackBy: trackBySwatch" [class]="swatch.thumbClass"
+                        [attr.title]="swatch.colorText" [attr.data-color]="swatch.colorText"
+                        (click)="onPaletteSelect(swatch.colorText)">
+                        <span class="sp-thumb-inner" [cssStyle]="swatch.swatchStyle"></span>
+                    </span>
+                </div>
+            </div>
+
+            <div *ngIf="showTogglePaletteButton" class="sp-palette-button-container sp-cf">
+                <button type="button" class="btn btn-light btn-sm sp-palette-toggle" (click)="togglePaletteOnlyView()">
+                    {{ togglePaletteText }}
+                </button>
+            </div>
+        </div>
+
+        <div class="sp-picker-container">
+            <div class="sp-top sp-cf">
+                <div class="sp-fill"></div>
+
+                <div *ngIf="canShowEditor" class="sp-top-inner">
+                    <div #colorAreaElement class="sp-color" [cssStyle]="colorAreaStyle"
+                        (mousedown)="onColorMouseDown($event)" (touchstart)="onColorTouchStart($event)">
+                        <div class="sp-sat">
+                            <div class="sp-val">
+                                <div class="sp-dragger" [class.sp-hidden]="isDraftEmpty" [cssStyle]="draggerStyle"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="allowEmpty" class="sp-clear sp-clear-display" [attr.title]="clearText" (click)="clear()"></div>
+
+                    <div #hueElement class="sp-hue" (mousedown)="onHueMouseDown($event)"
+                        (touchstart)="onHueTouchStart($event)">
+                        <div class="sp-slider" [class.sp-hidden]="isDraftEmpty" [cssStyle]="hueSliderStyle"></div>
+                    </div>
+                </div>
+
+                <div *ngIf="showAlpha && canShowEditor" #alphaElement class="sp-alpha"
+                    (mousedown)="onAlphaMouseDown($event)" (touchstart)="onAlphaTouchStart($event)">
+                    <div class="sp-alpha-inner" [cssStyle]="alphaGradientStyle">
+                        <div class="sp-alpha-handle" [class.sp-hidden]="isDraftEmpty" [cssStyle]="alphaHandleStyle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="showInput && canShowEditor" class="sp-input-container sp-cf">
+                <input type="text" [class]="resolvedInputClass" [value]="manualInputValue"
+                    [placeholder]="effectivePlaceholder" (input)="onTextInput($event.target.value)"
+                    (keydown)="onTextInputKeyDown($event)">
+            </div>
+
+            <div *ngIf="showInitial && hasInitialColor && canShowEditor" class="sp-initial sp-thumb sp-cf">
+                <div class="sp-palette-row sp-palette-row-initial">
+                    <button type="button" [class]="currentThumbClass" [attr.title]="currentThumbTitle">
+                        <span class="sp-thumb-inner" [cssStyle]="currentThumbStyle"></span>
+                    </button>
+                    <button type="button" [class]="initialThumbClass" [attr.title]="initialThumbTitle"
+                        (click)="restoreInitial()">
+                        <span class="sp-thumb-inner" [cssStyle]="initialThumbStyle"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="shouldShowButtons && canShowEditor" class="sp-button-container sp-cf">
+                <button type="button" class="btn btn-light sp-cancel" (click)="cancel()">{{ cancelText }}</button>
+                <button type="button" class="btn btn-primary sp-choose" (click)="apply()">{{ chooseText }}</button>
+            </div>
+        </div>
+    </div>
+</div>

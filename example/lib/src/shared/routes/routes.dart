@@ -16,6 +16,8 @@ import 'package:limitless_ui_example/src/pages/carousel/carousel_page.template.d
     as carousel_page;
 import 'package:limitless_ui_example/src/pages/currency/currency_page.template.dart'
     as currency_page;
+import 'package:limitless_ui_example/src/pages/color_picker/color_picker_page.template.dart'
+    as color_picker_page;
 import 'package:limitless_ui_example/src/pages/datatable/datatable_page.template.dart'
     as datatable_page;
 import 'package:limitless_ui_example/src/pages/datatable_select/datatable_select_page.template.dart'
@@ -153,6 +155,11 @@ class DemoRoutes {
     component: currency_page.CurrencyPageComponentNgFactory,
   );
 
+  static final colorPicker = RouteDefinition(
+    routePath: DemoRoutePaths.colorPicker,
+    component: color_picker_page.ColorPickerPageComponentNgFactory,
+  );
+
   static final datePicker = RouteDefinition(
     routePath: DemoRoutePaths.datePicker,
     component: date_picker_page.DatePickerPageComponentNgFactory,
@@ -274,6 +281,7 @@ class DemoRoutes {
     typeahead,
     multiSelect,
     currency,
+    colorPicker,
     datePicker,
     timePicker,
     dateRange,

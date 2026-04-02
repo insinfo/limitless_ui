@@ -34,15 +34,32 @@ nav:
   treeview: Treeview
   helpers: Utilitários
   button: Botões
+  fab: "FAB"
 
 common:
   restoreAlert: Restaurar alerta
   none: Nenhum
   open: Abrir
   close: Fechar
+  clear: Limpar
   status: Status
+  value: Valor
+  label: Label
+  event: Evento
   currentPeriod: Período atual
   restrictedWindow: Janela restrita
+  tabOverview: Visão geral
+  tabApi: API
+  sectionDescription: Descrição
+  sectionFeatures: Recursos
+  sectionLimitations: Limitações
+  sectionHowToUse: Como utilizar
+  sectionNotes: Observações
+  sectionVisibleExample: Exemplo visível
+  sectionMainOptions: Opções principais
+  sectionBestPractices: Boas práticas
+  sectionOutputs: Outputs
+  sectionPublicMethods: Métodos públicos
 
 pages:
   overview:
@@ -113,6 +130,13 @@ pages:
     breadcrumb: Itens expansivos
     cardTitle: Configurações do accordion
     intro: Esta página cobre allowMultipleOpen, flush, lazy, destroyOnCollapse, item desabilitado, ícones e header customizado.
+    descriptionBody: O accordion organiza blocos densos de informação em seções expansíveis, reduzindo ruído visual sem perder contexto.
+    featureOne: Itens recolhidos, expandidos, desabilitados e com cabeçalho customizado.
+    featureTwo: Eventos de abertura por item.
+    featureThree: Renderização tardia e destruição opcional do corpo.
+    limitOne: Conteúdo muito interativo exige cuidado com foco.
+    limitTwo: Seções longas demais ainda pedem hierarquia interna.
+    limitThree: O layout não substitui navegação por rotas.
     collapsedHeader: Estado recolhido
     collapsedDescription: Começa fechado e expande sob demanda.
     collapsedBody: Ideal para listas longas que precisam manter foco visual.
@@ -129,6 +153,31 @@ pages:
     idle: Nenhum accordion alterado.
     expandedState: expandido
     collapsedState: recolhido
+    directiveApiTitle: "API declarativa por diretivas"
+    directiveApiIntro: "Esta versão mantém o markup Bootstrap acessível no DOM e expõe uma API parecida com ng-bootstrap."
+    directiveApiNote: "Para destroyOnHide físico de verdade, use <template liAccordionBody>. O wrapper simples com <div liAccordionBody> mantém o conteúdo no DOM para casos em que a referência precisa permanecer estável."
+    declarativeOverviewButton: "Visão geral"
+    declarativeOverviewBody: "Conteúdo básico com header e body declarativos, mantendo classes e atributos de acessibilidade."
+    declarativeCustomHeader: "Header customizado"
+    declarativeToggle: "Alternar"
+    declarativeCustomBody: "O header pode ser totalmente customizado sem perder o controle por id, collapse e eventos."
+    declarativeDisabledButton: "Item desabilitado"
+    declarativeDisabledBody: "Este conteúdo continua acessível via API, mas não reage ao clique do usuário."
+    expandOverview: "Expandir overview"
+    toggleCustom: "Alternar custom"
+    closeAll: "Fechar todos"
+    itemApi: "API do item"
+    declarativeIdle: "Nenhum evento da API declarativa."
+    collapseTitle: "liCollapse"
+    collapseIntro: "Diretiva genérica para esconder e mostrar blocos com as classes collapse, show e collapsing."
+    openPanel: "Abrir painel"
+    closePanel: "Fechar painel"
+    collapseBody: "Este bloco usa a diretiva genérica de collapse, sem depender do accordion."
+    apiOne: "[allowMultipleOpen] permite manter mais de um item expandido ao mesmo tempo."
+    apiTwo: "[flush] remove contornos extras para uma composição mais compacta."
+    apiThree: "[lazy] adia a renderização do corpo até a primeira abertura."
+    apiFour: "[destroyOnCollapse] remove o conteúdo do DOM quando o item fecha."
+    apiFive: "[expanded] e (expandedChange) controlam abertura por item."
   progress:
     title: Componentes
     subtitle: Progresso
@@ -146,6 +195,22 @@ pages:
     subtitle: Abas
     breadcrumb: Abas horizontais e verticais
     cardTitle: Pills com header customizado
+    overviewIntro: "A página de tabs demonstra composição horizontal, vertical, cabeçalhos customizados e estados desabilitados."
+    descriptionBody: "Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e funcionam bem para documentação, formulários segmentados e painéis administrativos."
+    featureOne: "Modo tabs e pills."
+    featureTwo: "Posicionamento horizontal ou lateral."
+    featureThree: "Cabeçalho projetado e abas desabilitadas."
+    limitOne: "Muitas abas no mesmo nível prejudicam escaneabilidade."
+    limitTwo: "Conteúdo longo demais pede hierarquia adicional."
+    limitThree: "Abas aninhadas devem ser isoladas em subcomponentes."
+    previewTitle: "Exemplo visível"
+    previewIntro: "O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba desabilitada, sem contaminar a navegação da página de documentação."
+    apiIntro: "Use o componente para agrupar conteúdo relacionado quando a navegação por seções fizer mais sentido do que empilhar cards ou abrir novas rotas."
+    apiOne: "type aceita tabs ou pills."
+    apiTwo: "placement controla a posição das abas, como topo ou lateral."
+    apiThree: "[justified] distribui os gatilhos de forma uniforme."
+    apiFour: "[active] e [disabled] controlam estado por aba."
+    apiFive: "template li-tabx-header permite cabeçalhos customizados."
     tokens: Tokens
     flow: Fluxo
     blocked: Bloqueada
@@ -545,38 +610,147 @@ pages:
     subtitle: Datatable
     breadcrumb: Busca, seleção e exportação
     cardTitle: Operações da tabela
-    toggleGrid: Alternar grid
-    singleSelection: Seleção única
-    searchLabel: Buscar sprint
-    searchPlaceholder: Digite para buscar
-    featureCol: Entrega
-    ownerCol: Squad
-    statusCol: Status
-    healthCol: Saúde
-    featureRow1: Painel executivo
-    featureRow2: Exportação em PDF
-    featureRow3: Fluxo de aprovação
-    featureRow4: Alertas em tempo real
-    ownerProduct: Produto
-    ownerBackoffice: Backoffice
-    ownerOperations: Operações
-    ownerInfra: Infra
-    statusInProgress: Em andamento
-    statusDone: Concluído
-    statusPlanned: Planejado
-    statusBlocked: Bloqueado
-    healthWarning: Atenção
-    healthOk: Ok
-    healthCritical: Crítico
-    ready: Tabela pronta para interação.
-    gridMode: Datatable alternada para o modo grade.
-    tableMode: Datatable alternada para o modo tabela.
-    singleMode: Seleção única ativada.
-    multiMode: Seleção múltipla ativada.
-    exportXlsx: Exportação XLSX acionada.
-    exportPdf: Exportação em PDF acionada.
+    overviewIntro: "A datatable desta biblioteca cobre o fluxo administrativo mais comum: busca por campo, seleção de linhas, exportação, paginação, ordenação, colapso responsivo e uma camada de customização visual por coluna, por linha e por card."
+    descriptionBody: "O componente atende listagens operacionais que precisam alternar entre tabela e grade sem duplicar fonte de dados, regras de ordenação ou comportamento de busca."
+    featureOne: "Busca direcionada por coluna com campo e operador configuráveis."
+    featureTwo: "Exportação para XLSX e PDF usando a própria API do componente."
+    featureThree: "Modo tabela e modo grade com a mesma fonte de dados."
+    featureFour: "Largura, alinhamento, classes e estilos por coluna e por linha."
+    featureFive: "Cards customizados com customCardBuilder em grid mode."
+    limitOne: "cellStyleResolver trabalha com CSS inline, então não substitui um tema completo."
+    limitTwo: "customCardBuilder é ideal para cards ricos, mas exige montagem manual do markup."
+    limitThree: "O colapso mobile continua orientado a colunas, então layouts muito densos pedem curadoria das colunas secundárias."
+    toggleGrid: "Alternar grid"
+    singleSelection: "Seleção única"
+    searchLabel: "Buscar sprint"
+    searchPlaceholder: "Digite para buscar"
+    featureCol: "Entrega"
+    ownerCol: "Squad"
+    statusCol: "Status"
+    healthCol: "Saúde"
+    featureRow1: "Painel executivo"
+    featureRow2: "Exportação em PDF"
+    featureRow3: "Fluxo de aprovação"
+    featureRow4: "Alertas em tempo real"
+    ownerProduct: "Produto"
+    ownerBackoffice: "Backoffice"
+    ownerOperations: "Operações"
+    ownerInfra: "Infra"
+    statusInProgress: "Em andamento"
+    statusDone: "Concluído"
+    statusPlanned: "Planejado"
+    statusBlocked: "Bloqueado"
+    healthWarning: "Atenção"
+    healthOk: "Ok"
+    healthCritical: "Crítico"
+    ready: "Tabela pronta para interação."
+    demoIntro: "Demo principal com busca, seleção, exportação e alternância entre tabela e grade."
+    onDemandTitle: "Demos sob demanda"
+    onDemandIntro: "Os exemplos abaixo usam li-accordion com carregamento tardio para evitar que todos os datatables entrem no DOM ao abrir a rota."
+    readonlyTitle: "Exemplo somente leitura"
+    readonlyDescription: "Busca e ordenação sem clique de linha nem seleção."
+    gridPreviewTitle: "Exemplo em modo grade"
+    gridPreviewDescription: "Mesmo dataset reaproveitado como cartões."
+    customTableTitle: "Tabela com width, cor por coluna e cor por linha"
+    customTableDescription: "Combina width fixa, cellStyleResolver e rowStyleResolver no mesmo cenário."
+    customGridTitle: "Grid com customCardBuilder"
+    customGridDescription: "Card montado manualmente só quando o item é aberto."
+    lazyModalTitle: "Modal lazy loading com datatable"
+    lazyModalIntro: "Este cenário abre um li-modal com lazyContent e instancia o li-datatable somente depois da abertura."
+    openLazyModal: "Abrir modal lazy"
+    modalTitle: "Modal lazy com datatable"
+    modalBody: "O conteúdo do modal só entra no DOM quando ele abre. O datatable reutiliza o mesmo dataset da página para verificar se o primeiro render funciona corretamente."
+    howToUseBody: "O componente é controlado por três peças: Filters para paginação e busca, DataFrame para os dados e DatatableSettings para as colunas e o comportamento visual."
+    optionOne: "[dataTableFilter]: controla limite, offset, busca e ordenação."
+    optionTwo: "[settings]: define colunas, grid e builders customizados."
+    optionThree: "[searchInFields]: informa quais campos aparecem no seletor de busca."
+    optionFour: "[responsiveCollapse]: move colunas secundárias para a linha filha no mobile."
+    practiceOne: "Mantenha o DataFrame estável e atualize apenas filtros e seleção."
+    practiceTwo: "Use hideOnMobile nas colunas secundárias."
+    practiceThree: "Reserve customCardBuilder para grids que realmente precisam fugir do layout padrão."
+    columnStylesTitle: "Colunas e estilos"
+    columnStyleOne: "width, minWidth e maxWidth controlam a largura efetiva da coluna."
+    columnStyleTwo: "headerClass e cellClass adicionam classes sem mexer no template."
+    columnStyleThree: "styleCss e cellStyleResolver controlam cor e estilo por coluna."
+    columnStyleFour: "rowStyleResolver devolve uma string CSS por linha inteira com base nos dados."
+    columnStyleFive: "textAlign e nowrap ajustam leitura para colunas curtas ou status."
+    customCardEyebrow: "CustomCardBuilder"
+    ownerPrefix: "Responsável"
+    customCardSummary: "O card foi montado manualmente para combinar título, estado e metadados sem depender do layout padrão."
+    featureRow5: "Sincronizar cadastro com ERP"
+    featureRow6: "Publicar relatório operacional"
+    featureRow7: "Revisar fila de integração"
+    featureRow8: "Atualizar painel de atendimento"
+    ownerFinance: "Financeiro"
+    ownerSupport: "Atendimento"
+    gridMode: "Datatable alternada para o modo grade."
+    tableMode: "Datatable alternada para o modo tabela."
+    singleMode: "Seleção única ativada."
+    multiMode: "Seleção múltipla ativada."
+    exportXlsx: "Exportação XLSX acionada."
+    exportPdf: "Exportação em PDF acionada."
     rowClicked(String feature): "Linha clicada: $feature."
     selectedItems(int count): "Itens selecionados: $count."
+  datatableSelect:
+    title: "Componentes"
+    subtitle: "Datatable Select"
+    breadcrumb: "Select com datatable em modal"
+    overviewIntro: "Um select que abre um modal com um datatable completo, permitindo busca, paginação e ordenação. Ao clicar em uma linha, o item é selecionado e o modal fecha."
+    descriptionBody: "O componente combina um trigger no formato form-select com um modal que exibe um li-datatable completo. Implementa ControlValueAccessor para compatibilidade com ngModel."
+    featureOne: "Busca, paginação e ordenação via li-datatable."
+    featureTwo: "Seleção por clique de linha."
+    featureThree: "Suporte a ngModel e currentValueChange."
+    featureFour: "Tamanho do modal configurável."
+    featureFive: "Estados desabilitado e programático."
+    limitOne: "Requer dataRequest para fornecer dados ao datatable."
+    limitTwo: "O label exibido depende de labelKey sem projeção customizada."
+    limitThree: "Não suporta seleção múltipla."
+    demoIntro: "Uso básico com currentValueChange e controle programático."
+    selectMaria: "Selecionar Maria Silva"
+    selectPersonLabel: "Selecionar pessoa"
+    modalTitle: "Selecionar pessoa"
+    placeholder: "Clique para selecionar..."
+    searchPlaceholder: "Buscar por nome, e-mail..."
+    disabledIntro: "Estado desabilitado, o trigger fica inativo e não abre o modal."
+    disabledLabel: "Pessoa (desabilitado)"
+    disabledPlaceholder: "Campo desabilitado"
+    ngModelIntro: "Binding com ngModel. O valor é sincronizado via ControlValueAccessor."
+    ngModelLabel: "Selecionar pessoa (ngModel)"
+    howToUseBody: "O componente é controlado por três peças: Filters para paginação e busca, DataFrame para os dados e DatatableSettings para as colunas. Ao clicar no trigger, um modal abre com o datatable; ao clicar numa linha, a seleção é feita."
+    optionOne: "[settings]: definições de colunas do datatable."
+    optionTwo: "[data]: DataFrame com dados paginados."
+    optionThree: "[dataTableFilter]: filtros de busca e paginação."
+    optionFour: "[searchInFields]: campos de busca."
+    optionFive: "[labelKey]: chave para o texto exibido no trigger."
+    optionSix: "[valueKey]: chave para o valor; null = instância inteira."
+    optionSeven: "[placeholder]: texto quando nenhum item está selecionado."
+    optionEight: "[title]: título do modal."
+    optionNine: "[modalSize]: tamanho do modal (large, xtra-large)."
+    optionTen: "[disabled]: desabilita o componente."
+    optionEleven: "[fullScreenOnMobile]: modal fullscreen no mobile."
+    outputOne: "(dataRequest): emitido quando o datatable solicita dados."
+    outputTwo: "(currentValueChange): emitido quando o valor selecionado muda."
+    outputThree: "(limitChange): emitido quando o limite por página muda."
+    outputFour: "(searchRequest): emitido quando uma busca é submetida."
+    methodOne: "clear(): limpa a seleção."
+    methodTwo: "setSelectedItem({label, value}): define a seleção programaticamente."
+    methodThree: "selectedLabel: getter que retorna o label atual."
+    noteOne: "Compatível com ngModel via ControlValueAccessor."
+    noteTwo: "Mantenha o DataFrame estável; atualize apenas via (dataRequest)."
+    noteThree: "O botão de limpar no trigger aparece quando há valor selecionado."
+    columnId: "ID"
+    columnName: "Nome"
+    columnEmail: "E-mail"
+    columnDepartment: "Departamento"
+    searchName: "Nome"
+    searchEmail: "E-mail"
+    searchDepartment: "Departamento"
+    departmentEngineering: "Engenharia"
+    departmentDesign: "Design"
+    departmentMarketing: "Marketing"
+    departmentFinance: "Financeiro"
+    departmentHr: "RH"
+    ngModelValuePrefix: "ngModel value"
   notification:
     title: Componentes
     subtitle: Área de notificações
@@ -678,6 +852,18 @@ pages:
     title: Componentes
     subtitle: Botões
     breadcrumb: Estilos e variações de botões
+    overviewIntro: "Esta página reúne variações de cor, estilo, tamanho, alinhamento e estados do componente de botão."
+    usePrefix: "Use"
+    demoButton: "Botão"
+    lightCardTitle: "Botão light"
+    darkCardTitle: "Botão dark"
+    primaryCardTitle: "Botão primary"
+    secondaryCardTitle: "Botão secondary"
+    dangerCardTitle: "Botão danger"
+    successCardTitle: "Botão success"
+    warningCardTitle: "Botão warning"
+    infoCardTitle: "Botão info"
+    indigoCardTitle: "Botão indigo"
     colorsTitle: Cores de botões
     colorsSubtitle: Opções predefinidas de cores para botões
     solidTitle: Botões sólidos
@@ -694,3 +880,91 @@ pages:
     alignSubtitle: Exemplos de alinhamento de ícones à esquerda e à direita
     disabledTitle: Botões desabilitados
     disabledSubtitle: Botões no estado disabled
+  fab:
+    title: "Componentes"
+    subtitle: "FAB"
+    breadcrumbParent: "Componentes"
+    breadcrumb: "FAB"
+    intro: "O menu de botão de ação flutuante (FAB) exibe um botão flutuante único, com ou sem menu aninhado. A demonstração abaixo segue a organização visual do Limitless, com exemplos de interação, direção, rótulos e cores."
+    basicTitle: "Exemplos básicos"
+    basicSubtitle: "Demonstração de botões e listas de botões"
+    singleTitle: "Botão flutuante único"
+    singleBody: "O botão flutuante usa marcação de botão padrão com .fab-menu-btn dentro do container .fab-menu."
+    hoverTitle: "Abrir menu ao passar o cursor"
+    hoverBody: "Use a semântica data-fab-toggle=\"hover\" para menus que devem expandir ao passar o cursor."
+    clickTitle: "Abrir menu no clique"
+    clickBody: "O caso mais comum é abrir no clique com o trigger padrão somente com ícone."
+    elementsTitle: "Elementos do menu FAB"
+    elementsSubtitle: "Botões, direções e posicionamento fixo"
+    simpleButtonsTitle: "Botões simples"
+    simpleButtonsBody: "O submenu normalmente contém botões arredondados com um único ícone."
+    sideActionsTitle: "Ações laterais"
+    sideActionsBody: "A direção à esquerda mantém o trigger principal compacto enquanto expõe ações contextuais na lateral."
+    customTemplatesTitle: "Modelos personalizados"
+    customTemplatesBody: "Use TemplateRef para personalizar o conteúdo do gatilho e das ações sem substituir o comportamento do FAB, os atalhos de teclado ou o tratamento de links."
+    noBackdropTitle: "Ação de página sem sobreposição"
+    noBackdropBody: "A variante sem backdrop é exibida dentro do card para evitar colisão com a barra lateral esquerda. O FAB fixo real continua na borda direita da página."
+    innerLabelsTitle: "Rótulos dos botões internos"
+    innerLabelsSubtitle: "Tooltips visíveis, rótulos claros e posições do rótulo"
+    visibleLabelsTitle: "Rótulos visíveis"
+    visibleLabelsBody: "Use .fab-label-visible quando os rótulos precisarem permanecer visíveis enquanto o menu estiver expandido."
+    lightLabelsTitle: "Rótulos claros"
+    lightLabelsBody: "Todos os tipos de botão suportam tooltips claros como alternativa aos rótulos escuros padrão."
+    labelPositionsTitle: "Posições do rótulo"
+    labelPositionsBody: "A esquerda é o padrão; use .fab-label-end para posicionar os rótulos no lado direito."
+    defaultColorsTitle: "Cores padrão dos botões"
+    defaultColorsSubtitle: "Exemplos de cores contextuais predefinidas"
+    primaryColorTitle: "Cor primária do botão"
+    primaryColorBody: "A variação contextual primária usa o botão principal padrão .btn-primary."
+    successColorTitle: "Cor de sucesso do botão"
+    successColorBody: "Use .btn-success para uma variante contextual positiva."
+    warningColorTitle: "Cor de alerta do botão"
+    warningColorBody: "A variação warning é uma alternativa contextual forte para ações que exigem atenção."
+    customColorsTitle: "Opções de cores customizadas"
+    customColorsSubtitle: "Use cores customizadas nos botões principais e internos"
+    customMainColorTitle: "Cor customizada do botão principal"
+    customMainColorBody: "Cores da paleta secundária podem ser aplicadas diretamente ao trigger principal."
+    customInnerColorTitle: "Cor customizada do botão interno"
+    customInnerColorBody: "As ações internas podem usar qualquer cor de botão do Limitless mantendo o trigger principal claro."
+    mixedColorsTitle: "Misturando cores dos botões"
+    mixedColorsBody: "O submenu suporta cores contextuais misturadas sem mudar a marcação estrutural."
+    waitingAction: "Aguardando ação do FAB."
+    demoActionPrefix: "Ação selecionada no FAB: "
+    fixedActionPrefix: "FAB fixo com backdrop acionou: "
+    noBackdropActionPrefix: "FAB fixo sem backdrop acionou: "
+    apiIntro: "A implementação AngularDart mantém o contrato visual do Limitless e expõe uma API curta para ações, direção, toggle e posicionamento."
+    overviewLead: "Markup padrão do menu FAB:"
+    classesTitle: "Classes do menu do FAB"
+    classesIntro: "O estilo do menu FAB é orientado por classes CSS e atributos de dados. A tabela abaixo resume as classes usadas por este wrapper AngularDart preservando o contrato original do Limitless."
+    classHeader: "Classe"
+    descriptionHeader: "Descrição"
+    basicClassesGroup: "Classes básicas"
+    directionsGroup: "Direções e posicionamento"
+    visibilityGroup: "Visibilidade e rótulos"
+    classMenuDesc: "Wrapper principal usado pelo componente."
+    classMenuBtnDesc: "Botão circular principal do trigger."
+    classMenuInnerDesc: "Container interno da lista de ações."
+    classIconsDesc: "Ícones rotacionados e suavizados pelo CSS do Limitless conforme o estado do menu."
+    classMenuTopDesc: "O menu abre abaixo do trigger."
+    classMenuBottomDesc: "O menu abre acima do trigger."
+    classMenuFixedDesc: "FAB fixo no viewport usado para ações persistentes da página."
+    classDirHorizontalDesc: "Extensões horizontais adicionadas pelo wrapper AngularDart."
+    toggleClickDesc: "Comportamento de abrir no clique."
+    toggleHoverDesc: "Comportamento de abrir ao passar o cursor."
+    stateOpenDesc: "Aplicado enquanto o menu está expandido."
+    dataFabLabelDesc: "Texto de tooltip para ações internas."
+    labelModifiersDesc: "Modificadores de rótulo alinhado à direita, claro e persistente."
+    customTriggerClose: "Fechar"
+    customTriggerActions: "Ações rápidas"
+    actionComposeEmail: "Escrever e-mail"
+    actionConversations: "Conversas"
+    actionAccountSecurity: "Segurança da conta"
+    actionAnalytics: "Análises"
+    actionPrivacy: "Privacidade"
+    actionEdit: "Editar"
+    actionShare: "Compartilhar"
+    actionArchive: "Arquivar"
+    actionPublish: "Publicar"
+    actionSaveDraft: "Salvar rascunho"
+    actionPreview: "Pré-visualizar"
+    markupRunPipeline: "Executar pipeline"

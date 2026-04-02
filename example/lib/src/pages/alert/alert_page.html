@@ -16,34 +16,30 @@
     <div class="card">
       
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-3">{{ t.pages.alerts.intro }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">O componente destaca estados rápidos, confirmações e avisos operacionais sem depender de JavaScript externo.</p>
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Variantes cromáticas e ícones inline ou em bloco.</li>
-                    <li>Modo sólido, pill, borderless e dismissible.</li>
-                    <li>Customização por classes auxiliares.</li>
+                    <li *ngFor="let item of features">{{ item }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Alertas não substituem fluxos de confirmação crítica.</li>
-                    <li>Mensagens longas pedem composição mais estruturada.</li>
-                    <li>Estados simultâneos demais reduzem a hierarquia visual.</li>
+                    <li *ngFor="let item of limits">{{ item }}</li>
                   </ul>
                 </div>
               </div>
@@ -103,15 +99,11 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
-            <p class="text-muted mb-3">Use alertas para mensagens curtas, estados operacionais e avisos de interface. O componente aceita configuração visual sem precisar de wrappers externos.</p>
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
             <ul class="mb-3 ps-3">
-              <li><code>variant</code> define a paleta do alerta.</li>
-              <li><code>iconClass</code>, <code>iconMode</code> e <code>iconPosition</code> controlam a leitura visual.</li>
-              <li><code>[solid]</code>, <code>[dismissible]</code>, <code>[roundedPill]</code> e <code>[borderless]</code> ajustam o acabamento.</li>
-              <li><code>(visibleChange)</code> e <code>(dismissed)</code> sincronizam o estado com o componente pai.</li>
-              <li><code>alertClass</code>, <code>textClass</code> e <code>iconContainerClass</code> refinam a aparência sem criar nova variante.</li>
+              <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
             <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-alert
@@ -119,7 +111,7 @@
   [solid]="true"
   iconClass="ph-warning-circle"
   [dismissible]="true"&gt;
-  &lt;strong&gt;Atenção.&lt;/strong&gt; Revise a operação.
+  &lt;strong&gt;Atenção.&lt;/strong&gt; {{ apiSnippetBody }}
 &lt;/li-alert&gt;</code></pre>
           </div>
         </li-tabx>

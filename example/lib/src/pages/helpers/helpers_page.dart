@@ -15,9 +15,14 @@ class HelpersPageComponent implements OnDestroy {
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+  bool get _isPt => i18n.isPortuguese;
 
   final SimpleLoading _loading = SimpleLoading();
   String helperState = '';
+
+  String get overviewIntro => _isPt
+      ? 'Helpers cobrem overlays, diálogos, popovers e notificações rápidas reutilizáveis no app administrativo.'
+      : 'Helpers cover overlays, dialogs, popovers, and reusable quick notifications in the administrative app.';
 
   @ViewChild('loadingHost')
   html.DivElement? loadingHost;
@@ -101,7 +106,7 @@ class HelpersPageComponent implements OnDestroy {
       title: t.pages.helpers.sweetModalTitle,
       message: t.pages.helpers.sweetModalBody,
       type: SweetAlertType.success,
-      confirmButtonText: 'OK',
+      confirmButtonText: _isPt ? 'OK' : 'OK',
       showCloseButton: true,
       footer: t.pages.helpers.sweetSuccessState,
     );

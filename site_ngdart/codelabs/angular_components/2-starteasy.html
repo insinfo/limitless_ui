@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add material components to your app.">
+  <title>Step 2: Start Using AngularDart Components | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Step 2: Start Using AngularDart Components" />
+  <meta name="twitter:description" content="Add material components to your app." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Step 2: Start Using AngularDart Components" />
+  <meta property="og:description" content="Add material components to your app." />
+  <meta property="og:url" content="https://angulardart.xyz/codelabs/angular_components/2-starteasy" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/shared/dart-logo-for-shares.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/acx-68e101408d9ee1d463abd6652e3d077dcb5ad6b330334265e12c22c94263e047.css">
+  <link href="styles.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  </head>
+
+  <body class="components">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li >
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#--copy-the-source-code">  Copy the source code</a></li>
+<li class="toc-entry toc-h2"><a href="#--depend-on-angular_components">  Depend on angular_components</a></li>
+<li class="toc-entry toc-h2"><a href="#--set-up-the-root-components-dart-file">  Set up the root component’s Dart file</a></li>
+<li class="toc-entry toc-h2"><a href="#--use-material-progress">  Use material-progress</a></li>
+<li class="toc-entry toc-h2"><a href="#--use-material-icon-in-buttons">  Use material-icon in buttons</a></li>
+<li class="toc-entry toc-h2"><a href="#--use-material-icon-in-other-components">  Use material-icon in other components</a></li>
+<li class="toc-entry toc-h2"><a href="#--use-acx-scorecard">  Use acx-scorecard</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#problems">Problems?</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/codelabs/angular_components/1-base">Step 1: Get to Know the Software</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/codelabs/angular_components/3-usebuttons">Step 3: Upgrade Buttons and Inputs</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+            <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/codelabs/angular_components/2-starteasy.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Step 2: Start Using AngularDart Components' page issue&body=From URL: https://angulardart.xyz/codelabs/angular_components/2-starteasy"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+            <h1>
+              Step 2: Start Using AngularDart Components
+              <a href="/version">1.0</a>
+            </h1>
+          </div>
+          <hr>
+          <p>&lt;?code-excerpt path-base=”examples/acx/lottery”?&gt;</p>
+
+<p>In this step, you’ll change the app to use a few of the AngularDart Components:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">&lt;material-icon&gt;</code></li>
+  <li><code class="language-plaintext highlighter-rouge">&lt;material-progress&gt;</code></li>
+  <li><code class="language-plaintext highlighter-rouge">&lt;acx-scorecard&gt;</code></li>
+</ul>
+
+<p>Run the <span><a href="/examples/lottery/2-starteasy" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/lottery/tree/master/2-starteasy" target="_blank" rel="noopener">view source</a></span>)</span> of the `` version of the app.</p>
+
+<h2 id="--copy-the-source-code">
+<a class="anchor" href="#--copy-the-source-code" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Copy the source code</h2>
+
+<p>Make a copy of the base app’s source code:</p>
+
+<div class="language-terminal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cp</span> <span class="nt">-r</span> 1-base myapp
+<span class="gp">&gt;</span><span class="w"> </span><span class="nb">cd </span>myapp
+<span class="gp">&gt;</span><span class="w"> </span>pub get
+</code></pre></div></div>
+
+<p>From now on, you’ll work in this copy of the source code,
+using whatever <a href="/tools">Dart web development tools</a> you prefer.</p>
+
+<h2 id="--depend-on-angular_components">
+<a class="anchor" href="#--depend-on-angular_components" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Depend on angular_components</h2>
+
+<ol>
+
+<li>
+    <p>Edit <code class="language-plaintext highlighter-rouge">pubspec.yaml</code> to add a dependency to <code class="language-plaintext highlighter-rouge">angular_components</code>:</p>
+
+    <p>&lt;?code-excerpt “1-base/pubspec.yaml” diff-with=”2-starteasy/pubspec.yaml” to=”dev_dependencies”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/pubspec.yaml
+</span><span class="gi">+++ 2-starteasy/pubspec.yaml
+</span><span class="p">@@ -7,6 +7,7 @@</span>
+
+ dependencies:
+   angular: ^6.0.1
+<span class="gi">+  angular_components: ^1.0.3
+</span>   intl: ^0.16.1
+
+ dev_dependencies:
+</code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>Get the new package:</p>
+
+    <div class="language-terminal highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>pub get
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="--set-up-the-root-components-dart-file">
+<a class="anchor" href="#--set-up-the-root-components-dart-file" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Set up the root component’s Dart file</h2>
+
+<p>Edit <code class="language-plaintext highlighter-rouge">lib/lottery_simulator.dart</code>,
+importing the Angular components and informing Angular about
+<a href="/api/angular_components/angular_components/materialProviders-constant.html"><code class="language-plaintext highlighter-rouge">materialProviders</code></a>
+and the material directives used in the template:</p>
+
+<p>&lt;?code-excerpt “1-base/lib/lottery_simulator.dart” diff-with=”2-starteasy/lib/lottery_simulator.dart”?&gt;</p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/lib/lottery_simulator.dart
+</span><span class="gi">+++ 2-starteasy/lib/lottery_simulator.dart
+</span><span class="p">@@ -5,6 +5,7 @@</span>
+ import 'dart:async';
+
+ import 'package:angular/angular.dart';
+<span class="gi">+import 'package:angular_components/angular_components.dart';
+</span> import 'package:intl/intl.dart';
+
+ import 'src/help/help.dart';
+<span class="p">@@ -24,12 +25,15 @@</span>
+   templateUrl: 'lottery_simulator.html',
+   directives: [
+     HelpComponent,
+<span class="gi">+    MaterialIconComponent,
++    MaterialProgressComponent,
+</span>     ScoresComponent,
+     SettingsComponent,
+     StatsComponent,
+     VisualizeWinningsComponent,
+   ],
+   providers: [
+<span class="gi">+    materialProviders,
+</span>     ClassProvider(Settings),
+   ],
+ )
+</code></pre></div></div>
+
+<p>Now you’re ready to use the components.</p>
+
+<h2 id="--use-material-progress">
+<a class="anchor" href="#--use-material-progress" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Use material-progress</h2>
+
+<p>Edit the template file <code class="language-plaintext highlighter-rouge">lib/lottery_simulator.html</code> to use the
+<code class="language-plaintext highlighter-rouge">&lt;material-progress&gt;</code> tag
+(<a href="https://gallery.angulardart.xyz/#/material_progress">MaterialProgressComponent</a>).
+The diffs should look similar to this:</p>
+
+<p>&lt;?code-excerpt “{1-base,2-starteasy}/lib/lottery_simulator.html” from=”Progress” to=”/material”?&gt;</p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/lib/lottery_simulator.html
+</span><span class="gi">+++ 2-starteasy/lib/lottery_simulator.html
+</span><span class="p">@@ -26,2 +26,2 @@</span>
+<span class="gd">-  Progress: &lt;strong&gt;{{progress}}%&lt;/strong&gt; &lt;br&gt;
+-  &lt;progress max="100" [value]="progress"&gt;&lt;/progress&gt;
+</span><span class="gi">+  &lt;material-progress  [activeProgress]="progress" class="life-progress"&gt;
++  &lt;/material-progress&gt;
+</span></code></pre></div></div>
+
+<p>Run the app, and you’ll see the new progress bar stretching across the window:</p>
+
+<p><img style="border:1px solid black" src="images/material-progress-after.png" alt="screenshot showing the material progress bar"></p>
+
+<p>As a reminder, here’s what the progress section looked like before:</p>
+
+<p><img style="border:1px solid black" src="images/material-progress-before.png" alt="screenshot showing the HTML progress bar"></p>
+
+<p>That change is barely noticeable. You can make a bigger difference by adding
+images to the buttons, using the <code class="language-plaintext highlighter-rouge">&lt;material-icon&gt;</code> component.</p>
+
+<h2 id="--use-material-icon-in-buttons">
+<a class="anchor" href="#--use-material-icon-in-buttons" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Use material-icon in buttons</h2>
+
+<p>Using <code class="language-plaintext highlighter-rouge">&lt;material-icon&gt;</code>
+(<a href="https://gallery.angulardart.xyz/#/material_icon">MaterialIconComponent</a>)
+is similar to using <code class="language-plaintext highlighter-rouge">&lt;material-progress&gt;</code>,
+except that you also need
+<a href="http://google.github.io/material-design-icons/">material icon fonts</a>.
+You can find icons and instructions for including them at
+<a href="https://design.google.com/icons">design.google.com/icons</a>.
+Use the following icons in the main simulator UI:</p>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Current button text</th>
+      <th>New icon</th>
+      <th>Icon name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Play</td>
+      <td><img src="images/ic_play_arrow_black_24px.svg" alt=""></td>
+      <td>play arrow</td>
+    </tr>
+    <tr>
+      <td>Step</td>
+      <td><img src="images/ic_skip_next_black_24px.svg" alt=""></td>
+      <td>skip next</td>
+    </tr>
+    <tr>
+      <td>Pause</td>
+      <td><img src="images/ic_pause_black_24px.svg" alt=""></td>
+      <td>pause</td>
+    </tr>
+    <tr>
+      <td>Reset</td>
+      <td><img src="images/ic_replay_black_24px.svg" alt=""></td>
+      <td>replay</td>
+    </tr>
+  </tbody>
+</table>
+
+<ol>
+
+<li>
+    <p>Find the icon font value for <strong>play arrow</strong>:</p>
+
+    <ol type="a">
+      <li>Go to <a href="https://design.google.com/icons">design.google.com/icons.</a>
+</li>
+      <li>Enter <strong>play</strong> or <strong>play arrow</strong> in the site search box.</li>
+      <li>In the results, click the <strong>play arrow</strong> icon
+<img src="images/ic_play_arrow_black_24px.svg" alt="|&gt;">
+to get more information.</li>
+      <li>Click <strong>ICON FONT</strong> to get the icon code to use: <strong>play_arrow</strong>.</li>
+    </ol>
+  </li>
+
+<li>
+    <p>Find the icon font values for <strong>skip next</strong>, <strong>pause</strong>, and <strong>replay</strong>.</p>
+  </li>
+
+<li>
+    <p>Edit the main HTML file (<code class="language-plaintext highlighter-rouge">web/index.html</code>) to add the following code to the <code class="language-plaintext highlighter-rouge">&lt;head&gt;</code> section:</p>
+
+    <p>&lt;?code-excerpt “1-base/web/index.html” diff-with=”2-starteasy/web/index.html”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/web/index.html
+</span><span class="gi">+++ 2-starteasy/web/index.html
+</span><span class="p">@@ -13,6 +13,8 @@</span>
+       }());
+     &lt;/script&gt;
+     &lt;script defer src="main.dart.js"&gt;&lt;/script&gt;
+<span class="gi">+    &lt;link rel="stylesheet" type="text/css"
++          href="https://fonts.googleapis.com/icon?family=Material+Icons"&gt;
+</span>     &lt;style&gt;
+       #wrapper {
+         max-width: 600px;
+</code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>Edit <code class="language-plaintext highlighter-rouge">lib/lottery_simulator.html</code> to change the first button to use
+a <code class="language-plaintext highlighter-rouge">&lt;material-icon&gt;</code> instead of text:</p>
+
+    <ol type="a">
+      <li>Add an <code class="language-plaintext highlighter-rouge">aria-label</code> attribute to the button, giving it the value of the
+  button’s text (<strong>Play</strong>).</li>
+      <li>Replace the button’s text (<strong>Play</strong>) with a <code class="language-plaintext highlighter-rouge">&lt;material-icon&gt;</code> element.</li>
+      <li>Set the <code class="language-plaintext highlighter-rouge">icon</code> attribute to the icon code (<code class="language-plaintext highlighter-rouge">play_arrow</code>).</li>
+    </ol>
+
+    <p>Here are the diffs:</p>
+
+    <p>&lt;?code-excerpt “{1-base,2-starteasy}/lib/lottery_simulator.html” from=”play” to=”/button”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/lib/lottery_simulator.html
+</span><span class="gi">+++ 2-starteasy/lib/lottery_simulator.html
+</span><span class="p">@@ -31,5 +31,6 @@</span>
+       &lt;button (click)="play()"
+           [disabled]="endOfDays || inProgress"
+           id="play-button"
+<span class="gd">-      &gt;Play
+</span><span class="gi">+          aria-label="Play"&gt;
++        &lt;material-icon icon="play_arrow"&gt;&lt;/material-icon&gt;
+</span>       &lt;/button&gt;
+</code></pre></div>    </div>
+
+    </li>
+<li>
+      <p>Use similar changes to convert the <strong>Step</strong>, <strong>Pause</strong>, and <strong>Reset</strong> buttons
+to use material icons instead of text.</p>
+    </li>
+  
+</ol>
+
+<p>These small changes make a big difference in the UI:</p>
+
+<p><img style="border:1px solid black" src="images/material-icon-buttons-after.png" alt="buttons have images now, instead of text"></p>
+
+<aside class="alert alert-success">
+  <p><i class="fas fa-exclamation-circle"> </i> <strong>Common problem: Forgetting to import material icon fonts</strong></p>
+
+  <p>If you see words instead of icons, your app needs to import material icon fonts.</p>
+
+  <p><strong>The solution:</strong> In the app entry point (for example, <code class="language-plaintext highlighter-rouge">web/index.html</code>),
+  <strong>import the Material+Icons font family.</strong></p>
+</aside>
+
+<h2 id="--use-material-icon-in-other-components">
+<a class="anchor" href="#--use-material-icon-in-other-components" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Use material-icon in other components</h2>
+
+<p>If you scroll down to the Tips section of the page, you’ll see blank spaces where there should be icons:</p>
+
+<p><img style="border:1px solid black" src="images/material-icon-help-before.png" alt="help text has no images"></p>
+
+<p>The HTML template (<code class="language-plaintext highlighter-rouge">lib/src/help/help.html</code>) uses <code class="language-plaintext highlighter-rouge">&lt;material-icon&gt;</code> already, so why isn’t it working?</p>
+
+<aside class="alert alert-success">
+  <p><i class="fas fa-exclamation-circle"> </i> <strong>Common problem: Forgetting to register a component</strong></p>
+
+  <p>If an Angular component’s template uses a second Angular component
+  without declaring it, that <strong>second component doesn’t appear in the
+  first component’s UI</strong>.</p>
+
+  <p><strong>The solution:</strong> In the first component’s Dart file,
+  <strong>import</strong> the second component and <strong>register</strong> the second component’s
+  class as a directive.</p>
+</aside>
+
+<p>Edit <code class="language-plaintext highlighter-rouge">lib/src/help/help.dart</code> to import the AngularDart Components and
+register <code class="language-plaintext highlighter-rouge">MaterialIconComponent</code>.</p>
+
+<p>&lt;?code-excerpt “1-base/lib/src/help/help.dart” diff-with=”2-starteasy/lib/src/help/help.dart”?&gt;</p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/lib/src/help/help.dart
+</span><span class="gi">+++ 2-starteasy/lib/src/help/help.dart
+</span><span class="p">@@ -3,12 +3,14 @@</span>
+ // BSD-style license that can be found in the LICENSE file.
+
+ import 'package:angular/angular.dart';
+<span class="gi">+import 'package:angular_components/angular_components.dart';
+</span>
+ @Component(
+   selector: 'help-component',
+   templateUrl: 'help.html',
+   styleUrls: ['help.css'],
+   directives: [
+<span class="gi">+    MaterialIconComponent,
+</span>     NgSwitch,
+     NgSwitchWhen,
+     NgSwitchDefault,
+</code></pre></div></div>
+
+<aside class="alert alert-info">
+  <p><strong>Note:</strong>
+  Unlike when you edited <code class="language-plaintext highlighter-rouge">lib/lottery_simulator.dart</code>,
+  you don’t need to add <code class="language-plaintext highlighter-rouge">materialProviders</code> to this file.
+  The reason: the <code class="language-plaintext highlighter-rouge">&lt;help-component&gt;</code> UI has no buttons or anything else that
+  requires the ripple animations defined in <code class="language-plaintext highlighter-rouge">materialProviders</code>.</p>
+
+  <p>You also don’t need to do anything to get the material icon fonts,
+  since the app’s entry point (<code class="language-plaintext highlighter-rouge">web/index.html</code>) already imports the font file.</p>
+</aside>
+
+<p>Adding those two lines to <code class="language-plaintext highlighter-rouge">lib/src/help/help.dart</code> makes the material icons display:</p>
+
+<p><img style="border:1px solid black" src="images/material-icon-help-after.png" alt="help text now has images"></p>
+
+<h2 id="--use-acx-scorecard">
+<a class="anchor" href="#--use-acx-scorecard" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Use acx-scorecard</h2>
+
+<p>Make one more change: use
+<code class="language-plaintext highlighter-rouge">&lt;acx-scorecard&gt;</code> (<a href="https://gallery.angulardart.xyz/#/scorecard">ScorecardComponent</a>)
+to display the betting and investing results. You’ll use the
+scorecards in the app’s custom <code class="language-plaintext highlighter-rouge">ScoresComponent</code> (<code class="language-plaintext highlighter-rouge">&lt;scores-component&gt;</code>), which is
+implemented in <code class="language-plaintext highlighter-rouge">lib/src/scores/scores.*</code>.</p>
+
+<ol>
+
+<li>
+    <p>Edit <code class="language-plaintext highlighter-rouge">lib/src/scores/scores.dart</code> to register <code class="language-plaintext highlighter-rouge">ScorecardComponent</code> and the
+  <code class="language-plaintext highlighter-rouge">materialProviders</code> provider:</p>
+
+    <p>&lt;?code-excerpt “1-base/lib/src/scores/scores.dart” diff-with=”2-starteasy/lib/src/scores/scores.dart”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/lib/src/scores/scores.dart
+</span><span class="gi">+++ 2-starteasy/lib/src/scores/scores.dart
+</span><span class="p">@@ -3,11 +3,14 @@</span>
+ // BSD-style license that can be found in the LICENSE file.
+
+ import 'package:angular/angular.dart';
+<span class="gi">+import 'package:angular_components/angular_components.dart';
+</span>
+ @Component(
+   selector: 'scores-component',
+   styleUrls: ['scores.css'],
+   templateUrl: 'scores.html',
+<span class="gi">+  directives: [ScorecardComponent],
++  providers: [materialProviders],
+</span> )
+ class ScoresComponent {
+   /// The state of cash the person would have if they saved instead of betting.
+</code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>Edit <code class="language-plaintext highlighter-rouge">lib/src/scores/scores.html</code>
+  (the template file for <code class="language-plaintext highlighter-rouge">ScoresComponent</code>)
+  to change the <strong>Betting</strong> section from a <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> to an <code class="language-plaintext highlighter-rouge">&lt;acx-scorecard&gt;</code>.
+  Specify the following attributes (documented in the
+  <code class="language-plaintext highlighter-rouge">ScorecardComponent</code> API reference) for each <code class="language-plaintext highlighter-rouge">&lt;acx-scoreboard&gt;</code>:</p>
+
+    <ul>
+      <li>
+<code class="language-plaintext highlighter-rouge">label:</code> Set this to the string in the div’s <code class="language-plaintext highlighter-rouge">&lt;h4&gt;</code> heading: “Betting”.</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">class:</code> Set this to “betting”,
+so that you can use it to specify custom styles.</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">value:</code> Set this to the value of the <code class="language-plaintext highlighter-rouge">cash</code> property of <code class="language-plaintext highlighter-rouge">ScoresComponent</code>.</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">description:</code> Set this to the second line of content in the div’s
+<code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> section.</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">changeType:</code> Set this to the value that <code class="language-plaintext highlighter-rouge">[class]</code> is set
+to, surrounded by <code class="language-plaintext highlighter-rouge">{{ }}</code>.</li>
+    </ul>
+  </li>
+
+<li>
+
+    <p>Similarly, change the <strong>Investing</strong> section from a <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>
+to an <code class="language-plaintext highlighter-rouge">&lt;acx-scorecard&gt;</code>. A few notes:</p>
+
+    <ul>
+      <li>
+<code class="language-plaintext highlighter-rouge">label:</code> Set this to “Investing”.</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">class:</code> Set this to “investing”.</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">value:</code> Set this to the value of the <code class="language-plaintext highlighter-rouge">altCash</code> property of <code class="language-plaintext highlighter-rouge">ScoresComponent</code>.</li>
+      <li>
+<code class="language-plaintext highlighter-rouge">description:</code> As before, set this to the second line of content in the div’s
+<code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> section.</li>
+      <li>
+<strong>Don’t</strong> specify a <code class="language-plaintext highlighter-rouge">changeType</code> attribute.</li>
+    </ul>
+
+    <p>Here are the code diffs for the last two steps:</p>
+
+    <p>&lt;?code-excerpt “1-base/lib/src/scores/scores.html” diff-with=”2-starteasy/lib/src/scores/scores.html”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/lib/src/scores/scores.html
+</span><span class="gi">+++ 2-starteasy/lib/src/scores/scores.html
+</span><span class="p">@@ -1,15 +1,14 @@</span>
+<span class="gd">-&lt;div&gt;
+-  &lt;h4&gt;Betting&lt;/h4&gt;
+-  &lt;p&gt;
+-    &lt;strong [class]="cash &gt; altCash ? 'positive' : cash &lt; altCash ? 'negative' : 'neutral'"&gt;${{ cash }}&lt;/strong&gt;
+-    {{ outcomeDescription }}
+-  &lt;/p&gt;
+-&lt;/div&gt;
+</span><span class="gi">+&lt;acx-scorecard
++    label="Betting"
++    class="betting"
++    value="${{ cash }}"
++    description="{{ outcomeDescription }}"
++    changeType="{{ cash &gt; altCash ? 'positive' : cash &lt; altCash ? 'negative' : 'neutral' }}"&gt;
++&lt;/acx-scorecard&gt;
+</span>
+-&lt;div&gt;
+<span class="gd">-  &lt;h4&gt;Investing&lt;/h4&gt;
+-  &lt;p&gt;
+-    &lt;strong&gt;${{ altCash }}&lt;/strong&gt;
+-    ...
+-  &lt;/p&gt;
+-&lt;/div&gt;
+</span><span class="gi">+&lt;acx-scorecard
++    label="Investing"
++    class="investing"
++    value="${{ altCash }}"
++    description="..."&gt;
++&lt;/acx-scorecard&gt;
+</span></code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>Edit <code class="language-plaintext highlighter-rouge">lib/src/scores/scores.css</code> (styles for <code class="language-plaintext highlighter-rouge">ScoresComponent</code>)
+to specify that <code class="language-plaintext highlighter-rouge">.investing</code> floats to the right.
+You can also remove the unneeded <code class="language-plaintext highlighter-rouge">.positive</code> and <code class="language-plaintext highlighter-rouge">.negative</code> styles.</p>
+
+    <p>&lt;?code-excerpt “1-base/lib/src/scores/scores.css” diff-with=”2-starteasy/lib/src/scores/scores.css”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 1-base/lib/src/scores/scores.css
+</span><span class="gi">+++ 2-starteasy/lib/src/scores/scores.css
+</span><span class="p">@@ -1,7 +1,3 @@</span>
+<span class="gd">-.positive {
+-  color: green;
+-}
+-
+-.negative {
+-  color: red;
+</span><span class="gi">+.investing {
++  float: right;
+</span> }
+</code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>Refresh the app, and look at the nice new UI:</p>
+
+    <p><img style="border:1px solid black" src="images/acx-scorecard-after.png" alt='new UI of the lottery simulation, with "Betting" and "Investing" scorecards'></p>
+
+    <p>Remember, it used to look like this:</p>
+
+    <p><img style="border:1px solid black" src="images/acx-scorecard-before.png" alt="old UI of the lottery simulation"></p>
+  </li>
+</ol>
+
+<aside class="alert alert-success">
+  <p><i class="fas fa-exclamation-circle"> </i> <strong>Common problem: Registering the wrong component</strong><br></p>
+
+  <p>It’s easy to accidentally register the wrong component.
+  For example, you might register ScoresComponent instead of
+  <code class="language-plaintext highlighter-rouge">ScorecardComponent</code>.</p>
+
+  <p><strong>The solution:</strong> If the component doesn’t show up, make sure the <strong>containing
+  component’s Dart file includes the right component.</strong></p>
+</aside>
+
+<h3 id="problems">
+<a class="anchor" href="#problems" aria-hidden="true"><span class="octicon octicon-link"></span></a>Problems?</h3>
+
+<p>Check your code against the solution in the
+<a href="https://github.com/angulardart-community/lottery/tree/master/2-starteasy">2-starteasy</a>
+directory.</p>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/codelabs/angular_components/1-base">Step 1: Get to Know the Software</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/codelabs/angular_components/3-usebuttons">Step 3: Upgrade Buttons and Inputs</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

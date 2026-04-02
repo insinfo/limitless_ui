@@ -17,8 +17,10 @@ class SweetAlertPageComponent {
 
   final DemoI18nService i18n;
   final SweetAlertService sweetAlertService;
+  Messages get t => i18n.t;
 
   bool get _isPt => i18n.isPortuguese;
+  bool get isPt => _isPt;
 
   String lastAction = '';
 

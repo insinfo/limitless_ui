@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Property binding helps show app data in the UI.">
+  <title>Displaying Data | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Displaying Data" />
+  <meta name="twitter:description" content="Property binding helps show app data in the UI." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Displaying Data" />
+  <meta property="og:description" content="Property binding helps show app data in the UI." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/displaying-data" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li class="active">
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#showing-component-properties-with-interpolation">Showing component properties with interpolation</a></li>
+<li class="toc-entry toc-h2"><a href="#template-inline-or-template-file">Template inline or template file?</a></li>
+<li class="toc-entry toc-h2"><a href="#showing-a-list-property-with-ngfor">Showing a list property with *ngFor</a></li>
+<li class="toc-entry toc-h2"><a href="#creating-a-class-for-the-data">Creating a class for the data</a></li>
+<li class="toc-entry toc-h2"><a href="#using-the-hero-class">Using the Hero class</a></li>
+<li class="toc-entry toc-h2"><a href="#conditional-display-with-ngif">Conditional display with NgIf</a></li>
+<li class="toc-entry toc-h2"><a href="#summary">Summary</a></li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/architecture">Architecture Overview</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/user-input">User Input</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/displaying-data.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Displaying Data' page issue&body=From URL: https://angulardart.xyz/guide/displaying-data"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Displaying Data 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <!-- FilePath: src/guide/displaying-data.md -->
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/displaying-data”?&gt;</p>
+
+<p>You can display data by binding controls in an HTML template to properties of an Angular component.</p>
+
+<p>In this page, you’ll create a component with a list of heroes.
+You’ll display the list of hero names and
+conditionally show a message below the list.</p>
+
+<p>The final UI looks like this:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/displaying-data/final-1f57aca993995880f9d997bddb5b374d80514142b1a2d06028858a8c16c9c256.png" alt="Final UI"></p>
+
+<div class="l-sub-section">
+  <p>The <span><a href="/examples/displaying-data" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/displaying-data/tree/master" target="_blank" rel="noopener">view source</a></span>)</span> demonstrates all of the syntax and code
+  snippets described in this page.</p>
+</div>
+
+<p><a id="interpolation"></a></p>
+<h2 id="showing-component-properties-with-interpolation">
+<a class="anchor" href="#showing-component-properties-with-interpolation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Showing component properties with interpolation</h2>
+
+<p>The easiest way to display a component property
+is to bind the property name through interpolation.
+With interpolation, you put the property name in the view template, enclosed in double curly braces: <code class="language-plaintext highlighter-rouge">{{myHero}}</code>.</p>
+
+<p>Follow the <a href="setup">setup</a> instructions for creating a new project
+named <code class="language-plaintext highlighter-rouge">displaying_data</code>.</p>
+
+<p>Then modify the <code class="language-plaintext highlighter-rouge">app_component.dart</code> file by
+changing the template and the body of the component.</p>
+
+<p>When you’re done, it should look like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart” title linenums?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  @Component(
+    selector: 'my-app',
+    template: '''
+      &lt;h1&gt;{{title}}&lt;/h1&gt;
+      &lt;h2&gt;My favorite hero is: {{myHero}}&lt;/h2&gt;
+    ''',
+  )
+  class AppComponent {
+    final title = 'Tour of Heroes';
+    String myHero = 'Windstorm';
+  }
+</code></pre></div></div>
+
+<p>You added two properties to the formerly empty component: <code class="language-plaintext highlighter-rouge">title</code> and <code class="language-plaintext highlighter-rouge">myHero</code>.</p>
+
+<p>The revised template displays the two component properties using double curly brace
+interpolation:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (template)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;h2&gt;My favorite hero is: {{myHero}}&lt;/h2&gt;
+  ''',
+</code></pre></div></div>
+
+<p>Angular automatically pulls the value of the <code class="language-plaintext highlighter-rouge">title</code> and <code class="language-plaintext highlighter-rouge">myHero</code> properties from the component and
+inserts those values into the browser. Angular updates the display
+when these properties change.</p>
+
+<div class="l-sub-section">
+  <p>More precisely, the redisplay occurs after some kind of asynchronous event related to
+  the view, such as a keystroke, a timer completion, or a response to an HTTP request.</p>
+</div>
+
+<p>Notice that you don’t call <strong>new</strong> to create an instance of the <code class="language-plaintext highlighter-rouge">AppComponent</code> class.
+Angular is creating an instance for you. How?</p>
+
+<p>The CSS <code class="language-plaintext highlighter-rouge">selector</code> in the <code class="language-plaintext highlighter-rouge">@Component</code> annotation specifies an element named <code class="language-plaintext highlighter-rouge">&lt;my-app&gt;</code>.
+That element is a placeholder in the body of your <code class="language-plaintext highlighter-rouge">index.html</code> file:</p>
+
+<p>&lt;?code-excerpt “web/index.html (body)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;body&gt;
+    &lt;my-app&gt;Loading...&lt;/my-app&gt;
+  &lt;/body&gt;
+</code></pre></div></div>
+
+<p>When you launch your app with the <code class="language-plaintext highlighter-rouge">AppComponent</code> class (in <code class="language-plaintext highlighter-rouge">web/main.dart</code>), Angular looks for a <code class="language-plaintext highlighter-rouge">&lt;my-app&gt;</code>
+in the <code class="language-plaintext highlighter-rouge">index.html</code>, finds it, instantiates an instance of <code class="language-plaintext highlighter-rouge">AppComponent</code>, and renders it
+inside the <code class="language-plaintext highlighter-rouge">&lt;my-app&gt;</code> tag.</p>
+
+<p>Now run the app. It should display the title and hero name:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/displaying-data/title-and-hero-7b494ae2412c8c31c5d38fc9a388908cef2b11b3e4a0bf22c9862ffc505a2efb.png" alt="Title and Hero"></p>
+
+<h2 id="template-inline-or-template-file">
+<a class="anchor" href="#template-inline-or-template-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template inline or template file?</h2>
+
+<p>You can store your component’s template in one of two places.
+You can define it <em>inline</em> using the <code class="language-plaintext highlighter-rouge">template</code> property, or you can define
+the template in a separate HTML file and link to it in
+the component metadata using the <code class="language-plaintext highlighter-rouge">@Component</code> annotation’s <code class="language-plaintext highlighter-rouge">templateUrl</code> property.</p>
+
+<p>The choice between inline and separate HTML is a matter of taste,
+circumstances, and organization policy.
+Here the app uses inline HTML because the template is small and the demo
+is simpler without the additional HTML file.</p>
+
+<p>In either style, the template data bindings have the same access to the component’s properties.</p>
+
+<p><a id="ngFor"></a></p>
+<h2 id="showing-a-list-property-with-ngfor">
+<a class="anchor" href="#showing-a-list-property-with-ngfor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Showing a list property with <em>*ngFor</em>
+</h2>
+
+<p>To display a list of heroes, begin by adding a list of hero names to the component and redefine <code class="language-plaintext highlighter-rouge">myHero</code> to be the first name in the list.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart (class)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class AppComponent {
+    final title = 'Tour of Heroes';
+    List&lt;String&gt; heroes = [
+      'Windstorm',
+      'Bombasto',
+      'Magneta',
+      'Tornado',
+    ];
+    String get myHero =&gt; heroes.first;
+  }
+</code></pre></div></div>
+
+<p>Now use the Angular <code class="language-plaintext highlighter-rouge">ngFor</code> directive in the template to display
+each item in the <code class="language-plaintext highlighter-rouge">heroes</code> list.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart (template)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;h2&gt;My favorite hero is: {{myHero}}&lt;/h2&gt;
+    &lt;p&gt;Heroes:&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li *ngFor="let hero of heroes"&gt;
+        {{ hero }}
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  ''',
+</code></pre></div></div>
+
+<p>This UI uses the HTML unordered list with <code class="language-plaintext highlighter-rouge">&lt;ul&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;li&gt;</code> tags. The <code class="language-plaintext highlighter-rouge">*ngFor</code>
+in the <code class="language-plaintext highlighter-rouge">&lt;li&gt;</code> element is the Angular “repeater” directive.
+It marks that <code class="language-plaintext highlighter-rouge">&lt;li&gt;</code> element (and its children) as the “repeater template”:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart” region=”li”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;li *ngFor="let hero of heroes"&gt;
+    {{ hero }}
+  &lt;/li&gt;
+</code></pre></div></div>
+
+<div class="alert alert-warning">
+  <p>Don’t forget the leading asterisk (*) in <code class="language-plaintext highlighter-rouge">*ngFor</code>. It is an essential part of the syntax.
+  For more information, see the <a href="template-syntax#ngFor">Template Syntax</a> page.</p>
+</div>
+
+<p>Notice the <code class="language-plaintext highlighter-rouge">hero</code> variable in the <code class="language-plaintext highlighter-rouge">ngFor</code> instruction;
+it is an example of a <em>template input variable</em>. Read
+more about template input variables in the <a href="template-syntax#microsyntax">microsyntax</a> section of
+the <a href="template-syntax">Template Syntax</a> page.</p>
+
+<p>Angular duplicates the <code class="language-plaintext highlighter-rouge">&lt;li&gt;</code> for each item in the list, setting the <code class="language-plaintext highlighter-rouge">hero</code> variable
+to the item (the hero) in the current iteration. Angular uses that variable as the
+context for the interpolation in the double curly braces.</p>
+
+<div class="l-sub-section">
+  <p>In this case, <code class="language-plaintext highlighter-rouge">ngFor</code> is displaying a list, but <code class="language-plaintext highlighter-rouge">ngFor</code> can
+  repeat items for any <a href="https://api.dart.dev/stable/dart-core/Iterable-class.html">Iterable</a> object.</p>
+</div>
+
+<div class="alert alert-warning">
+  <h4 id="componentdirectives-">@Component(directives: …)</h4>
+
+  <p>Before you can use any Angular directives in a template,
+you need to list them in the <code class="language-plaintext highlighter-rouge">directives</code> argument of your component’s
+<code class="language-plaintext highlighter-rouge">@Component</code> annotation. You can list directives individually, or for
+convenience you can use groups like <a href="https://pub.dev/documentation/angular/6.0.1/angular/CORE_DIRECTIVES-constant.html">CORE_DIRECTIVES</a>:</p>
+
+  <p>&lt;?code-excerpt “lib/app_component_2.dart (directives)” title?&gt;</p>
+  <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  @Component(
+    selector: 'my-app',
+    // ···
+    directives: [coreDirectives],
+  )
+</code></pre></div>  </div>
+</div>
+
+<p>Refresh the browser. Now the heroes appear in an unordered list.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/displaying-data/hero-names-list-5aad56858327be3fa09457dcebf80c7ee85722cafc447a617dc8a664472d2e56.png" alt="After ngfor"></p>
+
+<h2 id="creating-a-class-for-the-data">
+<a class="anchor" href="#creating-a-class-for-the-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating a class for the data</h2>
+
+<p>The app’s code defines the data directly inside the component, which isn’t best practice.
+In a simple demo, however, it’s fine.</p>
+
+<p>At the moment, the binding is to a list of strings.
+In real apps, most bindings are to more specialized objects.</p>
+
+<p>To convert this binding to use specialized objects, turn the list
+of hero names into a list of <code class="language-plaintext highlighter-rouge">Hero</code> objects. For that you’ll need a <code class="language-plaintext highlighter-rouge">Hero</code> class.</p>
+
+<p>Create a new file in the <code class="language-plaintext highlighter-rouge">lib</code> folder called  <code class="language-plaintext highlighter-rouge">hero.dart</code> with the following code:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero.dart” linenums title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class Hero {
+    final int id;
+    String name;
+
+    Hero(this.id, this.name);
+
+    @override
+    String toString() =&gt; '$id: $name';
+  }
+</code></pre></div></div>
+
+<p>You’ve defined a class with a constructor, two properties (<code class="language-plaintext highlighter-rouge">id</code> and <code class="language-plaintext highlighter-rouge">name</code>),
+and a <code class="language-plaintext highlighter-rouge">toString()</code> method.</p>
+
+<h2 id="using-the-hero-class">
+<a class="anchor" href="#using-the-hero-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using the Hero class</h2>
+
+<p>After importing the <code class="language-plaintext highlighter-rouge">Hero</code> class, the <code class="language-plaintext highlighter-rouge">AppComponent.heroes</code> property can return a <em>typed</em> list
+of <code class="language-plaintext highlighter-rouge">Hero</code> objects:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_3.dart (heroes)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  List&lt;Hero&gt; heroes = [
+    Hero(1, 'Windstorm'),
+    Hero(13, 'Bombasto'),
+    Hero(15, 'Magneta'),
+    Hero(20, 'Tornado')
+  ];
+  Hero get myHero =&gt; heroes.first;
+</code></pre></div></div>
+
+<p>Next, update the template.
+At the moment it displays the hero’s <code class="language-plaintext highlighter-rouge">id</code> and <code class="language-plaintext highlighter-rouge">name</code>.
+Fix that to display only the hero’s <code class="language-plaintext highlighter-rouge">name</code> property.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_3.dart (template)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;h2&gt;My favorite hero is: {{myHero.name}}&lt;/h2&gt;
+    &lt;p&gt;Heroes:&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li *ngFor="let hero of heroes"&gt;
+        {{ hero.name }}
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  ''',
+</code></pre></div></div>
+
+<p>The display looks the same, but the code is clearer.</p>
+
+<p><a id="ngIf"></a></p>
+<h2 id="conditional-display-with-ngif">
+<a class="anchor" href="#conditional-display-with-ngif" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conditional display with NgIf</h2>
+
+<p>Sometimes an app needs to display a view or a portion of a view only under specific circumstances.</p>
+
+<p>Let’s change the example to display a message if there are more than three heroes.</p>
+
+<p>The Angular <code class="language-plaintext highlighter-rouge">ngIf</code> directive inserts or removes an element based on a boolean condition.
+To see it in action, add the following paragraph at the bottom of the template:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (message)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p *ngIf="heroes.length &gt; 3"&gt;There are many heroes!&lt;/p&gt;
+</code></pre></div></div>
+
+<div class="alert alert-warning">
+  <p>Don’t forget the leading asterisk (*) in <code class="language-plaintext highlighter-rouge">*ngIf</code>. It is an essential part of the syntax.
+  Read more about <code class="language-plaintext highlighter-rouge">ngIf</code> and <code class="language-plaintext highlighter-rouge">*</code> in the <a href="template-syntax#ngIf">ngIf section</a> of the <a href="template-syntax">Template Syntax</a> page.</p>
+</div>
+
+<p>The template expression inside the double quotes,
+<code class="language-plaintext highlighter-rouge">*ngIf="heros.length &gt; 3"</code>, looks and behaves much like Dart.
+When the component’s list of heroes has more than three items, Angular adds the paragraph
+to the DOM and the message appears. If there are three or fewer items, Angular omits the
+paragraph, so no message appears. For more information,
+see the <a href="template-syntax#template-expressions">template expressions</a> section of the
+<a href="template-syntax">Template Syntax</a> page.</p>
+
+<div class="alert alert-info">
+  <p>Angular isn’t showing and hiding the message. It is adding and removing the paragraph element from the DOM. That improves performance, especially in larger projects when conditionally including or excluding
+  big chunks of HTML with many data bindings.</p>
+</div>
+
+<p>Try it out. Because the list has four items, the message should appear.
+Go back into <code class="language-plaintext highlighter-rouge">app_component.dart</code> and delete or comment out one of the elements from the hero list.
+The browser should refresh automatically and the message should disappear.</p>
+
+<h2 id="summary">
+<a class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+
+<p>Now you know how to use:</p>
+
+<ul>
+  <li>
+<strong>Interpolation</strong> with double curly braces to display a component property.</li>
+  <li>
+<strong>ngFor</strong> to display a list of items.</li>
+  <li>A Dart class to shape the <strong>model data</strong> for your component and display properties of that model.</li>
+  <li>
+<strong>ngIf</strong> to conditionally display a chunk of HTML based on a boolean expression.</li>
+</ul>
+
+<p>Here’s the final code:</p>
+
+<code-tabs>
+  <?code-pane "lib/app_component.dart" linenums?>
+  <?code-pane "lib/src/hero.dart" linenums?>
+  <?code-pane "web/main.dart" linenums?>
+  <?code-pane "web/index.html" linenums?>
+  <?code-pane "pubspec.yaml" linenums?>
+</code-tabs>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/architecture">Architecture Overview</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/user-input">User Input</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

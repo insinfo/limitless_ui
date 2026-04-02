@@ -78,16 +78,19 @@
   <div id="demo_mobile_sidebar"
        class="sidebar sidebar-dark sidebar-main sidebar-expand-lg"
        [class.sidebar-mobile-expanded]="isMobileSidebarOpen"
-       [class.sidebar-collapsed]="isSidebarCollapsed">
+       [class.sidebar-main-resized]="isSidebarResized"
+       [class.sidebar-main-unfold]="isSidebarUnfolded"
+       (mouseenter)="onSidebarMouseEnter()"
+       (mouseleave)="onSidebarMouseLeave()">
     <div class="sidebar-content">
       <div class="sidebar-section">
         <div class="sidebar-section-body d-flex justify-content-center">
           <h5 class="sidebar-resize-hide flex-grow-1 my-auto">{{ t.app.navigation }}</h5>
 
           <div>
-            <button type="button" (click)="toggleSidebarCollapsed()"
+            <button type="button" (click)="toggleSidebarResized()"
                     class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-control sidebar-main-resize d-none d-lg-inline-flex"
-                    [attr.aria-expanded]="(!isSidebarCollapsed).toString()" aria-label="Toggle compact sidebar">
+                    [attr.aria-expanded]="(!isSidebarResized).toString()" aria-label="Toggle compact sidebar">
               <i class="ph-arrows-left-right"></i>
             </button>
 
@@ -103,10 +106,10 @@
       <div class="sidebar-section">
         <ul class="nav nav-sidebar" [attr.data-nav-type]="'accordion'">
           <li class="nav-item-header pt-0">
-            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">{{ t.app.components }}</div>
+            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">{{ mainLabel }}</div>
             <i class="ph-dots-three sidebar-resize-show"></i>
           </li>
-          <li *ngFor="let item of navItems" class="nav-item">
+          <li *ngFor="let item of primaryItems" class="nav-item">
             <a [routerLink]="item.url"
                (click)="onNavItemActivate()"
                routerLinkActive="active"
@@ -114,6 +117,28 @@
               <i [class]="item.iconClass"></i>
               <span>{{ item.label }}</span>
             </a>
+          </li>
+
+          <li *ngFor="let section of navSections" class="nav-item nav-item-submenu"
+              [class.nav-item-open]="isSectionExpanded(section.id)">
+            <a href="#"
+               class="nav-link"
+               (click)="toggleSection($event, section.id)">
+              <i [class]="section.iconClass"></i>
+              <span>{{ section.label }}</span>
+            </a>
+
+            <ul class="nav-group-sub collapse" [class.show]="isSectionExpanded(section.id)">
+              <li *ngFor="let item of section.items" class="nav-item">
+                <a [routerLink]="item.url"
+                   (click)="onNavItemActivate(section.id)"
+                   routerLinkActive="active"
+                   class="nav-link">
+                  <i [class]="item.iconClass"></i>
+                  <span>{{ item.label }}</span>
+                </a>
+              </li>
+            </ul>
           </li>
         </ul>
       </div>

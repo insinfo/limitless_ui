@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+  <loc>https://angulardart.xyz/codelabs/angular_components/1-base</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/router/1</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/codelabs/angular_components/2-starteasy</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/router/2</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/codelabs/angular_components/3-usebuttons</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/router/3</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/codelabs/angular_components/4-final</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/router/4</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/router/5</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/router/6</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/api</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/router/appendices</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/architecture</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/attribute-directives</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/component/basics</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/community</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/component-styles</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/components</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/dependency-injection</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/deployment</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/displaying-data</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/examples</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/faq</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/forms</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/glossary</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/hierarchical-dependency-injection</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/cheatsheet</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/codelabs/angular_components</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/codelabs</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/router</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/component</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/e2e</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tutorial</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/component/input-and-output</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/learning-angular</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/lifecycle-hooks</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/component/page-objects</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/pipes</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/component/routing-components</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/component/running-tests</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/search</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/security</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/server-communication</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/component/services</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/setup</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/testing/component/simulating-user-action</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/structural-directives</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/template-syntax</loc>
+  <lastmod>2019-01-08T00:00:00+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/terms</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tutorial/toh-pt0</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tutorial/toh-pt1</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tutorial/toh-pt2</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tutorial/toh-pt3</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tutorial/toh-pt4</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tutorial/toh-pt5</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tutorial/toh-pt6</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/tools</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/guide/user-input</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/version</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/reference/videos</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+<url>
+  <loc>https://angulardart.xyz/codelabs/angular_components/what-next</loc>
+  <lastmod>2026-04-01T20:39:50+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+  </url>
+</urlset>

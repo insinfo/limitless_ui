@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how to use AngularDart Components—a preview of Material Design components that are widely used in Google's Dart apps.">
+  <title>Codelab: AngularDart Components | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Codelab: AngularDart Components" />
+  <meta name="twitter:description" content="Learn how to use AngularDart Components—a preview of Material Design components that are widely used in Google's Dart apps." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Codelab: AngularDart Components" />
+  <meta property="og:description" content="Learn how to use AngularDart Components—a preview of Material Design components that are widely used in Google's Dart apps." />
+  <meta property="og:url" content="https://angulardart.xyz/codelabs/angular_components" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/shared/dart-logo-for-shares.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/acx-68e101408d9ee1d463abd6652e3d077dcb5ad6b330334265e12c22c94263e047.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  </head>
+
+  <body class="components hide_toc">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li >
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+    </li>
+    <li class="next">
+      
+        <a href="/codelabs/angular_components/1-base">Step 1: Get to Know the Software</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+            <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/codelabs/angular_components/index.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Codelab: AngularDart Components' page issue&body=From URL: https://angulardart.xyz/codelabs/angular_components"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+            <h1>
+              Codelab: AngularDart Components
+              <a href="/version">1.0</a>
+            </h1>
+          </div>
+          <hr>
+          <p>This codelab introduces you to a preview release of
+<a href="/components">AngularDart Components</a>,
+part of a large group of well-tested components that are widely used in
+Google’s Dart apps.</p>
+
+<p>To complete this codelab, you need the following:</p>
+
+<ul>
+  <li>A Windows, Mac, or Linux computer with Dart SDK 2.1.0 (or a higher version)</li>
+  <li>A web connection and modern browser</li>
+</ul>
+
+<p>This codelab assumes that you are familiar with Dart web app development.
+If you aren’t, instead try one of the
+<a href="/codelabs">other Dart web codelabs</a>.
+Familiarity with AngularDart development isn’t required but is helpful, since
+this codelab doesn’t explain
+<a href="/guide/architecture">Angular concepts</a>.</p>
+
+<p>In this codelab, you’ll take a basic AngularDart app, called Lottery Simulator,
+and use AngularDart Components to simplify the code and beautify the UI.
+You can play with a
+<a href="/examples/lottery/4-final/">live copy of the final app</a>.</p>
+
+<p>Here are screenshots of the app’s UI, before and after conversion to
+use AngularDart Components.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Base app</th>
+      <th style="text-align: center">Final app</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><img src="/codelabs/angular_components/images/app-base.png" alt="HTML app" /></td>
+      <td style="text-align: center"><img src="/codelabs/angular_components/images/app-final.png" alt="AngularDart Components app" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="/codelabs/angular_components/images/cartoon-guy.png" alt="top-hatted guy from the cartoon that appears in the app's About tab" align="right" /></p>
+
+<h2 id="contents">Contents</h2>
+
+<ul>
+  <li><a href="/codelabs/angular_components/1-base">Step 1: Get to Know the Software</a>
+    <ul>
+      <li>Get the app code</li>
+      <li>Get familiar with the base app</li>
+      <li>Get familiar with AngularDart Components</li>
+    </ul>
+  </li>
+  <li><a href="/codelabs/angular_components/2-starteasy">Step 2: Start Using AngularDart Components</a>
+    <ul>
+      <li>Copy the source code</li>
+      <li>Depend on <code class="language-plaintext highlighter-rouge">angular_components</code></li>
+      <li>Set up the root component’s Dart file</li>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-progress&gt;</code></li>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-icon&gt;</code> in buttons<br />
+<i class="fas fa-exclamation-circle"> </i> Common problem: Forgetting to import material icon fonts</li>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-icon&gt;</code> in other components<br />
+<i class="fas fa-exclamation-circle"> </i> Common problem: Forgetting to register a component</li>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;acx-scorecard&gt;</code><br />
+<i class="fas fa-exclamation-circle"> </i> Common problem: Registering the wrong component</li>
+    </ul>
+  </li>
+  <li><a href="/codelabs/angular_components/3-usebuttons">Step 3: Upgrade Buttons and Inputs</a>
+    <ul>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-toggle&gt;</code></li>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-fab&gt;</code><br />
+<i class="fas fa-exclamation-circle"> </i> Common pattern: (trigger)</li>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-checkbox&gt;</code></li>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-radio&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;material-radio-group&gt;</code></li>
+    </ul>
+  </li>
+  <li><a href="/codelabs/angular_components/4-final">Step 4: Add Expansion Panels and Tabs</a>
+    <ul>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-expansionpanel&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;material-expansionpanel-set&gt;</code></li>
+      <li>Use <code class="language-plaintext highlighter-rouge">&lt;material-tab&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;material-tab-panel&gt;</code></li>
+    </ul>
+  </li>
+  <li><a href="/codelabs/angular_components/what-next">What Next?</a></li>
+</ul>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+    </li>
+    <li class="next">
+      
+        <a href="/codelabs/angular_components/1-base">Step 1: Get to Know the Software</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

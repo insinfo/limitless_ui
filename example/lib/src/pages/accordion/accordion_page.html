@@ -18,34 +18,33 @@
 
       <li-tabsx type="tabs">
 
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-3">{{ t.pages.accordion.intro }}</p>
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">O accordion organiza blocos densos de informação em seções expansíveis,
-                    reduzindo ruído visual sem perder contexto.</p>
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ t.pages.accordion.descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Itens recolhidos, expandidos, desabilitados e com cabeçalho customizado.</li>
-                    <li>Eventos de abertura por item.</li>
-                    <li>Renderização tardia e destruição opcional do corpo.</li>
+                    <li>{{ t.pages.accordion.featureOne }}</li>
+                    <li>{{ t.pages.accordion.featureTwo }}</li>
+                    <li>{{ t.pages.accordion.featureThree }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Conteúdo muito interativo exige cuidado com foco.</li>
-                    <li>Seções longas demais ainda pedem hierarquia interna.</li>
-                    <li>O layout não substitui navegação por rotas.</li>
+                    <li>{{ t.pages.accordion.limitOne }}</li>
+                    <li>{{ t.pages.accordion.limitTwo }}</li>
+                    <li>{{ t.pages.accordion.limitThree }}</li>
                   </ul>
                 </div>
               </div>
@@ -86,13 +85,9 @@
               accordionEventLog }}</div>
 
             <div class="card card-body mt-4">
-              <h6 class="mb-2">API declarativa por diretivas</h6>
-              <p class="text-muted mb-3">
-                Esta versão mantém o markup Bootstrap acessível no DOM e expõe uma API parecida com ng-bootstrap.
-              </p>
-              <p class="text-muted small mb-3">
-                Para <code>destroyOnHide</code> físico de verdade, use <code>&lt;template liAccordionBody&gt;</code>. O wrapper simples com <code>&lt;div liAccordionBody&gt;</code> mantém o conteúdo no DOM para casos em que a referência precisa permanecer estável.
-              </p>
+              <h6 class="mb-2">{{ t.pages.accordion.directiveApiTitle }}</h6>
+              <p class="text-muted mb-3">{{ t.pages.accordion.directiveApiIntro }}</p>
+              <p class="text-muted small mb-3">{{ t.pages.accordion.directiveApiNote }}</p>
 
               <div liAccordion #directiveAccordion="liAccordion" [closeOthers]="true" [destroyOnHide]="true"
                 (show)="onDeclarativeAccordionEvent('show', $event)"
@@ -102,25 +97,25 @@
 
                 <div liAccordionItem="overview" #overviewItem="liAccordionItem" [collapsed]="false">
                   <h2 liAccordionHeader>
-                    <button liAccordionButton>Visão geral</button>
+                    <button liAccordionButton>{{ t.pages.accordion.declarativeOverviewButton }}</button>
                   </h2>
                   <div liAccordionCollapse>
                     <div liAccordionBody>
-                      Conteúdo básico com header e body declarativos, mantendo classes e atributos de acessibilidade.
+                      {{ t.pages.accordion.declarativeOverviewBody }}
                     </div>
                   </div>
                 </div>
 
                 <div liAccordionItem="custom">
                   <div liAccordionHeader class="accordion-button d-flex align-items-center gap-2">
-                    <span class="fw-semibold">Header customizado</span>
+                    <span class="fw-semibold">{{ t.pages.accordion.declarativeCustomHeader }}</span>
                     <span class="badge bg-primary ms-auto">directive</span>
-                    <button liAccordionToggle class="btn btn-sm btn-outline-primary">Alternar</button>
+                    <button liAccordionToggle class="btn btn-sm btn-outline-primary">{{ t.pages.accordion.declarativeToggle }}</button>
                   </div>
                   <div liAccordionCollapse>
                     <template liAccordionBody>
                       <div liAccordionBody>
-                        O header pode ser totalmente customizado sem perder o controle por id, collapse e eventos.
+                        {{ t.pages.accordion.declarativeCustomBody }}
                       </div>
                     </template>
                   </div>
@@ -128,11 +123,11 @@
 
                 <div liAccordionItem="disabled" [disabled]="true">
                   <h2 liAccordionHeader>
-                    <button liAccordionButton>Item desabilitado</button>
+                    <button liAccordionButton>{{ t.pages.accordion.declarativeDisabledButton }}</button>
                   </h2>
                   <div liAccordionCollapse>
                     <div liAccordionBody>
-                      Este conteúdo continua acessível via API, mas não reage ao clique do usuário.
+                      {{ t.pages.accordion.declarativeDisabledBody }}
                     </div>
                   </div>
                 </div>
@@ -140,48 +135,46 @@
 
               <div class="d-flex flex-wrap gap-2 mt-3">
                 <button class="btn btn-outline-primary" type="button"
-                  (click)="directiveAccordion.expand('overview')">Expandir overview</button>
+                  (click)="directiveAccordion.expand('overview')">{{ t.pages.accordion.expandOverview }}</button>
                 <button class="btn btn-outline-secondary" type="button"
-                  (click)="directiveAccordion.toggle('custom')">Alternar custom</button>
+                  (click)="directiveAccordion.toggle('custom')">{{ t.pages.accordion.toggleCustom }}</button>
                 <button class="btn btn-outline-dark" type="button"
-                  (click)="directiveAccordion.collapseAll()">Fechar todos</button>
+                  (click)="directiveAccordion.collapseAll()">{{ t.pages.accordion.closeAll }}</button>
                 <button class="btn btn-outline-indigo" type="button"
-                  (click)="overviewItem.toggle()">API do item</button>
+                  (click)="overviewItem.toggle()">{{ t.pages.accordion.itemApi }}</button>
               </div>
 
-              <div class="demo-summary-box mt-3">{{ declarativeAccordionEventLog.isEmpty ? 'Nenhum evento da API declarativa.' : declarativeAccordionEventLog }}</div>
+              <div class="demo-summary-box mt-3">{{ declarativeAccordionEventLog.isEmpty ? t.pages.accordion.declarativeIdle : declarativeAccordionEventLog }}</div>
             </div>
 
             <div class="card card-body mt-4">
-              <h6 class="mb-2">liCollapse</h6>
-              <p class="text-muted mb-3">
-                Diretiva genérica para esconder e mostrar blocos com as classes <code>collapse</code>, <code>show</code> e <code>collapsing</code>.
-              </p>
+              <h6 class="mb-2">{{ t.pages.accordion.collapseTitle }}</h6>
+              <p class="text-muted mb-3">{{ t.pages.accordion.collapseIntro }}</p>
 
               <div class="d-flex flex-wrap gap-2 align-items-center">
                 <button class="btn btn-outline-primary" type="button" (click)="toggleStandaloneCollapse()">
-                  {{ standaloneCollapsed ? 'Abrir painel' : 'Fechar painel' }}
+                  {{ standaloneCollapsed ? t.pages.accordion.openPanel : t.pages.accordion.closePanel }}
                 </button>
               </div>
 
               <div [liCollapse]="standaloneCollapsed" class="mt-3">
                 <div class="border rounded p-3 bg-light">
-                  Este bloco usa a diretiva genérica de collapse, sem depender do accordion.
+                  {{ t.pages.accordion.collapseBody }}
                 </div>
               </div>
             </div>
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
             <p class="text-muted mb-3">{{ t.pages.accordion.intro }}</p>
             <ul class="mb-3 ps-3">
-              <li><code>[allowMultipleOpen]</code> permite manter mais de um item expandido ao mesmo tempo.</li>
-              <li><code>[flush]</code> remove contornos extras para uma composição mais compacta.</li>
-              <li><code>[lazy]</code> adia a renderização do corpo até a primeira abertura.</li>
-              <li><code>[destroyOnCollapse]</code> remove o conteúdo do DOM quando o item fecha.</li>
-              <li><code>[expanded]</code> e <code>(expandedChange)</code> controlam abertura por item.</li>
+              <li>{{ t.pages.accordion.apiOne }}</li>
+              <li>{{ t.pages.accordion.apiTwo }}</li>
+              <li>{{ t.pages.accordion.apiThree }}</li>
+              <li>{{ t.pages.accordion.apiFour }}</li>
+              <li>{{ t.pages.accordion.apiFive }}</li>
             </ul>
             <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-accordion [allowMultipleOpen]="true"&gt;
   &lt;li-accordion-item

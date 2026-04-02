@@ -246,6 +246,11 @@ class NavMessagesEn extends NavMessages {
   /// "Buttons"
   /// ```
   String get button => """Buttons""";
+
+  /// ```dart
+  /// "FAB"
+  /// ```
+  String get fab => """FAB""";
 }
 
 class CommonMessagesEn extends CommonMessages {
@@ -273,9 +278,29 @@ class CommonMessagesEn extends CommonMessages {
   String get close => """Close""";
 
   /// ```dart
+  /// "Clear"
+  /// ```
+  String get clear => """Clear""";
+
+  /// ```dart
   /// "Status"
   /// ```
   String get status => """Status""";
+
+  /// ```dart
+  /// "Value"
+  /// ```
+  String get value => """Value""";
+
+  /// ```dart
+  /// "Label"
+  /// ```
+  String get label => """Label""";
+
+  /// ```dart
+  /// "Event"
+  /// ```
+  String get event => """Event""";
 
   /// ```dart
   /// "Current period"
@@ -286,6 +311,66 @@ class CommonMessagesEn extends CommonMessages {
   /// "Restricted window"
   /// ```
   String get restrictedWindow => """Restricted window""";
+
+  /// ```dart
+  /// "Overview"
+  /// ```
+  String get tabOverview => """Overview""";
+
+  /// ```dart
+  /// "API"
+  /// ```
+  String get tabApi => """API""";
+
+  /// ```dart
+  /// "Description"
+  /// ```
+  String get sectionDescription => """Description""";
+
+  /// ```dart
+  /// "Features"
+  /// ```
+  String get sectionFeatures => """Features""";
+
+  /// ```dart
+  /// "Limitations"
+  /// ```
+  String get sectionLimitations => """Limitations""";
+
+  /// ```dart
+  /// "How to use"
+  /// ```
+  String get sectionHowToUse => """How to use""";
+
+  /// ```dart
+  /// "Notes"
+  /// ```
+  String get sectionNotes => """Notes""";
+
+  /// ```dart
+  /// "Visible example"
+  /// ```
+  String get sectionVisibleExample => """Visible example""";
+
+  /// ```dart
+  /// "Main options"
+  /// ```
+  String get sectionMainOptions => """Main options""";
+
+  /// ```dart
+  /// "Best practices"
+  /// ```
+  String get sectionBestPractices => """Best practices""";
+
+  /// ```dart
+  /// "Outputs"
+  /// ```
+  String get sectionOutputs => """Outputs""";
+
+  /// ```dart
+  /// "Public methods"
+  /// ```
+  String get sectionPublicMethods => """Public methods""";
 }
 
 class PagesMessagesEn extends PagesMessages {
@@ -307,11 +392,14 @@ class PagesMessagesEn extends PagesMessages {
   CarouselPagesMessagesEn get carousel => CarouselPagesMessagesEn(this);
   TooltipPagesMessagesEn get tooltip => TooltipPagesMessagesEn(this);
   DatatablePagesMessagesEn get datatable => DatatablePagesMessagesEn(this);
+  DatatableSelectPagesMessagesEn get datatableSelect =>
+      DatatableSelectPagesMessagesEn(this);
   NotificationPagesMessagesEn get notification =>
       NotificationPagesMessagesEn(this);
   TreeviewPagesMessagesEn get treeview => TreeviewPagesMessagesEn(this);
   HelpersPagesMessagesEn get helpers => HelpersPagesMessagesEn(this);
   ButtonPagesMessagesEn get button => ButtonPagesMessagesEn(this);
+  FabPagesMessagesEn get fab => FabPagesMessagesEn(this);
 }
 
 class OverviewPagesMessagesEn extends OverviewPagesMessages {
@@ -681,6 +769,47 @@ class AccordionPagesMessagesEn extends AccordionPagesMessages {
       """This page covers allowMultipleOpen, flush, lazy, destroyOnCollapse, disabled item, icons, and custom header.""";
 
   /// ```dart
+  /// "The accordion organizes dense blocks of information into expandable sections, reducing visual noise without losing context."
+  /// ```
+  String get descriptionBody =>
+      """The accordion organizes dense blocks of information into expandable sections, reducing visual noise without losing context.""";
+
+  /// ```dart
+  /// "Collapsed, expanded, disabled items, and customized headers."
+  /// ```
+  String get featureOne =>
+      """Collapsed, expanded, disabled items, and customized headers.""";
+
+  /// ```dart
+  /// "Open and close events per item."
+  /// ```
+  String get featureTwo => """Open and close events per item.""";
+
+  /// ```dart
+  /// "Lazy rendering and optional body destruction."
+  /// ```
+  String get featureThree =>
+      """Lazy rendering and optional body destruction.""";
+
+  /// ```dart
+  /// "Highly interactive content requires extra focus care."
+  /// ```
+  String get limitOne =>
+      """Highly interactive content requires extra focus care.""";
+
+  /// ```dart
+  /// "Very long sections still need internal hierarchy."
+  /// ```
+  String get limitTwo =>
+      """Very long sections still need internal hierarchy.""";
+
+  /// ```dart
+  /// "The layout does not replace route-based navigation."
+  /// ```
+  String get limitThree =>
+      """The layout does not replace route-based navigation.""";
+
+  /// ```dart
   /// "Collapsed state"
   /// ```
   String get collapsedHeader => """Collapsed state""";
@@ -762,6 +891,143 @@ class AccordionPagesMessagesEn extends AccordionPagesMessages {
   /// "collapsed"
   /// ```
   String get collapsedState => """collapsed""";
+
+  /// ```dart
+  /// "Declarative API with directives"
+  /// ```
+  String get directiveApiTitle => """Declarative API with directives""";
+
+  /// ```dart
+  /// "This version keeps Bootstrap markup accessible in the DOM and exposes an API similar to ng-bootstrap."
+  /// ```
+  String get directiveApiIntro =>
+      """This version keeps Bootstrap markup accessible in the DOM and exposes an API similar to ng-bootstrap.""";
+
+  /// ```dart
+  /// "For true physical destroyOnHide, use <template liAccordionBody>. The simple wrapper with <div liAccordionBody> keeps the content in the DOM when the reference must remain stable."
+  /// ```
+  String get directiveApiNote =>
+      """For true physical destroyOnHide, use <template liAccordionBody>. The simple wrapper with <div liAccordionBody> keeps the content in the DOM when the reference must remain stable.""";
+
+  /// ```dart
+  /// "Overview"
+  /// ```
+  String get declarativeOverviewButton => """Overview""";
+
+  /// ```dart
+  /// "Basic content with declarative header and body, keeping accessibility classes and attributes."
+  /// ```
+  String get declarativeOverviewBody =>
+      """Basic content with declarative header and body, keeping accessibility classes and attributes.""";
+
+  /// ```dart
+  /// "Custom header"
+  /// ```
+  String get declarativeCustomHeader => """Custom header""";
+
+  /// ```dart
+  /// "Toggle"
+  /// ```
+  String get declarativeToggle => """Toggle""";
+
+  /// ```dart
+  /// "The header can be fully customized without losing id, collapse, and event control."
+  /// ```
+  String get declarativeCustomBody =>
+      """The header can be fully customized without losing id, collapse, and event control.""";
+
+  /// ```dart
+  /// "Disabled item"
+  /// ```
+  String get declarativeDisabledButton => """Disabled item""";
+
+  /// ```dart
+  /// "This content stays accessible through the API, but does not react to user clicks."
+  /// ```
+  String get declarativeDisabledBody =>
+      """This content stays accessible through the API, but does not react to user clicks.""";
+
+  /// ```dart
+  /// "Expand overview"
+  /// ```
+  String get expandOverview => """Expand overview""";
+
+  /// ```dart
+  /// "Toggle custom"
+  /// ```
+  String get toggleCustom => """Toggle custom""";
+
+  /// ```dart
+  /// "Close all"
+  /// ```
+  String get closeAll => """Close all""";
+
+  /// ```dart
+  /// "Item API"
+  /// ```
+  String get itemApi => """Item API""";
+
+  /// ```dart
+  /// "No declarative API events yet."
+  /// ```
+  String get declarativeIdle => """No declarative API events yet.""";
+
+  /// ```dart
+  /// "liCollapse"
+  /// ```
+  String get collapseTitle => """liCollapse""";
+
+  /// ```dart
+  /// "Generic directive to hide and show blocks with the collapse, show, and collapsing classes."
+  /// ```
+  String get collapseIntro =>
+      """Generic directive to hide and show blocks with the collapse, show, and collapsing classes.""";
+
+  /// ```dart
+  /// "Open panel"
+  /// ```
+  String get openPanel => """Open panel""";
+
+  /// ```dart
+  /// "Close panel"
+  /// ```
+  String get closePanel => """Close panel""";
+
+  /// ```dart
+  /// "This block uses the generic collapse directive without depending on the accordion."
+  /// ```
+  String get collapseBody =>
+      """This block uses the generic collapse directive without depending on the accordion.""";
+
+  /// ```dart
+  /// "[allowMultipleOpen] lets more than one item stay expanded at the same time."
+  /// ```
+  String get apiOne =>
+      """[allowMultipleOpen] lets more than one item stay expanded at the same time.""";
+
+  /// ```dart
+  /// "[flush] removes extra borders for a more compact composition."
+  /// ```
+  String get apiTwo =>
+      """[flush] removes extra borders for a more compact composition.""";
+
+  /// ```dart
+  /// "[lazy] defers body rendering until the first open."
+  /// ```
+  String get apiThree =>
+      """[lazy] defers body rendering until the first open.""";
+
+  /// ```dart
+  /// "[destroyOnCollapse] removes the content from the DOM when the item closes."
+  /// ```
+  String get apiFour =>
+      """[destroyOnCollapse] removes the content from the DOM when the item closes.""";
+
+  /// ```dart
+  /// "[expanded] and (expandedChange) control open state per item."
+  /// ```
+  String get apiFive =>
+      """[expanded] and (expandedChange) control open state per item.""";
 }
 
 class ProgressPagesMessagesEn extends ProgressPagesMessages {
@@ -847,6 +1113,94 @@ class TabsPagesMessagesEn extends TabsPagesMessages {
   /// "Pills with custom header"
   /// ```
   String get cardTitle => """Pills with custom header""";
+
+  /// ```dart
+  /// "The tabs page demonstrates horizontal and vertical composition, custom headers, and disabled states."
+  /// ```
+  String get overviewIntro =>
+      """The tabs page demonstrates horizontal and vertical composition, custom headers, and disabled states.""";
+
+  /// ```dart
+  /// "Tabs organize content in layers without breaking page context and work well for documentation, segmented forms, and administrative panels."
+  /// ```
+  String get descriptionBody =>
+      """Tabs organize content in layers without breaking page context and work well for documentation, segmented forms, and administrative panels.""";
+
+  /// ```dart
+  /// "Tabs and pills modes."
+  /// ```
+  String get featureOne => """Tabs and pills modes.""";
+
+  /// ```dart
+  /// "Horizontal or side placement."
+  /// ```
+  String get featureTwo => """Horizontal or side placement.""";
+
+  /// ```dart
+  /// "Projected header and disabled tabs."
+  /// ```
+  String get featureThree => """Projected header and disabled tabs.""";
+
+  /// ```dart
+  /// "Too many tabs at the same level hurt scannability."
+  /// ```
+  String get limitOne =>
+      """Too many tabs at the same level hurt scannability.""";
+
+  /// ```dart
+  /// "Very long content calls for additional hierarchy."
+  /// ```
+  String get limitTwo =>
+      """Very long content calls for additional hierarchy.""";
+
+  /// ```dart
+  /// "Nested tabs should be isolated into subcomponents."
+  /// ```
+  String get limitThree =>
+      """Nested tabs should be isolated into subcomponents.""";
+
+  /// ```dart
+  /// "Visible example"
+  /// ```
+  String get previewTitle => """Visible example""";
+
+  /// ```dart
+  /// "The example below shows side pills with a custom header and one disabled tab, without polluting the documentation page navigation."
+  /// ```
+  String get previewIntro =>
+      """The example below shows side pills with a custom header and one disabled tab, without polluting the documentation page navigation.""";
+
+  /// ```dart
+  /// "Use the component to group related content when section-based navigation makes more sense than stacking cards or opening new routes."
+  /// ```
+  String get apiIntro =>
+      """Use the component to group related content when section-based navigation makes more sense than stacking cards or opening new routes.""";
+
+  /// ```dart
+  /// "type accepts tabs or pills."
+  /// ```
+  String get apiOne => """type accepts tabs or pills.""";
+
+  /// ```dart
+  /// "placement controls tab position, such as top or side."
+  /// ```
+  String get apiTwo =>
+      """placement controls tab position, such as top or side.""";
+
+  /// ```dart
+  /// "[justified] distributes triggers evenly."
+  /// ```
+  String get apiThree => """[justified] distributes triggers evenly.""";
+
+  /// ```dart
+  /// "[active] and [disabled] control state per tab."
+  /// ```
+  String get apiFour => """[active] and [disabled] control state per tab.""";
+
+  /// ```dart
+  /// "template li-tabx-header allows custom headers."
+  /// ```
+  String get apiFive => """template li-tabx-header allows custom headers.""";
 
   /// ```dart
   /// "Tokens"
@@ -2917,6 +3271,66 @@ class DatatablePagesMessagesEn extends DatatablePagesMessages {
   String get cardTitle => """Table operations""";
 
   /// ```dart
+  /// "This library datatable covers the most common administrative flow: field search, row selection, export, pagination, sorting, responsive collapse, and a layer of visual customization per column, row, and card."
+  /// ```
+  String get overviewIntro =>
+      """This library datatable covers the most common administrative flow: field search, row selection, export, pagination, sorting, responsive collapse, and a layer of visual customization per column, row, and card.""";
+
+  /// ```dart
+  /// "The component serves operational listings that need to switch between table and grid without duplicating the data source, sorting rules, or search behavior."
+  /// ```
+  String get descriptionBody =>
+      """The component serves operational listings that need to switch between table and grid without duplicating the data source, sorting rules, or search behavior.""";
+
+  /// ```dart
+  /// "Column-aware search with configurable field and operator."
+  /// ```
+  String get featureOne =>
+      """Column-aware search with configurable field and operator.""";
+
+  /// ```dart
+  /// "XLSX and PDF export through the component API itself."
+  /// ```
+  String get featureTwo =>
+      """XLSX and PDF export through the component API itself.""";
+
+  /// ```dart
+  /// "Table and grid modes with the same data source."
+  /// ```
+  String get featureThree =>
+      """Table and grid modes with the same data source.""";
+
+  /// ```dart
+  /// "Width, alignment, classes, and styles per column and per row."
+  /// ```
+  String get featureFour =>
+      """Width, alignment, classes, and styles per column and per row.""";
+
+  /// ```dart
+  /// "Custom cards with customCardBuilder in grid mode."
+  /// ```
+  String get featureFive =>
+      """Custom cards with customCardBuilder in grid mode.""";
+
+  /// ```dart
+  /// "cellStyleResolver works with inline CSS, so it does not replace a full theme."
+  /// ```
+  String get limitOne =>
+      """cellStyleResolver works with inline CSS, so it does not replace a full theme.""";
+
+  /// ```dart
+  /// "customCardBuilder is ideal for rich cards, but requires manual markup assembly."
+  /// ```
+  String get limitTwo =>
+      """customCardBuilder is ideal for rich cards, but requires manual markup assembly.""";
+
+  /// ```dart
+  /// "Mobile collapse is still column-oriented, so very dense layouts need curation of secondary columns."
+  /// ```
+  String get limitThree =>
+      """Mobile collapse is still column-oriented, so very dense layouts need curation of secondary columns.""";
+
+  /// ```dart
   /// "Toggle grid"
   /// ```
   String get toggleGrid => """Toggle grid""";
@@ -3037,6 +3451,222 @@ class DatatablePagesMessagesEn extends DatatablePagesMessages {
   String get ready => """Table ready for interaction.""";
 
   /// ```dart
+  /// "Main demo with search, selection, export, and switching between table and grid."
+  /// ```
+  String get demoIntro =>
+      """Main demo with search, selection, export, and switching between table and grid.""";
+
+  /// ```dart
+  /// "On-demand demos"
+  /// ```
+  String get onDemandTitle => """On-demand demos""";
+
+  /// ```dart
+  /// "The examples below use li-accordion with lazy loading to keep every datatable out of the DOM until the route section is opened."
+  /// ```
+  String get onDemandIntro =>
+      """The examples below use li-accordion with lazy loading to keep every datatable out of the DOM until the route section is opened.""";
+
+  /// ```dart
+  /// "Read-only example"
+  /// ```
+  String get readonlyTitle => """Read-only example""";
+
+  /// ```dart
+  /// "Search and sorting without row clicks or selection."
+  /// ```
+  String get readonlyDescription =>
+      """Search and sorting without row clicks or selection.""";
+
+  /// ```dart
+  /// "Grid mode example"
+  /// ```
+  String get gridPreviewTitle => """Grid mode example""";
+
+  /// ```dart
+  /// "The same dataset reused as cards."
+  /// ```
+  String get gridPreviewDescription => """The same dataset reused as cards.""";
+
+  /// ```dart
+  /// "Table with width, per-column color, and per-row color"
+  /// ```
+  String get customTableTitle =>
+      """Table with width, per-column color, and per-row color""";
+
+  /// ```dart
+  /// "Combines fixed width, cellStyleResolver, and rowStyleResolver in the same scenario."
+  /// ```
+  String get customTableDescription =>
+      """Combines fixed width, cellStyleResolver, and rowStyleResolver in the same scenario.""";
+
+  /// ```dart
+  /// "Grid with customCardBuilder"
+  /// ```
+  String get customGridTitle => """Grid with customCardBuilder""";
+
+  /// ```dart
+  /// "Manually assembled card only when the item is opened."
+  /// ```
+  String get customGridDescription =>
+      """Manually assembled card only when the item is opened.""";
+
+  /// ```dart
+  /// "Lazy loading modal with datatable"
+  /// ```
+  String get lazyModalTitle => """Lazy loading modal with datatable""";
+
+  /// ```dart
+  /// "This scenario opens a li-modal with lazyContent and instantiates li-datatable only after opening."
+  /// ```
+  String get lazyModalIntro =>
+      """This scenario opens a li-modal with lazyContent and instantiates li-datatable only after opening.""";
+
+  /// ```dart
+  /// "Open lazy modal"
+  /// ```
+  String get openLazyModal => """Open lazy modal""";
+
+  /// ```dart
+  /// "Lazy modal with datatable"
+  /// ```
+  String get modalTitle => """Lazy modal with datatable""";
+
+  /// ```dart
+  /// "Modal content only enters the DOM when it opens. The datatable reuses the page dataset to verify that first render works correctly."
+  /// ```
+  String get modalBody =>
+      """Modal content only enters the DOM when it opens. The datatable reuses the page dataset to verify that first render works correctly.""";
+
+  /// ```dart
+  /// "The component is driven by three parts: Filters for pagination and search, DataFrame for data, and DatatableSettings for columns and visual behavior."
+  /// ```
+  String get howToUseBody =>
+      """The component is driven by three parts: Filters for pagination and search, DataFrame for data, and DatatableSettings for columns and visual behavior.""";
+
+  /// ```dart
+  /// "[dataTableFilter]: controls limit, offset, search, and sorting."
+  /// ```
+  String get optionOne =>
+      """[dataTableFilter]: controls limit, offset, search, and sorting.""";
+
+  /// ```dart
+  /// "[settings]: defines columns, grid, and custom builders."
+  /// ```
+  String get optionTwo =>
+      """[settings]: defines columns, grid, and custom builders.""";
+
+  /// ```dart
+  /// "[searchInFields]: declares which fields appear in the search selector."
+  /// ```
+  String get optionThree =>
+      """[searchInFields]: declares which fields appear in the search selector.""";
+
+  /// ```dart
+  /// "[responsiveCollapse]: moves secondary columns into the child row on mobile."
+  /// ```
+  String get optionFour =>
+      """[responsiveCollapse]: moves secondary columns into the child row on mobile.""";
+
+  /// ```dart
+  /// "Keep DataFrame stable and update only filters and selection."
+  /// ```
+  String get practiceOne =>
+      """Keep DataFrame stable and update only filters and selection.""";
+
+  /// ```dart
+  /// "Use hideOnMobile on secondary columns."
+  /// ```
+  String get practiceTwo => """Use hideOnMobile on secondary columns.""";
+
+  /// ```dart
+  /// "Reserve customCardBuilder for grids that really need to depart from the default layout."
+  /// ```
+  String get practiceThree =>
+      """Reserve customCardBuilder for grids that really need to depart from the default layout.""";
+
+  /// ```dart
+  /// "Columns and styles"
+  /// ```
+  String get columnStylesTitle => """Columns and styles""";
+
+  /// ```dart
+  /// "width, minWidth, and maxWidth control the effective column width."
+  /// ```
+  String get columnStyleOne =>
+      """width, minWidth, and maxWidth control the effective column width.""";
+
+  /// ```dart
+  /// "headerClass and cellClass add classes without touching the template."
+  /// ```
+  String get columnStyleTwo =>
+      """headerClass and cellClass add classes without touching the template.""";
+
+  /// ```dart
+  /// "styleCss and cellStyleResolver control color and style per column."
+  /// ```
+  String get columnStyleThree =>
+      """styleCss and cellStyleResolver control color and style per column.""";
+
+  /// ```dart
+  /// "rowStyleResolver returns a CSS string for the whole row based on the data."
+  /// ```
+  String get columnStyleFour =>
+      """rowStyleResolver returns a CSS string for the whole row based on the data.""";
+
+  /// ```dart
+  /// "textAlign and nowrap improve readability for short columns or statuses."
+  /// ```
+  String get columnStyleFive =>
+      """textAlign and nowrap improve readability for short columns or statuses.""";
+
+  /// ```dart
+  /// "CustomCardBuilder"
+  /// ```
+  String get customCardEyebrow => """CustomCardBuilder""";
+
+  /// ```dart
+  /// "Owner"
+  /// ```
+  String get ownerPrefix => """Owner""";
+
+  /// ```dart
+  /// "The card was manually assembled to combine title, state, and metadata without depending on the default layout."
+  /// ```
+  String get customCardSummary =>
+      """The card was manually assembled to combine title, state, and metadata without depending on the default layout.""";
+
+  /// ```dart
+  /// "Sync ERP registrations"
+  /// ```
+  String get featureRow5 => """Sync ERP registrations""";
+
+  /// ```dart
+  /// "Publish operational report"
+  /// ```
+  String get featureRow6 => """Publish operational report""";
+
+  /// ```dart
+  /// "Review integration queue"
+  /// ```
+  String get featureRow7 => """Review integration queue""";
+
+  /// ```dart
+  /// "Update support dashboard"
+  /// ```
+  String get featureRow8 => """Update support dashboard""";
+
+  /// ```dart
+  /// "Finance"
+  /// ```
+  String get ownerFinance => """Finance""";
+
+  /// ```dart
+  /// "Support"
+  /// ```
+  String get ownerSupport => """Support""";
+
+  /// ```dart
   /// "Datatable switched to grid mode."
   /// ```
   String get gridMode => """Datatable switched to grid mode.""";
@@ -3075,6 +3705,329 @@ class DatatablePagesMessagesEn extends DatatablePagesMessages {
   /// "Selected items: $count."
   /// ```
   String selectedItems(int count) => """Selected items: $count.""";
+}
+
+class DatatableSelectPagesMessagesEn extends DatatableSelectPagesMessages {
+  final PagesMessagesEn _parent;
+  const DatatableSelectPagesMessagesEn(this._parent) : super(_parent);
+
+  /// ```dart
+  /// "Components"
+  /// ```
+  String get title => """Components""";
+
+  /// ```dart
+  /// "Datatable Select"
+  /// ```
+  String get subtitle => """Datatable Select""";
+
+  /// ```dart
+  /// "Select with datatable modal"
+  /// ```
+  String get breadcrumb => """Select with datatable modal""";
+
+  /// ```dart
+  /// "A select that opens a modal with a full datatable, allowing search, pagination, and sorting. Clicking a row selects the item and closes the modal."
+  /// ```
+  String get overviewIntro =>
+      """A select that opens a modal with a full datatable, allowing search, pagination, and sorting. Clicking a row selects the item and closes the modal.""";
+
+  /// ```dart
+  /// "The component combines a form-select-style trigger with a modal that displays a complete li-datatable. It implements ControlValueAccessor for ngModel compatibility."
+  /// ```
+  String get descriptionBody =>
+      """The component combines a form-select-style trigger with a modal that displays a complete li-datatable. It implements ControlValueAccessor for ngModel compatibility.""";
+
+  /// ```dart
+  /// "Search, pagination, and sorting through li-datatable."
+  /// ```
+  String get featureOne =>
+      """Search, pagination, and sorting through li-datatable.""";
+
+  /// ```dart
+  /// "Selection by row click."
+  /// ```
+  String get featureTwo => """Selection by row click.""";
+
+  /// ```dart
+  /// "Support for ngModel and currentValueChange."
+  /// ```
+  String get featureThree => """Support for ngModel and currentValueChange.""";
+
+  /// ```dart
+  /// "Configurable modal size."
+  /// ```
+  String get featureFour => """Configurable modal size.""";
+
+  /// ```dart
+  /// "Disabled and programmatic states."
+  /// ```
+  String get featureFive => """Disabled and programmatic states.""";
+
+  /// ```dart
+  /// "Requires dataRequest to provide data to the datatable."
+  /// ```
+  String get limitOne =>
+      """Requires dataRequest to provide data to the datatable.""";
+
+  /// ```dart
+  /// "The displayed label depends on labelKey without custom projection."
+  /// ```
+  String get limitTwo =>
+      """The displayed label depends on labelKey without custom projection.""";
+
+  /// ```dart
+  /// "Does not support multiple selection."
+  /// ```
+  String get limitThree => """Does not support multiple selection.""";
+
+  /// ```dart
+  /// "Basic usage with currentValueChange and programmatic control."
+  /// ```
+  String get demoIntro =>
+      """Basic usage with currentValueChange and programmatic control.""";
+
+  /// ```dart
+  /// "Select Maria Silva"
+  /// ```
+  String get selectMaria => """Select Maria Silva""";
+
+  /// ```dart
+  /// "Select person"
+  /// ```
+  String get selectPersonLabel => """Select person""";
+
+  /// ```dart
+  /// "Select person"
+  /// ```
+  String get modalTitle => """Select person""";
+
+  /// ```dart
+  /// "Click to select..."
+  /// ```
+  String get placeholder => """Click to select...""";
+
+  /// ```dart
+  /// "Search by name, email..."
+  /// ```
+  String get searchPlaceholder => """Search by name, email...""";
+
+  /// ```dart
+  /// "Disabled state, the trigger stays inactive and does not open the modal."
+  /// ```
+  String get disabledIntro =>
+      """Disabled state, the trigger stays inactive and does not open the modal.""";
+
+  /// ```dart
+  /// "Person (disabled)"
+  /// ```
+  String get disabledLabel => """Person (disabled)""";
+
+  /// ```dart
+  /// "Disabled field"
+  /// ```
+  String get disabledPlaceholder => """Disabled field""";
+
+  /// ```dart
+  /// "Binding with ngModel. The value is synchronized through ControlValueAccessor."
+  /// ```
+  String get ngModelIntro =>
+      """Binding with ngModel. The value is synchronized through ControlValueAccessor.""";
+
+  /// ```dart
+  /// "Select person (ngModel)"
+  /// ```
+  String get ngModelLabel => """Select person (ngModel)""";
+
+  /// ```dart
+  /// "The component is driven by three parts: Filters for pagination and search, DataFrame for data, and DatatableSettings for columns. Clicking the trigger opens a modal with the datatable; clicking a row completes the selection."
+  /// ```
+  String get howToUseBody =>
+      """The component is driven by three parts: Filters for pagination and search, DataFrame for data, and DatatableSettings for columns. Clicking the trigger opens a modal with the datatable; clicking a row completes the selection.""";
+
+  /// ```dart
+  /// "[settings]: datatable column definitions."
+  /// ```
+  String get optionOne => """[settings]: datatable column definitions.""";
+
+  /// ```dart
+  /// "[data]: DataFrame with paginated data."
+  /// ```
+  String get optionTwo => """[data]: DataFrame with paginated data.""";
+
+  /// ```dart
+  /// "[dataTableFilter]: search and pagination filters."
+  /// ```
+  String get optionThree =>
+      """[dataTableFilter]: search and pagination filters.""";
+
+  /// ```dart
+  /// "[searchInFields]: search fields."
+  /// ```
+  String get optionFour => """[searchInFields]: search fields.""";
+
+  /// ```dart
+  /// "[labelKey]: key for the text shown in the trigger."
+  /// ```
+  String get optionFive =>
+      """[labelKey]: key for the text shown in the trigger.""";
+
+  /// ```dart
+  /// "[valueKey]: key for the value; null means the whole instance."
+  /// ```
+  String get optionSix =>
+      """[valueKey]: key for the value; null means the whole instance.""";
+
+  /// ```dart
+  /// "[placeholder]: text shown when no item is selected."
+  /// ```
+  String get optionSeven =>
+      """[placeholder]: text shown when no item is selected.""";
+
+  /// ```dart
+  /// "[title]: modal title."
+  /// ```
+  String get optionEight => """[title]: modal title.""";
+
+  /// ```dart
+  /// "[modalSize]: modal size (large, xtra-large)."
+  /// ```
+  String get optionNine => """[modalSize]: modal size (large, xtra-large).""";
+
+  /// ```dart
+  /// "[disabled]: disables the component."
+  /// ```
+  String get optionTen => """[disabled]: disables the component.""";
+
+  /// ```dart
+  /// "[fullScreenOnMobile]: fullscreen modal on mobile."
+  /// ```
+  String get optionEleven =>
+      """[fullScreenOnMobile]: fullscreen modal on mobile.""";
+
+  /// ```dart
+  /// "(dataRequest): emitted when the datatable requests data."
+  /// ```
+  String get outputOne =>
+      """(dataRequest): emitted when the datatable requests data.""";
+
+  /// ```dart
+  /// "(currentValueChange): emitted when the selected value changes."
+  /// ```
+  String get outputTwo =>
+      """(currentValueChange): emitted when the selected value changes.""";
+
+  /// ```dart
+  /// "(limitChange): emitted when the page-size limit changes."
+  /// ```
+  String get outputThree =>
+      """(limitChange): emitted when the page-size limit changes.""";
+
+  /// ```dart
+  /// "(searchRequest): emitted when a search is submitted."
+  /// ```
+  String get outputFour =>
+      """(searchRequest): emitted when a search is submitted.""";
+
+  /// ```dart
+  /// "clear(): clears the selection."
+  /// ```
+  String get methodOne => """clear(): clears the selection.""";
+
+  /// ```dart
+  /// "setSelectedItem({label, value}): sets the selection programmatically."
+  /// ```
+  String get methodTwo =>
+      """setSelectedItem({label, value}): sets the selection programmatically.""";
+
+  /// ```dart
+  /// "selectedLabel: getter that returns the current label."
+  /// ```
+  String get methodThree =>
+      """selectedLabel: getter that returns the current label.""";
+
+  /// ```dart
+  /// "Compatible with ngModel through ControlValueAccessor."
+  /// ```
+  String get noteOne =>
+      """Compatible with ngModel through ControlValueAccessor.""";
+
+  /// ```dart
+  /// "Keep DataFrame stable; update only through (dataRequest)."
+  /// ```
+  String get noteTwo =>
+      """Keep DataFrame stable; update only through (dataRequest).""";
+
+  /// ```dart
+  /// "The clear button in the trigger appears when a value is selected."
+  /// ```
+  String get noteThree =>
+      """The clear button in the trigger appears when a value is selected.""";
+
+  /// ```dart
+  /// "ID"
+  /// ```
+  String get columnId => """ID""";
+
+  /// ```dart
+  /// "Name"
+  /// ```
+  String get columnName => """Name""";
+
+  /// ```dart
+  /// "Email"
+  /// ```
+  String get columnEmail => """Email""";
+
+  /// ```dart
+  /// "Department"
+  /// ```
+  String get columnDepartment => """Department""";
+
+  /// ```dart
+  /// "Name"
+  /// ```
+  String get searchName => """Name""";
+
+  /// ```dart
+  /// "Email"
+  /// ```
+  String get searchEmail => """Email""";
+
+  /// ```dart
+  /// "Department"
+  /// ```
+  String get searchDepartment => """Department""";
+
+  /// ```dart
+  /// "Engineering"
+  /// ```
+  String get departmentEngineering => """Engineering""";
+
+  /// ```dart
+  /// "Design"
+  /// ```
+  String get departmentDesign => """Design""";
+
+  /// ```dart
+  /// "Marketing"
+  /// ```
+  String get departmentMarketing => """Marketing""";
+
+  /// ```dart
+  /// "Finance"
+  /// ```
+  String get departmentFinance => """Finance""";
+
+  /// ```dart
+  /// "HR"
+  /// ```
+  String get departmentHr => """HR""";
+
+  /// ```dart
+  /// "ngModel value"
+  /// ```
+  String get ngModelValuePrefix => """ngModel value""";
 }
 
 class NotificationPagesMessagesEn extends NotificationPagesMessages {
@@ -3600,6 +4553,67 @@ class ButtonPagesMessagesEn extends ButtonPagesMessages {
   String get breadcrumb => """Button styles and variations""";
 
   /// ```dart
+  /// "This page brings together color, style, size, alignment, and state variations for the button component."
+  /// ```
+  String get overviewIntro =>
+      """This page brings together color, style, size, alignment, and state variations for the button component.""";
+
+  /// ```dart
+  /// "Use"
+  /// ```
+  String get usePrefix => """Use""";
+
+  /// ```dart
+  /// "Button"
+  /// ```
+  String get demoButton => """Button""";
+
+  /// ```dart
+  /// "Light button"
+  /// ```
+  String get lightCardTitle => """Light button""";
+
+  /// ```dart
+  /// "Dark button"
+  /// ```
+  String get darkCardTitle => """Dark button""";
+
+  /// ```dart
+  /// "Primary button"
+  /// ```
+  String get primaryCardTitle => """Primary button""";
+
+  /// ```dart
+  /// "Secondary button"
+  /// ```
+  String get secondaryCardTitle => """Secondary button""";
+
+  /// ```dart
+  /// "Danger button"
+  /// ```
+  String get dangerCardTitle => """Danger button""";
+
+  /// ```dart
+  /// "Success button"
+  /// ```
+  String get successCardTitle => """Success button""";
+
+  /// ```dart
+  /// "Warning button"
+  /// ```
+  String get warningCardTitle => """Warning button""";
+
+  /// ```dart
+  /// "Info button"
+  /// ```
+  String get infoCardTitle => """Info button""";
+
+  /// ```dart
+  /// "Indigo button"
+  /// ```
+  String get indigoCardTitle => """Indigo button""";
+
+  /// ```dart
   /// "Button colors"
   /// ```
   String get colorsTitle => """Button colors""";
@@ -3681,6 +4695,473 @@ class ButtonPagesMessagesEn extends ButtonPagesMessages {
   String get disabledSubtitle => """Buttons in the disabled state""";
 }
 
+class FabPagesMessagesEn extends FabPagesMessages {
+  final PagesMessagesEn _parent;
+  const FabPagesMessagesEn(this._parent) : super(_parent);
+
+  /// ```dart
+  /// "Components"
+  /// ```
+  String get title => """Components""";
+
+  /// ```dart
+  /// "FAB"
+  /// ```
+  String get subtitle => """FAB""";
+
+  /// ```dart
+  /// "Components"
+  /// ```
+  String get breadcrumbParent => """Components""";
+
+  /// ```dart
+  /// "FAB"
+  /// ```
+  String get breadcrumb => """FAB""";
+
+  /// ```dart
+  /// "Floating action button (FAB) menu is the component used to display a single floating button with or without a nested menu. The demo below follows the Limitless visual organization with interaction, direction, label, and color examples."
+  /// ```
+  String get intro =>
+      """Floating action button (FAB) menu is the component used to display a single floating button with or without a nested menu. The demo below follows the Limitless visual organization with interaction, direction, label, and color examples.""";
+
+  /// ```dart
+  /// "Basic examples"
+  /// ```
+  String get basicTitle => """Basic examples""";
+
+  /// ```dart
+  /// "Demo of buttons and button lists"
+  /// ```
+  String get basicSubtitle => """Demo of buttons and button lists""";
+
+  /// ```dart
+  /// "Single floating button"
+  /// ```
+  String get singleTitle => """Single floating button""";
+
+  /// ```dart
+  /// "Floating button uses regular button markup with .fab-menu-btn inside the .fab-menu container."
+  /// ```
+  String get singleBody =>
+      """Floating button uses regular button markup with .fab-menu-btn inside the .fab-menu container.""";
+
+  /// ```dart
+  /// "Open menu on hover"
+  /// ```
+  String get hoverTitle => """Open menu on hover""";
+
+  /// ```dart
+  /// "Use data-fab-toggle="hover" semantics for menus that should expand on hover."
+  /// ```
+  String get hoverBody =>
+      """Use data-fab-toggle="hover" semantics for menus that should expand on hover.""";
+
+  /// ```dart
+  /// "Open menu on click"
+  /// ```
+  String get clickTitle => """Open menu on click""";
+
+  /// ```dart
+  /// "The most common case is click-to-open with the default icon-only trigger."
+  /// ```
+  String get clickBody =>
+      """The most common case is click-to-open with the default icon-only trigger.""";
+
+  /// ```dart
+  /// "FAB menu elements"
+  /// ```
+  String get elementsTitle => """FAB menu elements""";
+
+  /// ```dart
+  /// "Buttons, directions, and fixed placement"
+  /// ```
+  String get elementsSubtitle => """Buttons, directions, and fixed placement""";
+
+  /// ```dart
+  /// "Simple buttons"
+  /// ```
+  String get simpleButtonsTitle => """Simple buttons""";
+
+  /// ```dart
+  /// "The submenu usually contains rounded buttons with a single icon."
+  /// ```
+  String get simpleButtonsBody =>
+      """The submenu usually contains rounded buttons with a single icon.""";
+
+  /// ```dart
+  /// "Side actions"
+  /// ```
+  String get sideActionsTitle => """Side actions""";
+
+  /// ```dart
+  /// "Left direction keeps the main trigger compact while exposing contextual actions on the side."
+  /// ```
+  String get sideActionsBody =>
+      """Left direction keeps the main trigger compact while exposing contextual actions on the side.""";
+
+  /// ```dart
+  /// "Custom templates"
+  /// ```
+  String get customTemplatesTitle => """Custom templates""";
+
+  /// ```dart
+  /// "Use TemplateRef to customize trigger and action content without replacing the FAB behavior, keyboard shortcuts, or link handling."
+  /// ```
+  String get customTemplatesBody =>
+      """Use TemplateRef to customize trigger and action content without replacing the FAB behavior, keyboard shortcuts, or link handling.""";
+
+  /// ```dart
+  /// "No-backdrop page action"
+  /// ```
+  String get noBackdropTitle => """No-backdrop page action""";
+
+  /// ```dart
+  /// "The no-backdrop variant is previewed inside the card to avoid colliding with the left sidebar. The actual fixed FAB remains on the right edge."
+  /// ```
+  String get noBackdropBody =>
+      """The no-backdrop variant is previewed inside the card to avoid colliding with the left sidebar. The actual fixed FAB remains on the right edge.""";
+
+  /// ```dart
+  /// "Inner button labels"
+  /// ```
+  String get innerLabelsTitle => """Inner button labels""";
+
+  /// ```dart
+  /// "Visible tooltips, light labels, and label positions"
+  /// ```
+  String get innerLabelsSubtitle =>
+      """Visible tooltips, light labels, and label positions""";
+
+  /// ```dart
+  /// "Visible labels"
+  /// ```
+  String get visibleLabelsTitle => """Visible labels""";
+
+  /// ```dart
+  /// "Use .fab-label-visible when labels should stay visible while the menu is expanded."
+  /// ```
+  String get visibleLabelsBody =>
+      """Use .fab-label-visible when labels should stay visible while the menu is expanded.""";
+
+  /// ```dart
+  /// "Light labels"
+  /// ```
+  String get lightLabelsTitle => """Light labels""";
+
+  /// ```dart
+  /// "All button types support light tooltips as an alternative to the default dark labels."
+  /// ```
+  String get lightLabelsBody =>
+      """All button types support light tooltips as an alternative to the default dark labels.""";
+
+  /// ```dart
+  /// "Label positions"
+  /// ```
+  String get labelPositionsTitle => """Label positions""";
+
+  /// ```dart
+  /// "Left is default; use .fab-label-end to place labels on the right side."
+  /// ```
+  String get labelPositionsBody =>
+      """Left is default; use .fab-label-end to place labels on the right side.""";
+
+  /// ```dart
+  /// "Default button colors"
+  /// ```
+  String get defaultColorsTitle => """Default button colors""";
+
+  /// ```dart
+  /// "Examples of predefined contextual colors"
+  /// ```
+  String get defaultColorsSubtitle =>
+      """Examples of predefined contextual colors""";
+
+  /// ```dart
+  /// "Primary button color"
+  /// ```
+  String get primaryColorTitle => """Primary button color""";
+
+  /// ```dart
+  /// "Primary contextual color uses the standard .btn-primary main button."
+  /// ```
+  String get primaryColorBody =>
+      """Primary contextual color uses the standard .btn-primary main button.""";
+
+  /// ```dart
+  /// "Success button color"
+  /// ```
+  String get successColorTitle => """Success button color""";
+
+  /// ```dart
+  /// "Use .btn-success for a positive contextual variant."
+  /// ```
+  String get successColorBody =>
+      """Use .btn-success for a positive contextual variant.""";
+
+  /// ```dart
+  /// "Warning button color"
+  /// ```
+  String get warningColorTitle => """Warning button color""";
+
+  /// ```dart
+  /// "Warning is a strong contextual alternative for attention-heavy actions."
+  /// ```
+  String get warningColorBody =>
+      """Warning is a strong contextual alternative for attention-heavy actions.""";
+
+  /// ```dart
+  /// "Custom color options"
+  /// ```
+  String get customColorsTitle => """Custom color options""";
+
+  /// ```dart
+  /// "Use custom colors in main and inner buttons"
+  /// ```
+  String get customColorsSubtitle =>
+      """Use custom colors in main and inner buttons""";
+
+  /// ```dart
+  /// "Custom main button color"
+  /// ```
+  String get customMainColorTitle => """Custom main button color""";
+
+  /// ```dart
+  /// "Secondary palette colors can be applied directly to the main trigger."
+  /// ```
+  String get customMainColorBody =>
+      """Secondary palette colors can be applied directly to the main trigger.""";
+
+  /// ```dart
+  /// "Custom inner button color"
+  /// ```
+  String get customInnerColorTitle => """Custom inner button color""";
+
+  /// ```dart
+  /// "Inner actions can use any Limitless button color while keeping the light main trigger."
+  /// ```
+  String get customInnerColorBody =>
+      """Inner actions can use any Limitless button color while keeping the light main trigger.""";
+
+  /// ```dart
+  /// "Mixing button colors"
+  /// ```
+  String get mixedColorsTitle => """Mixing button colors""";
+
+  /// ```dart
+  /// "The submenu supports mixed contextual colors without changing the structural markup."
+  /// ```
+  String get mixedColorsBody =>
+      """The submenu supports mixed contextual colors without changing the structural markup.""";
+
+  /// ```dart
+  /// "Waiting for FAB action."
+  /// ```
+  String get waitingAction => """Waiting for FAB action.""";
+
+  /// ```dart
+  /// "FAB action selected: "
+  /// ```
+  String get demoActionPrefix => """FAB action selected: """;
+
+  /// ```dart
+  /// "Fixed FAB with backdrop triggered: "
+  /// ```
+  String get fixedActionPrefix => """Fixed FAB with backdrop triggered: """;
+
+  /// ```dart
+  /// "Fixed FAB without backdrop triggered: "
+  /// ```
+  String get noBackdropActionPrefix =>
+      """Fixed FAB without backdrop triggered: """;
+
+  /// ```dart
+  /// "The AngularDart implementation keeps the Limitless visual contract and exposes a short API for actions, direction, toggle, and positioning."
+  /// ```
+  String get apiIntro =>
+      """The AngularDart implementation keeps the Limitless visual contract and exposes a short API for actions, direction, toggle, and positioning.""";
+
+  /// ```dart
+  /// "Default FAB menu markup:"
+  /// ```
+  String get overviewLead => """Default FAB menu markup:""";
+
+  /// ```dart
+  /// "FAB menu classes"
+  /// ```
+  String get classesTitle => """FAB menu classes""";
+
+  /// ```dart
+  /// "FAB menu styling is driven by CSS classes and data attributes. The table below summarizes the classes used by this AngularDart wrapper while preserving the original Limitless contract."
+  /// ```
+  String get classesIntro =>
+      """FAB menu styling is driven by CSS classes and data attributes. The table below summarizes the classes used by this AngularDart wrapper while preserving the original Limitless contract.""";
+
+  /// ```dart
+  /// "Class"
+  /// ```
+  String get classHeader => """Class""";
+
+  /// ```dart
+  /// "Description"
+  /// ```
+  String get descriptionHeader => """Description""";
+
+  /// ```dart
+  /// "Basic classes"
+  /// ```
+  String get basicClassesGroup => """Basic classes""";
+
+  /// ```dart
+  /// "Directions and positioning"
+  /// ```
+  String get directionsGroup => """Directions and positioning""";
+
+  /// ```dart
+  /// "Visibility and labels"
+  /// ```
+  String get visibilityGroup => """Visibility and labels""";
+
+  /// ```dart
+  /// "Main wrapper used by the component."
+  /// ```
+  String get classMenuDesc => """Main wrapper used by the component.""";
+
+  /// ```dart
+  /// "Main circular trigger button."
+  /// ```
+  String get classMenuBtnDesc => """Main circular trigger button.""";
+
+  /// ```dart
+  /// "Inner action list container."
+  /// ```
+  String get classMenuInnerDesc => """Inner action list container.""";
+
+  /// ```dart
+  /// "Icons rotated and faded by the Limitless CSS depending on menu state."
+  /// ```
+  String get classIconsDesc =>
+      """Icons rotated and faded by the Limitless CSS depending on menu state.""";
+
+  /// ```dart
+  /// "Menu opens below the trigger."
+  /// ```
+  String get classMenuTopDesc => """Menu opens below the trigger.""";
+
+  /// ```dart
+  /// "Menu opens above the trigger."
+  /// ```
+  String get classMenuBottomDesc => """Menu opens above the trigger.""";
+
+  /// ```dart
+  /// "Viewport-fixed FAB used for persistent page actions."
+  /// ```
+  String get classMenuFixedDesc =>
+      """Viewport-fixed FAB used for persistent page actions.""";
+
+  /// ```dart
+  /// "Horizontal extensions added by the AngularDart wrapper."
+  /// ```
+  String get classDirHorizontalDesc =>
+      """Horizontal extensions added by the AngularDart wrapper.""";
+
+  /// ```dart
+  /// "Click-to-open behavior."
+  /// ```
+  String get toggleClickDesc => """Click-to-open behavior.""";
+
+  /// ```dart
+  /// "Hover-to-open behavior."
+  /// ```
+  String get toggleHoverDesc => """Hover-to-open behavior.""";
+
+  /// ```dart
+  /// "Applied while the menu is expanded."
+  /// ```
+  String get stateOpenDesc => """Applied while the menu is expanded.""";
+
+  /// ```dart
+  /// "Tooltip text for inner actions."
+  /// ```
+  String get dataFabLabelDesc => """Tooltip text for inner actions.""";
+
+  /// ```dart
+  /// "Right-aligned, light, and persistent label modifiers."
+  /// ```
+  String get labelModifiersDesc =>
+      """Right-aligned, light, and persistent label modifiers.""";
+
+  /// ```dart
+  /// "Close"
+  /// ```
+  String get customTriggerClose => """Close""";
+
+  /// ```dart
+  /// "Quick actions"
+  /// ```
+  String get customTriggerActions => """Quick actions""";
+
+  /// ```dart
+  /// "Compose email"
+  /// ```
+  String get actionComposeEmail => """Compose email""";
+
+  /// ```dart
+  /// "Conversations"
+  /// ```
+  String get actionConversations => """Conversations""";
+
+  /// ```dart
+  /// "Account security"
+  /// ```
+  String get actionAccountSecurity => """Account security""";
+
+  /// ```dart
+  /// "Analytics"
+  /// ```
+  String get actionAnalytics => """Analytics""";
+
+  /// ```dart
+  /// "Privacy"
+  /// ```
+  String get actionPrivacy => """Privacy""";
+
+  /// ```dart
+  /// "Edit"
+  /// ```
+  String get actionEdit => """Edit""";
+
+  /// ```dart
+  /// "Share"
+  /// ```
+  String get actionShare => """Share""";
+
+  /// ```dart
+  /// "Archive"
+  /// ```
+  String get actionArchive => """Archive""";
+
+  /// ```dart
+  /// "Publish"
+  /// ```
+  String get actionPublish => """Publish""";
+
+  /// ```dart
+  /// "Save draft"
+  /// ```
+  String get actionSaveDraft => """Save draft""";
+
+  /// ```dart
+  /// "Preview"
+  /// ```
+  String get actionPreview => """Preview""";
+
+  /// ```dart
+  /// "Run pipeline"
+  /// ```
+  String get markupRunPipeline => """Run pipeline""";
+}
+
 Map<String, String> get messagesEnMap => {
       """app.brand""": """Limitless UI Example""",
       """app.searchPlaceholder""": """Live package documentation""",
@@ -3716,13 +5197,30 @@ Map<String, String> get messagesEnMap => {
       """nav.treeview""": """Treeview""",
       """nav.helpers""": """Helpers""",
       """nav.button""": """Buttons""",
+      """nav.fab""": """FAB""",
       """common.restoreAlert""": """Restore alert""",
       """common.none""": """None""",
       """common.open""": """Open""",
       """common.close""": """Close""",
+      """common.clear""": """Clear""",
       """common.status""": """Status""",
+      """common.value""": """Value""",
+      """common.label""": """Label""",
+      """common.event""": """Event""",
       """common.currentPeriod""": """Current period""",
       """common.restrictedWindow""": """Restricted window""",
+      """common.tabOverview""": """Overview""",
+      """common.tabApi""": """API""",
+      """common.sectionDescription""": """Description""",
+      """common.sectionFeatures""": """Features""",
+      """common.sectionLimitations""": """Limitations""",
+      """common.sectionHowToUse""": """How to use""",
+      """common.sectionNotes""": """Notes""",
+      """common.sectionVisibleExample""": """Visible example""",
+      """common.sectionMainOptions""": """Main options""",
+      """common.sectionBestPractices""": """Best practices""",
+      """common.sectionOutputs""": """Outputs""",
+      """common.sectionPublicMethods""": """Public methods""",
       """pages.overview.title""": """Components""",
       """pages.overview.subtitle""": """Overview""",
       """pages.overview.breadcrumb""": """Library overview""",
@@ -3817,6 +5315,19 @@ Map<String, String> get messagesEnMap => {
       """pages.accordion.cardTitle""": """Accordion settings""",
       """pages.accordion.intro""":
           """This page covers allowMultipleOpen, flush, lazy, destroyOnCollapse, disabled item, icons, and custom header.""",
+      """pages.accordion.descriptionBody""":
+          """The accordion organizes dense blocks of information into expandable sections, reducing visual noise without losing context.""",
+      """pages.accordion.featureOne""":
+          """Collapsed, expanded, disabled items, and customized headers.""",
+      """pages.accordion.featureTwo""": """Open and close events per item.""",
+      """pages.accordion.featureThree""":
+          """Lazy rendering and optional body destruction.""",
+      """pages.accordion.limitOne""":
+          """Highly interactive content requires extra focus care.""",
+      """pages.accordion.limitTwo""":
+          """Very long sections still need internal hierarchy.""",
+      """pages.accordion.limitThree""":
+          """The layout does not replace route-based navigation.""",
       """pages.accordion.collapsedHeader""": """Collapsed state""",
       """pages.accordion.collapsedDescription""":
           """Starts closed and expands on demand.""",
@@ -3840,6 +5351,45 @@ Map<String, String> get messagesEnMap => {
       """pages.accordion.idle""": """No accordion changed.""",
       """pages.accordion.expandedState""": """expanded""",
       """pages.accordion.collapsedState""": """collapsed""",
+      """pages.accordion.directiveApiTitle""":
+          """Declarative API with directives""",
+      """pages.accordion.directiveApiIntro""":
+          """This version keeps Bootstrap markup accessible in the DOM and exposes an API similar to ng-bootstrap.""",
+      """pages.accordion.directiveApiNote""":
+          """For true physical destroyOnHide, use <template liAccordionBody>. The simple wrapper with <div liAccordionBody> keeps the content in the DOM when the reference must remain stable.""",
+      """pages.accordion.declarativeOverviewButton""": """Overview""",
+      """pages.accordion.declarativeOverviewBody""":
+          """Basic content with declarative header and body, keeping accessibility classes and attributes.""",
+      """pages.accordion.declarativeCustomHeader""": """Custom header""",
+      """pages.accordion.declarativeToggle""": """Toggle""",
+      """pages.accordion.declarativeCustomBody""":
+          """The header can be fully customized without losing id, collapse, and event control.""",
+      """pages.accordion.declarativeDisabledButton""": """Disabled item""",
+      """pages.accordion.declarativeDisabledBody""":
+          """This content stays accessible through the API, but does not react to user clicks.""",
+      """pages.accordion.expandOverview""": """Expand overview""",
+      """pages.accordion.toggleCustom""": """Toggle custom""",
+      """pages.accordion.closeAll""": """Close all""",
+      """pages.accordion.itemApi""": """Item API""",
+      """pages.accordion.declarativeIdle""":
+          """No declarative API events yet.""",
+      """pages.accordion.collapseTitle""": """liCollapse""",
+      """pages.accordion.collapseIntro""":
+          """Generic directive to hide and show blocks with the collapse, show, and collapsing classes.""",
+      """pages.accordion.openPanel""": """Open panel""",
+      """pages.accordion.closePanel""": """Close panel""",
+      """pages.accordion.collapseBody""":
+          """This block uses the generic collapse directive without depending on the accordion.""",
+      """pages.accordion.apiOne""":
+          """[allowMultipleOpen] lets more than one item stay expanded at the same time.""",
+      """pages.accordion.apiTwo""":
+          """[flush] removes extra borders for a more compact composition.""",
+      """pages.accordion.apiThree""":
+          """[lazy] defers body rendering until the first open.""",
+      """pages.accordion.apiFour""":
+          """[destroyOnCollapse] removes the content from the DOM when the item closes.""",
+      """pages.accordion.apiFive""":
+          """[expanded] and (expandedChange) control open state per item.""",
       """pages.progress.title""": """Components""",
       """pages.progress.subtitle""": """Progress""",
       """pages.progress.breadcrumb""": """Simple and stacked bars""",
@@ -3857,6 +5407,32 @@ Map<String, String> get messagesEnMap => {
       """pages.tabs.subtitle""": """Tabs""",
       """pages.tabs.breadcrumb""": """Horizontal and vertical tabs""",
       """pages.tabs.cardTitle""": """Pills with custom header""",
+      """pages.tabs.overviewIntro""":
+          """The tabs page demonstrates horizontal and vertical composition, custom headers, and disabled states.""",
+      """pages.tabs.descriptionBody""":
+          """Tabs organize content in layers without breaking page context and work well for documentation, segmented forms, and administrative panels.""",
+      """pages.tabs.featureOne""": """Tabs and pills modes.""",
+      """pages.tabs.featureTwo""": """Horizontal or side placement.""",
+      """pages.tabs.featureThree""": """Projected header and disabled tabs.""",
+      """pages.tabs.limitOne""":
+          """Too many tabs at the same level hurt scannability.""",
+      """pages.tabs.limitTwo""":
+          """Very long content calls for additional hierarchy.""",
+      """pages.tabs.limitThree""":
+          """Nested tabs should be isolated into subcomponents.""",
+      """pages.tabs.previewTitle""": """Visible example""",
+      """pages.tabs.previewIntro""":
+          """The example below shows side pills with a custom header and one disabled tab, without polluting the documentation page navigation.""",
+      """pages.tabs.apiIntro""":
+          """Use the component to group related content when section-based navigation makes more sense than stacking cards or opening new routes.""",
+      """pages.tabs.apiOne""": """type accepts tabs or pills.""",
+      """pages.tabs.apiTwo""":
+          """placement controls tab position, such as top or side.""",
+      """pages.tabs.apiThree""": """[justified] distributes triggers evenly.""",
+      """pages.tabs.apiFour""":
+          """[active] and [disabled] control state per tab.""",
+      """pages.tabs.apiFive""":
+          """template li-tabx-header allows custom headers.""",
       """pages.tabs.tokens""": """Tokens""",
       """pages.tabs.flow""": """Flow""",
       """pages.tabs.blocked""": """Blocked""",
@@ -4384,6 +5960,26 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.datatable.subtitle""": """Datatable""",
       """pages.datatable.breadcrumb""": """Search, selection, and export""",
       """pages.datatable.cardTitle""": """Table operations""",
+      """pages.datatable.overviewIntro""":
+          """This library datatable covers the most common administrative flow: field search, row selection, export, pagination, sorting, responsive collapse, and a layer of visual customization per column, row, and card.""",
+      """pages.datatable.descriptionBody""":
+          """The component serves operational listings that need to switch between table and grid without duplicating the data source, sorting rules, or search behavior.""",
+      """pages.datatable.featureOne""":
+          """Column-aware search with configurable field and operator.""",
+      """pages.datatable.featureTwo""":
+          """XLSX and PDF export through the component API itself.""",
+      """pages.datatable.featureThree""":
+          """Table and grid modes with the same data source.""",
+      """pages.datatable.featureFour""":
+          """Width, alignment, classes, and styles per column and per row.""",
+      """pages.datatable.featureFive""":
+          """Custom cards with customCardBuilder in grid mode.""",
+      """pages.datatable.limitOne""":
+          """cellStyleResolver works with inline CSS, so it does not replace a full theme.""",
+      """pages.datatable.limitTwo""":
+          """customCardBuilder is ideal for rich cards, but requires manual markup assembly.""",
+      """pages.datatable.limitThree""":
+          """Mobile collapse is still column-oriented, so very dense layouts need curation of secondary columns.""",
       """pages.datatable.toggleGrid""": """Toggle grid""",
       """pages.datatable.singleSelection""": """Single selection""",
       """pages.datatable.searchLabel""": """Search sprint""",
@@ -4409,12 +6005,167 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.datatable.healthOk""": """OK""",
       """pages.datatable.healthCritical""": """Critical""",
       """pages.datatable.ready""": """Table ready for interaction.""",
+      """pages.datatable.demoIntro""":
+          """Main demo with search, selection, export, and switching between table and grid.""",
+      """pages.datatable.onDemandTitle""": """On-demand demos""",
+      """pages.datatable.onDemandIntro""":
+          """The examples below use li-accordion with lazy loading to keep every datatable out of the DOM until the route section is opened.""",
+      """pages.datatable.readonlyTitle""": """Read-only example""",
+      """pages.datatable.readonlyDescription""":
+          """Search and sorting without row clicks or selection.""",
+      """pages.datatable.gridPreviewTitle""": """Grid mode example""",
+      """pages.datatable.gridPreviewDescription""":
+          """The same dataset reused as cards.""",
+      """pages.datatable.customTableTitle""":
+          """Table with width, per-column color, and per-row color""",
+      """pages.datatable.customTableDescription""":
+          """Combines fixed width, cellStyleResolver, and rowStyleResolver in the same scenario.""",
+      """pages.datatable.customGridTitle""": """Grid with customCardBuilder""",
+      """pages.datatable.customGridDescription""":
+          """Manually assembled card only when the item is opened.""",
+      """pages.datatable.lazyModalTitle""":
+          """Lazy loading modal with datatable""",
+      """pages.datatable.lazyModalIntro""":
+          """This scenario opens a li-modal with lazyContent and instantiates li-datatable only after opening.""",
+      """pages.datatable.openLazyModal""": """Open lazy modal""",
+      """pages.datatable.modalTitle""": """Lazy modal with datatable""",
+      """pages.datatable.modalBody""":
+          """Modal content only enters the DOM when it opens. The datatable reuses the page dataset to verify that first render works correctly.""",
+      """pages.datatable.howToUseBody""":
+          """The component is driven by three parts: Filters for pagination and search, DataFrame for data, and DatatableSettings for columns and visual behavior.""",
+      """pages.datatable.optionOne""":
+          """[dataTableFilter]: controls limit, offset, search, and sorting.""",
+      """pages.datatable.optionTwo""":
+          """[settings]: defines columns, grid, and custom builders.""",
+      """pages.datatable.optionThree""":
+          """[searchInFields]: declares which fields appear in the search selector.""",
+      """pages.datatable.optionFour""":
+          """[responsiveCollapse]: moves secondary columns into the child row on mobile.""",
+      """pages.datatable.practiceOne""":
+          """Keep DataFrame stable and update only filters and selection.""",
+      """pages.datatable.practiceTwo""":
+          """Use hideOnMobile on secondary columns.""",
+      """pages.datatable.practiceThree""":
+          """Reserve customCardBuilder for grids that really need to depart from the default layout.""",
+      """pages.datatable.columnStylesTitle""": """Columns and styles""",
+      """pages.datatable.columnStyleOne""":
+          """width, minWidth, and maxWidth control the effective column width.""",
+      """pages.datatable.columnStyleTwo""":
+          """headerClass and cellClass add classes without touching the template.""",
+      """pages.datatable.columnStyleThree""":
+          """styleCss and cellStyleResolver control color and style per column.""",
+      """pages.datatable.columnStyleFour""":
+          """rowStyleResolver returns a CSS string for the whole row based on the data.""",
+      """pages.datatable.columnStyleFive""":
+          """textAlign and nowrap improve readability for short columns or statuses.""",
+      """pages.datatable.customCardEyebrow""": """CustomCardBuilder""",
+      """pages.datatable.ownerPrefix""": """Owner""",
+      """pages.datatable.customCardSummary""":
+          """The card was manually assembled to combine title, state, and metadata without depending on the default layout.""",
+      """pages.datatable.featureRow5""": """Sync ERP registrations""",
+      """pages.datatable.featureRow6""": """Publish operational report""",
+      """pages.datatable.featureRow7""": """Review integration queue""",
+      """pages.datatable.featureRow8""": """Update support dashboard""",
+      """pages.datatable.ownerFinance""": """Finance""",
+      """pages.datatable.ownerSupport""": """Support""",
       """pages.datatable.gridMode""": """Datatable switched to grid mode.""",
       """pages.datatable.tableMode""": """Datatable switched to table mode.""",
       """pages.datatable.singleMode""": """Single selection enabled.""",
       """pages.datatable.multiMode""": """Multiple selection enabled.""",
       """pages.datatable.exportXlsx""": """XLSX export triggered.""",
       """pages.datatable.exportPdf""": """PDF export triggered.""",
+      """pages.datatableSelect.title""": """Components""",
+      """pages.datatableSelect.subtitle""": """Datatable Select""",
+      """pages.datatableSelect.breadcrumb""": """Select with datatable modal""",
+      """pages.datatableSelect.overviewIntro""":
+          """A select that opens a modal with a full datatable, allowing search, pagination, and sorting. Clicking a row selects the item and closes the modal.""",
+      """pages.datatableSelect.descriptionBody""":
+          """The component combines a form-select-style trigger with a modal that displays a complete li-datatable. It implements ControlValueAccessor for ngModel compatibility.""",
+      """pages.datatableSelect.featureOne""":
+          """Search, pagination, and sorting through li-datatable.""",
+      """pages.datatableSelect.featureTwo""": """Selection by row click.""",
+      """pages.datatableSelect.featureThree""":
+          """Support for ngModel and currentValueChange.""",
+      """pages.datatableSelect.featureFour""": """Configurable modal size.""",
+      """pages.datatableSelect.featureFive""":
+          """Disabled and programmatic states.""",
+      """pages.datatableSelect.limitOne""":
+          """Requires dataRequest to provide data to the datatable.""",
+      """pages.datatableSelect.limitTwo""":
+          """The displayed label depends on labelKey without custom projection.""",
+      """pages.datatableSelect.limitThree""":
+          """Does not support multiple selection.""",
+      """pages.datatableSelect.demoIntro""":
+          """Basic usage with currentValueChange and programmatic control.""",
+      """pages.datatableSelect.selectMaria""": """Select Maria Silva""",
+      """pages.datatableSelect.selectPersonLabel""": """Select person""",
+      """pages.datatableSelect.modalTitle""": """Select person""",
+      """pages.datatableSelect.placeholder""": """Click to select...""",
+      """pages.datatableSelect.searchPlaceholder""":
+          """Search by name, email...""",
+      """pages.datatableSelect.disabledIntro""":
+          """Disabled state, the trigger stays inactive and does not open the modal.""",
+      """pages.datatableSelect.disabledLabel""": """Person (disabled)""",
+      """pages.datatableSelect.disabledPlaceholder""": """Disabled field""",
+      """pages.datatableSelect.ngModelIntro""":
+          """Binding with ngModel. The value is synchronized through ControlValueAccessor.""",
+      """pages.datatableSelect.ngModelLabel""": """Select person (ngModel)""",
+      """pages.datatableSelect.howToUseBody""":
+          """The component is driven by three parts: Filters for pagination and search, DataFrame for data, and DatatableSettings for columns. Clicking the trigger opens a modal with the datatable; clicking a row completes the selection.""",
+      """pages.datatableSelect.optionOne""":
+          """[settings]: datatable column definitions.""",
+      """pages.datatableSelect.optionTwo""":
+          """[data]: DataFrame with paginated data.""",
+      """pages.datatableSelect.optionThree""":
+          """[dataTableFilter]: search and pagination filters.""",
+      """pages.datatableSelect.optionFour""":
+          """[searchInFields]: search fields.""",
+      """pages.datatableSelect.optionFive""":
+          """[labelKey]: key for the text shown in the trigger.""",
+      """pages.datatableSelect.optionSix""":
+          """[valueKey]: key for the value; null means the whole instance.""",
+      """pages.datatableSelect.optionSeven""":
+          """[placeholder]: text shown when no item is selected.""",
+      """pages.datatableSelect.optionEight""": """[title]: modal title.""",
+      """pages.datatableSelect.optionNine""":
+          """[modalSize]: modal size (large, xtra-large).""",
+      """pages.datatableSelect.optionTen""":
+          """[disabled]: disables the component.""",
+      """pages.datatableSelect.optionEleven""":
+          """[fullScreenOnMobile]: fullscreen modal on mobile.""",
+      """pages.datatableSelect.outputOne""":
+          """(dataRequest): emitted when the datatable requests data.""",
+      """pages.datatableSelect.outputTwo""":
+          """(currentValueChange): emitted when the selected value changes.""",
+      """pages.datatableSelect.outputThree""":
+          """(limitChange): emitted when the page-size limit changes.""",
+      """pages.datatableSelect.outputFour""":
+          """(searchRequest): emitted when a search is submitted.""",
+      """pages.datatableSelect.methodOne""":
+          """clear(): clears the selection.""",
+      """pages.datatableSelect.methodTwo""":
+          """setSelectedItem({label, value}): sets the selection programmatically.""",
+      """pages.datatableSelect.methodThree""":
+          """selectedLabel: getter that returns the current label.""",
+      """pages.datatableSelect.noteOne""":
+          """Compatible with ngModel through ControlValueAccessor.""",
+      """pages.datatableSelect.noteTwo""":
+          """Keep DataFrame stable; update only through (dataRequest).""",
+      """pages.datatableSelect.noteThree""":
+          """The clear button in the trigger appears when a value is selected.""",
+      """pages.datatableSelect.columnId""": """ID""",
+      """pages.datatableSelect.columnName""": """Name""",
+      """pages.datatableSelect.columnEmail""": """Email""",
+      """pages.datatableSelect.columnDepartment""": """Department""",
+      """pages.datatableSelect.searchName""": """Name""",
+      """pages.datatableSelect.searchEmail""": """Email""",
+      """pages.datatableSelect.searchDepartment""": """Department""",
+      """pages.datatableSelect.departmentEngineering""": """Engineering""",
+      """pages.datatableSelect.departmentDesign""": """Design""",
+      """pages.datatableSelect.departmentMarketing""": """Marketing""",
+      """pages.datatableSelect.departmentFinance""": """Finance""",
+      """pages.datatableSelect.departmentHr""": """HR""",
+      """pages.datatableSelect.ngModelValuePrefix""": """ngModel value""",
       """pages.notification.title""": """Components""",
       """pages.notification.subtitle""": """Notification Outlet""",
       """pages.notification.breadcrumb""": """Fixed viewport toasts""",
@@ -4547,6 +6298,19 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.button.title""": """Components""",
       """pages.button.subtitle""": """Buttons""",
       """pages.button.breadcrumb""": """Button styles and variations""",
+      """pages.button.overviewIntro""":
+          """This page brings together color, style, size, alignment, and state variations for the button component.""",
+      """pages.button.usePrefix""": """Use""",
+      """pages.button.demoButton""": """Button""",
+      """pages.button.lightCardTitle""": """Light button""",
+      """pages.button.darkCardTitle""": """Dark button""",
+      """pages.button.primaryCardTitle""": """Primary button""",
+      """pages.button.secondaryCardTitle""": """Secondary button""",
+      """pages.button.dangerCardTitle""": """Danger button""",
+      """pages.button.successCardTitle""": """Success button""",
+      """pages.button.warningCardTitle""": """Warning button""",
+      """pages.button.infoCardTitle""": """Info button""",
+      """pages.button.indigoCardTitle""": """Indigo button""",
       """pages.button.colorsTitle""": """Button colors""",
       """pages.button.colorsSubtitle""": """Preset color options for buttons""",
       """pages.button.solidTitle""": """Solid buttons""",
@@ -4568,4 +6332,120 @@ selectedDate = DateTime(2026, 3, 20);
           """Examples of left and right icon alignment""",
       """pages.button.disabledTitle""": """Disabled buttons""",
       """pages.button.disabledSubtitle""": """Buttons in the disabled state""",
+      """pages.fab.title""": """Components""",
+      """pages.fab.subtitle""": """FAB""",
+      """pages.fab.breadcrumbParent""": """Components""",
+      """pages.fab.breadcrumb""": """FAB""",
+      """pages.fab.intro""":
+          """Floating action button (FAB) menu is the component used to display a single floating button with or without a nested menu. The demo below follows the Limitless visual organization with interaction, direction, label, and color examples.""",
+      """pages.fab.basicTitle""": """Basic examples""",
+      """pages.fab.basicSubtitle""": """Demo of buttons and button lists""",
+      """pages.fab.singleTitle""": """Single floating button""",
+      """pages.fab.singleBody""":
+          """Floating button uses regular button markup with .fab-menu-btn inside the .fab-menu container.""",
+      """pages.fab.hoverTitle""": """Open menu on hover""",
+      """pages.fab.hoverBody""":
+          """Use data-fab-toggle="hover" semantics for menus that should expand on hover.""",
+      """pages.fab.clickTitle""": """Open menu on click""",
+      """pages.fab.clickBody""":
+          """The most common case is click-to-open with the default icon-only trigger.""",
+      """pages.fab.elementsTitle""": """FAB menu elements""",
+      """pages.fab.elementsSubtitle""":
+          """Buttons, directions, and fixed placement""",
+      """pages.fab.simpleButtonsTitle""": """Simple buttons""",
+      """pages.fab.simpleButtonsBody""":
+          """The submenu usually contains rounded buttons with a single icon.""",
+      """pages.fab.sideActionsTitle""": """Side actions""",
+      """pages.fab.sideActionsBody""":
+          """Left direction keeps the main trigger compact while exposing contextual actions on the side.""",
+      """pages.fab.customTemplatesTitle""": """Custom templates""",
+      """pages.fab.customTemplatesBody""":
+          """Use TemplateRef to customize trigger and action content without replacing the FAB behavior, keyboard shortcuts, or link handling.""",
+      """pages.fab.noBackdropTitle""": """No-backdrop page action""",
+      """pages.fab.noBackdropBody""":
+          """The no-backdrop variant is previewed inside the card to avoid colliding with the left sidebar. The actual fixed FAB remains on the right edge.""",
+      """pages.fab.innerLabelsTitle""": """Inner button labels""",
+      """pages.fab.innerLabelsSubtitle""":
+          """Visible tooltips, light labels, and label positions""",
+      """pages.fab.visibleLabelsTitle""": """Visible labels""",
+      """pages.fab.visibleLabelsBody""":
+          """Use .fab-label-visible when labels should stay visible while the menu is expanded.""",
+      """pages.fab.lightLabelsTitle""": """Light labels""",
+      """pages.fab.lightLabelsBody""":
+          """All button types support light tooltips as an alternative to the default dark labels.""",
+      """pages.fab.labelPositionsTitle""": """Label positions""",
+      """pages.fab.labelPositionsBody""":
+          """Left is default; use .fab-label-end to place labels on the right side.""",
+      """pages.fab.defaultColorsTitle""": """Default button colors""",
+      """pages.fab.defaultColorsSubtitle""":
+          """Examples of predefined contextual colors""",
+      """pages.fab.primaryColorTitle""": """Primary button color""",
+      """pages.fab.primaryColorBody""":
+          """Primary contextual color uses the standard .btn-primary main button.""",
+      """pages.fab.successColorTitle""": """Success button color""",
+      """pages.fab.successColorBody""":
+          """Use .btn-success for a positive contextual variant.""",
+      """pages.fab.warningColorTitle""": """Warning button color""",
+      """pages.fab.warningColorBody""":
+          """Warning is a strong contextual alternative for attention-heavy actions.""",
+      """pages.fab.customColorsTitle""": """Custom color options""",
+      """pages.fab.customColorsSubtitle""":
+          """Use custom colors in main and inner buttons""",
+      """pages.fab.customMainColorTitle""": """Custom main button color""",
+      """pages.fab.customMainColorBody""":
+          """Secondary palette colors can be applied directly to the main trigger.""",
+      """pages.fab.customInnerColorTitle""": """Custom inner button color""",
+      """pages.fab.customInnerColorBody""":
+          """Inner actions can use any Limitless button color while keeping the light main trigger.""",
+      """pages.fab.mixedColorsTitle""": """Mixing button colors""",
+      """pages.fab.mixedColorsBody""":
+          """The submenu supports mixed contextual colors without changing the structural markup.""",
+      """pages.fab.waitingAction""": """Waiting for FAB action.""",
+      """pages.fab.demoActionPrefix""": """FAB action selected: """,
+      """pages.fab.fixedActionPrefix""":
+          """Fixed FAB with backdrop triggered: """,
+      """pages.fab.noBackdropActionPrefix""":
+          """Fixed FAB without backdrop triggered: """,
+      """pages.fab.apiIntro""":
+          """The AngularDart implementation keeps the Limitless visual contract and exposes a short API for actions, direction, toggle, and positioning.""",
+      """pages.fab.overviewLead""": """Default FAB menu markup:""",
+      """pages.fab.classesTitle""": """FAB menu classes""",
+      """pages.fab.classesIntro""":
+          """FAB menu styling is driven by CSS classes and data attributes. The table below summarizes the classes used by this AngularDart wrapper while preserving the original Limitless contract.""",
+      """pages.fab.classHeader""": """Class""",
+      """pages.fab.descriptionHeader""": """Description""",
+      """pages.fab.basicClassesGroup""": """Basic classes""",
+      """pages.fab.directionsGroup""": """Directions and positioning""",
+      """pages.fab.visibilityGroup""": """Visibility and labels""",
+      """pages.fab.classMenuDesc""": """Main wrapper used by the component.""",
+      """pages.fab.classMenuBtnDesc""": """Main circular trigger button.""",
+      """pages.fab.classMenuInnerDesc""": """Inner action list container.""",
+      """pages.fab.classIconsDesc""":
+          """Icons rotated and faded by the Limitless CSS depending on menu state.""",
+      """pages.fab.classMenuTopDesc""": """Menu opens below the trigger.""",
+      """pages.fab.classMenuBottomDesc""": """Menu opens above the trigger.""",
+      """pages.fab.classMenuFixedDesc""":
+          """Viewport-fixed FAB used for persistent page actions.""",
+      """pages.fab.classDirHorizontalDesc""":
+          """Horizontal extensions added by the AngularDart wrapper.""",
+      """pages.fab.toggleClickDesc""": """Click-to-open behavior.""",
+      """pages.fab.toggleHoverDesc""": """Hover-to-open behavior.""",
+      """pages.fab.stateOpenDesc""": """Applied while the menu is expanded.""",
+      """pages.fab.dataFabLabelDesc""": """Tooltip text for inner actions.""",
+      """pages.fab.labelModifiersDesc""":
+          """Right-aligned, light, and persistent label modifiers.""",
+      """pages.fab.customTriggerClose""": """Close""",
+      """pages.fab.customTriggerActions""": """Quick actions""",
+      """pages.fab.actionComposeEmail""": """Compose email""",
+      """pages.fab.actionConversations""": """Conversations""",
+      """pages.fab.actionAccountSecurity""": """Account security""",
+      """pages.fab.actionAnalytics""": """Analytics""",
+      """pages.fab.actionPrivacy""": """Privacy""",
+      """pages.fab.actionEdit""": """Edit""",
+      """pages.fab.actionShare""": """Share""",
+      """pages.fab.actionArchive""": """Archive""",
+      """pages.fab.actionPublish""": """Publish""",
+      """pages.fab.actionSaveDraft""": """Save draft""",
+      """pages.fab.actionPreview""": """Preview""",
+      """pages.fab.markupRunPipeline""": """Run pipeline""",
     };

@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Attribute directives attach behavior to elements.">
+  <title>Attribute Directives | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Attribute Directives" />
+  <meta name="twitter:description" content="Attribute directives attach behavior to elements." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Attribute Directives" />
+  <meta property="og:description" content="Attribute directives attach behavior to elements." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/attribute-directives" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#directives-overview">Directives overview</a></li>
+<li class="toc-entry toc-h2"><a href="#create-a-class-based-attribute-directive">Create a class-based attribute directive</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#write-the-directive-code">Write the directive code</a></li>
+<li class="toc-entry toc-h3"><a href="#why-not-call-it-highlight">Why not call it “highlight”?</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#apply-the-attribute-directive">Apply the attribute directive</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#your-directive-isnt-working">Your directive isn’t working?</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#respond-to-user-initiated-events">Respond to user-initiated events</a></li>
+<li class="toc-entry toc-h2"><a href="#pass-values-into-the-directive-with-an-input-data-binding">Pass values into the directive with an @Input data binding</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#binding-to-an-input-property">Binding to an @Input property</a></li>
+<li class="toc-entry toc-h3"><a href="#bind-to-an-input-alias">Bind to an @Input alias</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#write-a-harness-to-try-it">Write a harness to try it</a></li>
+<li class="toc-entry toc-h2"><a href="#bind-to-a-second-property">Bind to a second property</a></li>
+<li class="toc-entry toc-h2"><a href="#write-a-functional-directive">Write a functional directive</a></li>
+<li class="toc-entry toc-h2"><a href="#summary">Summary</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#appendix-why-add-input">Appendix: Why add @Input?</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/template-syntax">Template Syntax</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/component-styles">Component Styles</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/attribute-directives.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Attribute Directives' page issue&body=From URL: https://angulardart.xyz/guide/attribute-directives"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Attribute Directives 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/attribute-directives”?&gt;</p>
+
+<p>An <strong>attribute</strong> directive changes the appearance or behavior of a DOM element.</p>
+
+<p>Try the <span><a href="/examples/attribute-directives" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/attribute-directives/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<h2 id="directives-overview">
+<a class="anchor" href="#directives-overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Directives overview</h2>
+
+<p>There are three kinds of directives in Angular:</p>
+
+<ol>
+  <li>Components—directives with a template.</li>
+  <li>Structural directives—change the DOM layout by adding and removing DOM elements.</li>
+  <li>Attribute directives—change the appearance or behavior of an element, component, or another directive.</li>
+</ol>
+
+<p><em>Components</em> are the most common of the three directives.
+You saw a simple component in the <a href="../tutorial/toh-pt0">Starter App</a>.</p>
+
+<p><em>Structural Directives</em> change the structure of the view.
+Two examples are <a href="template-syntax#ngFor">NgFor</a> and <a href="template-syntax#ngIf">NgIf</a>.
+Learn about them in the <a href="structural-directives">Structural Directives</a> page.</p>
+
+<p><em>Attribute directives</em> are used as attributes of elements.
+The built-in <a href="template-syntax#ngStyle">NgStyle</a> directive in the
+<a href="template-syntax">Template Syntax</a> page, for example,
+can change several element styles at the same time.</p>
+
+<p>There are two kinds of attribute directive:</p>
+
+<ul>
+  <li>
+<a href="#create-a-directive">Class-based</a>: A full-featured attribute directive,
+implemented using a class.</li>
+  <li>
+<a href="#functional">Functional</a>: A stateless attribute directive, implemented using
+a top-level function.</li>
+</ul>
+
+<p><a id="create-a-directive"></a></p>
+<h2 id="create-a-class-based-attribute-directive">
+<a class="anchor" href="#create-a-class-based-attribute-directive" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a class-based attribute directive</h2>
+
+<p>Creating a class-based attribute directive requires writing a controller class
+annotated with <a href="https://pub.dev/documentation/angular/6.0.1/di/Directive-class.html">@Directive()</a>, which specifies the selector that identifies
+the attribute.
+The controller class implements the desired directive behavior.</p>
+
+<p>This page demonstrates building a simple <em>myHighlight</em> attribute
+directive to set an element’s background color
+when the user hovers over that element. You can apply it like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.html (applied)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p myHighlight&gt;Highlight me!&lt;/p&gt;
+</code></pre></div></div>
+
+<h3 id="write-the-directive-code">
+<a class="anchor" href="#write-the-directive-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>Write the directive code</h3>
+
+<p>Follow the <a href="setup">setup</a> instructions for creating a new local project
+named <code class="language-plaintext highlighter-rouge">attribute_directives</code>.</p>
+
+<p>Create the following source file in the indicated folder:</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_1.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:html';
+
+  import 'package:angular/angular.dart';
+
+  @Directive(selector: '[myHighlight]')
+  class HighlightDirective {
+    HighlightDirective(Element el) {
+      el.style.backgroundColor = 'yellow';
+    }
+  }
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">@Directive()</code> requires a CSS selector to identify
+the HTML in the template that is associated with the directive.
+The <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors">CSS selector for an attribute</a>
+is the attribute name in square brackets.
+Here, the directive’s selector is <code class="language-plaintext highlighter-rouge">[myHighlight]</code>.
+Angular locates all elements in the template that have an attribute named <code class="language-plaintext highlighter-rouge">myHighlight</code>.</p>
+
+<div class="l-sub-section">
+  <h3 id="why-not-call-it-highlight">
+<a class="anchor" href="#why-not-call-it-highlight" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why not call it “highlight”?</h3>
+
+  <p>Though <em>highlight</em> is a more concise name than <em>myHighlight</em> and would work,
+  a best practice is to prefix selector names to ensure
+  they don’t conflict with standard HTML attributes.
+  This also reduces the risk of colliding with third-party directive names.</p>
+
+  <p>Make sure you do <strong>not</strong> prefix the <code class="language-plaintext highlighter-rouge">highlight</code> directive name with <strong><code class="language-plaintext highlighter-rouge">ng</code></strong> because
+  that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose.
+  For a simple demo, the short prefix, <code class="language-plaintext highlighter-rouge">my</code>, helps distinguish your custom directive.</p>
+</div>
+
+<p>After the <code class="language-plaintext highlighter-rouge">@Directive()</code> metadata comes the directive’s controller class,
+called <code class="language-plaintext highlighter-rouge">HighlightDirective</code>, which contains the logic for the directive.</p>
+
+<p>Angular creates a new instance of the directive’s controller class for
+each matching element, injecting an HTML <a href="https://api.dart.dev/stable/dart-html/Element-class.html">Element</a>
+into the constructor.</p>
+
+<p><a id="apply-directive"></a></p>
+<h2 id="apply-the-attribute-directive">
+<a class="anchor" href="#apply-the-attribute-directive" aria-hidden="true"><span class="octicon octicon-link"></span></a>Apply the attribute directive</h2>
+
+<p>To use the new <code class="language-plaintext highlighter-rouge">HighlightDirective</code>, create a template that
+applies the directive as an attribute to a paragraph (<code class="language-plaintext highlighter-rouge">&lt;p&gt;</code>) element.
+In Angular terms, the <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> element is the attribute <strong>host</strong>.</p>
+
+<p>Put the template in its own <code class="language-plaintext highlighter-rouge">app_component.html</code>
+file that looks like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.html” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;h1&gt;My First Attribute Directive&lt;/h1&gt;
+  &lt;p myHighlight&gt;Highlight me!&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Now reference this template in the <code class="language-plaintext highlighter-rouge">AppComponent</code>, and
+add the <code class="language-plaintext highlighter-rouge">Highlight</code> directive to the <code class="language-plaintext highlighter-rouge">directives</code> list. This way Angular
+recognizes the directive when it encounters <code class="language-plaintext highlighter-rouge">myHighlight</code> in the template.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  import 'src/auto_id_directive.dart';
+  import 'src/highlight_directive.dart';
+
+  @Component(
+    selector: 'my-app',
+    templateUrl: 'app_component.html',
+    directives: [autoIdDirective, HighlightDirective],
+  )
+  class AppComponent {
+    String color;
+  }
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong>
+The app runs, and the <code class="language-plaintext highlighter-rouge">myHighlight</code> directive highlights the paragraph text.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/attribute-directives/first-highlight-07dc83e75ce61fe97b6ea8b3d9284a480231885991afffeea1e80d14f0e713e8.png" alt="First Highlight"></p>
+
+<div class="l-sub-section">
+  <h3 id="your-directive-isnt-working">
+<a class="anchor" href="#your-directive-isnt-working" aria-hidden="true"><span class="octicon octicon-link"></span></a>Your directive isn’t working?</h3>
+
+  <p>Did you remember to set the <code class="language-plaintext highlighter-rouge">directives</code> attribute of <code class="language-plaintext highlighter-rouge">@Component</code>?
+  It is easy to forget!
+  Open the console in the browser tools and look for an error like this:</p>
+
+  <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>EXCEPTION: Template parse errors:
+Can't bind to 'myHighlight' since it isn't a known property of 'p'.
+</code></pre></div>  </div>
+
+  <p>Angular detects that you’re trying to bind to <em>something</em>
+  but it can’t find this directive.
+  You let Angular know by listing <code class="language-plaintext highlighter-rouge">HighlightDirective</code> in the <code class="language-plaintext highlighter-rouge">directives</code> list.</p>
+</div>
+
+<p>To summarize, Angular found the <code class="language-plaintext highlighter-rouge">myHighlight</code> attribute on the <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> element.
+It created an instance of the <code class="language-plaintext highlighter-rouge">HighlightDirective</code> class and
+injected a reference to the <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> element into the directive’s constructor
+which sets the <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> element’s background style to yellow.</p>
+
+<p><a id="respond-to-user"></a></p>
+<h2 id="respond-to-user-initiated-events">
+<a class="anchor" href="#respond-to-user-initiated-events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Respond to user-initiated events</h2>
+
+<p>Currently, <code class="language-plaintext highlighter-rouge">myHighlight</code> simply sets an element color.
+The directive could be more dynamic.
+It could detect when the user mouses into or out of the element
+and respond by setting or clearing the highlight color.</p>
+
+<p>Add two eventhandlers that respond when the mouse enters or leaves,
+each adorned by the <code class="language-plaintext highlighter-rouge">HostListener</code> annotation.</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart (mouse-methods)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @HostListener('mouseenter')
+  void onMouseEnter() {
+    _highlight('yellow');
+  }
+
+  @HostListener('mouseleave')
+  void onMouseLeave() {
+    _highlight();
+  }
+
+  void _highlight([String color]) {
+    _el.style.backgroundColor = color;
+  }
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">@HostListener</code> annotation lets you subscribe to events of the DOM
+element that hosts an attribute directive, the <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> in this case.</p>
+
+<div class="l-sub-section">
+  <p>Of course you could reach into the DOM with standard JavaScript and and attach event listeners manually.
+  There are at least three problems with <em>that</em> approach:</p>
+
+  <ol>
+    <li>You have to write the listeners correctly.</li>
+    <li>The code must <em>detach</em> the listener when the directive is destroyed to avoid memory leaks.</li>
+    <li>Talking to DOM API directly isn’t a best practice.</li>
+  </ol>
+</div>
+
+<p>The handlers delegate to a helper method that sets the color on the DOM element, <code class="language-plaintext highlighter-rouge">_el</code>,
+which you declare and initialize in the constructor.</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart (constructor)” region=”ctor” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  final Element _el;
+
+  HighlightDirective(this._el);
+</code></pre></div></div>
+
+<p>Here’s the updated directive in full:</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:html';
+
+  import 'package:angular/angular.dart';
+
+  @Directive(selector: '[myHighlight]')
+  class HighlightDirective {
+    final Element _el;
+
+    HighlightDirective(this._el);
+
+    @HostListener('mouseenter')
+    void onMouseEnter() {
+      _highlight('yellow');
+    }
+
+    @HostListener('mouseleave')
+    void onMouseLeave() {
+      _highlight();
+    }
+
+    void _highlight([String color]) {
+      _el.style.backgroundColor = color;
+    }
+  }
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong> Confirm that the background color appears when
+the mouse hovers over the <code class="language-plaintext highlighter-rouge">p</code> and disappears as it moves out.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/attribute-directives/highlight-directive-anim-1429690e8addf9c9f06df9dc569f6da2b1365c2da109a4c90737f0769a1d1e3d.gif" alt="Second Highlight"></p>
+
+<p><a id="bindings"></a></p>
+<h2 id="pass-values-into-the-directive-with-an-input-data-binding">
+<a class="anchor" href="#pass-values-into-the-directive-with-an-input-data-binding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pass values into the directive with an <em>@Input</em> data binding</h2>
+
+<p>Currently the highlight color is hard-coded <em>within</em> the directive. That’s inflexible.
+In this section, you give the developer the power to set the highlight color while applying the directive.</p>
+
+<p>Start by adding a <code class="language-plaintext highlighter-rouge">highlightColor</code> property to the directive class like this:</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart (highlightColor)” region=”color” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
+  String highlightColor;
+</code></pre></div></div>
+
+<p><a id="input"></a></p>
+<h3 id="binding-to-an-input-property">
+<a class="anchor" href="#binding-to-an-input-property" aria-hidden="true"><span class="octicon octicon-link"></span></a>Binding to an <em>@Input</em> property</h3>
+
+<p>Notice the <code class="language-plaintext highlighter-rouge">@Input</code> annotation. It adds metadata to the class that makes the directive’s <code class="language-plaintext highlighter-rouge">highlightColor</code> property available for binding.</p>
+
+<p>It’s called an <em>input</em> property because data flows from the binding expression <em>into</em> the directive.
+Without that input metadata, Angular rejects the binding; see <a href="#why-input" title="Why add @Input?">below</a> for more about that.</p>
+
+<p>Try it by adding the following directive binding variations to the <code class="language-plaintext highlighter-rouge">AppComponent</code> template:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.html (excerpt)” region=”color-1” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p myHighlight highlightColor="yellow"&gt;Highlighted in yellow&lt;/p&gt;
+  &lt;p myHighlight [highlightColor]="'orange'"&gt;Highlighted in orange&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Add a <code class="language-plaintext highlighter-rouge">color</code> property to the <code class="language-plaintext highlighter-rouge">AppComponent</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (class)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class AppComponent {
+    String color = 'yellow';
+  }
+</code></pre></div></div>
+
+<p>Let it control the highlight color with a property binding.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.html (excerpt)” region=”color-2” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p myHighlight [highlightColor]="color"&gt;Highlighted with parent component's color&lt;/p&gt;
+</code></pre></div></div>
+
+<p>That’s good, but it would be nice to <em>simultaneously</em> apply the directive and set the color <em>in the same attribute</em> like this.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (color)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p [myHighlight]="color"&gt;Highlight me!&lt;/p&gt;
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">[myHighlight]</code> attribute binding both applies the highlighting directive to the <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> element
+and sets the directive’s highlight color with a property binding.
+You’re re-using the directive’s attribute selector (<code class="language-plaintext highlighter-rouge">[myHighlight]</code>) to do both jobs.
+That’s a crisp, compact syntax.</p>
+
+<p>You’ll have to rename the directive’s <code class="language-plaintext highlighter-rouge">highlightColor</code> property to <code class="language-plaintext highlighter-rouge">myHighlight</code> because that’s now the color property binding name.</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart (renamed to match directive selector)” region=”color-2” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
+  String myHighlight;
+</code></pre></div></div>
+
+<p>This is disagreeable. The word, <code class="language-plaintext highlighter-rouge">myHighlight</code>, is a terrible property name and it doesn’t convey the property’s intent.</p>
+
+<p><a id="input-alias"></a></p>
+<h3 id="bind-to-an-input-alias">
+<a class="anchor" href="#bind-to-an-input-alias" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bind to an <em>@Input</em> alias</h3>
+
+<p>Fortunately you can name the directive property whatever you want <em>and</em> <strong><em>alias it</em></strong> for binding purposes.</p>
+
+<p>Restore the original property name and specify the selector as the alias in the argument to <code class="language-plaintext highlighter-rouge">@Input</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive.dart (color property with alias)” region=”color” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input('myHighlight')
+  String highlightColor;
+</code></pre></div></div>
+
+<p><em>Inside</em> the directive the property is known as <code class="language-plaintext highlighter-rouge">highlightColor</code>.
+<em>Outside</em> the directive, where you bind to it, it’s known as <code class="language-plaintext highlighter-rouge">myHighlight</code>.</p>
+
+<p>You get the best of both worlds: the property name you want and the binding syntax you want:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (color)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p [myHighlight]="color"&gt;Highlight me!&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Now that you’re binding to <code class="language-plaintext highlighter-rouge">highlightColor</code>, modify the <code class="language-plaintext highlighter-rouge">onMouseEnter()</code> method to use it.
+If someone neglects to bind to <code class="language-plaintext highlighter-rouge">highlightColor</code>, highlight in red:</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_3.dart (mouse enter)” region=”mouse-enter” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @HostListener('mouseenter')
+  void onMouseEnter() =&gt; _highlight(highlightColor ?? 'red');
+</code></pre></div></div>
+
+<p>Here’s the latest version of the directive class.</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_3.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:html';
+
+  import 'package:angular/angular.dart';
+
+  @Directive(selector: '[myHighlight]')
+  class HighlightDirective {
+    final Element _el;
+
+    HighlightDirective(this._el);
+
+    @Input('myHighlight')
+    String highlightColor;
+
+    @HostListener('mouseenter')
+    void onMouseEnter() =&gt; _highlight(highlightColor ?? 'red');
+
+    @HostListener('mouseleave')
+    void onMouseLeave() =&gt; _highlight();
+
+    void _highlight([String color]) {
+      _el.style.backgroundColor = color;
+    }
+  }
+</code></pre></div></div>
+
+<h2 id="write-a-harness-to-try-it">
+<a class="anchor" href="#write-a-harness-to-try-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Write a harness to try it</h2>
+
+<p>It may be difficult to imagine how this directive actually works.
+In this section, you’ll turn <code class="language-plaintext highlighter-rouge">AppComponent</code> into a harness that
+lets you pick the highlight color with a radio button and bind your color choice to the directive.</p>
+
+<p>Update <code class="language-plaintext highlighter-rouge">app_component.html</code> as follows:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (v2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;h1&gt;My First Attribute Directive&lt;/h1&gt;
+
+  &lt;h4&gt;Pick a highlight color&lt;/h4&gt;
+  &lt;div&gt;
+    &lt;input type="radio" name="colors" (click)="color='lightgreen'"&gt;Green
+    &lt;input type="radio" name="colors" (click)="color='yellow'"&gt;Yellow
+    &lt;input type="radio" name="colors" (click)="color='cyan'"&gt;Cyan
+  &lt;/div&gt;
+  &lt;p [myHighlight]="color"&gt;Highlight me!&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Revise the <code class="language-plaintext highlighter-rouge">AppComponent.color</code> so that it has no initial value.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (class)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class AppComponent {
+    String color;
+  }
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong>
+Here are the harness and directive in action.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/attribute-directives/highlight-directive-v2-anim-14ee7b1cfd9c49117a1323bf3dc7dd234f2bba2b452797d4b57e11c927546723.gif" alt="Highlight v.2"></p>
+
+<p><a id="second-property"></a></p>
+<h2 id="bind-to-a-second-property">
+<a class="anchor" href="#bind-to-a-second-property" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bind to a second property</h2>
+
+<p>This highlight directive has a single customizable property. In a real app, it may need more.</p>
+
+<p>At the moment, the default color—the color that prevails until
+the user picks a highlight color—is hard-coded as “red”.
+Let the template developer set the default color.</p>
+
+<p>Add a second <strong>input</strong> property to <code class="language-plaintext highlighter-rouge">HighlightDirective</code> called <code class="language-plaintext highlighter-rouge">defaultColor</code>:</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive.dart (defaultColor)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
+  String defaultColor;
+</code></pre></div></div>
+
+<p>Revise the directive’s <code class="language-plaintext highlighter-rouge">onMouseEnter</code> so that it first tries to highlight with the <code class="language-plaintext highlighter-rouge">highlightColor</code>,
+then with the <code class="language-plaintext highlighter-rouge">defaultColor</code>, and falls back to “red” if both properties are undefined.</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive.dart (mouse-enter)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @HostListener('mouseenter')
+  void onMouseEnter() =&gt; _highlight(highlightColor ?? defaultColor ?? 'red');
+</code></pre></div></div>
+
+<p>How do you bind to a second property when you’re already binding to the <code class="language-plaintext highlighter-rouge">myHighlight</code> attribute name?</p>
+
+<p>As with components, you can add as many directive property bindings as you need by stringing them along in the template.
+The developer should be able to write the following template HTML to both bind to the <code class="language-plaintext highlighter-rouge">AppComponent.color</code>
+and fall back to “violet” as the default color.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (defaultColor)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p [myHighlight]="color" defaultColor="violet"&gt;
+    Highlight me too!
+  &lt;/p&gt;
+</code></pre></div></div>
+
+<p>Angular knows that the <code class="language-plaintext highlighter-rouge">defaultColor</code> binding belongs to the <code class="language-plaintext highlighter-rouge">HighlightDirective</code>
+because you made it <em>public</em> with the <code class="language-plaintext highlighter-rouge">@Input</code> annotation.</p>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong>
+Here’s how the harness should work when you’re done coding.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/attribute-directives/highlight-directive-final-anim-6f6f5c6f6b417d4e257198a5caa00a44967906b05f25cb0629c94aed97fd7ebc.gif" alt="Final Highlight"></p>
+
+<p><a id="functional"></a></p>
+<h2 id="write-a-functional-directive">
+<a class="anchor" href="#write-a-functional-directive" aria-hidden="true"><span class="octicon octicon-link"></span></a>Write a functional directive</h2>
+
+<p>A functional directive is a stateless directive that is rendered once.
+You create a functional directive by annotating a public, top-level function with <a href="https://pub.dev/documentation/angular/6.0.1/di/Directive-class.html">@Directive()</a>.</p>
+
+<p>Create the following functional attribute directive:</p>
+
+<p>&lt;?code-excerpt “lib/src/auto_id_directive.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:html';
+  import 'package:angular/angular.dart';
+
+  int _idCounter = 0;
+
+  @Directive(selector: '[autoId]')
+  void autoIdDirective(
+    Element el,
+    @Attribute('autoId') String prefix,
+  ) {
+    el.id = '$prefix${_idCounter++}';
+  }
+</code></pre></div></div>
+
+<p>Like constructor parameters in class-based directives,
+function parameters define the functional directive’s dependencies.</p>
+
+<p>When you write a functional directive, follow these rules:</p>
+
+<ul>
+  <li>Make the function return type <code class="language-plaintext highlighter-rouge">void</code>.</li>
+  <li>In the <a href="https://pub.dev/documentation/angular/6.0.1/di/Directive-class.html">@Directive()</a> annotation,
+use only the <code class="language-plaintext highlighter-rouge">selector</code> parameter and, if necessary, <code class="language-plaintext highlighter-rouge">providers</code>.</li>
+</ul>
+
+<p>While functional directives are stateless, they can be impure
+(making use of global state), as the <code class="language-plaintext highlighter-rouge">autoId</code> directive shows.</p>
+
+<p>Add the following lines at the end of the app component template:
+&lt;?code-excerpt “lib/app_component.html (autoId)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;h4 #h1 autoId="heading-"&gt;Auto-ID at work&lt;/h4&gt;
+  &lt;p&gt;The previous heading has ID {{h1.id}}&lt;/p&gt;
+
+  &lt;h4 #h2 autoId="heading-"&gt;Auto-ID at work, again&lt;/h4&gt;
+  &lt;p&gt;The previous heading has ID {{h2.id}}&lt;/p&gt;
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong> The app reports headings ID <code class="language-plaintext highlighter-rouge">heading-0</code> and <code class="language-plaintext highlighter-rouge">heading-1</code>.</p>
+
+<h2 id="summary">
+<a class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+
+<p>This page covered how to:</p>
+
+<ul>
+  <li>
+<a href="#create-a-directive">Create a <strong>class-based attribute directive</strong></a> that
+modifies the behavior of an element.</li>
+  <li>
+<a href="#apply-directive">Apply an attribute directive</a> to an element in a template.</li>
+  <li>
+<a href="#respond-to-user">Respond to <strong>events</strong></a> that change a class-based directive’s behavior.</li>
+  <li>
+<a href="#bindings"><strong>Bind</strong> values</a> to a class-based directive.</li>
+  <li>
+<a href="#functional">Write a <strong>functional</strong> attribute directive</a>.</li>
+</ul>
+
+<p>The final source code follows:</p>
+
+<code-tabs>
+  <?code-pane "lib/app_component.dart" linenums?>
+  <?code-pane "lib/app_component.html" linenums?>
+  <?code-pane "lib/src/auto_id_directive.dart" linenums?>
+  <?code-pane "lib/src/highlight_directive.dart" linenums?>
+  <?code-pane "web/main.dart" linenums?>
+  <?code-pane "web/index.html" linenums?>
+</code-tabs>
+
+<p>You can also experience and download the <span><a href="/examples/attribute-directives" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/attribute-directives/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<p><a id="why-input"></a></p>
+<h3 id="appendix-why-add-input">
+<a class="anchor" href="#appendix-why-add-input" aria-hidden="true"><span class="octicon octicon-link"></span></a>Appendix: Why add <em>@Input</em>?</h3>
+
+<p>In this demo, the <code class="language-plaintext highlighter-rouge">hightlightColor</code> property is an <strong><em>input</em></strong> property of
+the <code class="language-plaintext highlighter-rouge">HighlightDirective</code>. You’ve seen it applied without an alias:</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart (color)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
+  String highlightColor;
+</code></pre></div></div>
+
+<p>You’ve seen it with an alias:</p>
+
+<p>&lt;?code-excerpt “lib/src/highlight_directive.dart (color)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input('myHighlight')
+  String highlightColor;
+</code></pre></div></div>
+
+<p>Either way, the <code class="language-plaintext highlighter-rouge">@Input</code> annotation tells Angular that this property is
+<em>public</em> and available for binding by a parent component.
+Without  <code class="language-plaintext highlighter-rouge">@Input</code>, Angular refuses to bind to the property.</p>
+
+<p>You’ve bound template HTML to component properties before and never used <code class="language-plaintext highlighter-rouge">@Input</code>.
+What’s different?</p>
+
+<p>The difference is a matter of trust.
+Angular treats a component’s template as <em>belonging</em> to the component.
+The component and its template trust each other implicitly.
+Therefore, the component’s own template may bind to <em>any</em> property of that component,
+with or without the <code class="language-plaintext highlighter-rouge">@Input</code> annotation.</p>
+
+<p>But a component or directive shouldn’t blindly trust <em>other</em> components and directives.
+The properties of a component or directive are hidden from binding by default.
+They are <em>private</em> from an Angular binding perspective.
+When adorned with the <code class="language-plaintext highlighter-rouge">@Input</code> annotation, the property becomes <em>public</em> from an Angular binding perspective.
+Only then can it be bound by some other component or directive.</p>
+
+<p>You can tell if <code class="language-plaintext highlighter-rouge">@Input</code> is needed by the position of the property name in a binding.</p>
+
+<ul>
+  <li>
+    <p>When it appears in the template expression to the <strong><em>right</em></strong> of the equals (=),
+it belongs to the template’s component and does not require the <code class="language-plaintext highlighter-rouge">@Input</code> annotation.</p>
+  </li>
+  <li>
+    <p>When it appears in <strong>square brackets</strong> ([ ]) to the <strong>left</strong> of the equals (=),
+the property belongs to some <em>other</em> component or directive;
+that property must be adorned with the <code class="language-plaintext highlighter-rouge">@Input</code> annotation.</p>
+  </li>
+</ul>
+
+<p>Now apply that reasoning to the following example:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (color)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p [myHighlight]="color"&gt;Highlight me!&lt;/p&gt;
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>The <code class="language-plaintext highlighter-rouge">color</code> property in the expression on the right belongs to the template’s component.
+The template and its component trust each other.
+The <code class="language-plaintext highlighter-rouge">color</code> property doesn’t require the <code class="language-plaintext highlighter-rouge">@Input</code> annotation.</p>
+  </li>
+  <li>
+    <p>The <code class="language-plaintext highlighter-rouge">myHighlight</code> property on the left refers to an <em>aliased</em> property of the <code class="language-plaintext highlighter-rouge">HighlightDirective</code>,
+not a property of the template’s component. There are trust issues.
+Therefore, the directive property must carry the <code class="language-plaintext highlighter-rouge">@Input</code> annotation.</p>
+  </li>
+</ul>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/template-syntax">Template Syntax</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/component-styles">Component Styles</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

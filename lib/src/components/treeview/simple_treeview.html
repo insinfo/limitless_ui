@@ -54,15 +54,27 @@
                     [class.fancytree-partsel]="item.treeViewNodeIsSelected"
                     [class.fancytree-exp-n]="item.treeViewNodes.isEmpty == true"
                     [class.fancytree-ico-c]="item.treeViewNodes.isEmpty == true"
-                    [class.fancytree-selected]="item.isAllChildrenSelected == true">
+                    [class.fancytree-selected]="item.isAllChildrenSelected == true"
+                    [class.li-treeview__node--disabled]="!isSelectable(item)">
 
                     <span (click)="item.treeViewNodeIsCollapse=!item.treeViewNodeIsCollapse" role="button"
                         class="fancytree-expander"> </span>
 
                     <span (click)="selectItem(item)" role="checkbox" class="fancytree-checkbox"></span>
 
-                    <!-- <span role="presentation" class="fancytree-icon"> </span> -->
-                    <span class="fancytree-title">{{item.treeViewNodeLabel}}</span>
+                    <span class="fancytree-title"
+                        [class.li-treeview__title--disabled]="!isSelectable(item)">
+                        <span *ngIf="nodeTemplate != null">
+                            <template [ngTemplateOutlet]="nodeTemplate?.templateRef"
+                                [ngTemplateOutletValue]="nodeContext(item)">
+                            </template>
+                        </span>
+
+                        <span *ngIf="nodeTemplate == null" class="li-treeview__title-content">
+                            <i *ngIf="hasNodeIcon(item)" [attr.class]="nodeIconClass(item)"></i>
+                            <span [style.color]="item.color">{{resolvedNodeLabel(item)}}</span>
+                        </span>
+                    </span>
                 </span>
                 <ul [hidden]="item.treeViewNodeIsCollapse == true" *ngIf="item.treeViewNodes.isNotEmpty == true"
                     role="group">

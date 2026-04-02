@@ -2,12 +2,12 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">Components <span class="fw-normal">Showcase</span></h4>
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
       <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">Carousel, tooltip e datatable</span>
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
       </div>
     </div>
   </div>
@@ -15,56 +15,55 @@
   <div class="content">
     <div class="card">
       <div class="card-header">
-        <h5 class="mb-0">Showcase</h5>
+        <h5 class="mb-0">{{ cardTitle }}</h5>
       </div>
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="i18n.t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-0">Esta página combina vários componentes na mesma composição para validar
-              convivência visual e integração entre APIs.</p>
+            <p class="text-muted mb-0">{{ overviewIntro }}</p>
           </div>
         </li-tabx>
-        <li-tabx header="Exemplos">
+        <li-tabx [header]="examplesTabLabel">
           <div class="card-body">
             <div class="row">
               <div class="col-xl-6">
                 <div class="card">
                   <div class="card-header">
-                    <h5 class="mb-0">Carousel e tooltip</h5>
+                    <h5 class="mb-0">{{ carouselCardTitle }}</h5>
                   </div>
                   <div class="card-body">
                     <li-carousel [showIndicators]="true" [showControls]="true" [autoPlay]="true" [intervalMs]="4500"
                       [initialIndex]="1">
-                      <li-carousel-item indicatorLabel="Arquitetura">
+                      <li-carousel-item [indicatorLabel]="slideOneTag">
                         <div class="demo-slide slide-one">
-                          <span class="demo-slide-tag">Setup</span>
-                          <h4>Arquitetura consistente</h4>
-                          <p>Organize a documentação em cards, rotas e exemplos vivos.</p>
+                          <span class="demo-slide-tag">{{ slideOneTag }}</span>
+                          <h4>{{ slideOneTitle }}</h4>
+                          <p>{{ slideOneBody }}</p>
                         </div>
                       </li-carousel-item>
-                      <li-carousel-item [active]="true" indicatorLabel="Composicao">
+                      <li-carousel-item [active]="true" [indicatorLabel]="slideTwoTag">
                         <div class="demo-slide slide-two">
-                          <span class="demo-slide-tag">Composicao</span>
-                          <h4>Componentes empilhados</h4>
-                          <p>Tabs, alertas, selects e datatables coexistem sem gambiarras visuais.</p>
+                          <span class="demo-slide-tag">{{ slideTwoTag }}</span>
+                          <h4>{{ slideTwoTitle }}</h4>
+                          <p>{{ slideTwoBody }}</p>
                         </div>
                       </li-carousel-item>
-                      <li-carousel-item indicatorLabel="Entrega">
+                      <li-carousel-item [indicatorLabel]="slideThreeTag">
                         <div class="demo-slide slide-three">
-                          <span class="demo-slide-tag">Entrega</span>
-                          <h4>Documentacao utilizavel</h4>
-                          <p>Uma galeria executavel evita exemplos quebrados e acelera onboarding.</p>
+                          <span class="demo-slide-tag">{{ slideThreeTag }}</span>
+                          <h4>{{ slideThreeTitle }}</h4>
+                          <p>{{ slideThreeBody }}</p>
                         </div>
                       </li-carousel-item>
                     </li-carousel>
 
                     <div class="demo-tooltip-row">
-                      <li-tooltip text="Mostra dicas ao passar o mouse.">
-                        <button class="btn btn-outline-primary" type="button">Hover tooltip</button>
+                      <li-tooltip [text]="hoverTooltipText">
+                        <button class="btn btn-outline-primary" type="button">{{ hoverTooltipButton }}</button>
                       </li-tooltip>
 
-                      <li-tooltip text="Tambem funciona com trigger de click." trigger="click">
-                        <button class="btn btn-outline-dark" type="button">Click tooltip</button>
+                      <li-tooltip [text]="clickTooltipText" trigger="click">
+                        <button class="btn btn-outline-dark" type="button">{{ clickTooltipButton }}</button>
                       </li-tooltip>
                     </div>
                   </div>
@@ -74,11 +73,11 @@
               <div class="col-xl-6">
                 <div class="card">
                   <div class="card-header">
-                    <h5 class="mb-0">Datatable</h5>
+                    <h5 class="mb-0">{{ datatableCardTitle }}</h5>
                   </div>
                   <div class="card-body">
                     <li-datatable [dataTableFilter]="filters" [data]="tableData" [settings]="tableSettings"
-                      [searchInFields]="searchFields" searchLabel="Buscar sprint" searchPlaceholder="Digite para buscar"
+                      [searchInFields]="searchFields" [searchLabel]="searchLabel" [searchPlaceholder]="searchPlaceholder"
                       (dataRequest)="onTableRequest($event)" (limitChange)="onTableRequest($event)"
                       (searchRequest)="onTableRequest($event)">
                     </li-datatable>

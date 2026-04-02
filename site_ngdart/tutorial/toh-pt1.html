@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Build a simple hero editor.">
+  <title>The Hero Editor | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="The Hero Editor" />
+  <meta name="twitter:description" content="Build a simple hero editor." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="The Hero Editor" />
+  <meta property="og:description" content="Build a simple hero editor." />
+  <meta property="og:url" content="https://angulardart.xyz/tutorial/toh-pt1" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li >
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li class="active">
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#where-you-left-off">Where you left off</a></li>
+<li class="toc-entry toc-h2"><a href="#show-the-hero">Show the hero</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#add-multi-line-template-html">Add multi-line template HTML</a></li>
+<li class="toc-entry toc-h3"><a href="#create-a-hero-class">Create a Hero class</a></li>
+<li class="toc-entry toc-h3"><a href="#show-all-hero-properties">Show all hero properties</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#enable-editing-the-hero-name">Enable editing the hero name</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#use-a-two-way-binding">Use a two-way binding</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#declare-non-core-directives">Declare non-core directives</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#template-parse-error">Template parse error</a></li>
+<li class="toc-entry toc-h3"><a href="#update-the-pubspec">Update the pubspec</a></li>
+<li class="toc-entry toc-h3"><a href="#component-directives">Add @Component(directives: …)</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#the-road-youve-travelled">The road you’ve travelled</a></li>
+<li class="toc-entry toc-h2"><a href="#the-road-ahead">The road ahead</a></li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/tutorial/toh-pt0">The Starter App</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/tutorial/toh-pt2">Master/Detail</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/tutorial/toh-pt1.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='The Hero Editor' page issue&body=From URL: https://angulardart.xyz/tutorial/toh-pt1"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  The Hero Editor 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/toh-1”?&gt;
+In this part of the tutorial, you’ll modify the starter app to display
+information about a hero. Then you’ll add the ability to edit the hero’s data.
+When you’re done, the app should look like this <span><a href="/examples/toh-1" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/toh-1/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<h2 id="where-you-left-off">
+<a class="anchor" href="#where-you-left-off" aria-hidden="true"><span class="octicon octicon-link"></span></a>Where you left off</h2>
+
+<p>Before you start writing code, let’s verify that you have the following structure. If not, you’ll need to go back and follow the <a href="toh-pt0">setup</a> instructions
+on the previous page.</p>
+
+<div class="ul-filetree">
+  <ul>
+    <li>angular_tour_of_heroes
+      <ul>
+        <li>lib
+          <ul>
+            <li>app_component.dart</li>
+          </ul>
+        </li>
+        <li>test
+          <ul>
+            <li>app_test.dart</li>
+          </ul>
+        </li>
+        <li>web
+          <ul>
+            <li>index.html</li>
+            <li>main.dart</li>
+            <li>styles.css</li>
+          </ul>
+        </li>
+        <li>analysis_options.yaml</li>
+        <li>pubspec.yaml</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<p>If the app isn’t running already,
+<a href="/guide/setup#run-the-app">launch the app</a>.
+As you make changes,
+<a href="/guide/setup#reload-the-app">keep it running</a>
+by reloading the browser window.</p>
+
+<h2 id="show-the-hero">
+<a class="anchor" href="#show-the-hero" aria-hidden="true"><span class="octicon octicon-link"></span></a>Show the hero</h2>
+
+<p>Make the following changes to <code class="language-plaintext highlighter-rouge">AppComponent</code>:</p>
+
+<ul>
+  <li>Add a <code class="language-plaintext highlighter-rouge">hero</code> property for a hero named Windstorm.</li>
+  <li>Add a <code class="language-plaintext highlighter-rouge">title</code> property initialized as shown below.</li>
+  <li>Drop the <code class="language-plaintext highlighter-rouge">name</code> property.</li>
+</ul>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (class)” replace=”/final.<em>|var.</em>/[!$&amp;!]/g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class AppComponent {
+    [!final title = 'Tour of Heroes';!]
+    [!var hero = 'Windstorm';!]
+  }
+</code></pre></div></div>
+
+<h3 id="add-multi-line-template-html">
+<a class="anchor" href="#add-multi-line-template-html" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add multi-line template HTML</h3>
+
+<p>Update the template parameter in the <code class="language-plaintext highlighter-rouge">@Component</code> annotation with data bindings
+to these new properties:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (template)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;h2&gt;{{hero}}&lt;/h2&gt;
+  ''',
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong> The app displays the title and hero name.</p>
+
+<p>The double curly braces are Angular’s <a href="/guide/template-syntax#interpolation">interpolation syntax</a>. These
+interpolation bindings present the component’s <code class="language-plaintext highlighter-rouge">title</code> and <code class="language-plaintext highlighter-rouge">hero</code> property
+values, as strings, inside the HTML header tags.</p>
+
+<div class="l-sub-section">
+  <p>Read more about interpolation in the <a href="../guide/displaying-data">Displaying Data</a> page.</p>
+</div>
+
+<h3 id="create-a-hero-class">
+<a class="anchor" href="#create-a-hero-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a <em>Hero</em> class</h3>
+
+<p>Create a <code class="language-plaintext highlighter-rouge">Hero</code> class with <code class="language-plaintext highlighter-rouge">id</code> and <code class="language-plaintext highlighter-rouge">name</code> properties and
+save it to the following new file:</p>
+
+<p>&lt;?code-excerpt “lib/hero.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class Hero {
+    final int id;
+    String name;
+
+    Hero(this.id, this.name);
+  }
+</code></pre></div></div>
+
+<p>Make these changes to <code class="language-plaintext highlighter-rouge">app_component.dart</code>:</p>
+
+<ul>
+  <li>Import <code class="language-plaintext highlighter-rouge">hero.dart</code>.</li>
+  <li>In the <code class="language-plaintext highlighter-rouge">AppComponent</code> class, declare the type of <code class="language-plaintext highlighter-rouge">hero</code> to be <code class="language-plaintext highlighter-rouge">Hero</code>, and
+initialize it with a new <code class="language-plaintext highlighter-rouge">Hero</code> having an ID of <code class="language-plaintext highlighter-rouge">1</code> and the name “Windstorm”.</li>
+</ul>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart (import and class)” replace=”/import.<em>|Hero(?= )|Hero.1.</em>/[!$&amp;!]/g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  [!import 'hero.dart';!]
+  // ···
+  class AppComponent {
+    final title = 'Tour of Heroes';
+    [!Hero!] hero = [!Hero(1, 'Windstorm');!]
+  }
+</code></pre></div></div>
+
+<p>Because you changed the hero from a string to an object, update the binding in
+the template to refer to the hero’s <code class="language-plaintext highlighter-rouge">name</code> property.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart (template)” remove=”/’|div/” replace=”/.name/[!$&amp;!]/g”?&gt;</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;h1&gt;</span>{{title}}<span class="nt">&lt;/h1&gt;</span>
+  <span class="nt">&lt;h2&gt;</span>{{hero[!.name!]}}<span class="nt">&lt;/h2&gt;</span>
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong> The app continues to display the hero’s name.</p>
+
+<h3 id="show-all-hero-properties">
+<a class="anchor" href="#show-all-hero-properties" aria-hidden="true"><span class="octicon octicon-link"></span></a>Show all hero properties</h3>
+
+<p>Update the template to show all of the hero’s properties: add a <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> for the
+hero’s <code class="language-plaintext highlighter-rouge">id</code> property and another <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> for the hero’s <code class="language-plaintext highlighter-rouge">name</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart (template)” remove=”’” title?&gt;</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;h1&gt;</span>{{title}}<span class="nt">&lt;/h1&gt;</span>
+  <span class="nt">&lt;h2&gt;</span>{{hero.name}}<span class="nt">&lt;/h2&gt;</span>
+  <span class="nt">&lt;div&gt;&lt;label&gt;</span>id: <span class="nt">&lt;/label&gt;</span>{{hero.id}}<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div&gt;&lt;label&gt;</span>name: <span class="nt">&lt;/label&gt;</span>{{hero.name}}<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong> The app shows all the hero’s details.</p>
+
+<h2 id="enable-editing-the-hero-name">
+<a class="anchor" href="#enable-editing-the-hero-name" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enable editing the hero name</h2>
+
+<p>Users should be able to edit the hero name in an <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> textbox.
+The textbox should both <em>display</em> the hero’s <code class="language-plaintext highlighter-rouge">name</code> property
+and <em>update</em> that property as the user types.</p>
+
+<p>You need a two-way binding between the <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> form element and the <code class="language-plaintext highlighter-rouge">hero.name</code> property.</p>
+
+<h3 id="use-a-two-way-binding">
+<a class="anchor" href="#use-a-two-way-binding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use a two-way binding</h3>
+
+<p>Refactor the hero name in the template so it looks like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (template)” remove=”/h\d|id|’/”?&gt;</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;label&gt;</span>name: <span class="nt">&lt;/label&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">[(ngModel)]=</span><span class="s">"hero.name"</span> <span class="na">placeholder=</span><span class="s">"name"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">[(ngModel)]</code> is the Angular syntax to bind the <code class="language-plaintext highlighter-rouge">hero.name</code> property
+to the textbox.
+Data flows <em>in both directions:</em> from the property to the textbox,
+and from the textbox back to the property.</p>
+
+<div class="l-sub-section">
+  <p>Read more about <code class="language-plaintext highlighter-rouge">ngModel</code> in the
+  <a href="../guide/forms#ngModel">Forms</a> and
+  <a href="../guide/template-syntax#ngModel">Template Syntax</a> pages.</p>
+</div>
+
+<h2 id="declare-non-core-directives">
+<a class="anchor" href="#declare-non-core-directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Declare non-core directives</h2>
+
+<p>Unfortunately, immediately after this change, the <strong>app breaks</strong>!</p>
+
+<h3 id="template-parse-error">
+<a class="anchor" href="#template-parse-error" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template parse error</h3>
+
+<p><i class="material-icons">open_in_browser</i>
+If you <strong>refresh the browser,</strong> the app won’t load.
+To know why, look at the <a href="https://pub.dev/packages/webdev#usage">webdev serve</a> output. The template
+compiler doesn’t recognize <code class="language-plaintext highlighter-rouge">ngModel</code>, and issues a parse error for
+<code class="language-plaintext highlighter-rouge">AppComponent</code>:</p>
+
+<pre><code class="language-nocode">  Error running TemplateGenerator for forms|lib/src/hero_form_component.dart.
+  Error: Template parse errors:
+  Can't bind to 'ngModel' since it isn't a known native property or known directive. Please fix typo or add to directives list.
+  [(ngModel)]="hero.name"
+  ^^^^^^^^^^^^^^^^^^^^^^^
+</code></pre>
+
+<h3 id="update-the-pubspec">
+<a class="anchor" href="#update-the-pubspec" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update the pubspec</h3>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc”?&gt;</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">ngforms</code> (also called <code class="language-plaintext highlighter-rouge">angular_forms</code>) library comes in its own package. Add the package to the pubspec dependencies:</p>
+
+<p>&lt;?code-excerpt “toh-0/pubspec.yaml” diff-with=”toh-1/pubspec.yaml” from=”dependencies” to=”ngforms”?&gt;</p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">--- toh-0/pubspec.yaml
+</span><span class="gi">+++ toh-1/pubspec.yaml
+</span><span class="p">@@ -8,2 +8,3 @@</span>
+ dependencies:
+   ngdart: ^7.1.1
+<span class="gi">+  ngforms: ^4.1.1
+</span></code></pre></div></div>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/toh-1”?&gt;</p>
+
+<h3 id="component-directives">
+<a class="anchor" href="#component-directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add <em>@Component(directives: …)</em>
+</h3>
+
+<p>Although <code class="language-plaintext highlighter-rouge">NgModel</code> is a valid Angular directive defined in the <a href="/api/angular_forms">ngforms</a>
+library, it isn’t available by default.</p>
+
+<p>Before you can use any Angular directives in a template,
+you need to list them in the <code class="language-plaintext highlighter-rouge">directives</code> argument of your component’s
+<code class="language-plaintext highlighter-rouge">@Component</code> annotation. You can add directives individually, or for
+convenience you can add the <a href="https://pub.dev/documentation/angular_forms/6.0.1/angular_forms/formDirectives-constant.html">formDirectives</a> list
+(note the new import statement):</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (directives)” replace=”/directives:.*/[!$&amp;!]/g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngforms/ngforms.dart';
+
+  import 'hero.dart';
+
+  @Component(
+    selector: 'my-app',
+    // ···
+    [!directives: [formDirectives],!]
+  )
+  class AppComponent {
+    // ···
+  }
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i> <strong>Refresh the browser</strong> and the
+app should work again. You can edit the hero’s name and see the changes
+reflected immediately in the <code class="language-plaintext highlighter-rouge">&lt;h2&gt;</code> heading above the textbox.</p>
+
+<h2 id="the-road-youve-travelled">
+<a class="anchor" href="#the-road-youve-travelled" aria-hidden="true"><span class="octicon octicon-link"></span></a>The road you’ve travelled</h2>
+
+<p>Take stock of what you’ve built.</p>
+
+<ul>
+  <li>The Tour of Heroes app uses the double curly braces of interpolation (a type of one-way data binding)
+to display the app title and properties of a <code class="language-plaintext highlighter-rouge">Hero</code> object.</li>
+  <li>You wrote a multi-line template using Dart’s template strings to make the template readable.</li>
+  <li>You added a two-way data binding to the <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> element
+using the built-in <code class="language-plaintext highlighter-rouge">ngModel</code> directive. This binding both displays the hero’s
+name and allows users to change it.</li>
+  <li>You added <a href="https://pub.dev/documentation/angular_forms/6.0.1/angular_forms/formDirectives-constant.html">formDirectives</a> to the <code class="language-plaintext highlighter-rouge">directives</code> argument of the app’s
+<code class="language-plaintext highlighter-rouge">@Component</code> annotation so that Angular knows where <code class="language-plaintext highlighter-rouge">ngModel</code> is defined.</li>
+</ul>
+
+<p>Your app should look like this <span><a href="/examples/toh-1" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/toh-1/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<p>Here are the files that you created or modified:</p>
+
+<code-tabs>
+  <?code-pane "lib/app_component.dart" linenums?>
+  <?code-pane "lib/hero.dart" linenums?>
+</code-tabs>
+
+<h2 id="the-road-ahead">
+<a class="anchor" href="#the-road-ahead" aria-hidden="true"><span class="octicon octicon-link"></span></a>The road ahead</h2>
+
+<p>In the <a href="toh-pt2">next tutorial page</a>, you’ll build on the Tour of Heroes app to display a list of heroes.
+You’ll also allow the user to select heroes and display their details.
+You’ll learn more about how to retrieve lists and bind them to the template.</p>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/tutorial/toh-pt0">The Starter App</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/tutorial/toh-pt2">Master/Detail</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

@@ -16,6 +16,7 @@ class DemoRoutePaths {
   static final typeahead = RoutePath(path: 'typeahead');
   static final multiSelect = RoutePath(path: 'multi-select');
   static final currency = RoutePath(path: 'currency');
+  static final colorPicker = RoutePath(path: 'color-picker');
   static final datePicker = RoutePath(path: 'date-picker');
   static final timePicker = RoutePath(path: 'time-picker');
   static final dateRange = RoutePath(path: 'date-range');

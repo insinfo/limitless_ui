@@ -8,6 +8,7 @@ library;
 import 'dart:async';
 import 'dart:html' as html;
 
+import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
@@ -44,6 +45,23 @@ import 'li_treeview_dropdown_select_component_test.template.dart' as ng;
           [closeOnSelect]="false"
           [(ngModel)]="selectedMultiValues">
       </li-treeview-select>
+
+      <li-treeview-select
+          #frameTree
+          container="inline"
+          [data]="frameNodes"
+          [settings]="frameSettings"
+          [(ngModel)]="selectedFrameValue">
+      </li-treeview-select>
+
+      <li-treeview-select
+          #lazyRawTree
+          container="inline"
+          [pageLoader]="loadRawChunk"
+          [settings]="rawSettings"
+          [pageSize]="2"
+          [(ngModel)]="selectedLazyRawValue">
+      </li-treeview-select>
     </div>
   ''',
   directives: [
@@ -53,14 +71,39 @@ import 'li_treeview_dropdown_select_component_test.template.dart' as ng;
   ],
 )
 class TreeviewDropdownTestHostComponent {
-  TreeviewDropdownTestHostComponent() : staticNodes = _buildStaticNodes();
+  TreeviewDropdownTestHostComponent()
+      : staticNodes = _buildStaticNodes(),
+        frameNodes = _buildFrameNodes();
 
   final List<TreeViewNode> staticNodes;
+  final DataFrame<Map<String, dynamic>> frameNodes;
   final List<TreeViewLoadRequest> requests = <TreeViewLoadRequest>[];
+  final List<TreeViewLoadRequest> rawRequests = <TreeViewLoadRequest>[];
+  final TreeViewSettings frameSettings = const TreeViewSettings(
+    idField: 'uuid',
+    labelField: 'name',
+    valueField: 'code',
+    nodesField: 'children',
+    iconField: 'icon',
+    colorField: 'color',
+    enabledField: 'enabled',
+  );
+  final TreeViewSettings rawSettings = TreeViewSettings(
+    idField: 'uuid',
+    labelField: 'title',
+    valueField: 'code',
+    nodesField: 'children',
+    iconField: 'icon',
+    colorField: 'color',
+    enabledField: 'enabled',
+    lazyChildrenResolver: (item, itemMap) => itemMap?['lazy'] == true,
+  );
 
   dynamic selectedStaticValue;
   dynamic selectedLazyValue;
   List<dynamic> selectedMultiValues = <dynamic>[];
+  dynamic selectedFrameValue;
+  dynamic selectedLazyRawValue;
 
   @ViewChild('staticTree')
   LiTreeviewSelectComponent? staticTree;
@@ -70,6 +113,12 @@ class TreeviewDropdownTestHostComponent {
 
   @ViewChild('multiTree')
   LiTreeviewSelectComponent? multiTree;
+
+  @ViewChild('frameTree')
+  LiTreeviewSelectComponent? frameTree;
+
+  @ViewChild('lazyRawTree')
+  LiTreeviewSelectComponent? lazyRawTree;
 
   Future<TreeViewLoadResult> loadChunk(TreeViewLoadRequest request) async {
     requests.add(request);
@@ -105,6 +154,49 @@ class TreeviewDropdownTestHostComponent {
         );
       }).toList(growable: false),
       hasMore: end < filtered.length,
+    );
+  }
+
+  Future<TreeViewLoadResult> loadRawChunk(TreeViewLoadRequest request) async {
+    rawRequests.add(request);
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+
+    final source = request.parent == null
+        ? _rawCatalog
+        : (_findRawSeed(request.parent!.id?.toString())?.children ??
+            const <_RawSeed>[]);
+
+    final filtered = request.searchTerm.trim().isEmpty
+        ? source
+        : source
+            .where((seed) => seed.title
+                .toLowerCase()
+                .contains(request.searchTerm.toLowerCase()))
+            .toList(growable: false);
+
+    final start = request.offset.clamp(0, filtered.length);
+    final end = (start + request.limit).clamp(0, filtered.length);
+    final slice = filtered.sublist(start, end);
+
+    return TreeViewLoadResult.raw(
+      items: DataFrame<_RawSeed>(
+        items:
+            slice.map((seed) => _toLazyPayload(seed)).toList(growable: false),
+        totalRecords: filtered.length,
+      ),
+      hasMore: end < filtered.length,
+    );
+  }
+
+  static _RawSeed _toLazyPayload(_RawSeed seed) {
+    return _RawSeed(
+      uuid: seed.uuid,
+      title: seed.title,
+      code: seed.code,
+      icon: seed.icon,
+      color: seed.color,
+      enabled: seed.enabled,
+      lazy: seed.children.isNotEmpty,
     );
   }
 
@@ -146,6 +238,43 @@ class TreeviewDropdownTestHostComponent {
     benefits.addChild(basket);
 
     return <TreeViewNode>[service, benefits];
+  }
+
+  static DataFrame<Map<String, dynamic>> _buildFrameNodes() {
+    return DataFrame<Map<String, dynamic>>(
+      items: <Map<String, dynamic>>[
+        <String, dynamic>{
+          'uuid': 'benefits',
+          'name': 'Benefícios',
+          'code': 'benefits',
+          'icon': 'ph ph-tree-structure',
+          'children': <Map<String, dynamic>>[
+            <String, dynamic>{
+              'uuid': 'basket',
+              'name': 'Cesta básica',
+              'code': 'basket',
+              'icon': 'ph ph-package',
+              'children': <Map<String, dynamic>>[
+                <String, dynamic>{
+                  'uuid': 'approved',
+                  'name': 'Aprovado',
+                  'code': 'approved',
+                  'color': 'var(--success)',
+                  'enabled': true,
+                },
+                <String, dynamic>{
+                  'uuid': 'archived',
+                  'name': 'Arquivado',
+                  'code': 'archived',
+                  'enabled': false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      totalRecords: 1,
+    );
   }
 
   static const List<_Seed> _lazyCatalog = <_Seed>[
@@ -201,6 +330,81 @@ class TreeviewDropdownTestHostComponent {
 
     return walk(_lazyCatalog);
   }
+
+  static _RawSeed? _findRawSeed(String? id) {
+    if (id == null) {
+      return null;
+    }
+
+    _RawSeed? walk(Iterable<_RawSeed> nodes) {
+      for (final node in nodes) {
+        if (node.uuid == id) {
+          return node;
+        }
+        final child = walk(node.children);
+        if (child != null) {
+          return child;
+        }
+      }
+      return null;
+    }
+
+    return walk(_rawCatalog);
+  }
+
+  static final List<_RawSeed> _rawCatalog = <_RawSeed>[
+    _RawSeed(
+      uuid: 'service',
+      title: 'Atendimento',
+      code: 'service',
+      icon: 'ph ph-headset',
+      lazy: true,
+      children: <_RawSeed>[
+        _RawSeed(uuid: 'triage', title: 'Triagem', code: 'triage'),
+        _RawSeed(uuid: 'returns', title: 'Retornos', code: 'returns'),
+      ],
+    ),
+    _RawSeed(
+      uuid: 'benefits',
+      title: 'Benefícios',
+      code: 'benefits',
+      icon: 'ph ph-tree-structure',
+      lazy: true,
+      children: <_RawSeed>[
+        _RawSeed(
+          uuid: 'basket',
+          title: 'Cesta básica',
+          code: 'basket',
+          icon: 'ph ph-package',
+          lazy: true,
+          children: <_RawSeed>[
+            _RawSeed(
+              uuid: 'approved',
+              title: 'Aprovado',
+              code: 'approved',
+              color: 'var(--success)',
+            ),
+            _RawSeed(
+              uuid: 'archived',
+              title: 'Arquivado',
+              code: 'archived',
+              enabled: false,
+            ),
+          ],
+        ),
+        _RawSeed(uuid: 'rent', title: 'Auxílio aluguel', code: 'rent'),
+      ],
+    ),
+    _RawSeed(
+      uuid: 'registers',
+      title: 'Cadastros',
+      code: 'registers',
+      lazy: true,
+      children: <_RawSeed>[
+        _RawSeed(uuid: 'families', title: 'Famílias', code: 'families'),
+      ],
+    ),
+  ];
 }
 
 class _Seed {
@@ -213,6 +417,43 @@ class _Seed {
   final String id;
   final String label;
   final List<_Seed> children;
+}
+
+class _RawSeed implements SerializeBase {
+  const _RawSeed({
+    required this.uuid,
+    required this.title,
+    required this.code,
+    this.icon,
+    this.color,
+    this.enabled = true,
+    this.lazy = false,
+    this.children = const <_RawSeed>[],
+  });
+
+  final String uuid;
+  final String title;
+  final String code;
+  final String? icon;
+  final String? color;
+  final bool enabled;
+  final bool lazy;
+  final List<_RawSeed> children;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'uuid': uuid,
+      'title': title,
+      'code': code,
+      'icon': icon,
+      'color': color,
+      'enabled': enabled,
+      'lazy': lazy,
+      'children':
+          children.map((child) => child.toMap()).toList(growable: false),
+    };
+  }
 }
 
 void main() {
@@ -339,6 +580,125 @@ void main() {
     expect(
         host.selectedMultiValues, containsAll(<String>['triage', 'approved']));
     expect(host.multiTree!.isPopupOpen, isTrue);
+  });
+
+  test('maps DataFrame<Map> with settings and blocks disabled nodes', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final frameHost =
+        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(3);
+
+    await fixture.update((_) {
+      _triggerButtons(fixture.rootElement)[3].click();
+    });
+    await _settle(fixture);
+
+    final expandBenefits = _findExpanderForLabel(frameHost, 'Benefícios');
+    expect(expandBenefits, isNotNull);
+
+    await fixture.update((_) {
+      expandBenefits!.click();
+    });
+    await _settle(fixture);
+
+    final expandBasket = _findExpanderForLabel(frameHost, 'Cesta básica');
+    expect(expandBasket, isNotNull);
+
+    await fixture.update((_) {
+      expandBasket!.click();
+    });
+    await _settle(fixture);
+
+    final archivedLabel = _findLabelButton(frameHost, 'Arquivado');
+    expect(archivedLabel, isNotNull);
+
+    await fixture.update((_) {
+      archivedLabel!.click();
+    });
+    await _settle(fixture);
+
+    expect(host.selectedFrameValue, isNull);
+
+    final approvedLabel = _findLabelButton(frameHost, 'Aprovado');
+    expect(approvedLabel, isNotNull);
+
+    await fixture.update((_) {
+      approvedLabel!.click();
+    });
+    await _settle(fixture);
+
+    expect(host.selectedFrameValue, 'approved');
+    expect(host.frameTree!.selectedLabel, 'Aprovado');
+  });
+
+  test('loads raw SerializeBase chunks with settings in lazy mode', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final rawHost =
+        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(4);
+
+    await fixture.update((_) {
+      _triggerButtons(fixture.rootElement)[4].click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    expect(rawHost.text, contains('Atendimento'));
+    expect(rawHost.text, contains('Benefícios'));
+    expect(rawHost.text, isNot(contains('Cadastros')));
+    expect(host.rawRequests.first.parent, isNull);
+
+    final loadMoreRoot = _findButtonByText(rawHost, 'Carregar mais');
+    expect(loadMoreRoot, isNotNull);
+
+    await fixture.update((_) {
+      loadMoreRoot!.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    expect(rawHost.text, contains('Cadastros'));
+
+    final expandBenefits = _findExpanderForLabel(rawHost, 'Benefícios');
+    expect(expandBenefits, isNotNull);
+
+    await fixture.update((_) {
+      expandBenefits!.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    final expandBasket = _findExpanderForLabel(rawHost, 'Cesta básica');
+    expect(expandBasket, isNotNull);
+
+    await fixture.update((_) {
+      expandBasket!.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    final archivedLabel = _findLabelButton(rawHost, 'Arquivado');
+    expect(archivedLabel, isNotNull);
+
+    await fixture.update((_) {
+      archivedLabel!.click();
+    });
+    await _settle(fixture);
+
+    expect(host.selectedLazyRawValue, isNull);
+
+    final approvedLabel = _findLabelButton(rawHost, 'Aprovado');
+    expect(approvedLabel, isNotNull);
+
+    await fixture.update((_) {
+      approvedLabel!.click();
+    });
+    await _settle(fixture);
+
+    expect(host.selectedLazyRawValue, 'approved');
+    expect(host.lazyRawTree!.selectedLabel, 'Aprovado');
+    expect(
+      host.rawRequests.any((request) => request.parent?.id == 'benefits'),
+      isTrue,
+    );
   });
 }
 

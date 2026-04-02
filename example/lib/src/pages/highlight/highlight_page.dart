@@ -14,6 +14,7 @@ class HighlightPageComponent {
   HighlightPageComponent(this.i18n);
 
   final DemoI18nService i18n;
+  Messages get t => i18n.t;
 
   bool get _isPt => i18n.isPortuguese;
 
@@ -86,6 +87,8 @@ class ReviewCardComponent {
   String get pickerBody => _isPt
       ? 'Troque entre os exemplos para verificar a saída visual do highlighter.'
       : 'Switch between examples to inspect the highlighter visual output.';
+    String get templateTitle => _isPt ? 'Template' : 'Template';
+    String get componentTitle => _isPt ? 'Componente' : 'Component';
   String get apiIntro => _isPt
       ? 'A API é deliberadamente curta: `code` recebe a string e `language` controla o parser leve disponível.'
       : 'The API is intentionally short: `code` receives the string and `language` controls the available lightweight parser.';

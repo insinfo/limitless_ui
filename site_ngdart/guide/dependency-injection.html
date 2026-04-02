@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Angular's dependency injection system creates and delivers dependent services "just-in-time".">
+  <title>Dependency Injection | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Dependency Injection" />
+  <meta name="twitter:description" content="Angular's dependency injection system creates and delivers dependent services "just-in-time"." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Dependency Injection" />
+  <meta property="og:description" content="Angular's dependency injection system creates and delivers dependent services "just-in-time"." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/dependency-injection" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li class="active">
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#why-dependency-injection">Why dependency injection?</a></li>
+<li class="toc-entry toc-h2"><a href="#angular-dependency-injection">Angular dependency injection</a></li>
+<li class="toc-entry toc-h2"><a href="#create-an-injectable-heroservice">Create an injectable HeroService</a></li>
+<li class="toc-entry toc-h2"><a href="#register-a-service-provider">Register a service provider</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#component-providers">@Component providers</a></li>
+<li class="toc-entry toc-h3"><a href="#root-injector-providers">Root injector providers</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#inject-a-service">Inject a service</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#singleton-services">Singleton services</a></li>
+<li class="toc-entry toc-h3"><a href="#component-child-injectors">Component child injectors</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#testing-a-component">Testing a component</a></li>
+<li class="toc-entry toc-h2"><a href="#when-a-service-needs-a-service">When a service needs a service</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#logger-service">Logger service</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#providers">Providers</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#class-providers">Class providers</a></li>
+<li class="toc-entry toc-h3"><a href="#use-class-providers">Use-class providers</a></li>
+<li class="toc-entry toc-h3"><a href="#provider-for-a-class-with-dependencies">Provider for a class with dependencies</a></li>
+<li class="toc-entry toc-h3"><a href="#existing-providers">Existing providers</a></li>
+<li class="toc-entry toc-h3"><a href="#value-providers">Value providers</a></li>
+<li class="toc-entry toc-h3"><a href="#factory-providers">Factory providers</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#tokens">Tokens</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#class-types">Class types</a></li>
+<li class="toc-entry toc-h3"><a href="#opaquetoken">OpaqueToken</a></li>
+<li class="toc-entry toc-h3"><a href="#custom-configuration-class">Custom configuration class</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#optional">Optional dependencies</a></li>
+<li class="toc-entry toc-h2"><a href="#summary">Summary</a></li>
+<li class="toc-entry toc-h2"><a href="#explicit-injector">Appendix: Working with injectors directly</a></li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/forms">Forms</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/template-syntax">Template Syntax</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/dependency-injection.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Dependency Injection' page issue&body=From URL: https://angulardart.xyz/guide/dependency-injection"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Dependency Injection 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/dependency-injection”?&gt;</p>
+
+<p><strong>Dependency injection</strong> is an important app design pattern.
+It’s used so widely that almost everyone just calls it <em>DI</em>.</p>
+
+<p>Angular has its own dependency injection framework, and
+you really can’t build an Angular app without it.</p>
+
+<p>This page covers what DI is, why it’s useful, and how to use Angular DI.</p>
+
+<p>Run the <span><a href="/examples/dependency-injection" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/dependency-injection/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<p><a id="why-di"></a></p>
+<h2 id="why-dependency-injection">
+<a class="anchor" href="#why-dependency-injection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why dependency injection?</h2>
+
+<p>To understand why dependency injection is so important, consider an example without it.
+Imagine writing the following code:</p>
+
+<p>&lt;?code-excerpt “lib/src/car/car_no_di.dart (car)” title=”lib/src/car/car.dart (without DI)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class Car {
+    Engine engine;
+    Tires tires;
+    var description = 'No DI';
+
+    Car() {
+      engine = Engine();
+      tires = Tires();
+    }
+
+    // Method using the engine and tires
+    String drive() =&gt; '$description car with '
+        '${engine.cylinders} cylinders and '
+        '${tires.make} tires.';
+  }
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">Car</code> class creates everything it needs inside its constructor.
+What’s the problem?
+The problem is that the <code class="language-plaintext highlighter-rouge">Car</code> class is brittle, inflexible, and hard to test.</p>
+
+<p>This <code class="language-plaintext highlighter-rouge">Car</code> needs an engine and tires. Instead of asking for them,
+the <code class="language-plaintext highlighter-rouge">Car</code> constructor instantiates its own copies from
+the very specific classes <code class="language-plaintext highlighter-rouge">Engine</code> and <code class="language-plaintext highlighter-rouge">Tires</code>.</p>
+
+<p>What if the <code class="language-plaintext highlighter-rouge">Engine</code> class evolves and its constructor requires a parameter?
+That would break the <code class="language-plaintext highlighter-rouge">Car</code> class and it would stay broken until you rewrote it along the lines of
+<code class="language-plaintext highlighter-rouge">engine = Engine(theNewParameter)</code>.
+The <code class="language-plaintext highlighter-rouge">Engine</code> constructor parameters weren’t even a consideration when you first wrote <code class="language-plaintext highlighter-rouge">Car</code>.
+You may not anticipate them even now.
+But you’ll <em>have</em> to start caring because
+when the definition of <code class="language-plaintext highlighter-rouge">Engine</code> changes, the <code class="language-plaintext highlighter-rouge">Car</code> class must change.
+That makes <code class="language-plaintext highlighter-rouge">Car</code> brittle.</p>
+
+<p>What if you want to put a different brand of tires on your <code class="language-plaintext highlighter-rouge">Car</code>? Too bad.
+You’re locked into whatever brand the <code class="language-plaintext highlighter-rouge">Tires</code> class creates. That makes the
+<code class="language-plaintext highlighter-rouge">Car</code> class inflexible.</p>
+
+<p>Right now each new car gets its own engine. It can’t share an engine with other cars.
+While that makes sense for an automobile engine,
+surely you can think of other dependencies that should be shared, such as the onboard
+wireless connection to the manufacturer’s service center. This <code class="language-plaintext highlighter-rouge">Car</code> lacks the flexibility
+to share services that have been created previously for other consumers.</p>
+
+<p>When you write tests for <code class="language-plaintext highlighter-rouge">Car</code> you’re at the mercy of its hidden dependencies.
+Is it even possible to create a new <code class="language-plaintext highlighter-rouge">Engine</code> in a test environment?
+What does <code class="language-plaintext highlighter-rouge">Engine</code> depend upon? What does that dependency depend on?
+Will a new instance of <code class="language-plaintext highlighter-rouge">Engine</code> make an asynchronous call to the server?
+You certainly don’t want that going on during tests.</p>
+
+<p>What if the <code class="language-plaintext highlighter-rouge">Car</code> should flash a warning signal when tire pressure is low?
+How do you confirm that it actually does flash a warning
+if you can’t swap in low-pressure tires during the test?</p>
+
+<p>You have no control over the car’s hidden dependencies.
+When you can’t control the dependencies, a class becomes difficult to test.</p>
+
+<p>How can you make <code class="language-plaintext highlighter-rouge">Car</code> more robust, flexible, and testable?</p>
+
+<p><a id="ctor-injection"></a>
+That’s super easy. Change the <code class="language-plaintext highlighter-rouge">Car</code> constructor to a version with DI:</p>
+
+<code-tabs>
+  <?code-pane "lib/src/car/car.dart (excerpt with DI)" region="car-ctor" linenums?>
+  <?code-pane "lib/src/car/car_no_di.dart (excerpt without DI)" region="car-ctor" linenums?>
+</code-tabs>
+
+<p>See what happened? The definition of the dependencies are
+now in the constructor.
+The <code class="language-plaintext highlighter-rouge">Car</code> class no longer creates an engine or tires.
+It just consumes them.</p>
+
+<div class="l-sub-section">
+  <p>This example leverages Dart’s constructor syntax for declaring parameters and
+  initializing properties simultaneously.</p>
+</div>
+
+<p>Now you can create a car by passing the engine and tires to the constructor.</p>
+
+<p>&lt;?code-excerpt “lib/src/car/car_creations.dart (car-ctor-instantiation)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // Simple car with 4 cylinders and Flintstone tires.
+  Car(Engine(), Tires())
+</code></pre></div></div>
+
+<p>How cool is that?
+The definition of the engine and tire dependencies are
+decoupled from the <code class="language-plaintext highlighter-rouge">Car</code> class.
+You can pass in any kind of engine or tires you like, as long as they
+conform to the general API requirements of an engine or tires.</p>
+
+<p>If someone extends the <code class="language-plaintext highlighter-rouge">Engine</code> class, that is not <code class="language-plaintext highlighter-rouge">Car</code>’s problem.</p>
+
+<div class="l-sub-section">
+  <p>The <em>consumer</em> of <code class="language-plaintext highlighter-rouge">Car</code> has the problem. The consumer must update the car creation code to
+  something like this:</p>
+
+  <p>&lt;?code-excerpt “lib/src/car/car_creations.dart (car-ctor-instantiation-with-param)” replace=”/Car(E.*/[!$&amp;!]/g”?&gt;</p>
+  <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>    class Engine2 extends Engine {
+      Engine2(cylinders) : super.withCylinders(cylinders);
+    }
+
+    Car superCar() =&gt;
+        // Super car with 12 cylinders and Flintstone tires.
+        [!Car(Engine2(12), Tires())!]
+          ..description = 'Super';
+</code></pre></div>  </div>
+
+  <p>The critical point is this: the <code class="language-plaintext highlighter-rouge">Car</code> class did not have to change.
+  You’ll take care of the consumer’s problem shortly.</p>
+</div>
+
+<p>The <code class="language-plaintext highlighter-rouge">Car</code> class is much easier to test now because you are in complete control
+of its dependencies.
+You can pass mocks to the constructor that do exactly what you want them to do
+during each test:</p>
+
+<p>&lt;?code-excerpt “lib/src/car/car_creations.dart (car-ctor-instantiation-with-mocks)” replace=”/\bCar(.*/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class MockEngine extends Engine {
+    MockEngine() : super.withCylinders(8);
+  }
+
+  class MockTires extends Tires {
+    MockTires() {
+      make = 'YokoGoodStone';
+    }
+  }
+
+  Car testCar() =&gt;
+      // Test car with 8 cylinders and YokoGoodStone tires.
+      [!Car(MockEngine(), MockTires())!]
+        ..description = 'Test';
+</code></pre></div></div>
+
+<p><strong>You just learned what dependency injection is</strong>.</p>
+
+<p>It’s a pattern in which a class receives its dependencies from external
+sources rather than creating them itself.</p>
+
+<p>Cool! But what about that poor consumer?
+Anyone who wants a <code class="language-plaintext highlighter-rouge">Car</code> must now
+create all three parts: the <code class="language-plaintext highlighter-rouge">Car</code>, <code class="language-plaintext highlighter-rouge">Engine</code>, and <code class="language-plaintext highlighter-rouge">Tires</code>.
+The <code class="language-plaintext highlighter-rouge">Car</code> class shed its problems at the consumer’s expense.
+You need something that takes care of assembling these parts.</p>
+
+<p>You <em>could</em> write a giant class to do that:</p>
+
+<p>&lt;?code-excerpt “lib/src/car/car_factory.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'car.dart';
+
+  // BAD pattern!
+  class CarFactory {
+    Car createCar() =&gt; Car(createEngine(), createTires())
+      ..description = 'Factory';
+
+    Engine createEngine() =&gt; Engine();
+    Tires createTires() =&gt; Tires();
+  }
+</code></pre></div></div>
+
+<p>It’s not so bad now with only three creation methods.
+But maintaining it will be hairy as the app grows.
+This factory is going to become a huge spiderweb of
+interdependent factory methods!</p>
+
+<p>Wouldn’t it be nice if you could simply list the things you want to build without
+having to define which dependency gets injected into what?</p>
+
+<p>This is where the dependency injection framework comes into play.
+Imagine the framework had something called an <em>injector</em>.
+You register some classes with this injector, and it figures out how to create them.</p>
+
+<p>When you need a <code class="language-plaintext highlighter-rouge">Car</code>, you simply ask the injector to get it for you and you’re good to go.</p>
+
+<p>&lt;?code-excerpt “lib/src/injector_component.dart (injector.get)” replace=”/_//g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  car = injector.get(Car);
+</code></pre></div></div>
+
+<p>Everyone wins. The <code class="language-plaintext highlighter-rouge">Car</code> knows nothing about creating an <code class="language-plaintext highlighter-rouge">Engine</code> or <code class="language-plaintext highlighter-rouge">Tires</code>.
+The consumer knows nothing about creating a <code class="language-plaintext highlighter-rouge">Car</code>.
+You don’t have a gigantic factory class to maintain.
+Both <code class="language-plaintext highlighter-rouge">Car</code> and consumer simply ask for what they need and the injector delivers.</p>
+
+<p>This is what a <strong>dependency injection framework</strong> is all about.</p>
+
+<p><a id="angular-di"></a></p>
+<h2 id="angular-dependency-injection">
+<a class="anchor" href="#angular-dependency-injection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Angular dependency injection</h2>
+
+<p>Angular ships with its own dependency injection framework.
+You’ll learn Angular dependency injection through a discussion of the sample app that accompanies this page.
+Run the <span><a href="/examples/dependency-injection" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/dependency-injection/tree/master" target="_blank" rel="noopener">view source</a></span>)</span> anytime.</p>
+
+<p>Start by reviewing this simplified version of the <em>heroes</em> feature
+from the <a href="../tutorial/">The Tour of Heroes</a>.</p>
+
+<code-tabs>
+  <?code-pane "lib/src/heroes/heroes_component_1.dart" region="v1" linenums?>
+  <?code-pane "lib/src/heroes/hero_list_component_1.dart" linenums?>
+  <?code-pane "lib/src/heroes/hero.dart" linenums?>
+  <?code-pane "lib/src/heroes/mock_heroes.dart" linenums?>
+</code-tabs>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeroesComponent</code> is the top-level heroes component.
+It’s only purpose is to display the <code class="language-plaintext highlighter-rouge">HeroListComponent</code>
+which displays a list of hero names.</p>
+
+<p>This version of the <code class="language-plaintext highlighter-rouge">HeroListComponent</code> gets its heroes from <code class="language-plaintext highlighter-rouge">mockHeroes</code>, an in-memory collection
+defined in a separate file.</p>
+
+<p>&lt;?code-excerpt “lib/src/heroes/hero_list_component_1.dart (class)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class HeroListComponent {
+    final List&lt;Hero&gt; heroes = mockHeroes;
+  }
+</code></pre></div></div>
+
+<p>That may suffice in the early stages of development, but it’s far from ideal.
+As soon as you try to test this component or get heroes from a remote server,
+you’ll have to change the implementation of <code class="language-plaintext highlighter-rouge">HeroListComponent</code> and
+replace every other use of the <code class="language-plaintext highlighter-rouge">mockHeroes</code> data.</p>
+
+<h2 id="create-an-injectable-heroservice">
+<a class="anchor" href="#create-an-injectable-heroservice" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create an injectable <em>HeroService</em>
+</h2>
+
+<p>It’s better to hide the details concerning hero data access inside a <em>service</em> class,
+defined in its own file.</p>
+
+<p>&lt;?code-excerpt “lib/src/heroes/hero_service_1.dart” title replace=”/@Inj.*/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'hero.dart';
+  import 'mock_heroes.dart';
+
+  class HeroService {
+    List&lt;Hero&gt; getAll() =&gt; mockHeroes;
+  }
+</code></pre></div></div>
+
+<p>The service class exposes a <code class="language-plaintext highlighter-rouge">getHeroes()</code> method
+that returns the same mock data as before.</p>
+
+<p>Of course, this isn’t a real data service.
+If the service were actually getting data from a remote server,
+the <code class="language-plaintext highlighter-rouge">getHeroes()</code> method signature would be asynchronous.
+Such a hero service is presented in the
+tutorial section on <a href="/tutorial/toh-pt6#heroes-and-http">Heroes and HTTP</a>.
+The focus here is on service <em>injection</em>, so a synchronous service will suffice.</p>
+
+<p><a id="injector-config"></a></p>
+<h2 id="register-a-service-provider">
+<a class="anchor" href="#register-a-service-provider" aria-hidden="true"><span class="octicon octicon-link"></span></a>Register a service provider</h2>
+
+<p>A <em>service</em> is just a class (or a top-level function) until you register it with
+an Angular dependency injector.</p>
+
+<p>An Angular injector is responsible for creating service instances and injecting them into classes like the <code class="language-plaintext highlighter-rouge">HeroListComponent</code>.</p>
+
+<p>Angular creates most injectors for you as it executes the app, including the
+app’s <em>root injector</em>. When your app needs a custom root injector, supply it as
+an <a href="#root-injector-providers">argument to the <code class="language-plaintext highlighter-rouge">runApp()</code> function</a>.</p>
+
+<p>You must register <em>providers</em> with an injector
+before the injector can create that service.</p>
+
+<p><strong>Providers</strong> tell the injector <em>how to create the service</em>.
+Without a provider, the injector would not know
+that it is responsible for injecting the service
+nor be able to create the service.</p>
+
+<div class="l-sub-section">
+  <p>You’ll learn more about <em>providers</em> <a href="#providers">below</a>.
+  For now it is sufficient to know that they create services
+  and must be registered with an injector.</p>
+</div>
+
+<p>The most common way to register a provider is with
+any Angular annotation that has a <strong><code class="language-plaintext highlighter-rouge">providers</code> list argument</strong>.
+The most common of these is <a href="https://pub.dev/documentation/angular/6.0.1/di/Component-class.html">@Component()</a>.</p>
+
+<h3 id="component-providers">
+<a class="anchor" href="#component-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a><em>@Component</em> providers</h3>
+
+<p>Here’s a revised <code class="language-plaintext highlighter-rouge">HeroesComponent</code> that registers the <code class="language-plaintext highlighter-rouge">HeroService</code> in its <code class="language-plaintext highlighter-rouge">providers</code> list.</p>
+
+<p>&lt;?code-excerpt “lib/src/heroes/heroes_component_1.dart (revised)” region=”full” plaster=”none” replace=”/providers:.*/[!$&amp;!]/g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  import 'hero_list_component.dart';
+  import 'hero_service.dart';
+
+  @Component(
+    selector: 'my-heroes',
+    template: '''
+      &lt;h2&gt;Heroes&lt;/h2&gt;
+      &lt;hero-list&gt;&lt;/hero-list&gt;
+    ''',
+    [!providers: [ClassProvider(HeroService)],!]
+    directives: [HeroListComponent],
+  )
+  class HeroesComponent {}
+</code></pre></div></div>
+
+<p>An instance of the <code class="language-plaintext highlighter-rouge">HeroService</code> is now available for injection in this <code class="language-plaintext highlighter-rouge">HeroesComponent</code>
+and all of its child components.</p>
+
+<p>A component-provided service may have a limited lifetime. Each new instance of the component gets its own instance of the service
+and, when the component instance is destroyed, so is that service instance.</p>
+
+<p>In this sample app, the <code class="language-plaintext highlighter-rouge">HeroComponent</code> is created when the app starts
+and is never destroyed so the <code class="language-plaintext highlighter-rouge">HeroService</code> created for the <code class="language-plaintext highlighter-rouge">HeroComponent</code> also lives for the life of the app.</p>
+
+<p><a id="bootstrap"></a></p>
+<h3 id="root-injector-providers">
+<a class="anchor" href="#root-injector-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Root injector providers</h3>
+
+<p>You can also register providers in the app’s <strong>root injector</strong>, which you pass
+as an argument to the <a href="https://pub.dev/documentation/angular/6.0.1/angular/runApp.html">runApp()</a> function. For example, the app from the
+<a href="../tutorial/toh-pt5">tutorial (part 5)</a> injects providers from the
+<a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/routerProvidersHash-constant.html">routerProvidersHash</a> list:</p>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc”?&gt;
+&lt;?code-excerpt “toh-5/web/main.dart” title replace=”/injector(?!$)/[!$&amp;!]/g; /\binjector\b/rootInjector/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngdart/angular.dart';
+  import 'package:ngrouter/ngrouter.dart';
+  import 'package:angular_tour_of_heroes/app_component.template.dart' as ng;
+
+  import 'main.template.dart' as self;
+
+  @GenerateInjector(
+    routerProvidersHash, // You can use routerProviders in production
+  )
+  final InjectorFactory [!rootInjector!] = self.rootInjector$Injector;
+
+  void main() {
+    runApp(ng.AppComponentNgFactory, createInjector: [!rootInjector!]);
+  }
+</code></pre></div></div>
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/dependency-injection”?&gt;</p>
+
+<p>Use root injector provisioning for <em>app-wide services</em> declared <em>external</em> to
+the app package. Registering app specific services like <code class="language-plaintext highlighter-rouge">HeroService</code> is
+<em>discouraged</em>:</p>
+
+<p>&lt;?code-excerpt “web/main_1.dart (discouraged)” replace=”/ClassProvider.<em>|\/\/.</em>/[!$&amp;!]/g; /_1//g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @GenerateInjector([
+    [!// DON'T register app-local services here; this is for illustration purposes only!]
+    [!ClassProvider(HeroService),!]
+  ])
+  final InjectorFactory rootInjector = self.rootInjector$Injector;
+
+  void main() {
+    runApp(ng.AppComponentNgFactory, createInjector: rootInjector);
+  }
+</code></pre></div></div>
+
+<p>The preferred approach is to register app services in app components.
+Because the <code class="language-plaintext highlighter-rouge">HeroService</code> is used within the <em>Heroes</em> feature set, and nowhere else,
+the ideal place to register it is in <code class="language-plaintext highlighter-rouge">HeroesComponent</code>.</p>
+
+<h2 id="inject-a-service">
+<a class="anchor" href="#inject-a-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inject a service</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeroListComponent</code> should get heroes from the <code class="language-plaintext highlighter-rouge">HeroService</code>, and it should
+ask for the <code class="language-plaintext highlighter-rouge">HeroService</code> to be injected.</p>
+
+<p>You can tell Angular to inject a dependency in the component’s constructor by
+specifying a <strong>constructor parameter annotated with the dependency’s type</strong>.
+Here’s the <code class="language-plaintext highlighter-rouge">HeroListComponent</code> constructor, asking for the <code class="language-plaintext highlighter-rouge">HeroService</code> to be
+injected.</p>
+
+<p>&lt;?code-excerpt “lib/src/heroes/hero_list_component.dart (ctor-signature)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  HeroListComponent(HeroService heroService)
+</code></pre></div></div>
+
+<p>Of course, the <code class="language-plaintext highlighter-rouge">HeroListComponent</code> should do something with the injected <code class="language-plaintext highlighter-rouge">HeroService</code>.
+Here’s the revised component, making use of the injected service, side-by-side with the previous version for comparison.</p>
+
+<code-tabs>
+  <?code-pane "lib/src/heroes/hero_list_component_2.dart (with DI)" region="" linenums?>
+  <?code-pane "lib/src/heroes/hero_list_component_1.dart (without DI)" region="" linenums?>
+</code-tabs>
+
+<p>Notice that the <code class="language-plaintext highlighter-rouge">HeroListComponent</code> doesn’t know where the <code class="language-plaintext highlighter-rouge">HeroService</code> comes from.
+<em>You</em> know that it comes from the parent <code class="language-plaintext highlighter-rouge">HeroesComponent</code>.
+The only thing that matters is that the <code class="language-plaintext highlighter-rouge">HeroService</code> is provided in some parent injector.</p>
+
+<h3 id="singleton-services">
+<a class="anchor" href="#singleton-services" aria-hidden="true"><span class="octicon octicon-link"></span></a>Singleton services</h3>
+
+<p>Services are singletons <em>within the scope of an injector</em>.
+There is at most one instance of a service in a given injector.</p>
+
+<p>However, Angular DI is a
+<a href="hierarchical-dependency-injection">hierarchical injection system</a>,
+which means that nested injectors can create their own service instances.
+Angular creates nested injectors all the time.</p>
+
+<h3 id="component-child-injectors">
+<a class="anchor" href="#component-child-injectors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Component child injectors</h3>
+
+<p>For example, when Angular creates an instance of a component that has <code class="language-plaintext highlighter-rouge">@Component.providers</code>,
+it also creates a new <em>child injector</em> for that instance.</p>
+
+<p>Component injectors are independent of each other and
+each of them holds its own instances of the component-provided services.</p>
+
+<p>When Angular disposes of a component instance, it also discards the
+component’s injector and that injector’s service instances.</p>
+
+<p>Thanks to <a href="hierarchical-dependency-injection">injector inheritance</a>,
+you can still inject app-wide services into these components.
+A component’s injector is a child of its parent component’s injector,
+and a descendent of its parent’s parent’s injector,
+and so on all the way back to the app’s <em>root</em> injector.
+Angular can inject a service provided by any injector in that lineage.</p>
+
+<h2 id="testing-a-component">
+<a class="anchor" href="#testing-a-component" aria-hidden="true"><span class="octicon octicon-link"></span></a>Testing a component</h2>
+
+<p>Earlier you saw that designing a class for dependency injection makes the class easier to test.
+Listing dependencies as constructor parameters may be all you need to test app parts effectively.</p>
+
+<p>For example, the <a href="../tutorial/toh-pt5">tutorial (part 5)</a> has a
+<code class="language-plaintext highlighter-rouge">HeroListComponent</code> test that uses a mock router provisioned through the root
+injector:</p>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc”?&gt;
+&lt;?code-excerpt “toh-5/test/heroes_test.dart (rootInjector)” title remove=”Probe” replace=”/injector.factory/rootInjector/g; /rootInjector(?!$)|MockRouter/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular_tour_of_heroes/src/hero_list_component.template.dart'
+      as ng;
+  // ···
+  import 'heroes_test.template.dart' as self;
+  // ···
+  @GenerateInjector([
+    ClassProvider(HeroService),
+    ClassProvider(Router, useClass: [!MockRouter!]),
+  ])
+  final InjectorFactory [!rootInjector!] = self.rootInjector$Injector;
+
+  void main() {
+    final testBed = NgTestBed&lt;HeroListComponent&gt;(
+      ng.HeroListComponentNgFactory,
+      [!rootInjector!]: [!rootInjector!],
+    );
+    // ···
+  }
+</code></pre></div></div>
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/dependency-injection”?&gt;</p>
+
+<p>Learn more in <a href="testing/component/services">Component Testing: Services</a>.</p>
+
+<h2 id="when-a-service-needs-a-service">
+<a class="anchor" href="#when-a-service-needs-a-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>When a service needs a service</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeroService</code> is very simple. It doesn’t have any dependencies of its own.</p>
+
+<p>What if it had a dependency? What if it reported its activities through a logging service?
+You’d apply the same <em>constructor injection</em> pattern,
+adding a constructor that takes a <code class="language-plaintext highlighter-rouge">Logger</code> parameter.</p>
+
+<p>Here is the revised <code class="language-plaintext highlighter-rouge">HeroService</code> that injects a <code class="language-plaintext highlighter-rouge">Logger</code>, side-by-side with the previous service for comparison.</p>
+
+<code-tabs>
+  <?code-pane "lib/src/heroes/hero_service_2.dart (v2)" region="" linenums?>
+  <?code-pane "lib/src/heroes/hero_service_1.dart (v1)" region="" linenums?>
+</code-tabs>
+
+<p>The constructor asks for an injected instance of a <code class="language-plaintext highlighter-rouge">Logger</code> and stores it in the private <code class="language-plaintext highlighter-rouge">_logger</code> field.
+The <code class="language-plaintext highlighter-rouge">getHeroes()</code> method logs a message when asked to fetch heroes.</p>
+
+<h3 id="logger-service">
+<a class="anchor" href="#logger-service" aria-hidden="true"><span class="octicon octicon-link"></span></a><em>Logger</em> service</h3>
+
+<p>The sample app’s <code class="language-plaintext highlighter-rouge">Logger</code> service is quite simple:</p>
+
+<p>&lt;?code-excerpt “lib/src/logger_service.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  /// Logger that keeps only the last log entry.
+  class Logger {
+    String _log = '';
+    String get id =&gt; 'Logger';
+
+    void fine(String msg) =&gt; _log = msg;
+
+    @override
+    String toString() =&gt; '[$id] $_log';
+  }
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>A real implementation would probably use the
+  <a href="https://pub.dev/packages/logging">logging package</a>.</p>
+</div>
+
+<p>If the app doesn’t provide <code class="language-plaintext highlighter-rouge">Logger</code>, Angular will throw an exception when it
+looks for a <code class="language-plaintext highlighter-rouge">Logger</code> to inject into the <code class="language-plaintext highlighter-rouge">HeroService</code>.</p>
+
+<pre><code class="language-nocode">  EXCEPTION: No provider for Logger! (HeroListComponent -&gt; HeroService -&gt; Logger)
+</code></pre>
+
+<p>Because a singleton logger service is useful everywhere in the app,
+it’s registered in <code class="language-plaintext highlighter-rouge">AppComponent</code>:</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (ClassProvider)” title=”lib/app_component.dart (excerpt)” replace=”/[\n/[/g; /,\n//g; /[\s*/[/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  providers: [ClassProvider(Logger)],
+</code></pre></div></div>
+
+<h2 id="providers">
+<a class="anchor" href="#providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Providers</h2>
+
+<p>A service provider <em>provides</em> a concrete,
+runtime instance associated with a dependency token.
+The injector relies on <strong>providers</strong> to create instances of the services
+that the injector injects into components, directives, pipes, and other services.</p>
+
+<p>You must register a service <em>provider</em> with an injector, or the injector won’t know how to create the service.</p>
+
+<p>The next few sections explain the many ways you can register a provider.</p>
+
+<h3 id="class-providers">
+<a class="anchor" href="#class-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Class providers</h3>
+
+<p>There are many ways to provide something that implements <code class="language-plaintext highlighter-rouge">Logger</code>.
+The most common way is to use <a href="https://pub.dev/documentation/angular/6.0.1/di/ClassProvider-class.html">ClassProvider</a>:</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (ClassProvider)” replace=”/[\n/[/g; /,\n//g; /[\s<em>/[/g; /Class[^]]</em>/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  providers: [[!ClassProvider(Logger)!]],
+</code></pre></div></div>
+
+<p>But it’s not the only way.
+You can configure the injector with alternative providers that can deliver a <code class="language-plaintext highlighter-rouge">Logger</code>.
+You can provide a substitute class.
+You can give it a provider that calls a logger factory function.
+Any of these approaches might be a good choice under the right circumstances.</p>
+
+<p>What matters is that the injector has a provider to go to when it needs a <code class="language-plaintext highlighter-rouge">Logger</code>.</p>
+
+<h3 id="use-class-providers">
+<a class="anchor" href="#use-class-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use-class providers</h3>
+
+<p>Occasionally you’ll ask a different class to provide the service.
+The following code tells the injector
+to return a <code class="language-plaintext highlighter-rouge">BetterLogger</code> when something asks for the <code class="language-plaintext highlighter-rouge">Logger</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (ClassProvider useClass)” replace=”/ClassProvider|useClass/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  [!ClassProvider!](Logger, [!useClass!]: BetterLogger),
+</code></pre></div></div>
+
+<h3 id="provider-for-a-class-with-dependencies">
+<a class="anchor" href="#provider-for-a-class-with-dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Provider for a class with dependencies</h3>
+
+<p>Maybe an <code class="language-plaintext highlighter-rouge">EvenBetterLogger</code> could display the user name in log messages.</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (EvenBetterLogger)” replace=”/UserService.*|this._userService/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class EvenBetterLogger extends Logger {
+    final [!UserService _userService;!]
+
+    EvenBetterLogger([!this._userService!]);
+
+    String get id =&gt; 'EvenBetterLogger';
+    String toString() =&gt; super.toString() + ' (user:${_userService.user.name})';
+  }
+</code></pre></div></div>
+
+<p>This logger gets the user from the injected <code class="language-plaintext highlighter-rouge">UserService</code>,
+which is also listed in the app component’s <code class="language-plaintext highlighter-rouge">providers</code> list:</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (logger with dependencies)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ClassProvider(UserService),
+  ClassProvider(Logger, useClass: EvenBetterLogger),
+</code></pre></div></div>
+
+<h3 id="existing-providers">
+<a class="anchor" href="#existing-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Existing providers</h3>
+
+<p>Suppose an old component depends upon an <code class="language-plaintext highlighter-rouge">OldLogger</code> class.
+<code class="language-plaintext highlighter-rouge">OldLogger</code> has the same interface as the <code class="language-plaintext highlighter-rouge">NewLogger</code>, but for some reason
+you can’t update the old component to use it.</p>
+
+<p>When the <em>old</em> component logs a message with <code class="language-plaintext highlighter-rouge">OldLogger</code>,
+you’d like the singleton instance of <code class="language-plaintext highlighter-rouge">NewLogger</code> to handle it instead.</p>
+
+<p>The dependency injector should inject that singleton instance
+when a component asks for either the new or the old logger.
+The <code class="language-plaintext highlighter-rouge">OldLogger</code> should be an alias for <code class="language-plaintext highlighter-rouge">NewLogger</code>.</p>
+
+<p>You certainly do not want two different <code class="language-plaintext highlighter-rouge">NewLogger</code> instances in your app.
+Unfortunately, that’s what you get if you try <code class="language-plaintext highlighter-rouge">useClass</code>:</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (two NewLoggers)” replace=”/NewLogger(?=))/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ClassProvider([!NewLogger!]),
+  ClassProvider(OldLogger, useClass: [!NewLogger!]),
+</code></pre></div></div>
+
+<p>To ensure that the <em>same</em> <code class="language-plaintext highlighter-rouge">NewLogger</code> instance is provided for both
+<code class="language-plaintext highlighter-rouge">OldLogger</code> and <code class="language-plaintext highlighter-rouge">NewLogger</code>, use <a href="https://pub.dev/documentation/angular/6.0.1/di/ExistingProvider-class.html">ExistingProvider</a>:</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (ExistingProvider)” replace=”/ExistingProvider/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ClassProvider(NewLogger),
+  [!ExistingProvider!](OldLogger, NewLogger),
+</code></pre></div></div>
+
+<h3 id="value-providers">
+<a class="anchor" href="#value-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Value providers</h3>
+
+<p>Sometimes it’s easier to provide a ready-made object rather than ask the injector to create it from a class.</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (silent-logger)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class SilentLogger implements Logger {
+    const SilentLogger();
+    String get id =&gt; 'SilentLogger';
+    @override
+    void fine(String msg) {}
+    @override
+    String toString() =&gt; '';
+  }
+
+  const silentLogger = SilentLogger();
+</code></pre></div></div>
+
+<p>Then you register the object using <a href="https://pub.dev/documentation/angular/6.0.1/di/ValueProvider-class.html">ValueProvider</a>:</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (ValueProvider)” replace=”/useValue: \w+/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ValueProvider(Logger, silentLogger),
+</code></pre></div></div>
+
+<p>For more examples of <code class="language-plaintext highlighter-rouge">ValueProvider</code>, see <a href="#opaquetoken">OpaqueToken</a>.</p>
+
+<h3 id="factory-providers">
+<a class="anchor" href="#factory-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Factory providers</h3>
+
+<p>Sometimes you need to create the dependent value dynamically,
+based on information you won’t have until the last possible moment.
+Maybe the information changes during the course of the browser session.</p>
+
+<p>Suppose also that the injectable service has no independent access to the source of this information.
+This situation calls for a <strong>factory provider</strong>.</p>
+
+<p>To illustrate the point, add a new business requirement:
+the <code class="language-plaintext highlighter-rouge">HeroService</code> must hide <em>secret</em> heroes from normal users.
+Only authorized users should see secret heroes.</p>
+
+<p>Like the <code class="language-plaintext highlighter-rouge">EvenBetterLogger</code>, the <code class="language-plaintext highlighter-rouge">HeroService</code> needs a fact about the user.
+It needs to know if the user is authorized to see secret heroes.
+That authorization can change during the course of a single app session,
+as when you log in a different user.</p>
+
+<p>Unlike <code class="language-plaintext highlighter-rouge">EvenBetterLogger</code>, you can’t inject the <code class="language-plaintext highlighter-rouge">UserService</code> into the <code class="language-plaintext highlighter-rouge">HeroService</code>.
+The <code class="language-plaintext highlighter-rouge">HeroService</code> won’t have direct access to the user information to decide
+who is authorized and who is not.</p>
+
+<p>Instead, the <code class="language-plaintext highlighter-rouge">HeroService</code> constructor takes a boolean flag to control display of secret heroes.</p>
+
+<p>&lt;?code-excerpt “lib/src/heroes/hero_service.dart (excerpt)” region=”internals” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  final Logger _logger;
+  final bool _isAuthorized;
+
+  HeroService(this._logger, this._isAuthorized);
+
+  List&lt;Hero&gt; getAll() {
+    var auth = _isAuthorized ? 'authorized' : 'unauthorized';
+    _logger.fine('Getting heroes for $auth user.');
+    return mockHeroes.where((hero) =&gt; _isAuthorized || !hero.isSecret).toList();
+  }
+</code></pre></div></div>
+
+<p>You can inject the <code class="language-plaintext highlighter-rouge">Logger</code>, but you can’t inject the  boolean <code class="language-plaintext highlighter-rouge">isAuthorized</code>.
+You’ll have to take over the creation of new instances of this <code class="language-plaintext highlighter-rouge">HeroService</code> with a factory provider.</p>
+
+<p>A factory provider needs a factory function:</p>
+
+<p>&lt;?code-excerpt “lib/src/heroes/hero_service_provider.dart (factory)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  HeroService heroServiceFactory(Logger logger, UserService userService) =&gt;
+      HeroService(logger, userService.user.isAuthorized);
+</code></pre></div></div>
+
+<p>Although the <code class="language-plaintext highlighter-rouge">HeroService</code> has no access to the <code class="language-plaintext highlighter-rouge">UserService</code>, the factory function does.</p>
+
+<p>You inject both the <code class="language-plaintext highlighter-rouge">Logger</code> and the <code class="language-plaintext highlighter-rouge">UserService</code> into the factory provider
+and let the injector pass them along to the factory function:</p>
+
+<p>&lt;?code-excerpt “lib/src/heroes/hero_service_provider.dart (provider)” replace=”/FactoryProvider/[!$&amp;!]/g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  const heroServiceProvider = [!FactoryProvider!](HeroService, heroServiceFactory);
+</code></pre></div></div>
+
+<p>Notice that you captured the factory provider in a constant, <code class="language-plaintext highlighter-rouge">heroServiceProvider</code>.
+This extra step makes the factory provider reusable.
+You can register the <code class="language-plaintext highlighter-rouge">HeroService</code> with this constant wherever you need it.</p>
+
+<p>In this sample, you need it only in the <code class="language-plaintext highlighter-rouge">HeroesComponent</code>,
+where it replaces the previous <code class="language-plaintext highlighter-rouge">HeroService</code> registration in the metadata <code class="language-plaintext highlighter-rouge">providers</code> list.
+Here you see the new and the old implementation side-by-side:</p>
+
+<code-tabs>
+  <?code-pane "lib/src/heroes/heroes_component.dart (v3)" region="" replace="/providers.*/[!$&!]/g" linenums?>
+  <?code-pane "lib/src/heroes/heroes_component_1.dart (v2)" region="full" replace="/providers.*/[!$&!]/g" linenums?>
+</code-tabs>
+
+<h2 id="tokens">
+<a class="anchor" href="#tokens" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tokens</h2>
+
+<p>When you register a provider with an injector, you associate that provider with
+a dependency injection <em>token</em>. The injector maintains an internal map from
+<em>tokens</em> to <em>providers</em> that it references when asked for a dependency.</p>
+
+<h3 id="class-types">
+<a class="anchor" href="#class-types" aria-hidden="true"><span class="octicon octicon-link"></span></a>Class types</h3>
+
+<p>In all previous examples, the token has been a class type and the provided value
+an instance of that type. For example, you get a <code class="language-plaintext highlighter-rouge">HeroService</code> directly from the
+injector by supplying the <code class="language-plaintext highlighter-rouge">HeroService</code> type as the token:</p>
+
+<p>&lt;?code-excerpt “lib/src/injector_component.dart (get-hero-service)” replace=”/HeroService/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  heroService = _injector.get([!HeroService!]);
+</code></pre></div></div>
+
+<p>Similarly, when you define a constructor parameter of type <code class="language-plaintext highlighter-rouge">HeroService</code>,
+Angular knows to inject a <code class="language-plaintext highlighter-rouge">HeroService</code> instance:</p>
+
+<p>&lt;?code-excerpt “lib/src/heroes/hero_list_component.dart (ctor-signature)” replace=”/HeroService/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  HeroListComponent([!HeroService!] heroService)
+</code></pre></div></div>
+
+<h3 id="opaquetoken">
+<a class="anchor" href="#opaquetoken" aria-hidden="true"><span class="octicon octicon-link"></span></a>OpaqueToken</h3>
+
+<p>Sometimes the thing you want to inject is a string, list, map, or even a function.
+For example, what if you want to inject the app title?</p>
+
+<p>&lt;?code-excerpt “lib/src/app_config.dart (appTitle)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  const appTitle = 'Dependency Injection';
+</code></pre></div></div>
+
+<p>You know that a <a href="#value-providers">value provider</a> is appropriate in this case,
+but what can you use as the token? You <em>could</em> use <code class="language-plaintext highlighter-rouge">String</code>, but that won’t
+work if your app depends on several such injected strings.</p>
+
+<p>One solution is to define and use an <a href="https://pub.dev/documentation/angular/6.0.1/di/OpaqueToken-class.html">OpaqueToken</a>:</p>
+
+<p>&lt;?code-excerpt “lib/src/app_config.dart (appTitleToken)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  const appTitleToken = OpaqueToken&lt;String&gt;('app.title');
+</code></pre></div></div>
+
+<p>The generic type argument, while optional, conveys the dependency’s type to developers
+and tooling (not to be confused with the <code class="language-plaintext highlighter-rouge">OpaqueToken</code> constructor argument type,
+which is always <code class="language-plaintext highlighter-rouge">String</code>). The <code class="language-plaintext highlighter-rouge">OpaqueToken</code> argument token description is a developer aid.</p>
+
+<p>Register the dependency provider using the <code class="language-plaintext highlighter-rouge">OpaqueToken</code> object:</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (ValueProvider-forToken)” replace=”/.forToken/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ValueProvider[!.forToken!](appTitleToken, appTitle)
+</code></pre></div></div>
+
+<p>Now you can inject the title into any constructor that needs it, with
+the help of an <a href="https://pub.dev/documentation/angular/6.0.1/di/Inject-class.html">@Inject()</a> annotation:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart (inject appTitleToken)” replace=”/@\S+/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  AppComponent([!@Inject(appTitleToken)!] this.title);
+</code></pre></div></div>
+
+<p>Alternatively you can directly use the <code class="language-plaintext highlighter-rouge">OpaqueToken</code> constant as an annotation:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart (appTitleToken)” replace=”/._//g; /@\S+/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  AppComponent([!@appTitleToken!] this.title);
+</code></pre></div></div>
+
+<p>You can inject values other than strings. For example, apps sometimes have
+configuration objects with lots of simple properties captured as a <a href="https://api.dart.dev/stable/dart-core/Map-class.html">Map:</a></p>
+
+<p>&lt;?code-excerpt “lib/src/app_config.dart (appConfigMap)” replace=”/appConfigMap\w*/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  const [!appConfigMap!] = {
+    'apiEndpoint': 'api.heroes.com',
+    'title': 'Dependency Injection',
+    // ...
+  };
+
+  const [!appConfigMapToken!] = OpaqueToken&lt;Map&gt;('app.config');
+</code></pre></div></div>
+
+<h3 id="custom-configuration-class">
+<a class="anchor" href="#custom-configuration-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom configuration class</h3>
+
+<p>As an alternative to injecting a <a href="https://api.dart.dev/stable/dart-core/Map-class.html">Map</a> for an app configuration object,
+consider defining a custom app configuration class:</p>
+
+<p>&lt;?code-excerpt “lib/src/app_config.dart (AppConfig)” title replace=”/AppConfig(?= {)|appConfigFactory(?=()|Factory\w+/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class [!AppConfig!] {
+    String apiEndpoint;
+    String title;
+  }
+
+  AppConfig [!appConfigFactory!]() =&gt; AppConfig()
+    ..apiEndpoint = 'api.heroes.com'
+    ..title = 'Dependency Injection';
+</code></pre></div></div>
+
+<p>Defining a configuration class has a few benefits. One key benefit
+is static checking: you’ll be warned by the analyzer if you misspell a property
+name or assign to it a value of the wrong type.
+The Dart <a href="https://dart.dev/guides/language/language-tour#cascade">cascade notation (<code class="language-plaintext highlighter-rouge">..</code>)</a> provides a convenient means of initializing
+a configuration object.</p>
+
+<p>If you use cascades, the configuration object can’t be declared <code class="language-plaintext highlighter-rouge">const</code>, so you
+can’t use a <a href="#value-providers">value provider</a>, but
+you can use a <a href="#factory-providers">factory provider</a>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (FactoryProvider)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  FactoryProvider(AppConfig, appConfigFactory),
+</code></pre></div></div>
+
+<p>You might use the app config like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (AppComponent)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  AppComponent(AppConfig config, this._userService) : title = config.title;
+</code></pre></div></div>
+
+<h2 id="optional">
+<a class="anchor" href="#optional" aria-hidden="true"><span class="octicon octicon-link"></span></a>Optional dependencies</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeroService</code> <em>requires</em> a <code class="language-plaintext highlighter-rouge">Logger</code>, but what if it could get by without
+a logger?
+You can tell Angular that the dependency is optional by annotating the
+constructor argument with <a href="https://pub.dev/documentation/angular/6.0.1/di/Optional-class.html">@Optional()</a>:</p>
+
+<p>&lt;?code-excerpt “lib/src/providers_component.dart (Optional)” plaster=”none” replace=”/(\w+)\d/$1/g; / : super\S+//g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  HeroService(@Optional() Logger logger) {
+    logger?.fine('Hello');
+  }
+</code></pre></div></div>
+
+<p>When using <code class="language-plaintext highlighter-rouge">@Optional()</code>, your code must be prepared for a null value. If you
+don’t register a logger somewhere up the line, the injector will set the
+value of <code class="language-plaintext highlighter-rouge">logger</code> to null.</p>
+
+<h2 id="summary">
+<a class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+
+<p>You learned the basics of Angular dependency injection in this page.
+You can register various kinds of providers,
+and you know how to ask for an injected object (such as a service) by
+adding a parameter to a constructor.</p>
+
+<p>Angular dependency injection is more capable than this page has described.
+You can learn more about its advanced features, beginning with its support for
+nested injectors, in
+<a href="hierarchical-dependency-injection">Hierarchical Dependency Injection</a>.</p>
+
+<h2 id="explicit-injector">
+<a class="anchor" href="#explicit-injector" aria-hidden="true"><span class="octicon octicon-link"></span></a>Appendix: Working with injectors directly</h2>
+
+<p>Developers rarely work directly with an injector, but
+here’s an <code class="language-plaintext highlighter-rouge">InjectorComponent</code> that does.</p>
+
+<p>&lt;?code-excerpt “lib/src/injector_component.dart (injector)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Component(
+    selector: 'my-injectors',
+    template: '''
+        &lt;h2&gt;Other Injections&lt;/h2&gt;
+        &lt;div id="car"&gt;{{car.drive()}}&lt;/div&gt;
+        &lt;div id="hero"&gt;{{hero.name}}&lt;/div&gt;
+        &lt;div id="rodent"&gt;{{rodent}}&lt;/div&gt;''',
+    providers: [
+      ClassProvider(Car),
+      ClassProvider(Engine),
+      ClassProvider(Tires),
+      heroServiceProvider,
+      ClassProvider(Logger),
+    ],
+  )
+  class InjectorComponent implements OnInit {
+    final Injector _injector;
+    Car car;
+    HeroService heroService;
+    Hero hero;
+
+    InjectorComponent(this._injector);
+
+    @override
+    void ngOnInit() {
+      car = _injector.get(Car);
+      heroService = _injector.get(HeroService);
+      hero = heroService.getAll()[0];
+    }
+
+    String get rodent =&gt;
+        _injector.get(ROUS, "R.O.U.S.'s? I don't think they exist!");
+  }
+</code></pre></div></div>
+
+<p>An <code class="language-plaintext highlighter-rouge">Injector</code> is itself an injectable service.</p>
+
+<p>In this example, Angular injects the component’s own <code class="language-plaintext highlighter-rouge">Injector</code> into the component’s constructor.
+The component then asks the injected injector for the services it wants in <code class="language-plaintext highlighter-rouge">ngOnInit()</code>.</p>
+
+<p>Note that the services themselves are not injected into the component.
+They are retrieved by calling <code class="language-plaintext highlighter-rouge">injector.get()</code>.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">get()</code> method throws an error if it can’t resolve the requested service.
+You can call <code class="language-plaintext highlighter-rouge">get()</code> with a second parameter, which is the value to return if the service
+is not found. Angular can’t find the service if it’s not registered with this or any ancestor injector.</p>
+<div class="l-sub-section">
+  <p>This technique is an example of the
+  <a href="https://en.wikipedia.org/wiki/Service_locator_pattern">service locator pattern</a>.</p>
+
+  <p><strong>Avoid</strong> this technique unless you genuinely need it.
+  It encourages a careless grab-bag approach such as you see here.
+  It’s difficult to explain, understand, and test.
+  You can’t know by inspecting the constructor what this class requires or what it will do.
+  It could acquire services from any ancestor component, not just its own.
+  You’re forced to spelunk the implementation to discover what it does.</p>
+
+  <p>Framework developers may take this approach when they
+  must acquire services generically and dynamically.</p>
+</div>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/forms">Forms</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/template-syntax">Template Syntax</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

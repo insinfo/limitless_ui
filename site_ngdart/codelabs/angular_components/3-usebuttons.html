@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add material buttons and inputs to your app.">
+  <title>Step 3: Upgrade Buttons and Inputs | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Step 3: Upgrade Buttons and Inputs" />
+  <meta name="twitter:description" content="Add material buttons and inputs to your app." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Step 3: Upgrade Buttons and Inputs" />
+  <meta property="og:description" content="Add material buttons and inputs to your app." />
+  <meta property="og:url" content="https://angulardart.xyz/codelabs/angular_components/3-usebuttons" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/shared/dart-logo-for-shares.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/acx-68e101408d9ee1d463abd6652e3d077dcb5ad6b330334265e12c22c94263e047.css">
+  <link href="styles.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  </head>
+
+  <body class="components">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li >
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#--use-material-toggle">  Use material-toggle</a></li>
+<li class="toc-entry toc-h2"><a href="#--use-material-fab">  Use material-fab</a></li>
+<li class="toc-entry toc-h2"><a href="#--use-material-checkbox">  Use material-checkbox</a></li>
+<li class="toc-entry toc-h2"><a href="#--use-material-radio-and-material-radio-group">  Use material-radio and material-radio-group</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#problems">Problems?</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/codelabs/angular_components/2-starteasy">Step 2: Start Using AngularDart Components</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/codelabs/angular_components/4-final">Step 4: Add Expansion Panels and Tabs</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+            <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/codelabs/angular_components/3-usebuttons.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Step 3: Upgrade Buttons and Inputs' page issue&body=From URL: https://angulardart.xyz/codelabs/angular_components/3-usebuttons"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+            <h1>
+              Step 3: Upgrade Buttons and Inputs
+              <a href="/version">1.0</a>
+            </h1>
+          </div>
+          <hr>
+          <p>&lt;?code-excerpt path-base=”examples/acx/lottery”?&gt;</p>
+
+<p>In this step you’ll change many of the controls in the app,
+using these components:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">&lt;material-toggle&gt;</code></li>
+  <li><code class="language-plaintext highlighter-rouge">&lt;material-fab&gt;</code></li>
+  <li><code class="language-plaintext highlighter-rouge">&lt;material-checkbox&gt;</code></li>
+  <li>
+<code class="language-plaintext highlighter-rouge">&lt;material-radio&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;material-radio-group&gt;</code>
+</li>
+</ul>
+
+<p>These controls appear in two custom components: <code class="language-plaintext highlighter-rouge">&lt;lottery-simulator&gt;</code> and
+<code class="language-plaintext highlighter-rouge">&lt;settings-component&gt;</code>.</p>
+
+<p>Run the <span><a href="/examples/lottery/3-usebuttons" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/lottery/tree/master/3-usebuttons" target="_blank" rel="noopener">view source</a></span>)</span> of the `` version of the app.</p>
+
+<h2 id="--use-material-toggle">
+<a class="anchor" href="#--use-material-toggle" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Use material-toggle</h2>
+
+<ol>
+<li>
+    <p>Make the following changes to <code class="language-plaintext highlighter-rouge">lib/lottery_simulator.dart</code>:</p>
+
+    <p>&lt;?code-excerpt “2-starteasy/lib/lottery_simulator.dart” diff-with=”3-usebuttons/lib/lottery_simulator.dart”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/lottery_simulator.dart
+</span><span class="gi">+++ 3-usebuttons/lib/lottery_simulator.dart
+</span><span class="p">@@ -25,8 +25,10 @@</span>
+   templateUrl: 'lottery_simulator.html',
+   directives: [
+     HelpComponent,
+<span class="gi">+    MaterialFabComponent,
+</span>     MaterialIconComponent,
+     MaterialProgressComponent,
+<span class="gi">+    MaterialToggleComponent,
+</span>     ScoresComponent,
+     SettingsComponent,
+     StatsComponent,
+</code></pre></div>    </div>
+
+  </li>
+<li>
+    <p>Edit <code class="language-plaintext highlighter-rouge">lib/lottery_simulator.html</code> to convert the “Go faster” <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>
+(and its children) into a <code class="language-plaintext highlighter-rouge">&lt;material-toggle&gt;</code> (<a href="https://gallery.angulardart.xyz/#/material_toggle">MaterialToggleComponent</a>), as the following diff shows:</p>
+
+    <p>&lt;?code-excerpt “{2-starteasy,3-usebuttons}/lib/lottery_simulator.html” from=”/^-\s*\x3C/div\x3E/” to=”/material-toggle”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/lottery_simulator.html
+</span><span class="gi">+++ 3-usebuttons/lib/lottery_simulator.html
+</span><span class="p">@@ -54,9 +53,7 @@</span>
+<span class="gd">-    &lt;/div&gt;
+-    &lt;div class="controls__faster-button"&gt;
+-      &lt;label&gt;
+-        &lt;input #fastCheckbox type="checkbox"
+-          (change)="fastEnabled = fastCheckbox.checked"&gt;
+-        Go faster
+-      &lt;/label&gt;
+</span><span class="gi">+      &lt;/material-fab&gt;
+</span>     &lt;/div&gt;
+<span class="gi">+    &lt;material-toggle class="controls__faster-button"
++        label="Go faster"
++        [(checked)]="fastEnabled"&gt;
++    &lt;/material-toggle&gt;
+</span></code></pre></div>    </div>
+
+  </li>
+</ol>
+
+<p>Here’s the resulting UI:</p>
+
+<p><img style="border:1px solid black" src="images/material-toggle-after.png" alt="tiny but attractive toggle button"></p>
+
+<p>The class behind <code class="language-plaintext highlighter-rouge">&lt;material-toggle&gt;</code>,
+<a href="/api/angular_components/angular_components/MaterialToggleComponent-class.html">MaterialToggleComponent</a>,
+defines <code class="language-plaintext highlighter-rouge">label</code> and <code class="language-plaintext highlighter-rouge">checked</code> attributes.
+The <code class="language-plaintext highlighter-rouge">label</code> attribute contains the main text for the toggle,
+which the app previously specified in the <code class="language-plaintext highlighter-rouge">&lt;label&gt;</code> element.
+A two-way binding to the <code class="language-plaintext highlighter-rouge">checked</code> property simplifies setting the
+toggle’s state.</p>
+
+<h2 id="--use-material-fab">
+<a class="anchor" href="#--use-material-fab" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Use material-fab</h2>
+
+<p>Now convert the buttons that have icons into floating action buttons (FABs).</p>
+
+<ol>
+<li>
+    <p>Edit <code class="language-plaintext highlighter-rouge">lib/lottery_simulator.html</code>.</p>
+  </li>
+
+<li>
+    <p>Convert the Play button from a <code class="language-plaintext highlighter-rouge">&lt;button&gt;</code> to a
+    <code class="language-plaintext highlighter-rouge">&lt;material-fab&gt;</code>
+   (<a href="https://gallery.angulardart.xyz/#/material_button">MaterialFabComponent</a>),
+    adding the <code class="language-plaintext highlighter-rouge">raised</code> attribute and
+    changing <code class="language-plaintext highlighter-rouge">(click)</code> to <code class="language-plaintext highlighter-rouge">(trigger)</code>:</p>
+
+    <p>&lt;?code-excerpt “2-starteasy/lib/lottery_simulator.html” diff-with=”3-usebuttons/lib/lottery_simulator.html” from=”play” to=”\/material-fab”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/lottery_simulator.html
+</span><span class="gi">+++ 3-usebuttons/lib/lottery_simulator.html
+</span><span class="p">@@ -31,7 +31,7 @@</span>
+<span class="gd">-      &lt;button (click)="play()"
+</span><span class="gi">+      &lt;material-fab raised (trigger)="play()"
+</span>           [disabled]="endOfDays || inProgress"
+           id="play-button"
+           aria-label="Play"&gt;
+         &lt;material-icon icon="play_arrow"&gt;&lt;/material-icon&gt;
+<span class="gd">-      &lt;/button&gt;
+</span><span class="gi">+      &lt;/material-fab&gt;
+</span></code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>Convert the remaining three buttons in the same way,
+    but add the <code class="language-plaintext highlighter-rouge">mini</code> attribute. For example:</p>
+
+    <p>&lt;?code-excerpt “2-starteasy/lib/lottery_simulator.html” diff-with=”3-usebuttons/lib/lottery_simulator.html” from=”step” to=”\/material-fab”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/lottery_simulator.html
+</span><span class="gi">+++ 3-usebuttons/lib/lottery_simulator.html
+</span><span class="p">@@ -38,6 +38,6 @@</span>
+<span class="gd">-      &lt;button (click)="step()"
+</span><span class="gi">+      &lt;material-fab mini raised (trigger)="step()"
+</span>           [disabled]="endOfDays || inProgress"
+           aria-label="Step"&gt;
+         &lt;material-icon icon="skip_next"&gt;&lt;/material-icon&gt;
+<span class="gd">-      &lt;/button&gt;
+</span><span class="gi">+      &lt;/material-fab&gt;
+</span></code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>Once you’re done, run the app and play with the buttons.
+They look good, and they have a nice ripple animation when you click them.</p>
+
+<p><img style="border:1px solid black" src="images/material-fab-after.png" alt="main UI buttons are now round"></p>
+
+<aside class="alert alert-success">
+  <p><i class="fas fa-exclamation-circle"> </i> <strong>Common pattern: (trigger)</strong> <br></p>
+
+  <p>Many of the AngularDart Components support trigger events. As a rule,
+  your app should <strong>handle trigger events instead of click events</strong>,
+  because trigger is better for accessibility. For example,
+  trigger events fire on both click and keypress,
+  and trigger events don’t fire when the element is disabled.</p>
+</aside>
+
+<h2 id="--use-material-checkbox">
+<a class="anchor" href="#--use-material-checkbox" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Use material-checkbox</h2>
+
+<p>The primary UI is looking good!
+Now start improving the settings section of the UI,
+which is implemented in <code class="language-plaintext highlighter-rouge">lib/src/settings/settings_component.*</code> files.
+First, change the checkbox to use <code class="language-plaintext highlighter-rouge">&lt;material-checkbox&gt;</code> (<a href="https://gallery.angulardart.xyz/#/material_checkbox">MaterialCheckboxComponent</a>).</p>
+
+<ol>
+
+<li>
+    <p>Make the following changes to the Dart file for <code class="language-plaintext highlighter-rouge">&lt;settings-component&gt;</code> (<code class="language-plaintext highlighter-rouge">lib/src/settings/settings_component.dart</code>):</p>
+
+    <p>&lt;?code-excerpt “2-starteasy/lib/src/settings/settings_component.dart” diff-with=”3-usebuttons/lib/src/settings/settings_component.dart”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/src/settings/settings_component.dart
+</span><span class="gi">+++ 3-usebuttons/lib/src/settings/settings_component.dart
+</span><span class="p">@@ -5,6 +5,7 @@</span>
+ import 'dart:async';
+
+ import 'package:angular/angular.dart';
+<span class="gi">+import 'package:angular_components/angular_components.dart';
+</span> import 'package:components_codelab/src/lottery/lottery.dart';
+ import 'package:components_codelab/src/settings/settings.dart';
+
+@@ -12,7 +13,13 @@
+   selector: 'settings-component',
+   styleUrls: ['settings_component.css'],
+   templateUrl: 'settings_component.html',
+<span class="gd">-  directives: [NgFor],
+</span><span class="gi">+  directives: [
++    MaterialCheckboxComponent,
++    MaterialRadioComponent,
++    MaterialRadioGroupComponent,
++    NgFor
++  ],
++  providers: [materialProviders],
+</span> )
+ class SettingsComponent implements OnInit {
+   final initialCashOptions = [0, 10, 100, 1000];
+</code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>Edit the template file
+    (<code class="language-plaintext highlighter-rouge">lib/src/settings/settings_component.html</code>),
+    changing the “checkbox” input and its surrounding label
+    into a <code class="language-plaintext highlighter-rouge">&lt;material-checkbox&gt;</code>.</p>
+
+    <p>&lt;?code-excerpt “2-starteasy/lib/src/settings/settings_component.html” diff-with=”3-usebuttons/lib/src/settings/settings_component.html” from=”Annual interest rate” to=”\/material-checkbox”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/src/settings/settings_component.html
+</span><span class="gi">+++ 3-usebuttons/lib/src/settings/settings_component.html
+</span><span class="p">@@ -70,15 +58,3 @@</span>
+       &lt;h3&gt;Annual interest rate&lt;/h3&gt;
+<span class="gd">-      &lt;label&gt;
+-        &lt;input #investingCheckbox type="checkbox"
+-               [checked]="isInvesting"
+-               (change)="isInvesting = investingCheckbox.checked"&gt;
+-        Investing
+-      &lt;/label&gt;&lt;br&gt;
+-      &lt;div&gt;
+-        &lt;label *ngFor="let value of interestRateOptions"&gt;
+-          &lt;input
+-              type="radio"
+-              #current
+-              [checked]="value == interestRate"
+-              [disabled]="!isInvesting"
+-              (click)="interestRate = current.checked ? value : interestRate"&gt;
+</span><span class="gi">+      &lt;material-checkbox label="Investing" [(checked)]="isInvesting"&gt;
++      &lt;/material-checkbox&gt;&lt;br&gt;
+</span></code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>Look how much simpler that code is!
+<code class="language-plaintext highlighter-rouge">MaterialCheckboxComponent</code> supports a <code class="language-plaintext highlighter-rouge">label</code> attribute and
+two-way binding to <code class="language-plaintext highlighter-rouge">checked</code>, enabling much cleaner HTML.</p>
+
+<h2 id="--use-material-radio-and-material-radio-group">
+<a class="anchor" href="#--use-material-radio-and-material-radio-group" aria-hidden="true"><span class="octicon octicon-link"></span></a><i class="far fa-money-bill-alt fa-sm"> </i> Use material-radio and material-radio-group</h2>
+
+<p>Still working on the settings, convert radio buttons
+into <code class="language-plaintext highlighter-rouge">&lt;material-radio&gt;</code> components. Each group of radio buttons
+is contained by a <code class="language-plaintext highlighter-rouge">&lt;material-radio-group&gt;</code> (<a href="https://gallery.angulardart.xyz/#/material_radio">MaterialRadioComponent</a>).</p>
+
+<ol>
+
+<li>
+    <p>Edit the Dart file for <code class="language-plaintext highlighter-rouge">&lt;settings-component&gt;</code>
+    (<code class="language-plaintext highlighter-rouge">lib/src/settings/settings_component.dart</code>) to register
+    <a href="/api/angular_components/angular_components/MaterialRadioComponent-class.html">MaterialRadioComponent</a> and
+    <a href="/api/angular_components/angular_components/MaterialRadioGroupComponent-class.html">MaterialRadioGroupComponent</a>:</p>
+
+    <p>&lt;?code-excerpt “2-starteasy/lib/src/settings/settings_component.dart” diff-with=”3-usebuttons/lib/src/settings/settings_component.dart” from=”directives:” to=”providers:”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/src/settings/settings_component.dart
+</span><span class="gi">+++ 3-usebuttons/lib/src/settings/settings_component.dart
+</span><span class="p">@@ -15 +16,7 @@</span>
+<span class="gd">-  directives: [NgFor],
+</span><span class="gi">+  directives: [
++    MaterialCheckboxComponent,
++    MaterialRadioComponent,
++    MaterialRadioGroupComponent,
++    NgFor
++  ],
++  providers: [materialProviders],
+</span></code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>In the template file
+  (<code class="language-plaintext highlighter-rouge">lib/src/settings/settings_component.html</code>),
+  find the string <code class="language-plaintext highlighter-rouge">"radio"</code>. Change the enclosing label to
+  <code class="language-plaintext highlighter-rouge">&lt;material-radio&gt;</code>, and then the immediately enclosing <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>
+  to <code class="language-plaintext highlighter-rouge">&lt;material-radio-group&gt;</code>.</p>
+  </li>
+
+<li>
+    <p>Move the input’s <code class="language-plaintext highlighter-rouge">[checked]</code> and <code class="language-plaintext highlighter-rouge">(click)</code>
+  code into the material-radio component.
+  If the input has <code class="language-plaintext highlighter-rouge">[disabled]</code> code, move that too.</p>
+  </li>
+
+<li>
+    <p>Change <code class="language-plaintext highlighter-rouge">(click)</code> to <code class="language-plaintext highlighter-rouge">(checkedChange)</code>,
+  and <code class="language-plaintext highlighter-rouge">current.checked</code> to <code class="language-plaintext highlighter-rouge">$event</code>.
+  Here’s why:
+  <a href="/api/angular_components/angular_components/MaterialRadioComponent-class.html">MaterialRadioComponent</a>
+  fires checkedChange when the radio button’s selection state changes.
+  The event’s value is true if the radio button has become selected,
+  and otherwise false.</p>
+  </li>
+
+<li>
+    <p>Remove the <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> tag.
+    Your code changes should look like this:</p>
+
+    <p>&lt;?code-excerpt “2-starteasy/lib/src/settings/settings_component.html” diff-with=”3-usebuttons/lib/src/settings/settings_component.html” from=”Initial cash” to=”\/material-radio-group”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/src/settings/settings_component.html
+</span><span class="gi">+++ 3-usebuttons/lib/src/settings/settings_component.html
+</span><span class="p">@@ -6,11 +6,8 @@</span>
+       &lt;h3&gt;Initial cash&lt;/h3&gt;
+<span class="gd">-      &lt;div&gt;
+-        &lt;label *ngFor="let item of initialCashOptions"&gt;
+-          &lt;input
+-                 type="radio"
+-                 #current
+-                 [checked]="item == initialCash"
+-                 (click)="initialCash = current.checked ? item : initialCash"&gt;
+</span><span class="gi">+      &lt;material-radio-group&gt;
++        &lt;material-radio *ngFor="let item of initialCashOptions"
++            [checked]="item == initialCash"
++            (checkedChange)="initialCash = $event ? item : initialCash"&gt;
+</span>           ${{ item }}
+<span class="gd">-        &lt;/label&gt;
+-      &lt;/div&gt;
+</span><span class="gi">+        &lt;/material-radio&gt;
++      &lt;/material-radio-group&gt;
+</span></code></pre></div>    </div>
+  </li>
+
+<li>
+    <p>Repeat the process for the remaining radio button groups.</p>
+  </li>
+
+<li>
+    <p>Run the app. You might notice a small problem with
+    the appearance of the Strategy settings:</p>
+
+    <p><img style="border:1px solid black" src="images/material-radio-after-1.png" alt="screenshot"></p>
+  </li>
+
+<li>
+    <p>Fix the appearance problem by editing
+    <code class="language-plaintext highlighter-rouge">lib/src/settings/settings_component.css</code> to add a rule that
+    maximizes that component’s width:</p>
+
+    <p>&lt;?code-excerpt “2-starteasy/lib/src/settings/settings_component.css” diff-with=”3-usebuttons/lib/src/settings/settings_component.css”?&gt;</p>
+    <div class="language-diff highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="gd">--- 2-starteasy/lib/src/settings/settings_component.css
+</span><span class="gi">+++ 3-usebuttons/lib/src/settings/settings_component.css
+</span><span class="p">@@ -1,5 +1,5 @@</span>
+<span class="gd">-.betting-panel label {
+-    display: block;
+</span><span class="gi">+.betting-panel material-radio {
++    width: 100%;
+</span> }
+
+ h3:not(:first-child) {
+</code></pre></div>    </div>
+
+  </li>
+</ol>
+
+<p>The app is now much better looking, but it still displays too much
+information. You’ll fix that in the next step.</p>
+
+<aside class="alert alert-info">
+  <p><strong>Note:</strong> You might notice that the
+  <code class="language-plaintext highlighter-rouge">lib/src/settings/settings_component.html</code> still has a few <code class="language-plaintext highlighter-rouge">&lt;button&gt;</code>
+  elements—all the <strong>Save</strong> and <strong>Cancel</strong> buttons.
+  You’ll remove those in the next step.</p>
+</aside>
+
+<h3 id="problems">
+<a class="anchor" href="#problems" aria-hidden="true"><span class="octicon octicon-link"></span></a>Problems?</h3>
+
+<p>Check your code against the solution in the
+<a href="https://github.com/angulardart-community/lottery/tree/master/3-usebuttons">3-usebuttons</a>
+directory.</p>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/codelabs/angular_components/2-starteasy">Step 2: Start Using AngularDart Components</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/codelabs/angular_components/4-final">Step 4: Add Expansion Panels and Tabs</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="How to use Dart tools to create and run Angular apps">
+  <title>Setup for Development | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Setup for Development" />
+  <meta name="twitter:description" content="How to use Dart tools to create and run Angular apps" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Setup for Development" />
+  <meta property="og:description" content="How to use Dart tools to create and run Angular apps" />
+  <meta property="og:url" content="https://angulardart.xyz/guide/setup" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li class="active">
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#get-prerequisites">Get prerequisites</a></li>
+<li class="toc-entry toc-h2"><a href="#install-command-line-tools">Install Command-line Tools</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#webdev">webdev</a></li>
+<li class="toc-entry toc-h3"><a href="#ngdart_cli-recommended">ngdart_cli (recommended)</a></li>
+<li class="toc-entry toc-h3"><a href="#note-for-flutter-developers">Note for Flutter developers</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#create-a-starter-project">Create a starter project</a></li>
+<li class="toc-entry toc-h2"><a href="#get">Get dependencies</a></li>
+<li class="toc-entry toc-h2"><a href="#customize-the-project">Customize the project</a></li>
+<li class="toc-entry toc-h2"><a href="#run-the-app">Run the app</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#visual-studio-code">Visual Studio Code</a></li>
+<li class="toc-entry toc-h3"><a href="#webstorm">WebStorm</a></li>
+<li class="toc-entry toc-h3"><a href="#command-line">Command-Line</a></li>
+<li class="toc-entry toc-h3"><a href="#result">Result</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#reload-the-app">Reload the app</a></li>
+<li class="toc-entry toc-h2"><a href="#next-step">Next step</a></li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/index">Documentation Overview</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/learning-angular">Learning Angular</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/setup.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Setup for Development' page issue&body=From URL: https://angulardart.xyz/guide/setup"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Setup for Development 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p><a id="develop-locally"></a>
+Setting up a new Angular project is straightforward using common Dart tools.
+This page leads you through getting and running the starter app
+that’s featured in this guide and tutorial.</p>
+
+<p><a id="sdk"></a></p>
+<h2 id="get-prerequisites">
+<a class="anchor" href="#get-prerequisites" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get prerequisites</h2>
+
+<p>For information on how to get the Dart SDK,
+see <a href="https://dart.dev/get-dart">the Dart site</a>:</p>
+
+<ul>
+  <li>
+<strong>Dart SDK</strong> 2.10.0 or a compatible version. For
+AngularDart 7, SDK &gt;= 2.17.0 is required.</li>
+  <li>Your favorite IDE &amp; code editor, such as WebStorm, Eclipse, or <strong>Visual Studio Code</strong> (recommended).</li>
+</ul>
+
+<h2 id="install-command-line-tools">
+<a class="anchor" href="#install-command-line-tools" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install Command-line Tools</h2>
+
+<h3 id="webdev">
+<a class="anchor" href="#webdev" aria-hidden="true"><span class="octicon octicon-link"></span></a>webdev</h3>
+
+<p><a href="https://pub.dev/packages/webdev"><code class="language-plaintext highlighter-rouge">webdev</code></a> is an official command-line tool for developing and deploying Dart web applications. You <strong>must</strong> install <code class="language-plaintext highlighter-rouge">webdev</code> to run AngularDart apps. To install it, open a terminal window and run the following command:</p>
+
+<div class="language-terminal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>dart pub global activate webdev
+</code></pre></div></div>
+
+<p>If this is your first time interacting with Pub global packages, Dart will tell you (in the terminal) to add the system cache <code class="language-plaintext highlighter-rouge">bin</code> directory to your <code class="language-plaintext highlighter-rouge">PATH</code> environment variable (see <a href="https://dart.dev/tools/pub/cmd/pub-global#running-a-script-from-your-path">this guide</a>). For more info on using global packages, see Dart’s <a href="https://dart.dev/tools/pub/cmd/pub-global">official docs</a> about Pub.</p>
+
+<h3 id="ngdart_cli-recommended">
+<a class="anchor" href="#ngdart_cli-recommended" aria-hidden="true"><span class="octicon octicon-link"></span></a>ngdart_cli (recommended)</h3>
+
+<p><a href="https://pub.dev/packages/ngdart_cli"><code class="language-plaintext highlighter-rouge">ngdart_cli</code></a> is a community-maintained command-line tool for creating and managing AngularDart applications. AngularDart can still run without it, but <code class="language-plaintext highlighter-rouge">ngdart_cli</code> makes your life much easier by providing some handy commands such as <code class="language-plaintext highlighter-rouge">ngdart create &lt;project_name&gt;</code> to create a new project and <code class="language-plaintext highlighter-rouge">ngdart clean</code> to clean all build artifacts and cache, similar to <code class="language-plaintext highlighter-rouge">flutter clean</code> if you come from Flutter. For more info on <code class="language-plaintext highlighter-rouge">ngdart_cli</code>, see <a href="https://pub.dev/packages/ngdart_cli"><code class="language-plaintext highlighter-rouge">ngdart_cli</code>’s Pub page</a>.</p>
+
+<p>Similar to <code class="language-plaintext highlighter-rouge">webdev</code>, run the following to install <code class="language-plaintext highlighter-rouge">ngdart_cli</code>:</p>
+<div class="language-terminal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>dart pub global activate ngdart_cli
+</code></pre></div></div>
+
+<h3 id="note-for-flutter-developers">
+<a class="anchor" href="#note-for-flutter-developers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Note for Flutter developers</h3>
+
+<p>Occasionally, you might get some errors similar to the following when running <code class="language-plaintext highlighter-rouge">webdev</code> or <code class="language-plaintext highlighter-rouge">ngdart</code>:</p>
+<div class="language-terminal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">Unhandled exception:
+  ProcessException: 'pub' command not found
+</span></code></pre></div></div>
+<p>This is because additional Dart tools don’t exist in Flutter SDK’s <code class="language-plaintext highlighter-rouge">bin</code> directory. You’ll have to add the Dart SDK’s <code class="language-plaintext highlighter-rouge">bin</code> directory to your <code class="language-plaintext highlighter-rouge">PATH</code> environment variable. The Dart SDK is located at <code class="language-plaintext highlighter-rouge">YOUR_FLUTTER_SDK_LOCATION/bin/cache/dart-sdk/bin/</code>.</p>
+
+<h2 id="create-a-starter-project">
+<a class="anchor" href="#create-a-starter-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a starter project</h2>
+
+<p>For generic purposes, use <code class="language-plaintext highlighter-rouge">ngdart create &lt;app_name&gt;</code> to create a new AngularDart application.</p>
+
+<p>If you want to follow the examples in this guide and tutorial, they are based on the <a href="https://github.com/angulardart-community/quickstart/tree/master">angular-examples/quickstart</a> GitHub project. You can get the project’s files by the following methods:</p>
+<ul>
+  <li><a href="https://github.com/angulardart-community/quickstart/archive/master.zip">Downloading them.</a></li>
+  <li>Cloning the repo: <code class="language-plaintext highlighter-rouge">git clone https://github.com/angulardart-community/quickstart.git</code>
+</li>
+  <li>Using VS Code’s <a href="https://code.visualstudio.com/Docs/editor/versioncontrol#_cloning-a-repository">Git support</a>.</li>
+</ul>
+
+<h2 id="get">
+<a class="anchor" href="#get" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get dependencies</h2>
+
+<div class="language-terminal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>dart pub get
+</code></pre></div></div>
+
+<h2 id="customize-the-project">
+<a class="anchor" href="#customize-the-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Customize the project</h2>
+
+<ol>
+  <li>
+    <p>Open <strong><code class="language-plaintext highlighter-rouge">web/index.html</code></strong>, and replace the text of the <strong><code class="language-plaintext highlighter-rouge">&lt;title&gt;</code></strong> element
+with a title suitable for your app. For example: <code class="language-plaintext highlighter-rouge">&lt;title&gt;Angular Tour
+of Heroes&lt;/title&gt;</code>.</p>
+  </li>
+  <li>
+    <p>Open <strong><code class="language-plaintext highlighter-rouge">pubspec.yaml</code></strong>, and update the <strong>description</strong> to suit your project.
+For example: <code class="language-plaintext highlighter-rouge">description: Tour of Heroes</code>.</p>
+  </li>
+  <li>
+    <p><em>Optional</em>. If you’d like to change your project’s name, then do a
+project-wide <em>search-and-replace</em> of the current value of the <strong>pubspec
+<code class="language-plaintext highlighter-rouge">name</code></strong> entry (<strong><code class="language-plaintext highlighter-rouge">angular_app</code></strong>) with a name suitable for your app
+— usually it will be the same as the <a href="#directory-name">directory name</a>
+you chose earlier.</p>
+
+    <p>This project-global rename will touch: <code class="language-plaintext highlighter-rouge">pubspec.yaml</code>, <code class="language-plaintext highlighter-rouge">web/main.dart</code> and
+<code class="language-plaintext highlighter-rouge">test/app_test.dart</code>.</p>
+  </li>
+</ol>
+
+<div><a id="running-the-app"></a></div>
+
+<h2 id="run-the-app">
+<a class="anchor" href="#run-the-app" aria-hidden="true"><span class="octicon octicon-link"></span></a>Run the app</h2>
+
+<p><strong>Note:</strong> if you get errors like this below when building:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[SEVERE] Failed to precompile build_runner:build_runner:
+[SEVERE] ../../../.pub-cache/hosted/pub.dartlang.org/analyzer-0.40.6/lib/src/error/best_practices_verifier.dart:258:50: Error: The property 'displayString' is defined in multiple extensions for 'TargetKind' and neither is more specific.
+[SEVERE]  - 'TargetKind' is from 'package:meta/meta_meta.dart' ('../../../.pub-cache/hosted/pub.dartlang.org/meta-1.7.0/lib/meta_meta.dart').
+[SEVERE] Try using an explicit extension application of the wanted extension or hiding unwanted extensions from scope.
+[SEVERE]         var kindNames = kinds.map((kind) =&gt; kind.displayString).toList()
+[SEVERE]                                                  ^^^^^^^^^^^^^
+[SEVERE] ../../../.pub-cache/hosted/pub.dartlang.org/analyzer-0.40.6/lib/src/error/best_practices_verifier.dart:1917:14: Context: This is one of the extension members.
+[SEVERE]   String get displayString {
+[SEVERE]              ^^^^^^^^^^^^^
+[SEVERE] ../../../.pub-cache/hosted/pub.dartlang.org/meta-1.7.0/lib/meta_meta.dart:91:14: Context: This is one of the extension members.
+[SEVERE]   String get displayString {
+[SEVERE]              ^^^^^^^^^^^^^
+[SEVERE] ../../../.pub-cache/hosted/pub.dartlang.org/analyzer-0.40.6/lib/src/error/best_practices_verifier.dart:260:36: Error: The getter 'commaSeparatedWithOr' isn't defined for the class 'List&lt;dynamic&gt;'.
+[SEVERE]  - 'List' is from 'dart:core'.
+[SEVERE] Try correcting the name to the name of an existing getter, or defining a getter or field named 'commaSeparatedWithOr'.
+[SEVERE]         var validKinds = kindNames.commaSeparatedWithOr;
+[SEVERE]                                    ^^^^^^^^^^^^^^^^^^^^
+</code></pre></div></div>
+<p>Try adding <code class="language-plaintext highlighter-rouge">meta: &lt;1.7.0</code> to your <code class="language-plaintext highlighter-rouge">dev_dependencies</code>. This is caused by the package <code class="language-plaintext highlighter-rouge">meta</code> (specifically version 1.7.0), not AngularDart itself.</p>
+
+<h3 id="visual-studio-code">
+<a class="anchor" href="#visual-studio-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>Visual Studio Code</h3>
+
+<p>Install the <a href="https://marketplace.visualstudio.com/items?itemName=Dart-Code.dart-code">Dart VSCode extension</a>. If you already have the Flutter VSCode extension installed, this is not necessary.</p>
+<ol>
+  <li>Start VS Code.</li>
+  <li>Press <strong>Ctrl+Shift+X</strong> (Windows/Linux) or <strong>Cmd+Shift+X</strong> (Mac) to open the Extensions side panel.</li>
+  <li>Type <code class="language-plaintext highlighter-rouge">Dart</code> in the extensions search field, and select <strong>Dart</strong> in the list, and click <strong>Install</strong>.</li>
+</ol>
+
+<!-- ngdart will change this -->
+<p>After that, usually you will do a one-time configuration <strong>for each project</strong> to set things up (you won’t need to do this if you use <code class="language-plaintext highlighter-rouge">ngdart</code> to create a new project):</p>
+<ol>
+  <li>Press <strong>F5</strong> or choose <strong>Run &gt; Start Debugging</strong>.</li>
+  <li>VSCode will prompt you to select an environment. Choose <strong>Dart &amp; Flutter</strong> or simply <strong>Dart</strong>. <!-- Does the Dart option even exists? It is here just in case. -->
+</li>
+  <li>After that, VSCode will create a <code class="language-plaintext highlighter-rouge">launch.json</code> file in the <code class="language-plaintext highlighter-rouge">.vscode</code> folder that contains something like this:
+    <div class="language-json highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+ </span><span class="err">//</span><span class="w"> </span><span class="err">Use</span><span class="w"> </span><span class="err">IntelliSense</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">learn</span><span class="w"> </span><span class="err">about</span><span class="w"> </span><span class="err">possible</span><span class="w"> </span><span class="err">attributes.</span><span class="w">
+ </span><span class="err">//</span><span class="w"> </span><span class="err">Hover</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">view</span><span class="w"> </span><span class="err">descriptions</span><span class="w"> </span><span class="err">of</span><span class="w"> </span><span class="err">existing</span><span class="w"> </span><span class="err">attributes.</span><span class="w">
+ </span><span class="err">//</span><span class="w"> </span><span class="err">For</span><span class="w"> </span><span class="err">more</span><span class="w"> </span><span class="err">information</span><span class="p">,</span><span class="w"> </span><span class="err">visit:</span><span class="w"> </span><span class="err">https://go.microsoft.com/fwlink/?linkid=</span><span class="mi">830387</span><span class="w">
+ </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.2.0"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"configurations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+     </span><span class="p">{</span><span class="w">
+         </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"quickstart"</span><span class="p">,</span><span class="w">
+         </span><span class="nl">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"launch"</span><span class="p">,</span><span class="w">
+         </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dart"</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+ </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+    <p>Add the <code class="language-plaintext highlighter-rouge">"program": "web"</code> value in “configurations”:</p>
+    <div class="language-json highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+ </span><span class="err">//</span><span class="w"> </span><span class="err">Use</span><span class="w"> </span><span class="err">IntelliSense</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">learn</span><span class="w"> </span><span class="err">about</span><span class="w"> </span><span class="err">possible</span><span class="w"> </span><span class="err">attributes.</span><span class="w">
+ </span><span class="err">//</span><span class="w"> </span><span class="err">Hover</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">view</span><span class="w"> </span><span class="err">descriptions</span><span class="w"> </span><span class="err">of</span><span class="w"> </span><span class="err">existing</span><span class="w"> </span><span class="err">attributes.</span><span class="w">
+ </span><span class="err">//</span><span class="w"> </span><span class="err">For</span><span class="w"> </span><span class="err">more</span><span class="w"> </span><span class="err">information</span><span class="p">,</span><span class="w"> </span><span class="err">visit:</span><span class="w"> </span><span class="err">https://go.microsoft.com/fwlink/?linkid=</span><span class="mi">830387</span><span class="w">
+ </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.2.0"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"configurations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+     </span><span class="p">{</span><span class="w">
+         </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"quickstart"</span><span class="p">,</span><span class="w">
+         </span><span class="nl">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"launch"</span><span class="p">,</span><span class="w">
+         </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dart"</span><span class="p">,</span><span class="w">
+         </span><span class="nl">"program"</span><span class="p">:</span><span class="w"> </span><span class="s2">"web"</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">ADD</span><span class="w"> </span><span class="err">THIS</span><span class="w"> </span><span class="err">LINE</span><span class="w">
+     </span><span class="p">}</span><span class="w">
+ </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+    <p>You’re now all set! You can close this file, and press <strong>F5</strong> to start running your app!</p>
+  </li>
+</ol>
+
+<p>The first build usually takes a few minutes, so sit back and grab a coffee while your app is building. Builds after that are much quicker because assets are cached on disk and Dart will execute incremental builds.</p>
+
+<!-- Address the "Google Chrome File Not Found Issue" issue -->
+
+<h3 id="webstorm">
+<a class="anchor" href="#webstorm" aria-hidden="true"><span class="octicon octicon-link"></span></a>WebStorm</h3>
+
+<ol>
+  <li>In WebStorm, the Dart plugin comes in pre-installed. If you find yourself having no syntax highlighting for Dart files or if you’re using another IntelliJ-based IDE, installed the <a href="https://plugins.jetbrains.com/plugin/6351-dart/">Dart plugin</a> for IntelliJ.</li>
+  <li>Open the project folder. On the top right of the screen, click the button <strong>Add Configuration…</strong> This will open up the “Run/Debug Configurations” window.
+<img src="/guide/images/webstorm-run-configuration.png" alt="WebStorm Run/Debug Configuration Window">
+</li>
+  <li>Click on the plus sign on the top left or the <strong>Add new run configuration…</strong> on the middle right. In the drop-down list, choose <strong>Dart Web</strong>.</li>
+  <li>WebStorm will tell you that “Path to HTML file is not specified”. In the “HTML File” field, choose the file <code class="language-plaintext highlighter-rouge">web/index.html</code>.</li>
+  <li>You can also store the configuration file if you want by checking the <strong>Store as project file</strong> checkbox. WebStorm will remember your setup regardless.</li>
+</ol>
+
+<p>You’re now all set! Close the configuration window, and press <strong>Shift + F10</strong> or click on the green run button to run. The first build usually takes a few minutes, so sit back and grab a coffee while your app is building. Builds after that are much quicker because assets are cached on disk and Dart will execute incremental builds.</p>
+
+<h3 id="command-line">
+<a class="anchor" href="#command-line" aria-hidden="true"><span class="octicon octicon-link"></span></a>Command-Line</h3>
+
+<p>To run the app from the command line, use <a href="https://dart.dev/tools/webdev">webdev</a> to build and serve the app:</p>
+
+<div class="language-terminal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>webdev serve
+</code></pre></div></div>
+
+<p>Then, to view your app, use the Chrome browser to visit
+<a href="localhost:8080">localhost:8080</a>.
+(Details about Dart’s browser support are
+<a href="/faq#q-what-browsers-do-you-support-as-javascript-compilation-targets">in the FAQ</a>.)</p>
+
+<h3 id="result">
+<a class="anchor" href="#result" aria-hidden="true"><span class="octicon octicon-link"></span></a>Result</h3>
+
+<p>Regardless of your method, you should see the following app in a browser window:</p>
+
+<p><img src="/guide/images/starter-app.png" alt="A web page with the header: Hello Angular"></p>
+
+<h2 id="reload-the-app">
+<a class="anchor" href="#reload-the-app" aria-hidden="true"><span class="octicon octicon-link"></span></a>Reload the app</h2>
+
+<p>Whenever you change the app, reload the browser window. As you save updates to the code, the <code class="language-plaintext highlighter-rouge">webdev</code> tool automatically detects changes and serves the new app.</p>
+
+<h2 id="next-step">
+<a class="anchor" href="#next-step" aria-hidden="true"><span class="octicon octicon-link"></span></a>Next step</h2>
+
+<p>If you’re new to Angular, we recommend staying on the <a href="learning-angular">learning path</a>.
+If you’d like to know more about the app you just created, see
+<a href="/tutorial/toh-pt0">The Starter App.</a></p>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/index">Documentation Overview</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/learning-angular">Learning Angular</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

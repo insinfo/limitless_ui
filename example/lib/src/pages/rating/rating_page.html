@@ -1,40 +1,37 @@
 <div class="page-header page-header-light shadow-sm rounded-0 border">
   <div class="page-header-content d-lg-flex">
     <div class="d-flex">
-      <h4 class="page-title mb-0">Forms <span class="fw-normal">Rating</span></h4>
+      <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
     </div>
   </div>
   <div class="page-header-content d-lg-flex border-top">
     <div class="breadcrumb py-2">
-      <span class="breadcrumb-item active">Star rating</span>
+      <span class="breadcrumb-item active">{{ breadcrumb }}</span>
     </div>
   </div>
 </div>
 
 <div class="content">
   <div class="card card-body mb-4">
-    <h5 class="mb-2">Avaliação com `ngModel` e estados do componente</h5>
-    <p class="text-muted mb-0">
-      O `li-rating` cobre seleção por clique, navegação por teclado, preview em hover, leitura parcial e modo
-      resetável.
-    </p>
+    <h5 class="mb-2">{{ introTitle }}</h5>
+    <p class="text-muted mb-0">{{ introBody }}</p>
   </div>
 
   <div class="row g-4">
     <div class="col-xl-4">
       <div class="card h-100">
         <div class="card-header">
-          <h5 class="mb-0">Interactive</h5>
+          <h5 class="mb-0">{{ interactiveTitle }}</h5>
         </div>
         <div class="card-body">
-          <label class="form-label fw-semibold">Avaliação do produto</label>
+          <label class="form-label fw-semibold">{{ productLabel }}</label>
           <li-rating
               [(ngModel)]="productRating"
               (hover)="hoverPreview = $event"
               (leave)="hoverPreview = 0">
           </li-rating>
           <div class="rating-summary-box mt-3">
-            <div><strong>Valor atual:</strong> {{ productRating }}</div>
+            <div><strong>{{ currentValueLabel }}:</strong> {{ productRating }}</div>
             <div class="text-muted">{{ hoverLabel }}</div>
           </div>
         </div>
@@ -44,10 +41,10 @@
     <div class="col-xl-4">
       <div class="card h-100">
         <div class="card-header">
-          <h5 class="mb-0">Resettable and sizes</h5>
+          <h5 class="mb-0">{{ resettableTitle }}</h5>
         </div>
         <div class="card-body">
-          <label class="form-label fw-semibold">Atendimento</label>
+          <label class="form-label fw-semibold">{{ serviceLabel }}</label>
           <li-rating
               [(ngModel)]="serviceRating"
               [resettable]="true"
@@ -55,7 +52,7 @@
           </li-rating>
 
           <div class="mt-4">
-            <div class="fw-semibold mb-2">Tamanhos</div>
+            <div class="fw-semibold mb-2">{{ sizesLabel }}</div>
             <div class="d-flex flex-column gap-2">
               <li-rating [rate]="2" size="sm" [readonly]="true"></li-rating>
               <li-rating [rate]="3" size="md" [readonly]="true"></li-rating>
@@ -64,8 +61,8 @@
           </div>
 
           <div class="rating-summary-box mt-3">
-            <div><strong>Atendimento:</strong> {{ serviceRating }}</div>
-            <div class="text-muted">Clique na estrela atual para zerar quando `resettable` estiver ativo.</div>
+            <div><strong>{{ serviceValueLabel }}:</strong> {{ serviceRating }}</div>
+            <div class="text-muted">{{ resettableHelp }}</div>
           </div>
         </div>
       </div>
@@ -74,19 +71,19 @@
     <div class="col-xl-4">
       <div class="card h-100">
         <div class="card-header">
-          <h5 class="mb-0">Readonly and disabled</h5>
+          <h5 class="mb-0">{{ readonlyTitle }}</h5>
         </div>
         <div class="card-body">
           <div class="mb-4">
-            <label class="form-label fw-semibold">Média consolidada</label>
+            <label class="form-label fw-semibold">{{ readonlyLabel }}</label>
             <li-rating [rate]="readonlyRating" [readonly]="true"></li-rating>
-            <div class="text-muted mt-2">Exemplo com preenchimento parcial inicial.</div>
+            <div class="text-muted mt-2">{{ readonlyHelp }}</div>
           </div>
 
           <div>
-            <label class="form-label fw-semibold">Campo bloqueado</label>
+            <label class="form-label fw-semibold">{{ disabledLabel }}</label>
             <li-rating [rate]="disabledRating" [disabled]="true"></li-rating>
-            <div class="text-muted mt-2">Mantém o valor visível, mas sem interação.</div>
+            <div class="text-muted mt-2">{{ disabledHelp }}</div>
           </div>
         </div>
       </div>

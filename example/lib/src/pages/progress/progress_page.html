@@ -16,35 +16,30 @@
   <div class="card">
 
     <li-tabsx type="tabs">
-      <li-tabx header="Visão geral" [active]="true">
+      <li-tabx [header]="t.common.tabOverview" [active]="true">
         <div class="card-body">
           <p class="text-muted mb-3">{{ t.pages.progress.releaseConfig }}</p>
 
           <div class="row g-3 mb-4">
             <div class="col-lg-4">
               <div class="card card-body h-100">
-                <h6 class="mb-2">Descrição</h6>
-                <p class="mb-0 text-muted">O componente de progresso cobre indicadores lineares simples, barras
-                  empilhadas e intervalos customizados para dashboards operacionais.</p>
+                <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                <p class="mb-0 text-muted">{{ descriptionBody }}</p>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body h-100">
-                <h6 class="mb-2">Recursos</h6>
+                <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
                 <ul class="mb-0 ps-3">
-                  <li>Altura configurável e cantos arredondados.</li>
-                  <li>Faixas com stripes, animação e labels.</li>
-                  <li>Escalas customizadas com <code>min</code> e <code>max</code>.</li>
+                  <li *ngFor="let item of features">{{ item }}</li>
                 </ul>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body h-100">
-                <h6 class="mb-2">Limitações</h6>
+                <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
                 <ul class="mb-0 ps-3">
-                  <li>O componente não calcula progresso automaticamente.</li>
-                  <li>Escalas muito complexas exigem legenda adicional.</li>
-                  <li>Barras empilhadas pedem curadoria de contraste.</li>
+                  <li *ngFor="let item of limits">{{ item }}</li>
                 </ul>
               </div>
             </div>
@@ -67,8 +62,8 @@
             </div>
             <li-progress [height]="'1rem'" [striped]="true" [animated]="true">
               <li-progress-bar class="bg-success" [value]="42" [label]="t.pages.progress.teamProduct"></li-progress-bar>
-              <li-progress-bar class="bg-info" [value]="28" label="UX"></li-progress-bar>
-              <li-progress-bar class="bg-warning" [value]="16" label="QA"></li-progress-bar>
+              <li-progress-bar class="bg-info" [value]="28" [label]="uxLabel"></li-progress-bar>
+              <li-progress-bar class="bg-warning" [value]="16" [label]="qaLabel"></li-progress-bar>
             </li-progress>
           </div>
 
@@ -78,22 +73,17 @@
               <small class="text-muted">{{ t.pages.progress.customConfig }}</small>
             </div>
             <li-progress [min]="0" [max]="200" [height]="'0.875rem'">
-              <li-progress-bar class="bg-pink" [value]="120" label="120 de 200"></li-progress-bar>
+              <li-progress-bar class="bg-pink" [value]="120" [label]="customRangeLabel"></li-progress-bar>
             </li-progress>
           </div>
         </div>
       </li-tabx>
 
-      <li-tabx header="API">
+      <li-tabx [header]="t.common.tabApi">
         <div class="card-body">
-          <p class="text-muted mb-3">Use o container <code>li-progress</code> para definir contexto visual e os filhos
-            <code>li-progress-bar</code> para cada faixa de progresso.</p>
+          <p class="text-muted mb-3">{{ apiIntro }}</p>
           <ul class="mb-3 ps-3">
-            <li><code>[height]</code> controla a espessura da barra.</li>
-            <li><code>[rounded]</code>, <code>[striped]</code> e <code>[animated]</code> ajustam a aparência.</li>
-            <li><code>[min]</code> e <code>[max]</code> permitem escalas além de 0-100.</li>
-            <li><code>[value]</code>, <code>label</code> e <code>[showValueLabel]</code> controlam o conteúdo de cada
-              faixa.</li>
+            <li *ngFor="let item of apiItems">{{ item }}</li>
           </ul>
 
           <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-progress [height]="'1rem'" [striped]="true" [animated]="true"&gt;

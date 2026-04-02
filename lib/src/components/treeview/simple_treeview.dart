@@ -4,8 +4,30 @@ import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
 
 import 'tree_view_base.dart';
+import 'treeview_settings.dart';
 
 import 'dart:html' as html;
+
+class LiTreeViewNodeContext {
+  LiTreeViewNodeContext({
+    required this.node,
+    required this.selected,
+    required this.disabled,
+    required this.label,
+  });
+
+  final TreeViewNode node;
+  final bool selected;
+  final bool disabled;
+  final String label;
+}
+
+@Directive(selector: 'template[liTreeviewNode]')
+class LiTreeViewNodeDirective {
+  LiTreeViewNodeDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
 
 @Component(
   selector: 'li-treeview',
@@ -13,7 +35,6 @@ import 'dart:html' as html;
   templateUrl: 'simple_treeview.html',
   directives: [
     coreDirectives,
-    // NgTemplateOutlet,
   ],
 )
 class LiTreeViewComponent {
@@ -23,7 +44,25 @@ class LiTreeViewComponent {
   @Input('searchPlaceholder')
   String searchPlaceholder = 'Digite e pressione enter para buscar';
 
+  dynamic _sourceData;
+  TreeViewSettings _settings = const TreeViewSettings();
+
   @Input('data')
+  set data(dynamic value) {
+    _sourceData = value;
+    list = _settings.normalize(value);
+  }
+
+  dynamic get data => _sourceData;
+
+  @Input('settings')
+  set settings(TreeViewSettings? value) {
+    _settings = value ?? const TreeViewSettings();
+    list = _settings.normalize(_sourceData);
+  }
+
+  TreeViewSettings get settings => _settings;
+
   List<TreeViewNode> list = <TreeViewNode>[];
 
   @Input('isMultiSelectable')
@@ -31,6 +70,12 @@ class LiTreeViewComponent {
 
   @Input('isDisableEnter')
   bool isDisableEnter = false;
+
+  @Input()
+  String Function(TreeViewNode node)? labelBuilder;
+
+  @ContentChild(LiTreeViewNodeDirective)
+  LiTreeViewNodeDirective? nodeTemplate;
 
   TreeViewNode? itemSelected;
 
@@ -204,7 +249,28 @@ class LiTreeViewComponent {
   @Output('onSelect')
   Stream get onSelect => onSelectStreamController.stream;
 
+  bool isSelectable(TreeViewNode node) => node.enabled;
+
+  String resolvedNodeLabel(TreeViewNode node) =>
+      labelBuilder?.call(node) ?? node.treeViewNodeLabel;
+
+  LiTreeViewNodeContext nodeContext(TreeViewNode node) => LiTreeViewNodeContext(
+        node: node,
+        selected: node.treeViewNodeIsSelected,
+        disabled: !isSelectable(node),
+        label: resolvedNodeLabel(node),
+      );
+
+  bool hasNodeIcon(TreeViewNode node) => (node.icon ?? '').trim().isNotEmpty;
+
+  String nodeIconClass(TreeViewNode node) =>
+      'li-treeview__title-icon ${node.icon ?? ''}'.trim();
+
   void selectItem(TreeViewNode node) {
+    if (!isSelectable(node)) {
+      return;
+    }
+
     node.treeViewNodeIsSelected = !node.treeViewNodeIsSelected;
     if (node.treeViewNodeIsSelected) {
       itemSelected = node;

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree.">
+  <title>Hierarchical Dependency Injectors | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Hierarchical Dependency Injectors" />
+  <meta name="twitter:description" content="Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Hierarchical Dependency Injectors" />
+  <meta property="og:description" content="Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/hierarchical-dependency-injection" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li class="active">
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#the-injector-tree">The injector tree</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#injector-bubbling">Injector bubbling</a></li>
+<li class="toc-entry toc-h3"><a href="#re-providing-a-service-at-different-levels">Re-providing a service at different levels</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#component-injectors">Component injectors</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#scenario-service-isolation">Scenario: service isolation</a></li>
+<li class="toc-entry toc-h3"><a href="#scenario-multiple-edit-sessions">Scenario: multiple edit sessions</a></li>
+<li class="toc-entry toc-h3"><a href="#scenario-specialized-providers">Scenario: specialized providers</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/deployment">Deployment</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/server-communication">HTTP Client</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/hierarchical-dependency-injection.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Hierarchical Dependency Injectors' page issue&body=From URL: https://angulardart.xyz/guide/hierarchical-dependency-injection"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Hierarchical Dependency Injectors 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/hierarchical-dependency-injection”?&gt;</p>
+
+<p>You learned the basics of Angular Dependency injection in the
+<a href="dependency-injection">Dependency Injection</a> page.
+Angular has a <em>Hierarchical Dependency Injection</em> system:
+there is actually a tree of injectors that parallel an app’s component tree.
+You can reconfigure the injectors at any level of that component tree.</p>
+
+<p>In this page you’ll explore this system and learn how to use it to your advantage.
+Try the <span><a href="/examples/hierarchical-dependency-injection" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/hierarchical-dependency-injection/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<h2 id="the-injector-tree">
+<a class="anchor" href="#the-injector-tree" aria-hidden="true"><span class="octicon octicon-link"></span></a>The injector tree</h2>
+
+<p>In the <a href="dependency-injection">Dependency Injection</a> page,
+you learned how to configure a dependency injector and how to retrieve dependencies where you need them.</p>
+
+<p>In fact, there is no such thing as <strong><em>the</em></strong> injector.
+An app may have multiple injectors.
+An Angular app is a tree of components. Each component instance has its own injector.
+The tree of injectors parallels the tree of components.</p>
+
+<div class="l-sub-section">
+  <p>A component’s injector may be a <em>proxy</em> for an ancestor injector higher in the component tree.
+  That’s an implementation detail that improves efficiency.
+  You won’t notice the difference and
+  your mental model should be that every component has its own injector.</p>
+</div>
+
+<p>Consider this guide’s variation on the Tour of Heroes app.
+At the top is the <code class="language-plaintext highlighter-rouge">AppComponent</code> which has some subcomponents.
+One of them is the <code class="language-plaintext highlighter-rouge">HeroesListComponent</code>.
+The <code class="language-plaintext highlighter-rouge">HeroesListComponent</code> holds and manages multiple instances of the <code class="language-plaintext highlighter-rouge">HeroTaxReturnComponent</code>.
+The following diagram illustrates a three-level component tree when there are three instances of <code class="language-plaintext highlighter-rouge">HeroTaxReturnComponent</code>
+open simultaneously.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/dependency-injection/component-hierarchy-7382ea4e98d06088bbcc91dc188bd92f3733caf993cdcf45e669991b041faa98.png" alt="injector tree"></p>
+
+<h3 id="injector-bubbling">
+<a class="anchor" href="#injector-bubbling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Injector bubbling</h3>
+
+<p>When a component requests a dependency, Angular tries to satisfy that dependency with a provider registered in that component’s own injector.
+If the component’s injector lacks the provider, it passes the request up to its parent component’s injector.
+If that injector can’t satisfy the request, it passes it along to <em>its</em> parent injector.
+The requests keep bubbling up until Angular finds an injector that can handle the request or runs out of injectors.
+If it runs out of injectors, Angular throws an error.</p>
+
+<div class="l-sub-section">
+  <p>You can cap the bubbling. An intermediate component can declare that it is the “host” component.
+  The hunt for providers will climb no higher than the injector for that host component.
+  This is a topic for another day.</p>
+</div>
+
+<h3 id="re-providing-a-service-at-different-levels">
+<a class="anchor" href="#re-providing-a-service-at-different-levels" aria-hidden="true"><span class="octicon octicon-link"></span></a>Re-providing a service at different levels</h3>
+
+<p>You can re-register a provider for a particular dependency token at multiple levels of the injector tree,
+but you shouldn’t do so unless you have a good reason.</p>
+
+<p>Since the lookup logic works upwards, the first provider encountered wins.
+Thus, a provider in an intermediate injector intercepts a request for a service from something lower in the tree.
+It effectively shadows a provider at a higher level in the tree.</p>
+
+<p>If you only specify providers at the top level (typically the root <code class="language-plaintext highlighter-rouge">AppComponent</code>), the tree of injectors appears to be flat.
+All requests bubble up to the root injector that you configured with the <a href="https://pub.dev/documentation/angular/6.0.1/angular/runApp.html">runApp()</a> method.</p>
+
+<h2 id="component-injectors">
+<a class="anchor" href="#component-injectors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Component injectors</h2>
+
+<p>The ability to configure one or more providers at different levels opens up interesting and useful possibilities.</p>
+
+<h3 id="scenario-service-isolation">
+<a class="anchor" href="#scenario-service-isolation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Scenario: service isolation</h3>
+
+<p>Architectural reasons may lead you to restrict access to a service to the app domain where it belongs.</p>
+
+<p>The sample app includes a <code class="language-plaintext highlighter-rouge">VillainsListComponent</code> that displays a list of villains.
+It gets those villains from a <code class="language-plaintext highlighter-rouge">VillainsService</code>.</p>
+
+<p>While you <em>could</em> provide <code class="language-plaintext highlighter-rouge">VillainsService</code> in the root <code class="language-plaintext highlighter-rouge">AppComponent</code> (that’s where you’ll find the <code class="language-plaintext highlighter-rouge">HeroesService</code>),
+that would make the <code class="language-plaintext highlighter-rouge">VillainsService</code> available everywhere in the app, including the <em>Hero</em> workflows.</p>
+
+<p>If you later modified the <code class="language-plaintext highlighter-rouge">VillainsService</code>, you could break something in a hero component somewhere.
+That’s not supposed to happen but providing the service in <code class="language-plaintext highlighter-rouge">AppComponent</code> creates that risk.</p>
+
+<p>Instead, provide the <code class="language-plaintext highlighter-rouge">VillainsService</code> in the <code class="language-plaintext highlighter-rouge">providers</code> metadata of the <code class="language-plaintext highlighter-rouge">VillainsListComponent</code> like this:</p>
+
+<p>&lt;?code-excerpt “lib/src/villains_list_component.dart (metadata)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Component(
+    selector: 'villains-list',
+    template: '''
+      &lt;div&gt;
+        &lt;h3&gt;Villains&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li *ngFor="let villain of villains | async"&gt;{{villain.name}}&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    ''',
+    directives: [coreDirectives],
+    providers: [ClassProvider(VillainsService)],
+    pipes: [commonPipes],
+  )
+</code></pre></div></div>
+
+<p>By providing <code class="language-plaintext highlighter-rouge">VillainsService</code> in the <code class="language-plaintext highlighter-rouge">VillainsListComponent</code> metadata and nowhere else,
+the service becomes available only in the <code class="language-plaintext highlighter-rouge">VillainsListComponent</code> and its subcomponent tree.
+It’s still a singleton, but it’s a singleton that exist solely in the <em>villain</em> domain.</p>
+
+<p>Now you know that a hero component can’t access it. You’ve reduced your exposure to error.</p>
+
+<h3 id="scenario-multiple-edit-sessions">
+<a class="anchor" href="#scenario-multiple-edit-sessions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Scenario: multiple edit sessions</h3>
+
+<p>Many apps allow users to work on several open tasks at the same time.
+For example, in a tax preparation app, the preparer could be working on several tax returns,
+switching from one to the other throughout the day.</p>
+
+<p>The sample app demonstrates that scenario with an example in the Tour of Heroes theme.
+Imagine an outer <code class="language-plaintext highlighter-rouge">HeroListComponent</code> that displays a list of heroes.</p>
+
+<p>To open a hero’s tax return, the preparer clicks on a hero name, which opens a component for editing that return.
+Each selected hero tax return opens in its own component and multiple returns can be open at the same time.</p>
+
+<p>Each tax return component has the following characteristics:</p>
+
+<ul>
+  <li>Is its own tax return editing session.</li>
+  <li>Can change a tax return without affecting a return in another component.</li>
+  <li>Has the ability to save the changes to its tax return or cancel them.</li>
+</ul>
+
+<p><img class="image-display" src="/assets/ng/devguide/dependency-injection/hid-heroes-anim-1fc7006b0ad9ee1bcfe5d28c4102397643f8515d16fe1f5d9c4c4e0fd5e1030e.gif" width="432" alt="Heroes in action"></p>
+
+<p>One might suppose that the <code class="language-plaintext highlighter-rouge">HeroTaxReturnComponent</code> has logic to manage and restore changes.
+That would be a pretty easy task for a simple hero tax return.
+In the real world, with a rich tax return data model, the change management would be tricky.
+You might delegate that management to a helper service, as this example does.</p>
+
+<p>Here is the <code class="language-plaintext highlighter-rouge">HeroTaxReturnService</code>.
+It caches a single <code class="language-plaintext highlighter-rouge">HeroTaxReturn</code>, tracks changes to that return, and can save or restore it.
+It also delegates to the app-wide singleton <code class="language-plaintext highlighter-rouge">HeroService</code>, which it gets by injection.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_tax_return_service.dart” title linenums?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:async';
+
+  import 'hero.dart';
+  import 'heroes_service.dart';
+
+  class HeroTaxReturnService {
+    final HeroesService _heroService;
+    HeroTaxReturn _currentTR, _originalTR;
+
+    HeroTaxReturnService(this._heroService);
+
+    void set taxReturn(HeroTaxReturn htr) {
+      _originalTR = htr;
+      _currentTR = HeroTaxReturn.copy(htr);
+    }
+
+    HeroTaxReturn get taxReturn =&gt; _currentTR;
+
+    void restoreTaxReturn() {
+      taxReturn = _originalTR;
+    }
+
+    Future&lt;void&gt; saveTaxReturn() async {
+      taxReturn = _currentTR;
+      await _heroService.saveTaxReturn(_currentTR);
+    }
+  }
+</code></pre></div></div>
+
+<p>Here is the <code class="language-plaintext highlighter-rouge">HeroTaxReturnComponent</code> that makes use of it.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_tax_return_component.dart” title linenums?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:async';
+
+  import 'package:angular/angular.dart';
+  import 'package:angular_forms/angular_forms.dart';
+
+  import 'hero.dart';
+  import 'hero_tax_return_service.dart';
+
+  @Component(
+    selector: 'hero-tax-return',
+    template: '''
+      &lt;div class="tax-return"&gt;
+        &lt;div class="msg" [class.canceled]="message==='Canceled'"&gt;{{message}}&lt;/div&gt;
+        &lt;fieldset&gt;
+          &lt;span id="name"&gt;{{taxReturn.name}}&lt;/span&gt;
+          &lt;label id="tid"&gt;TID: {{taxReturn.taxId}}&lt;/label&gt;
+        &lt;/fieldset&gt;
+        &lt;fieldset&gt;
+          &lt;label&gt;
+            Income: &lt;input type="number" [(ngModel)]="taxReturn.income" class="num"&gt;
+          &lt;/label&gt;
+        &lt;/fieldset&gt;
+        &lt;fieldset&gt;
+          &lt;label&gt;Tax: {{taxReturn.tax}}&lt;/label&gt;
+        &lt;/fieldset&gt;
+        &lt;fieldset&gt;
+          &lt;button (click)="onSaved()"&gt;Save&lt;/button&gt;
+          &lt;button (click)="onCanceled()"&gt;Cancel&lt;/button&gt;
+          &lt;button (click)="onClose()"&gt;Close&lt;/button&gt;
+        &lt;/fieldset&gt;
+      &lt;/div&gt;
+    ''',
+    styleUrls: ['hero_tax_return_component.css'],
+    directives: [coreDirectives, formDirectives],
+    providers: [ClassProvider(HeroTaxReturnService)],
+  )
+  class HeroTaxReturnComponent {
+    final HeroTaxReturnService _heroTaxReturnService;
+    String message = '';
+
+    HeroTaxReturnComponent(this._heroTaxReturnService);
+
+    final _close = StreamController&lt;Null&gt;();
+    @Output()
+    Stream&lt;Null&gt; get close =&gt; _close.stream;
+
+    HeroTaxReturn get taxReturn =&gt; _heroTaxReturnService.taxReturn;
+
+    @Input()
+    void set taxReturn(HeroTaxReturn htr) {
+      _heroTaxReturnService.taxReturn = htr;
+    }
+
+    Future&lt;void&gt; onCanceled() async {
+      _heroTaxReturnService.restoreTaxReturn();
+      await flashMessage('Canceled');
+    }
+
+    void onClose() =&gt; _close.add(null);
+
+    Future&lt;void&gt; onSaved() async {
+      await _heroTaxReturnService.saveTaxReturn();
+      await flashMessage('Saved');
+    }
+
+    Future&lt;void&gt; flashMessage(String msg) async {
+      message = msg;
+      await Future.delayed(Duration(milliseconds: 500));
+      message = '';
+    }
+  }
+</code></pre></div></div>
+
+<p>The <em>tax-return-to-edit</em> arrives via the input property which is implemented with getters and setters.
+The setter initializes the component’s own instance of the <code class="language-plaintext highlighter-rouge">HeroTaxReturnService</code> with the incoming return.
+The getter always returns what that service says is the current state of the hero.
+The component also asks the service to save and restore this tax return.</p>
+
+<p>There’d be big trouble if <em>this</em> service were an app-wide singleton.
+Every component would share the same service instance.
+Each component would overwrite the tax return that belonged to another hero.
+What a mess!</p>
+
+<p>Look closely at the metadata for the <code class="language-plaintext highlighter-rouge">HeroTaxReturnComponent</code>. Notice the <code class="language-plaintext highlighter-rouge">providers</code> property.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_tax_return_component.dart” region=”providers”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  providers: [ClassProvider(HeroTaxReturnService)],
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeroTaxReturnComponent</code> has its own provider of the <code class="language-plaintext highlighter-rouge">HeroTaxReturnService</code>.
+Recall that every component <em>instance</em> has its own injector.
+Providing the service at the component level ensures that <em>every</em> instance of the component gets its own, private instance of the service.
+No tax return overwriting. No mess.</p>
+
+<div class="l-sub-section">
+  <p>The rest of the scenario code relies on other Angular features and techniques that you can learn about elsewhere in the documentation.
+  You can review it and download it from the <span><a href="/examples/hierarchical-dependency-injection" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/hierarchical-dependency-injection/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+</div>
+
+<h3 id="scenario-specialized-providers">
+<a class="anchor" href="#scenario-specialized-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Scenario: specialized providers</h3>
+
+<p>Another reason to re-provide a service is to substitute a <em>more specialized</em> implementation of that service,
+deeper in the component tree.</p>
+
+<p>Consider again the Car example from the <a href="dependency-injection">Dependency Injection</a> page.
+Suppose you configured the root injector (marked as A) with <em>generic</em> providers for
+<code class="language-plaintext highlighter-rouge">CarService</code>, <code class="language-plaintext highlighter-rouge">EngineService</code> and <code class="language-plaintext highlighter-rouge">TiresService</code>.</p>
+
+<p>You create a car component (A) that displays a car constructed from these three generic services.</p>
+
+<p>Then you create a child component (B) that defines its own, <em>specialized</em> providers for <code class="language-plaintext highlighter-rouge">CarService</code> and <code class="language-plaintext highlighter-rouge">EngineService</code>
+that have special capabilites suitable for whatever is going on in component (B).</p>
+
+<p>Component (B) is the parent of another component (C) that defines its own, even <em>more specialized</em> provider for <code class="language-plaintext highlighter-rouge">CarService</code>.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/dependency-injection/car-components-445e64d3a0cf0479fe103471a4175987749483079a2b6732df94d7ebbb58ebb5.png" alt="car components" width="252"></p>
+
+<p>Behind the scenes, each component sets up its own injector with zero, one, or more providers defined for that component itself.</p>
+
+<p>When you resolve an instance of <code class="language-plaintext highlighter-rouge">Car</code> at the deepest component (C),
+its injector produces an instance of <code class="language-plaintext highlighter-rouge">Car</code> resolved by injector (C) with an <code class="language-plaintext highlighter-rouge">Engine</code> resolved by injector (B) and
+<code class="language-plaintext highlighter-rouge">Tires</code> resolved by the root injector (A).</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/dependency-injection/injector-tree-671d0b52a58ba40d87bed915361cdb22e58fe49ffdadb24f7eb85a2303858e2c.png" alt="car injector tree"></p>
+
+<p>Here is the code for this <em>cars</em> scenario:</p>
+
+<code-tabs>
+  <?code-pane "lib/src/car_components.dart" linenums?>
+  <?code-pane "lib/src/car_services.dart" linenums?>
+</code-tabs>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/deployment">Deployment</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/server-communication">HTTP Client</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

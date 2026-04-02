@@ -6,8 +6,10 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 import 'package:popper/popper.dart';
+import 'package:essential_core/essential_core.dart';
 
 import 'tree_view_base.dart';
+import 'treeview_settings.dart';
 
 typedef LiTreeViewPageLoader = FutureOr<TreeViewLoadResult> Function(
   TreeViewLoadRequest request,
@@ -100,19 +102,61 @@ class LiTreeviewSelectComponent
   dynamic _pendingModelValue;
 
   ChangeFunction<dynamic>? _ngModelValueChangeCallback;
-  TouchFunction? _touchCallback;
+  TouchFunction _touchCallback = () {};
+  bool _touched = false;
+
+  dynamic _sourceData;
+  TreeViewSettings _settings = const TreeViewSettings();
+  List<TreeViewNode> _staticNodes = <TreeViewNode>[];
 
   @Input()
-  List<TreeViewNode> data = <TreeViewNode>[];
+  set data(dynamic value) {
+    _sourceData = value;
+    _staticNodes = _settings.normalize(value);
+  }
+
+  dynamic get data => _sourceData;
+
+  @Input('settings')
+  set settings(TreeViewSettings? value) {
+    _settings = value ?? const TreeViewSettings();
+    _staticNodes = _settings.normalize(_sourceData);
+  }
+
+  TreeViewSettings get settings => _settings;
 
   @Input('disabled')
   bool isDisabled = false;
 
   @Input()
-  String placeholder = 'Selecione um item';
+  String placeholder = '';
 
   @Input()
-  String searchPlaceholder = 'Buscar nó';
+  String searchPlaceholder = '';
+
+  @Input()
+  String locale = 'pt_BR';
+
+  @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String helperText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
 
   @Input()
   bool searchable = true;
@@ -127,13 +171,13 @@ class LiTreeviewSelectComponent
   String container = 'body';
 
   @Input()
-  String emptyLabel = 'Nenhum item encontrado';
+  String emptyLabel = '';
 
   @Input()
-  String loadingLabel = 'Carregando...';
+  String loadingLabel = '';
 
   @Input()
-  String loadMoreLabel = 'Carregar mais';
+  String loadMoreLabel = '';
 
   @Input()
   bool returnNode = false;
@@ -148,10 +192,10 @@ class LiTreeviewSelectComponent
   bool closeOnSelect = true;
 
   @Input()
-  String clearButtonLabel = 'Limpar';
+  String clearButtonLabel = '';
 
   @Input()
-  String summarySuffix = 'itens';
+  String summarySuffix = '';
 
   @Input()
   String Function(TreeViewNode node)? labelBuilder;
@@ -193,10 +237,68 @@ class LiTreeviewSelectComponent
   bool hasMoreRootNodes = false;
   String searchTerm = '';
   List<TreeViewNode> rootNodes = <TreeViewNode>[];
+  List<TreeViewNode> visibleRootNodes = <TreeViewNode>[];
   TreeViewNode? selectedNode;
   List<TreeViewNode> selectedNodes = <TreeViewNode>[];
 
   bool get isPopupOpen => dropdownOpen;
+
+  bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  bool get effectiveInvalid => invalid || dataInvalid;
+
+  bool get effectiveValid => !effectiveInvalid && valid;
+
+  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+
+  bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String get resolvedPlaceholder => placeholder.trim().isNotEmpty
+      ? placeholder
+      : (_isEnglishLocale ? 'Select an item' : 'Selecione um item');
+
+  String get resolvedSearchPlaceholder => searchPlaceholder.trim().isNotEmpty
+      ? searchPlaceholder
+      : (_isEnglishLocale ? 'Search node' : 'Buscar no');
+
+  String get resolvedEmptyLabel => emptyLabel.trim().isNotEmpty
+      ? emptyLabel
+      : (_isEnglishLocale ? 'No items found' : 'Nenhum item encontrado');
+
+  String get resolvedLoadingLabel => loadingLabel.trim().isNotEmpty
+      ? loadingLabel
+      : (_isEnglishLocale ? 'Loading...' : 'Carregando...');
+
+  String get resolvedLoadMoreLabel => loadMoreLabel.trim().isNotEmpty
+      ? loadMoreLabel
+      : (_isEnglishLocale ? 'Load more' : 'Carregar mais');
+
+  String get resolvedClearButtonLabel => clearButtonLabel.trim().isNotEmpty
+      ? clearButtonLabel
+      : (_isEnglishLocale ? 'Clear' : 'Limpar');
+
+  String get resolvedSummarySuffix => summarySuffix.trim().isNotEmpty
+      ? summarySuffix
+      : (_isEnglishLocale ? 'items' : 'itens');
+
+  String get searchAriaLabel =>
+      _isEnglishLocale ? 'Search nodes' : 'Buscar nos';
+
+  String get resolvedTriggerClass => _joinClasses(<String>[
+        'form-select',
+        'treeview-dropdown-select__trigger',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
+      ]);
 
   bool get hasSelection =>
       multiple ? selectedNodes.isNotEmpty : selectedNode != null;
@@ -208,13 +310,11 @@ class LiTreeviewSelectComponent
         multiple: multiple,
         hasSelection: hasSelection,
         label: selectedLabel,
-        labels: selectedNodes
-            .map(resolvedNodeLabel)
-            .toList(growable: false),
+        labels: selectedNodes.map(resolvedNodeLabel).toList(growable: false),
         values: selectedNodes
             .map<dynamic>(_selectedValueFor)
             .toList(growable: false),
-        placeholder: placeholder,
+        placeholder: resolvedPlaceholder,
       );
 
   String get selectedLabel {
@@ -223,12 +323,12 @@ class LiTreeviewSelectComponent
         return '';
       }
       if (selectedNodes.length == 1) {
-        return selectedNodes.first.treeViewNodeLabel;
+        return resolvedNodeLabel(selectedNodes.first);
       }
       if (selectedNodes.length == 2) {
         return selectedNodes.map(resolvedNodeLabel).join(', ');
       }
-      return '${resolvedNodeLabel(selectedNodes[0])}, ${resolvedNodeLabel(selectedNodes[1])} +${selectedNodes.length - 2}';
+      return '${resolvedNodeLabel(selectedNodes[0])}, ${resolvedNodeLabel(selectedNodes[1])} +${selectedNodes.length - 2} $resolvedSummarySuffix';
     }
     return selectedNode == null ? '' : resolvedNodeLabel(selectedNode!);
   }
@@ -236,21 +336,18 @@ class LiTreeviewSelectComponent
   bool get isEmptyStateVisible =>
       !loadingRootNodes && visibleRootNodes.isEmpty && !hasMoreRootNodes;
 
-  List<TreeViewNode> get visibleRootNodes => rootNodes
-      .where((node) => node.treeViewNodeFilter)
-      .toList(growable: false);
-
   @override
   void ngOnInit() {
+    _staticNodes = _settings.normalize(_sourceData);
     _applyInitialData();
-    if (pageLoader != null && data.isEmpty) {
+    if (pageLoader != null && _staticNodes.isEmpty) {
       unawaited(_loadRootNodes(reset: true));
     }
   }
 
   @override
   void ngAfterChanges() {
-    if (pageLoader == null || data.isNotEmpty) {
+    if (pageLoader == null || _staticNodes.isNotEmpty) {
       _applyInitialData();
     }
   }
@@ -341,7 +438,7 @@ class LiTreeviewSelectComponent
   void closeDropdown({bool markTouched = true}) {
     if (!dropdownOpen) {
       if (markTouched) {
-        _touchCallback?.call();
+        _markTouched();
       }
       return;
     }
@@ -351,13 +448,14 @@ class LiTreeviewSelectComponent
     _unbindDocumentListeners();
 
     if (markTouched) {
-      _touchCallback?.call();
+      _markTouched();
     }
 
     _markForCheck();
   }
 
   void handleFocus() {
+    _markTouched();
     if (openOnFocus && !dropdownOpen) {
       openDropdown();
     }
@@ -431,6 +529,7 @@ class LiTreeviewSelectComponent
       _pendingModelValue = _selectedValues();
       _changeController.add(_pendingModelValue);
       _ngModelValueChangeCallback?.call(_pendingModelValue);
+      _markTouched();
       if (!closeOnSelect) {
         _scheduleOverlayUpdate();
       }
@@ -442,6 +541,7 @@ class LiTreeviewSelectComponent
     _pendingModelValue = _selectedValueFor(node);
     _changeController.add(_pendingModelValue);
     _ngModelValueChangeCallback?.call(_pendingModelValue);
+    _markTouched();
     if (closeOnSelect) {
       closeDropdown();
     } else {
@@ -452,10 +552,16 @@ class LiTreeviewSelectComponent
 
   bool isNodeSelected(TreeViewNode node) => _isNodeSelected(node);
 
-  bool isSelectable(TreeViewNode node) => canSelectNode?.call(node) ?? true;
+  bool isSelectable(TreeViewNode node) =>
+      node.enabled && (canSelectNode?.call(node) ?? true);
 
   String resolvedNodeLabel(TreeViewNode node) =>
       labelBuilder?.call(node) ?? node.treeViewNodeLabel;
+
+  bool hasNodeIcon(TreeViewNode node) => (node.icon ?? '').trim().isNotEmpty;
+
+  String nodeIconClass(TreeViewNode node) =>
+      'treeview-dropdown-select__node-icon ${node.icon ?? ''}'.trim();
 
   LiTreeviewSelectNodeContext nodeContext(TreeViewNode node) =>
       LiTreeviewSelectNodeContext(
@@ -478,6 +584,7 @@ class LiTreeviewSelectComponent
     selectedNodes = <TreeViewNode>[];
     _changeController.add(_pendingModelValue);
     _ngModelValueChangeCallback?.call(_pendingModelValue);
+    _markTouched();
     _markForCheck();
   }
 
@@ -525,11 +632,12 @@ class LiTreeviewSelectComponent
 
       _appendNodes(
         target: rootNodes,
-        nodes: result.nodes,
+        nodes: _resolveLoadedNodes(result),
         parent: null,
       );
       hasMoreRootNodes = result.hasMore;
       _applySelectionFromPendingValue();
+      _refreshVisibleRootNodes();
     } finally {
       if (!_destroyed) {
         loadingRootNodes = false;
@@ -577,7 +685,7 @@ class LiTreeviewSelectComponent
 
       _appendNodes(
         target: parent.treeViewNodes,
-        nodes: result.nodes,
+        nodes: _resolveLoadedNodes(result),
         parent: parent,
       );
       parent.treeViewNodeChildrenLoaded = true;
@@ -588,6 +696,8 @@ class LiTreeviewSelectComponent
 
       if (searchTerm.isNotEmpty) {
         _applyLocalFilter();
+      } else {
+        _refreshVisibleRootNodes();
       }
     } finally {
       if (!_destroyed) {
@@ -613,9 +723,17 @@ class LiTreeviewSelectComponent
     }
   }
 
+  List<TreeViewNode> _resolveLoadedNodes(TreeViewLoadResult result) {
+    if (result.items != null) {
+      return _settings.normalize(result.items);
+    }
+
+    return result.nodes;
+  }
+
   void _applyInitialData() {
     rootNodes = <TreeViewNode>[];
-    _appendNodes(target: rootNodes, nodes: data, parent: null);
+    _appendNodes(target: rootNodes, nodes: _staticNodes, parent: null);
     _applySelectionFromPendingValue();
     _applyLocalFilter();
   }
@@ -718,18 +836,24 @@ class LiTreeviewSelectComponent
     final normalizedTerm = searchTerm.trim();
     if (normalizedTerm.isEmpty) {
       _resetNodeVisibility(rootNodes);
+      _refreshVisibleRootNodes();
       return;
     }
 
     for (final node in rootNodes) {
       _filterNode(node, normalizedTerm);
     }
+
+    _refreshVisibleRootNodes();
   }
 
   bool _filterNode(TreeViewNode node, String term) {
-    final normalizedTerm = term.toLowerCase();
+    final normalizedTerm =
+        EssentialCoreUtils.removerAcentos(term).toLowerCase();
     final selfMatch = searchMatcher?.call(node, normalizedTerm) ??
-        resolvedNodeLabel(node).toLowerCase().contains(normalizedTerm);
+        EssentialCoreUtils.removerAcentos(resolvedNodeLabel(node))
+            .toLowerCase()
+            .contains(normalizedTerm);
     var childMatch = false;
 
     for (final child in node.treeViewNodes) {
@@ -750,6 +874,12 @@ class LiTreeviewSelectComponent
       node.treeViewNodeFilter = true;
       _resetNodeVisibility(node.treeViewNodes);
     }
+  }
+
+  void _refreshVisibleRootNodes() {
+    visibleRootNodes = rootNodes
+        .where((node) => node.treeViewNodeFilter)
+        .toList(growable: false);
   }
 
   void _ensureOverlay() {
@@ -862,5 +992,21 @@ class LiTreeviewSelectComponent
 
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
+  }
+
+  void _markTouched() {
+    if (_touched) {
+      _touchCallback();
+      return;
+    }
+    _touched = true;
+    _touchCallback();
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
   }
 }

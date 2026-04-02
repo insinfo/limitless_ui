@@ -17,9 +17,39 @@ class NotificationPageComponent {
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+  bool get _isPt => i18n.isPortuguese;
 
   final LiToastService toastService = LiToastService();
   String lastAction = '';
+
+    String get pageTitle => 'Toast';
+    String get pageSubtitle => _isPt ? 'mensagens de feedback' : 'feedback messages';
+    String get breadcrumb => _isPt
+      ? 'Notificações inline e em pilha'
+      : 'Inline and stacked notifications';
+    String get overviewIntro => _isPt
+      ? 'O novo li-toast cobre o uso declarativo inline e o fluxo global com LiToastService + li-toast-stack, mais próximo do padrão Bootstrap/ng-bootstrap.'
+      : 'The new li-toast covers declarative inline usage and the global flow with LiToastService + li-toast-stack, closer to the Bootstrap/ng-bootstrap pattern.';
+    String get basicToastTitle => _isPt ? 'Toast declarativo básico' : 'Basic declarative toast';
+    String get basicToastBody => _isPt ? 'Header, body e botão de fechar controlados pelo componente.' : 'Header, body, and dismiss button controlled by the component.';
+    String get reopenLabel => _isPt ? 'Reabrir' : 'Reopen';
+    String get roundedTitle => _isPt ? 'Toast arredondado' : 'Rounded toast';
+    String get roundedBody => _isPt ? 'A variação pill funciona melhor em mensagens curtas, compactas e sem muito chrome visual.' : 'The pill variant works better for short, compact messages without much visual chrome.';
+    String get manualHeader => _isPt ? 'Olá' : 'Hello';
+    String get manualBody => _isPt ? 'Sou um toast declarativo que pode ser exibido novamente via ViewChild.' : 'I am a declarative toast that can be shown again via ViewChild.';
+    String get inlineHelper => _isPt ? 'inline' : 'inline';
+    String get roundedToastBody => _isPt ? 'Salvo com sucesso' : 'Saved successfully';
+    String get customHeaderTitle => _isPt ? 'Header customizado' : 'Custom header background';
+    String get customMarkupTitle => _isPt ? 'Markup customizado com painel de ações' : 'Custom markup with action panel';
+    String get customToastHeader => _isPt ? 'Cabeçalho do toast' : 'Toast header';
+    String get customToastBody => _isPt ? 'Um toast contextual com cabeçalho colorido e botão de fechar.' : 'A contextual toast with colored header and close button.';
+    String get projectedBody => _isPt ? 'Olá, mundo! Este toast usa markup projetado para uma segunda linha de ações.' : 'Hello, world! This toast uses projected markup for a second action row.';
+    String get oneHourAgo => _isPt ? '1 hora atrás' : '1 hour ago';
+    String get clearStackLabel => _isPt ? 'Limpar pilha' : 'Clear stack';
+    String get examplesTab => _isPt ? 'Exemplos' : 'Examples';
+    String get howToUseTitle => _isPt ? 'Como utilizar' : 'How to use';
+    String get mainInputsTitle => _isPt ? 'Entradas principais' : 'Main inputs';
+    String get waitingState => _isPt ? 'Toast: aguardando interação' : 'Toast: waiting for interaction';
 
   @ViewChild('manualToast')
   LiToastComponent? manualToast;
@@ -29,55 +59,61 @@ class NotificationPageComponent {
 
   void reopenManualToast() {
     manualToast?.show();
-    lastAction = 'Toast inline aberto por API.';
+    lastAction = _isPt ? 'Toast inline aberto por API.' : 'Inline toast opened through the API.';
   }
 
   void reopenRoundedToast() {
     roundedToast?.show();
-    lastAction = 'Toast com estilo pill reaberto.';
+    lastAction = _isPt ? 'Toast com estilo pill reaberto.' : 'Pill-style toast reopened.';
   }
 
   void showSuccess() {
     toastService.show(
-      header: 'Processamento concluído',
-      body: 'A operação foi concluída com sucesso e o toast vai desaparecer sozinho.',
+        header: _isPt ? 'Processamento concluído' : 'Processing completed',
+        body: _isPt
+          ? 'A operação foi concluída com sucesso e o toast vai desaparecer sozinho.'
+          : 'The operation completed successfully and the toast will disappear on its own.',
       iconClass: 'ph-check-circle',
       toastClass: 'bg-success text-white border-0',
       headerClass: 'bg-black bg-opacity-10 text-white',
       delay: 3500,
       pauseOnHover: true,
     );
-    lastAction = 'Toast global de sucesso enviado para a pilha.';
+    lastAction = _isPt ? 'Toast global de sucesso enviado para a pilha.' : 'Global success toast sent to the stack.';
   }
 
   void showWarning() {
     toastService.show(
-      header: 'Atenção',
-      body: 'Existe uma pendência aguardando revisão humana antes da próxima etapa.',
+        header: _isPt ? 'Atenção' : 'Attention',
+        body: _isPt
+          ? 'Existe uma pendência aguardando revisão humana antes da próxima etapa.'
+          : 'There is a pending item waiting for human review before the next step.',
       iconClass: 'ph-warning-circle',
       toastClass: 'border-warning',
       headerClass: 'bg-warning text-white border-warning',
       delay: 5000,
     );
-    lastAction = 'Toast global de alerta enviado para a pilha.';
+    lastAction = _isPt ? 'Toast global de alerta enviado para a pilha.' : 'Global warning toast sent to the stack.';
   }
 
   void showWithLink() {
     toastService.show(
-      header: 'Atualização disponível',
-      body: 'Este exemplo usa badge, helper text e autohide desativado para toasts persistentes.',
-      helperText: 'agora',
-      badgeText: 'Update',
+        header: _isPt ? 'Atualização disponível' : 'Update available',
+        body: _isPt
+          ? 'Este exemplo usa badge, helper text e autohide desativado para toasts persistentes.'
+          : 'This example uses badge, helper text, and autohide disabled for persistent toasts.',
+        helperText: _isPt ? 'agora' : 'now',
+        badgeText: _isPt ? 'Atualização' : 'Update',
       iconClass: 'ph-bell-ringing',
       toastClass: 'border-primary',
       headerClass: 'bg-primary text-white border-primary',
       autohide: false,
     );
-    lastAction = 'Toast persistente enviado para a pilha.';
+    lastAction = _isPt ? 'Toast persistente enviado para a pilha.' : 'Persistent toast sent to the stack.';
   }
 
   void clearStack() {
     toastService.clear();
-    lastAction = 'Pilha de toast limpa.';
+    lastAction = _isPt ? 'Pilha de toast limpa.' : 'Toast stack cleared.';
   }
 }

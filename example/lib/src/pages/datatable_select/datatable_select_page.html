@@ -2,12 +2,12 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">Componentes <span class="fw-normal">Datatable Select</span></h4>
+        <h4 class="page-title mb-0">{{ t.pages.datatableSelect.title }} <span class="fw-normal">{{ t.pages.datatableSelect.subtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
       <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">Select com datatable em modal</span>
+        <span class="breadcrumb-item active">{{ t.pages.datatableSelect.breadcrumb }}</span>
       </div>
     </div>
   </div>
@@ -15,44 +15,36 @@
   <div class="content">
     <div class="card">
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">
-              Um select que abre um modal com um datatable completo, permitindo
-              busca, paginação e ordenação. Ao clicar em uma linha, o item é
-              selecionado e o modal fecha.
-            </p>
+            <p class="text-muted mb-3">{{ t.pages.datatableSelect.overviewIntro }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">
-                    O componente combina um trigger no formato <code>form-select</code> com um modal
-                    que exibe um <code>li-datatable</code> completo. Implementa <code>ControlValueAccessor</code>
-                    para compatibilidade com <code>ngModel</code>.
-                  </p>
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ t.pages.datatableSelect.descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Busca, paginação e ordenação via <code>li-datatable</code>.</li>
-                    <li>Seleção por clique de linha.</li>
-                    <li>Suporte a <code>ngModel</code> e <code>currentValueChange</code>.</li>
-                    <li>Tamanho do modal configurável.</li>
-                    <li>Estados desabilitado e programático.</li>
+                    <li>{{ t.pages.datatableSelect.featureOne }}</li>
+                    <li>{{ t.pages.datatableSelect.featureTwo }}</li>
+                    <li>{{ t.pages.datatableSelect.featureThree }}</li>
+                    <li>{{ t.pages.datatableSelect.featureFour }}</li>
+                    <li>{{ t.pages.datatableSelect.featureFive }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Requer <code>dataRequest</code> para fornecer dados ao datatable.</li>
-                    <li>O label exibido depende de <code>labelKey</code> — sem projeção customizada.</li>
-                    <li>Não suporta seleção múltipla.</li>
+                    <li>{{ t.pages.datatableSelect.limitOne }}</li>
+                    <li>{{ t.pages.datatableSelect.limitTwo }}</li>
+                    <li>{{ t.pages.datatableSelect.limitThree }}</li>
                   </ul>
                 </div>
               </div>
@@ -74,42 +66,42 @@
             <!-- Demo: basic usage -->
             <div class="demo-doc-section">
               <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
-                <p class="text-muted mb-0">Uso básico com <code>currentValueChange</code> e controle programático.</p>
+                <p class="text-muted mb-0">{{ t.pages.datatableSelect.demoIntro }}</p>
                 <div class="d-flex flex-wrap gap-2">
-                  <button class="btn btn-sm btn-outline-secondary" type="button" (click)="clearBasic()">Limpar</button>
+                  <button class="btn btn-sm btn-outline-secondary" type="button" (click)="clearBasic()">{{ t.common.clear }}</button>
                   <button class="btn btn-sm btn-outline-primary" type="button"
-                    (click)="setBasicProgrammatically()">Selecionar "Maria Silva"</button>
+                    (click)="setBasicProgrammatically()">{{ t.pages.datatableSelect.selectMaria }}</button>
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Selecionar pessoa</label>
+                  <label class="form-label">{{ t.pages.datatableSelect.selectPersonLabel }}</label>
                   <li-datatable-select #basicSelect [settings]="basicSettings" [dataTableFilter]="basicFilter"
                     [data]="basicData" [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
-                    [title]="'Selecionar pessoa'" [placeholder]="'Clique para selecionar...'"
-                    [searchPlaceholder]="'Buscar por nome, e-mail...'" (dataRequest)="onBasicDataRequest($event)"
+                    [title]="t.pages.datatableSelect.modalTitle" [placeholder]="t.pages.datatableSelect.placeholder"
+                    [searchPlaceholder]="t.pages.datatableSelect.searchPlaceholder" (dataRequest)="onBasicDataRequest($event)"
                     (currentValueChange)="onBasicValueChanged($event)">
                   </li-datatable-select>
                 </div>
               </div>
 
               <div class="demo-summary-box mt-3">
-                <div><strong>Valor:</strong> {{ selectedPersonId ?? 'nenhum' }}</div>
-                <div><strong>Label:</strong> {{ selectedPersonLabel.isEmpty ? '—' : selectedPersonLabel }}</div>
+                <div><strong>{{ t.common.value }}:</strong> {{ selectedPersonId ?? t.common.none }}</div>
+                <div><strong>{{ t.common.label }}:</strong> {{ selectedPersonLabel.isEmpty ? '—' : selectedPersonLabel }}</div>
               </div>
             </div>
 
             <!-- Demo: disabled -->
             <div class="demo-doc-section">
-              <p class="text-muted mb-3">Estado desabilitado — o trigger fica inativo e não abre o modal.</p>
+              <p class="text-muted mb-3">{{ t.pages.datatableSelect.disabledIntro }}</p>
 
               <div class="row">
                 <div class="col-md-6">
-                  <label class="form-label">Pessoa (desabilitado)</label>
+                  <label class="form-label">{{ t.pages.datatableSelect.disabledLabel }}</label>
                   <li-datatable-select [settings]="basicSettings" [dataTableFilter]="basicFilter" [data]="basicData"
                     [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'" [disabled]="true"
-                    [placeholder]="'Campo desabilitado'" (dataRequest)="onBasicDataRequest($event)">
+                    [placeholder]="t.pages.datatableSelect.disabledPlaceholder" (dataRequest)="onBasicDataRequest($event)">
                   </li-datatable-select>
                 </div>
               </div>
@@ -117,15 +109,14 @@
 
             <!-- Demo: ngModel -->
             <div class="demo-doc-section">
-              <p class="text-muted mb-3">Binding com <code>ngModel</code> — o valor é sincronizado via
-                <code>ControlValueAccessor</code>.</p>
+              <p class="text-muted mb-3">{{ t.pages.datatableSelect.ngModelIntro }}</p>
 
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Selecionar pessoa (ngModel)</label>
+                  <label class="form-label">{{ t.pages.datatableSelect.ngModelLabel }}</label>
                   <li-datatable-select #ngModelSelect [settings]="basicSettings" [dataTableFilter]="ngModelFilter"
                     [data]="ngModelData" [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
-                    [title]="'Selecionar pessoa'" [modalSize]="'xtra-large'" [ngModel]="ngModelValue"
+                    [title]="t.pages.datatableSelect.modalTitle" [modalSize]="'xtra-large'" [ngModel]="ngModelValue"
                     (ngModelChange)="onNgModelValueChanged($event)" (dataRequest)="onNgModelDataRequest($event)">
                   </li-datatable-select>
                 </div>
@@ -133,36 +124,84 @@
 
               <div class="demo-summary-box mt-3">
                 <div><strong>ngModel value:</strong> {{ ngModelValue ?? 'null' }}</div>
-                <div *ngIf="ngModelEventLog.isNotEmpty"><strong>Evento:</strong> {{ ngModelEventLog }}</div>
+                <div *ngIf="ngModelEventLog.isNotEmpty"><strong>{{ t.common.event }}:</strong> {{ ngModelEventLog }}</div>
+              </div>
+            </div>
+
+            <div class="demo-doc-section">
+              <p class="text-muted mb-3">{{ customTemplateIntro }}</p>
+
+              <div class="row">
+                <div class="col-md-7 mb-3">
+                  <label class="form-label">{{ customTemplateLabel }}</label>
+                  <li-datatable-select #customTemplateSelect [settings]="basicSettings"
+                    [dataTableFilter]="customTemplateFilter" [data]="customTemplateData"
+                    [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
+                    [title]="t.pages.datatableSelect.modalTitle" [placeholder]="t.pages.datatableSelect.placeholder"
+                    [searchPlaceholder]="t.pages.datatableSelect.searchPlaceholder"
+                    (dataRequest)="onCustomTemplateDataRequest($event)"
+                    (currentValueChange)="onCustomTemplateValueChanged($event)">
+                    <template liDatatableSelectTrigger let-ctx>
+                      <div class="d-flex align-items-center justify-content-between w-100 gap-2">
+                        <div class="text-start overflow-hidden">
+                          <div class="fw-semibold text-truncate">
+                            {{ ctx.hasSelection ? ctx.selectedLabel : customTemplateOpenCaption }}
+                          </div>
+                          <div class="small text-muted text-truncate">
+                            {{ ctx.hasSelection ? customTemplateSelectedCaption : ctx.placeholder }}
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+
+                    <template liDatatableSelectModalContent let-ctx>
+                      <div class="p-3 border-bottom">
+                        <div class="fw-semibold">{{ customTemplateHint }}</div>
+                        <div class="text-muted small">{{ customTemplateDescription }}</div>
+                      </div>
+                      <div class="p-3 border-bottom bg-light">
+                        <strong>{{ customTemplateSelectedCaption }}:</strong>
+                        {{ ctx.selectedLabel.isEmpty ? t.common.none : ctx.selectedLabel }}
+                      </div>
+                      <li-datatable [dataTableFilter]="ctx.dataTableFilter" [settings]="ctx.settings" [data]="ctx.data"
+                        [searchInFields]="ctx.searchInFields" [limitPerPageOptions]="limitPerPageOptions"
+                        [searchPlaceholder]="t.pages.datatableSelect.searchPlaceholder" [disableRowClick]="false"
+                        [showCheckboxToSelectRow]="false" [showExportMenu]="false"
+                        (onRowClick)="ctx.select($event)" (dataRequest)="ctx.requestData($event)">
+                      </li-datatable>
+                    </template>
+                  </li-datatable-select>
+                </div>
+              </div>
+
+              <div class="demo-summary-box mt-3">
+                <div><strong>{{ t.common.value }}:</strong> {{ customTemplateValue ?? t.common.none }}</div>
+                <div *ngIf="customTemplateEventLog.isNotEmpty"><strong>{{ t.common.event }}:</strong> {{ customTemplateEventLog }}</div>
               </div>
             </div>
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
             <div class="row g-4">
               <div class="col-xl-6">
-                <h6 class="mb-2">Como utilizar</h6>
-                <p class="text-muted mb-3">
-                  O componente é controlado por três peças: <code>Filters</code> para paginação e busca,
-                  <code>DataFrame</code> para os dados e <code>DatatableSettings</code> para as colunas.
-                  Ao clicar no trigger, um modal abre com o datatable; ao clicar numa linha, a seleção é feita.
-                </p>
+                <h6 class="mb-2">{{ t.common.sectionHowToUse }}</h6>
+                <p class="text-muted mb-3">{{ t.pages.datatableSelect.howToUseBody }}</p>
 
-                <h6 class="mb-2">Opções principais</h6>
+                <h6 class="mb-2">{{ t.common.sectionMainOptions }}</h6>
                 <ul class="mb-3 ps-3">
-                  <li><code>[settings]</code>: definições de colunas do datatable.</li>
-                  <li><code>[data]</code>: <code>DataFrame</code> com dados paginados.</li>
-                  <li><code>[dataTableFilter]</code>: filtros de busca e paginação.</li>
-                  <li><code>[searchInFields]</code>: campos de busca.</li>
-                  <li><code>[labelKey]</code>: chave para o texto exibido no trigger.</li>
-                  <li><code>[valueKey]</code>: chave para o valor; <code>null</code> = instância inteira.</li>
-                  <li><code>[placeholder]</code>: texto quando nenhum item está selecionado.</li>
-                  <li><code>[title]</code>: título do modal.</li>
-                  <li><code>[modalSize]</code>: tamanho do modal (<code>'large'</code>, <code>'xtra-large'</code>).</li>
-                  <li><code>[disabled]</code>: desabilita o componente.</li>
-                  <li><code>[fullScreenOnMobile]</code>: modal fullscreen no mobile.</li>
+                  <li>{{ t.pages.datatableSelect.optionOne }}</li>
+                  <li>{{ t.pages.datatableSelect.optionTwo }}</li>
+                  <li>{{ t.pages.datatableSelect.optionThree }}</li>
+                  <li>{{ t.pages.datatableSelect.optionFour }}</li>
+                  <li>{{ t.pages.datatableSelect.optionFive }}</li>
+                  <li>{{ t.pages.datatableSelect.optionSix }}</li>
+                  <li>{{ t.pages.datatableSelect.optionSeven }}</li>
+                  <li>{{ t.pages.datatableSelect.optionEight }}</li>
+                  <li>{{ t.pages.datatableSelect.optionNine }}</li>
+                  <li>{{ t.pages.datatableSelect.optionTen }}</li>
+                  <li>{{ t.pages.datatableSelect.optionEleven }}</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-datatable-select
@@ -178,26 +217,26 @@
               </div>
 
               <div class="col-xl-6">
-                <h6 class="mb-2">Outputs</h6>
+                <h6 class="mb-2">{{ t.common.sectionOutputs }}</h6>
                 <ul class="mb-3 ps-3">
-                  <li><code>(dataRequest)</code>: emitido quando o datatable solicita dados.</li>
-                  <li><code>(currentValueChange)</code>: emitido quando o valor selecionado muda.</li>
-                  <li><code>(limitChange)</code>: emitido quando o limite por página muda.</li>
-                  <li><code>(searchRequest)</code>: emitido quando uma busca é submetida.</li>
+                  <li>{{ t.pages.datatableSelect.outputOne }}</li>
+                  <li>{{ t.pages.datatableSelect.outputTwo }}</li>
+                  <li>{{ t.pages.datatableSelect.outputThree }}</li>
+                  <li>{{ t.pages.datatableSelect.outputFour }}</li>
                 </ul>
 
-                <h6 class="mb-2">Métodos públicos</h6>
+                <h6 class="mb-2">{{ t.common.sectionPublicMethods }}</h6>
                 <ul class="mb-3 ps-3">
-                  <li><code>clear()</code>: limpa a seleção.</li>
-                  <li><code>setSelectedItem({label, value})</code>: define a seleção programaticamente.</li>
-                  <li><code>selectedLabel</code>: getter que retorna o label atual.</li>
+                  <li>{{ t.pages.datatableSelect.methodOne }}</li>
+                  <li>{{ t.pages.datatableSelect.methodTwo }}</li>
+                  <li>{{ t.pages.datatableSelect.methodThree }}</li>
                 </ul>
 
-                <h6 class="mb-2">Observações</h6>
+                <h6 class="mb-2">{{ t.common.sectionNotes }}</h6>
                 <ul class="mb-0 ps-3">
-                  <li>Compatível com <code>ngModel</code> via <code>ControlValueAccessor</code>.</li>
-                  <li>Mantenha o <code>DataFrame</code> estável; atualize apenas via <code>(dataRequest)</code>.</li>
-                  <li>O botão de limpar no trigger aparece quando há valor selecionado.</li>
+                  <li>{{ t.pages.datatableSelect.noteOne }}</li>
+                  <li>{{ t.pages.datatableSelect.noteTwo }}</li>
+                  <li>{{ t.pages.datatableSelect.noteThree }}</li>
                 </ul>
               </div>
             </div>

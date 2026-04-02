@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pipes transform displayed values within a template.">
+  <title>Pipes | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Pipes" />
+  <meta name="twitter:description" content="Pipes transform displayed values within a template." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Pipes" />
+  <meta property="og:description" content="Pipes transform displayed values within a template." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/pipes" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li class="active">
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#using-pipes">Using pipes</a></li>
+<li class="toc-entry toc-h2"><a href="#built-in-pipes">Built-in pipes</a></li>
+<li class="toc-entry toc-h2"><a href="#parameterizing-a-pipe">Parameterizing a pipe</a></li>
+<li class="toc-entry toc-h2"><a href="#chaining-pipes">Chaining pipes</a></li>
+<li class="toc-entry toc-h2"><a href="#custom-pipes">Custom pipes</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#the-pipetransform-interface">The PipeTransform interface</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#power-boost-calculator">Power Boost Calculator</a></li>
+<li class="toc-entry toc-h2"><a href="#pipes-and-change-detection">Pipes and change detection</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#no-pipe">No pipe</a></li>
+<li class="toc-entry toc-h3"><a href="#flying-heroes-pipe">Flying-heroes pipe</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#pure-and-impure-pipes">Pure and impure pipes</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#pure-pipes">Pure pipes</a></li>
+<li class="toc-entry toc-h3"><a href="#impure-pipes">Impure pipes</a></li>
+<li class="toc-entry toc-h3"><a href="#an-impure-flyingheroespipe">An impure FlyingHeroesPipe</a></li>
+<li class="toc-entry toc-h3"><a href="#async-pipe">The impure AsyncPipe</a></li>
+<li class="toc-entry toc-h3"><a href="#an-impure-caching-pipe">An impure caching pipe</a></li>
+<li class="toc-entry toc-h3"><a href="#jsonpipe">JsonPipe</a></li>
+<li class="toc-entry toc-h3"><a href="#pure-pipes-and-pure-functions">Pure pipes and pure functions</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#next-steps">Next steps</a></li>
+<li class="toc-entry toc-h2"><a href="#appendix-no-filterpipe-or-orderbypipe">Appendix: No FilterPipe or OrderByPipe</a></li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/router">Router</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/pipes.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Pipes' page issue&body=From URL: https://angulardart.xyz/guide/pipes"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Pipes 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/pipes”?&gt;</p>
+
+<p>Every app starts out with what seems like a simple task: get data, transform them, and show them to users.
+Getting data could be as simple as creating a local variable or as complex as streaming data over a WebSocket.</p>
+
+<p>Once data arrive, you could push their raw <code class="language-plaintext highlighter-rouge">toString</code> values directly to the view,
+but that rarely makes for a good user experience.
+For example, in most use cases, users prefer to see a date in a simple format like
+<samp>April 15, 1988</samp> rather than the raw string format
+<samp>Fri Apr 15 1988 00:00:00 GMT-0700 (Pacific Daylight Time)</samp>.</p>
+
+<p>Clearly, some values benefit from a bit of editing. You may notice that you
+desire many of the same transformations repeatedly, both within and across many apps.
+You can almost think of them as styles.
+In fact, you might like to apply them in your HTML templates as you do styles.</p>
+
+<p>Introducing Angular pipes, a way to write display-value transformations that you can declare in your HTML.
+Try the <span><a href="/examples/pipes" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/pipes/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<h2 id="using-pipes">
+<a class="anchor" href="#using-pipes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using pipes</h2>
+
+<p>A pipe takes in data as input and transforms it to a desired output.
+In this page, you’ll use pipes to transform a component’s birthday property into
+a human-friendly date.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_birthday1_component.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  @Component(
+    selector: 'hero-birthday',
+    template: "&lt;p&gt;The hero's birthday is {{ birthday | date }}&lt;/p&gt;",
+    pipes: [commonPipes],
+  )
+  class HeroBirthdayComponent {
+    DateTime birthday = DateTime(1988, 4, 15); // April 15, 1988
+  }
+</code></pre></div></div>
+
+<p>Focus on the component’s template.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (hero birthday template)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p&gt;The hero's birthday is {{ birthday | date }}&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Inside the interpolation expression, you flow the component’s <code class="language-plaintext highlighter-rouge">birthday</code> value through the
+<a href="template-syntax#pipe">pipe operator</a> ( | ) to the <a href="https://pub.dev/documentation/angular/6.0.1/angular/DatePipe-class.html">Date pipe</a>
+function on the right. All pipes work this way.</p>
+
+<div class="l-sub-section">
+  <p>The <code class="language-plaintext highlighter-rouge">Date</code> and <code class="language-plaintext highlighter-rouge">Currency</code> pipes need the <em>ECMAScript Internationalization API</em>.
+  Safari and other older browsers don’t support it. You can add support with a polyfill.</p>
+
+  <div class="language-html highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div>  </div>
+</div>
+
+<h2 id="built-in-pipes">
+<a class="anchor" href="#built-in-pipes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Built-in pipes</h2>
+
+<p>Angular comes with a stock of pipes such as
+<code class="language-plaintext highlighter-rouge">DatePipe</code>, <code class="language-plaintext highlighter-rouge">UpperCasePipe</code>, <code class="language-plaintext highlighter-rouge">LowerCasePipe</code>, <code class="language-plaintext highlighter-rouge">CurrencyPipe</code>, and <code class="language-plaintext highlighter-rouge">PercentPipe</code>.
+They are all available for use in any template.</p>
+
+<div class="l-sub-section">
+  <p>Read more about these and many other built-in pipes in the <a href="/api?query=pipe">pipes topics</a> of the
+  <a href="/api">API Reference</a>; filter for entries that include the word “pipe”.</p>
+
+  <p>Angular doesn’t have a <code class="language-plaintext highlighter-rouge">FilterPipe</code> or an <code class="language-plaintext highlighter-rouge">OrderByPipe</code> for reasons explained in the <a href="#no-filter-pipe">Appendix</a> of this page.</p>
+</div>
+
+<h2 id="parameterizing-a-pipe">
+<a class="anchor" href="#parameterizing-a-pipe" aria-hidden="true"><span class="octicon octicon-link"></span></a>Parameterizing a pipe</h2>
+
+<p>A pipe can accept any number of optional parameters to fine-tune its output.
+To add parameters to a pipe, follow the pipe name with a colon ( : ) and then the parameter value
+(such as <code class="language-plaintext highlighter-rouge">currency:'EUR'</code>). If the pipe accepts multiple parameters, separate the values with colons (such as <code class="language-plaintext highlighter-rouge">slice:1:5</code>)</p>
+
+<p>Modify the birthday template to give the date pipe a format parameter.
+After formatting the hero’s April 15th birthday, it renders as <strong><samp>04/15/88</samp></strong>:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (format birthday)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p&gt;The hero's birthday is {{ birthday | date:"MM/dd/yy" }} &lt;/p&gt;
+</code></pre></div></div>
+
+<p>The parameter value can be any valid template expression,
+(see the <a href="template-syntax#template-expressions">Template expressions</a> section of the
+<a href="template-syntax">Template Syntax</a> page)
+such as a string literal or a component property.
+In other words, you can control the format through a binding the same way you control the birthday value through a binding.</p>
+
+<p>Write a second component that <em>binds</em> the pipe’s format parameter
+to the component’s <code class="language-plaintext highlighter-rouge">format</code> property. Here’s the template for that component:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_birthday2_component.dart (template)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+      &lt;p&gt;The hero's birthday is {{ birthday | date:format }}&lt;/p&gt;
+      &lt;button (click)="toggleFormat()"&gt;Toggle Format&lt;/button&gt;
+    ''',
+</code></pre></div></div>
+
+<p>You also added a button to the template and bound its click event to the component’s <code class="language-plaintext highlighter-rouge">toggleFormat()</code> method.
+That method toggles the component’s <code class="language-plaintext highlighter-rouge">format</code> property between a short form
+(<code class="language-plaintext highlighter-rouge">'shortDate'</code>) and a longer form (<code class="language-plaintext highlighter-rouge">'fullDate'</code>).</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_birthday2_component.dart (class)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class HeroBirthday2Component {
+    DateTime birthday = DateTime(1988, 4, 15); // April 15, 1988
+
+    bool toggle = true;
+
+    get format =&gt; toggle ? 'shortDate' : 'fullDate';
+
+    void toggleFormat() {
+      toggle = !toggle;
+    }
+  }
+</code></pre></div></div>
+
+<p>As you click the button, the displayed date alternates between
+“<strong><samp>04/15/1988</samp></strong>” and
+“<strong><samp>Friday, April 15, 1988</samp></strong>”.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/pipes/date-format-toggle-anim-324dbddc968269f3a93032a3a3b069ac091bc7162d25c612bc0a9dd9abdee955.gif" alt="Date Format Toggle"></p>
+
+<div class="l-sub-section">
+  <p>Read more about the <code class="language-plaintext highlighter-rouge">DatePipe</code> format options in the <a href="https://pub.dev/documentation/angular/6.0.1/angular/DatePipe-class.html">Date Pipe</a>
+  API Reference page.</p>
+</div>
+
+<h2 id="chaining-pipes">
+<a class="anchor" href="#chaining-pipes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chaining pipes</h2>
+
+<p>You can chain pipes together in potentially useful combinations.
+In the following example, to display the birthday in uppercase,
+the birthday is chained to the <code class="language-plaintext highlighter-rouge">DatePipe</code> and on to the <code class="language-plaintext highlighter-rouge">UpperCasePipe</code>.
+The birthday displays as <strong><samp>APR 15, 1988</samp></strong>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (chained-birthday)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  The chained hero's birthday is
+  {{ birthday | date | uppercase}}
+</code></pre></div></div>
+
+<p>This example—which displays <strong><samp>FRIDAY, APRIL 15, 1988</samp></strong>—chains
+the same pipes as above, but passes in a parameter to <code class="language-plaintext highlighter-rouge">date</code> as well.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (chained-parameter-birthday)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  The chained hero's birthday is
+  {{  birthday | date:'fullDate' | uppercase}}
+</code></pre></div></div>
+
+<h2 id="custom-pipes">
+<a class="anchor" href="#custom-pipes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom pipes</h2>
+
+<p>You can write your own custom pipes.
+Here’s a custom pipe named <code class="language-plaintext highlighter-rouge">ExponentialStrengthPipe</code> that can boost a hero’s powers:</p>
+
+<p>&lt;?code-excerpt “lib/src/exponential_strength_pipe.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:math' as math;
+  import 'package:angular/angular.dart';
+
+  /*
+   * Raise the value exponentially
+   * Takes an exponent argument that defaults to 1.
+   * Usage:
+   *   value | exponentialStrength:exponent
+   * Example:
+   *   {{ 2 |  exponentialStrength:10}}
+   *   formats to: 1024
+   */
+  @Pipe('exponentialStrength')
+  class ExponentialStrengthPipe extends PipeTransform {
+    num transform(num value, num exponent) =&gt; math.pow(value ?? 0, exponent ?? 1);
+  }
+</code></pre></div></div>
+
+<p>This pipe definition reveals the following key points:</p>
+
+<ul>
+  <li>A pipe is a class decorated with pipe metadata.</li>
+  <li>The pipe class implements the <code class="language-plaintext highlighter-rouge">PipeTransform</code> interface’s <code class="language-plaintext highlighter-rouge">transform</code> method that
+accepts an input value followed by optional parameters and returns the transformed value.</li>
+  <li>There will be one additional argument to the <code class="language-plaintext highlighter-rouge">transform</code> method for each parameter passed to the pipe.
+Your pipe has one such parameter: the <code class="language-plaintext highlighter-rouge">exponent</code>.</li>
+  <li>To tell Angular that this is a pipe, you apply the
+<code class="language-plaintext highlighter-rouge">@Pipe</code> annotation, which you import from the main Angular library.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">@Pipe</code> annotation allows you to define the
+ pipe name that you’ll use within template expressions. It must be a valid Dart identifier.
+ Your pipe’s name is <code class="language-plaintext highlighter-rouge">exponentialStrength</code>.</li>
+</ul>
+
+<div class="l-sub-section">
+  <h3 id="the-pipetransform-interface">
+<a class="anchor" href="#the-pipetransform-interface" aria-hidden="true"><span class="octicon octicon-link"></span></a>The <em>PipeTransform</em> interface</h3>
+
+  <p>The <code class="language-plaintext highlighter-rouge">transform</code> method is essential to a pipe.
+  The <code class="language-plaintext highlighter-rouge">PipeTransform</code> <em>interface</em> defines that method and guides both tooling and the compiler.
+  Technically, it’s optional; Angular looks for and executes the <code class="language-plaintext highlighter-rouge">transform</code> method regardless.</p>
+</div>
+
+<p>Now you need a component to demonstrate the pipe.</p>
+
+<p>&lt;?code-excerpt “lib/src/power_booster_component.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+  import 'exponential_strength_pipe.dart';
+
+  @Component(
+    selector: 'power-booster',
+    template: '''
+      &lt;h2&gt;Power Booster&lt;/h2&gt;
+      &lt;p&gt;Super power boost: {{2 | exponentialStrength: 10}}&lt;/p&gt;
+    ''',
+    pipes: [ExponentialStrengthPipe],
+  )
+  class PowerBoosterComponent {}
+</code></pre></div></div>
+
+<p><img class="image-display" src="/assets/ng/devguide/pipes/power-booster-90e4c3ef7088ef63923ba2cf1666b89948807a2f64a91a7834beb91bc49fbf8f.png" alt="Power Booster"></p>
+
+<p>Note the following:</p>
+
+<ul>
+  <li>You use your custom pipe the same way you use built-in pipes.</li>
+  <li>You must include your pipe in the <code class="language-plaintext highlighter-rouge">pipes</code> list of the <code class="language-plaintext highlighter-rouge">@Component</code>.</li>
+</ul>
+
+<div class="alert alert-info">
+  <h4>Remember the pipes list</h4>
+
+  <p>You must manually register custom pipes.
+  If you don’t, Angular reports an error.
+  In the previous example, you didn’t list the <code class="language-plaintext highlighter-rouge">DatePipe</code> because all
+  Angular built-in pipes are pre-registered.</p>
+</div>
+
+<p>To probe the behavior in the <span><a href="/examples/pipes" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/pipes/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>,
+change the value and optional exponent in the template.</p>
+
+<h2 id="power-boost-calculator">
+<a class="anchor" href="#power-boost-calculator" aria-hidden="true"><span class="octicon octicon-link"></span></a>Power Boost Calculator</h2>
+
+<p>It’s not much fun updating the template to test the custom pipe.
+Upgrade the example to a “Power Boost Calculator” that combines
+your pipe and two-way data binding with <code class="language-plaintext highlighter-rouge">ngModel</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/power_boost_calculator_component.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+  import 'package:angular_forms/angular_forms.dart';
+  import 'exponential_strength_pipe.dart';
+
+  @Component(
+    selector: 'power-boost-calculator',
+    template: '''
+      &lt;h2&gt;Power Boost Calculator&lt;/h2&gt;
+      &lt;div&gt;Normal power: &lt;input type="number" [(ngModel)]="power"/&gt;&lt;/div&gt;
+      &lt;div&gt;Boost factor: &lt;input type="number" [(ngModel)]="factor"/&gt;&lt;/div&gt;
+      &lt;p&gt;
+        Super Hero Power: {{power | exponentialStrength: factor}}
+      &lt;/p&gt;
+    ''',
+    directives: [coreDirectives, formDirectives],
+    pipes: [ExponentialStrengthPipe],
+  )
+  class PowerBoostCalculatorComponent {
+    num power = 5;
+    num factor = 1;
+  }
+</code></pre></div></div>
+
+<p><img class="image-display" src="/assets/ng/devguide/pipes/power-boost-calculator-anim-e7e0bd107e379d102daf0a7fc4bd893f9462184c22165ea0a990e2b2c011cf5c.gif" alt="Power Boost Calculator"></p>
+
+<div id="change-detection"></div>
+<h2 id="pipes-and-change-detection">
+<a class="anchor" href="#pipes-and-change-detection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pipes and change detection</h2>
+
+<p>Angular looks for changes to data-bound values through a <em>change detection</em> process that runs after every DOM event:
+every keystroke, mouse move, timer tick, and server response. This could be expensive.
+Angular strives to lower the cost whenever possible and appropriate.</p>
+
+<p>Angular picks a simpler, faster change detection algorithm when you use a pipe.</p>
+
+<h3 id="no-pipe">
+<a class="anchor" href="#no-pipe" aria-hidden="true"><span class="octicon octicon-link"></span></a>No pipe</h3>
+
+<p>In the next example, the component uses the default, aggressive change detection strategy to monitor and update
+its display of every hero in the <code class="language-plaintext highlighter-rouge">heroes</code> list. Here’s the template:</p>
+
+<p>&lt;?code-excerpt “lib/src/flying_heroes_component.html (v1)” region=”template-1” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  New hero:
+    &lt;input type="text" #box
+            (keyup.enter)="addHero(box.value); box.value=''"
+            placeholder="hero name"&gt;
+    &lt;button (click)="reset()"&gt;Reset&lt;/button&gt;
+    &lt;div *ngFor="let hero of heroes"&gt;
+      {{hero.name}}
+    &lt;/div&gt;
+</code></pre></div></div>
+
+<p>The companion component class provides heroes, adds heroes into the list, and can reset the list.</p>
+
+<p>&lt;?code-excerpt “lib/src/flying_heroes_component.dart (v1)” plaster=”none” replace=”/  (heroes.add)/$1/g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class FlyingHeroesComponent {
+    List&lt;Hero&gt; heroes;
+    bool canFly = true;
+
+    FlyingHeroesComponent() {
+      reset();
+    }
+
+    void addHero(String name) {
+      name = name.trim();
+      if (name.isEmpty) return;
+
+      var hero = Hero(name, canFly);
+      heroes.add(hero);
+    }
+
+    void reset() {
+      heroes = List&lt;Hero&gt;.from(mockHeroes);
+    }
+  }
+</code></pre></div></div>
+
+<p>You can add heroes and Angular updates the display when you do.
+If you click the <code class="language-plaintext highlighter-rouge">reset</code> button, Angular replaces <code class="language-plaintext highlighter-rouge">heroes</code> with a new list of the original heroes and updates the display.
+If you added the ability to remove or change a hero, Angular would detect those changes and update the display as well.</p>
+
+<h3 id="flying-heroes-pipe">
+<a class="anchor" href="#flying-heroes-pipe" aria-hidden="true"><span class="octicon octicon-link"></span></a>Flying-heroes pipe</h3>
+
+<p>Add a <code class="language-plaintext highlighter-rouge">FlyingHeroesPipe</code> to the <code class="language-plaintext highlighter-rouge">*ngFor</code> repeater that filters the list of heroes to just those heroes who can fly.</p>
+
+<p>&lt;?code-excerpt “lib/src/flying_heroes_component.html (flyers)” region=”template-flying-heroes” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngFor="let hero of (heroes | flyingHeroes)"&gt;
+    {{hero.name}}
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p>Here’s the <code class="language-plaintext highlighter-rouge">FlyingHeroesPipe</code> implementation, which follows the pattern for custom pipes described earlier.</p>
+
+<p>&lt;?code-excerpt “lib/src/flying_heroes_pipe.dart (pure)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+  import 'heroes.dart';
+
+  @Pipe('flyingHeroes')
+  class FlyingHeroesPipe extends PipeTransform {
+    List&lt;Hero&gt; transform(List&lt;Hero&gt; value) =&gt;
+        value.where((hero) =&gt; hero.canFly).toList();
+  }
+</code></pre></div></div>
+
+<p>Notice the odd behavior in the <span><a href="/examples/pipes" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/pipes/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>:
+when you add flying heroes, none of them are displayed under “Heroes who fly.”</p>
+
+<p>Although you’re not getting the behavior you want, Angular isn’t broken.
+It’s just using a different change-detection algorithm that ignores changes to the list or any of its items.</p>
+
+<p>Notice how a hero is added:</p>
+
+<p>&lt;?code-excerpt “lib/src/flying_heroes_component.dart (push)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  heroes.add(hero);
+</code></pre></div></div>
+
+<p>You add the hero into the <code class="language-plaintext highlighter-rouge">heroes</code> list.  The reference to the list hasn’t changed.
+It’s the same list. That’s all Angular cares about. From its perspective, <em>same list, no change, no display update</em>.</p>
+
+<p>To fix that, create an list with the new hero appended and assign that to <code class="language-plaintext highlighter-rouge">heroes</code>.
+This time Angular detects that the list reference has changed.
+It executes the pipe and updates the display with the new list, which includes the new flying hero.</p>
+
+<p>If you <em>mutate</em> the list, no pipe is invoked and the display isn’t updated;
+if you <em>replace</em> the list, the pipe executes and the display is updated.
+The Flying Heroes app extends the
+code with checkbox switches and additional displays to help you experience these effects.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/pipes/flying-heroes-anim-195ca83a66372616b9b50cb4b13f3d9bb0b9672e050753cd3a507e1f9a163321.gif" alt="Flying Heroes"></p>
+
+<p>Replacing the list is an efficient way to signal Angular to update the display.
+When do you replace the list? When the data change.
+That’s an easy rule to follow in <em>this</em> example
+where the only way to change the data is by adding a hero.</p>
+
+<p>More often, you don’t know when the data have changed,
+especially in apps that mutate data in many ways,
+perhaps in app locations far away.
+A component in such an app usually can’t know about those changes.
+Moreover, it’s unwise to distort the component design to accommodate a pipe.
+Strive to keep the component class independent of the HTML.
+The component should be unaware of pipes.</p>
+
+<p>For filtering flying heroes, consider an <em>impure pipe</em>.</p>
+
+<h2 id="pure-and-impure-pipes">
+<a class="anchor" href="#pure-and-impure-pipes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pure and impure pipes</h2>
+
+<p>There are two categories of pipes: <em>pure</em> and <em>impure</em>.
+Pipes are pure by default. Every pipe you’ve seen so far has been pure.
+You make a pipe impure by setting its pure flag to false. You could make the <code class="language-plaintext highlighter-rouge">FlyingHeroesPipe</code>
+impure like this:</p>
+
+<p>&lt;?code-excerpt “lib/src/flying_heroes_pipe.dart (pipe-decorator)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Pipe('flyingHeroes', pure: false)
+</code></pre></div></div>
+
+<p>Before doing that, understand the difference between pure and impure, starting with a pure pipe.</p>
+
+<h3 id="pure-pipes">
+<a class="anchor" href="#pure-pipes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pure pipes</h3>
+
+<p>Angular executes a <em>pure pipe</em> only when it detects a <em>pure change</em> to the input value.
+In AngularDart, a <em>pure change</em> results only from a change in object reference
+(given that <a href="https://dart.dev/guides/language/language-tour#important-concepts">everything is an object in Dart</a>).</p>
+
+<p>Angular ignores changes within (composite) objects.
+It won’t call a pure pipe if you change an input month, add to an input list, or update an input object property.</p>
+
+<p>This may seem restrictive but it’s also fast.
+An object reference check is fast—much faster than a deep check for
+differences—so Angular can quickly determine if it can skip both the
+pipe execution and a view update.</p>
+
+<p>For this reason, a pure pipe is preferable when you can live with the change detection strategy.
+When you can’t, you <em>can</em> use the impure pipe.</p>
+
+<div class="l-sub-section">
+  <p>Or you might not use a pipe at all.
+  It may be better to pursue the pipe’s purpose with a property of the component,
+  a point that’s discussed later in this page.</p>
+</div>
+
+<h3 id="impure-pipes">
+<a class="anchor" href="#impure-pipes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Impure pipes</h3>
+
+<p>Angular executes an <em>impure pipe</em>  during every component change detection cycle.
+An impure pipe is called often, as often as every keystroke or mouse-move.</p>
+
+<p>With that concern in mind, implement an impure pipe with great care.
+An expensive, long-running pipe could destroy the user experience.</p>
+
+<p><a id="impure-flying-heroes"></a></p>
+<h3 id="an-impure-flyingheroespipe">
+<a class="anchor" href="#an-impure-flyingheroespipe" aria-hidden="true"><span class="octicon octicon-link"></span></a>An impure <em>FlyingHeroesPipe</em>
+</h3>
+
+<p>A flip of the switch turns the <code class="language-plaintext highlighter-rouge">FlyingHeroesPipe</code> into a <code class="language-plaintext highlighter-rouge">FlyingHeroesImpurePipe</code>.
+The complete implementation is as follows:</p>
+
+<code-tabs>
+  <?code-pane "lib/src/flying_heroes_pipe.dart (impure)" linenums?>
+  <?code-pane "lib/src/flying_heroes_pipe.dart (pure)" linenums?>
+</code-tabs>
+
+<p>You inherit from <code class="language-plaintext highlighter-rouge">FlyingHeroesPipe</code> to prove the point that nothing changed internally.
+The only difference is the <code class="language-plaintext highlighter-rouge">pure</code> flag in the pipe metadata.</p>
+
+<p>This is a good candidate for an impure pipe because the <code class="language-plaintext highlighter-rouge">transform</code> function is trivial and fast.</p>
+
+<p>&lt;?code-excerpt “lib/src/flying_heroes_pipe.dart (filter)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  List&lt;Hero&gt; transform(List&lt;Hero&gt; value) =&gt;
+      value.where((hero) =&gt; hero.canFly).toList();
+</code></pre></div></div>
+
+<p>You can derive a <code class="language-plaintext highlighter-rouge">FlyingHeroesImpureComponent</code> from <code class="language-plaintext highlighter-rouge">FlyingHeroesComponent</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/flying_heroes_component.dart (impure component)” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Component(
+    selector: 'flying-heroes-impure',
+    templateUrl: 'flying_heroes_component.html',
+    pipes: [FlyingHeroesImpurePipe],
+    directives: [coreDirectives, formDirectives],
+  )
+  class FlyingHeroesImpureComponent extends FlyingHeroesComponent {
+    FlyingHeroesImpureComponent() {
+      title = 'Flying Heroes (impure pipe)';
+    }
+  }
+</code></pre></div></div>
+
+<p>The only substantive change is the pipe in the template.
+You can confirm in the <span><a href="/examples/pipes" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/pipes/tree/master" target="_blank" rel="noopener">view source</a></span>)</span> that the <em>flying heroes</em>
+display updates as you add heroes, even when you mutate the <code class="language-plaintext highlighter-rouge">heroes</code> list.</p>
+
+<h3 id="async-pipe">
+<a class="anchor" href="#async-pipe" aria-hidden="true"><span class="octicon octicon-link"></span></a>The impure <em>AsyncPipe</em>
+</h3>
+
+<p>The Angular <code class="language-plaintext highlighter-rouge">AsyncPipe</code> is an interesting example of an impure pipe.
+The <code class="language-plaintext highlighter-rouge">AsyncPipe</code> accepts a <code class="language-plaintext highlighter-rouge">Future</code> or <code class="language-plaintext highlighter-rouge">Stream</code> as input
+and subscribes to the input automatically, eventually returning the emitted values.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">AsyncPipe</code> is also stateful.
+The pipe maintains a subscription to the input <code class="language-plaintext highlighter-rouge">Stream</code> and
+keeps delivering values from that <code class="language-plaintext highlighter-rouge">Stream</code> as they arrive.</p>
+
+<p>This next example binds an <code class="language-plaintext highlighter-rouge">Stream</code> of message strings
+(<code class="language-plaintext highlighter-rouge">message</code>) to a view with the <code class="language-plaintext highlighter-rouge">async</code> pipe.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_async_message_component.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:async';
+
+  import 'package:angular/angular.dart';
+
+  @Component(
+    selector: 'hero-message',
+    template: '''
+      &lt;h2&gt;Async Hero Message and AsyncPipe&lt;/h2&gt;
+      &lt;p&gt;Message: {{ message | async }}&lt;/p&gt;
+      &lt;button (click)="resend()"&gt;Resend&lt;/button&gt;
+    ''',
+    pipes: [commonPipes],
+  )
+  class HeroAsyncMessageComponent {
+    static const _msgEventDelay = Duration(milliseconds: 500);
+
+    Stream&lt;String&gt; message;
+
+    HeroAsyncMessageComponent() {
+      resend();
+    }
+
+    void resend() {
+      message =
+          Stream.periodic(_msgEventDelay, (i) =&gt; _msgs[i]).take(_msgs.length);
+    }
+
+    List&lt;String&gt; _msgs = &lt;String&gt;[
+      'You are my hero!',
+      'You are the best hero!',
+      'Will you be my hero?'
+    ];
+  }
+</code></pre></div></div>
+
+<p>The Async pipe saves boilerplate in the component code.
+The component doesn’t have to subscribe to the async data source,
+extract the resolved values and expose them for binding,
+and have to unsubscribe when it’s destroyed
+(a potent source of memory leaks).</p>
+
+<h3 id="an-impure-caching-pipe">
+<a class="anchor" href="#an-impure-caching-pipe" aria-hidden="true"><span class="octicon octicon-link"></span></a>An impure caching pipe</h3>
+
+<p>Write one more impure pipe, a pipe that makes an HTTP request.</p>
+
+<p>Remember that impure pipes are called every few milliseconds.
+If you’re not careful, this pipe will punish the server with requests.</p>
+
+<p>In the following code, the pipe only calls the server when the request URL changes and it caches the server response.</p>
+
+<p>&lt;?code-excerpt “lib/src/fetch_json_pipe.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:convert';
+  import 'dart:html';
+
+  import 'package:angular/angular.dart';
+
+  @Pipe('fetch', pure: false)
+  class FetchJsonPipe extends PipeTransform {
+    dynamic _cachedData;
+    String _cachedUrl;
+
+    dynamic transform(String url) {
+      if (url != _cachedUrl) {
+        _cachedUrl = url;
+        _cachedData = null;
+        HttpRequest.getString(url).then((s) {
+          _cachedData = json.decode(s);
+        });
+      }
+      return _cachedData;
+    }
+  }
+</code></pre></div></div>
+
+<p>Now demonstrate it in a harness component whose template defines two bindings to this pipe,
+both requesting the heroes from the <code class="language-plaintext highlighter-rouge">heroes.json</code> file.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_list_component.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  import 'fetch_json_pipe.dart';
+
+  @Component(
+    selector: 'hero-list',
+    template: '''
+      &lt;h2&gt;Heroes from JSON File&lt;/h2&gt;
+
+      &lt;div *ngFor="let hero of ('heroes.json' | fetch) "&gt;
+        {{hero['name']}}
+      &lt;/div&gt;
+
+      &lt;p&gt;Heroes as JSON: {{'heroes.json' | fetch | json}}&lt;/p&gt;
+    ''',
+    directives: [coreDirectives],
+    pipes: [commonPipes, FetchJsonPipe],
+  )
+  class HeroListComponent {}
+</code></pre></div></div>
+
+<p>The component renders as the following:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/pipes/hero-list-e22778bf3ae38cc07cece681066e14615e90ca717ce47b3448bb20bfca3f09ed.png" alt="Hero List"></p>
+
+<p>A breakpoint on the pipe’s request for data shows the following:</p>
+<ul>
+  <li>Each binding gets its own pipe instance.</li>
+  <li>Each pipe instance caches its own URL and data.</li>
+  <li>Each pipe instance only calls the server once.</li>
+</ul>
+
+<h3 id="jsonpipe">
+<a class="anchor" href="#jsonpipe" aria-hidden="true"><span class="octicon octicon-link"></span></a><em>JsonPipe</em>
+</h3>
+
+<p>In the previous code sample, the second <code class="language-plaintext highlighter-rouge">fetch</code> pipe binding demonstrates more pipe chaining.
+It displays the same hero data in JSON format by chaining through to the built-in <code class="language-plaintext highlighter-rouge">JsonPipe</code>.</p>
+
+<div class="alert alert-info">
+  <p><strong>Debugging with JsonPipe:</strong>
+  The <a href="https://pub.dev/documentation/angular/6.0.1/angular/JsonPipe-class.html">JsonPipe</a>
+  provides an easy way to diagnosis a mysteriously failing data binding or
+  inspect an object for future binding.</p>
+</div>
+
+<div id="pure-pipe-pure-fn"></div>
+<h3 id="pure-pipes-and-pure-functions">
+<a class="anchor" href="#pure-pipes-and-pure-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pure pipes and pure functions</h3>
+
+<p>A pure pipe uses pure functions.
+Pure functions process inputs and return values without detectable side effects.
+Given the same input, they should always return the same output.</p>
+
+<p>The pipes discussed earlier in this page are implemented with pure functions.
+The built-in <code class="language-plaintext highlighter-rouge">DatePipe</code> is a pure pipe with a pure function implementation.
+So are the <code class="language-plaintext highlighter-rouge">ExponentialStrengthPipe</code> and <code class="language-plaintext highlighter-rouge">FlyingHeroesPipe</code>.
+A few steps back, you reviewed the <code class="language-plaintext highlighter-rouge">FlyingHeroesImpurePipe</code>—an impure pipe with a pure function.</p>
+
+<p>But always implement a <em>pure pipe</em> with a <em>pure function</em>.
+Otherwise, you’ll see many console errors regarding expressions that changed after they were checked.</p>
+
+<h2 id="next-steps">
+<a class="anchor" href="#next-steps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Next steps</h2>
+
+<p>Pipes are a great way to encapsulate and share common display-value
+transformations. Use them like styles, dropping them
+into your template’s expressions to enrich the appeal and usability
+of your views.</p>
+
+<p>Explore Angular’s inventory of built-in pipes in the <a href="/api?query=pipe">API Reference</a>.
+Try writing a custom pipe and perhaps contributing it to the community.</p>
+
+<div id="no-filter-pipe"></div>
+
+<h2 id="appendix-no-filterpipe-or-orderbypipe">
+<a class="anchor" href="#appendix-no-filterpipe-or-orderbypipe" aria-hidden="true"><span class="octicon octicon-link"></span></a>Appendix: No <em>FilterPipe</em> or <em>OrderByPipe</em>
+</h2>
+
+<p>Angular doesn’t provide pipes for filtering or sorting lists.
+Developers familiar with Angular 1 know these as <code class="language-plaintext highlighter-rouge">filter</code> and <code class="language-plaintext highlighter-rouge">orderBy</code>.
+There are no equivalents in Angular.</p>
+
+<p>This isn’t an oversight. Angular doesn’t offer such pipes because
+they perform poorly and prevent aggressive minification.
+Both <code class="language-plaintext highlighter-rouge">filter</code> and <code class="language-plaintext highlighter-rouge">orderBy</code> require parameters that reference object properties.
+Earlier in this page, you learned that such pipes must be <a href="#pure-and-impure-pipes">impure</a> and that
+Angular calls impure pipes in almost every change-detection cycle.</p>
+
+<p>Filtering and especially sorting are expensive operations.
+The user experience can degrade severely for even moderate-sized lists when Angular calls these pipe methods many times per second.
+<code class="language-plaintext highlighter-rouge">filter</code> and <code class="language-plaintext highlighter-rouge">orderBy</code> have often been abused in Angular 1 apps, leading to complaints that Angular itself is slow.
+That charge is fair in the indirect sense that Angular 1 prepared this performance trap
+by offering <code class="language-plaintext highlighter-rouge">filter</code> and <code class="language-plaintext highlighter-rouge">orderBy</code> in the first place.</p>
+
+<p>The minification hazard is also compelling, if less obvious. Imagine a sorting pipe applied to a list of heroes.
+The list might be sorted by hero <code class="language-plaintext highlighter-rouge">name</code> and <code class="language-plaintext highlighter-rouge">planet</code> of origin properties in the following way:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- NOT REAL CODE! --&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">*ngFor=</span><span class="s">"let hero of heroes | orderBy:'name,planet'"</span><span class="nt">&gt;&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<p>You identify the sort fields by text strings, expecting the pipe to reference a property value by indexing
+(such as <code class="language-plaintext highlighter-rouge">hero['name']</code>).
+Unfortunately, aggressive minification manipulates the <code class="language-plaintext highlighter-rouge">Hero</code> property names so that <code class="language-plaintext highlighter-rouge">Hero.name</code> and <code class="language-plaintext highlighter-rouge">Hero.planet</code>
+become something like <code class="language-plaintext highlighter-rouge">Hero.a</code> and <code class="language-plaintext highlighter-rouge">Hero.b</code>. Clearly <code class="language-plaintext highlighter-rouge">hero['name']</code> doesn’t work.</p>
+
+<p>While some may not care to minify this aggressively,
+the Angular product shouldn’t prevent anyone from minifying aggressively.
+Therefore, the Angular team decided that everything Angular provides will minify safely.</p>
+
+<p>The Angular team and many experienced Angular developers strongly recommend moving
+filtering and sorting logic into the component itself.
+The component can expose a <code class="language-plaintext highlighter-rouge">filteredHeroes</code> or <code class="language-plaintext highlighter-rouge">sortedHeroes</code> property and take control
+over when and how often to execute the supporting logic.
+Any capabilities that you would have put in a pipe and shared across the app can be
+written in a filtering/sorting service and injected into the component.</p>
+
+<p>If these performance and minification considerations don’t apply to you, you can always create your own such pipes
+(similar to the <a href="#impure-flying-heroes">FlyingHeroesPipe</a>) or find them in the community.</p>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/router">Router</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

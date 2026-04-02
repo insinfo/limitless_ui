@@ -24,6 +24,24 @@
   font-weight: 600;
 }
 
+.selection-subsection {
+  padding-top: 0.875rem;
+  border-top: 1px dashed rgba(var(--body-color-rgb), 0.12);
+}
+
+.li-selection-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.li-selection-group__legend {
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
 .selection-demo-panel :last-child {
   margin-bottom: 0;
 }

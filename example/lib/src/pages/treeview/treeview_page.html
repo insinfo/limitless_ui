@@ -17,35 +17,30 @@
     <div class="card">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-3">{{ t.pages.treeview.intro }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">O treeview organiza estruturas hierárquicas como módulos, permissões,
-                    pastas e mapas de navegação em uma única área de leitura.</p>
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Hierarquia com pai e filhos.</li>
-                    <li>Busca contextual pelo placeholder configurado.</li>
-                    <li>Expansão e recolhimento da árvore.</li>
+                    <li *ngFor="let item of features">{{ item }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Estruturas muito grandes pedem estratégia de carregamento.</li>
-                    <li>Rótulos longos exigem cuidado com densidade visual.</li>
-                    <li>Regras de seleção continuam no componente pai.</li>
+                    <li *ngFor="let item of limits">{{ item }}</li>
                   </ul>
                 </div>
               </div>
@@ -54,9 +49,8 @@
             <div class="row g-3">
               <div class="col-12">
                 <div class="card card-body">
-                  <h6 class="mb-2">Treeview clássico</h6>
-                  <p class="text-muted mb-3">Mantém a leitura hierárquica completa na própria página, com busca local,
-                    expandir/recolher e seleção em cascata.</p>
+                  <h6 class="mb-2">{{ classicTreeTitle }}</h6>
+                  <p class="text-muted mb-3">{{ classicTreeBody }}</p>
                   <li-treeview [data]="treeNodes"
                     [searchPlaceholder]="t.pages.treeview.searchPlaceholder"></li-treeview>
                 </div>
@@ -64,59 +58,96 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Dropdown select com árvore estática</h6>
-                  <p class="text-muted mb-3">Usa <code>ngModel</code> para retornar o <code>value</code> do nó
-                    selecionado sem abrir a árvore inteira fora do fluxo do formulário.</p>
+                  <h6 class="mb-2">{{ staticSelectTitle }}</h6>
+                  <p class="text-muted mb-3">{{ staticSelectBody }}</p>
 
-                  <label class="form-label fw-semibold">Módulo ou status</label>
+                  <label class="form-label fw-semibold">{{ staticSelectLabel }}</label>
                   <li-treeview-select [data]="staticDropdownNodes"
-                    [searchPlaceholder]="'Buscar por módulo ou status'"
-                    placeholder="Selecione um nó da árvore"
+                    [searchPlaceholder]="staticSearchPlaceholder"
+                    [placeholder]="staticPlaceholder"
                     [(ngModel)]="selectedStaticTreeValue">
                   </li-treeview-select>
 
                   <div class="treeview-demo-note mt-3">
-                    <strong>Valor atual:</strong> {{ selectedStaticTreeValueText }}<br>
-                    <strong>Rótulo:</strong> {{ selectedStaticTreeLabel }}
+                    <strong>{{ currentValueLabel }}:</strong> {{ selectedStaticTreeValueText }}<br>
+                    <strong>{{ currentLabelLabel }}:</strong> {{ selectedStaticTreeLabel }}
                   </div>
                 </div>
               </div>
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Dropdown select com carregamento em partes</h6>
-                  <p class="text-muted mb-3">O <code>pageLoader</code> busca apenas páginas da raiz e dos filhos
-                    expandidos. O mesmo contrato recebe <code>searchTerm</code>, então a busca remota já pode ser
-                    resolvida pelo backend sem materializar a árvore inteira no cliente.</p>
+                  <h6 class="mb-2">{{ lazySelectTitle }}</h6>
+                  <p class="text-muted mb-3">{{ lazySelectBody }}</p>
 
-                  <label class="form-label fw-semibold">Catálogo grande</label>
+                  <label class="form-label fw-semibold">{{ largeCatalogLabel }}</label>
                   <li-treeview-select [pageLoader]="loadTreeChunk"
                     [pageSize]="2"
-                    [searchPlaceholder]="'Buscar no catálogo lazy'"
-                    placeholder="Carregar catálogo por páginas"
+                    [searchPlaceholder]="lazySearchPlaceholder"
+                    [placeholder]="lazyPlaceholder"
                     [(ngModel)]="selectedLazyTreeValue">
                   </li-treeview-select>
 
                   <div class="treeview-demo-note mt-3">
-                    <strong>Valor atual:</strong> {{ selectedLazyTreeValueText }}<br>
-                    <strong>Rótulo:</strong> {{ selectedLazyTreeLabel }}
+                    <strong>{{ currentValueLabel }}:</strong> {{ selectedLazyTreeValueText }}<br>
+                    <strong>{{ currentLabelLabel }}:</strong> {{ selectedLazyTreeLabel }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ rawFrameTitle }}</h6>
+                  <p class="text-muted mb-3">{{ rawFrameBody }}</p>
+
+                  <label class="form-label fw-semibold">{{ rawFrameLabel }}</label>
+                  <li-treeview-select [data]="rawFrameNodes"
+                    [settings]="rawFrameSettings"
+                    [searchPlaceholder]="rawFrameSearchPlaceholder"
+                    [placeholder]="rawFramePlaceholder"
+                    [(ngModel)]="selectedRawFrameValue">
+                  </li-treeview-select>
+
+                  <div class="treeview-demo-note mt-3">
+                    <strong>{{ currentValueLabel }}:</strong> {{ selectedRawFrameValueText }}<br>
+                    <strong>{{ currentLabelLabel }}:</strong> {{ selectedRawFrameLabel }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ rawLazyTitle }}</h6>
+                  <p class="text-muted mb-3">{{ rawLazyBody }}</p>
+
+                  <label class="form-label fw-semibold">{{ rawLazyLabel }}</label>
+                  <li-treeview-select [pageLoader]="loadRawTreeChunk"
+                    [settings]="lazySerializableSettings"
+                    [pageSize]="2"
+                    [searchPlaceholder]="rawLazySearchPlaceholder"
+                    [placeholder]="rawLazyPlaceholder"
+                    [(ngModel)]="selectedLazySerializableValue">
+                  </li-treeview-select>
+
+                  <div class="treeview-demo-note mt-3">
+                    <strong>{{ currentValueLabel }}:</strong> {{ selectedLazySerializableValueText }}<br>
+                    <strong>{{ currentLabelLabel }}:</strong> {{ selectedLazySerializableLabel }}
                   </div>
                 </div>
               </div>
 
               <div class="col-12">
                 <div class="card card-body">
-                  <h6 class="mb-2">Custom render + múltipla seleção</h6>
-                  <p class="text-muted mb-3">A API aceita <code>TemplateRef</code> para o trigger e para cada nó,
-                    além de <code>labelBuilder</code> e <code>canSelectNode</code> para regras de exibição e seleção.</p>
+                  <h6 class="mb-2">{{ customRenderTitle }}</h6>
+                  <p class="text-muted mb-3">{{ customRenderBody }}</p>
 
-                  <label class="form-label fw-semibold">Nós finais do catálogo</label>
+                  <label class="form-label fw-semibold">{{ finalNodesLabel }}</label>
                   <li-treeview-select [data]="staticDropdownNodes"
                     [multiple]="true"
                     [closeOnSelect]="false"
                     [labelBuilder]="customNodeLabel"
                     [canSelectNode]="canSelectOnlyLeafNodes"
-                    placeholder="Selecione um ou mais nós finais"
+                    [placeholder]="multiPlaceholder"
                     [(ngModel)]="selectedMultiTreeValues">
 
                     <template liTreeviewSelectTrigger let-ctx>
@@ -139,15 +170,15 @@
                     <template liTreeviewSelectNode let-ctx>
                       <div class="treeview-custom-node">
                         <span>{{ ctx.node.treeViewNodeLabel }}</span>
-                        <small class="text-muted ms-2">{{ ctx.node.value ?? 'grupo' }}</small>
-                        <span *ngIf="ctx.disabled" class="badge bg-light text-muted border ms-2">Somente leitura</span>
+                        <small class="text-muted ms-2">{{ ctx.node.value ?? (isPt ? 'grupo' : 'group') }}</small>
+                        <span *ngIf="ctx.disabled" class="badge bg-light text-muted border ms-2">{{ readonlyBadge }}</span>
                       </div>
                     </template>
                   </li-treeview-select>
 
                   <div class="treeview-demo-note mt-3">
-                    <strong>Valores atuais:</strong> {{ selectedMultiTreeValueText }}<br>
-                    <strong>Rótulos:</strong> {{ selectedMultiTreeLabel }}
+                    <strong>{{ currentValuesLabel }}:</strong> {{ selectedMultiTreeValueText }}<br>
+                    <strong>{{ currentLabelsLabel }}:</strong> {{ selectedMultiTreeLabel }}
                   </div>
                 </div>
               </div>
@@ -155,24 +186,11 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
-            <p class="text-muted mb-3">Use o componente para representar relações hierárquicas quando a leitura por
-              níveis for mais clara do que uma tabela simples.</p>
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
             <ul class="mb-3 ps-3">
-              <li><code>[data]</code> recebe a lista hierárquica de nós.</li>
-              <li><code>[searchPlaceholder]</code> ajusta o texto da busca.</li>
-              <li>A expansão e o recolhimento são controlados pela estrutura da árvore.</li>
-              <li>O componente é indicado para navegação técnica, permissões e catálogos.</li>
-              <li><code>li-treeview-select</code> oferece seleção única em dropdown com
-                <code>ngModel</code>.</li>
-              <li><code>[multiple]</code> troca o modelo para <code>List&lt;dynamic&gt;</code> e mantém o dropdown aberto
-                se <code>[closeOnSelect]="false"</code>.</li>
-              <li><code>[pageLoader]</code> permite carregar páginas da raiz e dos filhos sob demanda.</li>
-              <li><code>[labelBuilder]</code> e <code>[canSelectNode]</code> customizam rótulo e regra de seleção.</li>
-              <li><code>template[liTreeviewSelectNode]</code> e <code>template[liTreeviewSelectTrigger]</code>
-                permitem custom render.</li>
-              <li><code>[pageSize]</code> controla quantos nós entram por lote em cada expansão.</li>
+              <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
             <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-treeview
@@ -181,7 +199,8 @@
 &lt;/li-treeview&gt;</code></pre>
 
             <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-treeview-select
-  [pageLoader]="loadTreeChunk"
+  [pageLoader]="loadRawTreeChunk"
+  [settings]="lazySerializableSettings"
   [pageSize]="20"
   placeholder="Selecione um nó"
   [(ngModel)]="selectedValue"&gt;

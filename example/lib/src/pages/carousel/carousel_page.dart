@@ -18,4 +18,9 @@ class CarouselPageComponent {
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+  bool get _isPt => i18n.isPortuguese;
+
+  String get overviewIntro => _isPt
+      ? 'A página do carousel reúne modos padrão, grid e transições adicionais, mantendo a mesma API do componente base.'
+      : 'The carousel page brings together default mode, grid mode, and additional transitions while keeping the same base component API.';
 }

@@ -16,6 +16,13 @@ responda sempre em portugues
 - Do not create or commit manual duplicate `.css` files next to component `.scss` sources just to satisfy `styleUrls`.
 - If a component has `toast_component.scss`, the correct AngularDart annotation is `styleUrls: ['toast_component.css']`.
 
+## i18n YAML rules
+
+- In `example/lib/messages.i18n.yaml` and `example/lib/messages_en.i18n.yaml`, always wrap text values in double quotes.
+- Do this even for apparently simple strings, to avoid YAML parser breaks with `:`, `[]`, `{}`, `#`, HTML snippets, interpolation-like text, or other special characters.
+- Prefer `key: "value"` consistently instead of mixing quoted and unquoted text entries.
+- When adding multiline examples, keep using YAML block syntax only when really needed; otherwise prefer a single double-quoted string.
+
 ## AngularDart change-detection rules
 
 - Do not assume `ChangeDetectorRef.markForCheck()` will fix async rendering issues on pages using the default `ChangeDetectionStrategy.checkAlways`.

@@ -16,7 +16,7 @@
     <div class="card">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="overviewTabLabel" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-3">{{ intro }}</p>
 
@@ -172,7 +172,7 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="apiTabLabel">
           <div class="card-body">
             <p class="text-muted mb-3">{{ apiIntro }}</p>
 

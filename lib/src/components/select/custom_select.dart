@@ -65,9 +65,35 @@ class LiSelectComponent
   bool _overlayRelayoutPending = false;
 
   dynamic Function(dynamic, {String rawValue})? _ngModelValueChangeCallback;
+  TouchFunction _onTouched = () {};
+  bool _touched = false;
 
   @Input('disabled')
   bool isDisabled = false;
+
+  @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String helperText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
+
+  @Input()
+  String locale = 'pt_BR';
 
   /// Whether the search input is displayed in the dropdown.
   ///
@@ -109,6 +135,37 @@ class LiSelectComponent
     }
     return optionId(currentIndex);
   }
+
+  bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  bool get effectiveInvalid => invalid || dataInvalid;
+
+  bool get effectiveValid => !effectiveInvalid && valid;
+
+  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+
+  bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String get searchPlaceholder => _isEnglishLocale ? 'Search' : 'Buscar';
+
+  String get searchAriaLabel =>
+      _isEnglishLocale ? 'Search options' : 'Buscar opções';
+
+  String get resolvedButtonClass => _joinClasses(<String>[
+        'form-select',
+        'dropdown-button',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
+      ]);
 
   @Input('id')
   String id = 'custom_select_1';
@@ -167,7 +224,9 @@ class LiSelectComponent
   }
 
   @override
-  void registerOnTouched(TouchFunction callback) {}
+  void registerOnTouched(TouchFunction callback) {
+    _onTouched = callback;
+  }
 
   @override
   void onDisabledChanged(bool isDisabled) {
@@ -270,6 +329,7 @@ class LiSelectComponent
     inputSearch?.value = '';
     _overlay?.stopAutoUpdate();
     _unbindDocumentListeners();
+    _markTouched();
 
     dropdownButtonElement?.focus();
 
@@ -335,6 +395,7 @@ class LiSelectComponent
     closeDropdown();
     _changeController.add(currentValue?.value);
     _ngModelValueChangeCallback?.call(currentValue?.value);
+    _markTouched();
     _markForCheck();
   }
 
@@ -643,5 +704,21 @@ class LiSelectComponent
 
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
+  }
+
+  void _markTouched() {
+    if (_touched) {
+      _onTouched();
+      return;
+    }
+    _touched = true;
+    _onTouched();
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
   }
 }

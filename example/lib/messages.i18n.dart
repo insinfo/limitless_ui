@@ -245,6 +245,11 @@ class NavMessages {
   /// "Botões"
   /// ```
   String get button => """Botões""";
+
+  /// ```dart
+  /// "FAB"
+  /// ```
+  String get fab => """FAB""";
 }
 
 class CommonMessages {
@@ -272,9 +277,29 @@ class CommonMessages {
   String get close => """Fechar""";
 
   /// ```dart
+  /// "Limpar"
+  /// ```
+  String get clear => """Limpar""";
+
+  /// ```dart
   /// "Status"
   /// ```
   String get status => """Status""";
+
+  /// ```dart
+  /// "Valor"
+  /// ```
+  String get value => """Valor""";
+
+  /// ```dart
+  /// "Label"
+  /// ```
+  String get label => """Label""";
+
+  /// ```dart
+  /// "Evento"
+  /// ```
+  String get event => """Evento""";
 
   /// ```dart
   /// "Período atual"
@@ -285,6 +310,66 @@ class CommonMessages {
   /// "Janela restrita"
   /// ```
   String get restrictedWindow => """Janela restrita""";
+
+  /// ```dart
+  /// "Visão geral"
+  /// ```
+  String get tabOverview => """Visão geral""";
+
+  /// ```dart
+  /// "API"
+  /// ```
+  String get tabApi => """API""";
+
+  /// ```dart
+  /// "Descrição"
+  /// ```
+  String get sectionDescription => """Descrição""";
+
+  /// ```dart
+  /// "Recursos"
+  /// ```
+  String get sectionFeatures => """Recursos""";
+
+  /// ```dart
+  /// "Limitações"
+  /// ```
+  String get sectionLimitations => """Limitações""";
+
+  /// ```dart
+  /// "Como utilizar"
+  /// ```
+  String get sectionHowToUse => """Como utilizar""";
+
+  /// ```dart
+  /// "Observações"
+  /// ```
+  String get sectionNotes => """Observações""";
+
+  /// ```dart
+  /// "Exemplo visível"
+  /// ```
+  String get sectionVisibleExample => """Exemplo visível""";
+
+  /// ```dart
+  /// "Opções principais"
+  /// ```
+  String get sectionMainOptions => """Opções principais""";
+
+  /// ```dart
+  /// "Boas práticas"
+  /// ```
+  String get sectionBestPractices => """Boas práticas""";
+
+  /// ```dart
+  /// "Outputs"
+  /// ```
+  String get sectionOutputs => """Outputs""";
+
+  /// ```dart
+  /// "Métodos públicos"
+  /// ```
+  String get sectionPublicMethods => """Métodos públicos""";
 }
 
 class PagesMessages {
@@ -305,10 +390,13 @@ class PagesMessages {
   CarouselPagesMessages get carousel => CarouselPagesMessages(this);
   TooltipPagesMessages get tooltip => TooltipPagesMessages(this);
   DatatablePagesMessages get datatable => DatatablePagesMessages(this);
+  DatatableSelectPagesMessages get datatableSelect =>
+      DatatableSelectPagesMessages(this);
   NotificationPagesMessages get notification => NotificationPagesMessages(this);
   TreeviewPagesMessages get treeview => TreeviewPagesMessages(this);
   HelpersPagesMessages get helpers => HelpersPagesMessages(this);
   ButtonPagesMessages get button => ButtonPagesMessages(this);
+  FabPagesMessages get fab => FabPagesMessages(this);
 }
 
 class OverviewPagesMessages {
@@ -679,6 +767,46 @@ class AccordionPagesMessages {
       """Esta página cobre allowMultipleOpen, flush, lazy, destroyOnCollapse, item desabilitado, ícones e header customizado.""";
 
   /// ```dart
+  /// "O accordion organiza blocos densos de informação em seções expansíveis, reduzindo ruído visual sem perder contexto."
+  /// ```
+  String get descriptionBody =>
+      """O accordion organiza blocos densos de informação em seções expansíveis, reduzindo ruído visual sem perder contexto.""";
+
+  /// ```dart
+  /// "Itens recolhidos, expandidos, desabilitados e com cabeçalho customizado."
+  /// ```
+  String get featureOne =>
+      """Itens recolhidos, expandidos, desabilitados e com cabeçalho customizado.""";
+
+  /// ```dart
+  /// "Eventos de abertura por item."
+  /// ```
+  String get featureTwo => """Eventos de abertura por item.""";
+
+  /// ```dart
+  /// "Renderização tardia e destruição opcional do corpo."
+  /// ```
+  String get featureThree =>
+      """Renderização tardia e destruição opcional do corpo.""";
+
+  /// ```dart
+  /// "Conteúdo muito interativo exige cuidado com foco."
+  /// ```
+  String get limitOne =>
+      """Conteúdo muito interativo exige cuidado com foco.""";
+
+  /// ```dart
+  /// "Seções longas demais ainda pedem hierarquia interna."
+  /// ```
+  String get limitTwo =>
+      """Seções longas demais ainda pedem hierarquia interna.""";
+
+  /// ```dart
+  /// "O layout não substitui navegação por rotas."
+  /// ```
+  String get limitThree => """O layout não substitui navegação por rotas.""";
+
+  /// ```dart
   /// "Estado recolhido"
   /// ```
   String get collapsedHeader => """Estado recolhido""";
@@ -761,6 +889,143 @@ class AccordionPagesMessages {
   /// "recolhido"
   /// ```
   String get collapsedState => """recolhido""";
+
+  /// ```dart
+  /// "API declarativa por diretivas"
+  /// ```
+  String get directiveApiTitle => """API declarativa por diretivas""";
+
+  /// ```dart
+  /// "Esta versão mantém o markup Bootstrap acessível no DOM e expõe uma API parecida com ng-bootstrap."
+  /// ```
+  String get directiveApiIntro =>
+      """Esta versão mantém o markup Bootstrap acessível no DOM e expõe uma API parecida com ng-bootstrap.""";
+
+  /// ```dart
+  /// "Para destroyOnHide físico de verdade, use <template liAccordionBody>. O wrapper simples com <div liAccordionBody> mantém o conteúdo no DOM para casos em que a referência precisa permanecer estável."
+  /// ```
+  String get directiveApiNote =>
+      """Para destroyOnHide físico de verdade, use <template liAccordionBody>. O wrapper simples com <div liAccordionBody> mantém o conteúdo no DOM para casos em que a referência precisa permanecer estável.""";
+
+  /// ```dart
+  /// "Visão geral"
+  /// ```
+  String get declarativeOverviewButton => """Visão geral""";
+
+  /// ```dart
+  /// "Conteúdo básico com header e body declarativos, mantendo classes e atributos de acessibilidade."
+  /// ```
+  String get declarativeOverviewBody =>
+      """Conteúdo básico com header e body declarativos, mantendo classes e atributos de acessibilidade.""";
+
+  /// ```dart
+  /// "Header customizado"
+  /// ```
+  String get declarativeCustomHeader => """Header customizado""";
+
+  /// ```dart
+  /// "Alternar"
+  /// ```
+  String get declarativeToggle => """Alternar""";
+
+  /// ```dart
+  /// "O header pode ser totalmente customizado sem perder o controle por id, collapse e eventos."
+  /// ```
+  String get declarativeCustomBody =>
+      """O header pode ser totalmente customizado sem perder o controle por id, collapse e eventos.""";
+
+  /// ```dart
+  /// "Item desabilitado"
+  /// ```
+  String get declarativeDisabledButton => """Item desabilitado""";
+
+  /// ```dart
+  /// "Este conteúdo continua acessível via API, mas não reage ao clique do usuário."
+  /// ```
+  String get declarativeDisabledBody =>
+      """Este conteúdo continua acessível via API, mas não reage ao clique do usuário.""";
+
+  /// ```dart
+  /// "Expandir overview"
+  /// ```
+  String get expandOverview => """Expandir overview""";
+
+  /// ```dart
+  /// "Alternar custom"
+  /// ```
+  String get toggleCustom => """Alternar custom""";
+
+  /// ```dart
+  /// "Fechar todos"
+  /// ```
+  String get closeAll => """Fechar todos""";
+
+  /// ```dart
+  /// "API do item"
+  /// ```
+  String get itemApi => """API do item""";
+
+  /// ```dart
+  /// "Nenhum evento da API declarativa."
+  /// ```
+  String get declarativeIdle => """Nenhum evento da API declarativa.""";
+
+  /// ```dart
+  /// "liCollapse"
+  /// ```
+  String get collapseTitle => """liCollapse""";
+
+  /// ```dart
+  /// "Diretiva genérica para esconder e mostrar blocos com as classes collapse, show e collapsing."
+  /// ```
+  String get collapseIntro =>
+      """Diretiva genérica para esconder e mostrar blocos com as classes collapse, show e collapsing.""";
+
+  /// ```dart
+  /// "Abrir painel"
+  /// ```
+  String get openPanel => """Abrir painel""";
+
+  /// ```dart
+  /// "Fechar painel"
+  /// ```
+  String get closePanel => """Fechar painel""";
+
+  /// ```dart
+  /// "Este bloco usa a diretiva genérica de collapse, sem depender do accordion."
+  /// ```
+  String get collapseBody =>
+      """Este bloco usa a diretiva genérica de collapse, sem depender do accordion.""";
+
+  /// ```dart
+  /// "[allowMultipleOpen] permite manter mais de um item expandido ao mesmo tempo."
+  /// ```
+  String get apiOne =>
+      """[allowMultipleOpen] permite manter mais de um item expandido ao mesmo tempo.""";
+
+  /// ```dart
+  /// "[flush] remove contornos extras para uma composição mais compacta."
+  /// ```
+  String get apiTwo =>
+      """[flush] remove contornos extras para uma composição mais compacta.""";
+
+  /// ```dart
+  /// "[lazy] adia a renderização do corpo até a primeira abertura."
+  /// ```
+  String get apiThree =>
+      """[lazy] adia a renderização do corpo até a primeira abertura.""";
+
+  /// ```dart
+  /// "[destroyOnCollapse] remove o conteúdo do DOM quando o item fecha."
+  /// ```
+  String get apiFour =>
+      """[destroyOnCollapse] remove o conteúdo do DOM quando o item fecha.""";
+
+  /// ```dart
+  /// "[expanded] e (expandedChange) controlam abertura por item."
+  /// ```
+  String get apiFive =>
+      """[expanded] e (expandedChange) controlam abertura por item.""";
 }
 
 class ProgressPagesMessages {
@@ -846,6 +1111,95 @@ class TabsPagesMessages {
   /// "Pills com header customizado"
   /// ```
   String get cardTitle => """Pills com header customizado""";
+
+  /// ```dart
+  /// "A página de tabs demonstra composição horizontal, vertical, cabeçalhos customizados e estados desabilitados."
+  /// ```
+  String get overviewIntro =>
+      """A página de tabs demonstra composição horizontal, vertical, cabeçalhos customizados e estados desabilitados.""";
+
+  /// ```dart
+  /// "Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e funcionam bem para documentação, formulários segmentados e painéis administrativos."
+  /// ```
+  String get descriptionBody =>
+      """Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e funcionam bem para documentação, formulários segmentados e painéis administrativos.""";
+
+  /// ```dart
+  /// "Modo tabs e pills."
+  /// ```
+  String get featureOne => """Modo tabs e pills.""";
+
+  /// ```dart
+  /// "Posicionamento horizontal ou lateral."
+  /// ```
+  String get featureTwo => """Posicionamento horizontal ou lateral.""";
+
+  /// ```dart
+  /// "Cabeçalho projetado e abas desabilitadas."
+  /// ```
+  String get featureThree => """Cabeçalho projetado e abas desabilitadas.""";
+
+  /// ```dart
+  /// "Muitas abas no mesmo nível prejudicam escaneabilidade."
+  /// ```
+  String get limitOne =>
+      """Muitas abas no mesmo nível prejudicam escaneabilidade.""";
+
+  /// ```dart
+  /// "Conteúdo longo demais pede hierarquia adicional."
+  /// ```
+  String get limitTwo => """Conteúdo longo demais pede hierarquia adicional.""";
+
+  /// ```dart
+  /// "Abas aninhadas devem ser isoladas em subcomponentes."
+  /// ```
+  String get limitThree =>
+      """Abas aninhadas devem ser isoladas em subcomponentes.""";
+
+  /// ```dart
+  /// "Exemplo visível"
+  /// ```
+  String get previewTitle => """Exemplo visível""";
+
+  /// ```dart
+  /// "O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba desabilitada, sem contaminar a navegação da página de documentação."
+  /// ```
+  String get previewIntro =>
+      """O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba desabilitada, sem contaminar a navegação da página de documentação.""";
+
+  /// ```dart
+  /// "Use o componente para agrupar conteúdo relacionado quando a navegação por seções fizer mais sentido do que empilhar cards ou abrir novas rotas."
+  /// ```
+  String get apiIntro =>
+      """Use o componente para agrupar conteúdo relacionado quando a navegação por seções fizer mais sentido do que empilhar cards ou abrir novas rotas.""";
+
+  /// ```dart
+  /// "type aceita tabs ou pills."
+  /// ```
+  String get apiOne => """type aceita tabs ou pills.""";
+
+  /// ```dart
+  /// "placement controla a posição das abas, como topo ou lateral."
+  /// ```
+  String get apiTwo =>
+      """placement controla a posição das abas, como topo ou lateral.""";
+
+  /// ```dart
+  /// "[justified] distribui os gatilhos de forma uniforme."
+  /// ```
+  String get apiThree =>
+      """[justified] distribui os gatilhos de forma uniforme.""";
+
+  /// ```dart
+  /// "[active] e [disabled] controlam estado por aba."
+  /// ```
+  String get apiFour => """[active] e [disabled] controlam estado por aba.""";
+
+  /// ```dart
+  /// "template li-tabx-header permite cabeçalhos customizados."
+  /// ```
+  String get apiFive =>
+      """template li-tabx-header permite cabeçalhos customizados.""";
 
   /// ```dart
   /// "Tokens"
@@ -2911,6 +3265,66 @@ class DatatablePagesMessages {
   String get cardTitle => """Operações da tabela""";
 
   /// ```dart
+  /// "A datatable desta biblioteca cobre o fluxo administrativo mais comum: busca por campo, seleção de linhas, exportação, paginação, ordenação, colapso responsivo e uma camada de customização visual por coluna, por linha e por card."
+  /// ```
+  String get overviewIntro =>
+      """A datatable desta biblioteca cobre o fluxo administrativo mais comum: busca por campo, seleção de linhas, exportação, paginação, ordenação, colapso responsivo e uma camada de customização visual por coluna, por linha e por card.""";
+
+  /// ```dart
+  /// "O componente atende listagens operacionais que precisam alternar entre tabela e grade sem duplicar fonte de dados, regras de ordenação ou comportamento de busca."
+  /// ```
+  String get descriptionBody =>
+      """O componente atende listagens operacionais que precisam alternar entre tabela e grade sem duplicar fonte de dados, regras de ordenação ou comportamento de busca.""";
+
+  /// ```dart
+  /// "Busca direcionada por coluna com campo e operador configuráveis."
+  /// ```
+  String get featureOne =>
+      """Busca direcionada por coluna com campo e operador configuráveis.""";
+
+  /// ```dart
+  /// "Exportação para XLSX e PDF usando a própria API do componente."
+  /// ```
+  String get featureTwo =>
+      """Exportação para XLSX e PDF usando a própria API do componente.""";
+
+  /// ```dart
+  /// "Modo tabela e modo grade com a mesma fonte de dados."
+  /// ```
+  String get featureThree =>
+      """Modo tabela e modo grade com a mesma fonte de dados.""";
+
+  /// ```dart
+  /// "Largura, alinhamento, classes e estilos por coluna e por linha."
+  /// ```
+  String get featureFour =>
+      """Largura, alinhamento, classes e estilos por coluna e por linha.""";
+
+  /// ```dart
+  /// "Cards customizados com customCardBuilder em grid mode."
+  /// ```
+  String get featureFive =>
+      """Cards customizados com customCardBuilder em grid mode.""";
+
+  /// ```dart
+  /// "cellStyleResolver trabalha com CSS inline, então não substitui um tema completo."
+  /// ```
+  String get limitOne =>
+      """cellStyleResolver trabalha com CSS inline, então não substitui um tema completo.""";
+
+  /// ```dart
+  /// "customCardBuilder é ideal para cards ricos, mas exige montagem manual do markup."
+  /// ```
+  String get limitTwo =>
+      """customCardBuilder é ideal para cards ricos, mas exige montagem manual do markup.""";
+
+  /// ```dart
+  /// "O colapso mobile continua orientado a colunas, então layouts muito densos pedem curadoria das colunas secundárias."
+  /// ```
+  String get limitThree =>
+      """O colapso mobile continua orientado a colunas, então layouts muito densos pedem curadoria das colunas secundárias.""";
+
+  /// ```dart
   /// "Alternar grid"
   /// ```
   String get toggleGrid => """Alternar grid""";
@@ -3031,6 +3445,223 @@ class DatatablePagesMessages {
   String get ready => """Tabela pronta para interação.""";
 
   /// ```dart
+  /// "Demo principal com busca, seleção, exportação e alternância entre tabela e grade."
+  /// ```
+  String get demoIntro =>
+      """Demo principal com busca, seleção, exportação e alternância entre tabela e grade.""";
+
+  /// ```dart
+  /// "Demos sob demanda"
+  /// ```
+  String get onDemandTitle => """Demos sob demanda""";
+
+  /// ```dart
+  /// "Os exemplos abaixo usam li-accordion com carregamento tardio para evitar que todos os datatables entrem no DOM ao abrir a rota."
+  /// ```
+  String get onDemandIntro =>
+      """Os exemplos abaixo usam li-accordion com carregamento tardio para evitar que todos os datatables entrem no DOM ao abrir a rota.""";
+
+  /// ```dart
+  /// "Exemplo somente leitura"
+  /// ```
+  String get readonlyTitle => """Exemplo somente leitura""";
+
+  /// ```dart
+  /// "Busca e ordenação sem clique de linha nem seleção."
+  /// ```
+  String get readonlyDescription =>
+      """Busca e ordenação sem clique de linha nem seleção.""";
+
+  /// ```dart
+  /// "Exemplo em modo grade"
+  /// ```
+  String get gridPreviewTitle => """Exemplo em modo grade""";
+
+  /// ```dart
+  /// "Mesmo dataset reaproveitado como cartões."
+  /// ```
+  String get gridPreviewDescription =>
+      """Mesmo dataset reaproveitado como cartões.""";
+
+  /// ```dart
+  /// "Tabela com width, cor por coluna e cor por linha"
+  /// ```
+  String get customTableTitle =>
+      """Tabela com width, cor por coluna e cor por linha""";
+
+  /// ```dart
+  /// "Combina width fixa, cellStyleResolver e rowStyleResolver no mesmo cenário."
+  /// ```
+  String get customTableDescription =>
+      """Combina width fixa, cellStyleResolver e rowStyleResolver no mesmo cenário.""";
+
+  /// ```dart
+  /// "Grid com customCardBuilder"
+  /// ```
+  String get customGridTitle => """Grid com customCardBuilder""";
+
+  /// ```dart
+  /// "Card montado manualmente só quando o item é aberto."
+  /// ```
+  String get customGridDescription =>
+      """Card montado manualmente só quando o item é aberto.""";
+
+  /// ```dart
+  /// "Modal lazy loading com datatable"
+  /// ```
+  String get lazyModalTitle => """Modal lazy loading com datatable""";
+
+  /// ```dart
+  /// "Este cenário abre um li-modal com lazyContent e instancia o li-datatable somente depois da abertura."
+  /// ```
+  String get lazyModalIntro =>
+      """Este cenário abre um li-modal com lazyContent e instancia o li-datatable somente depois da abertura.""";
+
+  /// ```dart
+  /// "Abrir modal lazy"
+  /// ```
+  String get openLazyModal => """Abrir modal lazy""";
+
+  /// ```dart
+  /// "Modal lazy com datatable"
+  /// ```
+  String get modalTitle => """Modal lazy com datatable""";
+
+  /// ```dart
+  /// "O conteúdo do modal só entra no DOM quando ele abre. O datatable reutiliza o mesmo dataset da página para verificar se o primeiro render funciona corretamente."
+  /// ```
+  String get modalBody =>
+      """O conteúdo do modal só entra no DOM quando ele abre. O datatable reutiliza o mesmo dataset da página para verificar se o primeiro render funciona corretamente.""";
+
+  /// ```dart
+  /// "O componente é controlado por três peças: Filters para paginação e busca, DataFrame para os dados e DatatableSettings para as colunas e o comportamento visual."
+  /// ```
+  String get howToUseBody =>
+      """O componente é controlado por três peças: Filters para paginação e busca, DataFrame para os dados e DatatableSettings para as colunas e o comportamento visual.""";
+
+  /// ```dart
+  /// "[dataTableFilter]: controla limite, offset, busca e ordenação."
+  /// ```
+  String get optionOne =>
+      """[dataTableFilter]: controla limite, offset, busca e ordenação.""";
+
+  /// ```dart
+  /// "[settings]: define colunas, grid e builders customizados."
+  /// ```
+  String get optionTwo =>
+      """[settings]: define colunas, grid e builders customizados.""";
+
+  /// ```dart
+  /// "[searchInFields]: informa quais campos aparecem no seletor de busca."
+  /// ```
+  String get optionThree =>
+      """[searchInFields]: informa quais campos aparecem no seletor de busca.""";
+
+  /// ```dart
+  /// "[responsiveCollapse]: move colunas secundárias para a linha filha no mobile."
+  /// ```
+  String get optionFour =>
+      """[responsiveCollapse]: move colunas secundárias para a linha filha no mobile.""";
+
+  /// ```dart
+  /// "Mantenha o DataFrame estável e atualize apenas filtros e seleção."
+  /// ```
+  String get practiceOne =>
+      """Mantenha o DataFrame estável e atualize apenas filtros e seleção.""";
+
+  /// ```dart
+  /// "Use hideOnMobile nas colunas secundárias."
+  /// ```
+  String get practiceTwo => """Use hideOnMobile nas colunas secundárias.""";
+
+  /// ```dart
+  /// "Reserve customCardBuilder para grids que realmente precisam fugir do layout padrão."
+  /// ```
+  String get practiceThree =>
+      """Reserve customCardBuilder para grids que realmente precisam fugir do layout padrão.""";
+
+  /// ```dart
+  /// "Colunas e estilos"
+  /// ```
+  String get columnStylesTitle => """Colunas e estilos""";
+
+  /// ```dart
+  /// "width, minWidth e maxWidth controlam a largura efetiva da coluna."
+  /// ```
+  String get columnStyleOne =>
+      """width, minWidth e maxWidth controlam a largura efetiva da coluna.""";
+
+  /// ```dart
+  /// "headerClass e cellClass adicionam classes sem mexer no template."
+  /// ```
+  String get columnStyleTwo =>
+      """headerClass e cellClass adicionam classes sem mexer no template.""";
+
+  /// ```dart
+  /// "styleCss e cellStyleResolver controlam cor e estilo por coluna."
+  /// ```
+  String get columnStyleThree =>
+      """styleCss e cellStyleResolver controlam cor e estilo por coluna.""";
+
+  /// ```dart
+  /// "rowStyleResolver devolve uma string CSS por linha inteira com base nos dados."
+  /// ```
+  String get columnStyleFour =>
+      """rowStyleResolver devolve uma string CSS por linha inteira com base nos dados.""";
+
+  /// ```dart
+  /// "textAlign e nowrap ajustam leitura para colunas curtas ou status."
+  /// ```
+  String get columnStyleFive =>
+      """textAlign e nowrap ajustam leitura para colunas curtas ou status.""";
+
+  /// ```dart
+  /// "CustomCardBuilder"
+  /// ```
+  String get customCardEyebrow => """CustomCardBuilder""";
+
+  /// ```dart
+  /// "Responsável"
+  /// ```
+  String get ownerPrefix => """Responsável""";
+
+  /// ```dart
+  /// "O card foi montado manualmente para combinar título, estado e metadados sem depender do layout padrão."
+  /// ```
+  String get customCardSummary =>
+      """O card foi montado manualmente para combinar título, estado e metadados sem depender do layout padrão.""";
+
+  /// ```dart
+  /// "Sincronizar cadastro com ERP"
+  /// ```
+  String get featureRow5 => """Sincronizar cadastro com ERP""";
+
+  /// ```dart
+  /// "Publicar relatório operacional"
+  /// ```
+  String get featureRow6 => """Publicar relatório operacional""";
+
+  /// ```dart
+  /// "Revisar fila de integração"
+  /// ```
+  String get featureRow7 => """Revisar fila de integração""";
+
+  /// ```dart
+  /// "Atualizar painel de atendimento"
+  /// ```
+  String get featureRow8 => """Atualizar painel de atendimento""";
+
+  /// ```dart
+  /// "Financeiro"
+  /// ```
+  String get ownerFinance => """Financeiro""";
+
+  /// ```dart
+  /// "Atendimento"
+  /// ```
+  String get ownerSupport => """Atendimento""";
+
+  /// ```dart
   /// "Datatable alternada para o modo grade."
   /// ```
   String get gridMode => """Datatable alternada para o modo grade.""";
@@ -3069,6 +3700,328 @@ class DatatablePagesMessages {
   /// "Itens selecionados: $count."
   /// ```
   String selectedItems(int count) => """Itens selecionados: $count.""";
+}
+
+class DatatableSelectPagesMessages {
+  final PagesMessages _parent;
+  const DatatableSelectPagesMessages(this._parent);
+
+  /// ```dart
+  /// "Componentes"
+  /// ```
+  String get title => """Componentes""";
+
+  /// ```dart
+  /// "Datatable Select"
+  /// ```
+  String get subtitle => """Datatable Select""";
+
+  /// ```dart
+  /// "Select com datatable em modal"
+  /// ```
+  String get breadcrumb => """Select com datatable em modal""";
+
+  /// ```dart
+  /// "Um select que abre um modal com um datatable completo, permitindo busca, paginação e ordenação. Ao clicar em uma linha, o item é selecionado e o modal fecha."
+  /// ```
+  String get overviewIntro =>
+      """Um select que abre um modal com um datatable completo, permitindo busca, paginação e ordenação. Ao clicar em uma linha, o item é selecionado e o modal fecha.""";
+
+  /// ```dart
+  /// "O componente combina um trigger no formato form-select com um modal que exibe um li-datatable completo. Implementa ControlValueAccessor para compatibilidade com ngModel."
+  /// ```
+  String get descriptionBody =>
+      """O componente combina um trigger no formato form-select com um modal que exibe um li-datatable completo. Implementa ControlValueAccessor para compatibilidade com ngModel.""";
+
+  /// ```dart
+  /// "Busca, paginação e ordenação via li-datatable."
+  /// ```
+  String get featureOne => """Busca, paginação e ordenação via li-datatable.""";
+
+  /// ```dart
+  /// "Seleção por clique de linha."
+  /// ```
+  String get featureTwo => """Seleção por clique de linha.""";
+
+  /// ```dart
+  /// "Suporte a ngModel e currentValueChange."
+  /// ```
+  String get featureThree => """Suporte a ngModel e currentValueChange.""";
+
+  /// ```dart
+  /// "Tamanho do modal configurável."
+  /// ```
+  String get featureFour => """Tamanho do modal configurável.""";
+
+  /// ```dart
+  /// "Estados desabilitado e programático."
+  /// ```
+  String get featureFive => """Estados desabilitado e programático.""";
+
+  /// ```dart
+  /// "Requer dataRequest para fornecer dados ao datatable."
+  /// ```
+  String get limitOne =>
+      """Requer dataRequest para fornecer dados ao datatable.""";
+
+  /// ```dart
+  /// "O label exibido depende de labelKey sem projeção customizada."
+  /// ```
+  String get limitTwo =>
+      """O label exibido depende de labelKey sem projeção customizada.""";
+
+  /// ```dart
+  /// "Não suporta seleção múltipla."
+  /// ```
+  String get limitThree => """Não suporta seleção múltipla.""";
+
+  /// ```dart
+  /// "Uso básico com currentValueChange e controle programático."
+  /// ```
+  String get demoIntro =>
+      """Uso básico com currentValueChange e controle programático.""";
+
+  /// ```dart
+  /// "Selecionar Maria Silva"
+  /// ```
+  String get selectMaria => """Selecionar Maria Silva""";
+
+  /// ```dart
+  /// "Selecionar pessoa"
+  /// ```
+  String get selectPersonLabel => """Selecionar pessoa""";
+
+  /// ```dart
+  /// "Selecionar pessoa"
+  /// ```
+  String get modalTitle => """Selecionar pessoa""";
+
+  /// ```dart
+  /// "Clique para selecionar..."
+  /// ```
+  String get placeholder => """Clique para selecionar...""";
+
+  /// ```dart
+  /// "Buscar por nome, e-mail..."
+  /// ```
+  String get searchPlaceholder => """Buscar por nome, e-mail...""";
+
+  /// ```dart
+  /// "Estado desabilitado, o trigger fica inativo e não abre o modal."
+  /// ```
+  String get disabledIntro =>
+      """Estado desabilitado, o trigger fica inativo e não abre o modal.""";
+
+  /// ```dart
+  /// "Pessoa (desabilitado)"
+  /// ```
+  String get disabledLabel => """Pessoa (desabilitado)""";
+
+  /// ```dart
+  /// "Campo desabilitado"
+  /// ```
+  String get disabledPlaceholder => """Campo desabilitado""";
+
+  /// ```dart
+  /// "Binding com ngModel. O valor é sincronizado via ControlValueAccessor."
+  /// ```
+  String get ngModelIntro =>
+      """Binding com ngModel. O valor é sincronizado via ControlValueAccessor.""";
+
+  /// ```dart
+  /// "Selecionar pessoa (ngModel)"
+  /// ```
+  String get ngModelLabel => """Selecionar pessoa (ngModel)""";
+
+  /// ```dart
+  /// "O componente é controlado por três peças: Filters para paginação e busca, DataFrame para os dados e DatatableSettings para as colunas. Ao clicar no trigger, um modal abre com o datatable; ao clicar numa linha, a seleção é feita."
+  /// ```
+  String get howToUseBody =>
+      """O componente é controlado por três peças: Filters para paginação e busca, DataFrame para os dados e DatatableSettings para as colunas. Ao clicar no trigger, um modal abre com o datatable; ao clicar numa linha, a seleção é feita.""";
+
+  /// ```dart
+  /// "[settings]: definições de colunas do datatable."
+  /// ```
+  String get optionOne => """[settings]: definições de colunas do datatable.""";
+
+  /// ```dart
+  /// "[data]: DataFrame com dados paginados."
+  /// ```
+  String get optionTwo => """[data]: DataFrame com dados paginados.""";
+
+  /// ```dart
+  /// "[dataTableFilter]: filtros de busca e paginação."
+  /// ```
+  String get optionThree =>
+      """[dataTableFilter]: filtros de busca e paginação.""";
+
+  /// ```dart
+  /// "[searchInFields]: campos de busca."
+  /// ```
+  String get optionFour => """[searchInFields]: campos de busca.""";
+
+  /// ```dart
+  /// "[labelKey]: chave para o texto exibido no trigger."
+  /// ```
+  String get optionFive =>
+      """[labelKey]: chave para o texto exibido no trigger.""";
+
+  /// ```dart
+  /// "[valueKey]: chave para o valor; null = instância inteira."
+  /// ```
+  String get optionSix =>
+      """[valueKey]: chave para o valor; null = instância inteira.""";
+
+  /// ```dart
+  /// "[placeholder]: texto quando nenhum item está selecionado."
+  /// ```
+  String get optionSeven =>
+      """[placeholder]: texto quando nenhum item está selecionado.""";
+
+  /// ```dart
+  /// "[title]: título do modal."
+  /// ```
+  String get optionEight => """[title]: título do modal.""";
+
+  /// ```dart
+  /// "[modalSize]: tamanho do modal (large, xtra-large)."
+  /// ```
+  String get optionNine =>
+      """[modalSize]: tamanho do modal (large, xtra-large).""";
+
+  /// ```dart
+  /// "[disabled]: desabilita o componente."
+  /// ```
+  String get optionTen => """[disabled]: desabilita o componente.""";
+
+  /// ```dart
+  /// "[fullScreenOnMobile]: modal fullscreen no mobile."
+  /// ```
+  String get optionEleven =>
+      """[fullScreenOnMobile]: modal fullscreen no mobile.""";
+
+  /// ```dart
+  /// "(dataRequest): emitido quando o datatable solicita dados."
+  /// ```
+  String get outputOne =>
+      """(dataRequest): emitido quando o datatable solicita dados.""";
+
+  /// ```dart
+  /// "(currentValueChange): emitido quando o valor selecionado muda."
+  /// ```
+  String get outputTwo =>
+      """(currentValueChange): emitido quando o valor selecionado muda.""";
+
+  /// ```dart
+  /// "(limitChange): emitido quando o limite por página muda."
+  /// ```
+  String get outputThree =>
+      """(limitChange): emitido quando o limite por página muda.""";
+
+  /// ```dart
+  /// "(searchRequest): emitido quando uma busca é submetida."
+  /// ```
+  String get outputFour =>
+      """(searchRequest): emitido quando uma busca é submetida.""";
+
+  /// ```dart
+  /// "clear(): limpa a seleção."
+  /// ```
+  String get methodOne => """clear(): limpa a seleção.""";
+
+  /// ```dart
+  /// "setSelectedItem({label, value}): define a seleção programaticamente."
+  /// ```
+  String get methodTwo =>
+      """setSelectedItem({label, value}): define a seleção programaticamente.""";
+
+  /// ```dart
+  /// "selectedLabel: getter que retorna o label atual."
+  /// ```
+  String get methodThree =>
+      """selectedLabel: getter que retorna o label atual.""";
+
+  /// ```dart
+  /// "Compatível com ngModel via ControlValueAccessor."
+  /// ```
+  String get noteOne => """Compatível com ngModel via ControlValueAccessor.""";
+
+  /// ```dart
+  /// "Mantenha o DataFrame estável; atualize apenas via (dataRequest)."
+  /// ```
+  String get noteTwo =>
+      """Mantenha o DataFrame estável; atualize apenas via (dataRequest).""";
+
+  /// ```dart
+  /// "O botão de limpar no trigger aparece quando há valor selecionado."
+  /// ```
+  String get noteThree =>
+      """O botão de limpar no trigger aparece quando há valor selecionado.""";
+
+  /// ```dart
+  /// "ID"
+  /// ```
+  String get columnId => """ID""";
+
+  /// ```dart
+  /// "Nome"
+  /// ```
+  String get columnName => """Nome""";
+
+  /// ```dart
+  /// "E-mail"
+  /// ```
+  String get columnEmail => """E-mail""";
+
+  /// ```dart
+  /// "Departamento"
+  /// ```
+  String get columnDepartment => """Departamento""";
+
+  /// ```dart
+  /// "Nome"
+  /// ```
+  String get searchName => """Nome""";
+
+  /// ```dart
+  /// "E-mail"
+  /// ```
+  String get searchEmail => """E-mail""";
+
+  /// ```dart
+  /// "Departamento"
+  /// ```
+  String get searchDepartment => """Departamento""";
+
+  /// ```dart
+  /// "Engenharia"
+  /// ```
+  String get departmentEngineering => """Engenharia""";
+
+  /// ```dart
+  /// "Design"
+  /// ```
+  String get departmentDesign => """Design""";
+
+  /// ```dart
+  /// "Marketing"
+  /// ```
+  String get departmentMarketing => """Marketing""";
+
+  /// ```dart
+  /// "Financeiro"
+  /// ```
+  String get departmentFinance => """Financeiro""";
+
+  /// ```dart
+  /// "RH"
+  /// ```
+  String get departmentHr => """RH""";
+
+  /// ```dart
+  /// "ngModel value"
+  /// ```
+  String get ngModelValuePrefix => """ngModel value""";
 }
 
 class NotificationPagesMessages {
@@ -3593,6 +4546,67 @@ class ButtonPagesMessages {
   String get breadcrumb => """Estilos e variações de botões""";
 
   /// ```dart
+  /// "Esta página reúne variações de cor, estilo, tamanho, alinhamento e estados do componente de botão."
+  /// ```
+  String get overviewIntro =>
+      """Esta página reúne variações de cor, estilo, tamanho, alinhamento e estados do componente de botão.""";
+
+  /// ```dart
+  /// "Use"
+  /// ```
+  String get usePrefix => """Use""";
+
+  /// ```dart
+  /// "Botão"
+  /// ```
+  String get demoButton => """Botão""";
+
+  /// ```dart
+  /// "Botão light"
+  /// ```
+  String get lightCardTitle => """Botão light""";
+
+  /// ```dart
+  /// "Botão dark"
+  /// ```
+  String get darkCardTitle => """Botão dark""";
+
+  /// ```dart
+  /// "Botão primary"
+  /// ```
+  String get primaryCardTitle => """Botão primary""";
+
+  /// ```dart
+  /// "Botão secondary"
+  /// ```
+  String get secondaryCardTitle => """Botão secondary""";
+
+  /// ```dart
+  /// "Botão danger"
+  /// ```
+  String get dangerCardTitle => """Botão danger""";
+
+  /// ```dart
+  /// "Botão success"
+  /// ```
+  String get successCardTitle => """Botão success""";
+
+  /// ```dart
+  /// "Botão warning"
+  /// ```
+  String get warningCardTitle => """Botão warning""";
+
+  /// ```dart
+  /// "Botão info"
+  /// ```
+  String get infoCardTitle => """Botão info""";
+
+  /// ```dart
+  /// "Botão indigo"
+  /// ```
+  String get indigoCardTitle => """Botão indigo""";
+
+  /// ```dart
   /// "Cores de botões"
   /// ```
   String get colorsTitle => """Cores de botões""";
@@ -3675,6 +4689,473 @@ class ButtonPagesMessages {
   String get disabledSubtitle => """Botões no estado disabled""";
 }
 
+class FabPagesMessages {
+  final PagesMessages _parent;
+  const FabPagesMessages(this._parent);
+
+  /// ```dart
+  /// "Componentes"
+  /// ```
+  String get title => """Componentes""";
+
+  /// ```dart
+  /// "FAB"
+  /// ```
+  String get subtitle => """FAB""";
+
+  /// ```dart
+  /// "Componentes"
+  /// ```
+  String get breadcrumbParent => """Componentes""";
+
+  /// ```dart
+  /// "FAB"
+  /// ```
+  String get breadcrumb => """FAB""";
+
+  /// ```dart
+  /// "O menu de botão de ação flutuante (FAB) exibe um botão flutuante único, com ou sem menu aninhado. A demonstração abaixo segue a organização visual do Limitless, com exemplos de interação, direção, rótulos e cores."
+  /// ```
+  String get intro =>
+      """O menu de botão de ação flutuante (FAB) exibe um botão flutuante único, com ou sem menu aninhado. A demonstração abaixo segue a organização visual do Limitless, com exemplos de interação, direção, rótulos e cores.""";
+
+  /// ```dart
+  /// "Exemplos básicos"
+  /// ```
+  String get basicTitle => """Exemplos básicos""";
+
+  /// ```dart
+  /// "Demonstração de botões e listas de botões"
+  /// ```
+  String get basicSubtitle => """Demonstração de botões e listas de botões""";
+
+  /// ```dart
+  /// "Botão flutuante único"
+  /// ```
+  String get singleTitle => """Botão flutuante único""";
+
+  /// ```dart
+  /// "O botão flutuante usa marcação de botão padrão com .fab-menu-btn dentro do container .fab-menu."
+  /// ```
+  String get singleBody =>
+      """O botão flutuante usa marcação de botão padrão com .fab-menu-btn dentro do container .fab-menu.""";
+
+  /// ```dart
+  /// "Abrir menu ao passar o cursor"
+  /// ```
+  String get hoverTitle => """Abrir menu ao passar o cursor""";
+
+  /// ```dart
+  /// "Use a semântica data-fab-toggle="hover" para menus que devem expandir ao passar o cursor."
+  /// ```
+  String get hoverBody =>
+      """Use a semântica data-fab-toggle="hover" para menus que devem expandir ao passar o cursor.""";
+
+  /// ```dart
+  /// "Abrir menu no clique"
+  /// ```
+  String get clickTitle => """Abrir menu no clique""";
+
+  /// ```dart
+  /// "O caso mais comum é abrir no clique com o trigger padrão somente com ícone."
+  /// ```
+  String get clickBody =>
+      """O caso mais comum é abrir no clique com o trigger padrão somente com ícone.""";
+
+  /// ```dart
+  /// "Elementos do menu FAB"
+  /// ```
+  String get elementsTitle => """Elementos do menu FAB""";
+
+  /// ```dart
+  /// "Botões, direções e posicionamento fixo"
+  /// ```
+  String get elementsSubtitle => """Botões, direções e posicionamento fixo""";
+
+  /// ```dart
+  /// "Botões simples"
+  /// ```
+  String get simpleButtonsTitle => """Botões simples""";
+
+  /// ```dart
+  /// "O submenu normalmente contém botões arredondados com um único ícone."
+  /// ```
+  String get simpleButtonsBody =>
+      """O submenu normalmente contém botões arredondados com um único ícone.""";
+
+  /// ```dart
+  /// "Ações laterais"
+  /// ```
+  String get sideActionsTitle => """Ações laterais""";
+
+  /// ```dart
+  /// "A direção à esquerda mantém o trigger principal compacto enquanto expõe ações contextuais na lateral."
+  /// ```
+  String get sideActionsBody =>
+      """A direção à esquerda mantém o trigger principal compacto enquanto expõe ações contextuais na lateral.""";
+
+  /// ```dart
+  /// "Modelos personalizados"
+  /// ```
+  String get customTemplatesTitle => """Modelos personalizados""";
+
+  /// ```dart
+  /// "Use TemplateRef para personalizar o conteúdo do gatilho e das ações sem substituir o comportamento do FAB, os atalhos de teclado ou o tratamento de links."
+  /// ```
+  String get customTemplatesBody =>
+      """Use TemplateRef para personalizar o conteúdo do gatilho e das ações sem substituir o comportamento do FAB, os atalhos de teclado ou o tratamento de links.""";
+
+  /// ```dart
+  /// "Ação de página sem sobreposição"
+  /// ```
+  String get noBackdropTitle => """Ação de página sem sobreposição""";
+
+  /// ```dart
+  /// "A variante sem backdrop é exibida dentro do card para evitar colisão com a barra lateral esquerda. O FAB fixo real continua na borda direita da página."
+  /// ```
+  String get noBackdropBody =>
+      """A variante sem backdrop é exibida dentro do card para evitar colisão com a barra lateral esquerda. O FAB fixo real continua na borda direita da página.""";
+
+  /// ```dart
+  /// "Rótulos dos botões internos"
+  /// ```
+  String get innerLabelsTitle => """Rótulos dos botões internos""";
+
+  /// ```dart
+  /// "Tooltips visíveis, rótulos claros e posições do rótulo"
+  /// ```
+  String get innerLabelsSubtitle =>
+      """Tooltips visíveis, rótulos claros e posições do rótulo""";
+
+  /// ```dart
+  /// "Rótulos visíveis"
+  /// ```
+  String get visibleLabelsTitle => """Rótulos visíveis""";
+
+  /// ```dart
+  /// "Use .fab-label-visible quando os rótulos precisarem permanecer visíveis enquanto o menu estiver expandido."
+  /// ```
+  String get visibleLabelsBody =>
+      """Use .fab-label-visible quando os rótulos precisarem permanecer visíveis enquanto o menu estiver expandido.""";
+
+  /// ```dart
+  /// "Rótulos claros"
+  /// ```
+  String get lightLabelsTitle => """Rótulos claros""";
+
+  /// ```dart
+  /// "Todos os tipos de botão suportam tooltips claros como alternativa aos rótulos escuros padrão."
+  /// ```
+  String get lightLabelsBody =>
+      """Todos os tipos de botão suportam tooltips claros como alternativa aos rótulos escuros padrão.""";
+
+  /// ```dart
+  /// "Posições do rótulo"
+  /// ```
+  String get labelPositionsTitle => """Posições do rótulo""";
+
+  /// ```dart
+  /// "A esquerda é o padrão; use .fab-label-end para posicionar os rótulos no lado direito."
+  /// ```
+  String get labelPositionsBody =>
+      """A esquerda é o padrão; use .fab-label-end para posicionar os rótulos no lado direito.""";
+
+  /// ```dart
+  /// "Cores padrão dos botões"
+  /// ```
+  String get defaultColorsTitle => """Cores padrão dos botões""";
+
+  /// ```dart
+  /// "Exemplos de cores contextuais predefinidas"
+  /// ```
+  String get defaultColorsSubtitle =>
+      """Exemplos de cores contextuais predefinidas""";
+
+  /// ```dart
+  /// "Cor primária do botão"
+  /// ```
+  String get primaryColorTitle => """Cor primária do botão""";
+
+  /// ```dart
+  /// "A variação contextual primária usa o botão principal padrão .btn-primary."
+  /// ```
+  String get primaryColorBody =>
+      """A variação contextual primária usa o botão principal padrão .btn-primary.""";
+
+  /// ```dart
+  /// "Cor de sucesso do botão"
+  /// ```
+  String get successColorTitle => """Cor de sucesso do botão""";
+
+  /// ```dart
+  /// "Use .btn-success para uma variante contextual positiva."
+  /// ```
+  String get successColorBody =>
+      """Use .btn-success para uma variante contextual positiva.""";
+
+  /// ```dart
+  /// "Cor de alerta do botão"
+  /// ```
+  String get warningColorTitle => """Cor de alerta do botão""";
+
+  /// ```dart
+  /// "A variação warning é uma alternativa contextual forte para ações que exigem atenção."
+  /// ```
+  String get warningColorBody =>
+      """A variação warning é uma alternativa contextual forte para ações que exigem atenção.""";
+
+  /// ```dart
+  /// "Opções de cores customizadas"
+  /// ```
+  String get customColorsTitle => """Opções de cores customizadas""";
+
+  /// ```dart
+  /// "Use cores customizadas nos botões principais e internos"
+  /// ```
+  String get customColorsSubtitle =>
+      """Use cores customizadas nos botões principais e internos""";
+
+  /// ```dart
+  /// "Cor customizada do botão principal"
+  /// ```
+  String get customMainColorTitle => """Cor customizada do botão principal""";
+
+  /// ```dart
+  /// "Cores da paleta secundária podem ser aplicadas diretamente ao trigger principal."
+  /// ```
+  String get customMainColorBody =>
+      """Cores da paleta secundária podem ser aplicadas diretamente ao trigger principal.""";
+
+  /// ```dart
+  /// "Cor customizada do botão interno"
+  /// ```
+  String get customInnerColorTitle => """Cor customizada do botão interno""";
+
+  /// ```dart
+  /// "As ações internas podem usar qualquer cor de botão do Limitless mantendo o trigger principal claro."
+  /// ```
+  String get customInnerColorBody =>
+      """As ações internas podem usar qualquer cor de botão do Limitless mantendo o trigger principal claro.""";
+
+  /// ```dart
+  /// "Misturando cores dos botões"
+  /// ```
+  String get mixedColorsTitle => """Misturando cores dos botões""";
+
+  /// ```dart
+  /// "O submenu suporta cores contextuais misturadas sem mudar a marcação estrutural."
+  /// ```
+  String get mixedColorsBody =>
+      """O submenu suporta cores contextuais misturadas sem mudar a marcação estrutural.""";
+
+  /// ```dart
+  /// "Aguardando ação do FAB."
+  /// ```
+  String get waitingAction => """Aguardando ação do FAB.""";
+
+  /// ```dart
+  /// "Ação selecionada no FAB: "
+  /// ```
+  String get demoActionPrefix => """Ação selecionada no FAB: """;
+
+  /// ```dart
+  /// "FAB fixo com backdrop acionou: "
+  /// ```
+  String get fixedActionPrefix => """FAB fixo com backdrop acionou: """;
+
+  /// ```dart
+  /// "FAB fixo sem backdrop acionou: "
+  /// ```
+  String get noBackdropActionPrefix => """FAB fixo sem backdrop acionou: """;
+
+  /// ```dart
+  /// "A implementação AngularDart mantém o contrato visual do Limitless e expõe uma API curta para ações, direção, toggle e posicionamento."
+  /// ```
+  String get apiIntro =>
+      """A implementação AngularDart mantém o contrato visual do Limitless e expõe uma API curta para ações, direção, toggle e posicionamento.""";
+
+  /// ```dart
+  /// "Markup padrão do menu FAB:"
+  /// ```
+  String get overviewLead => """Markup padrão do menu FAB:""";
+
+  /// ```dart
+  /// "Classes do menu do FAB"
+  /// ```
+  String get classesTitle => """Classes do menu do FAB""";
+
+  /// ```dart
+  /// "O estilo do menu FAB é orientado por classes CSS e atributos de dados. A tabela abaixo resume as classes usadas por este wrapper AngularDart preservando o contrato original do Limitless."
+  /// ```
+  String get classesIntro =>
+      """O estilo do menu FAB é orientado por classes CSS e atributos de dados. A tabela abaixo resume as classes usadas por este wrapper AngularDart preservando o contrato original do Limitless.""";
+
+  /// ```dart
+  /// "Classe"
+  /// ```
+  String get classHeader => """Classe""";
+
+  /// ```dart
+  /// "Descrição"
+  /// ```
+  String get descriptionHeader => """Descrição""";
+
+  /// ```dart
+  /// "Classes básicas"
+  /// ```
+  String get basicClassesGroup => """Classes básicas""";
+
+  /// ```dart
+  /// "Direções e posicionamento"
+  /// ```
+  String get directionsGroup => """Direções e posicionamento""";
+
+  /// ```dart
+  /// "Visibilidade e rótulos"
+  /// ```
+  String get visibilityGroup => """Visibilidade e rótulos""";
+
+  /// ```dart
+  /// "Wrapper principal usado pelo componente."
+  /// ```
+  String get classMenuDesc => """Wrapper principal usado pelo componente.""";
+
+  /// ```dart
+  /// "Botão circular principal do trigger."
+  /// ```
+  String get classMenuBtnDesc => """Botão circular principal do trigger.""";
+
+  /// ```dart
+  /// "Container interno da lista de ações."
+  /// ```
+  String get classMenuInnerDesc => """Container interno da lista de ações.""";
+
+  /// ```dart
+  /// "Ícones rotacionados e suavizados pelo CSS do Limitless conforme o estado do menu."
+  /// ```
+  String get classIconsDesc =>
+      """Ícones rotacionados e suavizados pelo CSS do Limitless conforme o estado do menu.""";
+
+  /// ```dart
+  /// "O menu abre abaixo do trigger."
+  /// ```
+  String get classMenuTopDesc => """O menu abre abaixo do trigger.""";
+
+  /// ```dart
+  /// "O menu abre acima do trigger."
+  /// ```
+  String get classMenuBottomDesc => """O menu abre acima do trigger.""";
+
+  /// ```dart
+  /// "FAB fixo no viewport usado para ações persistentes da página."
+  /// ```
+  String get classMenuFixedDesc =>
+      """FAB fixo no viewport usado para ações persistentes da página.""";
+
+  /// ```dart
+  /// "Extensões horizontais adicionadas pelo wrapper AngularDart."
+  /// ```
+  String get classDirHorizontalDesc =>
+      """Extensões horizontais adicionadas pelo wrapper AngularDart.""";
+
+  /// ```dart
+  /// "Comportamento de abrir no clique."
+  /// ```
+  String get toggleClickDesc => """Comportamento de abrir no clique.""";
+
+  /// ```dart
+  /// "Comportamento de abrir ao passar o cursor."
+  /// ```
+  String get toggleHoverDesc =>
+      """Comportamento de abrir ao passar o cursor.""";
+
+  /// ```dart
+  /// "Aplicado enquanto o menu está expandido."
+  /// ```
+  String get stateOpenDesc => """Aplicado enquanto o menu está expandido.""";
+
+  /// ```dart
+  /// "Texto de tooltip para ações internas."
+  /// ```
+  String get dataFabLabelDesc => """Texto de tooltip para ações internas.""";
+
+  /// ```dart
+  /// "Modificadores de rótulo alinhado à direita, claro e persistente."
+  /// ```
+  String get labelModifiersDesc =>
+      """Modificadores de rótulo alinhado à direita, claro e persistente.""";
+
+  /// ```dart
+  /// "Fechar"
+  /// ```
+  String get customTriggerClose => """Fechar""";
+
+  /// ```dart
+  /// "Ações rápidas"
+  /// ```
+  String get customTriggerActions => """Ações rápidas""";
+
+  /// ```dart
+  /// "Escrever e-mail"
+  /// ```
+  String get actionComposeEmail => """Escrever e-mail""";
+
+  /// ```dart
+  /// "Conversas"
+  /// ```
+  String get actionConversations => """Conversas""";
+
+  /// ```dart
+  /// "Segurança da conta"
+  /// ```
+  String get actionAccountSecurity => """Segurança da conta""";
+
+  /// ```dart
+  /// "Análises"
+  /// ```
+  String get actionAnalytics => """Análises""";
+
+  /// ```dart
+  /// "Privacidade"
+  /// ```
+  String get actionPrivacy => """Privacidade""";
+
+  /// ```dart
+  /// "Editar"
+  /// ```
+  String get actionEdit => """Editar""";
+
+  /// ```dart
+  /// "Compartilhar"
+  /// ```
+  String get actionShare => """Compartilhar""";
+
+  /// ```dart
+  /// "Arquivar"
+  /// ```
+  String get actionArchive => """Arquivar""";
+
+  /// ```dart
+  /// "Publicar"
+  /// ```
+  String get actionPublish => """Publicar""";
+
+  /// ```dart
+  /// "Salvar rascunho"
+  /// ```
+  String get actionSaveDraft => """Salvar rascunho""";
+
+  /// ```dart
+  /// "Pré-visualizar"
+  /// ```
+  String get actionPreview => """Pré-visualizar""";
+
+  /// ```dart
+  /// "Executar pipeline"
+  /// ```
+  String get markupRunPipeline => """Executar pipeline""";
+}
+
 Map<String, String> get messagesMap => {
       """app.brand""": """Limitless UI Example""",
       """app.searchPlaceholder""": """Documentação viva do pacote""",
@@ -3710,13 +5191,30 @@ Map<String, String> get messagesMap => {
       """nav.treeview""": """Treeview""",
       """nav.helpers""": """Utilitários""",
       """nav.button""": """Botões""",
+      """nav.fab""": """FAB""",
       """common.restoreAlert""": """Restaurar alerta""",
       """common.none""": """Nenhum""",
       """common.open""": """Abrir""",
       """common.close""": """Fechar""",
+      """common.clear""": """Limpar""",
       """common.status""": """Status""",
+      """common.value""": """Valor""",
+      """common.label""": """Label""",
+      """common.event""": """Evento""",
       """common.currentPeriod""": """Período atual""",
       """common.restrictedWindow""": """Janela restrita""",
+      """common.tabOverview""": """Visão geral""",
+      """common.tabApi""": """API""",
+      """common.sectionDescription""": """Descrição""",
+      """common.sectionFeatures""": """Recursos""",
+      """common.sectionLimitations""": """Limitações""",
+      """common.sectionHowToUse""": """Como utilizar""",
+      """common.sectionNotes""": """Observações""",
+      """common.sectionVisibleExample""": """Exemplo visível""",
+      """common.sectionMainOptions""": """Opções principais""",
+      """common.sectionBestPractices""": """Boas práticas""",
+      """common.sectionOutputs""": """Outputs""",
+      """common.sectionPublicMethods""": """Métodos públicos""",
       """pages.overview.title""": """Componentes""",
       """pages.overview.subtitle""": """Visão geral""",
       """pages.overview.breadcrumb""": """Visão geral da biblioteca""",
@@ -3812,6 +5310,19 @@ Map<String, String> get messagesMap => {
       """pages.accordion.cardTitle""": """Configurações do accordion""",
       """pages.accordion.intro""":
           """Esta página cobre allowMultipleOpen, flush, lazy, destroyOnCollapse, item desabilitado, ícones e header customizado.""",
+      """pages.accordion.descriptionBody""":
+          """O accordion organiza blocos densos de informação em seções expansíveis, reduzindo ruído visual sem perder contexto.""",
+      """pages.accordion.featureOne""":
+          """Itens recolhidos, expandidos, desabilitados e com cabeçalho customizado.""",
+      """pages.accordion.featureTwo""": """Eventos de abertura por item.""",
+      """pages.accordion.featureThree""":
+          """Renderização tardia e destruição opcional do corpo.""",
+      """pages.accordion.limitOne""":
+          """Conteúdo muito interativo exige cuidado com foco.""",
+      """pages.accordion.limitTwo""":
+          """Seções longas demais ainda pedem hierarquia interna.""",
+      """pages.accordion.limitThree""":
+          """O layout não substitui navegação por rotas.""",
       """pages.accordion.collapsedHeader""": """Estado recolhido""",
       """pages.accordion.collapsedDescription""":
           """Começa fechado e expande sob demanda.""",
@@ -3834,6 +5345,45 @@ Map<String, String> get messagesMap => {
       """pages.accordion.idle""": """Nenhum accordion alterado.""",
       """pages.accordion.expandedState""": """expandido""",
       """pages.accordion.collapsedState""": """recolhido""",
+      """pages.accordion.directiveApiTitle""":
+          """API declarativa por diretivas""",
+      """pages.accordion.directiveApiIntro""":
+          """Esta versão mantém o markup Bootstrap acessível no DOM e expõe uma API parecida com ng-bootstrap.""",
+      """pages.accordion.directiveApiNote""":
+          """Para destroyOnHide físico de verdade, use <template liAccordionBody>. O wrapper simples com <div liAccordionBody> mantém o conteúdo no DOM para casos em que a referência precisa permanecer estável.""",
+      """pages.accordion.declarativeOverviewButton""": """Visão geral""",
+      """pages.accordion.declarativeOverviewBody""":
+          """Conteúdo básico com header e body declarativos, mantendo classes e atributos de acessibilidade.""",
+      """pages.accordion.declarativeCustomHeader""": """Header customizado""",
+      """pages.accordion.declarativeToggle""": """Alternar""",
+      """pages.accordion.declarativeCustomBody""":
+          """O header pode ser totalmente customizado sem perder o controle por id, collapse e eventos.""",
+      """pages.accordion.declarativeDisabledButton""": """Item desabilitado""",
+      """pages.accordion.declarativeDisabledBody""":
+          """Este conteúdo continua acessível via API, mas não reage ao clique do usuário.""",
+      """pages.accordion.expandOverview""": """Expandir overview""",
+      """pages.accordion.toggleCustom""": """Alternar custom""",
+      """pages.accordion.closeAll""": """Fechar todos""",
+      """pages.accordion.itemApi""": """API do item""",
+      """pages.accordion.declarativeIdle""":
+          """Nenhum evento da API declarativa.""",
+      """pages.accordion.collapseTitle""": """liCollapse""",
+      """pages.accordion.collapseIntro""":
+          """Diretiva genérica para esconder e mostrar blocos com as classes collapse, show e collapsing.""",
+      """pages.accordion.openPanel""": """Abrir painel""",
+      """pages.accordion.closePanel""": """Fechar painel""",
+      """pages.accordion.collapseBody""":
+          """Este bloco usa a diretiva genérica de collapse, sem depender do accordion.""",
+      """pages.accordion.apiOne""":
+          """[allowMultipleOpen] permite manter mais de um item expandido ao mesmo tempo.""",
+      """pages.accordion.apiTwo""":
+          """[flush] remove contornos extras para uma composição mais compacta.""",
+      """pages.accordion.apiThree""":
+          """[lazy] adia a renderização do corpo até a primeira abertura.""",
+      """pages.accordion.apiFour""":
+          """[destroyOnCollapse] remove o conteúdo do DOM quando o item fecha.""",
+      """pages.accordion.apiFive""":
+          """[expanded] e (expandedChange) controlam abertura por item.""",
       """pages.progress.title""": """Componentes""",
       """pages.progress.subtitle""": """Progresso""",
       """pages.progress.breadcrumb""": """Barras simples e empilhadas""",
@@ -3851,6 +5401,34 @@ Map<String, String> get messagesMap => {
       """pages.tabs.subtitle""": """Abas""",
       """pages.tabs.breadcrumb""": """Abas horizontais e verticais""",
       """pages.tabs.cardTitle""": """Pills com header customizado""",
+      """pages.tabs.overviewIntro""":
+          """A página de tabs demonstra composição horizontal, vertical, cabeçalhos customizados e estados desabilitados.""",
+      """pages.tabs.descriptionBody""":
+          """Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e funcionam bem para documentação, formulários segmentados e painéis administrativos.""",
+      """pages.tabs.featureOne""": """Modo tabs e pills.""",
+      """pages.tabs.featureTwo""": """Posicionamento horizontal ou lateral.""",
+      """pages.tabs.featureThree""":
+          """Cabeçalho projetado e abas desabilitadas.""",
+      """pages.tabs.limitOne""":
+          """Muitas abas no mesmo nível prejudicam escaneabilidade.""",
+      """pages.tabs.limitTwo""":
+          """Conteúdo longo demais pede hierarquia adicional.""",
+      """pages.tabs.limitThree""":
+          """Abas aninhadas devem ser isoladas em subcomponentes.""",
+      """pages.tabs.previewTitle""": """Exemplo visível""",
+      """pages.tabs.previewIntro""":
+          """O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba desabilitada, sem contaminar a navegação da página de documentação.""",
+      """pages.tabs.apiIntro""":
+          """Use o componente para agrupar conteúdo relacionado quando a navegação por seções fizer mais sentido do que empilhar cards ou abrir novas rotas.""",
+      """pages.tabs.apiOne""": """type aceita tabs ou pills.""",
+      """pages.tabs.apiTwo""":
+          """placement controla a posição das abas, como topo ou lateral.""",
+      """pages.tabs.apiThree""":
+          """[justified] distribui os gatilhos de forma uniforme.""",
+      """pages.tabs.apiFour""":
+          """[active] e [disabled] controlam estado por aba.""",
+      """pages.tabs.apiFive""":
+          """template li-tabx-header permite cabeçalhos customizados.""",
       """pages.tabs.tokens""": """Tokens""",
       """pages.tabs.flow""": """Fluxo""",
       """pages.tabs.blocked""": """Bloqueada""",
@@ -4384,6 +5962,26 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.datatable.subtitle""": """Datatable""",
       """pages.datatable.breadcrumb""": """Busca, seleção e exportação""",
       """pages.datatable.cardTitle""": """Operações da tabela""",
+      """pages.datatable.overviewIntro""":
+          """A datatable desta biblioteca cobre o fluxo administrativo mais comum: busca por campo, seleção de linhas, exportação, paginação, ordenação, colapso responsivo e uma camada de customização visual por coluna, por linha e por card.""",
+      """pages.datatable.descriptionBody""":
+          """O componente atende listagens operacionais que precisam alternar entre tabela e grade sem duplicar fonte de dados, regras de ordenação ou comportamento de busca.""",
+      """pages.datatable.featureOne""":
+          """Busca direcionada por coluna com campo e operador configuráveis.""",
+      """pages.datatable.featureTwo""":
+          """Exportação para XLSX e PDF usando a própria API do componente.""",
+      """pages.datatable.featureThree""":
+          """Modo tabela e modo grade com a mesma fonte de dados.""",
+      """pages.datatable.featureFour""":
+          """Largura, alinhamento, classes e estilos por coluna e por linha.""",
+      """pages.datatable.featureFive""":
+          """Cards customizados com customCardBuilder em grid mode.""",
+      """pages.datatable.limitOne""":
+          """cellStyleResolver trabalha com CSS inline, então não substitui um tema completo.""",
+      """pages.datatable.limitTwo""":
+          """customCardBuilder é ideal para cards ricos, mas exige montagem manual do markup.""",
+      """pages.datatable.limitThree""":
+          """O colapso mobile continua orientado a colunas, então layouts muito densos pedem curadoria das colunas secundárias.""",
       """pages.datatable.toggleGrid""": """Alternar grid""",
       """pages.datatable.singleSelection""": """Seleção única""",
       """pages.datatable.searchLabel""": """Buscar sprint""",
@@ -4408,6 +6006,69 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.datatable.healthOk""": """Ok""",
       """pages.datatable.healthCritical""": """Crítico""",
       """pages.datatable.ready""": """Tabela pronta para interação.""",
+      """pages.datatable.demoIntro""":
+          """Demo principal com busca, seleção, exportação e alternância entre tabela e grade.""",
+      """pages.datatable.onDemandTitle""": """Demos sob demanda""",
+      """pages.datatable.onDemandIntro""":
+          """Os exemplos abaixo usam li-accordion com carregamento tardio para evitar que todos os datatables entrem no DOM ao abrir a rota.""",
+      """pages.datatable.readonlyTitle""": """Exemplo somente leitura""",
+      """pages.datatable.readonlyDescription""":
+          """Busca e ordenação sem clique de linha nem seleção.""",
+      """pages.datatable.gridPreviewTitle""": """Exemplo em modo grade""",
+      """pages.datatable.gridPreviewDescription""":
+          """Mesmo dataset reaproveitado como cartões.""",
+      """pages.datatable.customTableTitle""":
+          """Tabela com width, cor por coluna e cor por linha""",
+      """pages.datatable.customTableDescription""":
+          """Combina width fixa, cellStyleResolver e rowStyleResolver no mesmo cenário.""",
+      """pages.datatable.customGridTitle""": """Grid com customCardBuilder""",
+      """pages.datatable.customGridDescription""":
+          """Card montado manualmente só quando o item é aberto.""",
+      """pages.datatable.lazyModalTitle""":
+          """Modal lazy loading com datatable""",
+      """pages.datatable.lazyModalIntro""":
+          """Este cenário abre um li-modal com lazyContent e instancia o li-datatable somente depois da abertura.""",
+      """pages.datatable.openLazyModal""": """Abrir modal lazy""",
+      """pages.datatable.modalTitle""": """Modal lazy com datatable""",
+      """pages.datatable.modalBody""":
+          """O conteúdo do modal só entra no DOM quando ele abre. O datatable reutiliza o mesmo dataset da página para verificar se o primeiro render funciona corretamente.""",
+      """pages.datatable.howToUseBody""":
+          """O componente é controlado por três peças: Filters para paginação e busca, DataFrame para os dados e DatatableSettings para as colunas e o comportamento visual.""",
+      """pages.datatable.optionOne""":
+          """[dataTableFilter]: controla limite, offset, busca e ordenação.""",
+      """pages.datatable.optionTwo""":
+          """[settings]: define colunas, grid e builders customizados.""",
+      """pages.datatable.optionThree""":
+          """[searchInFields]: informa quais campos aparecem no seletor de busca.""",
+      """pages.datatable.optionFour""":
+          """[responsiveCollapse]: move colunas secundárias para a linha filha no mobile.""",
+      """pages.datatable.practiceOne""":
+          """Mantenha o DataFrame estável e atualize apenas filtros e seleção.""",
+      """pages.datatable.practiceTwo""":
+          """Use hideOnMobile nas colunas secundárias.""",
+      """pages.datatable.practiceThree""":
+          """Reserve customCardBuilder para grids que realmente precisam fugir do layout padrão.""",
+      """pages.datatable.columnStylesTitle""": """Colunas e estilos""",
+      """pages.datatable.columnStyleOne""":
+          """width, minWidth e maxWidth controlam a largura efetiva da coluna.""",
+      """pages.datatable.columnStyleTwo""":
+          """headerClass e cellClass adicionam classes sem mexer no template.""",
+      """pages.datatable.columnStyleThree""":
+          """styleCss e cellStyleResolver controlam cor e estilo por coluna.""",
+      """pages.datatable.columnStyleFour""":
+          """rowStyleResolver devolve uma string CSS por linha inteira com base nos dados.""",
+      """pages.datatable.columnStyleFive""":
+          """textAlign e nowrap ajustam leitura para colunas curtas ou status.""",
+      """pages.datatable.customCardEyebrow""": """CustomCardBuilder""",
+      """pages.datatable.ownerPrefix""": """Responsável""",
+      """pages.datatable.customCardSummary""":
+          """O card foi montado manualmente para combinar título, estado e metadados sem depender do layout padrão.""",
+      """pages.datatable.featureRow5""": """Sincronizar cadastro com ERP""",
+      """pages.datatable.featureRow6""": """Publicar relatório operacional""",
+      """pages.datatable.featureRow7""": """Revisar fila de integração""",
+      """pages.datatable.featureRow8""": """Atualizar painel de atendimento""",
+      """pages.datatable.ownerFinance""": """Financeiro""",
+      """pages.datatable.ownerSupport""": """Atendimento""",
       """pages.datatable.gridMode""":
           """Datatable alternada para o modo grade.""",
       """pages.datatable.tableMode""":
@@ -4416,6 +6077,101 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.datatable.multiMode""": """Seleção múltipla ativada.""",
       """pages.datatable.exportXlsx""": """Exportação XLSX acionada.""",
       """pages.datatable.exportPdf""": """Exportação em PDF acionada.""",
+      """pages.datatableSelect.title""": """Componentes""",
+      """pages.datatableSelect.subtitle""": """Datatable Select""",
+      """pages.datatableSelect.breadcrumb""":
+          """Select com datatable em modal""",
+      """pages.datatableSelect.overviewIntro""":
+          """Um select que abre um modal com um datatable completo, permitindo busca, paginação e ordenação. Ao clicar em uma linha, o item é selecionado e o modal fecha.""",
+      """pages.datatableSelect.descriptionBody""":
+          """O componente combina um trigger no formato form-select com um modal que exibe um li-datatable completo. Implementa ControlValueAccessor para compatibilidade com ngModel.""",
+      """pages.datatableSelect.featureOne""":
+          """Busca, paginação e ordenação via li-datatable.""",
+      """pages.datatableSelect.featureTwo""":
+          """Seleção por clique de linha.""",
+      """pages.datatableSelect.featureThree""":
+          """Suporte a ngModel e currentValueChange.""",
+      """pages.datatableSelect.featureFour""":
+          """Tamanho do modal configurável.""",
+      """pages.datatableSelect.featureFive""":
+          """Estados desabilitado e programático.""",
+      """pages.datatableSelect.limitOne""":
+          """Requer dataRequest para fornecer dados ao datatable.""",
+      """pages.datatableSelect.limitTwo""":
+          """O label exibido depende de labelKey sem projeção customizada.""",
+      """pages.datatableSelect.limitThree""":
+          """Não suporta seleção múltipla.""",
+      """pages.datatableSelect.demoIntro""":
+          """Uso básico com currentValueChange e controle programático.""",
+      """pages.datatableSelect.selectMaria""": """Selecionar Maria Silva""",
+      """pages.datatableSelect.selectPersonLabel""": """Selecionar pessoa""",
+      """pages.datatableSelect.modalTitle""": """Selecionar pessoa""",
+      """pages.datatableSelect.placeholder""": """Clique para selecionar...""",
+      """pages.datatableSelect.searchPlaceholder""":
+          """Buscar por nome, e-mail...""",
+      """pages.datatableSelect.disabledIntro""":
+          """Estado desabilitado, o trigger fica inativo e não abre o modal.""",
+      """pages.datatableSelect.disabledLabel""": """Pessoa (desabilitado)""",
+      """pages.datatableSelect.disabledPlaceholder""": """Campo desabilitado""",
+      """pages.datatableSelect.ngModelIntro""":
+          """Binding com ngModel. O valor é sincronizado via ControlValueAccessor.""",
+      """pages.datatableSelect.ngModelLabel""":
+          """Selecionar pessoa (ngModel)""",
+      """pages.datatableSelect.howToUseBody""":
+          """O componente é controlado por três peças: Filters para paginação e busca, DataFrame para os dados e DatatableSettings para as colunas. Ao clicar no trigger, um modal abre com o datatable; ao clicar numa linha, a seleção é feita.""",
+      """pages.datatableSelect.optionOne""":
+          """[settings]: definições de colunas do datatable.""",
+      """pages.datatableSelect.optionTwo""":
+          """[data]: DataFrame com dados paginados.""",
+      """pages.datatableSelect.optionThree""":
+          """[dataTableFilter]: filtros de busca e paginação.""",
+      """pages.datatableSelect.optionFour""":
+          """[searchInFields]: campos de busca.""",
+      """pages.datatableSelect.optionFive""":
+          """[labelKey]: chave para o texto exibido no trigger.""",
+      """pages.datatableSelect.optionSix""":
+          """[valueKey]: chave para o valor; null = instância inteira.""",
+      """pages.datatableSelect.optionSeven""":
+          """[placeholder]: texto quando nenhum item está selecionado.""",
+      """pages.datatableSelect.optionEight""": """[title]: título do modal.""",
+      """pages.datatableSelect.optionNine""":
+          """[modalSize]: tamanho do modal (large, xtra-large).""",
+      """pages.datatableSelect.optionTen""":
+          """[disabled]: desabilita o componente.""",
+      """pages.datatableSelect.optionEleven""":
+          """[fullScreenOnMobile]: modal fullscreen no mobile.""",
+      """pages.datatableSelect.outputOne""":
+          """(dataRequest): emitido quando o datatable solicita dados.""",
+      """pages.datatableSelect.outputTwo""":
+          """(currentValueChange): emitido quando o valor selecionado muda.""",
+      """pages.datatableSelect.outputThree""":
+          """(limitChange): emitido quando o limite por página muda.""",
+      """pages.datatableSelect.outputFour""":
+          """(searchRequest): emitido quando uma busca é submetida.""",
+      """pages.datatableSelect.methodOne""": """clear(): limpa a seleção.""",
+      """pages.datatableSelect.methodTwo""":
+          """setSelectedItem({label, value}): define a seleção programaticamente.""",
+      """pages.datatableSelect.methodThree""":
+          """selectedLabel: getter que retorna o label atual.""",
+      """pages.datatableSelect.noteOne""":
+          """Compatível com ngModel via ControlValueAccessor.""",
+      """pages.datatableSelect.noteTwo""":
+          """Mantenha o DataFrame estável; atualize apenas via (dataRequest).""",
+      """pages.datatableSelect.noteThree""":
+          """O botão de limpar no trigger aparece quando há valor selecionado.""",
+      """pages.datatableSelect.columnId""": """ID""",
+      """pages.datatableSelect.columnName""": """Nome""",
+      """pages.datatableSelect.columnEmail""": """E-mail""",
+      """pages.datatableSelect.columnDepartment""": """Departamento""",
+      """pages.datatableSelect.searchName""": """Nome""",
+      """pages.datatableSelect.searchEmail""": """E-mail""",
+      """pages.datatableSelect.searchDepartment""": """Departamento""",
+      """pages.datatableSelect.departmentEngineering""": """Engenharia""",
+      """pages.datatableSelect.departmentDesign""": """Design""",
+      """pages.datatableSelect.departmentMarketing""": """Marketing""",
+      """pages.datatableSelect.departmentFinance""": """Financeiro""",
+      """pages.datatableSelect.departmentHr""": """RH""",
+      """pages.datatableSelect.ngModelValuePrefix""": """ngModel value""",
       """pages.notification.title""": """Componentes""",
       """pages.notification.subtitle""": """Área de notificações""",
       """pages.notification.breadcrumb""": """Toasts fixos no viewport""",
@@ -4548,6 +6304,19 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.button.title""": """Componentes""",
       """pages.button.subtitle""": """Botões""",
       """pages.button.breadcrumb""": """Estilos e variações de botões""",
+      """pages.button.overviewIntro""":
+          """Esta página reúne variações de cor, estilo, tamanho, alinhamento e estados do componente de botão.""",
+      """pages.button.usePrefix""": """Use""",
+      """pages.button.demoButton""": """Botão""",
+      """pages.button.lightCardTitle""": """Botão light""",
+      """pages.button.darkCardTitle""": """Botão dark""",
+      """pages.button.primaryCardTitle""": """Botão primary""",
+      """pages.button.secondaryCardTitle""": """Botão secondary""",
+      """pages.button.dangerCardTitle""": """Botão danger""",
+      """pages.button.successCardTitle""": """Botão success""",
+      """pages.button.warningCardTitle""": """Botão warning""",
+      """pages.button.infoCardTitle""": """Botão info""",
+      """pages.button.indigoCardTitle""": """Botão indigo""",
       """pages.button.colorsTitle""": """Cores de botões""",
       """pages.button.colorsSubtitle""":
           """Opções predefinidas de cores para botões""",
@@ -4568,4 +6337,128 @@ selectedDate = DateTime(2026, 3, 20);
           """Exemplos de alinhamento de ícones à esquerda e à direita""",
       """pages.button.disabledTitle""": """Botões desabilitados""",
       """pages.button.disabledSubtitle""": """Botões no estado disabled""",
+      """pages.fab.title""": """Componentes""",
+      """pages.fab.subtitle""": """FAB""",
+      """pages.fab.breadcrumbParent""": """Componentes""",
+      """pages.fab.breadcrumb""": """FAB""",
+      """pages.fab.intro""":
+          """O menu de botão de ação flutuante (FAB) exibe um botão flutuante único, com ou sem menu aninhado. A demonstração abaixo segue a organização visual do Limitless, com exemplos de interação, direção, rótulos e cores.""",
+      """pages.fab.basicTitle""": """Exemplos básicos""",
+      """pages.fab.basicSubtitle""":
+          """Demonstração de botões e listas de botões""",
+      """pages.fab.singleTitle""": """Botão flutuante único""",
+      """pages.fab.singleBody""":
+          """O botão flutuante usa marcação de botão padrão com .fab-menu-btn dentro do container .fab-menu.""",
+      """pages.fab.hoverTitle""": """Abrir menu ao passar o cursor""",
+      """pages.fab.hoverBody""":
+          """Use a semântica data-fab-toggle="hover" para menus que devem expandir ao passar o cursor.""",
+      """pages.fab.clickTitle""": """Abrir menu no clique""",
+      """pages.fab.clickBody""":
+          """O caso mais comum é abrir no clique com o trigger padrão somente com ícone.""",
+      """pages.fab.elementsTitle""": """Elementos do menu FAB""",
+      """pages.fab.elementsSubtitle""":
+          """Botões, direções e posicionamento fixo""",
+      """pages.fab.simpleButtonsTitle""": """Botões simples""",
+      """pages.fab.simpleButtonsBody""":
+          """O submenu normalmente contém botões arredondados com um único ícone.""",
+      """pages.fab.sideActionsTitle""": """Ações laterais""",
+      """pages.fab.sideActionsBody""":
+          """A direção à esquerda mantém o trigger principal compacto enquanto expõe ações contextuais na lateral.""",
+      """pages.fab.customTemplatesTitle""": """Modelos personalizados""",
+      """pages.fab.customTemplatesBody""":
+          """Use TemplateRef para personalizar o conteúdo do gatilho e das ações sem substituir o comportamento do FAB, os atalhos de teclado ou o tratamento de links.""",
+      """pages.fab.noBackdropTitle""": """Ação de página sem sobreposição""",
+      """pages.fab.noBackdropBody""":
+          """A variante sem backdrop é exibida dentro do card para evitar colisão com a barra lateral esquerda. O FAB fixo real continua na borda direita da página.""",
+      """pages.fab.innerLabelsTitle""": """Rótulos dos botões internos""",
+      """pages.fab.innerLabelsSubtitle""":
+          """Tooltips visíveis, rótulos claros e posições do rótulo""",
+      """pages.fab.visibleLabelsTitle""": """Rótulos visíveis""",
+      """pages.fab.visibleLabelsBody""":
+          """Use .fab-label-visible quando os rótulos precisarem permanecer visíveis enquanto o menu estiver expandido.""",
+      """pages.fab.lightLabelsTitle""": """Rótulos claros""",
+      """pages.fab.lightLabelsBody""":
+          """Todos os tipos de botão suportam tooltips claros como alternativa aos rótulos escuros padrão.""",
+      """pages.fab.labelPositionsTitle""": """Posições do rótulo""",
+      """pages.fab.labelPositionsBody""":
+          """A esquerda é o padrão; use .fab-label-end para posicionar os rótulos no lado direito.""",
+      """pages.fab.defaultColorsTitle""": """Cores padrão dos botões""",
+      """pages.fab.defaultColorsSubtitle""":
+          """Exemplos de cores contextuais predefinidas""",
+      """pages.fab.primaryColorTitle""": """Cor primária do botão""",
+      """pages.fab.primaryColorBody""":
+          """A variação contextual primária usa o botão principal padrão .btn-primary.""",
+      """pages.fab.successColorTitle""": """Cor de sucesso do botão""",
+      """pages.fab.successColorBody""":
+          """Use .btn-success para uma variante contextual positiva.""",
+      """pages.fab.warningColorTitle""": """Cor de alerta do botão""",
+      """pages.fab.warningColorBody""":
+          """A variação warning é uma alternativa contextual forte para ações que exigem atenção.""",
+      """pages.fab.customColorsTitle""": """Opções de cores customizadas""",
+      """pages.fab.customColorsSubtitle""":
+          """Use cores customizadas nos botões principais e internos""",
+      """pages.fab.customMainColorTitle""":
+          """Cor customizada do botão principal""",
+      """pages.fab.customMainColorBody""":
+          """Cores da paleta secundária podem ser aplicadas diretamente ao trigger principal.""",
+      """pages.fab.customInnerColorTitle""":
+          """Cor customizada do botão interno""",
+      """pages.fab.customInnerColorBody""":
+          """As ações internas podem usar qualquer cor de botão do Limitless mantendo o trigger principal claro.""",
+      """pages.fab.mixedColorsTitle""": """Misturando cores dos botões""",
+      """pages.fab.mixedColorsBody""":
+          """O submenu suporta cores contextuais misturadas sem mudar a marcação estrutural.""",
+      """pages.fab.waitingAction""": """Aguardando ação do FAB.""",
+      """pages.fab.demoActionPrefix""": """Ação selecionada no FAB: """,
+      """pages.fab.fixedActionPrefix""": """FAB fixo com backdrop acionou: """,
+      """pages.fab.noBackdropActionPrefix""":
+          """FAB fixo sem backdrop acionou: """,
+      """pages.fab.apiIntro""":
+          """A implementação AngularDart mantém o contrato visual do Limitless e expõe uma API curta para ações, direção, toggle e posicionamento.""",
+      """pages.fab.overviewLead""": """Markup padrão do menu FAB:""",
+      """pages.fab.classesTitle""": """Classes do menu do FAB""",
+      """pages.fab.classesIntro""":
+          """O estilo do menu FAB é orientado por classes CSS e atributos de dados. A tabela abaixo resume as classes usadas por este wrapper AngularDart preservando o contrato original do Limitless.""",
+      """pages.fab.classHeader""": """Classe""",
+      """pages.fab.descriptionHeader""": """Descrição""",
+      """pages.fab.basicClassesGroup""": """Classes básicas""",
+      """pages.fab.directionsGroup""": """Direções e posicionamento""",
+      """pages.fab.visibilityGroup""": """Visibilidade e rótulos""",
+      """pages.fab.classMenuDesc""":
+          """Wrapper principal usado pelo componente.""",
+      """pages.fab.classMenuBtnDesc""":
+          """Botão circular principal do trigger.""",
+      """pages.fab.classMenuInnerDesc""":
+          """Container interno da lista de ações.""",
+      """pages.fab.classIconsDesc""":
+          """Ícones rotacionados e suavizados pelo CSS do Limitless conforme o estado do menu.""",
+      """pages.fab.classMenuTopDesc""": """O menu abre abaixo do trigger.""",
+      """pages.fab.classMenuBottomDesc""": """O menu abre acima do trigger.""",
+      """pages.fab.classMenuFixedDesc""":
+          """FAB fixo no viewport usado para ações persistentes da página.""",
+      """pages.fab.classDirHorizontalDesc""":
+          """Extensões horizontais adicionadas pelo wrapper AngularDart.""",
+      """pages.fab.toggleClickDesc""": """Comportamento de abrir no clique.""",
+      """pages.fab.toggleHoverDesc""":
+          """Comportamento de abrir ao passar o cursor.""",
+      """pages.fab.stateOpenDesc""":
+          """Aplicado enquanto o menu está expandido.""",
+      """pages.fab.dataFabLabelDesc""":
+          """Texto de tooltip para ações internas.""",
+      """pages.fab.labelModifiersDesc""":
+          """Modificadores de rótulo alinhado à direita, claro e persistente.""",
+      """pages.fab.customTriggerClose""": """Fechar""",
+      """pages.fab.customTriggerActions""": """Ações rápidas""",
+      """pages.fab.actionComposeEmail""": """Escrever e-mail""",
+      """pages.fab.actionConversations""": """Conversas""",
+      """pages.fab.actionAccountSecurity""": """Segurança da conta""",
+      """pages.fab.actionAnalytics""": """Análises""",
+      """pages.fab.actionPrivacy""": """Privacidade""",
+      """pages.fab.actionEdit""": """Editar""",
+      """pages.fab.actionShare""": """Compartilhar""",
+      """pages.fab.actionArchive""": """Arquivar""",
+      """pages.fab.actionPublish""": """Publicar""",
+      """pages.fab.actionSaveDraft""": """Salvar rascunho""",
+      """pages.fab.actionPreview""": """Pré-visualizar""",
+      """pages.fab.markupRunPipeline""": """Executar pipeline""",
     };

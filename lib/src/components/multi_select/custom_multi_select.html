@@ -1,10 +1,13 @@
 <div class="dropdown-collection">
-    <button type="button" #dropdownButton class="form-select dropdown-button"
+    <button type="button" #dropdownButton [class]="resolvedButtonClass"
         role="combobox"
         [attr.aria-expanded]="dropdownOpen.toString()"
         [attr.aria-controls]="listboxId"
+        [attr.aria-describedby]="resolvedDescribedBy"
+        [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
         aria-haspopup="listbox"
         (click)="toggleDropdown()" (clickOutside)="closeDropdown(restoreFocus: false)" tabindex="0"
+        [attr.data-invalid]="effectiveInvalid ? 'true' : null"
         [disabled]="isDisabled">
 
         <span class="dropdown-value" *ngIf="selectedValues.isEmpty == true">{{ placeholder}}</span>
@@ -18,7 +21,7 @@
         <span *ngIf="showClearButton && hasSelection && !isDisabled"
             class="dropdown-clear"
             role="button"
-            [attr.aria-label]="clearButtonLabel"
+            [attr.aria-label]="resolvedClearButtonLabel"
             (click)="clearSelection($event)">
             <i class="ph ph-x"></i>
         </span>
@@ -26,6 +29,16 @@
     </button>
     <div #dropdownContainer class="dropdown-container dropdown-menu"
         [class.dropdown-open]="dropdownOpen">
+        <div *ngIf="searchable" class="dropdown-search" (click)="$event.stopPropagation()">
+            <div class="form-control-feedback form-control-feedback-start m-2">
+                <input #inputSearch type="text" class="form-control" [placeholder]="searchPlaceholder"
+                    (input)="searchHandle($event.target.value)"
+                    tabindex="-1" [attr.aria-label]="searchAriaLabel">
+                <div class="form-control-feedback-icon">
+                    <i class="ph-magnifying-glass"></i>
+                </div>
+            </div>
+        </div>
         <ul [attr.id]="listboxId" role="listbox" aria-multiselectable="true">
             <!-- multiple -->
             <li class="dropdown-item" *ngFor="let o of options; let idx = index"
@@ -38,4 +51,6 @@
             </li>
         </ul>
     </div>
+    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+    <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 </div>

@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add the Angular component router and learn to navigate among the views.">
+  <title>Routing | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Routing" />
+  <meta name="twitter:description" content="Add the Angular component router and learn to navigate among the views." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Routing" />
+  <meta property="og:description" content="Add the Angular component router and learn to navigate among the views." />
+  <meta property="og:url" content="https://angulardart.xyz/tutorial/toh-pt5" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li >
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li class="active">
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#where-you-left-off">Where you left off</a></li>
+<li class="toc-entry toc-h2"><a href="#action-plan">Action plan</a></li>
+<li class="toc-entry toc-h2"><a href="#splitting-the-appcomponent">Splitting the AppComponent</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#herolistcomponent">HeroListComponent</a></li>
+<li class="toc-entry toc-h3"><a href="#create-appcomponent">Create AppComponent</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#add-routing">Add routing</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#update-the-pubspec">Update the pubspec</a></li>
+<li class="toc-entry toc-h3"><a href="#import-the-library">Import the library</a></li>
+<li class="toc-entry toc-h3"><a href="#make-the-router-available">Make the router available</a></li>
+<li class="toc-entry toc-h3"><a href="#base-href">&lt;base href&gt;</a></li>
+<li class="toc-entry toc-h3"><a href="#configure-routes">Configure routes</a></li>
+<li class="toc-entry toc-h3"><a href="#router-outlet">Router outlet</a></li>
+<li class="toc-entry toc-h3"><a href="#router-links">Router links</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#add-a-dashboard">Add a dashboard</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#configure-the-dashboard-route">Configure the dashboard route</a></li>
+<li class="toc-entry toc-h3"><a href="#add-a-redirect-route">Add a redirect route</a></li>
+<li class="toc-entry toc-h3"><a href="#add-navigation-to-the-dashboard">Add navigation to the dashboard</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#add-heroes-to-the-dashboard">Add heroes to the dashboard</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#reusing-the-heroservice">Reusing the HeroService</a></li>
+<li class="toc-entry toc-h3"><a href="#get-heroes">Get heroes</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#navigating-to-hero-details">Navigating to hero details</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#routing-to-a-hero-detail">Routing to a hero detail</a></li>
+<li class="toc-entry toc-h3"><a href="#parameterized-route">Parameterized route</a></li>
+<li class="toc-entry toc-h3"><a href="#add-a-route-with-a-parameter">Add a route with a parameter</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#revise-herocomponent">Revise HeroComponent</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#drop-input">Drop @Input()</a></li>
+<li class="toc-entry toc-h3"><a href="#add-onactivate-life-cycle-hook">Add onActivate() life-cycle hook</a></li>
+<li class="toc-entry toc-h3"><a href="#add-heroserviceget">Add HeroService.get()</a></li>
+<li class="toc-entry toc-h3"><a href="#find-the-way-back">Find the way back</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#select-a-dashboard-hero">Select a dashboard hero</a></li>
+<li class="toc-entry toc-h2"><a href="#select-a-hero-in-the-herolistcomponent">Select a hero in the HeroListComponent</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#add-the-mini-detail">Add the mini detail</a></li>
+<li class="toc-entry toc-h3"><a href="#update-the-herolistcomponent-class">Update the HeroListComponent class</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#style-the-app">Style the app</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#dashboard-styles">Dashboard styles</a></li>
+<li class="toc-entry toc-h3"><a href="#hero-detail-styles">Hero detail styles</a></li>
+<li class="toc-entry toc-h3"><a href="#style-the-navigation-links">Style the navigation links</a></li>
+<li class="toc-entry toc-h3"><a href="#global-app-styles">Global app styles</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#app-structure-and-code">App structure and code</a></li>
+<li class="toc-entry toc-h2"><a href="#the-road-youve-travelled">The road you’ve travelled</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#the-road-ahead">The road ahead</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/tutorial/toh-pt4">Services</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/tutorial/toh-pt6">HTTP</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/tutorial/toh-pt5.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Routing' page issue&body=From URL: https://angulardart.xyz/tutorial/toh-pt5"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Routing 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/toh-5”?&gt;
+&lt;?code-excerpt replace=”/_\d((.template)?.(dart|html))/$1/g”?&gt;</p>
+
+<p>There are new requirements for the Tour of Heroes app:</p>
+
+<ul>
+  <li>Add a <em>Dashboard</em> view.</li>
+  <li>Add the ability to navigate between the <em>Heroes</em> and <em>Dashboard</em> views.</li>
+  <li>When users click a hero name in either view, navigate to a detail view of the selected hero.</li>
+  <li>When users click a <em>deep link</em> in an email, open the detail view for a particular hero.</li>
+</ul>
+
+<p>When you’re done, users will be able to navigate the app like this:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/toh/nav-diagram-40cd1a82605aed33d15bc1bd6350b2c4173fd88ea7384c2c5a2852f8aa66e2cd.png" alt="View navigations"></p>
+
+<p>To satisfy these requirements, you’ll add Angular’s router to the app.</p>
+
+<div class="l-sub-section">
+  <p>For more information about the router, read the <a href="/guide/router">Routing and Navigation</a> page.</p>
+</div>
+
+<p>When you’re done with this page, the app should look like this <span><a href="/examples/toh-5" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/toh-5/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<h2 id="where-you-left-off">
+<a class="anchor" href="#where-you-left-off" aria-hidden="true"><span class="octicon octicon-link"></span></a>Where you left off</h2>
+
+<p>Before continuing with the Tour of Heroes, verify that you have the following structure.</p>
+
+<div class="ul-filetree">
+  <ul>
+    <li>angular_tour_of_heroes
+      <ul>
+        <li>lib
+          <ul>
+            <li>app_component.{css,dart,html}</li>
+            <li>src
+              <ul>
+                <li>hero.dart</li>
+                <li>hero_component.dart</li>
+                <li>hero_service.dart</li>
+                <li>mock_heroes.dart</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>test
+          <ul>
+            <li>…</li>
+          </ul>
+        </li>
+        <li>web
+          <ul>
+            <li>index.html</li>
+            <li>main.dart</li>
+            <li>styles.css</li>
+          </ul>
+        </li>
+        <li>analysis_options.yaml</li>
+        <li>pubspec.yaml</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<p>If the app isn’t running already,
+<a href="/guide/setup#run-the-app">launch the app</a>.
+As you make changes,
+<a href="/guide/setup#reload-the-app">keep it running</a>
+by reloading the browser window.</p>
+
+<h2 id="action-plan">
+<a class="anchor" href="#action-plan" aria-hidden="true"><span class="octicon octicon-link"></span></a>Action plan</h2>
+
+<p>Here’s the plan:</p>
+
+<ul>
+  <li>Turn <code class="language-plaintext highlighter-rouge">AppComponent</code> into an app shell that only handles navigation.</li>
+  <li>Relocate the <em>Heroes</em> concerns within the current <code class="language-plaintext highlighter-rouge">AppComponent</code> to a separate <code class="language-plaintext highlighter-rouge">HeroListComponent</code>.</li>
+  <li>Add routing.</li>
+  <li>Create a new <code class="language-plaintext highlighter-rouge">DashboardComponent</code>.</li>
+  <li>Tie the <em>Dashboard</em> into the navigation structure.</li>
+</ul>
+
+<div class="l-sub-section">
+  <p><em>Routing</em> is another name for <em>navigation</em>. The router is the mechanism for navigating from view to view.</p>
+</div>
+
+<h2 id="splitting-the-appcomponent">
+<a class="anchor" href="#splitting-the-appcomponent" aria-hidden="true"><span class="octicon octicon-link"></span></a>Splitting the <em>AppComponent</em>
+</h2>
+
+<p>The current app loads <code class="language-plaintext highlighter-rouge">AppComponent</code> and immediately displays the list of heroes.
+The revised app should present a shell with a choice of views (<em>Dashboard</em> and <em>Heroes</em>)
+and then default to one of them.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">AppComponent</code> should only handle navigation, so you’ll
+move the display of <em>Heroes</em> out of <code class="language-plaintext highlighter-rouge">AppComponent</code> and into its own <code class="language-plaintext highlighter-rouge">HeroListComponent</code>.</p>
+
+<h3 id="herolistcomponent">
+<a class="anchor" href="#herolistcomponent" aria-hidden="true"><span class="octicon octicon-link"></span></a><em>HeroListComponent</em>
+</h3>
+
+<p><code class="language-plaintext highlighter-rouge">AppComponent</code> is already dedicated to <em>Heroes</em>.
+Instead of moving the code out of <code class="language-plaintext highlighter-rouge">AppComponent</code>, rename it to <code class="language-plaintext highlighter-rouge">HeroListComponent</code>
+and create a separate <code class="language-plaintext highlighter-rouge">AppComponent</code> shell.</p>
+
+<p>Do the following:</p>
+
+<ul>
+  <li>Rename and move the <code class="language-plaintext highlighter-rouge">app_component.*</code> files to <code class="language-plaintext highlighter-rouge">src/hero_list_component.*</code>.</li>
+  <li>Drop the <code class="language-plaintext highlighter-rouge">src/</code> prefix from import paths.</li>
+  <li>Rename the <code class="language-plaintext highlighter-rouge">AppComponent</code> class to <code class="language-plaintext highlighter-rouge">HeroListComponent</code> (rename locally, <em>only</em> in this file).</li>
+  <li>Rename the selector <code class="language-plaintext highlighter-rouge">my-app</code> to <code class="language-plaintext highlighter-rouge">my-heroes</code>.</li>
+  <li>Change the template URL to <code class="language-plaintext highlighter-rouge">hero_list_component.html</code> and style file to <code class="language-plaintext highlighter-rouge">hero_list_component.css</code>.</li>
+</ul>
+
+<p>&lt;?code-excerpt “lib/src/hero_list_component.dart (showing renamings only)” region=”renaming” replace=”/, this._router//g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Component(
+    selector: 'my-heroes',
+    templateUrl: 'hero_list_component.html',
+    styleUrls: ['hero_list_component.css'],
+    // ···
+  )
+  class HeroListComponent implements OnInit {
+    // ···
+    HeroListComponent(this._heroService);
+    // ···
+  }
+</code></pre></div></div>
+
+<h3 id="create-appcomponent">
+<a class="anchor" href="#create-appcomponent" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create <em>AppComponent</em>
+</h3>
+
+<p>The new <code class="language-plaintext highlighter-rouge">AppComponent</code> is the app shell.
+It will have some navigation links at the top and a display area below.</p>
+
+<p>Perform these steps:</p>
+
+<ul>
+  <li>Create the file <code class="language-plaintext highlighter-rouge">lib/app_component.dart</code>.</li>
+  <li>Define an <code class="language-plaintext highlighter-rouge">AppComponent</code> class.</li>
+  <li>Add an <code class="language-plaintext highlighter-rouge">@Component</code> annotation above the class with a <code class="language-plaintext highlighter-rouge">my-app</code> selector.</li>
+  <li>Move the following from the hero list component to the app component:
+    <ul>
+      <li>The <code class="language-plaintext highlighter-rouge">title</code> class property.</li>
+      <li>The template <code class="language-plaintext highlighter-rouge">&lt;h1&gt;</code> element, which contains a binding to  <code class="language-plaintext highlighter-rouge">title</code>.</li>
+    </ul>
+  </li>
+  <li>Add a <code class="language-plaintext highlighter-rouge">&lt;my-heroes&gt;</code> element to the app template just below the heading so you still see the heroes.</li>
+  <li>Add <code class="language-plaintext highlighter-rouge">HeroListComponent</code> to the <code class="language-plaintext highlighter-rouge">directives</code> list of <code class="language-plaintext highlighter-rouge">AppComponent</code> so Angular recognizes the <code class="language-plaintext highlighter-rouge">&lt;my-heroes&gt;</code> tags.</li>
+  <li>Add <code class="language-plaintext highlighter-rouge">HeroService</code> to the  <code class="language-plaintext highlighter-rouge">providers</code> list of <code class="language-plaintext highlighter-rouge">AppComponent</code> because you’ll need it in every other view.</li>
+  <li>Remove <code class="language-plaintext highlighter-rouge">HeroService</code> from the <code class="language-plaintext highlighter-rouge">HeroListComponent</code> <code class="language-plaintext highlighter-rouge">providers</code> list since it was promoted.</li>
+  <li>Add the supporting <code class="language-plaintext highlighter-rouge">import</code> statements for <code class="language-plaintext highlighter-rouge">AppComponent</code>.</li>
+</ul>
+
+<p>The first draft looks like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngdart/angular.dart';
+
+  import 'src/hero_service.dart';
+  import 'src/hero_list_component.dart';
+
+  @Component(
+    selector: 'my-app',
+    template: '''
+      &lt;h1&gt;{{title}}&lt;/h1&gt;
+      &lt;my-heroes&gt;&lt;/my-heroes&gt;
+    ''',
+    directives: [HeroListComponent],
+    providers: [ClassProvider(HeroService)],
+  )
+  class AppComponent {
+    final title = 'Tour of Heroes';
+  }
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong> The app still runs and displays heroes.</p>
+
+<h2 id="add-routing">
+<a class="anchor" href="#add-routing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add routing</h2>
+
+<p>Instead of displaying automatically, heroes should display after users click a button.
+In other words, users should be able to navigate to the list of heroes.</p>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc”?&gt;</p>
+
+<h3 id="update-the-pubspec">
+<a class="anchor" href="#update-the-pubspec" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update the pubspec</h3>
+
+<p>Use the Angular router ([ngrouter][]) to enable navigation. Since the
+router is in its own package, first add the package to the app’s pubspec:</p>
+
+<p>&lt;?code-excerpt “toh-4/pubspec.yaml” diff-with=”toh-5/pubspec.yaml” to=”ngrouter”?&gt;</p>
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gd">--- toh-4/pubspec.yaml
+</span><span class="gi">+++ toh-5/pubspec.yaml
+</span><span class="p">@@ -8,3 +8,4 @@</span>
+ dependencies:
+   ngdart: ^7.1.1
+   ngforms: ^4.1.1
+<span class="gi">+  ngrouter: ^3.1.1
+</span></code></pre></div></div>
+
+<p>Not all apps need routing, which is why the Angular router is
+in a separate, optional package.</p>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/toh-5”?&gt;</p>
+
+<h3 id="import-the-library">
+<a class="anchor" href="#import-the-library" aria-hidden="true"><span class="octicon octicon-link"></span></a>Import the library</h3>
+
+<p>The Angular router is a combination of multiple services
+(<a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/routerProviders-constant.html">routerProviders</a>/<a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/routerProvidersHash-constant.html">routerProvidersHash</a>),
+directives (<a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/routerDirectives-constant.html">routerDirectives</a>), and
+configuration classes. You get them all by importing
+the router library:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (angular_router)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngrouter/ngrouter.dart';
+</code></pre></div></div>
+
+<h3 id="make-the-router-available">
+<a class="anchor" href="#make-the-router-available" aria-hidden="true"><span class="octicon octicon-link"></span></a>Make the router available</h3>
+
+<p>To tell Angular that your app uses the router, pass as an argument to <code class="language-plaintext highlighter-rouge">runApp()</code>
+an injector seeded with <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/routerProvidersHash-constant.html">routerProvidersHash</a>:</p>
+
+<p>&lt;?code-excerpt “web/main.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngdart/angular.dart';
+  import 'package:ngrouter/ngrouter.dart';
+  import 'package:angular_tour_of_heroes/app_component.template.dart' as ng;
+
+  import 'main.template.dart' as self;
+
+  @GenerateInjector(
+    routerProvidersHash, // You can use routerProviders in production
+  )
+  final InjectorFactory injector = self.injector$Injector;
+
+  void main() {
+    runApp(ng.AppComponentNgFactory, createInjector: injector);
+  }
+</code></pre></div></div>
+
+<div class="alert alert-warning">
+  <p><a id="which-location-strategy-to-use"></a></p>
+  <h4>Which location strategy to use</h4>
+
+  <p>The default <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/LocationStrategy-class.html">LocationStrategy</a> is <a href="https://pub.dev/documentation/ngrouter/6.0.1/angular_router/PathLocationStrategy-class.html">PathLocationStrategy</a> so, in
+  production, you can use <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/routerProviders-constant.html">routerProviders</a>.
+  During development, it is more convenient to use <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/routerProvidersHash-constant.html">routerProvidersHash</a>
+  (which has a <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/HashLocationStrategy-class.html">HashLocationStrategy</a> provider override for <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/LocationStrategy-class.html">LocationStrategy</a>)
+  because <a href="https://pub.dev/packages/webdev#usage">webdev serve</a> does not support <a href="https://en.wikipedia.org/wiki/Deep_linking">deep linking.</a>
+  See the Router Appendix on <a href="/guide/router/appendices#browser-url-styles">LocationStrategy and browser URL styles</a>
+  for details.</p>
+</div>
+
+<h3 id="base-href">
+<a class="anchor" href="#base-href" aria-hidden="true"><span class="octicon octicon-link"></span></a><em>&lt;base href&gt;</em>
+</h3>
+
+<p>Open <code class="language-plaintext highlighter-rouge">index.html</code> and ensure there is a <code class="language-plaintext highlighter-rouge">&lt;base href="..."&gt;</code> element
+(or a script that dynamically sets this element)
+at the top of the <code class="language-plaintext highlighter-rouge">&lt;head&gt;</code> section.</p>
+
+<p>As explained in the <a href="/guide/router/1#base-href">Set the base href</a>
+section of the <a href="/guide/router">Routing and Navigation</a> page,
+the example apps use the following script:</p>
+
+<p>&lt;?code-excerpt “web/index.html (base-href)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;head&gt;
+    &lt;script&gt;
+      // WARNING: DO NOT set the &lt;base href&gt; like this in production!
+      // Details: https://webdev.dartlang.org/angular/guide/router
+      (function () {
+        var m = document.location.pathname.match(/^(\/[-\w]+)+\/web($|\/)/);
+        document.write('&lt;base href="' + (m ? m[0] : '/') + '" /&gt;');
+      }());
+    &lt;/script&gt;
+</code></pre></div></div>
+
+<h3 id="configure-routes">
+<a class="anchor" href="#configure-routes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configure routes</h3>
+
+<p><em>Routes</em> tell the router which views to display when a user clicks a link or
+pastes a URL into the browser address bar.</p>
+
+<p>First create a file to hold route paths. Initialize it with this content:</p>
+
+<p>&lt;?code-excerpt “lib/src/route_paths.dart” region=”v1” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngrouter/ngrouter.dart';
+
+  class RoutePaths {
+    static final heroes = RoutePath(path: 'heroes');
+  }
+</code></pre></div></div>
+
+<p>As a first route, define a route to the heroes component:</p>
+
+<p>&lt;?code-excerpt “lib/src/routes.dart (a first route)” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngrouter/ngrouter.dart';
+
+  import 'route_paths.dart';
+  import 'hero_list_component.template.dart' as hero_list_template;
+
+  export 'route_paths.dart';
+
+  class Routes {
+    static final heroes = RouteDefinition(
+      routePath: RoutePaths.heroes,
+      component: hero_list_template.HeroListComponentNgFactory,
+    );
+
+    static final all = &lt;RouteDefinition&gt;[
+      heroes,
+    ];
+
+    static final heroRoute = &lt;RouteDefinition&gt;[hero];
+  }
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">Routes.all</code> field is a list of <em>route definitions</em>.
+It contains only one route, but you’ll be adding more routes shortly.</p>
+
+<p>The heroes <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/RouteDefinition-class.html">RouteDefinition</a> has the following named arguments:</p>
+
+<ul>
+  <li>
+<code class="language-plaintext highlighter-rouge">routePath</code>: The router matches this path against the URL in the browser
+address bar (<code class="language-plaintext highlighter-rouge">heroes</code>).</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">component</code>: The (factory of the) component that will be activated when this
+route is navigated to (<code class="language-plaintext highlighter-rouge">hero_list_template.HeroListComponentNgFactory</code>).</li>
+</ul>
+
+<div class="l-sub-section">
+  <p>Read more about defining routes in the <a href="/guide/router">Routing &amp; Navigation</a> page.</p>
+</div>
+
+<p>The Angular compiler generates <strong>component factories</strong> behind the scenes when
+you build the app. To access the factory you need to import the generated
+component template file:</p>
+
+<p>&lt;?code-excerpt “lib/src/routes.dart (hero_list_template)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'hero_list_component.template.dart' as hero_list_template;
+</code></pre></div></div>
+
+<p>Until you’ve built the app, the generated files don’t exist. The analyzer
+normally reports a missing import as an error, but we’ve disabled this error
+using the following configuration:</p>
+
+<p>&lt;?fixme-code-excerpt “analysis_options.yaml” retain=”/analyzer:|errors:|uri/”  plaster=”none” title?&gt;</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">analyzer</span><span class="pi">:</span>
+    <span class="na">errors</span><span class="pi">:</span>
+      <span class="na">uri_has_not_been_generated</span><span class="pi">:</span> <span class="s">ignore</span>
+</code></pre></div></div>
+
+<p>By naming the import (<code class="language-plaintext highlighter-rouge">hero_list_template</code>) you can use the not-yet-generated
+component factory without an error from the analyzer</p>
+
+<h3 id="router-outlet">
+<a class="anchor" href="#router-outlet" aria-hidden="true"><span class="octicon octicon-link"></span></a>Router outlet</h3>
+
+<p>When you visit <a href="http://localhost:8080/#/heroes" class="no-automatic-external">localhost:8080/#/heroes</a>,
+the router should match the URL to the heroes route and display a <code class="language-plaintext highlighter-rouge">HeroListComponent</code>.
+However, you have to tell the router where to display the component.</p>
+
+<p>To do this, open <code class="language-plaintext highlighter-rouge">app_component.dart</code> and make the following changes:</p>
+
+<ul>
+  <li>Add <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/routerDirectives-constant.html">routerDirectives</a> to the directives list. <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/RouterOutlet-class.html">RouterOutlet</a> is one of
+the <code class="language-plaintext highlighter-rouge">routerDirectives</code>.</li>
+  <li>Add a <code class="language-plaintext highlighter-rouge">&lt;router-outlet&gt;</code> element at the end of the template. The router
+displays each component immediately below the <code class="language-plaintext highlighter-rouge">&lt;router-outlet&gt;</code> as users
+navigate through the app.</li>
+  <li>Remove <code class="language-plaintext highlighter-rouge">&lt;my-heroes&gt;</code> from the template because <code class="language-plaintext highlighter-rouge">AppComponent</code> won’t directly
+display heroes, that’s the router’s job.</li>
+  <li>Remove <code class="language-plaintext highlighter-rouge">HeroListComponent</code> from the directives list.</li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;router-outlet&gt;</code> takes a list of routes as input, so make these changes:</p>
+
+<ul>
+  <li>Import the app routes.</li>
+  <li>Add an <code class="language-plaintext highlighter-rouge">exports</code> argument to the <code class="language-plaintext highlighter-rouge">@Component</code> annotation, and export
+<code class="language-plaintext highlighter-rouge">RoutePaths</code> and <code class="language-plaintext highlighter-rouge">Routes</code> (you’ll be using <code class="language-plaintext highlighter-rouge">RoutePaths</code> shortly).</li>
+  <li>In the template, bind the <code class="language-plaintext highlighter-rouge">routes</code> property of the <code class="language-plaintext highlighter-rouge">&lt;router-outlet&gt;</code> to
+<code class="language-plaintext highlighter-rouge">Routes.all</code>.</li>
+</ul>
+
+<p>The app component code should look like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (routes and template)” replace=”/(template: ‘’’)\n/$1/g; /’’‘\s<em>\/\//’’‘/g; /(.router-outlet|directives|exports).</em>/[!$&amp;!]/g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'src/routes.dart';
+
+  @Component(
+    // ···
+    template: ''' ···
+      [!&lt;router-outlet [routes]="Routes.all"&gt;&lt;/router-outlet&gt;!]
+    ''',
+    // ···
+    [!directives: [routerDirectives],!]
+    providers: [ClassProvider(HeroService)],
+    [!exports: [RoutePaths, Routes],!]
+  )
+  class AppComponent {
+    final title = 'Tour of Heroes';
+  }
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser,</strong> then visit
+<a href="http://localhost:8080/#/heroes" class="no-automatic-external">localhost:8080/#/heroes</a>.
+You should see the heroes list.</p>
+
+<h3 id="router-links">
+<a class="anchor" href="#router-links" aria-hidden="true"><span class="octicon octicon-link"></span></a>Router links</h3>
+
+<p>Users shouldn’t have to paste a route path into the address bar.
+Instead, add an anchor to the template that, when clicked,
+triggers navigation to <code class="language-plaintext highlighter-rouge">HeroListComponent</code>.</p>
+
+<p>The revised template looks like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (template)” remove=”/[Dd]ashboard/” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;nav&gt;
+      &lt;a [routerLink]="RoutePaths.heroes.toUrl()"
+         [routerLinkActive]="'active'"&gt;Heroes&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;router-outlet [routes]="Routes.all"&gt;&lt;/router-outlet&gt;
+  ''',
+</code></pre></div></div>
+
+<p>Note the <code class="language-plaintext highlighter-rouge">routerLink</code> <a href="/guide/template-syntax#property-binding">property binding</a> in the anchor tag. The <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/RouterLink-class.html">RouterLink</a> directive
+is bound to an expression whose string value that tells the router where to navigate to when the user
+clicks the link.</p>
+
+<p>Looking back at the route definitions, you can confirm that
+<code class="language-plaintext highlighter-rouge">'heroes'</code> is the path of the route to the <code class="language-plaintext highlighter-rouge">HeroListComponent</code>.</p>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser</strong>. The browser displays the app title and heroes link,
+but not the heroes list. Click the <em>Heroes</em> navigation link. The address bar
+updates to <code class="language-plaintext highlighter-rouge">/#/heroes</code> (or the equivalent <code class="language-plaintext highlighter-rouge">/#heroes</code>),
+and the list of heroes displays.</p>
+
+<p><code class="language-plaintext highlighter-rouge">AppComponent</code> now looks like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart” remove=”/style|[Dd]ash/” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngdart/angular.dart';
+  import 'package:ngrouter/ngrouter.dart';
+
+  import 'src/hero_service.dart';
+  import 'src/routes.dart';
+
+  @Component(
+    selector: 'my-app',
+    template: '''
+      &lt;h1&gt;{{title}}&lt;/h1&gt;
+      &lt;nav&gt;
+        &lt;a [routerLink]="RoutePaths.heroes.toUrl()"
+           [routerLinkActive]="'active'"&gt;Heroes&lt;/a&gt;
+      &lt;/nav&gt;
+      &lt;router-outlet [routes]="Routes.all"&gt;&lt;/router-outlet&gt;
+    ''',
+    directives: [routerDirectives],
+    providers: [ClassProvider(HeroService)],
+    exports: [RoutePaths, Routes],
+  )
+  class AppComponent {
+    final title = 'Tour of Heroes';
+  }
+</code></pre></div></div>
+
+<p>The  <em>AppComponent</em> has a router and displays routed views.
+For this reason, and to distinguish it from other kinds of components,
+this component type is called a <em>router component</em>.</p>
+
+<h2 id="add-a-dashboard">
+<a class="anchor" href="#add-a-dashboard" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add a dashboard</h2>
+
+<p>Routing only makes sense when multiple views exist.
+To add another view, create a placeholder <code class="language-plaintext highlighter-rouge">DashboardComponent</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/dashboard_component_1.dart (v1)” region=”” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngdart/angular.dart';
+
+  @Component(
+    selector: 'my-dashboard',
+    template: '&lt;h3&gt;Dashboard&lt;/h3&gt;',
+  )
+  class DashboardComponent {}
+</code></pre></div></div>
+
+<p>You’ll make this component more useful later.</p>
+
+<h3 id="configure-the-dashboard-route">
+<a class="anchor" href="#configure-the-dashboard-route" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configure the dashboard route</h3>
+
+<p>Add a dashboard route similar to the heroes route by adding a path
+and then creating a route definition.</p>
+
+<p>&lt;?code-excerpt “lib/src/route_paths.dart (dashboard)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  static final dashboard = RoutePath(path: 'dashboard');
+</code></pre></div></div>
+
+<p>&lt;?code-excerpt “lib/src/routes.dart (dashboard)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  static final dashboard = RouteDefinition(
+    routePath: RoutePaths.dashboard,
+    component: dashboard_template.DashboardComponentNgFactory,
+  );
+  // ···
+  static final all = &lt;RouteDefinition&gt;[
+    dashboard,
+    // ···
+  ];
+</code></pre></div></div>
+
+<p>You’ll also need to import the compiled dashboard template:</p>
+
+<p>&lt;?code-excerpt “lib/src/routes.dart (dashboard_template)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dashboard_component.template.dart' as dashboard_template;
+</code></pre></div></div>
+
+<h3 id="add-a-redirect-route">
+<a class="anchor" href="#add-a-redirect-route" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add a redirect route</h3>
+
+<p>Currently, the browser launches with <code class="language-plaintext highlighter-rouge">/</code> in the address bar.
+When the app starts, it should show the dashboard and
+display the <code class="language-plaintext highlighter-rouge">/#/dashboard</code> path in the address bar.</p>
+
+<p>To make this happen, add a redirect route:</p>
+
+<p>&lt;?code-excerpt “lib/src/routes.dart (redirect route)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  static final all = &lt;RouteDefinition&gt;[
+    // ···
+    RouteDefinition.redirect(
+      path: '',
+      redirectTo: RoutePaths.dashboard.toUrl(),
+    ),
+  ];
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>Alternatively, you could define <code class="language-plaintext highlighter-rouge">Dashboard</code> as a <em>default</em> route.
+  Read more about
+  <a href="/guide/router/2#default-route">default routes</a> and
+  <a href="/guide/router/2#redirect-route">redirects</a> in the
+  <a href="/guide/router/2">Routing &amp; Navigation</a> page.</p>
+</div>
+
+<h3 id="add-navigation-to-the-dashboard">
+<a class="anchor" href="#add-navigation-to-the-dashboard" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add navigation to the dashboard</h3>
+
+<p>Add a dashboard link to the app component template, just above the heroes link.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (template)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;nav&gt;
+      &lt;a [routerLink]="RoutePaths.dashboard.toUrl()"
+         [routerLinkActive]="'active'"&gt;Dashboard&lt;/a&gt;
+      &lt;a [routerLink]="RoutePaths.heroes.toUrl()"
+         [routerLinkActive]="'active'"&gt;Heroes&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;router-outlet [routes]="Routes.all"&gt;&lt;/router-outlet&gt;
+  ''',
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>The <code class="language-plaintext highlighter-rouge">&lt;nav&gt;</code> element and the <code class="language-plaintext highlighter-rouge">routerLinkActive</code> directives don’t do anything yet,
+  but they’ll be useful later when you <a href="#style-the-navigation-links">style the links</a>.</p>
+</div>
+
+<p><i class="material-icons">open_in_browser</i> <strong>Refresh the browser,</strong> then
+visit <a href="http://localhost:8080/" class="no-automatic-external">localhost:8080/</a>. The
+app displays the dashboard and you can navigate between the dashboard and the
+heroes list.</p>
+
+<h2 id="add-heroes-to-the-dashboard">
+<a class="anchor" href="#add-heroes-to-the-dashboard" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add heroes to the dashboard</h2>
+
+<p>To make the dashboard more interesting, you’ll display the top four heroes at a glance.</p>
+
+<p>Replace the <code class="language-plaintext highlighter-rouge">template</code> metadata with a <code class="language-plaintext highlighter-rouge">templateUrl</code> property that points to a new
+template file, and add the directives shown below (you’ll add the necessary imports soon):</p>
+
+<p>&lt;?code-excerpt “lib/src/dashboard_component_2.dart (metadata)” region=”metadata-wo-styles” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Component(
+    selector: 'my-dashboard',
+    templateUrl: 'dashboard_component.html',
+    // ···
+    directives: [coreDirectives],
+  )
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>The value of <code class="language-plaintext highlighter-rouge">templateUrl</code> can be an asset in this package or another
+  package. To refer to an asset from another package, use a full package reference,
+  such as <code class="language-plaintext highlighter-rouge">'package:some_other_package/dashboard_component.html'</code>.</p>
+</div>
+
+<p>Create the template file with this content:</p>
+
+<p>&lt;?code-excerpt “lib/src/dashboard_component_1.html” title linenums?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;h3&gt;Top Heroes&lt;/h3&gt;
+  &lt;div class="grid grid-pad"&gt;
+    &lt;div *ngFor="let hero of heroes"&gt;
+      &lt;div class="module hero"&gt;
+        &lt;h4&gt;{{hero.name}}&lt;/h4&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">*ngFor</code> is used again to iterate over a list of heroes and display their names.
+The extra <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> elements will help with styling later.</p>
+
+<h3 id="reusing-the-heroservice">
+<a class="anchor" href="#reusing-the-heroservice" aria-hidden="true"><span class="octicon octicon-link"></span></a>Reusing the <em>HeroService</em>
+</h3>
+
+<p>To populate the component’s <code class="language-plaintext highlighter-rouge">heroes</code> list, you can reuse the <code class="language-plaintext highlighter-rouge">HeroService</code>.</p>
+
+<p>Earlier, you removed the <code class="language-plaintext highlighter-rouge">HeroService</code> from the <code class="language-plaintext highlighter-rouge">providers</code> list of <code class="language-plaintext highlighter-rouge">HeroListComponent</code>
+and added it to the <code class="language-plaintext highlighter-rouge">providers</code> list of <code class="language-plaintext highlighter-rouge">AppComponent</code>.
+That move created a singleton <code class="language-plaintext highlighter-rouge">HeroService</code> instance, available to all components of the app.
+Angular injects <code class="language-plaintext highlighter-rouge">HeroService</code> and you can use it in the <code class="language-plaintext highlighter-rouge">DashboardComponent</code>.</p>
+
+<h3 id="get-heroes">
+<a class="anchor" href="#get-heroes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get heroes</h3>
+
+<p>In <code class="language-plaintext highlighter-rouge">dashboard_component.dart</code>, add the following <code class="language-plaintext highlighter-rouge">import</code> statements.</p>
+
+<p>&lt;?code-excerpt “lib/src/dashboard_component_2.dart (imports)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngdart/angular.dart';
+
+  import 'hero.dart';
+  import 'hero_service.dart';
+</code></pre></div></div>
+
+<p>Now create the <code class="language-plaintext highlighter-rouge">DashboardComponent</code> class like this:</p>
+
+<p>&lt;?code-excerpt “lib/src/dashboard_component_2.dart (class)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class DashboardComponent implements OnInit {
+    List&lt;Hero&gt; heroes = &lt;Hero&gt;[];
+
+    final HeroService _heroService;
+
+    DashboardComponent(this._heroService);
+
+    @override
+    void ngOnInit() async {
+      heroes = (await _heroService.getAll()).skip(1).take(4).toList();
+    }
+  }
+</code></pre></div></div>
+
+<p>You’re using the same kind of features for the dashboard as you did for the heroes component:</p>
+
+<ul>
+  <li>Define a <code class="language-plaintext highlighter-rouge">heroes</code> list property.</li>
+  <li>Inject a <code class="language-plaintext highlighter-rouge">HeroService</code> in the constructor, saving it to a private field.</li>
+  <li>Call the service to get heroes inside the Angular <code class="language-plaintext highlighter-rouge">ngOnInit()</code> lifecycle hook.</li>
+</ul>
+
+<p>In this dashboard you specify four heroes (2nd, 3rd, 4th, and 5th).</p>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser</strong> to see four hero names in the new dashboard.</p>
+
+<h2 id="navigating-to-hero-details">
+<a class="anchor" href="#navigating-to-hero-details" aria-hidden="true"><span class="octicon octicon-link"></span></a>Navigating to hero details</h2>
+
+<p>While the details of a selected hero display at the bottom of the <code class="language-plaintext highlighter-rouge">HeroListComponent</code>,
+users should be able to navigate to a <code class="language-plaintext highlighter-rouge">HeroComponent</code> in the following additional ways:</p>
+
+<ul>
+  <li>From the dashboard to a selected hero.</li>
+  <li>From the heroes list to a selected hero.</li>
+  <li>From a “deep link” URL pasted into the browser address bar.</li>
+</ul>
+
+<h3 id="routing-to-a-hero-detail">
+<a class="anchor" href="#routing-to-a-hero-detail" aria-hidden="true"><span class="octicon octicon-link"></span></a>Routing to a hero detail</h3>
+
+<p>You can add a route to the <code class="language-plaintext highlighter-rouge">HeroComponent</code> in <code class="language-plaintext highlighter-rouge">AppComponent</code>, where the other routes are defined.</p>
+
+<p>The new route is unusual in that you must tell the <code class="language-plaintext highlighter-rouge">HeroComponent</code> which hero to show.
+You didn’t have to tell the <code class="language-plaintext highlighter-rouge">HeroListComponent</code> or the <code class="language-plaintext highlighter-rouge">DashboardComponent</code> anything.</p>
+
+<p>Currently, the parent <code class="language-plaintext highlighter-rouge">HeroListComponent</code> sets the component’s <code class="language-plaintext highlighter-rouge">hero</code> property to a
+hero object with a binding like this:</p>
+
+<p>&lt;?code-excerpt “../toh-3/lib/app_component.html (my-hero)”?&gt;</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nt">&lt;my-hero</span> <span class="na">[hero]=</span><span class="s">"selected"</span><span class="nt">&gt;&lt;/my-hero&gt;</span>
+</code></pre></div></div>
+
+<p>But this binding won’t work in any of the routing scenarios.</p>
+
+<h3 id="parameterized-route">
+<a class="anchor" href="#parameterized-route" aria-hidden="true"><span class="octicon octicon-link"></span></a>Parameterized route</h3>
+
+<p>You can add the hero’s ID to the route path. When routing to the hero whose ID is 11,
+you could expect to see a path such as this:</p>
+
+<pre><code class="language-nocode">/heroes/11
+</code></pre>
+
+<p>The <code class="language-plaintext highlighter-rouge">/heroes/</code> part is constant. The trailing numeric ID changes from hero to hero.
+You need to represent the variable part of the route with a <em>parameter</em> that stands for the hero’s ID.</p>
+
+<h3 id="add-a-route-with-a-parameter">
+<a class="anchor" href="#add-a-route-with-a-parameter" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add a route with a parameter</h3>
+
+<p>First, define the route path:</p>
+
+<p>&lt;?code-excerpt “lib/src/route_paths.dart (hero)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  const idParam = 'id';
+
+  class RoutePaths {
+    // ···
+    static final hero = RoutePath(path: '${heroes.path}/:$idParam');
+  }
+</code></pre></div></div>
+
+<p>The colon (:) in the path indicates that <code class="language-plaintext highlighter-rouge">:$idParam</code> (<code class="language-plaintext highlighter-rouge">:id</code>) is a placeholder
+for a specific hero ID when navigating to hero view.</p>
+
+<p>In the routes file, import the hero detail component template:</p>
+
+<p>&lt;?code-excerpt “lib/src/routes.dart (hero_template)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'hero_component.template.dart' as hero_template;
+</code></pre></div></div>
+
+<p>Next, add the following route:</p>
+
+<p>&lt;?code-excerpt “lib/src/routes.dart (hero)” title replace=”/([[,])\n\s*(\/)/$1 $2/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  static final hero = RouteDefinition(
+    routePath: RoutePaths.hero,
+    component: hero_template.HeroComponentNgFactory,
+  );
+  // ···
+  static final all = &lt;RouteDefinition&gt;[ // ···
+    hero, // ···
+  ];
+</code></pre></div></div>
+
+<p>You’re finished with the app routes.</p>
+
+<p>You didn’t add a hero detail link to the template because users
+don’t click a navigation <em>link</em> to view a particular hero;
+they click a <em>hero name</em>, whether the name is displayed on the dashboard or in the heroes list.
+But this won’t work until the <code class="language-plaintext highlighter-rouge">HeroComponent</code>
+is revised and ready to be navigated to.</p>
+
+<h2 id="revise-herocomponent">
+<a class="anchor" href="#revise-herocomponent" aria-hidden="true"><span class="octicon octicon-link"></span></a>Revise <em>HeroComponent</em>
+</h2>
+
+<p>Here’s what the <code class="language-plaintext highlighter-rouge">HeroComponent</code> looks like now:</p>
+
+<p>&lt;?code-excerpt “../toh-4/lib/src/hero_component.dart” region=”” title=”lib/src/hero_component.dart (current)” linenums?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngdart/angular.dart';
+  import 'package:ngforms/ngforms.dart';
+
+  import 'hero.dart';
+
+  @Component(
+    selector: 'my-hero',
+    template: '''
+      &lt;div *ngIf="hero != null"&gt;
+        &lt;h2&gt;{{hero!.name}}&lt;/h2&gt;
+        &lt;div&gt;&lt;label&gt;id: &lt;/label&gt;{{hero!.id}}&lt;/div&gt;
+        &lt;div&gt;
+          &lt;label&gt;name: &lt;/label&gt;
+          &lt;input [(ngModel)]="hero!.name" placeholder="name"/&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    ''',
+    directives: [coreDirectives, formDirectives],
+  )
+  class HeroComponent {
+    @Input()
+    Hero? hero;
+
+    void bruh(Hero? h) {
+      if (h != null) {
+        print(h.name);
+      }
+    }
+  }
+</code></pre></div></div>
+
+<p>The template won’t change. Hero names will display the same way.
+The major changes are driven by how you get hero names.</p>
+
+<h3 id="drop-input">
+<a class="anchor" href="#drop-input" aria-hidden="true"><span class="octicon octicon-link"></span></a>Drop <em>@Input()</em>
+</h3>
+
+<p>You will no longer receive the hero in a parent component property binding, so
+you can <strong>remove the <code class="language-plaintext highlighter-rouge">@Input()</code> annotation</strong> from the <code class="language-plaintext highlighter-rouge">hero</code> field:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (hero with @Input removed)” region=”hero” replace=”/implements \w+ //g” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class HeroComponent {
+    Hero? hero;
+  }
+</code></pre></div></div>
+
+<h3 id="add-onactivate-life-cycle-hook">
+<a class="anchor" href="#add-onactivate-life-cycle-hook" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add <em>onActivate()</em> life-cycle hook</h3>
+
+<p>The new <code class="language-plaintext highlighter-rouge">HeroComponent</code> will take the <code class="language-plaintext highlighter-rouge">id</code> parameter from the router’s
+state and use the <code class="language-plaintext highlighter-rouge">HeroService</code> to fetch the hero with that <code class="language-plaintext highlighter-rouge">id</code>.</p>
+
+<p>Add the following imports:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (added-imports)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngrouter/ngrouter.dart';
+  // ···
+  import 'hero_service.dart';
+  import 'route_paths.dart';
+</code></pre></div></div>
+
+<p>Inject the <code class="language-plaintext highlighter-rouge">HeroService</code> and <a href="https://pub.dev/documentation/ngrouter/6.0.1/angular_router/Location-class.html">Location</a> service
+into the constructor, saving their values in private fields:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (constructor)” region=”ctor” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  final HeroService _heroService;
+  final Location _location;
+
+  HeroComponent(this._heroService, this._location);
+</code></pre></div></div>
+
+<p>To get notified when a hero route is navigated to, make <code class="language-plaintext highlighter-rouge">HeroComponent</code>
+implement the <a href="https://pub.dev/documentation/ngrouter/6.0.1/angular_router/OnActivate-class.html">OnActivate</a> interface, and update <code class="language-plaintext highlighter-rouge">hero</code> from
+the <a href="/guide/router/5#on-activate">onActivate()</a> <a href="/guide/router/5">router lifecycle hook</a>:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (OnActivate)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class HeroComponent implements OnActivate {
+    // ···
+    @override
+    void onActivate(_, RouterState current) async {
+      final id = getId(current.parameters);
+      if (id != null) hero = await (_heroService.get(id));
+    }
+    // ···
+  }
+</code></pre></div></div>
+
+<p>The hook implementation makes use of the <code class="language-plaintext highlighter-rouge">getId()</code> helper function that
+extracts the <code class="language-plaintext highlighter-rouge">id</code> from the <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/RouterState/parameters.html">RouterState.parameters</a> map.</p>
+
+<p>&lt;?code-excerpt “lib/src/route_paths.dart (getId)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  int? getId(Map&lt;String, String&gt; parameters) {
+    final id = parameters[idParam];
+    return id == null ? null : int.tryParse(id);
+  }
+</code></pre></div></div>
+
+<p>The hero ID is a number. Route parameters are always strings.
+So the route parameter value is converted to a number.</p>
+
+<h3 id="add-heroserviceget">
+<a class="anchor" href="#add-heroserviceget" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add <em>HeroService.get()</em>
+</h3>
+
+<p>In <code class="language-plaintext highlighter-rouge">onActivate()</code>, you used the <code class="language-plaintext highlighter-rouge">get()</code> method, which <code class="language-plaintext highlighter-rouge">HeroService</code> doesn’t
+have yet. To fix this issue, open <code class="language-plaintext highlighter-rouge">HeroService</code> and add a <code class="language-plaintext highlighter-rouge">get()</code> method
+that filters the heroes list from <code class="language-plaintext highlighter-rouge">getAll()</code> by <code class="language-plaintext highlighter-rouge">id</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_service.dart (get)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;Hero&gt; get(int id) async =&gt;
+      (await getAll()).firstWhere((hero) =&gt; hero.id == id);
+</code></pre></div></div>
+
+<h3 id="find-the-way-back">
+<a class="anchor" href="#find-the-way-back" aria-hidden="true"><span class="octicon octicon-link"></span></a>Find the way back</h3>
+
+<p>Users have several ways to navigate <em>to</em> the <code class="language-plaintext highlighter-rouge">HeroComponent</code>.</p>
+
+<p>To navigate somewhere else, users can click one of the two links in the <code class="language-plaintext highlighter-rouge">AppComponent</code> or click the browser’s back button.
+Now add a third option, a <code class="language-plaintext highlighter-rouge">goBack()</code> method that navigates backward one step in the browser’s history stack
+using the <code class="language-plaintext highlighter-rouge">Location</code> service you injected previously.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (goBack)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  void goBack() =&gt; _location.back();
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>Going back too far could take users out of the app.
+  In a real app, you can prevent this issue with the <em>canDeactivate()</em> hook.
+  Read more on the <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/CanDeactivate-class.html">CanDeactivate</a> page.</p>
+</div>
+
+<p>You’ll wire this method with an event binding to a <em>Back</em> button that you’ll add to the component template.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.html (back-button)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button (click)="goBack()"&gt;Back&lt;/button&gt;
+</code></pre></div></div>
+
+<p>Migrate the template to its own file called <code class="language-plaintext highlighter-rouge">hero_component.html</code>:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.html” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngIf="hero != null"&gt;
+    &lt;h2&gt;{{hero!.name}}&lt;/h2&gt;
+    &lt;div&gt;
+      &lt;label&gt;id: &lt;/label&gt;{{hero!.id}}&lt;/div&gt;
+    &lt;div&gt;
+      &lt;label&gt;name: &lt;/label&gt;
+      &lt;input [(ngModel)]="hero!.name" placeholder="name" /&gt;
+    &lt;/div&gt;
+    &lt;button (click)="goBack()"&gt;Back&lt;/button&gt;
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p>Update the component metadata with a <code class="language-plaintext highlighter-rouge">templateUrl</code> pointing to the template file that you just created.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (metadata)” region=”metadata-wo-style” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Component(
+    selector: 'my-hero',
+    templateUrl: 'hero_component.html',
+    // ···
+    directives: [coreDirectives, formDirectives],
+  )
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser</strong> and visit
+<a href="http://localhost:8080/#heroes/11" class="no-automatic-external">localhost:8080/#heroes/11</a>.
+Details for hero 11 should be displayed. Selecting a hero
+in either the dashboard or the heroes list doesn’t work yet.
+You’ll deal with that next.</p>
+
+<h2 id="select-a-dashboard-hero">
+<a class="anchor" href="#select-a-dashboard-hero" aria-hidden="true"><span class="octicon octicon-link"></span></a>Select a dashboard hero</h2>
+
+<p>When a user selects a hero in the dashboard, the app should navigate to a
+<code class="language-plaintext highlighter-rouge">HeroComponent</code> to allow the user to view and edit the selected hero.</p>
+
+<p>The dashboard heroes should behave like anchor tags:
+when hovering over a hero name, the target URL should display in the browser status bar
+and the user should be able to copy the link or open the hero detail view in a new tab.</p>
+
+<p>To achieve this, you’ll need to make changes to the dashboard component and its
+template.</p>
+
+<p>Update the dashboard component:</p>
+
+<ul>
+  <li>Import <code class="language-plaintext highlighter-rouge">route_paths.dart</code>
+</li>
+  <li>Add <code class="language-plaintext highlighter-rouge">routerDirectives</code> to the <code class="language-plaintext highlighter-rouge">directives</code> list</li>
+  <li>Add the following method:</li>
+</ul>
+
+<p>&lt;?code-excerpt “lib/src/dashboard_component.dart (heroUrl)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  String heroUrl(int id) =&gt; RoutePaths.hero.toUrl(parameters: {idParam: '$id'});
+</code></pre></div></div>
+
+<p>Edit the dashboard template:</p>
+
+<ul>
+  <li>Replace the <code class="language-plaintext highlighter-rouge">div</code> opening and closing tags in the <code class="language-plaintext highlighter-rouge">&lt;div *ngFor...&gt;</code> element
+with anchor tags.</li>
+  <li>Add a router link property binding, as shown.</li>
+</ul>
+
+<p>&lt;?code-excerpt “lib/src/dashboard_component.html (repeated &lt;a&gt; tag)” region=”click” replace=”/\ba\b|[routerLink][^\x3E]+/[!$&amp;!]/g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;[!a!] *ngFor="let hero of heroes" class="col-1-4"
+     [![routerLink]="heroUrl(hero.id)"!]&gt;
+    &lt;div class="module hero"&gt;
+      &lt;h4&gt;{{hero.name}}&lt;/h4&gt;
+    &lt;/div&gt;
+  &lt;/[!a!]&gt;
+</code></pre></div></div>
+
+<p>As described in the <a href="#router-links">Router links</a> section of this page,
+top-level navigation in the <code class="language-plaintext highlighter-rouge">AppComponent</code> template has router links set to
+paths like, <code class="language-plaintext highlighter-rouge">/dashboard</code> and <code class="language-plaintext highlighter-rouge">/heroes</code>. This time, you’re binding to the
+parameterized <code class="language-plaintext highlighter-rouge">hero</code> path you defined earlier:</p>
+
+<p>&lt;?code-excerpt “lib/src/route_paths.dart (hero)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  const idParam = 'id';
+
+  class RoutePaths {
+    // ···
+    static final hero = RoutePath(path: '${heroes.path}/:$idParam');
+  }
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">heroUrl()</code> method generates the string representation of the path using the
+<code class="language-plaintext highlighter-rouge">toUrl()</code> method, passing route parameter values using a map literal. For
+example, it returns <a href="localhost:8080/#/heroes/15">/heroes/15</a> when <code class="language-plaintext highlighter-rouge">id</code> is 15.</p>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser</strong> and select a hero from the dashboard; the app navigates to that hero’s details.</p>
+
+<h2 id="select-a-hero-in-the-herolistcomponent">
+<a class="anchor" href="#select-a-hero-in-the-herolistcomponent" aria-hidden="true"><span class="octicon octicon-link"></span></a>Select a hero in the <em>HeroListComponent</em>
+</h2>
+
+<p>In the <code class="language-plaintext highlighter-rouge">HeroListComponent</code>,
+the current template exhibits a “master/detail” style with the list of heroes
+at the top and details of the selected hero below.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_list_component_1.html” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;h2&gt;Heroes&lt;/h2&gt;
+  &lt;ul class="heroes"&gt;
+    &lt;li *ngFor="let hero of heroes"
+        [class.selected]="hero == selected"
+        (click)="onSelect(hero)"&gt;
+      &lt;span class="badge"&gt;{{hero.id}}&lt;/span&gt; {{hero.name}}
+    &lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;my-hero [hero]="selected"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<p>You’ll no longer show the full <code class="language-plaintext highlighter-rouge">HeroComponent</code> here.
+Instead, you’ll display the hero detail on its own page and route to it as you did in the dashboard.
+Make these changes:</p>
+
+<ul>
+  <li>Remove the <code class="language-plaintext highlighter-rouge">&lt;my-hero&gt;</code> element from the last line of the template.</li>
+  <li>Remove <code class="language-plaintext highlighter-rouge">HeroComponent</code> from list of <code class="language-plaintext highlighter-rouge">directives</code>.</li>
+  <li>Remove the hero detail import.</li>
+</ul>
+
+<p>When users select a hero from the list, they won’t go to the detail page.
+Instead, they’ll see a mini detail on <em>this</em> page and have to click a button to navigate to the <em>full detail</em> page.</p>
+
+<h3 id="add-the-mini-detail">
+<a class="anchor" href="#add-the-mini-detail" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add the <em>mini detail</em>
+</h3>
+
+<p>Add the following HTML fragment at the bottom of the template where the <code class="language-plaintext highlighter-rouge">&lt;my-hero&gt;</code> used to be:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_list_component.html (mini detail)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngIf="selected != null"&gt;
+    &lt;h2&gt;
+      {{$pipe.uppercase(selected!.name)}} is my hero
+    &lt;/h2&gt;
+    &lt;button (click)="gotoDetail()"&gt;View Details&lt;/button&gt;
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p>Add the following import and method stub to <code class="language-plaintext highlighter-rouge">HeroListComponent</code>:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_list_component.dart (gotoDetail stub)” title retain=”/^\s<em>($|[^_\s])/” replace=”/(.</em>?=\x3E).*/$1 null;/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:ngrouter/ngrouter.dart';
+  // ···
+  class HeroListComponent implements OnInit {
+    // ···
+    Future&lt;NavigationResult&gt; gotoDetail() =&gt; null;
+  }
+</code></pre></div></div>
+
+<p>After clicking a hero (but don’t try now since it won’t work yet), users should see something like this below the hero list:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/toh/mini-hero-detail-bb8d54945f2ac5d97bc516fafdf723f7990a66797c216ba9d30c33f9a4ca11e8.png" alt="Mini Hero Detail" width="250"></p>
+
+<p>The hero’s name is displayed in capital letters because of the <code class="language-plaintext highlighter-rouge">uppercase</code> pipe
+that’s included in the interpolation binding, right after the pipe operator ( | ).</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_list_component.html (pipe)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  {{$pipe.uppercase(selected!.name)}} is my hero
+</code></pre></div></div>
+
+<p>Pipes are a good way to format strings, currency amounts, dates and other display data.
+Angular ships with several pipes and you can write your own.</p>
+
+<p><i class="material-icons">warning</i> Before you can use an Angular pipe in a
+template, you need to list it in the <code class="language-plaintext highlighter-rouge">pipes</code> argument of your component’s
+<code class="language-plaintext highlighter-rouge">@Component</code> annotation. You can add pipes
+individually, or for convenience you can use groups like <a href="https://pub.dev/documentation/angular/6.0.1/angular/commonPipes-constant.html">commonPipes</a>.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_list_component.dart (pipes)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Component(
+    selector: 'my-heroes',
+    // ···
+    pipes: [commonPipes],
+  )
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>Read more about pipes on the <a href="/guide/pipes">Pipes</a> page.</p>
+</div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser.</strong> Selecting a hero from the heroes list will activate the mini
+detail view. The view details button doesn’t work yet.</p>
+
+<h3 id="update-the-herolistcomponent-class">
+<a class="anchor" href="#update-the-herolistcomponent-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update the <em>HeroListComponent</em> class</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeroListComponent</code> navigates to the <code class="language-plaintext highlighter-rouge">HeroesDetailComponent</code> in response to a button click.
+The button’s click event is bound to a <code class="language-plaintext highlighter-rouge">gotoDetail()</code> method that should navigate <em>imperatively</em>
+by telling the router where to go.</p>
+
+<p>This approach requires the following changes to the component class:</p>
+
+<ul>
+  <li>Import <code class="language-plaintext highlighter-rouge">route_paths.dart</code>.</li>
+  <li>Inject the <code class="language-plaintext highlighter-rouge">Router</code> in the constructor, along with the <code class="language-plaintext highlighter-rouge">HeroService</code>.</li>
+  <li>Implement <code class="language-plaintext highlighter-rouge">gotoDetail()</code> by calling the router <code class="language-plaintext highlighter-rouge">navigate()</code> method.</li>
+</ul>
+
+<p>Here’s the revised <code class="language-plaintext highlighter-rouge">HeroListComponent</code> class:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_list_component.dart (class)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class HeroListComponent implements OnInit {
+    final HeroService _heroService;
+    final Router _router;
+    List&lt;Hero&gt; heroes = &lt;Hero&gt;[];
+    Hero? selected;
+
+    HeroListComponent(this._heroService, this._router);
+
+    Future&lt;void&gt; _getHeroes() async {
+      heroes = await _heroService.getAll();
+    }
+
+    void ngOnInit() =&gt; _getHeroes();
+
+    void onSelect(Hero hero) =&gt; selected = hero;
+
+    String _heroUrl(int id) =&gt;
+        RoutePaths.hero.toUrl(parameters: {idParam: '$id'});
+
+    Future&lt;NavigationResult&gt; gotoDetail() =&gt;
+        _router.navigate(_heroUrl(selected!.id));
+  }
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+<strong>Refresh the browser</strong> and start clicking.
+Users can navigate around the app, from the dashboard to hero details and back,
+from heroes list to the mini detail to the hero details and back to the heroes again.</p>
+
+<p>You’ve met all of the navigational requirements that propelled this page.</p>
+
+<h2 id="style-the-app">
+<a class="anchor" href="#style-the-app" aria-hidden="true"><span class="octicon octicon-link"></span></a>Style the app</h2>
+
+<p>The app is functional but it needs styling.
+The dashboard heroes should display in a row of rectangles.
+You’ve received around 60 lines of CSS for this purpose, including some simple media queries for responsive design.</p>
+
+<p>As you now know, adding the CSS to the component <code class="language-plaintext highlighter-rouge">styles</code> metadata
+would obscure the component logic.
+Instead, you’ll add the CSS to separate <code class="language-plaintext highlighter-rouge">.css</code> files.</p>
+
+<h3 id="dashboard-styles">
+<a class="anchor" href="#dashboard-styles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dashboard styles</h3>
+
+<p>Create a <code class="language-plaintext highlighter-rouge">dashboard_component.css</code> file in the <code class="language-plaintext highlighter-rouge">lib/src</code> folder and reference
+that file in the component metadata’s <code class="language-plaintext highlighter-rouge">styleUrls</code> list property like this:</p>
+
+<code-tabs>
+  <?code-pane "lib/src/dashboard_component.dart (styleUrls)" region="metadata" linenums?>
+  <?code-pane "lib/src/dashboard_component.css" linenums?>
+</code-tabs>
+
+<h3 id="hero-detail-styles">
+<a class="anchor" href="#hero-detail-styles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hero detail styles</h3>
+
+<p>Create a <code class="language-plaintext highlighter-rouge">hero_component.css</code> file in the <code class="language-plaintext highlighter-rouge">lib/src</code>
+folder and reference that file in the component metadata’s <code class="language-plaintext highlighter-rouge">styleUrls</code> list:</p>
+
+<code-tabs>
+  <?code-pane "lib/src/hero_component.dart (styleUrls)" region="metadata" linenums?>
+  <?code-pane "lib/src/hero_component.css" linenums?>
+</code-tabs>
+
+<h3 id="style-the-navigation-links">
+<a class="anchor" href="#style-the-navigation-links" aria-hidden="true"><span class="octicon octicon-link"></span></a>Style the navigation links</h3>
+
+<p>Create an <code class="language-plaintext highlighter-rouge">app_component.css</code> file in the <code class="language-plaintext highlighter-rouge">lib</code> folder
+and reference that file in the component metadata’s <code class="language-plaintext highlighter-rouge">styleUrls</code> list:</p>
+
+<code-tabs>
+  <?code-pane "lib/app_component.dart (styleUrls)" linenums?>
+  <?code-pane "lib/app_component.css" linenums?>
+</code-tabs>
+
+<p>The provided CSS makes the navigation links in the <code class="language-plaintext highlighter-rouge">AppComponent</code> look more like selectable buttons.
+Earlier, you surrounded those links with a <code class="language-plaintext highlighter-rouge">&lt;nav&gt;</code> element,
+and added a <code class="language-plaintext highlighter-rouge">routerLinkActive</code> directive to each anchor:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (template)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;h1&gt;{{title}}&lt;/h1&gt;
+    &lt;nav&gt;
+      &lt;a [routerLink]="RoutePaths.dashboard.toUrl()"
+         [routerLinkActive]="'active'"&gt;Dashboard&lt;/a&gt;
+      &lt;a [routerLink]="RoutePaths.heroes.toUrl()"
+         [routerLinkActive]="'active'"&gt;Heroes&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;router-outlet [routes]="Routes.all"&gt;&lt;/router-outlet&gt;
+  ''',
+</code></pre></div></div>
+
+<p>The router adds the class named by the <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/RouterLinkActive-class.html">RouterLinkActive</a> directive to
+the HTML navigation element whose route matches the active route.</p>
+
+<h3 id="global-app-styles">
+<a class="anchor" href="#global-app-styles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Global app styles</h3>
+
+<p>When you add styles to a component, you keep everything a component needs—HTML,
+the CSS, the code—together in one convenient place.
+It’s easy to package it all up and reuse the component somewhere else.</p>
+
+<p>You can also create styles at the <em>app level</em> outside of any component.</p>
+
+<p>The designers provided some basic styles to apply to elements across the entire app.
+These correspond to the full set of master styles that you installed earlier during <a href="/guide/setup">setup</a>.
+Here’s an excerpt:</p>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/_boilerplate”?&gt;</p>
+
+<p>&lt;?code-excerpt “web/styles.css (excerpt)” region=”toh” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @import url(https://fonts.googleapis.com/css?family=Roboto);
+  @import url(https://fonts.googleapis.com/css?family=Material+Icons);
+
+  /* Master Styles */
+  h1 {
+    color: #369;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 250%;
+  }
+  h2, h3 {
+    color: #444;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: lighter;
+  }
+  body {
+    margin: 2em;
+  }
+  body, input[text], button {
+    color: #888;
+    font-family: Cambria, Georgia;
+  }
+  /* ··· */
+  /* everywhere else */
+  * {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+</code></pre></div></div>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/toh-5”?&gt;</p>
+
+<p>Create the file <code class="language-plaintext highlighter-rouge">web/styles.css</code>, if necessary.
+Ensure that the file contains the <a href="https://raw.githubusercontent.com/angular/angular.io/master/public/docs/_examples/_boilerplate/src/styles.css">master styles provided here</a>.
+Also edit <code class="language-plaintext highlighter-rouge">web/index.html</code> to refer to this stylesheet.</p>
+
+<p>&lt;?code-excerpt “web/index.html (link ref)” region=”css” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;link rel="stylesheet" href="styles.css"&gt;
+</code></pre></div></div>
+
+<p>Look at the app now. The dashboard, heroes, and navigation links are styled.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/toh/dashboard-top-heroes-ff42a578e4239687bbc7d815382bb69f3856371178897a75113359aa14703209.png" alt="View navigations"></p>
+
+<h2 id="app-structure-and-code">
+<a class="anchor" href="#app-structure-and-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>App structure and code</h2>
+
+<p>Review the sample source code in the <span><a href="/examples/toh-5" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/toh-5/tree/master" target="_blank" rel="noopener">view source</a></span>)</span> for this page.
+Verify that you have the following structure:</p>
+
+<div class="ul-filetree">
+  <ul>
+    <li>angular_tour_of_heroes
+      <ul>
+        <li>lib
+          <ul>
+            <li>app_component.{css,dart}</li>
+            <li>src
+              <ul>
+                <li>dashboard_component.{css,dart,html}</li>
+                <li>hero.dart</li>
+                <li>hero_component.{css,dart,html}</li>
+                <li>hero_list_component.{css,dart,html}</li>
+                <li>hero_service.dart</li>
+                <li>mock_heroes.dart</li>
+                <li>route_paths.dart</li>
+                <li>routes.dart</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>test
+          <ul>
+            <li>…</li>
+          </ul>
+        </li>
+        <li>web
+          <ul>
+            <li>index.html</li>
+            <li>main.dart</li>
+            <li>styles.css</li>
+          </ul>
+        </li>
+        <li>analysis_options.yaml</li>
+        <li>pubspec.yaml</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<h2 id="the-road-youve-travelled">
+<a class="anchor" href="#the-road-youve-travelled" aria-hidden="true"><span class="octicon octicon-link"></span></a>The road you’ve travelled</h2>
+
+<p>Here’s what you achieved in this page:</p>
+
+<ul>
+  <li>You added the Angular router to navigate among different components.</li>
+  <li>You learned how to create router links to represent navigation menu items.</li>
+  <li>You used router link parameters to navigate to the details of the user-selected hero.</li>
+  <li>You shared the <code class="language-plaintext highlighter-rouge">HeroService</code> among multiple components.</li>
+  <li>You added the <code class="language-plaintext highlighter-rouge">uppercase</code> pipe to format data.</li>
+</ul>
+
+<p>Your app should look like this <span><a href="/examples/toh-5" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/toh-5/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<h3 id="the-road-ahead">
+<a class="anchor" href="#the-road-ahead" aria-hidden="true"><span class="octicon octicon-link"></span></a>The road ahead</h3>
+
+<p>You have much of the foundation you need to build an app.
+You’re still missing a key piece: remote data access.</p>
+
+<p>In the next page,
+you’ll replace the mock data with data retrieved from a server using http.</p>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/tutorial/toh-pt4">Services</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/tutorial/toh-pt6">HTTP</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

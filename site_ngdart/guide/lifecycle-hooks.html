@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them.">
+  <title>Lifecycle Hooks | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Lifecycle Hooks" />
+  <meta name="twitter:description" content="Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Lifecycle Hooks" />
+  <meta property="og:description" content="Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/lifecycle-hooks" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li class="active">
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#component-lifecycle-hooks">Component lifecycle hooks</a></li>
+<li class="toc-entry toc-h2"><a href="#lifecycle-sequence">Lifecycle sequence</a></li>
+<li class="toc-entry toc-h2"><a href="#other-lifecycle-hooks">Other lifecycle hooks</a></li>
+<li class="toc-entry toc-h2"><a href="#lifecycle-exercises">Lifecycle exercises</a></li>
+<li class="toc-entry toc-h2"><a href="#peek-a-boo-all-hooks">Peek-a-boo: all hooks</a></li>
+<li class="toc-entry toc-h2"><a href="#spying-oninit-and-ondestroy">Spying OnInit and OnDestroy</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#oninit">OnInit</a></li>
+<li class="toc-entry toc-h3"><a href="#ondestroy">OnDestroy</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#afterchanges">AfterChanges</a></li>
+<li class="toc-entry toc-h2"><a href="#docheck">DoCheck</a></li>
+<li class="toc-entry toc-h2"><a href="#afterview">AfterView</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#abide-by-the-unidirectional-data-flow-rule">Abide by the unidirectional data flow rule</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#aftercontent">AfterContent</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#content-projection">Content projection</a></li>
+<li class="toc-entry toc-h3"><a href="#aftercontent-hooks">AfterContent hooks</a></li>
+<li class="toc-entry toc-h3"><a href="#no-unidirectional-flow-worries-with-aftercontent">No unidirectional flow worries with AfterContent…</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/server-communication">HTTP Client</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/pipes">Pipes</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/lifecycle-hooks.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Lifecycle Hooks' page issue&body=From URL: https://angulardart.xyz/guide/lifecycle-hooks"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Lifecycle Hooks 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <!-- FilePath: src/guide/lifecycle-hooks.md -->
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/lifecycle-hooks”?&gt;</p>
+
+<p><img src="/assets/ng/devguide/lifecycle-hooks/hooks-in-sequence-f0284a4e9a015ae19cb006fb53e006090cc53291cd6c0ab434ec8494f8ba4af3.png" alt="Us" align="right" style="width:200px; margin-right:30px"></p>
+
+<p>A component has a lifecycle managed by Angular itself.</p>
+
+<p>Angular creates it, renders it, creates and renders its children,
+checks it when its data-bound properties change, and destroys it before removing it from the DOM.</p>
+
+<p>Angular offers <strong>lifecycle hooks</strong>
+that provide visibility into these key life moments and the ability to act when they occur.</p>
+
+<p>A directive has the same set of lifecycle hooks, minus the hooks that are specific to component content and views.</p>
+
+<p>Try the <span><a href="/examples/lifecycle-hooks" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/lifecycle-hooks/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<div id="hooks-overview"></div>
+<h2 id="component-lifecycle-hooks">
+<a class="anchor" href="#component-lifecycle-hooks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Component lifecycle hooks</h2>
+
+<p>Directive and component instances have a lifecycle
+as Angular creates, updates, and destroys them.
+Developers can tap into key moments in that lifecycle by implementing
+one or more of the <em>Lifecycle Hook</em> interfaces in the Angular <code class="language-plaintext highlighter-rouge">core</code> library.</p>
+
+<p>Each interface has a single hook method whose name is the interface name prefixed with <code class="language-plaintext highlighter-rouge">ng</code>.
+For example, the <code class="language-plaintext highlighter-rouge">OnInit</code> interface has a hook method named <code class="language-plaintext highlighter-rouge">ngOnInit</code>
+that Angular calls shortly after creating the component:</p>
+
+<p>&lt;?code-excerpt “lib/src/peek_a_boo_component.dart (ngOnInit)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class PeekABoo implements OnInit {
+    final LoggerService _logger;
+
+    PeekABoo(this._logger);
+
+    // implement OnInit's `ngOnInit` method
+    void ngOnInit() {
+      _logIt('OnInit');
+    }
+
+    void _logIt(String msg) {
+      // Don't tick or else
+      // the AfterContentChecked and AfterViewChecked recurse.
+      // Let parent call tick()
+      _logger.log("#${_nextId++} $msg");
+    }
+  }
+</code></pre></div></div>
+
+<p>No directive or component will implement all of the lifecycle hooks and some of the hooks only make sense for components.
+Angular only calls a directive/component hook method <em>if it is defined</em>.</p>
+
+<div id="hooks-purpose-timing"></div>
+<h2 id="lifecycle-sequence">
+<a class="anchor" href="#lifecycle-sequence" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lifecycle sequence</h2>
+
+<p><em>After</em> creating a component/directive by calling its constructor, Angular
+calls the lifecycle hook methods in the following sequence at specific moments:</p>
+
+<table>
+<col width="20%">
+<col width="80%">
+<tr>
+  <th>Hook</th>
+  <th>Purpose and Timing</th>
+</tr>
+<tr style="vertical-align:top">
+  <td>ngAfterChanges</td>
+  <td>
+      <p>Respond when Angular (re)sets data-bound input properties.</p>
+
+      <p>Called before <code class="language-plaintext highlighter-rouge">ngOnInit</code> and whenever one or more data-bound input properties change.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td>ngOnInit</td>
+  <td>
+      <p>Initialize the directive/component after Angular first displays the data-bound properties
+  and sets the directive/component’s input properties.</p>
+
+      <p>Called <em>once</em>, after the <em>first</em> <code class="language-plaintext highlighter-rouge">ngAfterChanges</code>.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td>ngDoCheck</td>
+  <td>
+      <p>Detect and act upon changes that Angular can’t or won’t detect on its own.</p>
+
+      <p>Called during every change detection run, immediately after <code class="language-plaintext highlighter-rouge">ngAfterChanges</code> and <code class="language-plaintext highlighter-rouge">ngOnInit</code>.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td>ngAfterContentInit</td>
+  <td>
+      <p>Respond after Angular projects external content into the component’s view.</p>
+
+      <p>Called <em>once</em> after the first <code class="language-plaintext highlighter-rouge">NgDoCheck</code>.</p>
+
+      <p><em>A component-only hook</em>.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td>ngAfterContentChecked</td>
+  <td>
+      <p>Respond after Angular checks the content projected into the component.</p>
+
+      <p>Called after the <code class="language-plaintext highlighter-rouge">ngAfterContentInit</code> and every subsequent <code class="language-plaintext highlighter-rouge">NgDoCheck</code>.</p>
+
+      <p><em>A component-only hook</em>.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td>ngAfterViewInit</td>
+  <td>
+      <p>Respond after Angular initializes the component’s views and child views.</p>
+
+      <p>Called <em>once</em> after the first <code class="language-plaintext highlighter-rouge">ngAfterContentChecked</code>.</p>
+
+      <p><em>A component-only hook</em>.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td>ngAfterViewChecked</td>
+  <td>
+      <p>Respond after Angular checks the component’s views and child views.</p>
+
+      <p>Called after the <code class="language-plaintext highlighter-rouge">ngAfterViewInit</code> and every subsequent <code class="language-plaintext highlighter-rouge">ngAfterContentChecked</code>.</p>
+
+      <p><em>A component-only hook</em>.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td>ngOnDestroy</td>
+  <td>
+      <p>Cleanup just before Angular destroys the directive/component.
+  Unsubscribe observables and detach event handlers to avoid memory leaks.</p>
+
+      <p>Called <em>just before</em> Angular destroys the directive/component.</p>
+    </td>
+</tr>
+</table>
+
+<div id="other-lifecycle-hooks"></div>
+<h2 id="other-lifecycle-hooks">
+<a class="anchor" href="#other-lifecycle-hooks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Other lifecycle hooks</h2>
+
+<p>Other Angular sub-systems may have their own lifecycle hooks apart from these component hooks.</p>
+
+<p>The router, for instance, also has its own <a href="router/5">router lifecycle
+hooks</a> that allow us to tap into
+specific moments in route navigation.
+A parallel can be drawn between <code class="language-plaintext highlighter-rouge">ngOnInit</code> and <code class="language-plaintext highlighter-rouge">routerOnActivate</code>.  Both are
+prefixed so as to avoid collision, and both run right when a component is
+being initialized.</p>
+
+<p>3rd party libraries might implement their hooks as well in order to give developers more
+control over how these libraries are used.</p>
+
+<div id="the-sample"></div>
+<h2 id="lifecycle-exercises">
+<a class="anchor" href="#lifecycle-exercises" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lifecycle exercises</h2>
+
+<p>The <span><a href="/examples/lifecycle-hooks" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/lifecycle-hooks/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>
+demonstrates the lifecycle hooks in action through a series of exercises
+presented as components under the control of the root <code class="language-plaintext highlighter-rouge">AppComponent</code>.</p>
+
+<p>They follow a common pattern:  a <em>parent</em> component serves as a test rig for
+a <em>child</em> component that illustrates one or more of the lifecycle hook methods.</p>
+
+<p>Here’s a brief description of each exercise:</p>
+
+<table>
+<col width="20%">
+<col width="80%">
+<tr>
+  <th>Component</th>
+  <th>Description</th>
+</tr>
+<tr style="vertical-align:top">
+  <td><a href="#peek-a-boo">Peek-a-boo</a></td>
+  <td>
+      <p>Demonstrates every lifecycle hook.
+  Each hook method writes to the on-screen log.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td><a href="#spy">Spy</a></td>
+  <td>
+      <p>Directives have lifecycle hooks too.
+  A <code class="language-plaintext highlighter-rouge">SpyDirective</code> can log when the element it spies upon is
+  created or destroyed using the <code class="language-plaintext highlighter-rouge">ngOnInit</code> and <code class="language-plaintext highlighter-rouge">ngOnDestroy</code> hooks.</p>
+
+      <p>This example applies the <code class="language-plaintext highlighter-rouge">SpyDirective</code> to a <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> in an <code class="language-plaintext highlighter-rouge">ngFor</code> <em>hero</em> repeater
+  managed by the parent <code class="language-plaintext highlighter-rouge">SpyComponent</code>.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td><a href="#afterchanges">AfterChanges</a></td>
+  <td>
+      <p>See how Angular calls the <code class="language-plaintext highlighter-rouge">ngAfterChanges</code> hook with a <code class="language-plaintext highlighter-rouge">changes</code> object
+  every time one of the component input properties changes.
+  Shows how to interpret the <code class="language-plaintext highlighter-rouge">changes</code> object.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td><a href="#docheck">DoCheck</a></td>
+  <td>
+      <p>Implements an <code class="language-plaintext highlighter-rouge">ngDoCheck</code> method with custom change detection.
+  See how often Angular calls this hook and watch it post changes to a log.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td><a href="#afterview">AfterView</a></td>
+  <td>
+      <p>Shows what Angular means by a <em>view</em>.
+  Demonstrates the <code class="language-plaintext highlighter-rouge">ngAfterViewInit</code> and <code class="language-plaintext highlighter-rouge">ngAfterViewChecked</code> hooks.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td><a href="#aftercontent">AfterContent</a></td>
+  <td>
+      <p>Shows how to project external content into a component and
+  how to distinguish projected content from a component’s view children.
+  Demonstrates the <code class="language-plaintext highlighter-rouge">ngAfterContentInit</code> and <code class="language-plaintext highlighter-rouge">ngAfterContentChecked</code> hooks.</p>
+    </td>
+</tr>
+<tr style="vertical-align:top">
+  <td>Counter</td>
+  <td>
+      <p>Demonstrates a combination of a component and a directive
+  each with its own hooks.</p>
+
+      <p>In this example, a <code class="language-plaintext highlighter-rouge">CounterComponent</code> logs a change (via <code class="language-plaintext highlighter-rouge">ngAfterChanges</code>)
+  every time the parent component increments its input counter property.
+  Meanwhile, the <code class="language-plaintext highlighter-rouge">SpyDirective</code> from the previous example is applied
+  to the <code class="language-plaintext highlighter-rouge">CounterComponent</code> log where it watches log entries being created and destroyed.</p>
+    </td>
+</tr>
+</table>
+
+<p>The remainder of this chapter discusses selected exercises in further detail.</p>
+
+<div id="peek-a-boo"></div>
+<h2 id="peek-a-boo-all-hooks">
+<a class="anchor" href="#peek-a-boo-all-hooks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Peek-a-boo: all hooks</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">PeekABooComponent</code> demonstrates all of the hooks in one component.</p>
+
+<p>You would rarely, if ever, implement all of the interfaces like this.
+The peek-a-boo exists to show how Angular calls the hooks in the expected order.</p>
+
+<p>This snapshot reflects the state of the log after the user clicked the <em>Create…</em> button and then the <em>Destroy…</em> button.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/lifecycle-hooks/peek-a-boo-a47adc72737ffc37b74dc47e937212bc26d07e4aaf0ff211d21492ab800d4e3f.png" alt="Peek-a-boo"></p>
+
+<p>The sequence of log messages follows the prescribed hook calling order:
+<code class="language-plaintext highlighter-rouge">AfterChanges</code>, <code class="language-plaintext highlighter-rouge">OnInit</code>, <code class="language-plaintext highlighter-rouge">DoCheck</code> (3x), <code class="language-plaintext highlighter-rouge">AfterContentInit</code>, <code class="language-plaintext highlighter-rouge">AfterContentChecked</code> (3x),
+<code class="language-plaintext highlighter-rouge">AfterViewInit</code>, <code class="language-plaintext highlighter-rouge">AfterViewChecked</code> (3x), and <code class="language-plaintext highlighter-rouge">OnDestroy</code>.</p>
+
+<div class="l-sub-section">
+  <p>The constructor isn’t an Angular hook <em>per se</em>.
+  The log confirms that input properties (the <code class="language-plaintext highlighter-rouge">name</code> property in this case) have no assigned values at construction.</p>
+</div>
+
+<p>Had the user clicked the <em>Update Hero</em> button, the log would show another <code class="language-plaintext highlighter-rouge">AfterChanges</code> and two more triplets of
+<code class="language-plaintext highlighter-rouge">DoCheck</code>, <code class="language-plaintext highlighter-rouge">AfterContentChecked</code> and <code class="language-plaintext highlighter-rouge">AfterViewChecked</code>.
+Clearly these three hooks fire a <em>often</em>. Keep the logic in these hooks as lean as possible!</p>
+
+<p>The next examples focus on hook details.</p>
+
+<div id="spy"></div>
+<h2 id="spying-oninit-and-ondestroy">
+<a class="anchor" href="#spying-oninit-and-ondestroy" aria-hidden="true"><span class="octicon octicon-link"></span></a>Spying <em>OnInit</em> and <em>OnDestroy</em>
+</h2>
+
+<p>Go undercover with these two spy hooks to discover when an element is initialized or destroyed.</p>
+
+<p>This is the perfect infiltration job for a directive.
+The heroes will never know they’re being watched.</p>
+
+<div class="l-sub-section">
+  <p>Kidding aside, pay attention to two key points:</p>
+
+  <ol>
+    <li>
+      <p>Angular calls hook methods for <em>directives</em> as well as components.<br><br></p>
+    </li>
+    <li>
+      <p>A spy directive can provide insight into a DOM object that you cannot change directly.
+  Obviously you can’t touch the implementation of a native <code class="language-plaintext highlighter-rouge">div</code>.
+  You can’t modify a third party component either.
+  But you can watch both with a directive.</p>
+    </li>
+  </ol>
+</div>
+
+<p>The sneaky spy directive is simple,  consisting almost entirely of <code class="language-plaintext highlighter-rouge">ngOnInit</code> and <code class="language-plaintext highlighter-rouge">ngOnDestroy</code> hooks
+that log messages to the parent via an injected <code class="language-plaintext highlighter-rouge">LoggerService</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/spy_directive.dart” region=”spy-directive”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // Spy on any element to which it is applied.
+  // Usage: &lt;div mySpy&gt;...&lt;/div&gt;
+  @Directive(selector: '[mySpy]')
+  class SpyDirective implements OnInit, OnDestroy {
+    final LoggerService _logger;
+
+    SpyDirective(this._logger);
+
+    @override
+    void ngOnInit() =&gt; _logIt('onInit');
+
+    @override
+    void ngOnDestroy() =&gt; _logIt('onDestroy');
+
+    _logIt(String msg) =&gt; _logger.log('Spy #${_nextId++} $msg');
+  }
+</code></pre></div></div>
+
+<p>You can apply the spy to any native or component element and it’ll be initialized and destroyed
+at the same time as that element.
+Here it is attached to the repeated hero <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code></p>
+
+<p>&lt;?code-excerpt “lib/src/spy_component.html” region=”template”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngFor="let hero of heroes" mySpy class="heroes"&gt;
+    {{hero}}
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p>Each spy’s birth and death marks the birth and death of the attached hero <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>
+with an entry in the <em>Hook Log</em> as seen here:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/lifecycle-hooks/spy-directive-b701141bebc1543a5fe9fb8ffb604565d522a6d1283b35198f65e147c9dee155.gif" alt="Spy Directive"></p>
+
+<p>Adding a hero results in a new hero <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>. The spy’s <code class="language-plaintext highlighter-rouge">ngOnInit</code> logs that event.</p>
+
+<p>The <em>Reset</em> button clears the <code class="language-plaintext highlighter-rouge">heroes</code> list.
+Angular removes all hero <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> elements from the DOM and destroys their spy directives at the same time.
+The spy’s <code class="language-plaintext highlighter-rouge">ngOnDestroy</code> method reports its last moments.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">ngOnInit</code> and <code class="language-plaintext highlighter-rouge">ngOnDestroy</code> methods have more vital roles to play in real apps.</p>
+
+<h3 id="oninit">
+<a class="anchor" href="#oninit" aria-hidden="true"><span class="octicon octicon-link"></span></a>OnInit</h3>
+
+<p>Use <code class="language-plaintext highlighter-rouge">ngOnInit</code> for two main reasons:</p>
+<ol>
+  <li>to perform complex initializations shortly after construction</li>
+  <li>to set up the component after Angular sets the input properties</li>
+</ol>
+
+<p>Experienced developers agree that components should be cheap and safe to construct.</p>
+
+<div class="l-sub-section">
+  <p>Misko Hevery, Angular team lead,
+  <a href="http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/">explains why</a>
+  you should avoid complex constructor logic.</p>
+</div>
+
+<p>Don’t fetch data in a component constructor.
+You shouldn’t worry that a new component will try to contact a remote server when
+created under test or before you decide to display it.
+Constructors should do no more than set the initial local variables to simple values.</p>
+
+<p>An <code class="language-plaintext highlighter-rouge">ngOnInit</code> is a good place for a component to fetch its initial data. The
+<a href="../tutorial/toh-pt4#oninit">Tutorial</a> and <a href="server-communication#oninit">HTTP</a> chapter
+show how.</p>
+
+<p>Remember also that a directive’s data-bound input properties are not set until <em>after construction</em>.
+That’s a problem if you need to initialize the directive based on those properties.
+They’ll have been set when <code class="language-plaintext highlighter-rouge">ngOninit</code> runs.</p>
+
+<div class="l-sub-section">
+  <p>The <code class="language-plaintext highlighter-rouge">ngAfterChanges</code> method is your first opportunity to access those properties.
+  Angular calls <code class="language-plaintext highlighter-rouge">ngAfterChanges</code> before <code class="language-plaintext highlighter-rouge">ngOnInit</code> … and many times after that.
+  It only calls <code class="language-plaintext highlighter-rouge">ngOnInit</code> once.</p>
+</div>
+
+<p>You can count on Angular to call the <code class="language-plaintext highlighter-rouge">ngOnInit</code> method <em>soon</em> after creating the component.
+That’s where the heavy initialization logic belongs.</p>
+
+<h3 id="ondestroy">
+<a class="anchor" href="#ondestroy" aria-hidden="true"><span class="octicon octicon-link"></span></a>OnDestroy</h3>
+
+<p>Put cleanup logic in <code class="language-plaintext highlighter-rouge">ngOnDestroy</code>, the logic that <em>must</em> run before Angular destroys the directive.</p>
+
+<p>This is the time to notify another part of the app that the component is going away.</p>
+
+<p>This is the place to free resources that won’t be garbage collected automatically.
+Unsubscribe from observables and DOM events. Stop interval timers.
+Unregister all callbacks that this directive registered with global or app services.
+You risk memory leaks if you neglect to do so.</p>
+
+<h2 id="afterchanges">
+<a class="anchor" href="#afterchanges" aria-hidden="true"><span class="octicon octicon-link"></span></a>AfterChanges</h2>
+
+<p>Angular calls its <code class="language-plaintext highlighter-rouge">ngAfterChanges</code> method whenever it detects changes to <strong><em>input properties</em></strong> of the component (or directive).
+This example monitors the <code class="language-plaintext highlighter-rouge">AfterChanges</code> hook.</p>
+
+<p>&lt;?code-excerpt “lib/src/after_changes_component.dart (ngAfterChanges)” region=”ng-after-changes” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ngAfterChanges() {
+    changeLog.add('Input property has changed. ($power)');
+  }
+</code></pre></div></div>
+
+<p>The example component, <code class="language-plaintext highlighter-rouge">AfterChangesComponent</code>, has two input properties: <code class="language-plaintext highlighter-rouge">hero</code> and <code class="language-plaintext highlighter-rouge">power</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/after_changes_component.dart” region=”inputs”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
+  Hero? hero;
+  @Input()
+  String power = '';
+</code></pre></div></div>
+
+<p>The host <code class="language-plaintext highlighter-rouge">AfterChangesParentComponent</code> binds to them like this:</p>
+
+<p>&lt;?code-excerpt “lib/src/after_changes_parent_component.html” region=”after-changes”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;after-changes [hero]="hero" [power]="power"&gt;&lt;/after-changes&gt;
+</code></pre></div></div>
+
+<p>Here’s the sample in action as the user makes changes.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/lifecycle-hooks/after-changes-anim-cadacd997ad549bb6cc7bff59d773782ff7165d00bedbd259a25be945845c4cf.gif" alt="AfterChanges"></p>
+
+<p>The log entry appear as the string value of the <em>power</em> property changes.
+But the <code class="language-plaintext highlighter-rouge">ngAfterChanges</code> does not catch changes to <code class="language-plaintext highlighter-rouge">hero.name</code>
+That’s surprising at first.</p>
+
+<p>Angular only calls the hook when the value of the input property changes.
+The value of the <code class="language-plaintext highlighter-rouge">hero</code> property is the <em>reference to the hero object</em>.
+Angular doesn’t care that the hero’s own <code class="language-plaintext highlighter-rouge">name</code> property changed.
+The hero object <em>reference</em> didn’t change so, from Angular’s perspective, there is no change to report!</p>
+
+<h2 id="docheck">
+<a class="anchor" href="#docheck" aria-hidden="true"><span class="octicon octicon-link"></span></a>DoCheck</h2>
+
+<p>Use the <code class="language-plaintext highlighter-rouge">DoCheck</code> hook to detect and act upon changes that Angular doesn’t catch on its own.</p>
+
+<div class="l-sub-section">
+  <p>Use this method to detect a change that Angular overlooked.</p>
+</div>
+
+<p>The <em>DoCheck</em> sample extends the <em>AfterChanges</em> sample with the following <code class="language-plaintext highlighter-rouge">ngDoCheck</code> hook:</p>
+
+<p>&lt;?code-excerpt “lib/src/do_check_component.dart (ngDoCheck)” region=”ng-do-check” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ngDoCheck() {
+    final heroName = hero?.name ?? '';
+    if (heroName != oldHeroName) {
+      changeDetected = true;
+      changeLog.add(
+          'DoCheck: Hero name changed to "${heroName}" from "$oldHeroName"');
+      oldHeroName = heroName;
+    }
+
+    if (power != oldPower) {
+      changeDetected = true;
+      changeLog.add('DoCheck: Power changed to "$power" from "$oldPower"');
+      oldPower = power;
+    }
+
+    if (changeDetected) {
+      noChangeCount = 0;
+    } else {
+      // log that hook was called when there was no relevant change.
+      var count = noChangeCount += 1;
+      var noChangeMsg =
+          'DoCheck called ${count}x when no change to hero or power';
+      if (count == 1) {
+        // add "no change" message
+        changeLog.add(noChangeMsg);
+      } else {
+        // update last "no change" message
+        changeLog[changeLog.length - 1] = noChangeMsg;
+      }
+    }
+
+    changeDetected = false;
+  }
+</code></pre></div></div>
+
+<p>This code inspects certain <em>values-of-interest</em>, capturing and comparing their current state against previous values.
+It writes a special message to the log when there are no substantive changes to the <code class="language-plaintext highlighter-rouge">hero</code> or the <code class="language-plaintext highlighter-rouge">power</code>
+so you can see how often <code class="language-plaintext highlighter-rouge">DoCheck</code> is called. The results are illuminating:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/lifecycle-hooks/do-check-anim-1f1efcb7b275d11235b3598f27ceb387382e6a040090d1e96973901038ff28c8.gif" alt="DoCheck"></p>
+
+<p>While the <code class="language-plaintext highlighter-rouge">ngDoCheck</code> hook can detect when the hero’s <code class="language-plaintext highlighter-rouge">name</code> has changed, it has a frightful cost.
+This hook is called with enormous frequency —
+after <em>every</em> change detection cycle no matter where the change occurred.
+It’s called over twenty times in this example before the user can do anything.</p>
+
+<p>Most of these initial checks are triggered by Angular’s first rendering of <em>unrelated data elsewhere on the page</em>.
+Mere mousing into another input box triggers a call.
+Relatively few calls reveal actual changes to pertinent data.
+Clearly our implementation must be very lightweight or the user experience will suffer.</p>
+
+<h2 id="afterview">
+<a class="anchor" href="#afterview" aria-hidden="true"><span class="octicon octicon-link"></span></a>AfterView</h2>
+
+<p>The <em>AfterView</em> sample explores the <code class="language-plaintext highlighter-rouge">AfterViewInit</code> and <code class="language-plaintext highlighter-rouge">AfterViewChecked</code> hooks that Angular calls
+<em>after</em> it creates a component’s child views.</p>
+
+<p>Here’s a child view that displays a hero’s name in an input box:</p>
+
+<p>&lt;?code-excerpt “lib/src/after_view_component.dart (child view)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Component(
+    selector: 'my-child-view',
+    template: '&lt;input [(ngModel)]="hero"&gt;',
+    directives: [coreDirectives, formDirectives],
+  )
+  class ChildViewComponent {
+    String hero = 'Magneta';
+  }
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">AfterViewComponent</code> displays this child view <em>within its template</em>:</p>
+
+<p>&lt;?code-excerpt “lib/src/after_view_component.dart (template)” region=”template” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;div&gt;-- child view begins --&lt;/div&gt;
+      &lt;my-child-view&gt;&lt;/my-child-view&gt;
+    &lt;div&gt;-- child view ends --&lt;/div&gt;
+    &lt;p *ngIf="comment.isNotEmpty" class="comment"&gt;{{comment}}&lt;/p&gt;''',
+</code></pre></div></div>
+
+<p>The following hooks take action based on changing values <em>within the child view</em>
+which can only be reached by querying for the child view via the property decorated with
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/ViewChild-class.html">@ViewChild</a>.</p>
+
+<p>&lt;?code-excerpt “lib/src/after_view_component.dart (class excerpts)” region=”hooks” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class AfterViewComponent implements AfterViewChecked, AfterViewInit {
+    String? _prevHero = '';
+
+    // Query for a VIEW child of type `ChildViewComponent`
+    @ViewChild(ChildViewComponent)
+    ChildViewComponent? viewChild;
+
+    ngAfterViewInit() {
+      // viewChild is set after the view has been initialized
+      _logIt('AfterViewInit');
+      _doSomething();
+    }
+
+    ngAfterViewChecked() {
+      // viewChild is updated after the view has been checked
+      if (_prevHero == viewChild?.hero) {
+        _logIt('AfterViewChecked (no change)');
+      } else {
+        _prevHero = viewChild?.hero;
+        _logIt('AfterViewChecked');
+        _doSomething();
+      }
+    }
+  }
+</code></pre></div></div>
+
+<div id="wait-a-tick"></div>
+<h3 id="abide-by-the-unidirectional-data-flow-rule">
+<a class="anchor" href="#abide-by-the-unidirectional-data-flow-rule" aria-hidden="true"><span class="octicon octicon-link"></span></a>Abide by the unidirectional data flow rule</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">doSomething</code> method updates the screen when the hero name exceeds 10 characters.</p>
+
+<p>&lt;?code-excerpt “lib/src/after_view_component.dart (doSomething)” region=”do-something” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  // This surrogate for real business logic sets the `comment`
+  void _doSomething() {
+    var length = viewChild?.hero.length ?? 0;
+    var c = length &gt; 10 ? "That's a long name" : '';
+    if (c != comment) {
+      // Wait a tick because the component's view has already been checked
+      _logger.tick().then((_) {
+        comment = c;
+      });
+    }
+  }
+</code></pre></div></div>
+
+<p>Why does the <code class="language-plaintext highlighter-rouge">doSomething</code> method wait a tick before updating <code class="language-plaintext highlighter-rouge">comment</code>?</p>
+
+<p>Angular’s unidirectional data flow rule forbids updates to the view <em>after</em> it has been composed.
+Both of these hooks fire <em>after</em> the component’s view has been composed.</p>
+
+<p>Angular throws an error if the hook updates the component’s data-bound <code class="language-plaintext highlighter-rouge">comment</code> property immediately (try it!).</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">LoggerService.tick()</code> postpones the log update
+for one turn of the browser’s update cycle … and that’s just long enough.</p>
+
+<p>Here’s <em>AfterView</em> in action</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/lifecycle-hooks/after-view-anim-a4cd472d17ef180ae79797047225c6a7d3e9a4ccefbbebd6479d410d4c64dcfe.gif" alt="AfterView"></p>
+
+<p>Notice that Angular frequently calls <code class="language-plaintext highlighter-rouge">AfterViewChecked</code>, often when there are no changes of interest.
+Write lean hook methods to avoid performance problems.</p>
+
+<h2 id="aftercontent">
+<a class="anchor" href="#aftercontent" aria-hidden="true"><span class="octicon octicon-link"></span></a>AfterContent</h2>
+
+<p>The <em>AfterContent</em> sample explores the <code class="language-plaintext highlighter-rouge">AfterContentInit</code> and <code class="language-plaintext highlighter-rouge">AfterContentChecked</code> hooks that Angular calls
+<em>after</em> Angular projects external content into the component.</p>
+
+<h3 id="content-projection">
+<a class="anchor" href="#content-projection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Content projection</h3>
+
+<p><em>Content projection</em> is a way to import HTML content from outside the component and insert that content
+into the component’s template in a designated spot.</p>
+
+<div class="l-sub-section">
+  <p>Angular 1 developers know this technique as <em>transclusion</em>.</p>
+</div>
+
+<p>Consider this variation on the <a href="#afterview">previous <em>AfterView</em></a> example.
+This time, instead of including the child view within the template, it imports the content from
+the <code class="language-plaintext highlighter-rouge">AfterContentComponent</code>’s parent. Here’s the parent’s template.</p>
+
+<p>&lt;?code-excerpt “lib/src/after_content_component.dart (template excerpt)” region=”parent-template” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;div class="parent"&gt;
+      &lt;h2&gt;AfterContent&lt;/h2&gt;
+
+      &lt;div *ngIf="show"&gt;
+        &lt;after-content&gt;
+          &lt;my-child&gt;&lt;/my-child&gt;
+        &lt;/after-content&gt;
+      &lt;/div&gt;
+
+      &lt;h4&gt;-- AfterContent Logs --&lt;/h4&gt;
+      &lt;p&gt;&lt;button (click)="reset()"&gt;Reset&lt;/button&gt;&lt;/p&gt;
+      &lt;div *ngFor="let msg of logs"&gt;{{msg}}&lt;/div&gt;
+    &lt;/div&gt;
+    ''',
+</code></pre></div></div>
+
+<p>Notice that the <code class="language-plaintext highlighter-rouge">&lt;my-child&gt;</code> tag is tucked between the <code class="language-plaintext highlighter-rouge">&lt;after-content&gt;</code> tags.
+Never put content between a component’s element tags <em>unless you intend to project that content
+into the component</em>.</p>
+
+<p>Now look at the component’s template:</p>
+
+<p>&lt;?code-excerpt “lib/src/after_content_component.dart (template)” region=”template” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;div&gt;-- projected content begins --&lt;/div&gt;
+      &lt;ng-content&gt;&lt;/ng-content&gt;
+    &lt;div&gt;-- projected content ends --&lt;/div&gt;
+    &lt;p *ngIf="comment.isNotEmpty" class="comment"&gt;{{comment}}&lt;/p&gt;
+    ''',
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;ng-content&gt;</code> tag is a <em>placeholder</em> for the external content.
+It tells Angular where to insert that content.
+In this case, the projected content is the <code class="language-plaintext highlighter-rouge">&lt;my-child&gt;</code> from the parent.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/lifecycle-hooks/projected-child-view-9c219dc05db84a0ecc2e0c2eb315b5e3c393b76429578220b1eac52cae0de947.png" width="262" alt="Projected Content"></p>
+
+<div class="l-sub-section">
+  <p>The tell-tale signs of <em>content projection</em> are (a) HTML between component element tags
+  and (b) the presence of <code class="language-plaintext highlighter-rouge">&lt;ng-content&gt;</code> tags in the component’s template.</p>
+</div>
+
+<h3 id="aftercontent-hooks">
+<a class="anchor" href="#aftercontent-hooks" aria-hidden="true"><span class="octicon octicon-link"></span></a>AfterContent hooks</h3>
+
+<p><em>AfterContent</em> hooks are similar to the <em>AfterView</em> hooks.
+The key difference is in the child component</p>
+
+<ul>
+  <li>
+    <p>The <em>AfterView</em> hooks concern <code class="language-plaintext highlighter-rouge">ViewChildren</code>, the child components whose element tags
+appear <em>within</em> the component’s template.</p>
+  </li>
+  <li>
+    <p>The <em>AfterContent</em> hooks concern <code class="language-plaintext highlighter-rouge">ContentChildren</code>, the child components that Angular
+projected into the component.</p>
+  </li>
+</ul>
+
+<p>The following <em>AfterContent</em> hooks take action based on changing values in a  <em>content child</em>
+which can only be reached by querying for it via the property decorated with
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/ContentChild-class.html">@ContentChild</a>.</p>
+
+<p>&lt;?code-excerpt “lib/src/after_content_component.dart (class excerpts)” region=”hooks” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class AfterContentComponent implements AfterContentChecked, AfterContentInit {
+    String? _prevHero = '';
+    String comment = '';
+
+    // Query for a CONTENT child of type `ChildComponent`
+    @ContentChild(ChildComponent)
+    ChildComponent? contentChild;
+
+    ngAfterContentInit() {
+      // contentChild is set after the content has been initialized
+      _logIt('AfterContentInit');
+      _doSomething();
+    }
+
+    ngAfterContentChecked() {
+      // contentChild is updated after the content has been checked
+      if (_prevHero == contentChild?.hero) {
+        _logIt('AfterContentChecked (no change)');
+      } else {
+        _prevHero = contentChild?.hero;
+        _logIt('AfterContentChecked');
+        _doSomething();
+      }
+    }
+  }
+</code></pre></div></div>
+
+<div id="no-unidirectional-flow-worries"></div>
+<h3 id="no-unidirectional-flow-worries-with-aftercontent">
+<a class="anchor" href="#no-unidirectional-flow-worries-with-aftercontent" aria-hidden="true"><span class="octicon octicon-link"></span></a>No unidirectional flow worries with <em>AfterContent…</em>
+</h3>
+
+<p>This component’s <code class="language-plaintext highlighter-rouge">doSomething</code> method update’s the component’s data-bound <code class="language-plaintext highlighter-rouge">comment</code> property immediately.
+There’s no <a href="#wait-a-tick">need to wait</a>.</p>
+
+<p>Recall that Angular calls both <em>AfterContent</em> hooks before calling either of the <em>AfterView</em> hooks.
+Angular completes composition of the projected content <em>before</em> finishing the composition of this component’s view.
+There is a small window between the <code class="language-plaintext highlighter-rouge">AfterContent...</code> and <code class="language-plaintext highlighter-rouge">AfterView...</code> hooks to modify the host view.</p>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/server-communication">HTTP Client</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/pipes">Pipes</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

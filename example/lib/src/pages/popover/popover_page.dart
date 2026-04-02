@@ -27,6 +27,7 @@ class PopoverPageComponent {
   LiPopoverComponent? manualPopover;
 
   bool get _isPt => i18n.isPortuguese;
+  Messages get t => i18n.t;
 
   String get pageTitle => _isPt ? 'Componentes' : 'Components';
   String get pageSubtitle => 'Popover';
@@ -169,6 +170,8 @@ class PopoverPageComponent {
   String get apiIntro => _isPt
       ? 'Hoje o pacote expõe tanto helpers imperativos quanto um componente declarativo para casos mais próximos do fluxo AngularDart.'
       : 'Today the package exposes both imperative helpers and a declarative component for flows closer to AngularDart usage.';
+    String get overviewTabLabel => _isPt ? 'Visão geral' : 'Overview';
+    String get apiTabLabel => 'API';
   String get idleState => _isPt
       ? 'Popover: aguardando interação'
       : 'Popover: waiting for interaction';

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FAQ and other tips for using AngularDart.">
+  <title>FAQ | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="AngularDart Development FAQ" />
+  <meta name="twitter:description" content="FAQ and other tips for using AngularDart." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="AngularDart Development FAQ" />
+  <meta property="og:description" content="FAQ and other tips for using AngularDart." />
+  <meta property="og:url" content="https://angulardart.xyz/faq" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/shared/dart-logo-for-shares.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  </head>
+
+  <body class="default">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li >
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li class="active">
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#general">General</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#q-what-browsers-do-you-support-as-javascript-compilation-targets">Q. What browsers do you support as JavaScript compilation targets?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-is-dart-supported-by-my-browser">Q. Is Dart supported by my browser?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-do-i-debug-an-app">Q. How do I debug an app?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-can-i-use-angular-with-dart">Q. Can I use Angular with Dart?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-should-i-use-angular-or-polymer">Q. Should I use Angular or Polymer?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-can-i-build-a-chrome-app-with-dart">Q. Can I build a Chrome App with Dart?</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#javascript-and-other-web-technologies">JavaScript and other web technologies</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#q-does-google-want-to-replace-javascript-with-dart">Q. Does Google want to replace JavaScript with Dart?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-does-dart-code-interoperate-with-javascript-libraries">Q. How does Dart code interoperate with JavaScript libraries?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-i-have-a-large-javascript-codebase-how-can-i-migrate-it-to-dart">Q. I have a large JavaScript codebase. How can I migrate it to Dart?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-does-dart-compare-with-using-the-closure-compiler-on-javascript">Q. How does Dart compare with using the Closure compiler on JavaScript?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-does-dart-compare-with-coffeescript">Q. How does Dart compare with CoffeeScript?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-what-does-google-think-of-typescript">Q. What does Google think of TypeScript?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-i-have-a-large-app-written-in-gwt-how-do-i-port-it-to-dart">Q. I have a large app written in GWT. How do I port it to Dart?</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#javascript-compilation">JavaScript compilation</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#q-will-any-valid-dart-code-compile-to-javascript-or-are-there-limitations">Q. Will any valid Dart code compile to JavaScript, or are there limitations?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-why-does-dart-have-two-compilers-dartdevc-and-dart2js">Q. Why does Dart have two compilers, dartdevc and dart2js?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-can-dart2js-produce-javascript-that-runs-faster-than-handwritten-javascript">Q. How can dart2js produce JavaScript that runs faster than handwritten JavaScript?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-can-i-write-dart-code-that-compiles-to-performant-javascript">Q. How can I write Dart code that compiles to performant JavaScript?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-why-is-the-code-for-hello-world-so-big-compared-to-the-original-dart-code-after-compilation-to-javascript">Q. Why is the code for “Hello, World” so big, compared to the original Dart code after compilation to JavaScript?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-are-floating-point-numbers-handled-when-compiled-to-javascript">Q. How are floating point numbers handled when compiled to JavaScript?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-are-integers-handled-when-compiled-to-javascript">Q. How are integers handled when compiled to JavaScript?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-how-are-typed-lists-handled-when-compiled-to-javascript">Q. How are typed lists handled when compiled to JavaScript?</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#historical">Historical</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#q-why-dart">Q. Why Dart?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-is-the-language-what-really-needs-to-be-fixed-in-web-development">Q. Is the language what really needs to be fixed in web development?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-is-dart-going-to-divert-community-effort-from-javascript-based-web-development">Q. Is Dart going to divert community effort from JavaScript-based web development?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-will-the-dart-vm-get-into-chrome">Q. Will the Dart VM get into Chrome?</a></li>
+<li class="toc-entry toc-h3"><a href="#q-why-not-compile-dart-to-asmjs-instead-of-javascript">Q. Why not compile Dart to asm.js instead of JavaScript?</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+
+          <div>
+            <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/faq.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='AngularDart Development FAQ' page issue&body=From URL: https://angulardart.xyz/faq"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+            <h1>AngularDart Development FAQ</h1>
+          </div>
+          <hr>
+          <p><em>Updated December 2018</em></p>
+
+<p>This FAQ applies to AngularDart. For more general Dart questions,
+see the <a href="https://dart.dev/faq">Dart FAQ.</a></p>
+
+<h2 id="general">
+<a class="anchor" href="#general" aria-hidden="true"><span class="octicon octicon-link"></span></a>General</h2>
+
+<h3 id="q-what-browsers-do-you-support-as-javascript-compilation-targets">
+<a class="anchor" href="#q-what-browsers-do-you-support-as-javascript-compilation-targets" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. What browsers do you support as JavaScript compilation targets?</h3>
+
+<p>The <em>production</em> compiler (<a href="https://dart.dev/tools/dart2js">dart2js</a>) supports Internet Explorer 11
+and the last two major releases of the following browsers:</p>
+
+<ul>
+  <li>Chrome</li>
+  <li>Edge</li>
+  <li>Firefox</li>
+  <li>Safari</li>
+</ul>
+
+<p>The <em>development</em> compiler (<a href="https://dart.dev/tools/dartdevc">dartdevc</a>) supports only Chrome.</p>
+
+<h3 id="q-is-dart-supported-by-my-browser">
+<a class="anchor" href="#q-is-dart-supported-by-my-browser" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Is Dart supported by my browser?</h3>
+
+<p>Although no production browsers can execute Dart code directly,
+all modern browsers can execute Dart code that’s been compiled to JavaScript.</p>
+
+<h3 id="q-how-do-i-debug-an-app">
+<a class="anchor" href="#q-how-do-i-debug-an-app" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How do I debug an app?</h3>
+
+<p>For setup details and a walkthrough, see
+<a href="https://dart.dev/web/guides/debugging">Debugging Dart Web Apps</a>.</p>
+
+<p>The <a href="https://dart.dev/web/tools/dart2js#debugging">debugging</a> section of the dart2js documentation
+has some tips for specific browsers.</p>
+
+<h3 id="q-can-i-use-angular-with-dart">
+<a class="anchor" href="#q-can-i-use-angular-with-dart" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Can I use Angular with Dart?</h3>
+
+<p>Yes! <a href="/">AngularDart</a> is a port of Angular to Dart.</p>
+
+<h3 id="q-should-i-use-angular-or-polymer">
+<a class="anchor" href="#q-should-i-use-angular-or-polymer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Should I use Angular or Polymer?</h3>
+
+<p>Use <a href="/">AngularDart</a>.
+<a href="https://github.com/dart-archive/polymer-dart/wiki">Polymer Dart</a> is no longer supported and is likely to break in
+<a href="https://dart.dev/dart-2">Dart 2.</a>
+At <a href="https://developers.google.com/events/flutter-live/">Flutter Live</a> we announced <a href="https://medium.com/flutter-io/hummingbird-building-flutter-for-the-web-e687c2a023a8">Hummingbird</a> as
+an experimental way to write web applications.
+We’ll let you know when Hummingbird is ready to use.</p>
+
+<h3 id="q-can-i-build-a-chrome-app-with-dart">
+<a class="anchor" href="#q-can-i-build-a-chrome-app-with-dart" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Can I build a Chrome App with Dart?</h3>
+
+<p>You can use the <a href="https://github.com/dart-gde/chrome.dart">chrome.dart</a> libraries,
+but you still need to compile to JavaScript.
+But otherwise, yes, you can build a Chrome App with Dart.</p>
+
+<hr>
+
+<h2 id="javascript-and-other-web-technologies">
+<a class="anchor" href="#javascript-and-other-web-technologies" aria-hidden="true"><span class="octicon octicon-link"></span></a>JavaScript and other web technologies</h2>
+
+<h3 id="q-does-google-want-to-replace-javascript-with-dart">
+<a class="anchor" href="#q-does-google-want-to-replace-javascript-with-dart" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Does Google want to replace JavaScript with Dart?</h3>
+
+<p>No. We believe that developers should have a choice when they build for the web.
+Adding a new option, such as Dart, does not imply replacing an existing option.</p>
+
+<h3 id="q-how-does-dart-code-interoperate-with-javascript-libraries">
+<a class="anchor" href="#q-how-does-dart-code-interoperate-with-javascript-libraries" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How does Dart code interoperate with JavaScript libraries?</h3>
+
+<p>Although Dart and JavaScript are completely separate languages with
+separate VMs, they can interoperate. For more information, see
+<a href="https://pub.dev/packages/js">package:js</a> and
+the <a href="https://github.com/google/chartjs.dart/">chartjs</a> example.</p>
+
+<h3 id="q-i-have-a-large-javascript-codebase-how-can-i-migrate-it-to-dart">
+<a class="anchor" href="#q-i-have-a-large-javascript-codebase-how-can-i-migrate-it-to-dart" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. I have a large JavaScript codebase. How can I migrate it to Dart?</h3>
+
+<p>Try migrating one major feature at a time, and use the
+<a href="https://pub.dev/packages/js">JavaScript interoperability library</a>
+only when necessary.</p>
+
+<h3 id="q-how-does-dart-compare-with-using-the-closure-compiler-on-javascript">
+<a class="anchor" href="#q-how-does-dart-compare-with-using-the-closure-compiler-on-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How does Dart compare with using the Closure compiler on JavaScript?</h3>
+
+<p>The idea of optional type annotations is similar.
+Dart’s are nicer syntactically.</p>
+
+<p>Compare the following Closure compiler code:</p>
+
+<pre class="prettyprint lang-dart">// Closure compiler code
+
+/**
+ * @param {String} name
+ * @return {String}
+ */
+makeGreeting = function(name) {
+  /** @type {String} */
+  var greeting = 'hello ' + name;
+  return greeting;
+}</pre>
+
+<p>With the following Dart code:</p>
+
+<pre class="prettyprint lang-dart">// Dart code
+
+String makeGreeting(String name) {
+  String greeting = 'hello $name';
+  return greeting;
+}</pre>
+
+<h3 id="q-how-does-dart-compare-with-coffeescript">
+<a class="anchor" href="#q-how-does-dart-compare-with-coffeescript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How does Dart compare with CoffeeScript?</h3>
+
+<p>Both Dart and CoffeeScript are inspired by JavaScript, and both can be
+translated back to it.  They make different choices, particularly in the flavor
+of their syntax.  As a language we think it’s fair to say that Dart differs
+semantically from JavaScript more than CoffeeScript does; that may result in a
+less line-for-line translation, but we believe Dart-generated JavaScript can
+have excellent size and speed.</p>
+
+<p>Dart introduces new semantics, while CoffeeScript retains the semantics
+of JavaScript.</p>
+
+<p>If you like CoffeeScript for its more structured feel than raw JavaScript, you
+may like Dart’s static type annotations.</p>
+
+<h3 id="q-what-does-google-think-of-typescript">
+<a class="anchor" href="#q-what-does-google-think-of-typescript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. What does Google think of TypeScript?</h3>
+
+<p>TypeScript and Dart have similar goals; they make building large-scale web
+apps easier. However, their approaches are fairly different. TypeScript
+maintains backwards compatability with JavaScript, whereas Dart purposely made a
+break from certain parts of JavaScript’s syntax and semantics in order to
+eradicate large classes of bugs and to improve performance. The web has suffered
+from too little choice for too long, and we think that both Dart and TypeScript
+are pointing to a brighter future for web developers. You can read a
+<a href="http://news.dartlang.org/2012/10/the-dart-team-welcomes-typescript.html">more complete response</a> on our blog.</p>
+
+<h3 id="q-i-have-a-large-app-written-in-gwt-how-do-i-port-it-to-dart">
+<a class="anchor" href="#q-i-have-a-large-app-written-in-gwt-how-do-i-port-it-to-dart" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. I have a large app written in GWT. How do I port it to Dart?</h3>
+
+<p>Java and Dart are syntactically similar,
+so this might be easier than you think.
+You can rely on the <a href="https://github.com/dart-lang/sdk/tree/master/pkg/analyzer_cli#dartanalyzer">Dart analyzer</a>
+to flag any syntax problems. Alternatively, you may
+consider porting one feature at a time to Dart and using the
+<a href="https://pub.dev/packages/js">JavaScript interoperability library</a> as the common middle
+ground. Be sure to watch <a href="https://www.youtube.com/watch?v=aIonwL-8hdE">Dart-JavaScript
+interoperability,</a>
+a talk from Dart Developer Summit 2016.</p>
+
+<hr>
+
+<h2 id="javascript-compilation">
+<a class="anchor" href="#javascript-compilation" aria-hidden="true"><span class="octicon octicon-link"></span></a>JavaScript compilation</h2>
+
+<h3 id="q-will-any-valid-dart-code-compile-to-javascript-or-are-there-limitations">
+<a class="anchor" href="#q-will-any-valid-dart-code-compile-to-javascript-or-are-there-limitations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Will any valid Dart code compile to JavaScript, or are there limitations?</h3>
+
+<p>We intend for any valid Dart code to compile to JavaScript.  Of course,
+there are some libraries that will only run on the server because they
+don’t make sense in a browser context. For example, the <code class="language-plaintext highlighter-rouge">dart:io</code> library
+provides access to operating system files and directories with APIs not
+available to the browser.</p>
+
+<h3 id="q-why-does-dart-have-two-compilers-dartdevc-and-dart2js">
+<a class="anchor" href="#q-why-does-dart-have-two-compilers-dartdevc-and-dart2js" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Why does Dart have two compilers, dartdevc and dart2js?</h3>
+
+<p>The two compilers have different use cases. You don’t usually have to worry
+about which compiler you’re using, because the <a href="https://dart.dev/tools/webdev">webdev</a> tool
+chooses the right compiler for your use case. When you’re developing your app,
+webdev chooses <a href="https://dart.dev/tools/dartdevc">dartdevc</a>, which supports incremental compilation so
+you can quickly see the results of your edits.
+When you’re building your app for deployment, webdev chooses <a href="https://dart.dev/tools/dart2js">dart2js</a>,
+which uses techniques such as tree shaking to produce optimized code.</p>
+
+<h3 id="q-how-can-dart2js-produce-javascript-that-runs-faster-than-handwritten-javascript">
+<a class="anchor" href="#q-how-can-dart2js-produce-javascript-that-runs-faster-than-handwritten-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How can dart2js produce JavaScript that runs faster than handwritten JavaScript?</h3>
+
+<p>Think of dart2js as a real compiler,
+which can analyze your entire program and make optimizations
+that you probably can’t or won’t do. Just like gcc can output efficient code
+by moving code around, dart2js can take advantage of Dart’s structured nature
+to implement global optimizations.</p>
+
+<p>We don’t claim that all Dart code will run faster
+than handwritten JavaScript, when compiled to JavaScript,
+but we’re working to make the common cases fast.</p>
+
+<h3 id="q-how-can-i-write-dart-code-that-compiles-to-performant-javascript">
+<a class="anchor" href="#q-how-can-i-write-dart-code-that-compiles-to-performant-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How can I write Dart code that compiles to performant JavaScript?</h3>
+
+<p>See <a href="https://dart.dev/web/tools/dart2js#helping-dart2js-generate-efficient-code">Helping dart2js generate better
+code</a>.
+Just be aware that this information might change as the implementation of
+dart2js changes.</p>
+
+<h3 id="q-why-is-the-code-for-hello-world-so-big-compared-to-the-original-dart-code-after-compilation-to-javascript">
+<a class="anchor" href="#q-why-is-the-code-for-hello-world-so-big-compared-to-the-original-dart-code-after-compilation-to-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Why is the code for “Hello, World” so big, compared to the original Dart code after compilation to JavaScript?</h3>
+
+<p>We believe that it’s important to create small and efficient JavaScript
+from Dart, but most developers don’t write “Hello, World” apps. It’s all
+relative, and with tree shaking (dead code elimination), minification, and
+compression, Dart apps can be compiled to JavaScript fairly efficiently.</p>
+
+<p>Kevin Moore <a href="http://work.j832.com/2012/11/excited-to-see-dart2js-minified-output.html">saw improvements</a> in the size of the generated
+JavaScript from his real-world HTML5 game.</p>
+
+<p>The dart2js team strives to generate smaller output, but is more focused on
+real-world apps instead of trivial examples.</p>
+
+<h3 id="q-how-are-floating-point-numbers-handled-when-compiled-to-javascript">
+<a class="anchor" href="#q-how-are-floating-point-numbers-handled-when-compiled-to-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How are floating point numbers handled when compiled to JavaScript?</h3>
+
+<p>JavaScript has only one number representation: an IEEE-754 double-precision
+floating-point number. This means that any number—integer or floating
+point—is represented as a double. JavaScript has typed data arrays,
+and the mapping from native Dart typed lists to JavaScript typed arrays is trivial.</p>
+
+<h3 id="q-how-are-integers-handled-when-compiled-to-javascript">
+<a class="anchor" href="#q-how-are-integers-handled-when-compiled-to-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How are integers handled when compiled to JavaScript?</h3>
+
+<p>Because all numbers are stored as doubles,
+integers are restricted to a 53-bit precision.
+Integer values in the range of -2<sup>53</sup> to 2<sup>53</sup> can be stored
+without loss of accuracy.
+Because JavaScript VMs play tricks
+with the internal representation of numbers
+(similar to those described above),
+staying within smi range is still good practice.</p>
+
+<h3 id="q-how-are-typed-lists-handled-when-compiled-to-javascript">
+<a class="anchor" href="#q-how-are-typed-lists-handled-when-compiled-to-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. How are typed lists handled when compiled to JavaScript?</h3>
+
+<p>JavaScript offers typed arrays
+that are compatible with Dart’s typed lists.
+The mapping is trivial—for example,
+Float32List becomes a Float32Array.
+The one exception today is that dart2js does not support 64-bit integers
+and thus does not support Int64List or Uint64List.
+Dart code compiled via dart2js results in a runtime exception
+if either of those lists is used.</p>
+
+<hr>
+
+<h2 id="historical">
+<a class="anchor" href="#historical" aria-hidden="true"><span class="octicon octicon-link"></span></a>Historical</h2>
+
+<h3 id="q-why-dart">
+<a class="anchor" href="#q-why-dart" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Why Dart?</h3>
+
+<p>At Google we’ve written our share of web apps, and we’ve tried in many ways to
+make improvements to that development process, short of introducing a new
+language.  Now we think it’s time to take that leap.  We designed Dart to be
+easy to write development tools for, well-suited to modern app development, and
+capable of high-performance implementations.</p>
+
+<h3 id="q-is-the-language-what-really-needs-to-be-fixed-in-web-development">
+<a class="anchor" href="#q-is-the-language-what-really-needs-to-be-fixed-in-web-development" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Is the language what really needs to be fixed in web development?</h3>
+
+<p>We want to <a href="http://hyperboleandahalf.blogspot.com/2010/06/this-is-why-ill-never-be-adult.html">fix ALL the things</a>.  There’s “Dart” the language,
+and then there’s “Dart” the overall project.  The Dart <em>project</em> is
+betting that the language needs some changes, but we also want to
+improve the DOM and other libraries, and to improve the tools we use.</p>
+
+<p>At the same time, Google is also placing bets that JavaScript <em>can</em> be
+evolved as needed, and contributing to that work.  Google wants web development
+to be great, and if that happens with JavaScript, we’re happy.</p>
+
+<h3 id="q-is-dart-going-to-divert-community-effort-from-javascript-based-web-development">
+<a class="anchor" href="#q-is-dart-going-to-divert-community-effort-from-javascript-based-web-development" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Is Dart going to divert community effort from JavaScript-based web development?</h3>
+
+<p>If people like Dart and use it, then to a certain extent, yes, but isn’t this
+true of any improvement to existing web development?  Nothing is zero-effort to
+learn or 100% back-compatible to legacy browsers, so people use both new and
+old.  You might look at it this way: Google is putting significant effort behind
+both Dart and JavaScript, choosing to develop Dart while at the same time using
+JavaScript extensively, and working on JavaScript tools, implementation, and
+language spec.  We’re doing both because we think Dart is worth it.</p>
+
+<p>Server-side web programming finds room for many languages: does Python divert
+effort from Perl, and does Java undercut C++?  Again, to a certain extent, yes
+they do, but people generally consider that a healthy situation, better than if
+we all used a single programming language.  Multiple languages have allowed for
+faster change than any single language has achieved through a standards process.
+Furthermore, languages coexist in different niches: does Groovy really compete
+directly with C++?  People face different engineering tradeoffs and choose
+different languages to meet them.  Ultimately, we think client-side developers
+should have this kind of flexibility.</p>
+
+<h3 id="q-will-the-dart-vm-get-into-chrome">
+<a class="anchor" href="#q-will-the-dart-vm-get-into-chrome" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Will the Dart VM get into Chrome?</h3>
+
+<p><a href="http://news.dartlang.org/2015/03/dart-for-entire-web.html">No.</a>
+Dart is designed to compile to JavaScript to run across the modern web.</p>
+
+<h3 id="q-why-not-compile-dart-to-asmjs-instead-of-javascript">
+<a class="anchor" href="#q-why-not-compile-dart-to-asmjs-instead-of-javascript" aria-hidden="true"><span class="octicon octicon-link"></span></a>Q. Why not compile Dart to asm.js instead of JavaScript?</h3>
+
+<p>Asm.js is a very restricted subset of JavaScript best suited as a compilation
+target for C compilers. It does not include JavaScript objects or direct
+access to the DOM. Essentially, it allows only arithmetic operations and
+manipulations on typed arrays.</p>
+
+<p>While it is possible to implement the features that Dart requires,
+they would incur a large overhead in both speed and size, compared to
+relying on the already existing features provided by the underlying
+JavaScript engine.
+For example, any JavaScript machine comes with a garbage collector;
+implementing another one in asm.js would increase the output size, and be
+noticeably slower than the well-tuned garbage collectors of
+modern JavaScript VMs.</p>
+
+
+          
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

@@ -1,4 +1,4 @@
-name: Deploy Example to GitHub Pages
+name: Deploy Pages
 
 on:
   push:
@@ -43,15 +43,14 @@ jobs:
         working-directory: example
         run: dart run build_runner build --release --delete-conflicting-outputs --output web:build
 
-      - name: Prepare Pages artifact
-        run: |
-          rm -rf example/build/.dart_tool
-          touch example/build/.nojekyll
+      - name: Prepare combined Pages artifact
+        shell: pwsh
+        run: ./scripts/prepare-pages.ps1
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: example/build
+          path: dist
 
   deploy:
     needs: build

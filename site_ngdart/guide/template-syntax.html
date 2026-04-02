@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn how to write templates that display data and consume user events with the help of data binding.">
+  <title>Template Syntax | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Template Syntax" />
+  <meta name="twitter:description" content="Learn how to write templates that display data and consume user events with the help of data binding." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Template Syntax" />
+  <meta property="og:description" content="Learn how to write templates that display data and consume user events with the help of data binding." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/template-syntax" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li class="active">
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#html">HTML in templates</a></li>
+<li class="toc-entry toc-h2"><a href="#interpolation---">Interpolation ( {﻿{…}} )</a></li>
+<li class="toc-entry toc-h2"><a href="#template-expressions">Template expressions</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#expression-context">Expression context</a></li>
+<li class="toc-entry toc-h3"><a href="#expression-guidelines">Expression guidelines</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#template-statements">Template statements</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#statement-context">Statement context</a></li>
+<li class="toc-entry toc-h3"><a href="#statement-guidelines">Statement guidelines</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#binding-syntax">Binding syntax: An overview</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#a-new-mental-model">A new mental model</a></li>
+<li class="toc-entry toc-h3"><a href="#html-attribute-vs-dom-property">HTML attribute vs. DOM property</a></li>
+<li class="toc-entry toc-h3"><a href="#binding-targets">Binding targets</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#property-binding">Property binding ( [property] )</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#one-way-in">One-way in</a></li>
+<li class="toc-entry toc-h3"><a href="#binding-target">Binding target</a></li>
+<li class="toc-entry toc-h3"><a href="#avoid-side-effects">Avoid side effects</a></li>
+<li class="toc-entry toc-h3"><a href="#return-the-proper-type">Return the proper type</a></li>
+<li class="toc-entry toc-h3"><a href="#remember-the-brackets">Remember the brackets</a></li>
+<li class="toc-entry toc-h3"><a href="#one-time-initialization">One-time string initialization</a></li>
+<li class="toc-entry toc-h3"><a href="#property-binding-or-interpolation">Property binding or interpolation?</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#other-bindings">Attribute, class, and style bindings</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#attribute-binding">Attribute binding</a></li>
+<li class="toc-entry toc-h3"><a href="#class-binding">Class binding</a></li>
+<li class="toc-entry toc-h3"><a href="#style-binding">Style binding</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#event-binding">Event binding  ( (event) )</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#target-event">Target event</a></li>
+<li class="toc-entry toc-h3"><a href="#event-and-event-handling-statements">$event and event handling statements</a></li>
+<li class="toc-entry toc-h3"><a href="#custom-events">Custom events</a></li>
+<li class="toc-entry toc-h3"><a href="#template-statements-have-side-effects">Template statements have side effects</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#two-way">Two-way binding ( [(…)] )</a></li>
+<li class="toc-entry toc-h2"><a href="#directives">Built-in directives</a></li>
+<li class="toc-entry toc-h2"><a href="#attribute-directives">Built-in attribute directives</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#ngclass">NgClass</a></li>
+<li class="toc-entry toc-h3"><a href="#ngstyle">NgStyle</a></li>
+<li class="toc-entry toc-h3"><a href="#ngmodel---two-way-binding-to-form-elements-with-ngmodel">NgModel - Two-way binding to form elements with [(ngModel)]</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#built-in-structural-directives">Built-in structural directives</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#ngif">NgIf</a></li>
+<li class="toc-entry toc-h3"><a href="#ngfor">NgFor</a></li>
+<li class="toc-entry toc-h3"><a href="#template-input-variables">Template input variables</a></li>
+<li class="toc-entry toc-h3"><a href="#the-ngswitch-directives">The NgSwitch directives</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#ref-vars">Template reference variables ( #var )</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#how-a-reference-variable-gets-its-value">How a reference variable gets its value</a></li>
+<li class="toc-entry toc-h3"><a href="#template-reference-notes">Template reference variable warning notes</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#inputs-outputs">Input and output properties ( @Input and @Output )</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#declaring-input-and-output-properties">Declaring input and output properties</a></li>
+<li class="toc-entry toc-h3"><a href="#input-or-output">Input or output?</a></li>
+<li class="toc-entry toc-h3"><a href="#aliasing-io">Aliasing input/output properties</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#template-expression-operators">Template expression operators</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#the-pipe-operator---">The pipe operator ( | )</a></li>
+<li class="toc-entry toc-h3"><a href="#the-safe-navigation-operator----and-null-property-paths">The safe navigation operator ( ?. ) and null property paths</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#summary">Summary</a></li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/dependency-injection">Dependency Injection</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/attribute-directives">Attribute Directives</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/template-syntax.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Template Syntax' page issue&body=From URL: https://angulardart.xyz/guide/template-syntax"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Template Syntax 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/template-syntax”?&gt;</p>
+<style>td, th {vertical-align: top}</style>
+
+<p><small><em>Last updated: 2019-01-08</em></small></p>
+
+<p>This page covers the basic elements of the Angular template syntax for constructing views.</p>
+
+<p>The Angular app manages what the user sees and can do, achieving this through the interaction of a
+component class instance (the <em>component</em>) and its user-facing template.</p>
+
+<p>You might be familiar with the combination of component and template from experience with model-view-controller (MVC) or model-view-viewmodel (MVVM).
+In Angular, the component plays the part of the controller/viewmodel, and the template represents the view.</p>
+
+<p>The <span><a href="/examples/template-syntax" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/template-syntax/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>
+demonstrates all of the syntax and code snippets described in this page.</p>
+
+<div class="l-hr"></div>
+<h2 id="html">
+<a class="anchor" href="#html" aria-hidden="true"><span class="octicon octicon-link"></span></a>HTML in templates</h2>
+
+<p>HTML is the language of the Angular template.
+Almost all HTML syntax is valid template syntax.
+The <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code> element is a notable exception;
+it’s forbidden, eliminating the risk of script injection attacks.
+In practice, <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code> is ignored and a warning appears in the browser console.
+See the <a href="security">Security</a> page for details.</p>
+
+<p>Some legal HTML doesn’t make much sense in a template.
+The <code class="language-plaintext highlighter-rouge">&lt;html&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;body&gt;</code>, and <code class="language-plaintext highlighter-rouge">&lt;base&gt;</code> elements have no useful role.
+Pretty much everything else can be used.</p>
+
+<p>You can extend the HTML vocabulary of templates with components and directives that appear as new elements and attributes.
+In the following sections, you’ll learn how to get and set DOM (Document Object Model) values dynamically through data binding.</p>
+
+<p>Begin with the first form of data binding—interpolation—to see how much richer template HTML can be.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<div id="interpolation"></div>
+<h2 id="interpolation---">
+<a class="anchor" href="#interpolation---" aria-hidden="true"><span class="octicon octicon-link"></span></a>Interpolation ( <span class="syntax">{﻿{…}}</span> )</h2>
+
+<p>You met the double-curly braces of interpolation, <code class="language-plaintext highlighter-rouge">{{</code> and <code class="language-plaintext highlighter-rouge">}}</code>, early in your Angular education.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (first-interpolation)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p&gt;My current hero is {{currentHero.name}}&lt;/p&gt;
+</code></pre></div></div>
+
+<p>You use interpolation to weave calculated strings into the text between HTML element tags and within attribute assignments.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html” region=”title+image”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;h3&gt;
+    {{title}}
+    &lt;img src="{{heroImageUrl}}" style="height:30px"&gt;
+  &lt;/h3&gt;
+</code></pre></div></div>
+
+<p>The text between the braces is often the name of a component property. Angular replaces that name with the
+string value of the corresponding component property. In the example above, Angular evaluates the <code class="language-plaintext highlighter-rouge">title</code> and <code class="language-plaintext highlighter-rouge">heroImageUrl</code> properties
+and “fills in the blanks”, first displaying a bold app title and then a heroic image.</p>
+
+<p>More generally, the text between the braces is a <strong>template expression</strong> that Angular first <strong>evaluates</strong>
+and then <strong>converts to a string</strong>. The following interpolation illustrates the point by adding the two numbers:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (sum-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- "The sum of 1 + 1 is 2" --&gt;
+  &lt;p&gt;The sum of 1 + 1 is {{1 + 1}}&lt;/p&gt;
+</code></pre></div></div>
+
+<p>The expression can invoke methods of the host component such as <code class="language-plaintext highlighter-rouge">getVal()</code>, seen here:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (sum-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- "The sum of 1 + 1 is not 4" --&gt;
+  &lt;p&gt;The sum of 1 + 1 is not {{1 + 1 + getVal()}}&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Angular evaluates all expressions in double curly braces,
+converts the expression results to strings, and links them with neighboring literal strings. Finally,
+it assigns this composite interpolated result to an <strong>element or directive property</strong>.</p>
+
+<p>From a quick glance at the syntax, it looks as if you’re inserting the result
+between element tags and assigning it to attributes. That’s a convenient way to
+think of what’s happening, but it’s not exactly true. Interpolation is a special
+syntax that Angular converts into a
+<a href="#property-binding">property binding</a>. See the details
+<a href="#property-binding-or-interpolation">below</a>.</p>
+
+<p>But first, let’s take a closer look at template expressions and statements.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="template-expressions">
+<a class="anchor" href="#template-expressions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template expressions</h2>
+
+<p>A template <strong>expression</strong> produces a value.
+Angular executes the expression and assigns it to a property of a binding target;
+the target might be an HTML element, a component, or a directive.</p>
+
+<p>The interpolation braces in <code class="language-plaintext highlighter-rouge">{{1 + 1}}</code> surround the template expression <code class="language-plaintext highlighter-rouge">1 + 1</code>.
+In the <a href="#property-binding">property binding</a> section below,
+a template expression appears in quotes to the right of the <code class="language-plaintext highlighter-rouge">=</code> symbol, as in <code class="language-plaintext highlighter-rouge">[property]="expression"</code>.</p>
+
+<p>You write these template expressions in a language that looks like Dart.
+Many Dart expressions are legal template expressions, but not all are.</p>
+
+<p>Dart expressions that have or promote side effects are prohibited,
+including the following:</p>
+
+<ul>
+  <li>Assignments (<code class="language-plaintext highlighter-rouge">=</code>, <code class="language-plaintext highlighter-rouge">+=</code>, <code class="language-plaintext highlighter-rouge">-=</code>, …)</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">new</code> or <code class="language-plaintext highlighter-rouge">const</code>
+</li>
+  <li>Chaining expressions with <code class="language-plaintext highlighter-rouge">;</code>
+</li>
+  <li>Increment and decrement operators (<code class="language-plaintext highlighter-rouge">++</code> and <code class="language-plaintext highlighter-rouge">--</code>)</li>
+</ul>
+
+<p>Other notable differences from Dart syntax include the following:</p>
+
+<ul>
+  <li>No support for Dart string interpolation; for example,
+instead of <code class="language-plaintext highlighter-rouge">"'The title is $title'"</code>, you must write
+<code class="language-plaintext highlighter-rouge">"'The title is ' + title"</code>
+</li>
+  <li>No support for the bitwise operators <code class="language-plaintext highlighter-rouge">|</code> and <code class="language-plaintext highlighter-rouge">&amp;</code>
+</li>
+  <li>New <a href="#expression-operators">template expression operators</a>, such as <code class="language-plaintext highlighter-rouge">|</code>
+</li>
+</ul>
+
+<p><a href="#page-content">back to top</a></p>
+
+<h3 id="expression-context">
+<a class="anchor" href="#expression-context" aria-hidden="true"><span class="octicon octicon-link"></span></a>Expression context</h3>
+
+<p>The <em>expression context</em> is typically the <em>component</em> instance.
+In the following snippets, the <code class="language-plaintext highlighter-rouge">title</code>  within double curly braces and the
+<code class="language-plaintext highlighter-rouge">isUnchanged</code> in quotes refer to properties of the <code class="language-plaintext highlighter-rouge">AppComponent</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (context-component-expression)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  {{title}}
+  &lt;span [hidden]="isUnchanged"&gt;changed&lt;/span&gt;
+</code></pre></div></div>
+
+<p>An expression can also refer to properties of the <em>template’s</em> context,
+such as a <a href="#template-input-variable">template input variable</a> (<code class="language-plaintext highlighter-rouge">let hero</code>)
+or a <a href="#ref-vars">template reference variable</a> (<code class="language-plaintext highlighter-rouge">#heroInput</code>).</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (context-var)” plaster=”none”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngFor="let hero of heroes"&gt;{{hero.name}}&lt;/div&gt;
+  &lt;input #heroInput&gt; {{heroInput.value}}
+</code></pre></div></div>
+
+<p>The context for terms in an expression is a blend of the <em>template variables</em>
+and the component’s <em>members</em>.
+If you reference a name that belongs to more than one of these namespaces,
+the template variable name takes precedence, followed by a name in the directive’s <em>context</em>,
+and, lastly, the component’s member names.</p>
+
+<p>The previous example presents such a name collision. The component has a <code class="language-plaintext highlighter-rouge">hero</code>
+property and the <code class="language-plaintext highlighter-rouge">*ngFor</code> defines a <code class="language-plaintext highlighter-rouge">hero</code> template variable.
+The <code class="language-plaintext highlighter-rouge">hero</code> in <code class="language-plaintext highlighter-rouge">{{hero.name}}</code>
+refers to the template input variable, not the component’s property.</p>
+
+<p>Template expressions can refer to top-level and static-member constants and
+functions that are listed in a component’s <code class="language-plaintext highlighter-rouge">exports</code> argument.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (exports)” replace=”/exports:.*/[!$&amp;!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:math' as math;
+  // ···
+  enum Color { red, green, blue }
+  // ···
+  @Component(
+    // ···
+    [!exports: [Color, math.min],!]
+    // ···
+  )
+  class AppComponent implements OnInit {
+    // ···
+  }
+</code></pre></div></div>
+
+<p>Access members of exported enums using the usual syntax:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (enums)” retain=”Color.”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  The name of the Color.red enum is {{Color.red}}.&lt;br&gt;
+</code></pre></div></div>
+
+<p><a href="#page-content">back to top</a></p>
+
+<div id="no-side-effects"></div>
+<h3 id="expression-guidelines">
+<a class="anchor" href="#expression-guidelines" aria-hidden="true"><span class="octicon octicon-link"></span></a>Expression guidelines</h3>
+
+<p>Template expressions can make or break an app.
+Follow these guidelines:</p>
+
+<ul>
+  <li><a href="#no-visible-side-effects">No visible side effects</a></li>
+  <li><a href="#quick-execution">Quick execution</a></li>
+  <li><a href="#simplicity">Simplicity</a></li>
+  <li><a href="#idempotence">Idempotence</a></li>
+</ul>
+
+<p>If you make an exception to the above guidelines, make sure you thoroughly
+understand the circumstances.</p>
+
+<h4 id="no-visible-side-effects">No visible side effects</h4>
+
+<p>A template expression must not change any app state other than the value of the
+target property.</p>
+
+<p>This rule is essential to Angular’s “unidirectional data flow” policy.
+It ensures that reading a component value doesn’t change some other displayed
+value. The view must be stable throughout a single rendering pass.</p>
+
+<h4 id="quick-execution">Quick execution</h4>
+
+<p>Angular executes template expressions after every change detection cycle.
+Change detection cycles are triggered by many asynchronous activities such as
+promise resolutions, http results, timer events, keypresses and mouse moves.</p>
+
+<p>Expressions need to finish quickly or the user experience might drag, especially on slower devices.
+Consider caching values when their computation is expensive.</p>
+
+<h4 id="simplicity">Simplicity</h4>
+
+<p>Although it’s possible to write quite complex template expressions, it’s best to avoid them.</p>
+
+<p>In most situations, use a property name or method call.
+An occasional Boolean negation (<code class="language-plaintext highlighter-rouge">!</code>) is OK.
+Otherwise, confine application and business logic to the component itself,
+where it’s easier to develop and test.</p>
+
+<h4 id="idempotence">Idempotence</h4>
+
+<p>An <a href="https://en.wikipedia.org/wiki/Idempotence">idempotent</a> expression is ideal because
+it’s free of side effects and improves Angular’s change detection performance.</p>
+
+<p>In Angular terms, an idempotent expression always returns <em>exactly the same thing</em> until
+one of its dependent values changes.</p>
+
+<p>Dependent values should not change during a single turn of the event loop.
+If an idempotent expression returns a string or a number, it returns the same string or number
+when called twice in a row. If the expression returns an object (including a <code class="language-plaintext highlighter-rouge">List</code>),
+it returns the same object <em>reference</em> when called twice in a row.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="template-statements">
+<a class="anchor" href="#template-statements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template statements</h2>
+
+<p>A template <strong>statement</strong> responds to an <strong>event</strong> raised by a binding target
+such as an element, component, or directive.
+You’ll see template statements in the <a href="#event-binding">event binding</a> section
+appearing in quotes to the right of the <code class="language-plaintext highlighter-rouge">=</code> symbol as in <code class="language-plaintext highlighter-rouge">(event)="statement"</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (context-component-statement)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button (click)="deleteHero()"&gt;Delete hero&lt;/button&gt;
+</code></pre></div></div>
+
+<p>A template statement <em>has a side effect</em>.
+That’s the whole point of an event.
+It’s how you update app state from user action.</p>
+
+<p>Responding to events is the other side of Angular’s “unidirectional data flow”.
+You’re free to change anything, anywhere, during this turn of the event loop.</p>
+
+<p>Like template expressions, template <em>statements</em> use a language that looks like Dart.
+The template statement parser differs from the template expression parser and
+specifically supports both basic assignment (<code class="language-plaintext highlighter-rouge">=</code>) and chaining expressions
+(with <code class="language-plaintext highlighter-rouge">;</code>).</p>
+
+<p>However, the following Dart syntax is not allowed:</p>
+
+<ul>
+  <li>
+<code class="language-plaintext highlighter-rouge">new</code> or <code class="language-plaintext highlighter-rouge">const</code>
+</li>
+  <li>Increment and decrement operators, <code class="language-plaintext highlighter-rouge">++</code> and <code class="language-plaintext highlighter-rouge">--</code>
+</li>
+  <li>Operator assignment, such as <code class="language-plaintext highlighter-rouge">+=</code> and <code class="language-plaintext highlighter-rouge">-=</code>
+</li>
+  <li>The bitwise operators <code class="language-plaintext highlighter-rouge">|</code> and <code class="language-plaintext highlighter-rouge">&amp;</code>
+</li>
+  <li>The <a href="#expression-operators">template expression operators</a>
+</li>
+</ul>
+
+<h3 id="statement-context">
+<a class="anchor" href="#statement-context" aria-hidden="true"><span class="octicon octicon-link"></span></a>Statement context</h3>
+
+<p>As with expressions, statements can refer only to what’s in the statement context
+such as an event handling method of the component instance.</p>
+
+<p>The <em>statement context</em> is typically the component instance.
+The <em>deleteHero</em> in <code class="language-plaintext highlighter-rouge">(click)="deleteHero()"</code> is a method of the data-bound component.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (context-component-statement)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button (click)="deleteHero()"&gt;Delete hero&lt;/button&gt;
+</code></pre></div></div>
+
+<p>The statement context can also refer to properties of the template’s own context.
+In the following examples, the template <code class="language-plaintext highlighter-rouge">$event</code> object,
+a <a href="#template-input-variable">template input variable</a> (<code class="language-plaintext highlighter-rouge">let hero</code>),
+and a <a href="#ref-vars">template reference variable</a> (<code class="language-plaintext highlighter-rouge">#heroForm</code>)
+are passed to an event handling method of the component.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (context-var-statement)” plaster=”none”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button (click)="onSave($event)"&gt;Save&lt;/button&gt;
+  &lt;button *ngFor="let hero of heroes" (click)="deleteHero(hero)"&gt;{{hero.name}}&lt;/button&gt;
+  &lt;form #heroForm (ngSubmit)="onSubmit(heroForm)"&gt; ... &lt;/form&gt;
+</code></pre></div></div>
+
+<p>Template context names take precedence over component context names.
+In <code class="language-plaintext highlighter-rouge">deleteHero(hero)</code> above, the <code class="language-plaintext highlighter-rouge">hero</code> is the template input variable,
+not the component’s <code class="language-plaintext highlighter-rouge">hero</code> property.</p>
+
+<p>Template statements can refer to top-level and static-member constants and
+functions that are listed in a component’s <code class="language-plaintext highlighter-rouge">exports</code> argument.
+For details, see the discussion of <code class="language-plaintext highlighter-rouge">exports</code> in the section on
+<a href="#expression-context">Expression context</a>.</p>
+
+<h3 id="statement-guidelines">
+<a class="anchor" href="#statement-guidelines" aria-hidden="true"><span class="octicon octicon-link"></span></a>Statement guidelines</h3>
+
+<p>As with expressions, avoid writing complex template statements.
+Method calls or simple property assignments are best.</p>
+
+<p>Now that you have a feel for template expressions and statements,
+you’re ready to learn about the varieties of data binding syntax beyond interpolation.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="binding-syntax">
+<a class="anchor" href="#binding-syntax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Binding syntax: An overview</h2>
+
+<p>Data binding is a mechanism for coordinating what users see, with app data values.
+While you can push values to and pull values from HTML,
+the app is easier to write, read, and maintain if you use a binding framework.
+You declare bindings between binding sources and target HTML elements and then let the framework do the work.</p>
+
+<p>Below is a high-level summary of Angular data binding and its syntax. It’s
+followed by more detailed information about most of the data binding types that
+Angular provides.</p>
+
+<p>Binding types can be grouped into three categories based on the direction of
+data flow: <em>source-to-view</em>, <em>view-to-source</em>, and two-way sequence
+<em>view-to-source-to-view</em>.</p>
+
+<table width="100%">
+  <col width="30%"> <col width="50%"> <col width="20%">
+  <tr> <th>Data direction</th> <th>Syntax</th> <th>Type</th> </tr>
+
+  <tr>
+  <td>One-way<br>from data source<br>to view target</td>
+  <td>
+      <div class="language-dart highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>  <span class="o">{{</span><span class="n">expression</span><span class="o">}}</span>
+  <span class="o">[</span><span class="n">target</span><span class="o">]=</span><span class="s">"expression"</span>
+  <span class="n">bind</span><span class="o">-</span><span class="n">target</span><span class="o">=</span><span class="s">"expression"</span>
+</code></pre></div>      </div>
+    </td>
+  <td>Interpolation<br>Property<br>Attribute<br>Class<br>Style</td>
+  </tr>
+
+  <tr>
+  <td>One-way<br>from view target<br>to data source</td>
+  <td>
+      <div class="language-dart highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>  <span class="o">(</span><span class="n">target</span><span class="o">)=</span><span class="s">"statement"</span>
+  <span class="n">on</span><span class="o">-</span><span class="n">target</span><span class="o">=</span><span class="s">"statement"</span>
+</code></pre></div>      </div>
+    </td>
+  <td>Event</td>
+  </tr>
+
+  <tr>
+  <td>Two-way</td>
+  <td>
+      <div class="language-dart highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>  <span class="o">[(</span><span class="n">target</span><span class="o">)]=</span><span class="s">"expression"</span>
+</code></pre></div>      </div>
+    </td>
+  <td>Two-way</td>
+  </tr>
+</table>
+
+<p>Binding types other than interpolation have a <strong>target name</strong> to the left of the equal sign,
+either surrounded by punctuation (<code class="language-plaintext highlighter-rouge">[]</code>, <code class="language-plaintext highlighter-rouge">()</code>, <code class="language-plaintext highlighter-rouge">[()]</code>) or preceded by a prefix (<code class="language-plaintext highlighter-rouge">bind-</code>, <code class="language-plaintext highlighter-rouge">on-</code>).</p>
+
+<p>The target name is the name of a <em>property</em>. It might look like the name of an <em>attribute</em> but it never is.
+To appreciate the difference, you must develop a new way to think about template HTML.</p>
+
+<h3 id="a-new-mental-model">
+<a class="anchor" href="#a-new-mental-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>A new mental model</h3>
+
+<p>With all the power of data binding and the ability to extend the HTML vocabulary
+with custom markup, it’s tempting to think of template HTML as <em>HTML Plus</em>.</p>
+
+<p>It really <em>is</em> HTML Plus.
+But it’s also significantly different from the HTML you’re used to.
+It requires a new mental model.</p>
+
+<p>In the normal course of HTML development, you create a visual structure with HTML elements, and
+you modify those elements by setting element attributes with string constants.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html” region=”img+button”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div class="special"&gt;Mental Model&lt;/div&gt;
+  &lt;img src="assets/images/hero.png"&gt;
+  &lt;button disabled&gt;Save&lt;/button&gt;
+</code></pre></div></div>
+
+<p>You still create a structure and initialize attribute values this way in Angular templates.</p>
+
+<p>Then you learn to create new elements with components that encapsulate HTML
+and drop them into templates as if they were native HTML elements.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (my-hero-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- Normal HTML --&gt;
+  &lt;div class="special"&gt;Mental Model&lt;/div&gt;
+  &lt;!-- Wow! A new element! --&gt;
+  &lt;my-hero&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<p>That’s HTML Plus.</p>
+
+<p>Then you learn about data binding. The first binding you meet might look like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (disabled-button-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- Bind button disabled state to `isUnchanged` property --&gt;
+  &lt;button [disabled]="isUnchanged"&gt;Save&lt;/button&gt;
+</code></pre></div></div>
+
+<p>Your intuition might suggest that you’re binding to the button’s <code class="language-plaintext highlighter-rouge">disabled</code> attribute and setting
+it to the current value of the component’s <code class="language-plaintext highlighter-rouge">isUnchanged</code> property. That intuition would be incorrect!</p>
+
+<p>The everyday HTML mental model is misleading. Once you start data
+binding, you’re no longer working with HTML <em>attributes</em>. You aren’t setting
+attributes; you’re setting the <em>properties</em> of DOM elements, components, and
+directives.</p>
+
+<div class="l-sub-section">
+  <h3 id="html-attribute-vs-dom-property">
+<a class="anchor" href="#html-attribute-vs-dom-property" aria-hidden="true"><span class="octicon octicon-link"></span></a>HTML attribute vs. DOM property</h3>
+
+  <p>The distinction between an HTML attribute and a DOM property is crucial to understanding how Angular binding works.</p>
+
+  <p><strong>Attributes are defined by HTML. Properties are defined by the DOM (Document Object Model).</strong></p>
+
+  <ul>
+    <li>
+      <p>A few HTML attributes have 1:1 mapping to properties. <code class="language-plaintext highlighter-rouge">id</code> is one example.</p>
+    </li>
+    <li>
+      <p>Some HTML attributes don’t have corresponding properties. <code class="language-plaintext highlighter-rouge">colspan</code> is one example.</p>
+    </li>
+    <li>
+      <p>Some DOM properties don’t have corresponding attributes. <code class="language-plaintext highlighter-rouge">textContent</code> is one example.</p>
+    </li>
+    <li>
+      <p>Many HTML attributes appear to map to properties … but not in the way you might think!</p>
+    </li>
+  </ul>
+
+  <p>That last category is confusing unless you know this general rule:</p>
+
+  <p><strong>Attributes <em>initialize</em> DOM properties and then they’re done.
+  Property values can change; attribute values can’t.</strong></p>
+
+  <p>For example, when the browser renders <code class="language-plaintext highlighter-rouge">&lt;input type="text" value="Bob"&gt;</code>, it creates a
+  corresponding DOM node with a <code class="language-plaintext highlighter-rouge">value</code> property <em>initialized</em> to “Bob”.</p>
+
+  <p>When the user enters “Sally” in the input box, the DOM element <code class="language-plaintext highlighter-rouge">value</code> <em>property</em> becomes “Sally”.
+  But the HTML <code class="language-plaintext highlighter-rouge">value</code> <em>attribute</em> remains unchanged, as you discover if you ask the input element
+  about that attribute: <code class="language-plaintext highlighter-rouge">input.getAttribute('value')</code> returns “Bob”.</p>
+
+  <p>The HTML attribute <code class="language-plaintext highlighter-rouge">value</code> specifies the <em>initial</em> value; the DOM <code class="language-plaintext highlighter-rouge">value</code> property is the <em>current</em> value.</p>
+
+  <p>The <code class="language-plaintext highlighter-rouge">disabled</code> attribute is another peculiar example. A button’s <code class="language-plaintext highlighter-rouge">disabled</code> <em>property</em> is
+  <code class="language-plaintext highlighter-rouge">false</code> by default so the button is enabled.
+  When you add the <code class="language-plaintext highlighter-rouge">disabled</code> <em>attribute</em>, its presence alone initializes the  button’s <code class="language-plaintext highlighter-rouge">disabled</code> <em>property</em> to <code class="language-plaintext highlighter-rouge">true</code>
+  so the button is disabled.</p>
+
+  <p>Adding and removing the <code class="language-plaintext highlighter-rouge">disabled</code> <em>attribute</em> disables and enables the button. The value of the <em>attribute</em> is irrelevant,
+  which is why you can’t enable a button by writing <code class="language-plaintext highlighter-rouge">&lt;button disabled="false"&gt;Still Disabled&lt;/button&gt;</code>.</p>
+
+  <p>Setting the button’s <code class="language-plaintext highlighter-rouge">disabled</code> <em>property</em>  (say, with an Angular binding) disables or enables the button.
+  The value of the <em>property</em> matters.</p>
+
+  <p><strong>The HTML attribute and the DOM property are not the same thing, even when they have the same name.</strong></p>
+</div>
+
+<p>This fact bears repeating:
+<strong>Template binding works with <em>properties</em> and <em>events</em>, not <em>attributes</em>.</strong></p>
+
+<div class="alert alert-info">
+  <h4>A world without attributes</h4>
+  <p>In the world of Angular, the only role of attributes is to initialize element and directive state.
+  When you write a data binding, you’re dealing exclusively with properties and events of the target object.
+  HTML attributes effectively disappear.</p>
+</div>
+
+<p>With this model in mind, read on to learn about binding targets.</p>
+
+<h3 id="binding-targets">
+<a class="anchor" href="#binding-targets" aria-hidden="true"><span class="octicon octicon-link"></span></a>Binding targets</h3>
+
+<p>The <strong>target of a data binding</strong> is something in the DOM.
+Depending on the binding type, the target can be an
+(element | component | directive) property, an
+(element | component | directive) event, or (rarely) an attribute name.
+The following table summarizes the scenarios:</p>
+
+<table>
+<col width="10%"> <col width="15%"> <col width="75%">
+<tr> <th>Type</th> <th>Target</th> <th>Examples</th> </tr>
+<tr>
+  <td>Property</td>
+  <td>Element property<br>Component property<br>Directive property</td>
+  <td>
+      <p>&lt;?code-excerpt “lib/app_component.html (property-binding-syntax-1)”?&gt;</p>
+      <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>    &lt;img [src]="heroImageUrl"&gt;
+    &lt;my-hero [hero]="currentHero"&gt;&lt;/my-hero&gt;
+    &lt;div [ngClass]="{'special': isSpecial}"&gt;...&lt;/div&gt;
+</code></pre></div>      </div>
+    </td>
+</tr>
+<tr>
+  <td>Event</td>
+  <td>Element event<br>Component event<br>Directive event</td>
+  <td>
+      <p>&lt;?code-excerpt “lib/app_component.html (event-binding-syntax-1)”?&gt;</p>
+      <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>    &lt;button (click)="onSave()"&gt;Save&lt;/button&gt;
+    &lt;my-hero (deleteRequest)="deleteHero()"&gt;&lt;/my-hero&gt;
+    &lt;div (myClick)="clicked=$event" clickable&gt;click me&lt;/div&gt;
+</code></pre></div>      </div>
+    </td>
+</tr>
+<tr>
+  <td>Two-way</td>
+  <td>Event and property</td>
+  <td>
+      <p>&lt;?code-excerpt “lib/app_component.html (2-way-binding-syntax-1)”?&gt;</p>
+      <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>    &lt;input [(ngModel)]="name"&gt;
+</code></pre></div>      </div>
+    </td>
+</tr>
+<tr>
+  <td>Attribute</td>
+  <td>Attribute (the exception)</td>
+  <td>
+      <p>&lt;?code-excerpt “lib/app_component.html (attribute-binding-syntax-1)”?&gt;</p>
+      <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>    &lt;button [attr.aria-label]="help"&gt;help&lt;/button&gt;
+</code></pre></div>      </div>
+    </td>
+</tr>
+<tr>
+  <td>Class</td>
+  <td>
+<code>class</code> property</td>
+  <td>
+      <p>&lt;?code-excerpt “lib/app_component.html (class-binding-syntax-1)”?&gt;</p>
+      <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>    &lt;div [class.special]="isSpecial"&gt;Special&lt;/div&gt;
+</code></pre></div>      </div>
+    </td>
+</tr>
+<tr>
+  <td>Style</td>
+  <td>
+<code>style</code> property</td>
+  <td>
+      <p>&lt;?code-excerpt “lib/app_component.html (style-binding-syntax-1)”?&gt;</p>
+      <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>    &lt;button [style.color]="isSpecial ? 'red' : 'green'"&gt;
+</code></pre></div>      </div>
+    </td>
+</tr>
+</table>
+
+<p>You’re now ready to look at binding types in detail.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="property-binding">
+<a class="anchor" href="#property-binding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Property binding ( <span class="syntax">[property]</span> )</h2>
+
+<p>Write a template <strong>property binding</strong> to set a property of a view element.
+The binding sets the property to the value of a <a href="#template-expressions">template expression</a>.</p>
+
+<p>The most common property binding sets an element property to a component property value. An example is
+binding the <code class="language-plaintext highlighter-rouge">src</code> property of an image element to a component’s <code class="language-plaintext highlighter-rouge">heroImageUrl</code> property:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;img [src]="heroImageUrl"&gt;
+</code></pre></div></div>
+
+<p>Another example is disabling a button when the component says that it <code class="language-plaintext highlighter-rouge">isUnchanged</code>:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button [disabled]="isUnchanged"&gt;Cancel is disabled&lt;/button&gt;
+</code></pre></div></div>
+
+<p>Another is setting a property of a directive:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-3)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div [ngClass]="classes"&gt;[ngClass] binding to the classes property&lt;/div&gt;
+</code></pre></div></div>
+
+<p>Yet another is setting the model property of a custom component (a great way
+for parent and child components to communicate):</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-4)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-hero [hero]="currentHero"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<h3 id="one-way-in">
+<a class="anchor" href="#one-way-in" aria-hidden="true"><span class="octicon octicon-link"></span></a>One-way <em>in</em>
+</h3>
+
+<p>People often describe property binding as <em>one-way data binding</em> because it flows a value in one direction,
+from a component’s data property into a target element property.</p>
+
+<p>You can’t use property binding to pull values <em>out</em> of the target element.
+You can’t bind to a property of the target element to <em>read</em> it.; you can only <em>set</em> it.</p>
+
+<div class="l-sub-section">
+  <p>Similarly, you can’t use property binding to <em>call</em> a method on the target element.</p>
+
+  <p>If the element raises events, you can listen to them with an <a href="#event-binding">event binding</a>.</p>
+
+  <p>If you must read a target element property or call one of its methods,
+  you need a different technique.
+  See the API reference for
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/ViewChild-class.html">ViewChild</a> and
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/ContentChild-class.html">ContentChild</a>.</p>
+</div>
+
+<h3 id="binding-target">
+<a class="anchor" href="#binding-target" aria-hidden="true"><span class="octicon octicon-link"></span></a>Binding target</h3>
+
+<p>An element property between enclosing square brackets identifies the target property.
+The target property in the following code is the image element’s <code class="language-plaintext highlighter-rouge">src</code> property.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;img [src]="heroImageUrl"&gt;
+</code></pre></div></div>
+
+<p>Some people prefer the <code class="language-plaintext highlighter-rouge">bind-</code> prefix alternative, known as the <em>canonical form</em>:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-5)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;img bind-src="heroImageUrl"&gt;
+</code></pre></div></div>
+
+<p>The target name is always the name of a property, even when it appears to be the name of something else.
+You might see <code class="language-plaintext highlighter-rouge">src</code> and think it’s the name of an attribute. It’s not; it’s the name of an image element property.</p>
+
+<p>Element properties might be the more common targets,
+but Angular looks first to see if the name is a property of a known directive,
+as it is in the following example:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-3)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div [ngClass]="classes"&gt;[ngClass] binding to the classes property&lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>Technically, Angular is matching the name to a directive <a href="#inputs-outputs">input</a>
+  or a property decorated with <code class="language-plaintext highlighter-rouge">@Input()</code>. Such inputs map to the directive’s own properties.</p>
+</div>
+
+<p>If the name fails to match a property of a known directive or element, Angular reports an “unknown directive” error.</p>
+
+<h3 id="avoid-side-effects">
+<a class="anchor" href="#avoid-side-effects" aria-hidden="true"><span class="octicon octicon-link"></span></a>Avoid side effects</h3>
+
+<p>As mentioned previously, the evaluation of a template expression must have no visible side effects.
+The expression language itself does its part to keep you safe.
+You can’t assign a value to anything in a property binding expression nor use the increment and decrement operators.</p>
+
+<p>Of course, the expression might invoke a property or method that has side effects.
+Angular has no way of knowing that or stopping you.</p>
+
+<p>The expression could call something like <code class="language-plaintext highlighter-rouge">getFoo()</code>. Only you know what <code class="language-plaintext highlighter-rouge">getFoo()</code> does.
+If <code class="language-plaintext highlighter-rouge">getFoo()</code> changes something and you happen to be binding to that something, you risk an unpleasant experience.
+Angular may or may not display the changed value. Angular may detect the change and throw a warning error.
+In general, stick to data properties and to methods that return values and do no more.</p>
+
+<h3 id="return-the-proper-type">
+<a class="anchor" href="#return-the-proper-type" aria-hidden="true"><span class="octicon octicon-link"></span></a>Return the proper type</h3>
+
+<p>The template expression should evaluate to the type of value expected by the target property.
+The <code class="language-plaintext highlighter-rouge">hero</code> property of <code class="language-plaintext highlighter-rouge">HeroComponent</code> expects a <code class="language-plaintext highlighter-rouge">Hero</code> object, which is exactly what you’re sending in the property binding:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-4)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-hero [hero]="currentHero"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<h3 id="remember-the-brackets">
+<a class="anchor" href="#remember-the-brackets" aria-hidden="true"><span class="octicon octicon-link"></span></a>Remember the brackets</h3>
+
+<p>The brackets tell Angular to evaluate the template expression.
+If you omit the brackets, Angular treats the string as a constant
+and <em>initializes the target property</em> with that string.
+It does <em>not</em> evaluate the string!</p>
+
+<p>If you forget the brackets around the <code class="language-plaintext highlighter-rouge">hero</code> property like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-6)” remove=”–” replace=”/DON’T.*/[!\x3C– $&amp; –\x3E!]/g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  [!&lt;-- DON'T do this: --&gt;!]
+  &lt;my-hero hero="currentHero"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<p>You’ll get the following build error:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">[error] A value of type 'String' can't be assigned to a variable of type 'Hero'.
+</span></code></pre></div></div>
+
+<h3 id="one-time-initialization">
+<a class="anchor" href="#one-time-initialization" aria-hidden="true"><span class="octicon octicon-link"></span></a>One-time string initialization</h3>
+
+<p>Omit the brackets when all of the following are true:</p>
+<ul>
+  <li>The target property accepts a string value.</li>
+  <li>The string is a fixed value that you can bake into the template.</li>
+  <li>This initial value never changes.</li>
+</ul>
+
+<p>One-time string initialization is routine in standard HTML, and
+it works just as well for directive and component properties.
+The following example initializes the <code class="language-plaintext highlighter-rouge">prefix</code> property of the <code class="language-plaintext highlighter-rouge">HeroComponent</code> to a fixed string,
+not a template expression. Angular sets it and forgets about it.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-7)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-hero prefix="You are my" [hero]="currentHero"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">[hero]</code> binding, on the other hand, remains a live binding to the component’s <code class="language-plaintext highlighter-rouge">currentHero</code> property.</p>
+
+<h3 id="property-binding-or-interpolation">
+<a class="anchor" href="#property-binding-or-interpolation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Property binding or interpolation?</h3>
+
+<p>You often have a choice between interpolation and property binding.
+The following binding pairs do the same thing:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-vs-interpolation)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p&gt;&lt;img src="{{heroImageUrl}}"&gt; is the &lt;i&gt;interpolated&lt;/i&gt; image.&lt;/p&gt;
+  &lt;p&gt;&lt;img [src]="heroImageUrl"&gt; is the &lt;i&gt;property bound&lt;/i&gt; image.&lt;/p&gt;
+
+  &lt;p&gt;&lt;span&gt;"{{title}}" is the &lt;i&gt;interpolated&lt;/i&gt; title.&lt;/span&gt;&lt;/p&gt;
+  &lt;p&gt;"&lt;span [innerHTML]="title"&gt;&lt;/span&gt;" is the &lt;i&gt;property bound&lt;/i&gt; title.&lt;/p&gt;
+</code></pre></div></div>
+
+<p><em>Interpolation</em> is a convenient alternative to <em>property binding</em> in many cases.</p>
+
+<p>When rendering data values as strings, there is no technical reason to prefer one form to the other,
+but interpolation can be more readable.
+We suggest establishing coding style rules and choosing the form that
+both conforms to the rules and feels most natural for the task at hand.</p>
+
+<p>When setting an element property to a non-string data value, you must use <em>property binding</em>.</p>
+
+<h4 id="content-security">Content security</h4>
+
+<p>Imagine the following <em>malicious content</em>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (evil-title)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  String evilTitle =
+      'Template &lt;script&gt;alert("evil never sleeps")&lt;/script&gt;Syntax';
+</code></pre></div></div>
+
+<p>Fortunately, Angular data binding is on alert for dangerous HTML.
+It <a href="security#sanitization-and-security-contexts"><em>sanitizes</em></a> the values before displaying them.
+It <strong>does not</strong> allow HTML with script tags to leak into the browser, neither with interpolation
+nor property binding.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (property-binding-vs-interpolation-sanitization)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!--
+    Angular generates warnings for these two lines as it sanitizes them
+    WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
+   --&gt;
+  &lt;p&gt;&lt;span&gt;"{{evilTitle}}" is the &lt;i&gt;interpolated&lt;/i&gt; evil title.&lt;/span&gt;&lt;/p&gt;
+  &lt;p&gt;"&lt;span [innerHTML]="evilTitle"&gt;&lt;/span&gt;" is the &lt;i&gt;property bound&lt;/i&gt; evil title.&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Interpolation handles the script tags differently than property binding but both approaches render the
+content harmlessly.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/template-syntax/evil-title-b04d8ab28b75ebb639b83009ffb3e662bc0e739173430e63a1f52fd88c344599.png" alt="evil title made safe" width="500px"></p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="other-bindings">
+<a class="anchor" href="#other-bindings" aria-hidden="true"><span class="octicon octicon-link"></span></a>Attribute, class, and style bindings</h2>
+
+<p>The template syntax provides specialized one-way bindings for scenarios less well suited to property binding.</p>
+
+<h3 id="attribute-binding">
+<a class="anchor" href="#attribute-binding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Attribute binding</h3>
+
+<p>You can set the value of an attribute directly with an <strong>attribute binding</strong>.</p>
+
+<div class="l-sub-section">
+  <p>This is the only exception to the rule that a binding sets a target property.
+  This is the only binding that creates and sets an attribute.</p>
+</div>
+
+<p>This guide stresses repeatedly that setting an element property with a property binding
+is always preferred to setting the attribute with a string. Why does Angular offer attribute binding?</p>
+
+<p><strong>You must use attribute binding when there is no element property to bind.</strong></p>
+
+<p>Consider the <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA">ARIA</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/SVG">SVG</a>, and
+table span attributes. They are pure attributes.
+They do not correspond to element properties, and they do not set element properties.
+There are no property targets to bind to.</p>
+
+<p>This fact becomes painfully obvious when writing something like this:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;tr&gt;&lt;td</span> <span class="na">colspan=</span><span class="s">"{{1 + 1}}"</span><span class="nt">&gt;</span>Three-Four<span class="nt">&lt;/td&gt;&lt;/tr&gt;</span>
+</code></pre></div></div>
+
+<p>The result is this error:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Template parse errors:
+Can't bind to 'colspan' since it isn't a known native property
+</code></pre></div></div>
+
+<p>As the message says, the <code class="language-plaintext highlighter-rouge">&lt;td&gt;</code> element does not have a <code class="language-plaintext highlighter-rouge">colspan</code> property.
+It has the “colspan” <em>attribute</em>, but
+interpolation and property binding can set only <em>properties</em>, not attributes.</p>
+
+<p>You need attribute bindings to create and bind to such attributes.</p>
+
+<p>Attribute binding syntax resembles property binding.
+Instead of an element property between brackets, start with the prefix <strong><code class="language-plaintext highlighter-rouge">attr</code></strong>,
+followed by a dot (<code class="language-plaintext highlighter-rouge">.</code>) and the name of the attribute.
+You then set the attribute value, using an expression that resolves to a string.</p>
+
+<p>Bind <code class="language-plaintext highlighter-rouge">[attr.colspan]</code> to a calculated value:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (attrib-binding-colspan)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;table border="1"&gt;
+    &lt;!--  expression calculates colspan=2 --&gt;
+    &lt;tr&gt;&lt;td [attr.colspan]="1 + 1"&gt;One-Two&lt;/td&gt;&lt;/tr&gt;
+
+    &lt;!-- ERROR: There is no `colspan` property to set!
+      &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;
+    --&gt;
+
+    &lt;tr&gt;&lt;td&gt;Five&lt;/td&gt;&lt;td&gt;Six&lt;/td&gt;&lt;/tr&gt;
+  &lt;/table&gt;
+</code></pre></div></div>
+
+<p>Here’s how the table renders:</p>
+
+<table border="1px">
+  <tr><td colspan="2">One-Two</td></tr>
+  <tr>
+<td>Five</td>
+<td>Six</td>
+</tr>
+ </table>
+
+<p>One of the primary use cases for attribute binding
+is to set ARIA attributes, as in this example:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (attrib-binding-aria)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- create and set an aria attribute for assistive technology --&gt;
+  &lt;button [attr.aria-label]="actionName"&gt;{{actionName}} with Aria&lt;/button&gt;
+</code></pre></div></div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h3 id="class-binding">
+<a class="anchor" href="#class-binding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Class binding</h3>
+
+<p>You can add and remove CSS class names from an element’s <code class="language-plaintext highlighter-rouge">class</code> attribute with
+a <strong>class binding</strong>.</p>
+
+<p>Class binding syntax resembles property binding.
+Instead of an element property between brackets, start with the prefix <code class="language-plaintext highlighter-rouge">class</code>,
+optionally followed by a dot (<code class="language-plaintext highlighter-rouge">.</code>) and the name of a CSS class: <code class="language-plaintext highlighter-rouge">[class.class-name]</code>.</p>
+
+<p>The following examples show how to add and remove the app’s “special” class
+with class bindings.  Here’s how to set the attribute without binding:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (class-binding-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- standard class attribute setting  --&gt;
+  &lt;div class="bad curly special"&gt;Bad curly special&lt;/div&gt;
+</code></pre></div></div>
+
+<p>You can replace that with a binding to a string of the desired class names; this is an all-or-nothing, replacement binding.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (class-binding-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- reset/override all class names with a binding  --&gt;
+  &lt;div class="bad curly special"
+       [class]="badCurly"&gt;Bad curly&lt;/div&gt;
+</code></pre></div></div>
+
+<p>Finally, you can bind to a specific class name.
+Angular adds the class when the template expression evaluates to true.
+It removes the class when the expression is false.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (class-binding-3)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- toggle the "special" class on/off with a property --&gt;
+  &lt;div [class.special]="isSpecial"&gt;The class binding is special&lt;/div&gt;
+
+  &lt;!-- binding to `class.special` trumps the class attribute --&gt;
+  &lt;div class="special"
+       [class.special]="!isSpecial"&gt;This one is not so special&lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>While this is a fine way to toggle a single class name,
+  the <a href="#ngClass">NgClass directive</a> is usually preferred when managing multiple class names at the same time.</p>
+</div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h3 id="style-binding">
+<a class="anchor" href="#style-binding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Style binding</h3>
+
+<p>You can set inline styles with a <strong>style binding</strong>.</p>
+
+<p>Style binding syntax resembles property binding.
+Instead of an element property between brackets, start with the prefix <code class="language-plaintext highlighter-rouge">style</code>,
+followed by a dot (<code class="language-plaintext highlighter-rouge">.</code>) and the name of a CSS style property: <code class="language-plaintext highlighter-rouge">[style.style-property]</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (style-binding-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button [style.color]="isSpecial ? 'red': 'green'"&gt;Red&lt;/button&gt;
+  &lt;button [style.background-color]="canSave ? 'cyan': 'grey'" &gt;Save&lt;/button&gt;
+</code></pre></div></div>
+
+<p>Some style binding styles have a unit extension.
+The following example conditionally sets the font size in  “em” and “%” units .</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (style-binding-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button [style.font-size.em]="isSpecial ? 3 : 1" &gt;Big&lt;/button&gt;
+  &lt;button [style.font-size.%]="!isSpecial ? 150 : 50" &gt;Small&lt;/button&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>While this is a fine way to set a single style,
+  the <a href="#ngStyle">NgStyle directive</a> is generally preferred when setting several inline styles at the same time.</p>
+
+  <p>Note that a <em>style property</em> name can be written in either
+  <a href="/glossary#dash-case">dash-case</a>, as shown above, or
+  <a href="/glossary#camelcase">camelCase</a>, such as <code class="language-plaintext highlighter-rouge">fontSize</code>.</p>
+</div>
+
+<div class="alert alert-info">
+  <h4>Style property names</h4>
+
+  <p>While <a href="/glossary#camelcase">camelCase</a> and
+  <a href="/glossary#dash-case">dash-case</a> style property naming schemes are
+  equivalent in AngularDart, only dash-case names are recognized by the
+  <code class="language-plaintext highlighter-rouge">dart:html</code> <a href="https://api.dart.dev/stable/dart-html/CssStyleDeclaration-class.html">CssStyleDeclaration</a> methods <code class="language-plaintext highlighter-rouge">getPropertyValue()</code>
+  and <code class="language-plaintext highlighter-rouge">setProperty()</code>.
+  So using dash-case for style property names is generally preferred.</p>
+
+</div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="event-binding">
+<a class="anchor" href="#event-binding" aria-hidden="true"><span class="octicon octicon-link"></span></a>Event binding  ( <span class="syntax">(event)</span> )</h2>
+
+<p>The bindings directives you’ve met so far flow data in one direction: <strong>from a component to an element</strong>.</p>
+
+<p>Users don’t just stare at the screen. They enter text into input boxes. They pick items from lists.
+They click buttons. Such user actions can result in a flow of data in the opposite direction:
+<strong>from an element to a component</strong>.</p>
+
+<p>The only way to know about a user action is to listen for certain events such as
+keystrokes, mouse movements, clicks, and touches.
+You declare your interest in user actions through Angular event binding.</p>
+
+<p>Event binding syntax consists of a <strong>target event</strong> name
+within parentheses on the left of an equal sign, and a quoted
+<a href="#template-statements">template statement</a> on the right.
+The following event binding listens for the button’s click events, calling
+the component’s <code class="language-plaintext highlighter-rouge">onSave()</code> method whenever a click occurs:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (event-binding-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button (click)="onSave()"&gt;Save&lt;/button&gt;
+</code></pre></div></div>
+
+<h3 id="target-event">
+<a class="anchor" href="#target-event" aria-hidden="true"><span class="octicon octicon-link"></span></a>Target event</h3>
+
+<p>A <strong>name between parentheses</strong> — for example, <code class="language-plaintext highlighter-rouge">(click)</code> —
+identifies the target event. In the following example, the target is the button’s click event.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (event-binding-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button (click)="onSave()"&gt;Save&lt;/button&gt;
+</code></pre></div></div>
+
+<p>Some people prefer the <code class="language-plaintext highlighter-rouge">on-</code> prefix alternative, known as the <strong>canonical form</strong>:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (event-binding-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button on-click="onSave()"&gt;On Save&lt;/button&gt;
+</code></pre></div></div>
+
+<p>Element events might be the more common targets, but Angular looks first to see if the name matches an event property
+of a known directive, as it does in the following example:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (event-binding-3)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- `myClick` is an event on the custom `ClickDirective` --&gt;
+  &lt;div (myClick)="clickMessage=$event" clickable&gt;click with myClick&lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>The <code class="language-plaintext highlighter-rouge">myClick</code> directive is further described in the section
+  on <a href="#aliasing-io">aliasing input/output properties</a>.</p>
+</div>
+
+<p>If the name fails to match an element event or an output property of a known directive,
+Angular reports an “unknown directive” error.</p>
+
+<h3 id="event-and-event-handling-statements">
+<a class="anchor" href="#event-and-event-handling-statements" aria-hidden="true"><span class="octicon octicon-link"></span></a><em>$event</em> and event handling statements</h3>
+
+<p>In an event binding, Angular sets up an event handler for the target event.</p>
+
+<p>When the event is raised, the handler executes the template statement.
+The template statement typically involves a receiver, which performs an action
+in response to the event, such as storing a value from the HTML control
+into a model.</p>
+
+<p>The binding conveys information about the event, including data values, through
+an <strong>event object named <code class="language-plaintext highlighter-rouge">$event</code></strong>.</p>
+
+<p>The shape of the event object is determined by the target event.
+If the target event is a native DOM element event, then <code class="language-plaintext highlighter-rouge">$event</code> is a
+<a href="https://developer.mozilla.org/en-US/docs/Web/Events">DOM event object</a>,
+with properties such as <code class="language-plaintext highlighter-rouge">target</code> and <code class="language-plaintext highlighter-rouge">target.value</code>.</p>
+
+<p>Consider this example:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (without-NgModel)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;input [value]="currentHero.name"
+         (input)="currentHero.name=$event.target.value" &gt;
+</code></pre></div></div>
+
+<p>This code sets the input box <code class="language-plaintext highlighter-rouge">value</code> property by binding to the <code class="language-plaintext highlighter-rouge">name</code> property.
+To listen for changes to the value, the code binds to the input box’s <code class="language-plaintext highlighter-rouge">input</code> event.
+When the user makes changes, the <code class="language-plaintext highlighter-rouge">input</code> event is raised, and the binding executes
+the statement within a context that includes the DOM event object, <code class="language-plaintext highlighter-rouge">$event</code>.</p>
+
+<p>To update the <code class="language-plaintext highlighter-rouge">name</code> property, the changed text is retrieved by following the path <code class="language-plaintext highlighter-rouge">$event.target.value</code>.</p>
+
+<p>If the event belongs to a directive (recall that components are directives),
+<code class="language-plaintext highlighter-rouge">$event</code> has whatever shape the directive decides to produce.</p>
+
+<div id="custom-event"></div>
+<h3 id="custom-events">
+<a class="anchor" href="#custom-events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Custom events</h3>
+
+<p>Directives typically raise custom events using a <a href="https://api.dart.dev/stable/dart-async/StreamController-class.html">StreamController</a>.
+The directive creates a <code class="language-plaintext highlighter-rouge">StreamController</code> and exposes its underlying <code class="language-plaintext highlighter-rouge">stream</code> as a property.
+The directive calls <code class="language-plaintext highlighter-rouge">StreamController.add(payload)</code> to fire an event, passing in a message payload, which can be anything.
+Parent directives listen for the event by binding to this property and accessing the payload through the <code class="language-plaintext highlighter-rouge">$event</code> object.</p>
+
+<p>Consider a <code class="language-plaintext highlighter-rouge">HeroComponent</code> that presents hero information and responds to user actions.
+Although the <code class="language-plaintext highlighter-rouge">HeroComponent</code> has a delete button it doesn’t know how to delete the hero itself.
+The best it can do is raise an event reporting the user’s delete request.</p>
+
+<p>Here are the pertinent excerpts from that <code class="language-plaintext highlighter-rouge">HeroComponent</code>:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (template)” region=”template-1” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  template: '''
+    &lt;div&gt;
+      &lt;img src="{{heroImageUrl}}"&gt;
+      &lt;span [style.text-decoration]="lineThrough"&gt;
+        {{prefix}} {{hero?.name}}
+      &lt;/span&gt;
+      &lt;button (click)="delete()"&gt;Delete&lt;/button&gt;
+    &lt;/div&gt;
+  ''',
+</code></pre></div></div>
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (deleteRequest)” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  final _deleteRequest = StreamController&lt;Hero&gt;();
+  @Output()
+  Stream&lt;Hero&gt; get deleteRequest =&gt; _deleteRequest.stream;
+
+  void delete() {
+    _deleteRequest.add(hero);
+  }
+</code></pre></div></div>
+
+<p>The component defines a private <code class="language-plaintext highlighter-rouge">StreamController</code> property and
+exposes the controller’s stream through the <code class="language-plaintext highlighter-rouge">deleteRequest</code> getter.
+When a user clicks <em>Delete</em>, the component’s <code class="language-plaintext highlighter-rouge">delete()</code> method is called,
+directing the <code class="language-plaintext highlighter-rouge">StreamController</code> to add a <code class="language-plaintext highlighter-rouge">Hero</code> to the stream.</p>
+
+<p>Now imagine a hosting parent component that binds to the <code class="language-plaintext highlighter-rouge">HeroComponent</code>’s <code class="language-plaintext highlighter-rouge">deleteRequest</code> event.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (event-binding-to-component)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-hero (deleteRequest)="deleteHero($event)" [hero]="currentHero"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<p>When the <code class="language-plaintext highlighter-rouge">deleteRequest</code> event fires, Angular calls the parent component’s <code class="language-plaintext highlighter-rouge">deleteHero</code> method,
+passing the <em>hero-to-delete</em> (emitted by <code class="language-plaintext highlighter-rouge">HeroDetail</code>) in the <code class="language-plaintext highlighter-rouge">$event</code> variable.</p>
+
+<h3 id="template-statements-have-side-effects">
+<a class="anchor" href="#template-statements-have-side-effects" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template statements have side effects</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">deleteHero</code> method has a side effect: it deletes a hero.
+Template statement side effects are not just OK, but expected.</p>
+
+<p>Deleting the hero updates the model, perhaps triggering other changes
+including queries and saves to a remote server.
+These changes percolate through the system and are ultimately displayed in this and other views.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="two-way">
+<a class="anchor" href="#two-way" aria-hidden="true"><span class="octicon octicon-link"></span></a>Two-way binding ( <span class="syntax">[(…)]</span> )</h2>
+
+<p>You often want to both display a data property and update that property when the user makes changes.</p>
+
+<p>On the element side that takes a combination of setting a specific element property
+and listening for an element change event.</p>
+
+<p>Angular offers a special <em>two-way data binding</em> syntax for this purpose, <strong><code class="language-plaintext highlighter-rouge">[(x)]</code></strong>.
+The <code class="language-plaintext highlighter-rouge">[(x)]</code> syntax combines the brackets
+of <em>property binding</em>, <code class="language-plaintext highlighter-rouge">[x]</code>, with the parentheses of <em>event binding</em>, <code class="language-plaintext highlighter-rouge">(x)</code>.</p>
+
+<div class="alert alert-warning">
+  <h4>[( )] = banana in a box</h4>
+
+  <p>Visualize a <em>banana in a box</em> to remember that the parentheses go <em>inside</em> the brackets.</p>
+</div>
+
+<p>The <code class="language-plaintext highlighter-rouge">[(x)]</code> syntax is easy to demonstrate when the element has a settable property called <code class="language-plaintext highlighter-rouge">x</code>
+and a corresponding event named <code class="language-plaintext highlighter-rouge">xChange</code>.
+Here’s a <code class="language-plaintext highlighter-rouge">SizerComponent</code> that fits the pattern.
+It has a <code class="language-plaintext highlighter-rouge">size</code> value property and a companion <code class="language-plaintext highlighter-rouge">sizeChange</code> event:</p>
+
+<p>&lt;?code-excerpt “lib/src/sizer_component.dart” title linenums?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:async';
+  import 'dart:math';
+  import 'package:angular/angular.dart';
+
+  const minSize = 8;
+  const maxSize = minSize * 5;
+
+  @Component(
+    selector: 'my-sizer',
+    template: '''
+      &lt;div&gt;
+        &lt;button (click)="dec()" [disabled]="size &lt;= minSize"&gt;-&lt;/button&gt;
+        &lt;button (click)="inc()" [disabled]="size &gt;= maxSize"&gt;+&lt;/button&gt;
+        &lt;label [style.font-size.px]="size"&gt;FontSize: {{size}}px&lt;/label&gt;
+      &lt;/div&gt;''',
+    exports: [minSize, maxSize],
+  )
+  class SizerComponent {
+    int _size = minSize * 2;
+    int get size =&gt; _size;
+    @Input()
+    void set size(/*String|int*/ val) {
+      int z = val is int ? val : int.tryParse(val);
+      if (z != null) _size = min(maxSize, max(minSize, z));
+    }
+
+    final _sizeChange = StreamController&lt;int&gt;();
+    @Output()
+    Stream&lt;int&gt; get sizeChange =&gt; _sizeChange.stream;
+
+    void dec() =&gt; resize(-1);
+    void inc() =&gt; resize(1);
+
+    void resize(int delta) {
+      size = size + delta;
+      _sizeChange.add(size);
+    }
+  }
+</code></pre></div></div>
+
+<p>The initial <code class="language-plaintext highlighter-rouge">size</code> is an input value from a property binding.
+Clicking the buttons increases or decreases the <code class="language-plaintext highlighter-rouge">size</code>, within min/max values constraints,
+and then raises (<em>emits</em>) the <code class="language-plaintext highlighter-rouge">sizeChange</code> event with the adjusted size.</p>
+
+<p>Here’s an example in which the <code class="language-plaintext highlighter-rouge">AppComponent.fontSizePx</code> is two-way bound to the <code class="language-plaintext highlighter-rouge">SizerComponent</code>:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (two-way-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-sizer [(size)]="fontSizePx" #mySizer&gt;&lt;/my-sizer&gt;
+  &lt;div [style.font-size.px]="mySizer.size"&gt;Resizable Text&lt;/div&gt;
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">AppComponent.fontSizePx</code> establishes the initial <code class="language-plaintext highlighter-rouge">SizerComponent.size</code> value.
+Clicking the buttons updates the <code class="language-plaintext highlighter-rouge">AppComponent.fontSizePx</code> via the two-way binding.
+The revised <code class="language-plaintext highlighter-rouge">size</code> value flows through to the <em>style</em> binding,
+making the displayed text bigger or smaller.</p>
+
+<p>The two-way binding syntax is really just syntactic sugar for a <em>property</em> binding and an <em>event</em> binding.
+Angular <em>desugars</em> the <code class="language-plaintext highlighter-rouge">SizerComponent</code> binding into this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (two-way-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-sizer [size]="fontSizePx" (sizeChange)="fontSizePx=$event"&gt;&lt;/my-sizer&gt;
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">$event</code> variable contains the payload of the <code class="language-plaintext highlighter-rouge">SizerComponent.sizeChange</code> event.
+Angular assigns the <code class="language-plaintext highlighter-rouge">$event</code> value to the <code class="language-plaintext highlighter-rouge">AppComponent.fontSizePx</code> when the user clicks the buttons.</p>
+
+<p>Clearly the two-way binding syntax is a great convenience compared to separate property and event bindings.</p>
+
+<p>It would be convenient to use two-way binding with HTML form elements like <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;select&gt;</code>.
+However, no native HTML element follows the <code class="language-plaintext highlighter-rouge">x</code> value and <code class="language-plaintext highlighter-rouge">xChange</code> event pattern.</p>
+
+<p>Fortunately, the Angular <a href="#ngModel"><em>NgModel</em></a> directive is a bridge that enables two-way binding to form elements.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="directives">
+<a class="anchor" href="#directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Built-in directives</h2>
+
+<p>Earlier versions of Angular included over seventy built-in directives.
+The community contributed many more, and countless private directives
+have been created for internal apps.</p>
+
+<p>You don’t need many of those directives in Angular.
+You can often achieve the same results with the more capable and expressive Angular binding system.
+Why create a directive to handle a click when you can write a simple binding such as this?</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (event-binding-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;button (click)="onSave()"&gt;Save&lt;/button&gt;
+</code></pre></div></div>
+
+<p>You still benefit from directives that simplify complex tasks.
+Angular still ships with built-in directives; just not as many.
+You’ll write your own directives, just not as many.</p>
+
+<p>This segment reviews some of the most frequently used built-in directives,
+classified as either <a href="#attribute-directives"><em>attribute</em> directives</a> or <a href="#structural-directives"><em>structural</em> directives</a>.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="attribute-directives">
+<a class="anchor" href="#attribute-directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Built-in <em>attribute</em> directives</h2>
+
+<p>Attribute directives listen to and modify the behavior of
+other HTML elements, attributes, properties, and components.
+They are usually applied to elements as if they were HTML attributes, hence the name.</p>
+
+<p>Many details are covered in the <a href="attribute-directives"><em>Attribute Directives</em></a> guide.
+Many Angular packages such as the <a href="router" title="Routing and Navigation"><code class="language-plaintext highlighter-rouge">Router</code></a>
+and <a href="forms"><code class="language-plaintext highlighter-rouge">Forms</code></a> packages define their own attribute directives.
+This section is an introduction to the most commonly used attribute directives:</p>
+
+<ul>
+  <li>
+<a href="#ngClass"><code class="language-plaintext highlighter-rouge">NgClass</code></a>: Add and remove a set of CSS classes.</li>
+  <li>
+<a href="#ngStyle"><code class="language-plaintext highlighter-rouge">NgStyle</code></a>: Add and remove a set of HTML styles.</li>
+  <li>
+<a href="#ngModel"><code class="language-plaintext highlighter-rouge">NgModel</code></a>: Two-way data binding to an HTML form element.</li>
+</ul>
+
+<div class="l-hr"></div>
+
+<div id="ngClass"></div>
+<h3 id="ngclass">
+<a class="anchor" href="#ngclass" aria-hidden="true"><span class="octicon octicon-link"></span></a>NgClass</h3>
+
+<p>You typically control how elements appear
+by adding and removing CSS classes dynamically.
+You can bind to the <code class="language-plaintext highlighter-rouge">ngClass</code> to add or remove several classes simultaneously.</p>
+
+<p>A <a href="#class-binding">class binding</a> is a good way to add or remove a <em>single</em> class.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (class-binding-3a)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- toggle the "special" class on/off with a property --&gt;
+  &lt;div [class.special]="isSpecial"&gt;The class binding is special&lt;/div&gt;
+</code></pre></div></div>
+
+<p>To add or remove <em>many</em> CSS classes at the same time, the <code class="language-plaintext highlighter-rouge">NgClass</code> directive might be the better choice.</p>
+
+<p>Try binding <code class="language-plaintext highlighter-rouge">ngClass</code> to a key:value control <a href="https://api.dart.dev/stable/dart-core/Map-class.html">Map</a>.
+Each key of the object is a CSS class name; its value is <code class="language-plaintext highlighter-rouge">true</code> if the class should be added,
+<code class="language-plaintext highlighter-rouge">false</code> if it should be removed.</p>
+
+<p>Consider a <code class="language-plaintext highlighter-rouge">setCurrentClasses</code> component method that sets a component property,
+<code class="language-plaintext highlighter-rouge">currentClasses</code> with an object that adds or removes three classes based on the
+<code class="language-plaintext highlighter-rouge">true</code>/<code class="language-plaintext highlighter-rouge">false</code> state of three other component properties:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (setClasses)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Map&lt;String, bool&gt; currentClasses = &lt;String, bool&gt;{};
+  void setCurrentClasses() {
+    currentClasses = &lt;String, bool&gt;{
+      'saveable': canSave,
+      'modified': !isUnchanged,
+      'special': isSpecial
+    };
+  }
+</code></pre></div></div>
+
+<p>Adding an <code class="language-plaintext highlighter-rouge">ngClass</code> property binding to <code class="language-plaintext highlighter-rouge">currentClasses</code> sets the element’s classes accordingly:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgClass-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div [ngClass]="currentClasses"&gt;This div is initially saveable, unchanged, and special&lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>It’s up to you to call <code class="language-plaintext highlighter-rouge">setCurrentClasses()</code>, both initially and when the dependent properties change.</p>
+</div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<div id="ngStyle"></div>
+<h3 id="ngstyle">
+<a class="anchor" href="#ngstyle" aria-hidden="true"><span class="octicon octicon-link"></span></a>NgStyle</h3>
+
+<p>You can set inline styles dynamically, based on the state of the component.
+With <code class="language-plaintext highlighter-rouge">NgStyle</code> you can set many inline styles simultaneously.</p>
+
+<p>A <a href="#style-binding">style binding</a> is an easy way to set a <em>single</em> style value.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgStyle-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div [style.font-size]="isSpecial ? 'x-large' : 'smaller'" &gt;
+    This div is x-large or smaller.
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p>To set <em>many</em> inline styles at the same time, the <code class="language-plaintext highlighter-rouge">NgStyle</code> directive might be the better choice.</p>
+
+<p>Try binding <code class="language-plaintext highlighter-rouge">ngStyle</code> to a key:value control <a href="https://api.dart.dev/stable/dart-core/Map-class.html">Map</a>.
+Each key of the object is a style name; its value is whatever is appropriate for that style.</p>
+
+<p>Consider a <code class="language-plaintext highlighter-rouge">setCurrentStyles</code> component method that sets a component property, <code class="language-plaintext highlighter-rouge">currentStyles</code>
+with an object that defines three styles, based on the state of three other component propertes:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (setStyles)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Map&lt;String, String&gt; currentStyles = &lt;String, String&gt;{};
+  void setCurrentStyles() {
+    currentStyles = &lt;String, String&gt;{
+      'font-style': canSave ? 'italic' : 'normal',
+      'font-weight': !isUnchanged ? 'bold' : 'normal',
+      'font-size': isSpecial ? '24px' : '12px'
+    };
+  }
+</code></pre></div></div>
+
+<p>Adding an <code class="language-plaintext highlighter-rouge">ngStyle</code> property binding to <code class="language-plaintext highlighter-rouge">currentStyles</code> sets the element’s styles accordingly:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgStyle-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div [ngStyle]="currentStyles"&gt;
+    This div is initially italic, normal weight, and extra large (24px).
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>It’s up to you to call <code class="language-plaintext highlighter-rouge">setCurrentStyles()</code>, both initially and when the dependent properties change.</p>
+</div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<div id="ngModel"></div>
+<h3 id="ngmodel---two-way-binding-to-form-elements-with-ngmodel">
+<a class="anchor" href="#ngmodel---two-way-binding-to-form-elements-with-ngmodel" aria-hidden="true"><span class="octicon octicon-link"></span></a>NgModel - Two-way binding to form elements with <span class="syntax">[(ngModel)]</span>
+</h3>
+
+<p>When developing data entry forms, you often both display a data property and
+update that property when the user makes changes.</p>
+
+<p>Two-way data binding with the <code class="language-plaintext highlighter-rouge">NgModel</code> directive makes that easy. Here’s an example:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgModel-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;input [(ngModel)]="currentHero.name"&gt;
+</code></pre></div></div>
+
+<h4 id="inside-ngmodel">Inside <span class="syntax">[(ngModel)]</span>
+</h4>
+
+<p>Looking back at the <code class="language-plaintext highlighter-rouge">name</code> binding, note that
+you could achieve the same result with separate bindings to
+the <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> element’s  <code class="language-plaintext highlighter-rouge">value</code> property and <code class="language-plaintext highlighter-rouge">input</code> event.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (without-NgModel)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;input [value]="currentHero.name"
+         (input)="currentHero.name=$event.target.value" &gt;
+</code></pre></div></div>
+
+<p>That’s cumbersome. Who can remember which element property to set and which element event emits user changes?
+How do you extract the currently displayed text from the input box so you can update the data property?
+Who wants to look that up each time?</p>
+
+<p>That <code class="language-plaintext highlighter-rouge">ngModel</code> directive hides these onerous details behind its own  <code class="language-plaintext highlighter-rouge">ngModel</code> input and <code class="language-plaintext highlighter-rouge">ngModelChange</code> output properties.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgModel-3)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;input
+    [ngModel]="currentHero.name"
+    (ngModelChange)="currentHero.name=$event"&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>The <code class="language-plaintext highlighter-rouge">ngModel</code> data property sets the element’s value property and the <code class="language-plaintext highlighter-rouge">ngModelChange</code> event property
+  listens for changes to the element’s value.</p>
+
+  <p>The details are specific to each kind of element and therefore the <code class="language-plaintext highlighter-rouge">NgModel</code> directive only works for an element
+  supported by a <a href="https://pub.dev/documentation/angular_forms/6.0.1/angular_forms/ControlValueAccessor-class.html">ControlValueAccessor</a>
+  that adapts an element to this protocol.
+  The <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> box is one of those elements.
+  Angular provides <em>value accessors</em> for all of the basic HTML form elements and the
+  <a href="forms"><em>Forms</em></a> guide shows how to bind to them.</p>
+
+  <p>You can’t apply <code class="language-plaintext highlighter-rouge">[(ngModel)]</code> to a non-form native element or a third-party custom component
+  until you write a suitable <em>value accessor</em>,
+  a technique that is beyond the scope of this guide.</p>
+
+  <p>You don’t need a <em>value accessor</em> for an Angular component that you write because you
+  can name the value and event properties
+  to suit Angular’s basic <a href="#two-way">two-way binding syntax</a> and skip <code class="language-plaintext highlighter-rouge">NgModel</code> altogether.
+  The <a href="#two-way"><code class="language-plaintext highlighter-rouge">sizer</code> shown above</a> is an example of this technique.</p>
+</div>
+
+<p>Separate <code class="language-plaintext highlighter-rouge">ngModel</code> bindings is an improvement over binding to the element’s native properties. You can do better.</p>
+
+<p>You shouldn’t have to mention the data property twice. Angular should be able to capture
+the component’s data property and set it
+with a single declaration, which it can with the <code class="language-plaintext highlighter-rouge">[(ngModel)]</code> syntax:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgModel-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;input [(ngModel)]="currentHero.name"&gt;
+</code></pre></div></div>
+
+<p>Is <code class="language-plaintext highlighter-rouge">[(ngModel)]</code> all you need? Is there ever a reason to fall back to its expanded form?</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">[(ngModel)]</code> syntax can only <em>set</em> a data-bound property.
+If you need to do something more or something different, you can write the expanded form.</p>
+
+<p>The following contrived example forces the input value to uppercase:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgModel-4)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;input
+    [ngModel]="currentHero.name"
+    (ngModelChange)="setUppercaseName($event)"&gt;
+</code></pre></div></div>
+
+<p>Here are all variations in action, including the uppercase version:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/template-syntax/ng-model-anim-824a010bb893c0d33c4a8f3129c94eb158b59ac5014ea578dbe63ec515c5e849.gif" alt="NgModel variations"></p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<div id="structural-directives"></div>
+<h2 id="built-in-structural-directives">
+<a class="anchor" href="#built-in-structural-directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Built-in <em>structural</em> directives</h2>
+
+<p>Structural directives are responsible for HTML layout.
+They shape or reshape the DOM’s <em>structure</em>, typically by adding, removing, and manipulating
+the host elements to which they are attached.</p>
+
+<p>The deep details of structural directives are covered in the
+<a href="structural-directives"><em>Structural Directives</em></a> guide,
+where you’ll learn the following:</p>
+
+<ul>
+  <li>Why you must
+<a href="structural-directives#asterisk" title="The * in *ngIf"><em>prefix the directive name with an asterisk</em> (*)</a>.</li>
+  <li>How to <a href="structural-directives#group-sibling-elements">group elements</a>
+when there is no suitable host element for the directive.</li>
+  <li>How to write your own structural directive.</li>
+  <li>Why you can apply only <a href="structural-directives#one-per-element" title="one per host element">one structural directive</a> to an element.</li>
+</ul>
+
+<p><em>This</em> section is an introduction to the common structural directives:</p>
+
+<ul>
+  <li>
+<a href="#ngIf"><code class="language-plaintext highlighter-rouge">NgIf</code></a>: Conditionally add or remove an element from the DOM.</li>
+  <li>
+<a href="#ngFor"><code class="language-plaintext highlighter-rouge">NgFor</code></a>: Repeat a template for each item in a list.</li>
+  <li>
+<a href="#ngSwitch"><code class="language-plaintext highlighter-rouge">NgSwitch</code></a>: Show only one of multiple possible elements.</li>
+</ul>
+
+<div class="l-hr"></div>
+<div id="ngIf"></div>
+<h3 id="ngif">
+<a class="anchor" href="#ngif" aria-hidden="true"><span class="octicon octicon-link"></span></a>NgIf</h3>
+
+<p>You can add or remove an element from the DOM by applying an <code class="language-plaintext highlighter-rouge">NgIf</code> directive to
+that element (called the <em>host elment</em>).
+Bind the directive to a condition expression like <code class="language-plaintext highlighter-rouge">isActive</code> in this example.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgIf-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-hero *ngIf="isActive"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<div class="alert alert-warning">
+  <p>Don’t forget the asterisk (<code class="language-plaintext highlighter-rouge">*</code>) in front of <code class="language-plaintext highlighter-rouge">ngIf</code>.</p>
+</div>
+
+<p>When the <code class="language-plaintext highlighter-rouge">isActive</code> expression returns a true value, <code class="language-plaintext highlighter-rouge">NgIf</code> adds the <code class="language-plaintext highlighter-rouge">HeroComponent</code> to the DOM.
+When the expression is false, <code class="language-plaintext highlighter-rouge">NgIf</code> removes the <code class="language-plaintext highlighter-rouge">HeroComponent</code>
+from the DOM, destroying that component and all of its sub-components.</p>
+
+<h4 id="showhide-is-not-the-same-thing">Show/hide is not the same thing</h4>
+
+<p>You can control the visibility of an element with a
+<a href="#class-binding">class</a> or <a href="#style-binding">style</a> binding:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgIf-3)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- isSpecial is true --&gt;
+  &lt;div [class.hidden]="!isSpecial"&gt;Show with class&lt;/div&gt;
+  &lt;div [class.hidden]="isSpecial"&gt;Hide with class&lt;/div&gt;
+
+  &lt;!-- HeroDetail is in the DOM but hidden --&gt;
+  &lt;my-hero [class.hidden]="isSpecial"&gt;&lt;/my-hero&gt;
+
+  &lt;div [style.display]="isSpecial ? 'block' : 'none'"&gt;Show with style&lt;/div&gt;
+  &lt;div [style.display]="isSpecial ? 'none'  : 'block'"&gt;Hide with style&lt;/div&gt;
+</code></pre></div></div>
+
+<p>Hiding an element is quite different from removing an element with <code class="language-plaintext highlighter-rouge">NgIf</code>.</p>
+
+<p>When you hide an element, that element and all of its descendents remain in the DOM.
+All components for those elements stay in memory, and
+Angular might continue to check for changes.
+Your app might hold onto considerable computing resources, degrading performance
+for something the user can’t see.</p>
+
+<p>When <code class="language-plaintext highlighter-rouge">NgIf</code> is <code class="language-plaintext highlighter-rouge">false</code>, Angular removes the element and its descendents from the DOM.
+It destroys their components, potentially freeing up substantial resources,
+resulting in a more responsive user experience.</p>
+
+<p>The show/hide technique is fine for a few elements with few children.
+Be wary of hiding large component trees; <code class="language-plaintext highlighter-rouge">NgIf</code> might be the safer choice.</p>
+
+<h4 id="guard-against-null">Guard against null</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">ngIf</code> directive is often used to guard against null.
+Show/hide is useless as a guard.
+Angular will throw an error if a nested expression tries to access a property of <code class="language-plaintext highlighter-rouge">null</code>.</p>
+
+<p>Here we see <code class="language-plaintext highlighter-rouge">NgIf</code> guarding two <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>s.
+The <code class="language-plaintext highlighter-rouge">currentHero</code> name appears only when there is a <code class="language-plaintext highlighter-rouge">currentHero</code>.
+The <code class="language-plaintext highlighter-rouge">nullHero</code> is never displayed.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgIf-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngIf="currentHero != null"&gt;Hello, {{currentHero.name}}&lt;/div&gt;
+  &lt;div *ngIf="nullHero != null"&gt;Hello, {{nullHero.name}}&lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>See also the
+  <a href="#safe-navigation-operator" title="Safe naviation operator (?.)"><em>safe navigation operator</em></a>
+  described below.</p>
+</div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<div id="ngFor"></div>
+<h3 id="ngfor">
+<a class="anchor" href="#ngfor" aria-hidden="true"><span class="octicon octicon-link"></span></a>NgFor</h3>
+
+<p><code class="language-plaintext highlighter-rouge">NgFor</code> is a <em>repeater</em> directive — a way to present a list of items.
+You define a block of HTML that defines how a single item should be displayed.
+You tell Angular to use that block as a template for rendering each item in the list.</p>
+
+<p>Here is an example of <code class="language-plaintext highlighter-rouge">NgFor</code> applied to a simple <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgFor-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngFor="let hero of heroes"&gt;{{hero.name}}&lt;/div&gt;
+</code></pre></div></div>
+
+<p>You can also apply an <code class="language-plaintext highlighter-rouge">NgFor</code> to a component element, as in this example:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgFor-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-hero *ngFor="let hero of heroes" [hero]="hero"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<div class="alert alert-warning">
+  <p>Don’t forget the asterisk (<code class="language-plaintext highlighter-rouge">*</code>) in front of <code class="language-plaintext highlighter-rouge">ngFor</code>.</p>
+</div>
+
+<p>The text assigned to <code class="language-plaintext highlighter-rouge">*ngFor</code> is the instruction that guides the repeater process.</p>
+
+<div id="microsyntax"></div>
+<h4 id="ngfor-microsyntax">*ngFor microsyntax</h4>
+
+<p>The string assigned to <code class="language-plaintext highlighter-rouge">*ngFor</code> is not a <a href="#template-expressions">template expression</a>.
+It’s a <em>microsyntax</em> — a little language of its own that Angular interprets.
+The string <code class="language-plaintext highlighter-rouge">"let hero of heroes"</code> means:</p>
+
+<blockquote>
+  <p><em>Take each hero in the <code class="language-plaintext highlighter-rouge">heroes</code> list, store it in the local <code class="language-plaintext highlighter-rouge">hero</code> looping variable, and
+make it available to the templated HTML for each iteration.</em></p>
+</blockquote>
+
+<p>Angular translates this instruction into a <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> around the host element,
+then uses this template repeatedly to create a new set of elements and bindings for each <code class="language-plaintext highlighter-rouge">hero</code>
+in the list.</p>
+
+<p>Learn about the <em>microsyntax</em> in the <a href="structural-directives#microsyntax"><em>Structural Directives</em></a> guide.</p>
+
+<div id="template-input-variable"></div>
+<div id="template-input-variables"></div>
+<h3 id="template-input-variables">
+<a class="anchor" href="#template-input-variables" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template input variables</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">let</code> keyword before <code class="language-plaintext highlighter-rouge">hero</code> creates a <em>template input variable</em> called <code class="language-plaintext highlighter-rouge">hero</code>.
+The <code class="language-plaintext highlighter-rouge">ngFor</code> directive iterates over the <code class="language-plaintext highlighter-rouge">heroes</code> list returned by the parent component’s <code class="language-plaintext highlighter-rouge">heroes</code> property
+and sets <code class="language-plaintext highlighter-rouge">hero</code> to the current item from the list during each iteration.</p>
+
+<p>To access the hero’s properties,
+reference the <code class="language-plaintext highlighter-rouge">hero</code> input variable within the <code class="language-plaintext highlighter-rouge">ngFor</code> host element
+(or within its descendents).
+Here <code class="language-plaintext highlighter-rouge">hero</code> is referenced first in an interpolation
+and then passed in a binding to the <code class="language-plaintext highlighter-rouge">hero</code> property of the <code class="language-plaintext highlighter-rouge">&lt;my-hero&gt;</code> component.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgFor-1-2)” plaster=”none”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngFor="let hero of heroes"&gt;{{hero.name}}&lt;/div&gt;
+  &lt;my-hero *ngFor="let hero of heroes" [hero]="hero"&gt;&lt;/my-hero&gt;
+</code></pre></div></div>
+
+<p>Learn more about <em>template input variables</em> in the
+<a href="structural-directives#template-input-variable"><em>Structural Directives</em></a> guide.</p>
+
+<h4 id="ngfor-with-index">*ngFor with <em>index</em>
+</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">index</code> property of the <code class="language-plaintext highlighter-rouge">NgFor</code> directive context  returns the zero-based index of the item in each iteration.
+You can capture the <code class="language-plaintext highlighter-rouge">index</code> in a template input variable and use it in the template.</p>
+
+<p>The next example captures the <code class="language-plaintext highlighter-rouge">index</code> in a variable named <code class="language-plaintext highlighter-rouge">i</code> and displays it with the hero name like this.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgFor-3)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngFor="let hero of heroes; let i=index"&gt;{{i + 1}} - {{hero.name}}&lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>Learn about the other <code class="language-plaintext highlighter-rouge">NgFor</code> context values such as <code class="language-plaintext highlighter-rouge">last</code>, <code class="language-plaintext highlighter-rouge">even</code>,
+  and <code class="language-plaintext highlighter-rouge">odd</code> in the <a href="https://pub.dev/documentation/angular/6.0.1/angular/NgFor-class.html">NgFor API reference</a>.</p>
+</div>
+
+<h4 id="trackBy">*ngFor with <em>trackBy</em>
+</h4>
+
+<p>The <code class="language-plaintext highlighter-rouge">NgFor</code> directive can perform poorly, especially with large lists.
+A small change to one item, an item removed, or an item added can trigger a cascade of DOM manipulations.</p>
+
+<p>For example, re-querying the server might reset the list with all new hero objects.</p>
+
+<p>Most, if not all, are previously displayed heroes.
+<em>You</em> know this because the <code class="language-plaintext highlighter-rouge">id</code> of each hero hasn’t changed.
+But Angular sees only a fresh list of new object references.
+It has no choice but to tear down the old DOM elements and insert all new DOM elements.</p>
+
+<p>Angular can avoid this churn with <code class="language-plaintext highlighter-rouge">trackBy</code>.
+Add a method to the component that returns the value <code class="language-plaintext highlighter-rouge">NgFor</code> <em>should</em> track.
+In this case, that value is the hero’s <code class="language-plaintext highlighter-rouge">id</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (trackByHeroId)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Object trackByHeroId(_, dynamic o) =&gt; o is Hero ? o.id : o;
+</code></pre></div></div>
+
+<p>In the microsyntax expression, set <code class="language-plaintext highlighter-rouge">trackBy</code> to this method.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (trackBy)” replace=”/\s+#withTrackBy//g”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngFor="let hero of heroes; trackBy: trackByHeroId"&gt;
+    ({{hero.id}}) {{hero.name}}
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<aside class="alert alert-info">
+  <p><strong>Note:</strong> A track-by function’s signature must match the <a href="https://pub.dev/documentation/angular/6.0.1/angular/TrackByFn.html">TrackByFn</a> type.</p>
+</aside>
+
+<p>Here is an illustration of the <em>trackBy</em> effect.
+“Reset heroes” creates new heroes with the same <code class="language-plaintext highlighter-rouge">hero.id</code>s.
+“Change ids” creates new heroes with new <code class="language-plaintext highlighter-rouge">hero.id</code>s.</p>
+<ul>
+  <li>With no <code class="language-plaintext highlighter-rouge">trackBy</code>, both buttons trigger complete DOM element replacement.</li>
+  <li>With <code class="language-plaintext highlighter-rouge">trackBy</code>, only changing the <code class="language-plaintext highlighter-rouge">id</code> triggers element replacement.</li>
+</ul>
+
+<p><img class="image-display" src="/assets/ng/devguide/template-syntax/ng-for-track-by-anim-db57185bb8bd0016eae7cfd3b32c2c49d9092738738f404b3a4a0719fc1f245e.gif" alt="trackBy"></p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<div id="ngSwitch"></div>
+<h3 id="the-ngswitch-directives">
+<a class="anchor" href="#the-ngswitch-directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>The <em>NgSwitch</em> directives</h3>
+
+<p><em>NgSwitch</em> is like the Dart <code class="language-plaintext highlighter-rouge">switch</code> statement.
+It can display <em>one</em> element from among several possible elements, based on a <em>switch condition</em>.
+Angular puts only the <em>selected</em> element into the DOM.</p>
+
+<p><em>NgSwitch</em> is actually a set of three, cooperating directives:
+<code class="language-plaintext highlighter-rouge">NgSwitch</code>, <code class="language-plaintext highlighter-rouge">NgSwitchCase</code>, and <code class="language-plaintext highlighter-rouge">NgSwitchDefault</code> as seen in this example.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgSwitch)” plaster=”none”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div [ngSwitch]="currentHero.emotion"&gt;
+    &lt;happy-hero    *ngSwitchCase="'happy'"    [hero]="currentHero"&gt;&lt;/happy-hero&gt;
+    &lt;sad-hero      *ngSwitchCase="'sad'"      [hero]="currentHero"&gt;&lt;/sad-hero&gt;
+    &lt;confused-hero *ngSwitchCase="'confused'" [hero]="currentHero"&gt;&lt;/confused-hero&gt;
+    &lt;unknown-hero  *ngSwitchDefault           [hero]="currentHero"&gt;&lt;/unknown-hero&gt;
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>You might come across an <code class="language-plaintext highlighter-rouge">NgSwitchWhen</code> directive in older code.
+  That is the deprecated name for <code class="language-plaintext highlighter-rouge">NgSwitchCase</code>.</p>
+</div>
+
+<p><img class="image-display" src="/assets/ng/devguide/template-syntax/switch-anim-587ca81a4a20c0afcf645180286d158467648744100440be216ce2e0703162e4.gif" alt="trackBy"></p>
+
+<p><code class="language-plaintext highlighter-rouge">NgSwitch</code> is the controller directive. Bind it to an expression that returns the <em>switch value</em>.
+The <code class="language-plaintext highlighter-rouge">emotion</code> value in this example is a string, but the switch value can be of any type.</p>
+
+<p><strong>Bind to <code class="language-plaintext highlighter-rouge">[ngSwitch]</code></strong>. You’ll get an error if you try to set <code class="language-plaintext highlighter-rouge">*ngSwitch</code> because
+<code class="language-plaintext highlighter-rouge">NgSwitch</code> is an <em>attribute</em> directive, not a <em>structural</em> directive.
+It changes the behavior of its companion directives.
+It doesn’t touch the DOM directly.</p>
+
+<p><strong>Bind to <code class="language-plaintext highlighter-rouge">*ngSwitchCase</code> and <code class="language-plaintext highlighter-rouge">*ngSwitchDefault</code></strong>.
+The <code class="language-plaintext highlighter-rouge">NgSwitchCase</code> and <code class="language-plaintext highlighter-rouge">NgSwitchDefault</code> directives are <em>structural</em> directives
+because they add or remove elements from the DOM.</p>
+
+<ul>
+  <li>
+<code class="language-plaintext highlighter-rouge">NgSwitchCase</code> adds its element to the DOM when its bound value equals the switch value.</li>
+  <li>
+<code class="language-plaintext highlighter-rouge">NgSwitchDefault</code> adds its element to the DOM when there is no selected <code class="language-plaintext highlighter-rouge">NgSwitchCase</code>.</li>
+</ul>
+
+<p>The switch directives are particularly useful for adding and removing <em>component elements</em>.
+This example switches among four “emotional hero” components defined in the <code class="language-plaintext highlighter-rouge">hero_switch_components.dart</code> file.
+Each component has a <code class="language-plaintext highlighter-rouge">hero</code> <a href="#inputs-outputs" title="Input property">input property</a>
+which is bound to the <code class="language-plaintext highlighter-rouge">currentHero</code> of the parent component.</p>
+
+<p>Switch directives work as well with native elements and web components too.
+For example, you can replace the <code class="language-plaintext highlighter-rouge">&lt;confused-hero&gt;</code> switch case with the following.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (NgSwitch-div)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngSwitchCase="'confused'"&gt;Are you as confused as {{currentHero.name}}?&lt;/div&gt;
+</code></pre></div></div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="ref-vars">
+<a class="anchor" href="#ref-vars" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template reference variables ( <span class="syntax">#var</span> )</h2>
+
+<p>A <strong>template reference variable</strong> is often a reference to a DOM element within a template.
+It can also refer to an Angular component or directive or a
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" target="_blank" rel="noopener" title="MDN: Web Components">web component</a>.</p>
+
+<p>Use the hash symbol (#) to declare a reference variable.
+The <code class="language-plaintext highlighter-rouge">#phone</code> declares a <code class="language-plaintext highlighter-rouge">phone</code> variable on an <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> element.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ref-var)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;input #phone placeholder="phone number"&gt;
+</code></pre></div></div>
+
+<p>You can refer to a template reference variable almost anywhere in the template
+(see <a href="#template-reference-notes">notes below</a> for exceptions).
+The <code class="language-plaintext highlighter-rouge">phone</code> variable declared on this <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> is consumed in a <code class="language-plaintext highlighter-rouge">&lt;button&gt;</code> on
+the other side of the template</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ref-phone)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;input #phone placeholder="phone number"&gt;
+
+  &lt;!-- lots of other elements --&gt;
+
+  &lt;!-- phone refers to the input element; pass its `value` to an event handler --&gt;
+  &lt;button (click)="callPhone(phone.value)"&gt;Call&lt;/button&gt;
+</code></pre></div></div>
+
+<h3 id="how-a-reference-variable-gets-its-value">
+<a class="anchor" href="#how-a-reference-variable-gets-its-value" aria-hidden="true"><span class="octicon octicon-link"></span></a>How a reference variable gets its value</h3>
+
+<p>In most cases, Angular sets the reference variable’s value to the element on which it was declared.
+In the previous example, <code class="language-plaintext highlighter-rouge">phone</code> refers to the <em>phone number</em> <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> box.
+The phone button click handler passes the <em>input</em> value to the component’s <code class="language-plaintext highlighter-rouge">callPhone</code> method.
+But a directive can change that behavior and set the value to something else, such as itself.
+The <code class="language-plaintext highlighter-rouge">NgForm</code> directive does that.</p>
+
+<p>The following is a <em>simplified</em> version of the form example in the <a href="forms">Forms</a> guide.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_form_component.html”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;form (ngSubmit)="onSubmit(heroForm)" #heroForm="ngForm"&gt;
+      &lt;div class="form-group"&gt;
+          &lt;label for="name"&gt;Name
+              &lt;input class="form-control"
+                     ngControl="name"
+                     required
+                     [(ngModel)]="hero.name"&gt;
+          &lt;/label&gt;
+      &lt;/div&gt;
+      &lt;button type="submit" [disabled]="!heroForm.form.valid"&gt;Submit&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;div [hidden]="!heroForm.form.valid"&gt;
+      {{submitMessage}}
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p>A template reference variable, <code class="language-plaintext highlighter-rouge">heroForm</code>, appears three times in this example, separated
+by a large amount of HTML.
+What is the value of <code class="language-plaintext highlighter-rouge">heroForm</code>?
+The <code class="language-plaintext highlighter-rouge">heroForm</code> is a reference to an Angular
+<a href="https://pub.dev/documentation/angular_forms/6.0.1/angular_forms/NgForm-class.html" title="API: NgForm">NgForm</a>
+directive with the ability to track the value and validity of every control in the form.</p>
+
+<p>The native <code class="language-plaintext highlighter-rouge">&lt;form&gt;</code> element doesn’t have a <code class="language-plaintext highlighter-rouge">form</code> property.
+But the <code class="language-plaintext highlighter-rouge">NgForm</code> directive does, which explains how you can disable the submit button
+if the <code class="language-plaintext highlighter-rouge">heroForm.form.valid</code> is invalid and pass the entire form control tree
+to the parent component’s <code class="language-plaintext highlighter-rouge">onSubmit</code> method.</p>
+
+<h3 id="template-reference-notes">
+<a class="anchor" href="#template-reference-notes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template reference variable warning notes</h3>
+
+<p>A template <em>reference</em> variable (<code class="language-plaintext highlighter-rouge">#phone</code>) is <em>not</em> the same as a template <em>input</em> variable (<code class="language-plaintext highlighter-rouge">let phone</code>)
+such as you might see in an <a href="#template-input-variable"><code class="language-plaintext highlighter-rouge">*ngFor</code></a>.
+Learn the difference in the <a href="structural-directives#template-input-variable"><em>Structural Directives</em></a> guide.</p>
+
+<p>The scope of a reference variable is the <em>entire template</em>, unless it’s declared
+within an embedded view controlled by a <a href="#built-in-structural-directives">structural
+directive</a>. Reference variables declared within
+an embedded view are only visible to the portion of the template embedded by the
+structural directive. Note that a reference variable declared outside an
+embedded view can be referenced from within it, but not the other way around.</p>
+
+<p>Do not define the same variable name more than once in the same template. The
+runtime value will be unpredictable.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="inputs-outputs">
+<a class="anchor" href="#inputs-outputs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input and output properties ( <span class="syntax">@Input</span> and <span class="syntax">@Output</span> )</h2>
+
+<p>So far, this page has focused mainly on binding to component members within template expressions and statements
+that appear on the <em>right side of the binding declaration</em>.
+A member in that position is a data binding <strong>source</strong>.</p>
+
+<p>This section concentrates on binding to <strong>targets</strong>, which are directive
+properties on the <em>left side of the binding declaration</em>.
+These directive properties must be declared as <strong>inputs</strong> or <strong>outputs</strong>.</p>
+
+<div class="alert alert-warning">
+  <p>Remember: All <strong>components</strong> are <strong>directives</strong>.</p>
+</div>
+
+<div class="l-sub-section">
+  <p>Note the important distinction between a data binding <strong>target</strong> and a data binding <strong>source</strong>.</p>
+
+  <p>The <em>target</em> of a binding is to the <em>left</em> of the <code class="language-plaintext highlighter-rouge">=</code>.
+  The <em>source</em> is on the <em>right</em> of the <code class="language-plaintext highlighter-rouge">=</code>.</p>
+
+  <p>The <em>target</em> of a binding is the property or event inside the binding punctuation: <code class="language-plaintext highlighter-rouge">[]</code>, <code class="language-plaintext highlighter-rouge">()</code> or <code class="language-plaintext highlighter-rouge">[()]</code>.
+  The <em>source</em> is either inside quotes (<code class="language-plaintext highlighter-rouge">" "</code>) or within an interpolation (<code class="language-plaintext highlighter-rouge">{{}}</code>).</p>
+
+  <p>Every member of a <strong>source</strong> directive is automatically available for binding.
+  You don’t have to do anything special to access a directive member in a template expression or statement.</p>
+
+  <p>You have <em>limited</em> access to members of a <strong>target</strong> directive.
+  You can only bind to properties that are explicitly identified as <em>inputs</em> and <em>outputs</em>.</p>
+</div>
+
+<p>In the following snippet, <code class="language-plaintext highlighter-rouge">iconUrl</code> and <code class="language-plaintext highlighter-rouge">onSave</code> are data-bound members of the <code class="language-plaintext highlighter-rouge">AppComponent</code>
+and are referenced within quoted syntax to the <em>right</em> of the equals (<code class="language-plaintext highlighter-rouge">=</code>).</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (io-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;img [src]="iconUrl"/&gt;
+  &lt;button (click)="onSave()"&gt;Save&lt;/button&gt;
+</code></pre></div></div>
+
+<p>They are <em>neither inputs nor outputs</em> of the component. They are <strong>sources</strong> for their bindings.
+The targets are the native <code class="language-plaintext highlighter-rouge">&lt;img&gt;</code> and <code class="language-plaintext highlighter-rouge">&lt;button&gt;</code> elements.</p>
+
+<p>Now look at a another snippet in which the <code class="language-plaintext highlighter-rouge">HeroComponent</code>
+is the <strong>target</strong> of a binding on the <em>left</em> of the equals (<code class="language-plaintext highlighter-rouge">=</code>).</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (io-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;my-hero [hero]="currentHero" (deleteRequest)="deleteHero($event)"&gt;
+  &lt;/my-hero&gt;
+</code></pre></div></div>
+
+<p>Both <code class="language-plaintext highlighter-rouge">HeroComponent.hero</code> and <code class="language-plaintext highlighter-rouge">HeroComponent.deleteRequest</code> are on the <strong>left side</strong> of binding declarations.
+<code class="language-plaintext highlighter-rouge">HeroComponent.hero</code> is inside brackets; it is the target of a property binding.
+<code class="language-plaintext highlighter-rouge">HeroComponent.deleteRequest</code> is inside parentheses; it is the target of an event binding.</p>
+
+<h3 id="declaring-input-and-output-properties">
+<a class="anchor" href="#declaring-input-and-output-properties" aria-hidden="true"><span class="octicon octicon-link"></span></a>Declaring input and output properties</h3>
+
+<p>Target properties must be explicitly marked as inputs or outputs.</p>
+
+<p>In the <code class="language-plaintext highlighter-rouge">HeroComponent</code>, such properties are marked as input or output properties using annotations.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_component.dart (input-output-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
+  Hero hero;
+  final _deleteRequest = StreamController&lt;Hero&gt;();
+  @Output()
+  Stream&lt;Hero&gt; get deleteRequest =&gt; _deleteRequest.stream;
+</code></pre></div></div>
+
+<h3 id="input-or-output">
+<a class="anchor" href="#input-or-output" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input or output?</h3>
+
+<p><em>Input</em> properties usually receive data values.
+<em>Output</em> properties expose event producers, such as
+<a href="https://api.dart.dev/stable/dart-async/Stream-class.html">Stream</a> objects.</p>
+
+<p>The terms <em>input</em> and <em>output</em> reflect the perspective of the target directive.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/template-syntax/input-output-74af04195a3e1f3aa0001026d5877d7f1706bcef727aa1604edc35ba3e19a0c6.png" alt="Inputs and outputs"></p>
+
+<p><code class="language-plaintext highlighter-rouge">HeroComponent.hero</code> is an <strong>input</strong> property from the perspective of <code class="language-plaintext highlighter-rouge">HeroComponent</code>
+because data flows <em>into</em> that property from a template binding expression.</p>
+
+<p><code class="language-plaintext highlighter-rouge">HeroComponent.deleteRequest</code> is an <strong>output</strong> property from the perspective of <code class="language-plaintext highlighter-rouge">HeroComponent</code>
+because events stream <em>out</em> of that property and toward the handler in a template binding statement.</p>
+
+<h3 id="aliasing-io">
+<a class="anchor" href="#aliasing-io" aria-hidden="true"><span class="octicon octicon-link"></span></a>Aliasing input/output properties</h3>
+
+<p>Sometimes the public name of an input/output property should be different from the internal name.</p>
+
+<p>This is frequently the case with <a href="attribute-directives">attribute directives</a>.
+Directive consumers expect to bind to the name of the directive.
+For example, when you apply a directive with a <code class="language-plaintext highlighter-rouge">myClick</code> selector to a <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> tag,
+you expect to bind to an event property that is also called <code class="language-plaintext highlighter-rouge">myClick</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (myClick)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div (myClick)="clickMessage=$event" clickable&gt;click with myClick&lt;/div&gt;
+</code></pre></div></div>
+
+<p>However, the directive name is often a poor choice for the name of a property within the directive class.
+The directive name rarely describes what the property does.
+The <code class="language-plaintext highlighter-rouge">myClick</code> directive name is not a good name for a property that emits click messages.</p>
+
+<p>Fortunately, you can create a public name for the property that meets conventional expectations,
+while using a different name internally.
+In the example immediately above, the code binds <em>through the</em> <code class="language-plaintext highlighter-rouge">myClick</code> <em>alias</em> to
+the directive’s own <code class="language-plaintext highlighter-rouge">clicks</code> property.</p>
+
+<p>To specify the alias for the property name, pass the alias into the input/output decorator like this:</p>
+
+<p>&lt;?code-excerpt “lib/src/click_directive.dart (output-myClick)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  final _onClick = StreamController&lt;String&gt;();
+  // @Output(alias) propertyName = ...
+  @Output('myClick')
+  Stream&lt;String&gt; get clicks =&gt; _onClick.stream;
+</code></pre></div></div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<div id="expression-operators"></div>
+<h2 id="template-expression-operators">
+<a class="anchor" href="#template-expression-operators" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template expression operators</h2>
+
+<p>The template expression language employs a subset of Dart syntax supplemented with a few special operators
+for specific scenarios. The next sections cover two of these operators: <em>pipe</em> and <em>safe navigation operator</em>.</p>
+
+<div id="pipe"></div>
+<h3 id="the-pipe-operator---">
+<a class="anchor" href="#the-pipe-operator---" aria-hidden="true"><span class="octicon octicon-link"></span></a>The pipe operator ( <span class="syntax">|</span> )</h3>
+
+<p>The result of an expression might require some transformation before it’s ready to use in a binding.
+For example, you might display a number as a currency, force text to uppercase, or filter a list and sort it.</p>
+
+<p>Angular <a href="pipes">pipes</a> are a good choice for small transformations such as these.
+Pipes are simple functions that accept an input value and return a transformed value.
+They’re easy to apply within template expressions, using the <strong>pipe operator (<code class="language-plaintext highlighter-rouge">|</code>)</strong>:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (pipes-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div&gt;Title through uppercase pipe: {{title | uppercase}}&lt;/div&gt;
+</code></pre></div></div>
+
+<p>The pipe operator passes the result of an expression on the left to a pipe function on the right.</p>
+
+<p>You can chain expressions through multiple pipes:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (pipes-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- Pipe chaining: convert title to uppercase, then to lowercase --&gt;
+  &lt;div&gt;
+    Title through a pipe chain:
+    {{title | uppercase | lowercase}}
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p>You can also <a href="pipes#parameterizing-a-pipe">apply parameters</a> to a pipe:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (pipes-3)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- pipe with configuration argument =&gt; "February 25, 1970" --&gt;
+  &lt;div&gt;Birthdate: {{currentHero?.birthdate | date:'longDate'}}&lt;/div&gt;
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">json</code> pipe can be helpful for debugging bindings:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (pipes-json)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div&gt;{{currentHero | json}}&lt;/div&gt;
+</code></pre></div></div>
+
+<p>The generated output looks something like this:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w"> </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hercules"</span><span class="p">,</span><span class="w"> </span><span class="nl">"emotion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"happy"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"birthdate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1970-02-25T08:00:00.000Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://www.imdb.com/title/tt0065832/"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"rate"</span><span class="p">:</span><span class="w"> </span><span class="mi">325</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<div id="safe-navigation-operator"></div>
+<h3 id="the-safe-navigation-operator----and-null-property-paths">
+<a class="anchor" href="#the-safe-navigation-operator----and-null-property-paths" aria-hidden="true"><span class="octicon octicon-link"></span></a>The safe navigation operator ( <span class="syntax">?.</span> ) and null property paths</h3>
+
+<p>The Angular <strong>safe navigation operator (<code class="language-plaintext highlighter-rouge">?.</code>)</strong>, like the Dart <a href="https://dart.dev/guides/language/language-tour#other-operators">conditional member
+access</a>
+operator, is a fluent and convenient way to
+guard against null values in property paths.
+Here it is, protecting against a view render failure if the <code class="language-plaintext highlighter-rouge">currentHero</code> is null.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (safe-2)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  The current hero's name is {{currentHero?.name}}
+</code></pre></div></div>
+
+<p>What happens when the following data bound <code class="language-plaintext highlighter-rouge">title</code> property is null?</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (safe-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  The title is {{title}}
+</code></pre></div></div>
+
+<p>The view still renders but the displayed value is blank; you see only “The title is” with nothing after it.
+That is reasonable behavior. At least the app doesn’t crash.</p>
+
+<p>Suppose the template expression involves a property path, as in this next example
+that displays the <code class="language-plaintext highlighter-rouge">name</code> of a null hero.</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The null hero's name is {{nullHero.name}}
+</code></pre></div></div>
+
+<p>Dart throws an exception, and so does Angular:</p>
+
+<pre><code class="language-nocode">EXCEPTION: The null object does not have a getter 'name'.
+</code></pre>
+
+<p>Worse, the <em>entire view disappears</em>.</p>
+
+<p>This would be reasonable behavior if the <code class="language-plaintext highlighter-rouge">hero</code> property could never be null.
+If it must never be null and yet it is null,
+that’s a programming error that should be caught and fixed.
+Throwing an exception is the right thing to do.</p>
+
+<p>On the other hand, null values in the property path might be OK from time to time,
+especially when the data are null now and will arrive eventually.</p>
+
+<p>While waiting for data, the view should render without complaint, and
+the null property path should display as blank just as the <code class="language-plaintext highlighter-rouge">title</code> property does.</p>
+
+<p>Unfortunately, the app crashes when the <code class="language-plaintext highlighter-rouge">currentHero</code> is null.</p>
+
+<p>You could code around that problem with <a href="#ngIf">*ngIf</a>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (safe-4)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!--No hero, div not displayed, no error --&gt;
+  &lt;div *ngIf="nullHero != null"&gt;The null hero's name is {{nullHero.name}}&lt;/div&gt;
+</code></pre></div></div>
+
+<p>These approaches have merit but can be cumbersome, especially if the property path is long.
+Imagine guarding against a null somewhere in a long property path such as <code class="language-plaintext highlighter-rouge">a.b.c.d</code>.</p>
+
+<p>The Angular safe navigation operator (<code class="language-plaintext highlighter-rouge">?.</code>) is a more fluent and convenient way to guard against nulls in property paths.
+The expression bails out when it hits the first null value.
+The display is blank, but the app keeps rolling without errors.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (safe-6)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;!-- No hero, no problem! --&gt;
+  The null hero's name is {{nullHero?.name}}
+</code></pre></div></div>
+
+<p>It works perfectly with long property paths such as <code class="language-plaintext highlighter-rouge">a?.b?.c?.d</code>.</p>
+
+<p><a href="#page-content">back to top</a></p>
+<div class="l-hr"></div>
+
+<h2 id="summary">
+<a class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+
+<p>You’ve completed this survey of template syntax.
+Now it’s time to put that knowledge to work on your own components and directives.</p>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/dependency-injection">Dependency Injection</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/attribute-directives">Attribute Directives</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

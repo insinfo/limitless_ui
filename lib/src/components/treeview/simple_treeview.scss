@@ -22,3 +22,21 @@
 .fancytree-loading > .fancytree-expander:after {
   content: "\ed16" !important;
 }
+
+.li-treeview__title-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.li-treeview__title-icon {
+  color: inherit;
+}
+
+.li-treeview__node--disabled {
+  opacity: 0.58;
+}
+
+.li-treeview__title--disabled {
+  cursor: not-allowed;
+}

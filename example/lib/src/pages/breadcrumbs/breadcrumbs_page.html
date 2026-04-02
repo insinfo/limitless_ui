@@ -1,12 +1,12 @@
 <div class="page-header page-header-light shadow-sm rounded-0 border">
   <div class="page-header-content d-lg-flex">
     <div class="d-flex">
-      <h4 class="page-title mb-0">Navigation <span class="fw-normal">Breadcrumbs</span></h4>
+      <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
     </div>
   </div>
   <div class="page-header-content d-lg-flex border-top">
     <div class="breadcrumb py-2">
-      <span class="breadcrumb-item active">Layouts, divisores, ações laterais e superfícies no estilo Limitless</span>
+      <span class="breadcrumb-item active">{{ breadcrumb }}</span>
     </div>
   </div>
 </div>
@@ -14,31 +14,29 @@
 <div class="content">
   <div class="card">
     <li-tabsx type="tabs">
-      <li-tabx header="Visão geral" [active]="true">
+      <li-tabx [header]="t.common.tabOverview" [active]="true">
         <div class="card-body">
           <p class="text-muted mb-4">
-            <code>li-breadcrumb</code> agora cobre mais cenários de cabeçalho e linha de ações, com exemplos próximos
-            dos layouts mostrados no Limitless.
+            {{ isPt ? 'li-breadcrumb agora cobre mais cenários de cabeçalho e linha de ações, com exemplos próximos dos layouts mostrados no Limitless.' : 'li-breadcrumb now covers more header and action-row scenarios, with examples close to the layouts shown in Limitless.' }}
           </p>
 
           <div class="mb-3">
-            <h6 class="mb-0">Breadcrumb location</h6>
-            <span class="text-muted d-block">Variações de posição no topo, rodapé do header e como componente
-              isolado.</span>
+            <h6 class="mb-0">{{ isPt ? 'Posicionamento do breadcrumb' : 'Breadcrumb location' }}</h6>
+            <span class="text-muted d-block">{{ isPt ? 'Variações de posição no topo, rodapé do header e como componente isolado.' : 'Position variations at the top, in the header footer, and as a standalone component.' }}</span>
           </div>
 
           <div class="card mb-3">
             <div class="page-header page-header-content d-lg-flex">
               <div class="page-title">
-                <h5 class="mb-0">Header <span class="fw-normal">Breadcrumb</span></h5>
-                <div class="text-muted">Breadcrumb dentro do bloco de título.</div>
+                <h5 class="mb-0">{{ isPt ? 'Header' : 'Header' }} <span class="fw-normal">{{ breadcrumbsLabel }}</span></h5>
+                <div class="text-muted">{{ isPt ? 'Breadcrumb dentro do bloco de título.' : 'Breadcrumb inside the title block.' }}</div>
               </div>
 
               <div class="mb-3 my-lg-auto ms-lg-auto">
                 <li-breadcrumb>
-                  <a liBreadcrumbItem href="#home">Home</a>
-                  <a liBreadcrumbItem href="#components">Components</a>
-                  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                  <a liBreadcrumbItem href="#home">{{ homeLabel }}</a>
+                  <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                  <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
                 </li-breadcrumb>
               </div>
             </div>
@@ -48,18 +46,18 @@
             <div class="page-header">
               <div class="page-header-content border-bottom">
                 <li-breadcrumb breadcrumbClass="py-2">
-                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                  <a liBreadcrumbItem href="#components">Components</a>
-                  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                  <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                  <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
 
                   <div liBreadcrumbEnd class="breadcrumb-demo-actions">
                     <a href="#support" class="d-flex align-items-center text-body py-2">
                       <i class="ph-lifebuoy me-2"></i>
-                      Support
+                      {{ supportLabel }}
                     </a>
                     <button type="button" class="btn btn-sm btn-light">
                       <i class="ph-gear me-2"></i>
-                      Settings
+                      {{ settingsLabel }}
                     </button>
                   </div>
                 </li-breadcrumb>
@@ -67,8 +65,8 @@
 
               <div class="page-header-content d-lg-flex flex-lg-wrap">
                 <div class="page-title">
-                  <h5 class="mb-0">Breadcrumb <span class="fw-normal">Top Full Width</span></h5>
-                  <div class="text-muted">Posicionado antes do conteúdo principal do cabeçalho.</div>
+                  <h5 class="mb-0">{{ breadcrumbsLabel }} <span class="fw-normal">{{ isPt ? 'Topo em largura total' : 'Top Full Width' }}</span></h5>
+                  <div class="text-muted">{{ isPt ? 'Posicionado antes do conteúdo principal do cabeçalho.' : 'Positioned before the main header content.' }}</div>
                 </div>
               </div>
             </div>
@@ -78,14 +76,14 @@
             <div class="page-header page-header-content d-lg-flex flex-lg-wrap">
               <div class="pt-3">
                 <li-breadcrumb>
-                  <a liBreadcrumbItem href="#home">Home</a>
-                  <a liBreadcrumbItem href="#components">Components</a>
-                  <span liBreadcrumbItem [active]="true">Breadcrumb</span>
+                  <a liBreadcrumbItem href="#home">{{ homeLabel }}</a>
+                  <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                  <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
                 </li-breadcrumb>
 
                 <div class="page-title mt-2">
-                  <h5 class="mb-0">Breadcrumb <span class="fw-normal">Top Transparent</span></h5>
-                  <div class="text-muted">Sem borda extra nem superfície destacada.</div>
+                  <h5 class="mb-0">{{ breadcrumbsLabel }} <span class="fw-normal">{{ isPt ? 'Topo transparente' : 'Top Transparent' }}</span></h5>
+                  <div class="text-muted">{{ isPt ? 'Sem borda extra nem superfície destacada.' : 'Without extra border or highlighted surface.' }}</div>
                 </div>
               </div>
             </div>
@@ -95,25 +93,25 @@
             <div class="page-header">
               <div class="page-header-content d-lg-flex flex-lg-wrap">
                 <div class="page-title">
-                  <h5 class="mb-0">Breadcrumb <span class="fw-normal">Bottom Full Width</span></h5>
-                  <div class="text-muted">Posição inferior padrão com ações no lado direito.</div>
+                  <h5 class="mb-0">{{ breadcrumbsLabel }} <span class="fw-normal">{{ isPt ? 'Base em largura total' : 'Bottom Full Width' }}</span></h5>
+                  <div class="text-muted">{{ isPt ? 'Posição inferior padrão com ações no lado direito.' : 'Default bottom position with actions on the right side.' }}</div>
                 </div>
               </div>
 
               <div class="page-header-content border-top">
                 <li-breadcrumb breadcrumbClass="py-2">
-                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                  <a liBreadcrumbItem href="#components">Components</a>
-                  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                  <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                  <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
 
                   <div liBreadcrumbEnd class="breadcrumb-demo-actions">
                     <a href="#support" class="d-flex align-items-center text-body py-2">
                       <i class="ph-lifebuoy me-2"></i>
-                      Support
+                      {{ supportLabel }}
                     </a>
                     <button type="button" class="btn btn-sm btn-light">
                       <i class="ph-gear me-2"></i>
-                      Settings
+                      {{ settingsLabel }}
                     </button>
                   </div>
                 </li-breadcrumb>
@@ -124,24 +122,24 @@
           <div class="card mb-4">
             <div class="page-header page-header-content pb-3">
               <div class="page-title">
-                <h5 class="mb-0">Breadcrumb <span class="fw-normal">Bottom Component</span></h5>
-                <div class="text-muted">Usando o breadcrumb como barra independente no rodapé do header.</div>
+                <h5 class="mb-0">{{ breadcrumbsLabel }} <span class="fw-normal">{{ isPt ? 'Componente inferior' : 'Bottom Component' }}</span></h5>
+                <div class="text-muted">{{ isPt ? 'Usando o breadcrumb como barra independente no rodapé do header.' : 'Using the breadcrumb as an independent bar in the header footer.' }}</div>
               </div>
 
               <div class="card flex-lg-row flex-lg-wrap px-3 mt-3 mb-0">
                 <li-breadcrumb breadcrumbClass="py-2">
-                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                  <a liBreadcrumbItem href="#components">Components</a>
-                  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                  <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                  <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                  <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
 
                   <div liBreadcrumbEnd class="breadcrumb-demo-actions">
                     <a href="#support" class="d-flex align-items-center text-body py-2">
                       <i class="ph-lifebuoy me-2"></i>
-                      Support
+                      {{ supportLabel }}
                     </a>
                     <button type="button" class="btn btn-sm btn-light">
                       <i class="ph-gear me-2"></i>
-                      Settings
+                      {{ settingsLabel }}
                     </button>
                   </div>
                 </li-breadcrumb>
@@ -150,8 +148,8 @@
           </div>
 
           <div class="mb-3">
-            <h6 class="mb-0">Page title breadcrumb</h6>
-            <span class="text-muted d-block">Exemplos condensados acima e abaixo do título.</span>
+            <h6 class="mb-0">{{ isPt ? 'Breadcrumb no título' : 'Page title breadcrumb' }}</h6>
+            <span class="text-muted d-block">{{ isPt ? 'Exemplos condensados acima e abaixo do título.' : 'Condensed examples above and below the title.' }}</span>
           </div>
 
           <div class="row g-3 mb-4">
@@ -160,12 +158,12 @@
                 <div class="page-header page-header-content">
                   <div class="page-title">
                     <li-breadcrumb breadcrumbClass="mb-1">
-                      <a liBreadcrumbItem href="#home">Home</a>
-                      <a liBreadcrumbItem href="#components">Components</a>
-                      <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                      <a liBreadcrumbItem href="#home">{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
                     </li-breadcrumb>
 
-                    <h5 class="mb-0">Breadcrumb <span class="fw-normal">Top Condensed</span></h5>
+                    <h5 class="mb-0">{{ breadcrumbsLabel }} <span class="fw-normal">{{ isPt ? 'Topo condensado' : 'Top Condensed' }}</span></h5>
                   </div>
                 </div>
               </div>
@@ -178,12 +176,12 @@
                     <i class="ph-arrow-circle-left align-self-end lh-lg me-2"></i>
                     <div>
                       <li-breadcrumb breadcrumbClass="mb-1">
-                        <a liBreadcrumbItem href="#home">Home</a>
-                        <a liBreadcrumbItem href="#components">Components</a>
-                        <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                        <a liBreadcrumbItem href="#home">{{ homeLabel }}</a>
+                        <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                        <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
                       </li-breadcrumb>
 
-                      <h5 class="mb-0">Breadcrumb <span class="fw-normal">Top Condensed Spaced</span></h5>
+                      <h5 class="mb-0">{{ breadcrumbsLabel }} <span class="fw-normal">{{ isPt ? 'Topo condensado com espaço' : 'Top Condensed Spaced' }}</span></h5>
                     </div>
                   </div>
                 </div>
@@ -194,12 +192,12 @@
               <div class="card">
                 <div class="page-header page-header-content">
                   <div class="page-title">
-                    <h5 class="mb-0">Breadcrumb <span class="fw-normal">Bottom Condensed</span></h5>
+                    <h5 class="mb-0">{{ breadcrumbsLabel }} <span class="fw-normal">{{ isPt ? 'Base condensada' : 'Bottom Condensed' }}</span></h5>
 
                     <li-breadcrumb breadcrumbClass="mt-1">
-                      <a liBreadcrumbItem href="#home">Home</a>
-                      <a liBreadcrumbItem href="#components">Components</a>
-                      <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                      <a liBreadcrumbItem href="#home">{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -212,12 +210,12 @@
                   <div class="page-title d-flex">
                     <i class="ph-arrow-circle-left lh-lg me-2"></i>
                     <div>
-                      <h5 class="mb-0">Breadcrumb <span class="fw-normal">Bottom Condensed Spaced</span></h5>
+                      <h5 class="mb-0">{{ breadcrumbsLabel }} <span class="fw-normal">{{ isPt ? 'Base condensada com espaço' : 'Bottom Condensed Spaced' }}</span></h5>
 
                       <li-breadcrumb breadcrumbClass="mt-1">
-                        <a liBreadcrumbItem href="#home">Home</a>
-                        <a liBreadcrumbItem href="#components">Components</a>
-                        <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+                        <a liBreadcrumbItem href="#home">{{ homeLabel }}</a>
+                        <a liBreadcrumbItem href="#components">{{ componentsLabel }}</a>
+                        <span liBreadcrumbItem [active]="true">{{ breadcrumbsLabel }}</span>
                       </li-breadcrumb>
                     </div>
                   </div>
@@ -227,8 +225,8 @@
           </div>
 
           <div class="mb-3">
-            <h6 class="mb-0">Breadcrumb options</h6>
-            <span class="text-muted d-block">Divisores, helper text, ícones e ações laterais.</span>
+            <h6 class="mb-0">{{ isPt ? 'Opções de breadcrumb' : 'Breadcrumb options' }}</h6>
+            <span class="text-muted d-block">{{ isPt ? 'Divisores, helper text, ícones e ações laterais.' : 'Dividers, helper text, icons, and side actions.' }}</span>
           </div>
 
           <div class="row g-3">
@@ -237,16 +235,16 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Default breadcrumb</h5>
-                      <div class="text-muted">Estilo base.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Breadcrumb padrão' : 'Default breadcrumb' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Estilo base.' : 'Base style.' }}</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
                     <li-breadcrumb breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home">Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#home">{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -256,16 +254,16 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Helper text</h5>
-                      <div class="text-muted">Texto auxiliar antes da trilha.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Texto auxiliar' : 'Helper text' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Texto auxiliar antes da trilha.' : 'Helper text before the trail.' }}</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
-                    <li-breadcrumb helperText="You are here:" breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home">Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                    <li-breadcrumb [helperText]="isPt ? 'Você está aqui:' : 'You are here:'" breadcrumbClass="py-2">
+                      <a liBreadcrumbItem href="#home">{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -275,16 +273,16 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Icons only</h5>
-                      <div class="text-muted">Primeiro nível em forma de ícone.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Só ícones' : 'Icons only' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Primeiro nível em forma de ícone.' : 'First level displayed as an icon.' }}</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
                     <li-breadcrumb breadcrumbClass="py-2">
                       <a liBreadcrumbItem href="#home"><i class="ph-house"></i></a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -294,16 +292,16 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Icons with labels</h5>
-                      <div class="text-muted">Ícones aplicados em toda a trilha.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Ícones com rótulos' : 'Icons with labels' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Ícones aplicados em toda a trilha.' : 'Icons applied across the entire trail.' }}</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
                     <li-breadcrumb breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current"><i class="ph-folders me-2"></i>Current</a>
-                      <span liBreadcrumbItem [active]="true"><i class="ph-file me-2"></i>Location</span>
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current"><i class="ph-folders me-2"></i>{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true"><i class="ph-file me-2"></i>{{ locationLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -315,16 +313,16 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Dash divider</h5>
-                      <div class="text-muted">Usando <code>divider="dash"</code>.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Divisor dash' : 'Dash divider' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Usando divider="dash".' : 'Using divider="dash".' }}</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
                     <li-breadcrumb divider="dash" breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -334,16 +332,16 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Arrows divider</h5>
-                      <div class="text-muted">Usando <code>divider="arrows"</code>.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Divisor arrows' : 'Arrows divider' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Usando' : 'Using' }} <code>divider="arrows"</code>.</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
                     <li-breadcrumb divider="arrows" breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -353,16 +351,16 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Caret divider</h5>
-                      <div class="text-muted">Usando <code>divider="caret"</code>.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Divisor caret' : 'Caret divider' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Usando' : 'Using' }} <code>divider="caret"</code>.</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
                     <li-breadcrumb divider="caret" breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -372,16 +370,16 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Arrow divider</h5>
-                      <div class="text-muted">Usando <code>divider="arrow"</code>.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Divisor arrow' : 'Arrow divider' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Usando' : 'Using' }} <code>divider="arrow"</code>.</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
                     <li-breadcrumb divider="arrow" breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
                     </li-breadcrumb>
                   </div>
                 </div>
@@ -391,20 +389,20 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Buttons and badge</h5>
-                      <div class="text-muted">Ações extras na mesma linha do breadcrumb.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Botões e badge' : 'Buttons and badge' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Ações extras na mesma linha do breadcrumb.' : 'Extra actions on the same breadcrumb row.' }}</div>
                     </div>
                   </div>
 
                   <div class="page-header-content border-top">
                     <li-breadcrumb breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
 
                       <div liBreadcrumbEnd class="breadcrumb-demo-actions">
                         <a href="#button" class="d-flex align-items-center text-body py-2">
-                          <span class="flex-1">Button with badge</span>
+                          <span class="flex-1">{{ isPt ? 'Botão com badge' : 'Button with badge' }}</span>
                           <span class="badge bg-primary rounded-pill ms-2">6</span>
                         </a>
                       </div>
@@ -416,8 +414,8 @@
           </div>
 
           <div class="mb-3 mt-4">
-            <h6 class="mb-0">Breadcrumb colors</h6>
-            <span class="text-muted d-block">Superfícies claras e sólidas, como no kit original.</span>
+            <h6 class="mb-0">{{ isPt ? 'Cores do breadcrumb' : 'Breadcrumb colors' }}</h6>
+            <span class="text-muted d-block">{{ isPt ? 'Superfícies claras e sólidas, como no kit original.' : 'Light and solid surfaces, like the original kit.' }}</span>
           </div>
 
           <div class="row g-3">
@@ -426,20 +424,20 @@
                 <div class="page-header">
                   <div class="page-header-content bg-secondary bg-opacity-10 rounded-top border-bottom">
                     <li-breadcrumb breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
 
                       <div liBreadcrumbEnd class="breadcrumb-demo-actions">
-                        <button type="button" class="btn btn-sm btn-light">Menu</button>
+                        <button type="button" class="btn btn-sm btn-light">{{ menuLabel }}</button>
                       </div>
                     </li-breadcrumb>
                   </div>
 
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Top light</h5>
-                      <div class="text-muted">Breadcrumb sobre fundo claro.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Topo claro' : 'Top light' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Breadcrumb sobre fundo claro.' : 'Breadcrumb over a light background.' }}</div>
                     </div>
                   </div>
                 </div>
@@ -449,20 +447,20 @@
                 <div class="page-header">
                   <div class="page-header-content bg-secondary rounded-top">
                     <li-breadcrumb breadcrumbClass="py-2 text-white">
-                      <a liBreadcrumbItem href="#home" class="text-white"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current" class="text-white">Current</a>
-                      <span liBreadcrumbItem [active]="true" class="text-white opacity-75">Location</span>
+                      <a liBreadcrumbItem href="#home" class="text-white"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current" class="text-white">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true" class="text-white opacity-75">{{ locationLabel }}</span>
 
                       <div liBreadcrumbEnd class="breadcrumb-demo-actions">
-                        <button type="button" class="btn btn-sm btn-outline-light">Menu</button>
+                        <button type="button" class="btn btn-sm btn-outline-light">{{ menuLabel }}</button>
                       </div>
                     </li-breadcrumb>
                   </div>
 
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Top solid</h5>
-                      <div class="text-muted">Breadcrumb sobre fundo sólido.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Topo sólido' : 'Top solid' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Breadcrumb sobre fundo sólido.' : 'Breadcrumb over a solid background.' }}</div>
                     </div>
                   </div>
                 </div>
@@ -474,19 +472,19 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Bottom light</h5>
-                      <div class="text-muted">Versão inferior com fundo claro.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Base clara' : 'Bottom light' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Versão inferior com fundo claro.' : 'Bottom version with a light background.' }}</div>
                     </div>
                   </div>
 
                   <div class="page-header-content bg-secondary bg-opacity-10 rounded-bottom border-top">
                     <li-breadcrumb breadcrumbClass="py-2">
-                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current">Current</a>
-                      <span liBreadcrumbItem [active]="true">Location</span>
+                      <a liBreadcrumbItem href="#home"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true">{{ locationLabel }}</span>
 
                       <div liBreadcrumbEnd class="breadcrumb-demo-actions">
-                        <button type="button" class="btn btn-sm btn-light">Menu</button>
+                        <button type="button" class="btn btn-sm btn-light">{{ menuLabel }}</button>
                       </div>
                     </li-breadcrumb>
                   </div>
@@ -497,19 +495,19 @@
                 <div class="page-header">
                   <div class="page-header-content">
                     <div class="page-title">
-                      <h5 class="mb-0">Bottom solid</h5>
-                      <div class="text-muted">Versão inferior com fundo sólido.</div>
+                      <h5 class="mb-0">{{ isPt ? 'Base sólida' : 'Bottom solid' }}</h5>
+                      <div class="text-muted">{{ isPt ? 'Versão inferior com fundo sólido.' : 'Bottom version with a solid background.' }}</div>
                     </div>
                   </div>
 
                   <div class="page-header-content bg-secondary rounded-bottom">
                     <li-breadcrumb breadcrumbClass="py-2 text-white">
-                      <a liBreadcrumbItem href="#home" class="text-white"><i class="ph-house me-2"></i>Home</a>
-                      <a liBreadcrumbItem href="#current" class="text-white">Current</a>
-                      <span liBreadcrumbItem [active]="true" class="text-white opacity-75">Location</span>
+                      <a liBreadcrumbItem href="#home" class="text-white"><i class="ph-house me-2"></i>{{ homeLabel }}</a>
+                      <a liBreadcrumbItem href="#current" class="text-white">{{ currentLabel }}</a>
+                      <span liBreadcrumbItem [active]="true" class="text-white opacity-75">{{ locationLabel }}</span>
 
                       <div liBreadcrumbEnd class="breadcrumb-demo-actions">
-                        <button type="button" class="btn btn-sm btn-outline-light">Menu</button>
+                        <button type="button" class="btn btn-sm btn-outline-light">{{ menuLabel }}</button>
                       </div>
                     </li-breadcrumb>
                   </div>
@@ -520,7 +518,7 @@
         </div>
       </li-tabx>
 
-      <li-tabx header="API">
+      <li-tabx [header]="t.common.tabApi">
         <div class="card-body">
           <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-breadcrumb divider="dash" helperText="You are here:"&gt;
   &lt;a liBreadcrumbItem href="#home"&gt;Home&lt;/a&gt;

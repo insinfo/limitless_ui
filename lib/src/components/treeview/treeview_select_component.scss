@@ -168,6 +168,17 @@
     text-overflow: ellipsis;
 }
 
+.treeview-dropdown-select__label-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.treeview-dropdown-select__node-icon {
+    color: inherit;
+}
+
 .treeview-dropdown-select__label:hover,
 .treeview-dropdown-select__expander:hover,
 .treeview-dropdown-select__checkbox:hover,

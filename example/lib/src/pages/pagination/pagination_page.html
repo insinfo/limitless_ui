@@ -1,12 +1,12 @@
 <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
         <div class="d-flex">
-            <h4 class="page-title mb-0">Navigation <span class="fw-normal">Pagination</span></h4>
+            <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
         </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
         <div class="breadcrumb py-2">
-            <span class="breadcrumb-item active">Paginação para listas, grids e rodapés de datatable</span>
+            <span class="breadcrumb-item active">{{ breadcrumb }}</span>
         </div>
     </div>
 </div>
@@ -14,55 +14,50 @@
 <div class="content">
     <div class="card">
         <li-tabsx type="tabs">
-            <li-tabx header="Visão geral" [active]="true">
+            <li-tabx [header]="t.common.tabOverview" [active]="true">
                 <div class="card-body">
                     <p class="text-muted mb-4">
-                        <code>li-pagination</code> cobre layouts inspirados no Limitless, templates customizados e a
-                        nova variação <code>appearance="datatable"</code> usada no rodapé do
-                        <code>li-datatable</code>.
+                        {{ isPt ? 'li-pagination cobre layouts inspirados no Limitless, templates customizados e a nova variação appearance="datatable" usada no rodapé do li-datatable.' : 'li-pagination covers Limitless-inspired layouts, custom templates, and the new appearance="datatable" variation used in the li-datatable footer.' }}
                     </p>
 
                     <div class="mb-3">
-                        <h6 class="mb-0">Pagination layouts</h6>
-                        <span class="text-muted d-block">Versões bordered, flat, spaced e arredondadas.</span>
+                        <h6 class="mb-0">{{ isPt ? 'Layouts de paginação' : 'Pagination layouts' }}</h6>
+                        <span class="text-muted d-block">{{ isPt ? 'Versões bordered, flat, spaced e arredondadas.' : 'Bordered, flat, spaced, and rounded variants.' }}</span>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Bordered pagination</h6>
-                                <p class="text-muted mb-3">Base para listagens tradicionais com números e links de
-                                    navegação.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Paginação com borda' : 'Bordered pagination' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Base para listagens tradicionais com números e links de navegação.' : 'Base variant for traditional listings with numbers and navigation links.' }}</p>
 
                                 <li-pagination [collectionSize]="96" [pageSize]="10" [page]="borderedPage"
                                     [maxSize]="5" [boundaryLinks]="true"
                                     (pageChange)="updatePage('bordered', $event)">
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Página atual: {{ borderedPage }} de 10</div>
+                                <div class="pagination-demo-meta mt-3">{{ isPt ? 'Página atual' : 'Current page' }}: {{ borderedPage }} {{ isPt ? 'de' : 'of' }} 10</div>
                             </div>
                         </div>
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Flat rounded</h6>
-                                <p class="text-muted mb-3">Versão mais limpa, com bordas suaves e foco visual no item
-                                    ativo.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Flat arredondado' : 'Flat rounded' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Versão mais limpa, com bordas suaves e foco visual no item ativo.' : 'Cleaner version with soft borders and visual emphasis on the active item.' }}</p>
 
                                 <li-pagination [collectionSize]="120" [pageSize]="10" [page]="flatPage" [maxSize]="5"
                                     [rotate]="true" variant="flat" linkClass="rounded-pill"
                                     (pageChange)="updatePage('flat', $event)">
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Janela ativa: {{ flatPage }}</div>
+                                <div class="pagination-demo-meta mt-3">{{ isPt ? 'Janela ativa' : 'Active window' }}: {{ flatPage }}</div>
                             </div>
                         </div>
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Spaced compact</h6>
-                                <p class="text-muted mb-3">Boa para cards, grids e áreas densas com menos espaço
-                                    horizontal.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Spaced compacto' : 'Spaced compact' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Boa para cards, grids e áreas densas com menos espaço horizontal.' : 'Good for cards, grids, and dense areas with less horizontal space.' }}</p>
 
                                 <div class="pagination-demo-scroll">
                                     <li-pagination [collectionSize]="180" [pageSize]="10" [page]="spacedPage"
@@ -71,7 +66,7 @@
                                     </li-pagination>
                                 </div>
 
-                                <div class="pagination-demo-meta mt-3">Página atual: {{ spacedPage }}</div>
+                                <div class="pagination-demo-meta mt-3">{{ isPt ? 'Página atual' : 'Current page' }}: {{ spacedPage }}</div>
                             </div>
                         </div>
                     </div>
@@ -79,9 +74,8 @@
                     <div class="row g-3 mt-1">
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Rounded with icons</h6>
-                                <p class="text-muted mb-3">Templates substituem os controles padrão por ícones do
-                                    tema, mantendo o item ativo bem destacado.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Arredondada com ícones' : 'Rounded with icons' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Templates substituem os controles padrão por ícones do tema, mantendo o item ativo bem destacado.' : 'Templates replace the default controls with theme icons while keeping the active item emphasized.' }}</p>
 
                                 <li-pagination [collectionSize]="140" [pageSize]="10" [page]="roundedPage"
                                     [maxSize]="5" [boundaryLinks]="true" variant="flat" linkClass="rounded-pill"
@@ -100,21 +94,20 @@
                                     </template>
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Página atual: {{ roundedPage }}</div>
+                                <div class="pagination-demo-meta mt-3">{{ isPt ? 'Página atual' : 'Current page' }}: {{ roundedPage }}</div>
                             </div>
                         </div>
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Toolbar compact</h6>
-                                <p class="text-muted mb-3">Combina paginação minimalista com resumo de registros,
-                                    próximo ao layout do Limitless.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Toolbar compacta' : 'Toolbar compact' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Combina paginação minimalista com resumo de registros, próximo ao layout do Limitless.' : 'Combines minimal pagination with a records summary, close to the Limitless layout.' }}</p>
 
                                 <div class="pagination-demo-toolbar-inline">
                                     <span class="text-muted pagination-toolbar-spacer">
-                                        Mostrando {{ toolbarStart }} a {{ toolbarEnd }} de 120 itens
+                                        {{ isPt ? 'Mostrando' : 'Showing' }} {{ toolbarStart }} {{ isPt ? 'a' : 'to' }} {{ toolbarEnd }} {{ isPt ? 'de' : 'of' }} 120 {{ isPt ? 'itens' : 'items' }}
                                     </span>
-                                    <span class="text-muted">{{ toolbarPage }} de 12</span>
+                                    <span class="text-muted">{{ toolbarPage }} {{ isPt ? 'de' : 'of' }} 12</span>
 
                                     <li-pagination [collectionSize]="120" [pageSize]="10" [page]="toolbarPage"
                                         [maxSize]="1" variant="flat" linkClass="rounded-pill px-0"
@@ -133,76 +126,71 @@
 
                         <div class="col-xl-6">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Borderless pagination</h6>
-                                <p class="text-muted mb-3">Links sem borda deixam o componente mais leve em toolbars e
-                                    rodapés visuais.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Paginação sem borda' : 'Borderless pagination' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Links sem borda deixam o componente mais leve em toolbars e rodapés visuais.' : 'Borderless links make the component lighter in toolbars and visual footers.' }}</p>
 
                                 <li-pagination [collectionSize]="50" [pageSize]="10" [page]="borderlessPage"
                                     [maxSize]="5" linkClass="border-transparent mx-0 rounded-pill"
                                     (pageChange)="updatePage('borderless', $event)">
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Página atual: {{ borderlessPage }}</div>
+                                <div class="pagination-demo-meta mt-3">{{ isPt ? 'Página atual' : 'Current page' }}: {{ borderlessPage }}</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3 mt-4">
-                        <h6 class="mb-0">Pagination styles</h6>
-                        <span class="text-muted d-block">Pagers, dots e links com aparência próxima às demos do
-                            Limitless.</span>
+                        <h6 class="mb-0">{{ isPt ? 'Estilos de paginação' : 'Pagination styles' }}</h6>
+                        <span class="text-muted d-block">{{ isPt ? 'Pagers, dots e links com aparência próxima às demos do Limitless.' : 'Pagers, dots, and links with a look close to the Limitless demos.' }}</span>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Simple pager</h6>
-                                <p class="text-muted mb-3">Versão com apenas dois botões, útil para timelines, feeds
-                                    ou histórico paginado.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Pager simples' : 'Simple pager' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Versão com apenas dois botões, útil para timelines, feeds ou histórico paginado.' : 'Version with only two buttons, useful for timelines, feeds, or paged history.' }}</p>
 
                                 <li-pagination [collectionSize]="120" [pageSize]="10" [page]="simplePagerPage"
                                     [maxSize]="1" paginationClass="gap-2"
                                     (pageChange)="updatePage('simplePager', $event)">
                                     <template liPaginationPages></template>
                                     <template liPaginationPrevious>
-                                        <span aria-hidden="true">&larr;</span>&nbsp; Anterior
+                                        <span aria-hidden="true">&larr;</span>&nbsp; {{ simplePreviousLabel }}
                                     </template>
                                     <template liPaginationNext>
-                                        Próxima &nbsp;<span aria-hidden="true">&rarr;</span>
+                                        {{ simpleNextLabel }} &nbsp;<span aria-hidden="true">&rarr;</span>
                                     </template>
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Página atual: {{ simplePagerPage }}</div>
+                                <div class="pagination-demo-meta mt-3">{{ isPt ? 'Página atual' : 'Current page' }}: {{ simplePagerPage }}</div>
                             </div>
                         </div>
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Linked pager</h6>
-                                <p class="text-muted mb-3">Usa a variação <code>linked</code> para um pager leve com
-                                    hover mais explícito.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Pager encadeado' : 'Linked pager' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Usa a variação linked para um pager leve com hover mais explícito.' : 'Uses the linked variation for a lightweight pager with more explicit hover.' }}</p>
 
                                 <li-pagination [collectionSize]="120" [pageSize]="10" [page]="linkedPagerPage"
                                     [maxSize]="1" variant="linked" linkClass="rounded" paginationClass="gap-1"
                                     (pageChange)="updatePage('linkedPager', $event)">
                                     <template liPaginationPages></template>
                                     <template liPaginationPrevious>
-                                        <span aria-hidden="true">&larr;</span>&nbsp; Older
+                                        <span aria-hidden="true">&larr;</span>&nbsp; {{ linkedPreviousLabel }}
                                     </template>
                                     <template liPaginationNext>
-                                        Newer &nbsp;<span aria-hidden="true">&rarr;</span>
+                                        {{ linkedNextLabel }} &nbsp;<span aria-hidden="true">&rarr;</span>
                                     </template>
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Página atual: {{ linkedPagerPage }}</div>
+                                <div class="pagination-demo-meta mt-3">{{ isPt ? 'Página atual' : 'Current page' }}: {{ linkedPagerPage }}</div>
                             </div>
                         </div>
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Dotted pagination</h6>
-                                <p class="text-muted mb-3">Ícones de navegação com dots compactos para carrosséis,
-                                    onboarding e etapas visuais.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Paginação pontilhada' : 'Dotted pagination' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Ícones de navegação com dots compactos para carrosséis, onboarding e etapas visuais.' : 'Navigation icons with compact dots for carousels, onboarding, and visual steps.' }}</p>
 
                                 <li-pagination [collectionSize]="90" [pageSize]="10" [page]="dottedPage"
                                     [maxSize]="5" [rotate]="true" [ellipses]="false" variant="spaced"
@@ -216,27 +204,25 @@
                                         <i class="ph ph-caret-right"></i>
                                     </template>
                                     <template liPaginationNumber let-page>
-                                        <span class="pagination-dot-label">Página {{ page }}</span>
+                                        <span class="pagination-dot-label">{{ isPt ? 'Página' : 'Page' }} {{ page }}</span>
                                     </template>
                                 </li-pagination>
 
-                                <div class="pagination-demo-meta mt-3">Página atual: {{ dottedPage }}</div>
+                                <div class="pagination-demo-meta mt-3">{{ isPt ? 'Página atual' : 'Current page' }}: {{ dottedPage }}</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3 mt-4">
-                        <h6 class="mb-0">Pagination options</h6>
-                        <span class="text-muted d-block">Tamanhos e alinhamentos seguindo o mesmo padrão do
-                            Limitless.</span>
+                        <h6 class="mb-0">{{ isPt ? 'Opções de paginação' : 'Pagination options' }}</h6>
+                        <span class="text-muted d-block">{{ isPt ? 'Tamanhos e alinhamentos seguindo o mesmo padrão do Limitless.' : 'Sizes and alignments following the same Limitless pattern.' }}</span>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Bordered sizes</h6>
-                                <p class="text-muted mb-3">A versão padrão suporta `lg`, default e `sm` sem precisar de
-                                    classes extras fora da API do componente.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Tamanhos com borda' : 'Bordered sizes' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'A versão padrão suporta lg, default e sm sem precisar de classes extras fora da API do componente.' : 'The default version supports lg, default, and sm without extra classes outside the component API.' }}</p>
 
                                 <div class="pagination-demo-stack">
                                     <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedBorderedPage"
@@ -256,9 +242,8 @@
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Flat sizes</h6>
-                                <p class="text-muted mb-3">A combinação `variant="flat"` com tamanhos diferentes
-                                    resolve cenários de páginas compactas e cabeçalhos limpos.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Tamanhos flat' : 'Flat sizes' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'A combinação variant="flat" com tamanhos diferentes resolve cenários de páginas compactas e cabeçalhos limpos.' : 'The variant="flat" combination with different sizes solves compact-page and clean-header scenarios.' }}</p>
 
                                 <div class="pagination-demo-stack">
                                     <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedFlatPage"
@@ -281,9 +266,8 @@
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Spaced sizes</h6>
-                                <p class="text-muted mb-3">A variação `spaced` funciona melhor com pills arredondadas e
-                                    áreas de navegação mais respiradas.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Tamanhos spaced' : 'Spaced sizes' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'A variação spaced funciona melhor com pills arredondadas e áreas de navegação mais respiradas.' : 'The spaced variation works better with rounded pills and airier navigation areas.' }}</p>
 
                                 <div class="pagination-demo-stack">
                                     <li-pagination [collectionSize]="100" [pageSize]="10" [page]="sizedSpacedPage"
@@ -308,9 +292,8 @@
                     <div class="row g-3 mt-1">
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Left alignment</h6>
-                                <p class="text-muted mb-3">Alinhamento padrão para listas e blocos de conteúdo
-                                    tradicionais.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Alinhamento à esquerda' : 'Left alignment' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Alinhamento padrão para listas e blocos de conteúdo tradicionais.' : 'Default alignment for lists and traditional content blocks.' }}</p>
 
                                 <li-pagination [collectionSize]="100" [pageSize]="10" [page]="leftAlignedPage"
                                     [maxSize]="4" (pageChange)="updatePage('leftAligned', $event)">
@@ -320,9 +303,8 @@
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Center alignment</h6>
-                                <p class="text-muted mb-3">Usa a API de alinhamento do componente para centralizar a
-                                    navegação sem classes extras no template.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Alinhamento central' : 'Center alignment' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Usa a API de alinhamento do componente para centralizar a navegação sem classes extras no template.' : 'Uses the component alignment API to center navigation without extra template classes.' }}</p>
 
                                 <li-pagination [collectionSize]="100" [pageSize]="10" [page]="centerAlignedPage"
                                     [maxSize]="4" alignment="center"
@@ -333,9 +315,8 @@
 
                         <div class="col-xl-4">
                             <div class="card card-body h-100 mb-0">
-                                <h6 class="mb-2">Right alignment</h6>
-                                <p class="text-muted mb-3">Adequado para footers e barras auxiliares em cards mais
-                                    densos.</p>
+                                <h6 class="mb-2">{{ isPt ? 'Alinhamento à direita' : 'Right alignment' }}</h6>
+                                <p class="text-muted mb-3">{{ isPt ? 'Adequado para footers e barras auxiliares em cards mais densos.' : 'Suitable for footers and helper bars in denser cards.' }}</p>
 
                                 <li-pagination [collectionSize]="100" [pageSize]="10" [page]="rightAlignedPage"
                                     [maxSize]="4" alignment="end"
@@ -346,15 +327,13 @@
                     </div>
 
                     <div class="mb-3 mt-4">
-                        <h6 class="mb-0">Datatable variation</h6>
-                        <span class="text-muted d-block">Mesmo componente, com aparência específica para rodapés de
-                            tabela.</span>
+                        <h6 class="mb-0">{{ isPt ? 'Variação do Datatable' : 'Datatable variation' }}</h6>
+                        <span class="text-muted d-block">{{ isPt ? 'Mesmo componente, com aparência específica para rodapés de tabela.' : 'Same component with a specific look for table footers.' }}</span>
                     </div>
 
                     <div class="card card-body mb-0 pagination-toolbar-demo">
                         <div class="d-flex flex-wrap align-items-center gap-3">
-                            <span class="text-muted me-auto">Mostrando {{ datatableStart }} a {{ datatableEnd }} de 96
-                                registros</span>
+                            <span class="text-muted me-auto">{{ isPt ? 'Mostrando' : 'Showing' }} {{ datatableStart }} {{ isPt ? 'a' : 'to' }} {{ datatableEnd }} {{ isPt ? 'de' : 'of' }} 96 {{ isPt ? 'registros' : 'records' }}</span>
 
                             <li-pagination appearance="datatable" variant="flat" linkClass="rounded"
                                 [collectionSize]="96" [pageSize]="10" [page]="datatablePage" [maxSize]="5"
@@ -376,7 +355,7 @@
                         </div>
 
                         <div class="pagination-demo-meta mt-3">
-                            A demo acima replica a paginação agora usada dentro do <code>li-datatable</code>.
+                            {{ isPt ? 'A demo acima replica a paginação agora usada dentro do li-datatable.' : 'The demo above reproduces the pagination now used inside li-datatable.' }}
                         </div>
                     </div>
 
@@ -389,7 +368,7 @@
                 </div>
             </li-tabx>
 
-            <li-tabx header="API">
+            <li-tabx [header]="t.common.tabApi">
                 <div class="card-body">
                     <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-pagination
   appearance="datatable"

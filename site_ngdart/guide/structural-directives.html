@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Angular has a powerful template engine that lets us easily manipulate the DOM structure of our elements.">
+  <title>Structural Directives | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Structural Directives" />
+  <meta name="twitter:description" content="Angular has a powerful template engine that lets us easily manipulate the DOM structure of our elements." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Structural Directives" />
+  <meta property="og:description" content="Angular has a powerful template engine that lets us easily manipulate the DOM structure of our elements." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/structural-directives" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li class="active">
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#what-are-structural-directives">What are structural directives?</a></li>
+<li class="toc-entry toc-h2"><a href="#ngIf">NgIf case study</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#why-remove-rather-than-hide">Why remove rather than hide?</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#asterisk">The asterisk (*) prefix</a></li>
+<li class="toc-entry toc-h2"><a href="#ngFor">Inside *ngFor</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#microsyntax">Microsyntax</a></li>
+<li class="toc-entry toc-h3"><a href="#template-input-variable">Template input variable</a></li>
+<li class="toc-entry toc-h3"><a href="#one-structural-directive-per-host-element">One structural directive per host element</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#ngSwitch">Inside NgSwitch directives</a></li>
+<li class="toc-entry toc-h2"><a href="#prefer-asterisk">Prefer the asterisk (*) syntax</a></li>
+<li class="toc-entry toc-h2"><a href="#template">The template element</a></li>
+<li class="toc-entry toc-h2"><a href="#group-sibling-elements">Group sibling elements</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#template-to-the-rescue">template to the rescue</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#unless">Write a structural directive</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#templateref-and-viewcontainerref">TemplateRef and ViewContainerRef</a></li>
+<li class="toc-entry toc-h3"><a href="#the-myunless-property">The myUnless property</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#summary">Summary</a></li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/security">Security</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/testing">Testing</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/structural-directives.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Structural Directives' page issue&body=From URL: https://angulardart.xyz/guide/structural-directives"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Structural Directives 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <!-- FilePath: src/guide/structural-directives.md -->
+<p>&lt;?code-excerpt path-base=”examples/ng/doc/structural-directives”?&gt;
+Angular has a powerful template engine that lets us easily manipulate the DOM structure of our elements.</p>
+
+<p>This guide looks at how Angular manipulates the DOM with <strong>structural directives</strong> and
+how you can write your own structural directives to do the same thing.</p>
+
+<p>Try the <span><a href="/examples/structural-directives" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/structural-directives/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<div id="definition"></div>
+<h2 id="what-are-structural-directives">
+<a class="anchor" href="#what-are-structural-directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>What are structural directives?</h2>
+
+<p>Structural directives are responsible for HTML layout.
+They shape or reshape the DOM’s <em>structure</em>, typically by adding, removing, or manipulating
+elements.</p>
+
+<p>As with other directives, you apply a structural directive to a <em>host element</em>.
+The directive then does whatever it’s supposed to do with that host element and its descendents.</p>
+
+<p>Structural directives are easy to recognize.
+An asterisk (*) precedes the directive attribute name as in this example.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngif)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngIf="hero != null" &gt;{{hero.name}}&lt;/div&gt;
+</code></pre></div></div>
+
+<p>No brackets. No parentheses. Just <code class="language-plaintext highlighter-rouge">*ngIf</code> set to a string.</p>
+
+<p>You’ll learn in this guide that the <a href="#asterisk">asterisk (*) is a convenience notation</a>
+and the string is a <a href="#microsyntax"><em>microsyntax</em></a> rather than the usual
+<a href="template-syntax#template-expressions">template expression</a>.
+Angular desugars this notation into a marked-up <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> that surrounds the
+host element and its descendents.
+Each structural directive does something different with that template.</p>
+
+<p>Three of the common, built-in structural directives — <a href="template-syntax#ngIf">NgIf</a>,
+<a href="template-syntax#ngFor">NgFor</a>, and <a href="template-syntax#ngSwitch">NgSwitch…</a> — are
+described in the <a href="template-syntax"><em>Template Syntax</em></a> guide and seen in samples throughout the Angular documentation.
+Here’s an example of them in a template:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (built-in)” plaster=”none”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngIf="hero != null" &gt;{{hero.name}}&lt;/div&gt;
+
+  &lt;ul&gt;
+    &lt;li *ngFor="let hero of heroes"&gt;{{hero.name}}&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;div [ngSwitch]="hero?.emotion"&gt;
+    &lt;happy-hero    *ngSwitchCase="'happy'"    [hero]="hero"&gt;&lt;/happy-hero&gt;
+    &lt;sad-hero      *ngSwitchCase="'sad'"      [hero]="hero"&gt;&lt;/sad-hero&gt;
+    &lt;confused-hero *ngSwitchCase="'confused'" [hero]="hero"&gt;&lt;/confused-hero&gt;
+    &lt;unknown-hero  *ngSwitchDefault           [hero]="hero"&gt;&lt;/unknown-hero&gt;
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<p>This guide won’t repeat how to <em>use</em> them. But it does explain <em>how they work</em>
+and how to <a href="#unless">write your own</a> structural directive.</p>
+
+<div class="alert alert-info">
+  <h4>Directive spelling</h4>
+
+  <p>Throughout this guide, you’ll see a directive spelled in both <em>UpperCamelCase</em> and <em>lowerCamelCase</em>.
+  Already you’ve seen <code class="language-plaintext highlighter-rouge">NgIf</code> and <code class="language-plaintext highlighter-rouge">ngIf</code>.
+  There’s a reason. <code class="language-plaintext highlighter-rouge">NgIf</code> refers to the directive <em>class</em>;
+  <code class="language-plaintext highlighter-rouge">ngIf</code> refers to the directive’s <em>attribute name</em>.</p>
+
+  <p>A directive <em>class</em> is spelled in <em>UpperCamelCase</em> (<code class="language-plaintext highlighter-rouge">NgIf</code>).
+  A directive’s <em>attribute name</em> is spelled in <em>lowerCamelCase</em> (<code class="language-plaintext highlighter-rouge">ngIf</code>).
+  The guide refers to the directive <em>class</em> when talking about its properties and what the directive does.
+  The guide refers to the <em>attribute name</em> when describing how
+  you apply the directive to an element in the HTML template.</p>
+</div>
+
+<div class="l-sub-section">
+  <p>There are two other kinds of Angular directives, described extensively elsewhere:
+  (1) components and (2) attribute directives.</p>
+
+  <p>A <em>component</em> manages a region of HTML in the manner of a native HTML element.
+  Technically it’s a directive with a template.</p>
+
+  <p>An <a href="attribute-directives"><em>attribute</em> directive</a> changes the appearance or behavior
+  of an element, component, or another directive.
+  For example, the built-in <a href="template-syntax#ngStyle"><code class="language-plaintext highlighter-rouge">NgStyle</code></a> directive
+  changes several element styles at the same time.</p>
+
+  <p>You can apply many <em>attribute</em> directives to one host element.
+  You can <a href="#one-per-element">only apply one</a> <em>structural</em> directive to a host element.</p>
+</div>
+
+<h2 id="ngIf">
+<a class="anchor" href="#ngIf" aria-hidden="true"><span class="octicon octicon-link"></span></a>NgIf case study</h2>
+
+<p><code class="language-plaintext highlighter-rouge">NgIf</code> is the simplest structural directive and the easiest to understand.
+It takes a boolean expression and makes an entire chunk of the DOM appear or disappear.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngif-true)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p *ngIf="true"&gt;
+    Expression is true and ngIf is true.
+    This paragraph is in the DOM.
+  &lt;/p&gt;
+  &lt;p *ngIf="false"&gt;
+    Expression is false and ngIf is false.
+    This paragraph is not in the DOM.
+  &lt;/p&gt;
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">ngIf</code> directive doesn’t hide elements with CSS. It adds and removes them physically from the DOM.
+Confirm that fact using browser developer tools to inspect the DOM.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/element-not-in-dom-6c65c16353f750448f47663a88f604f577d986ee3bf06a9ed4e0d8eed4f887e9.png" alt="ngIf=false element not in DOM"></p>
+
+<p>The top paragraph is in the DOM. The bottom, disused paragraph is not;
+in its place is a comment about “template bindings” (more about that <a href="#asterisk">later</a>).</p>
+
+<p>When the condition is false, <code class="language-plaintext highlighter-rouge">NgIf</code> removes its host element from the DOM,
+detaches it from DOM events (the attachments that it made),
+detaches the component from Angular change detection, and destroys it.
+The component and DOM nodes can be garbage-collected and free up memory.</p>
+
+<h3 id="why-remove-rather-than-hide">
+<a class="anchor" href="#why-remove-rather-than-hide" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why <em>remove</em> rather than <em>hide</em>?</h3>
+
+<p>A directive could hide the unwanted paragraph instead by setting its <code class="language-plaintext highlighter-rouge">display</code> style to <code class="language-plaintext highlighter-rouge">none</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (display-none)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p [style.display]="'block'"&gt;
+    Expression sets display to "block".
+    This paragraph is visible.
+  &lt;/p&gt;
+  &lt;p [style.display]="'none'"&gt;
+    Expression sets display to "none".
+    This paragraph is hidden but still in the DOM.
+  &lt;/p&gt;
+</code></pre></div></div>
+
+<p>While invisible, the element remains in the DOM.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/element-display-in-dom-354fc6a4cc1f3595283392889f444db9c62c0518fcb9386f4ff9338038d445d6.png" alt="hidden element still in DOM"></p>
+
+<p>The difference between hiding and removing doesn’t matter for a simple paragraph.
+It does matter when the host element is attached to a resource intensive component.
+Such a component’s behavior continues even when hidden.
+The component stays attached to its DOM element. It keeps listening to events.
+Angular keeps checking for changes that could affect data bindings.
+Whatever the component was doing, it keeps doing.</p>
+
+<p>Although invisible, the component—and all of its descendant components—tie up resources.
+The performance and memory burden can be substantial, responsiveness can degrade, and the user sees nothing.</p>
+
+<p>On the positive side, showing the element again is quick.
+The component’s previous state is preserved and ready to display.
+The component doesn’t re-initialize—an operation that could be expensive.
+So hiding and showing is sometimes the right thing to do.</p>
+
+<p>But in the absence of a compelling reason to keep them around,
+your preference should be to remove DOM elements that the user can’t see
+and recover the unused resources with a structural directive like <code class="language-plaintext highlighter-rouge">NgIf</code> .</p>
+
+<p><strong>These same considerations apply to every structural directive, whether built-in or custom.</strong>
+Before applying a structural directive, you might want to pause for a moment
+to consider the consequences of adding and removing elements and of creating and destroying components.</p>
+
+<h2 id="asterisk">
+<a class="anchor" href="#asterisk" aria-hidden="true"><span class="octicon octicon-link"></span></a>The asterisk (*) prefix</h2>
+
+<p>Surely you noticed the asterisk (*) prefix to the directive name
+and wondered why it is necessary and what it does.</p>
+
+<p>Here is <code class="language-plaintext highlighter-rouge">*ngIf</code> displaying the hero’s name if <code class="language-plaintext highlighter-rouge">hero</code> exists.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (asterisk)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngIf="hero != null" &gt;{{hero.name}}&lt;/div&gt;
+</code></pre></div></div>
+
+<p>The asterisk is <a href="https://en.wikipedia.org/wiki/Syntactic_sugar">syntactic sugar</a> for something a bit more complicated.
+Internally, Angular desugars it into a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template">template element</a>, wrapped around the host element, like this.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngif-template)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;template [ngIf]="hero != null"&gt;
+    &lt;div&gt;{{hero.name}}&lt;/div&gt;
+  &lt;/template&gt;
+</code></pre></div></div>
+
+<ul>
+  <li>The <code class="language-plaintext highlighter-rouge">*ngIf</code> directive moved to the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> element where it became a property binding,<code class="language-plaintext highlighter-rouge">[ngIf]</code>.</li>
+  <li>The rest of the <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>, including its class attribute, moved inside the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> element.</li>
+</ul>
+
+<p>None of these forms are actually rendered.
+Only the finished product ends up in the DOM.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/hero-div-in-dom-f37a6a90631df64a64098b886238f80aaaa871878bdd3885220953cac585c8f3.png" alt="hero div in DOM"></p>
+
+<p>Angular consumed the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> content during its actual rendering and
+replaced the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> with a diagnostic comment.</p>
+
+<p>The <a href="#ngFor">NgFor</a> and <a href="#ngSwitch">NgSwitch</a> directives follow the same pattern.</p>
+
+<h2 id="ngFor">
+<a class="anchor" href="#ngFor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inside <em>*ngFor</em>
+</h2>
+
+<p>Angular transforms the <code class="language-plaintext highlighter-rouge">*ngFor</code> in similar fashion from asterisk (*) syntax through
+template <em>attribute</em> to template <em>element</em>.</p>
+
+<p>Here’s a full-featured app of <code class="language-plaintext highlighter-rouge">NgFor</code>, written all three ways:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (inside-ngfor)” plaster=”none”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackByHeroId"
+       [class.odd]="odd"&gt;
+    ({{i}}) {{hero.name}}
+  &lt;/div&gt;
+
+  &lt;template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd"
+            [ngForTrackBy]="trackByHeroId"&gt;
+    &lt;div [class.odd]="odd"&gt;({{i}}) {{hero.name}}&lt;/div&gt;
+  &lt;/template&gt;
+</code></pre></div></div>
+
+<p>This is manifestly more complicated than <code class="language-plaintext highlighter-rouge">ngIf</code> and rightly so.
+The <code class="language-plaintext highlighter-rouge">NgFor</code> directive has more features, both required and optional, than the <code class="language-plaintext highlighter-rouge">NgIf</code> shown in this guide.
+At minimum <code class="language-plaintext highlighter-rouge">NgFor</code> needs a looping variable (<code class="language-plaintext highlighter-rouge">let hero</code>) and a list (<code class="language-plaintext highlighter-rouge">heroes</code>).</p>
+
+<p>You enable these features in the string assigned to <code class="language-plaintext highlighter-rouge">ngFor</code>, which you write in Angular’s <a href="#microsyntax">microsyntax</a>.</p>
+
+<div class="alert alert-info">
+  <p>Everything <em>outside</em> the <code class="language-plaintext highlighter-rouge">ngFor</code> string stays with the host element
+  (the <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>) as it moves inside the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code>.
+  In this example, the <code class="language-plaintext highlighter-rouge">[ngClass]="odd"</code> stays on the <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>.</p>
+</div>
+
+<h3 id="microsyntax">
+<a class="anchor" href="#microsyntax" aria-hidden="true"><span class="octicon octicon-link"></span></a>Microsyntax</h3>
+
+<p>The Angular microsyntax lets you configure a directive in a compact, friendly string.
+The microsyntax parser translates that string into attributes on the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code>:</p>
+
+<ul>
+  <li>
+    <p>The <code class="language-plaintext highlighter-rouge">let</code> keyword declares a <a href="#template-input-variable"><em>template input variable</em></a>
+that you reference within the template. The input variables in this example are <code class="language-plaintext highlighter-rouge">hero</code>, <code class="language-plaintext highlighter-rouge">i</code>, and <code class="language-plaintext highlighter-rouge">odd</code>.
+The parser translates <code class="language-plaintext highlighter-rouge">let hero</code>, <code class="language-plaintext highlighter-rouge">let i</code>, and <code class="language-plaintext highlighter-rouge">let odd</code> into variables named,
+<code class="language-plaintext highlighter-rouge">let-hero</code>, <code class="language-plaintext highlighter-rouge">let-i</code>, and <code class="language-plaintext highlighter-rouge">let-odd</code>.</p>
+  </li>
+  <li>
+    <p>The microsyntax parser takes <code class="language-plaintext highlighter-rouge">of</code> and <code class="language-plaintext highlighter-rouge">trackby</code>, title-cases them (<code class="language-plaintext highlighter-rouge">of</code> -&gt; <code class="language-plaintext highlighter-rouge">Of</code>, <code class="language-plaintext highlighter-rouge">trackBy</code> -&gt; <code class="language-plaintext highlighter-rouge">TrackBy</code>),
+and prefixes them with the directive’s attribute name (<code class="language-plaintext highlighter-rouge">ngFor</code>), yielding the names <code class="language-plaintext highlighter-rouge">ngForOf</code> and <code class="language-plaintext highlighter-rouge">ngForTrackBy</code>.
+Those are the names of two <code class="language-plaintext highlighter-rouge">NgFor</code> <em>input properties</em> .
+That’s how the directive learns that the list is <code class="language-plaintext highlighter-rouge">heroes</code> and the track-by function is <code class="language-plaintext highlighter-rouge">trackById</code>.</p>
+  </li>
+  <li>
+    <p>As the <code class="language-plaintext highlighter-rouge">NgFor</code> directive loops through the list, it sets and resets properties of its own <em>context</em> object.
+These properties include <code class="language-plaintext highlighter-rouge">index</code> and <code class="language-plaintext highlighter-rouge">odd</code> and a special property named <code class="language-plaintext highlighter-rouge">$implicit</code>.</p>
+  </li>
+  <li>
+    <p>The <code class="language-plaintext highlighter-rouge">let-i</code> and <code class="language-plaintext highlighter-rouge">let-odd</code> variables were defined as <code class="language-plaintext highlighter-rouge">let i=index</code> and <code class="language-plaintext highlighter-rouge">let odd=odd</code>.
+Angular sets them to the current value of the context’s <code class="language-plaintext highlighter-rouge">index</code> and <code class="language-plaintext highlighter-rouge">odd</code> properties.</p>
+  </li>
+  <li>
+    <p>The context property for <code class="language-plaintext highlighter-rouge">let-hero</code> wasn’t specified.
+It’s intended source is implicit.
+Angular sets <code class="language-plaintext highlighter-rouge">let-hero</code> to the value of the context’s <code class="language-plaintext highlighter-rouge">$implicit</code> property
+which <code class="language-plaintext highlighter-rouge">NgFor</code> has initialized with the hero for the current iteration.</p>
+  </li>
+  <li>
+    <p>The <a href="https://pub.dev/documentation/angular/6.0.1/angular/NgFor-class.html" title="API: NgFor">API guide</a>
+describes additional <code class="language-plaintext highlighter-rouge">NgFor</code> directive properties and context properties.</p>
+  </li>
+</ul>
+
+<p>These microsyntax mechanisms are available to you when you write your own structural directives.
+Studying the source code for <code class="language-plaintext highlighter-rouge">NgIf</code> and <code class="language-plaintext highlighter-rouge">NgFor</code> is a great way to learn more.</p>
+
+<div id="template-input-variables"></div>
+<h3 id="template-input-variable">
+<a class="anchor" href="#template-input-variable" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template input variable</h3>
+
+<p>A <em>template input variable</em> is a variable whose value you can reference <em>within</em> a single instance of the template.
+There are several such variables in this example: <code class="language-plaintext highlighter-rouge">hero</code>, <code class="language-plaintext highlighter-rouge">i</code>, and <code class="language-plaintext highlighter-rouge">odd</code>.
+All are preceded by the keyword <code class="language-plaintext highlighter-rouge">let</code>.</p>
+
+<p>A <em>template input variable</em> is <strong><em>not</em></strong> the same as a
+<a href="template-syntax#ref-vars">template <em>reference</em> variable</a>,
+neither <em>semantically</em> nor <em>syntactically</em>.</p>
+
+<p>You declare a template <em>input</em> variable using the <code class="language-plaintext highlighter-rouge">let</code> keyword (<code class="language-plaintext highlighter-rouge">let hero</code>).
+The variable’s scope is limited to a <em>single instance</em> of the repeated template.
+You can use the same variable name again in the definition of other structural directives.</p>
+
+<p>You declare a template <em>reference</em> variable by prefixing the variable name with <code class="language-plaintext highlighter-rouge">#</code> (<code class="language-plaintext highlighter-rouge">#var</code>).
+A <em>reference</em> variable refers to its attached element, component or directive.
+It can be accessed <em>anywhere</em> in the <em>entire template</em>.</p>
+
+<p>Template <em>input</em> and <em>reference</em> variable names have their own namespaces. The <code class="language-plaintext highlighter-rouge">hero</code> in <code class="language-plaintext highlighter-rouge">let hero</code> is never the same
+variable as the <code class="language-plaintext highlighter-rouge">hero</code> declared as <code class="language-plaintext highlighter-rouge">#hero</code>.</p>
+
+<div id="one-per-element"></div>
+<h3 id="one-structural-directive-per-host-element">
+<a class="anchor" href="#one-structural-directive-per-host-element" aria-hidden="true"><span class="octicon octicon-link"></span></a>One structural directive per host element</h3>
+
+<p>Someday you’ll want to repeat a block of HTML but only when a particular condition is true.
+You’ll <em>try</em> to put both an <code class="language-plaintext highlighter-rouge">*ngFor</code> and an <code class="language-plaintext highlighter-rouge">*ngIf</code> on the same host element.
+Angular won’t let you. You may apply only one <em>structural</em> directive to an element.</p>
+
+<p>The reason is simplicity. Structural directives can do complex things with the host element and its descendents.
+When two directives lay claim to the same host element, which one takes precedence?
+Which should go first, the <code class="language-plaintext highlighter-rouge">NgIf</code> or the <code class="language-plaintext highlighter-rouge">NgFor</code>? Can the <code class="language-plaintext highlighter-rouge">NgIf</code> cancel the effect of the <code class="language-plaintext highlighter-rouge">NgFor</code>?
+If so (and it seems like it should be so), how should Angular generalize the ability to cancel for other structural directives?</p>
+
+<p>There are no easy answers to these questions. Prohibiting multiple structural directives makes them moot.
+There’s an easy solution for this use case: put the <code class="language-plaintext highlighter-rouge">*ngIf</code> on a container element that wraps the <code class="language-plaintext highlighter-rouge">*ngFor</code> element.
+One or both elements can be an <a href="#ngcontainer"><code class="language-plaintext highlighter-rouge">template</code></a> so you don’t have to introduce extra levels of HTML.</p>
+
+<h2 id="ngSwitch">
+<a class="anchor" href="#ngSwitch" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inside <em>NgSwitch</em> directives</h2>
+
+<p>The Angular <em>NgSwitch</em> is actually a set of cooperating directives: <code class="language-plaintext highlighter-rouge">NgSwitch</code>, <code class="language-plaintext highlighter-rouge">NgSwitchCase</code>, and <code class="language-plaintext highlighter-rouge">NgSwitchDefault</code>.</p>
+
+<p>Here’s an example.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngswitch)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div [ngSwitch]="hero?.emotion"&gt;
+    &lt;happy-hero    *ngSwitchCase="'happy'"    [hero]="hero"&gt;&lt;/happy-hero&gt;
+    &lt;sad-hero      *ngSwitchCase="'sad'"      [hero]="hero"&gt;&lt;/sad-hero&gt;
+    &lt;confused-hero *ngSwitchCase="'confused'" [hero]="hero"&gt;&lt;/confused-hero&gt;
+    &lt;unknown-hero  *ngSwitchDefault           [hero]="hero"&gt;&lt;/unknown-hero&gt;
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>You might come across an <code class="language-plaintext highlighter-rouge">NgSwitchWhen</code> directive in older code.
+  That is the deprecated name for <code class="language-plaintext highlighter-rouge">NgSwitchCase</code>.</p>
+</div>
+
+<p>The switch value assigned to <code class="language-plaintext highlighter-rouge">NgSwitch</code> (<code class="language-plaintext highlighter-rouge">hero.emotion</code>) determines which
+(if any) of the switch cases are displayed.</p>
+
+<p><code class="language-plaintext highlighter-rouge">NgSwitch</code> itself is not a structural directive.
+It’s an <em>attribute</em> directive that controls the behavior of the other two switch directives.
+That’s why you write <code class="language-plaintext highlighter-rouge">[ngSwitch]</code>, never <code class="language-plaintext highlighter-rouge">*ngSwitch</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">NgSwitchCase</code> and <code class="language-plaintext highlighter-rouge">NgSwitchDefault</code> <em>are</em> structural directives.
+You attach them to elements using the asterisk (*) prefix notation.
+An <code class="language-plaintext highlighter-rouge">NgSwitchCase</code> displays its host element when its value matches the switch value.
+The <code class="language-plaintext highlighter-rouge">NgSwitchDefault</code> displays its host element when no sibling <code class="language-plaintext highlighter-rouge">NgSwitchCase</code> matches the switch value.</p>
+
+<div class="l-sub-section">
+  <p>The element to which you apply a directive is its <em>host</em> element.
+  The <code class="language-plaintext highlighter-rouge">&lt;happy-hero&gt;</code> is the host element for the happy <code class="language-plaintext highlighter-rouge">*ngSwitchCase</code>.
+  The <code class="language-plaintext highlighter-rouge">&lt;unknown-hero&gt;</code> is the host element for the <code class="language-plaintext highlighter-rouge">*ngSwitchDefault</code>.</p>
+</div>
+
+<p>As with other structural directives, the <code class="language-plaintext highlighter-rouge">NgSwitchCase</code> and <code class="language-plaintext highlighter-rouge">NgSwitchDefault</code>
+can be desugared into the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> element form.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngswitch-template)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div [ngSwitch]="hero?.emotion"&gt;
+    &lt;template [ngSwitchCase]="'happy'"&gt;
+      &lt;happy-hero [hero]="hero"&gt;&lt;/happy-hero&gt;
+    &lt;/template&gt;
+    &lt;template [ngSwitchCase]="'sad'"&gt;
+      &lt;sad-hero [hero]="hero"&gt;&lt;/sad-hero&gt;
+    &lt;/template&gt;
+    &lt;template [ngSwitchCase]="'confused'"&gt;
+      &lt;confused-hero [hero]="hero"&gt;&lt;/confused-hero&gt;
+    &lt;/template &gt;
+    &lt;template ngSwitchDefault&gt;
+      &lt;unknown-hero [hero]="hero"&gt;&lt;/unknown-hero&gt;
+    &lt;/template&gt;
+  &lt;/div&gt;
+</code></pre></div></div>
+
+<h2 id="prefer-asterisk">
+<a class="anchor" href="#prefer-asterisk" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prefer the asterisk (*) syntax</h2>
+
+<p>The asterisk (*) syntax is more clear than the other desugared forms.</p>
+
+<p>While there’s rarely a good reason to apply a structural directive in template <em>attribute</em> or <em>element</em> form,
+it’s still important to know that Angular creates a <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> and to understand how it works.
+You’ll refer to the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> when you <a href="#unless">write your own structural directive</a>.</p>
+
+<h2 id="template">
+<a class="anchor" href="#template" aria-hidden="true"><span class="octicon octicon-link"></span></a>The <em>template</em> element</h2>
+
+<p>The HTML 5 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template">template element</a> is a formula for rendering HTML.
+It is never displayed directly.
+In fact, before rendering the view, Angular <em>replaces</em> the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> and its contents with a comment.</p>
+
+<p>If there is no structural directive and you merely wrap some elements in a <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code>,
+those elements disappear.
+That’s the fate of the middle “Hip!” in the phrase “Hip! Hip! Hooray!”.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (template-tag)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p&gt;Hip!&lt;/p&gt;
+  &lt;template&gt;
+    &lt;p&gt;Hip!&lt;/p&gt;
+  &lt;/template&gt;
+  &lt;p&gt;Hooray!&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Angular erases the middle “Hip!”, leaving the cheer a bit less enthusiastic.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/template-rendering-df1e0c0e3d72c94f9e0295d734744f943aced3e2ac5781c30cf014f187961730.png" width="382" alt="template tag rendering"></p>
+
+<p>A structural directive puts a <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> to work
+as you’ll see when you <a href="#unless">write your own structural directive</a>.</p>
+
+<div id="group-elements"></div>
+<div id="ngcontainer"></div>
+<div id="ng-container"></div>
+<h2 id="group-sibling-elements">
+<a class="anchor" href="#group-sibling-elements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Group sibling elements</h2>
+
+<p>There’s often a <em>root</em> element that can and should host the structural directive.
+The list element (<code class="language-plaintext highlighter-rouge">&lt;li&gt;</code>) is a typical host element of an <code class="language-plaintext highlighter-rouge">NgFor</code> repeater.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngfor-li)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;li *ngFor="let hero of heroes"&gt;{{hero.name}}&lt;/li&gt;
+</code></pre></div></div>
+
+<p>When there isn’t a host element, you can usually wrap the content in a native HTML container element,
+such as a <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>, and attach the directive to that wrapper.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngif)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div *ngIf="hero != null" &gt;{{hero.name}}&lt;/div&gt;
+</code></pre></div></div>
+
+<p>Introducing another container element—typically a <code class="language-plaintext highlighter-rouge">&lt;span&gt;</code> or <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>—to
+group the elements under a single <em>root</em> is usually harmless.
+<em>Usually</em> … but not <em>always</em>.</p>
+
+<p>The grouping element may break the template appearance because CSS styles
+neither expect nor accommodate the new layout.
+For example, suppose you have the following paragraph layout.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngif-span)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p&gt;
+    I turned the corner
+    &lt;span *ngIf="hero != null"&gt;
+      and saw {{hero.name}}. I waved
+    &lt;/span&gt;
+    and continued on my way.
+  &lt;/p&gt;
+</code></pre></div></div>
+
+<p>You also have a CSS style rule that happens to apply to a <code class="language-plaintext highlighter-rouge">&lt;span&gt;</code> within a <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code>aragraph.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.css (p-span)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  p span { color: red; font-size: 70%; }
+</code></pre></div></div>
+
+<p>The constructed paragraph renders strangely.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/bad-paragraph-f1440cf7a7a777c4e78637516b45dd977de6bcd3074030dbbcb61e88431b6864.png" alt="spanned paragraph with bad style"></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">p span</code> style, intended for use elsewhere, was inadvertently applied here.</p>
+
+<p>Another problem: some HTML elements require all immediate children to be of a specific type.
+For example, the <code class="language-plaintext highlighter-rouge">&lt;select&gt;</code> element requires <code class="language-plaintext highlighter-rouge">&lt;option&gt;</code> children.
+You can’t wrap the <em>options</em> in a conditional <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> or a <code class="language-plaintext highlighter-rouge">&lt;span&gt;</code>.</p>
+
+<p>When you try this,</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (select-span)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div&gt;
+    Pick your favorite hero
+    (&lt;label&gt;&lt;input type="checkbox" checked (change)="showSad = !showSad"&gt;show sad&lt;/label&gt;)
+  &lt;/div&gt;
+  &lt;select [(ngModel)]="hero"&gt;
+    &lt;span *ngFor="let h of heroes"&gt;
+      &lt;span *ngIf="showSad || h.emotion !== 'sad'"&gt;
+        &lt;option [ngValue]="h"&gt;{{h.name}} ({{h.emotion}})&lt;/option&gt;
+      &lt;/span&gt;
+    &lt;/span&gt;
+  &lt;/select&gt;
+</code></pre></div></div>
+
+<p>the drop down is empty.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/bad-select-1eea25fae937bc74083dbd2f39a6f51d420a04059446d519513aa9265c0ab739.png" alt="spanned options don't work"></p>
+
+<p>The browser won’t display an <code class="language-plaintext highlighter-rouge">&lt;option&gt;</code> within a <code class="language-plaintext highlighter-rouge">&lt;span&gt;</code>.</p>
+
+<h3 id="template-to-the-rescue">
+<a class="anchor" href="#template-to-the-rescue" aria-hidden="true"><span class="octicon octicon-link"></span></a><em>template</em> to the rescue</h3>
+
+<p>The Angular <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> is a grouping element that doesn’t interfere with styles or layout
+because Angular <em>doesn’t put it in the DOM</em>.</p>
+
+<p>Here’s the conditional paragraph again, this time using <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (ngif-ngcontainer)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p&gt;
+    I turned the corner
+    &lt;template [ngIf]="hero != null"&gt;
+      and saw {{hero.name}}. I waved
+    &lt;/template&gt;
+    and continued on my way. [template]
+  &lt;/p&gt;
+</code></pre></div></div>
+
+<p>It renders properly. Notice the use of a desugared form of <a href="#ngIf">NgIf</a>.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/good-paragraph-83add292c7c62a3a3ae944a8b14bddb9ab2e51093f75e34bdcf7a11e010c96bc.png" alt="ngcontainer paragraph with proper style"></p>
+
+<p>Now conditionally exclude a <em>select</em> <code class="language-plaintext highlighter-rouge">&lt;option&gt;</code> with <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (select-ngcontainer)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;div&gt;
+    Pick your favorite hero 2
+    (&lt;label&gt;&lt;input type="checkbox" checked (change)="showSad = !showSad"&gt;show sad&lt;/label&gt;)
+  &lt;/div&gt;
+  &lt;select [(ngModel)]="hero"&gt;
+    &lt;template ngFor let-h [ngForOf]="heroes"&gt;
+      &lt;template [ngIf]="showSad || h.emotion !== 'sad'"&gt;
+        &lt;option [ngValue]="h"&gt;{{h.name}} ({{h.emotion}})&lt;/option&gt;
+      &lt;/template&gt;
+    &lt;/template&gt;
+  &lt;/select&gt;
+</code></pre></div></div>
+
+<p>The drop down works properly.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/select-ngcontainer-anim-e03f217df587e4570f27374b5573a8fa3d5703ffbf0d17ff4ca19f333e7145c9.gif" alt="ngcontainer options work properly"></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> is a syntax element recognized by the Angular parser.
+It’s not a directive, component, class, or interface.
+It’s more like the curly braces in a Dart <code class="language-plaintext highlighter-rouge">if</code>-block:</p>
+
+<div class="language-dart highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="n">someCondition</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">statement1</span><span class="o">;</span>
+  <span class="n">statement2</span><span class="o">;</span>
+  <span class="n">statement3</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>Without those braces, Dart would only execute the first statement
+when you intend to conditionally execute all of them as a single block.
+The <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> satisfies a similar need in Angular templates.</p>
+
+<h2 id="unless">
+<a class="anchor" href="#unless" aria-hidden="true"><span class="octicon octicon-link"></span></a>Write a structural directive</h2>
+
+<p>In this section, you write an <code class="language-plaintext highlighter-rouge">UnlessDirective</code> structural directive
+that does the opposite of <code class="language-plaintext highlighter-rouge">NgIf</code>.
+<code class="language-plaintext highlighter-rouge">NgIf</code> displays the template content when the condition is <code class="language-plaintext highlighter-rouge">true</code>.
+<code class="language-plaintext highlighter-rouge">UnlessDirective</code> displays the content when the condition is <strong><em>false</em></strong>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (myUnless-1)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p *myUnless="condition"&gt;Show this sentence unless the condition is true.&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Creating a directive is similar to creating a component.
+Here’s how you might begin:</p>
+
+<p>&lt;?code-excerpt “lib/src/unless_directive.dart (skeleton)” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  @Directive(selector: '[myUnless]')
+  class UnlessDirective {
+  }
+</code></pre></div></div>
+
+<p>The directive’s <em>selector</em> is typically the directive’s <strong>attribute name</strong> in square brackets, <code class="language-plaintext highlighter-rouge">[myUnless]</code>.
+The brackets define a CSS
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" target="_blank" rel="noopener" title="MDN: Attribute selectors">attribute selector</a>.</p>
+
+<p>The directive <em>attribute name</em> should be spelled in <em>lowerCamelCase</em> and begin with a prefix.
+Don’t use <code class="language-plaintext highlighter-rouge">ng</code>. That prefix belongs to Angular.
+Pick something short that fits you or your company.
+In this example, the prefix is <code class="language-plaintext highlighter-rouge">my</code>.</p>
+
+<p>The directive <em>class</em> name ends in <code class="language-plaintext highlighter-rouge">Directive</code>.
+Angular’s own directives do not.</p>
+
+<h3 id="templateref-and-viewcontainerref">
+<a class="anchor" href="#templateref-and-viewcontainerref" aria-hidden="true"><span class="octicon octicon-link"></span></a><em>TemplateRef</em> and <em>ViewContainerRef</em>
+</h3>
+
+<p>A simple structural directive like this one creates an
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/EmbeddedViewRef-class.html" title="API: EmbeddedViewRef"><em>embedded view</em></a>
+from the Angular-generated <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> and inserts that view in a
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/ViewContainerRef-class.html" title="API: ViewContainerRef"><em>view container</em></a>
+adjacent to the directive’s original <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> host element.</p>
+
+<p>You’ll acquire the <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code> contents with a
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/TemplateRef-class.html" title="API: TemplateRef"><code class="language-plaintext highlighter-rouge">TemplateRef</code></a>
+and access the <em>view container</em> through a
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/ViewContainerRef-class.html" title="API: ViewContainerRef"><code class="language-plaintext highlighter-rouge">ViewContainerRef</code></a>.</p>
+
+<p>You inject both in the directive constructor as private variables of the class.</p>
+
+<p>&lt;?code-excerpt “lib/src/unless_directive.dart (ctor)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  TemplateRef _templateRef;
+  ViewContainerRef _viewContainer;
+
+  UnlessDirective(this._templateRef, this._viewContainer);
+</code></pre></div></div>
+
+<h3 id="the-myunless-property">
+<a class="anchor" href="#the-myunless-property" aria-hidden="true"><span class="octicon octicon-link"></span></a>The <em>myUnless</em> property</h3>
+
+<p>The directive consumer expects to bind a true/false condition to <code class="language-plaintext highlighter-rouge">[myUnless]</code>.
+That means the directive needs a <code class="language-plaintext highlighter-rouge">myUnless</code> property, decorated with <code class="language-plaintext highlighter-rouge">@Input</code></p>
+
+<div class="l-sub-section">
+  <p>Read about <code class="language-plaintext highlighter-rouge">@Input</code> in the <a href="template-syntax#inputs-outputs"><em>Template Syntax</em></a> guide.</p>
+</div>
+
+<p>&lt;?code-excerpt “lib/src/unless_directive.dart (set)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
+  set myUnless(bool condition) {
+    if (!condition &amp;&amp; !_hasView) {
+      _viewContainer.createEmbeddedView(_templateRef);
+      _hasView = true;
+    } else if (condition &amp;&amp; _hasView) {
+      _viewContainer.clear();
+      _hasView = false;
+    }
+  }
+</code></pre></div></div>
+
+<p>Angular sets the  <code class="language-plaintext highlighter-rouge">myUnless</code> property whenever the value of the condition changes.
+Because the <code class="language-plaintext highlighter-rouge">myUnless</code> property does work, it needs a setter.</p>
+
+<ul>
+  <li>
+    <p>If the condition is false and the view hasn’t been created previously,
+tell the <em>view container</em> to create the <em>embedded view</em> from the template.</p>
+  </li>
+  <li>
+    <p>If the condition is true and the view is currently displayed,
+clear the container which also destroys the view.</p>
+  </li>
+</ul>
+
+<p>Nobody reads the <code class="language-plaintext highlighter-rouge">myUnless</code> property so it doesn’t need a getter.</p>
+
+<p>The completed directive code looks like this:</p>
+
+<p>&lt;?code-excerpt “lib/src/unless_directive.dart (excerpt)” region=”no-docs” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+
+  @Directive(selector: '[myUnless]')
+  class UnlessDirective {
+    bool _hasView = false;
+
+    TemplateRef _templateRef;
+    ViewContainerRef _viewContainer;
+
+    UnlessDirective(this._templateRef, this._viewContainer);
+
+    @Input()
+    set myUnless(bool condition) {
+      if (!condition &amp;&amp; !_hasView) {
+        _viewContainer.createEmbeddedView(_templateRef);
+        _hasView = true;
+      } else if (condition &amp;&amp; _hasView) {
+        _viewContainer.clear();
+        _hasView = false;
+      }
+    }
+  }
+</code></pre></div></div>
+
+<p>Add this directive to the <code class="language-plaintext highlighter-rouge">directives</code> list of the AppComponent.</p>
+
+<p>Then create some HTML to try it.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.html (myUnless)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;p *myUnless="condition" class="unless a"&gt;
+    (A) This paragraph is displayed because the condition is false.
+  &lt;/p&gt;
+
+  &lt;p *myUnless="!condition" class="unless b"&gt;
+    (B) Although the condition is true,
+    this paragraph is displayed because myUnless is set to false.
+  &lt;/p&gt;
+</code></pre></div></div>
+
+<p>When the <code class="language-plaintext highlighter-rouge">condition</code> is false, the top (A) paragraph appears and the bottom (B) paragraph disappears.
+When the <code class="language-plaintext highlighter-rouge">condition</code> is true, the top (A) paragraph is removed and the bottom (B) paragraph appears.</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/structural-directives/unless-anim-f99bad87d3dd85e2b29f5ea87a4bbba718fc513cdec37417df49d189eec39097.gif" alt="UnlessDirective in action"></p>
+
+<h2 id="summary">
+<a class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+
+<p>You can both try and download the source code for this guide in the <span><a href="/examples/structural-directives" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/structural-directives/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<p>Here is the source under the <code class="language-plaintext highlighter-rouge">lib</code> folder.</p>
+
+<code-tabs>
+  <?code-pane "lib/app_component.dart" linenums?>
+  <?code-pane "lib/app_component.html" linenums?>
+  <?code-pane "lib/app_component.css" linenums?>
+  <?code-pane "lib/src/hero.dart" linenums?>
+  <?code-pane "lib/src/hero_switch_components.dart" linenums?>
+  <?code-pane "lib/src/unless_directive.dart" linenums?>
+</code-tabs>
+
+<p>You learned</p>
+
+<ul>
+  <li>that structural directives manipulate HTML layout.</li>
+  <li>to use <a href="#ngcontainer"><code class="language-plaintext highlighter-rouge">&lt;template&gt;</code></a> as a grouping element when there is no suitable host element.</li>
+  <li>that the Angular desugars <a href="#asterisk">asterisk (*) syntax</a> into a <code class="language-plaintext highlighter-rouge">&lt;template&gt;</code>.</li>
+  <li>how that works for the <code class="language-plaintext highlighter-rouge">NgIf</code>, <code class="language-plaintext highlighter-rouge">NgFor</code> and <code class="language-plaintext highlighter-rouge">NgSwitch</code> built-in directives.</li>
+  <li>about the <a href="#microsyntax"><em>microsyntax</em></a> that expands into a <a href="#template"><code class="language-plaintext highlighter-rouge">&lt;template&gt;</code></a>.</li>
+  <li>to write a <a href="#unless">custom structural directive</a>, <code class="language-plaintext highlighter-rouge">UnlessDirective</code>.</li>
+</ul>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/security">Security</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/testing">Testing</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

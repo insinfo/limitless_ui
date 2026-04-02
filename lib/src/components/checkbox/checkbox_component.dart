@@ -11,7 +11,7 @@ import 'package:ngforms/ngforms.dart'
   ],
   changeDetection: ChangeDetectionStrategy.onPush,
 )
-class LiCheckboxComponent implements ControlValueAccessor<bool?> {
+class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
   LiCheckboxComponent(this._changeDetectorRef)
       : _generatedId = 'li-checkbox-${_nextId++}';
 
@@ -20,7 +20,13 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
   final ChangeDetectorRef _changeDetectorRef;
   final String _generatedId;
 
-  bool _value = false;
+  dynamic _value = false;
+
+  @Input()
+  dynamic trueValue = true;
+
+  @Input()
+  dynamic falseValue = false;
 
   @Input()
   String id = '';
@@ -33,6 +39,15 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
 
   @Input()
   String helperText = '';
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
 
   @Input()
   String ariaLabel = '';
@@ -50,6 +65,15 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
   String variant = '';
 
   @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
   bool inline = false;
 
   @Input()
@@ -61,7 +85,7 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
   @Input()
   bool required = false;
 
-  ChangeFunction<bool?> _onChange = (bool? _, {String? rawValue}) {};
+  ChangeFunction<dynamic> _onChange = (dynamic _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
 
   String get resolvedId => id.trim().isEmpty ? _generatedId : id.trim();
@@ -71,9 +95,24 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
   String? get resolvedAriaLabel =>
       ariaLabel.trim().isNotEmpty ? ariaLabel.trim() : null;
 
-  bool get checked => _value;
+  bool get checked => _value == trueValue;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  bool get hasErrorText => errorText.trim().isNotEmpty;
+
+  bool get showErrorFeedback => hasErrorText && effectiveInvalid;
+
+  bool get effectiveInvalid => invalid || dataInvalid;
+
+  bool get effectiveValid => !effectiveInvalid && valid;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String? get resolvedAriaInvalid => effectiveInvalid ? 'true' : null;
+
+  String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
 
   String get resolvedContainerClass => _joinClasses(<String>[
         'form-check',
@@ -85,6 +124,8 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
   String get resolvedInputClass => _joinClasses(<String>[
         'form-check-input',
         variant.trim().isNotEmpty ? 'form-check-input-${variant.trim()}' : '',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
         inputClass,
       ]);
 
@@ -93,12 +134,18 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
         labelClass,
       ]);
 
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
+      ]);
+
   @HostBinding('class.d-block')
   bool get hostClass => true;
 
   void handleChange(bool? value) {
-    _value = value ?? false;
-    _onChange(_value, rawValue: '$_value');
+    _value = (value ?? false) ? trueValue : falseValue;
+    _onChange(_value, rawValue: _value?.toString() ?? '');
     _markForCheck();
   }
 
@@ -107,7 +154,7 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
   }
 
   @override
-  void registerOnChange(ChangeFunction<bool?> fn) {
+  void registerOnChange(ChangeFunction<dynamic> fn) {
     _onChange = fn;
   }
 
@@ -117,8 +164,8 @@ class LiCheckboxComponent implements ControlValueAccessor<bool?> {
   }
 
   @override
-  void writeValue(bool? value) {
-    _value = value ?? false;
+  void writeValue(dynamic value) {
+    _value = value ?? falseValue;
     _markForCheck();
   }
 

@@ -1,48 +1,45 @@
 <div class="page-header page-header-light shadow-sm rounded-0 border">
   <div class="page-header-content d-lg-flex">
     <div class="d-flex">
-      <h4 class="page-title mb-0">Forms <span class="fw-normal">Checkboxes, radios e toggles</span></h4>
+      <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
     </div>
   </div>
   <div class="page-header-content d-lg-flex border-top">
     <div class="breadcrumb py-2">
-      <span class="breadcrumb-item active">Selection controls</span>
+      <span class="breadcrumb-item active">{{ breadcrumb }}</span>
     </div>
   </div>
 </div>
 
 <div class="content">
   <div class="card card-body mb-4">
-    <h5 class="mb-2">Controles de seleção no padrão Limitless</h5>
-    <p class="text-muted mb-0">
-      A página reúne alinhamentos, variações de cor, blocos inversos, switches e um caso opcional de rádio
-      desmarcável para ficar mais próxima da demo original do Limitless.
-    </p>
+    <h5 class="mb-2">{{ introTitle }}</h5>
+    <p class="text-muted mb-0">{{ introBody }}</p>
   </div>
 
   <div class="card mb-4">
     <div class="card-header">
-      <h5 class="mb-0">Checkboxes</h5>
-      <span class="text-muted">Empilhados, reversos, inline, cores contextuais e bloco inverso</span>
+      <h5 class="mb-0">{{ checkboxesTitle }}</h5>
+      <span class="text-muted">{{ checkboxesSubtitle }}</span>
     </div>
     <div class="card-body">
       <div class="row g-4">
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Left stacked</p>
+            <p class="selection-demo-title">{{ leftStackedTitle }}</p>
             <li-checkbox
-                label="Trilha de auditoria"
-                helperText="Mantém histórico completo das alterações."
+                [label]="auditTrailLabel"
+                [helperText]="auditTrailHelp"
                 [(ngModel)]="auditTrailEnabled">
             </li-checkbox>
             <li-checkbox
-                label="Portal público"
-                helperText="Expõe o status para acompanhamento externo."
+                [label]="publicPortalLabel"
+                [helperText]="publicPortalHelp"
                 [(ngModel)]="publicPortalEnabled">
             </li-checkbox>
             <li-checkbox
-                label="Fila de revisão"
-                helperText="Mantém uma etapa manual de aprovação."
+                [label]="reviewQueueLabel"
+                [helperText]="reviewQueueHelp"
                 variant="success"
                 [(ngModel)]="reviewQueueEnabled">
             </li-checkbox>
@@ -51,19 +48,19 @@
 
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Right stacked</p>
+            <p class="selection-demo-title">{{ rightStackedTitle }}</p>
             <li-checkbox
-                label="Auditoria externa"
+                [label]="reverseAuditLabel"
                 [reverse]="true"
                 [(ngModel)]="reverseAuditEnabled">
             </li-checkbox>
             <li-checkbox
-                label="Feed do cliente"
+                [label]="reverseClientFeedLabel"
                 [reverse]="true"
                 [(ngModel)]="reverseClientFeedEnabled">
             </li-checkbox>
             <li-checkbox
-                label="Alertas de SLA"
+                [label]="reverseSlaLabel"
                 [reverse]="true"
                 variant="warning"
                 [(ngModel)]="reverseSlaAlertsEnabled">
@@ -73,20 +70,20 @@
 
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Inline</p>
+            <p class="selection-demo-title">{{ inlineTitle }}</p>
             <li-checkbox
-                label="SMS"
+                [label]="smsLabel"
                 [inline]="true"
                 [(ngModel)]="smsChannelEnabled">
             </li-checkbox>
             <li-checkbox
-                label="E-mail"
+                [label]="emailLabel"
                 [inline]="true"
                 variant="info"
                 [(ngModel)]="emailChannelEnabled">
             </li-checkbox>
             <li-checkbox
-                label="Push"
+                [label]="pushLabel"
                 [inline]="true"
                 [reverse]="true"
                 variant="success"
@@ -97,53 +94,79 @@
 
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Contextual colors</p>
+            <p class="selection-demo-title">{{ contextualTitle }}</p>
             <li-checkbox
-                label="Secondary"
+                [label]="secondaryLabel"
                 variant="secondary"
+                trueValue="enabled"
+                falseValue="disabled"
                 [(ngModel)]="secondaryChecksEnabled">
             </li-checkbox>
             <li-checkbox
-                label="Danger"
+                [label]="dangerLabel"
                 variant="danger"
+                trueValue="enabled"
+                falseValue="disabled"
                 [(ngModel)]="dangerChecksEnabled">
             </li-checkbox>
             <li-checkbox
-                label="Success"
+                [label]="successLabel"
                 variant="success"
+                trueValue="enabled"
+                falseValue="disabled"
                 [(ngModel)]="successChecksEnabled">
             </li-checkbox>
           </div>
         </div>
 
-        <div class="col-12">
-          <div class="selection-demo-panel selection-demo-panel-dark">
-            <p class="selection-demo-title text-white">Inverse block</p>
-            <div class="row g-3">
-              <div class="col-lg-6">
-                <li-checkbox
-                    label="Fixar este card no dashboard"
-                    labelClass="text-white"
-                    inputClass="form-check-input-white"
-                    [(ngModel)]="inversePinEnabled">
-                </li-checkbox>
-              </div>
-              <div class="col-lg-6">
-                <li-checkbox
-                    label="Modo somente leitura"
-                    labelClass="text-white"
-                    inputClass="form-check-input-white"
-                    [reverse]="true"
-                    [(ngModel)]="inverseReadonlyEnabled">
-                </li-checkbox>
-              </div>
-            </div>
+        <div class="col-xl-6">
+          <div class="selection-demo-panel h-100">
+            <li-checkbox-group
+                [legend]="complianceLegend"
+                [helperText]="complianceHelp"
+                [errorText]="complianceError"
+                [invalid]="complianceInvalid">
+              <li-checkbox
+                  [label]="auditTrailLabel"
+                  [(ngModel)]="auditTrailEnabled"
+                  [dataInvalid]="complianceInvalid">
+              </li-checkbox>
+              <li-checkbox
+                  [label]="publicPortalLabel"
+                  [(ngModel)]="publicPortalEnabled"
+                  [dataInvalid]="complianceInvalid">
+              </li-checkbox>
+              <li-checkbox
+                  [label]="reviewQueueLabel"
+                  [(ngModel)]="reviewQueueEnabled"
+                  [dataInvalid]="complianceInvalid">
+              </li-checkbox>
+            </li-checkbox-group>
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <div class="selection-demo-panel selection-demo-panel-dark h-100">
+            <p class="selection-demo-title text-white">{{ inverseBlockTitle }}</p>
+            <li-checkbox
+                [label]="inversePinLabel"
+                labelClass="text-white"
+                inputClass="form-check-input-white"
+                [(ngModel)]="inversePinEnabled">
+            </li-checkbox>
+            <li-checkbox
+                [label]="inverseReadonlyLabel"
+                labelClass="text-white"
+                inputClass="form-check-input-white"
+                [reverse]="true"
+                [(ngModel)]="inverseReadonlyEnabled">
+            </li-checkbox>
           </div>
         </div>
       </div>
 
       <div class="selection-summary-box mt-4">
-        <div class="fw-semibold mb-1">Resumo</div>
+        <div class="fw-semibold mb-1">{{ summaryTitle }}</div>
         <div>{{ checkboxSummary }}</div>
         <div class="text-muted mt-1">{{ checkboxChannelSummary }}</div>
       </div>
@@ -152,139 +175,160 @@
 
   <div class="card mb-4">
     <div class="card-header">
-      <h5 class="mb-0">Radios</h5>
-      <span class="text-muted">Comportamento padrão restaurado, alinhamentos, cores e exemplo opt-in desmarcável</span>
+      <h5 class="mb-0">{{ radiosTitle }}</h5>
+      <span class="text-muted">{{ radiosSubtitle }}</span>
     </div>
     <div class="card-body">
       <div class="row g-4">
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Left stacked</p>
+            <p class="selection-demo-title">{{ neutralTitle }}</p>
             <li-radio
                 name="visibility"
-                label="Equipe interna"
+                [label]="teamLabel"
                 value="team"
                 [(ngModel)]="visibility">
             </li-radio>
             <li-radio
                 name="visibility"
-                label="Clientes"
+                [label]="customersLabel"
                 value="customers"
-                variant="warning"
                 [(ngModel)]="visibility">
             </li-radio>
             <li-radio
                 name="visibility"
-                label="Público"
+                [label]="publicLabel"
                 value="public"
-                variant="danger"
                 [(ngModel)]="visibility">
             </li-radio>
+
+            <div class="selection-subsection mt-4">
+              <p class="selection-demo-title mb-3">{{ inlineTitle }}</p>
+              <li-radio
+                  name="density"
+                  [label]="compactLabel"
+                  value="compact"
+                  [inline]="true"
+                  [(ngModel)]="density">
+              </li-radio>
+              <li-radio
+                  name="density"
+                  [label]="comfortableLabel"
+                  value="comfortable"
+                  [inline]="true"
+                  [(ngModel)]="density">
+              </li-radio>
+              <li-radio
+                  name="density"
+                  [label]="spaciousLabel"
+                  value="spacious"
+                  [inline]="true"
+                  [(ngModel)]="density">
+              </li-radio>
+            </div>
           </div>
         </div>
 
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Right stacked</p>
-            <li-radio
-                name="reviewFlow"
-                label="Manual"
-                value="manual"
-                [reverse]="true"
-                [(ngModel)]="reviewFlow">
-            </li-radio>
-            <li-radio
-                name="reviewFlow"
-                label="Assistido"
-                value="assisted"
-                [reverse]="true"
-                variant="info"
-                [(ngModel)]="reviewFlow">
-            </li-radio>
-            <li-radio
-                name="reviewFlow"
-                label="Automático"
-                value="automatic"
-                [reverse]="true"
-                variant="success"
-                [(ngModel)]="reviewFlow">
-            </li-radio>
-          </div>
-        </div>
-
-        <div class="col-xl-6">
-          <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Inline</p>
-            <li-radio
-                name="density"
-                label="Compacto"
-                value="compact"
-                [inline]="true"
-                [(ngModel)]="density">
-            </li-radio>
-            <li-radio
-                name="density"
-                label="Confortável"
-                value="comfortable"
-                [inline]="true"
-                variant="success"
-                [(ngModel)]="density">
-            </li-radio>
-            <li-radio
-                name="density"
-                label="Espaçado"
-                value="spacious"
-                [inline]="true"
-                [reverse]="true"
-                variant="info"
-                [(ngModel)]="density">
-            </li-radio>
-          </div>
-        </div>
-
-        <div class="col-xl-6">
-          <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Contextual colors</p>
+            <p class="selection-demo-title">{{ contextualTitle }}</p>
             <li-radio
                 name="contextualTone"
-                label="Secondary"
+                [label]="secondaryLabel"
                 value="secondary"
                 variant="secondary"
                 [(ngModel)]="contextualTone">
             </li-radio>
             <li-radio
                 name="contextualTone"
-                label="Warning"
+                [label]="warningLabel"
                 value="warning"
                 variant="warning"
                 [(ngModel)]="contextualTone">
             </li-radio>
             <li-radio
                 name="contextualTone"
-                label="Danger"
+                [label]="dangerLabel"
                 value="danger"
                 variant="danger"
                 [(ngModel)]="contextualTone">
             </li-radio>
+
+            <div class="selection-subsection mt-4">
+              <p class="selection-demo-title mb-2">{{ rightStackedTitle }}</p>
+              <li-radio
+                  name="reviewFlow"
+                  [label]="manualLabel"
+                  value="manual"
+                  [reverse]="true"
+                  [(ngModel)]="reviewFlow">
+              </li-radio>
+              <li-radio
+                  name="reviewFlow"
+                  [label]="assistedLabel"
+                  value="assisted"
+                  [reverse]="true"
+                  variant="info"
+                  [(ngModel)]="reviewFlow">
+              </li-radio>
+              <li-radio
+                  name="reviewFlow"
+                  [label]="automaticLabel"
+                  value="automatic"
+                  [reverse]="true"
+                  variant="success"
+                  [(ngModel)]="reviewFlow">
+              </li-radio>
+            </div>
           </div>
         </div>
 
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Optional uncheckable</p>
-            <p class="text-muted small mb-3">
-              Aqui o rádio usa `[uncheckable]="true"` de forma explícita e com `String?` no host.
-            </p>
+            <li-radio-group
+                [legend]="radioFormLegend"
+                [helperText]="radioFormHelp"
+                [errorText]="radioFormError"
+                [invalid]="radioFormInvalid">
+              <li-radio
+                  name="approvalMode"
+                  [label]="manualLabel"
+                  value="manual"
+                  [(ngModel)]="approvalMode"
+                  [dataInvalid]="radioFormInvalid">
+              </li-radio>
+              <li-radio
+                  name="approvalMode"
+                  [label]="assistedLabel"
+                  value="assisted"
+                  [(ngModel)]="approvalMode"
+                  [dataInvalid]="radioFormInvalid">
+              </li-radio>
+              <li-radio
+                  name="approvalMode"
+                  [label]="automaticLabel"
+                  value="automatic"
+                  [(ngModel)]="approvalMode"
+                  [dataInvalid]="radioFormInvalid">
+              </li-radio>
+            </li-radio-group>
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <div class="selection-demo-panel h-100">
+            <p class="selection-demo-title">{{ optionalRadioTitle }}</p>
+            <p class="text-muted small mb-3">{{ radioUncheckableHelp }}</p>
             <li-radio
                 name="optionalFilter"
-                label="Ativo"
+                [label]="activeLabel"
                 value="active"
                 [uncheckable]="true"
                 [(ngModel)]="optionalFilter">
             </li-radio>
             <li-radio
                 name="optionalFilter"
-                label="Pendente"
+                [label]="pendingLabel"
                 value="pending"
                 [uncheckable]="true"
                 variant="warning"
@@ -293,32 +337,38 @@
           </div>
         </div>
 
-        <div class="col-xl-6">
-          <div class="selection-demo-panel selection-demo-panel-dark h-100">
-            <p class="selection-demo-title text-white">Inverse block</p>
-            <li-radio
-                name="inverseFilter"
-                label="Interno"
-                value="internal"
-                labelClass="text-white"
-                inputClass="form-check-input-white"
-                [(ngModel)]="inverseFilter">
-            </li-radio>
-            <li-radio
-                name="inverseFilter"
-                label="Parceiros"
-                value="partners"
-                labelClass="text-white"
-                inputClass="form-check-input-white"
-                [reverse]="true"
-                [(ngModel)]="inverseFilter">
-            </li-radio>
+        <div class="col-12">
+          <div class="selection-demo-panel selection-demo-panel-dark">
+            <p class="selection-demo-title text-white">{{ inverseBlockTitle }}</p>
+            <div class="row g-3">
+              <div class="col-lg-6">
+                <li-radio
+                    name="inverseFilter"
+                    [label]="internalLabel"
+                    value="internal"
+                    labelClass="text-white"
+                    inputClass="form-check-input-white"
+                    [(ngModel)]="inverseFilter">
+                </li-radio>
+              </div>
+              <div class="col-lg-6">
+                <li-radio
+                    name="inverseFilter"
+                    [label]="partnersLabel"
+                    value="partners"
+                    labelClass="text-white"
+                    inputClass="form-check-input-white"
+                    [reverse]="true"
+                    [(ngModel)]="inverseFilter">
+                </li-radio>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="selection-summary-box mt-4">
-        <div class="fw-semibold mb-1">Resumo</div>
+        <div class="fw-semibold mb-1">{{ summaryTitle }}</div>
         <div>{{ radioSummary }}</div>
       </div>
     </div>
@@ -326,30 +376,30 @@
 
   <div class="card">
     <div class="card-header">
-      <h5 class="mb-0">Toggles</h5>
-      <span class="text-muted">Valores booleanos e mapeados, alinhamento reverso, cores e bloco inverso</span>
+      <h5 class="mb-0">{{ togglesTitle }}</h5>
+      <span class="text-muted">{{ togglesSubtitle }}</span>
     </div>
     <div class="card-body">
       <div class="row g-4">
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Mapped values</p>
+            <p class="selection-demo-title">{{ mappedValuesTitle }}</p>
             <li-toggle
-                label="Digest noturno"
-                helperText="Envia um resumo automático no fim do expediente."
+                [label]="digestLabel"
+                [helperText]="digestHelp"
                 [(ngModel)]="nightlyDigest">
             </li-toggle>
             <li-toggle
-                label="Fluxo de onboarding"
-                helperText="Usa `trueValue` e `falseValue` customizados."
+                [label]="onboardingLabel"
+                [helperText]="onboardingHelp"
                 trueValue="enabled"
                 falseValue="paused"
                 variant="success"
                 [(ngModel)]="onboardingState">
             </li-toggle>
             <li-toggle
-                label="Escalonamento crítico por SMS"
-                helperText="Quando desligado, o fluxo cai para e-mail."
+                [label]="incidentLabel"
+                [helperText]="incidentHelp"
                 trueValue="sms"
                 falseValue="email"
                 variant="warning"
@@ -361,27 +411,27 @@
 
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Inline and reverse</p>
+            <p class="selection-demo-title">{{ inlineReverseTitle }}</p>
             <li-toggle
-                label="Espelhar automações"
+                [label]="automationMirrorLabel"
                 [reverse]="true"
                 [(ngModel)]="automationMirrorEnabled">
             </li-toggle>
             <li-toggle
-                label="Campanhas externas"
+                [label]="campaignMirrorLabel"
                 [reverse]="true"
                 variant="info"
                 [(ngModel)]="campaignMirrorEnabled">
             </li-toggle>
             <div class="mt-3">
               <li-toggle
-                  label="Sync"
+                  [label]="syncLabel"
                   [inline]="true"
                   variant="success"
                   [(ngModel)]="inlineSyncEnabled">
               </li-toggle>
               <li-toggle
-                  label="Archive"
+                  [label]="archiveLabel"
                   [inline]="true"
                   [reverse]="true"
                   variant="secondary"
@@ -393,19 +443,19 @@
 
         <div class="col-xl-6">
           <div class="selection-demo-panel h-100">
-            <p class="selection-demo-title">Color switches</p>
+            <p class="selection-demo-title">{{ colorSwitchesTitle }}</p>
             <li-toggle
-                label="Secondary"
+                [label]="secondaryLabel"
                 variant="secondary"
                 [(ngModel)]="toggleSecondaryEnabled">
             </li-toggle>
             <li-toggle
-                label="Warning"
+                [label]="warningLabel"
                 variant="warning"
                 [(ngModel)]="toggleWarningEnabled">
             </li-toggle>
             <li-toggle
-                label="Dark"
+                [label]="darkLabel"
                 variant="dark"
                 [(ngModel)]="toggleDarkEnabled">
             </li-toggle>
@@ -413,27 +463,51 @@
         </div>
 
         <div class="col-xl-6">
-          <div class="selection-demo-panel selection-demo-panel-dark h-100">
-            <p class="selection-demo-title text-white">Inverse block</p>
+          <div class="selection-demo-panel h-100">
+            <p class="selection-demo-title">{{ toggleFormCaseTitle }}</p>
             <li-toggle
-                label="Monitoramento ativo"
-                labelClass="text-white"
-                inputClass="form-check-input-white"
-                [(ngModel)]="inverseMonitoringEnabled">
+                [label]="toggleFormLabel"
+                [helperText]="toggleFormDescription"
+                [errorText]="toggleFormError"
+                [invalid]="toggleFormInvalid"
+                [dataInvalid]="toggleFormInvalid"
+                [(ngModel)]="escalationToggleEnabled">
             </li-toggle>
-            <li-toggle
-                label="Convidados liberados"
-                labelClass="text-white"
-                inputClass="form-check-input-white"
-                [reverse]="true"
-                [(ngModel)]="inverseGuestsEnabled">
-            </li-toggle>
+            <li-checkbox
+                [label]="toggleFormHelp"
+                [(ngModel)]="requiresValidationWindow">
+            </li-checkbox>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="selection-demo-panel selection-demo-panel-dark">
+            <p class="selection-demo-title text-white">{{ inverseBlockTitle }}</p>
+            <div class="row g-3">
+              <div class="col-lg-6">
+                <li-toggle
+                    [label]="inverseMonitoringLabel"
+                    labelClass="text-white"
+                    inputClass="form-check-input-white"
+                    [(ngModel)]="inverseMonitoringEnabled">
+                </li-toggle>
+              </div>
+              <div class="col-lg-6">
+                <li-toggle
+                    [label]="inverseGuestsLabel"
+                    labelClass="text-white"
+                    inputClass="form-check-input-white"
+                    [reverse]="true"
+                    [(ngModel)]="inverseGuestsEnabled">
+                </li-toggle>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="selection-summary-box mt-4">
-        <div class="fw-semibold mb-1">Resumo</div>
+        <div class="fw-semibold mb-1">{{ summaryTitle }}</div>
         <div>{{ toggleSummary }}</div>
       </div>
     </div>

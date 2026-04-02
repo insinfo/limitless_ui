@@ -17,10 +17,9 @@
     <div class="card mb-4">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-0">A página do carousel reúne modos padrão, grid e transições adicionais, mantendo a
-              mesma API do componente base.</p>
+            <p class="text-muted mb-0">{{ overviewIntro }}</p>
         
             <div class="card border-0 shadow-none">
               <div class="card-header">

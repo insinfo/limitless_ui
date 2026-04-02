@@ -2,12 +2,12 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">Typeahead <span class="fw-normal">Busca com sugestões</span></h4>
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
       <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">Autocomplete com lista filtrada</span>
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
       </div>
     </div>
   </div>
@@ -17,44 +17,30 @@
 
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="i18n.t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">
-              <code>li-typeahead</code> cobre o fluxo mais comum de autocomplete no formulário:
-              digitação com debounce, navegação por teclado, seleção por Enter/Tab,
-              highlight configurável, busca assíncrona e integração direta com <code>ngModel</code>.
-            </p>
+            <p class="text-muted mb-3">{{ overviewIntro }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">
-                    É a opção intermediária entre <code>li-select</code> e <code>li-datatable-select</code>,
-                    quando a escolha precisa de busca rápida, mas não de uma tabela completa.
-                  </p>
+                  <h6 class="mb-2">{{ i18n.t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ i18n.t.common.sectionFeatures }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li><code>dataSource</code> com lista estável ou <code>DataFrame</code>.</li>
-                    <li><code>searchCallback</code> para busca remota/assíncrona.</li>
-                    <li><code>resultMarkupBuilder</code> para renderização rica do item.</li>
-                    <li><code>LiTypeaheadConfig</code> e <code>li-typeahead-highlight</code>.</li>
+                    <li *ngFor="let item of features">{{ item }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limites</h6>
+                  <h6 class="mb-2">{{ i18n.t.common.sectionLimitations }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>O resultado customizado rico usa callback HTML seguro, não <code>TemplateRef</code> contextual.
-                    </li>
-                    <li>Quando <code>editable=true</code>, o <code>ngModel</code> pode refletir texto livre até a
-                      seleção.</li>
-                    <li>Se a busca remota falhar, o popup mostra uma mensagem simples de erro.</li>
+                    <li *ngFor="let item of limits">{{ item }}</li>
                   </ul>
                 </div>
               </div>
@@ -63,10 +49,10 @@
             <div class="row g-4">
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Busca simples</h6>
-                  <p class="text-muted mb-3">Lista estática de estados com highlight e debounce curto.</p>
+                  <h6 class="mb-2">{{ simpleSearchTitle }}</h6>
+                  <p class="text-muted mb-3">{{ simpleSearchBody }}</p>
                   <li-typeahead [dataSource]="states" [debounceMs]="120" [minLength]="2" [maxResults]="8"
-                    placeholder="Search for a state" [(ngModel)]="selectedState"
+                    [placeholder]="simpleSearchPlaceholder" [(ngModel)]="selectedState"
                     (currentValueChange)="onSelectedStateChange($event)">
                   </li-typeahead>
                 </div>
@@ -74,10 +60,10 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Open on focus</h6>
-                  <p class="text-muted mb-3">Abre a lista completa ao focar no campo, mesmo vazio.</p>
+                  <h6 class="mb-2">{{ openOnFocusTitle }}</h6>
+                  <p class="text-muted mb-3">{{ openOnFocusBody }}</p>
                   <li-typeahead [dataSource]="states" [openOnFocus]="true" [minLength]="0"
-                    placeholder="Focus to browse states" [(ngModel)]="selectedOnFocus"
+                    [placeholder]="openOnFocusPlaceholder" [(ngModel)]="selectedOnFocus"
                     (currentValueChange)="onOpenFocusChange($event)">
                   </li-typeahead>
                 </div>
@@ -85,9 +71,9 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Select on exact</h6>
-                  <p class="text-muted mb-3">Se houver um único match exato, o item é selecionado automaticamente.</p>
-                  <li-typeahead [dataSource]="states" [selectOnExact]="true" placeholder="Type an exact state"
+                  <h6 class="mb-2">{{ selectOnExactTitle }}</h6>
+                  <p class="text-muted mb-3">{{ selectOnExactBody }}</p>
+                  <li-typeahead [dataSource]="states" [selectOnExact]="true" [placeholder]="selectOnExactPlaceholder"
                     [(ngModel)]="selectedExact" (currentValueChange)="onExactChange($event)">
                   </li-typeahead>
                 </div>
@@ -95,12 +81,11 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Resultados formatados</h6>
-                  <p class="text-muted mb-3">Usa <code>inputFormatter</code> e <code>resultFormatter</code> sobre
-                    objetos.</p>
+                  <h6 class="mb-2">{{ formattedResultsTitle }}</h6>
+                  <p class="text-muted mb-3">{{ formattedResultsBody }}</p>
                   <li-typeahead [dataSource]="cityOptions" labelKey="name" valueKey="code"
                     [inputFormatter]="cityInputFormatter" [resultFormatter]="cityResultFormatter"
-                    placeholder="Search for a city" [(ngModel)]="selectedCity"
+                    [placeholder]="cityPlaceholder" [(ngModel)]="selectedCity"
                     (currentValueChange)="onCityChange($event)">
                   </li-typeahead>
                 </div>
@@ -108,14 +93,11 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Busca assíncrona + markup customizado</h6>
-                  <p class="text-muted mb-3">
-                    Usa <code>searchCallback</code> com atraso simulado e <code>resultMarkupBuilder</code>
-                    para mostrar layout mais rico por item.
-                  </p>
+                  <h6 class="mb-2">{{ asyncTitle }}</h6>
+                  <p class="text-muted mb-3">{{ asyncBody }}</p>
                   <li-typeahead [searchCallback]="remoteCitySearch" [inputFormatter]="cityInputFormatter"
                     [resultMarkupBuilder]="remoteResultMarkup" [debounceMs]="220" [minLength]="1"
-                    placeholder="Remote city search" [(ngModel)]="remoteSelection"
+                    [placeholder]="remotePlaceholder" [(ngModel)]="remoteSelection"
                     (currentValueChange)="onRemoteChange($event)">
                   </li-typeahead>
                 </div>
@@ -123,10 +105,9 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Prevent manual entry</h6>
-                  <p class="text-muted mb-3">Com <code>editable=false</code>, o modelo só aceita um item selecionado.
-                  </p>
-                  <li-typeahead [dataSource]="states" [editable]="false" placeholder="Select only from suggestions"
+                  <h6 class="mb-2">{{ strictTitle }}</h6>
+                  <p class="text-muted mb-3">{{ strictBody }}</p>
+                  <li-typeahead [dataSource]="states" [editable]="false" [placeholder]="strictPlaceholder"
                     [(ngModel)]="strictSelection" (currentValueChange)="onStrictChange($event)">
                   </li-typeahead>
                 </div>
@@ -134,10 +115,8 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Highlight configurável</h6>
-                  <p class="text-muted mb-3">
-                    O componente separado <code>li-typeahead-highlight</code> também pode ser usado fora do typeahead.
-                  </p>
+                  <h6 class="mb-2">{{ highlightTitle }}</h6>
+                  <p class="text-muted mb-3">{{ highlightBody }}</p>
 
                   <div class="border rounded p-3">
                     <li-typeahead-highlight result="São Paulo, San Francisco, Santiago" [term]="highlightTerms"
@@ -156,26 +135,15 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="i18n.t.common.tabApi">
           <div class="card-body">
             <div class="row g-4">
               <div class="col-xl-6">
-                <h6 class="mb-2">Como utilizar</h6>
-                <p class="mb-3">
-                  O componente recebe uma coleção em <code>dataSource</code>, mantém o filtro local
-                  e devolve o valor selecionado por <code>[(ngModel)]</code> e <code>(currentValueChange)</code>.
-                </p>
+                <h6 class="mb-2">{{ apiUsageTitle }}</h6>
+                <p class="mb-3">{{ apiUsageBody }}</p>
 
                 <ul class="mb-3 ps-3">
-                  <li><code>labelKey</code>, <code>valueKey</code> e <code>disabledKey</code> para listas de mapas.</li>
-                  <li><code>inputFormatter</code> e <code>resultFormatter</code> para objetos.</li>
-                  <li><code>searchCallback</code> para busca assíncrona retornando <code>Future</code> ou lista
-                    imediata.</li>
-                  <li><code>resultMarkupBuilder</code> para markup HTML do item.</li>
-                  <li><code>openOnFocus</code>, <code>showHint</code>, <code>editable</code> e
-                    <code>selectOnExact</code>.</li>
-                  <li><code>minLength</code>, <code>maxResults</code>, <code>debounceMs</code> e
-                    <code>LiTypeaheadConfig</code>.</li>
+                  <li *ngFor="let item of apiUsageItems">{{ item }}</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-typeahead
@@ -189,14 +157,9 @@
               </div>
 
               <div class="col-xl-6">
-                <h6 class="mb-2">Boas práticas</h6>
+                <h6 class="mb-2">{{ bestPracticesTitle }}</h6>
                 <ul class="mb-3 ps-3">
-                  <li>Mantenha o <code>dataSource</code> estável no pai.</li>
-                  <li>Prefira <code>searchCallback</code> quando o backend já expõe busca filtrada.</li>
-                  <li>Use <code>LiTypeaheadConfig</code> para defaults locais por área da tela.</li>
-                  <li>Use <code>li-datatable-select</code> quando a escolha exigir colunas, paginação ou ordenação.</li>
-                  <li>Prefira <code>editable=false</code> em formulários cujo valor final precisa ser estritamente
-                    validado.</li>
+                  <li *ngFor="let item of bestPractices">{{ item }}</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>final cities = &lt;Map&lt;String, dynamic&gt;&gt;[

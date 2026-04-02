@@ -2,12 +2,12 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">Components <span class="fw-normal">Feedback</span></h4>
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
       <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">Feedback</span>
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
       </div>
     </div>
   </div>
@@ -17,38 +17,30 @@
 
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">
-              A página combina alertas e barras de progresso para demonstrar padrões de feedback
-              transacional e contínuo em uma interface administrativa.
-            </p>
+            <p class="text-muted mb-3">{{ overviewIntro }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">A tela reúne componentes úteis para mensagens imediatas, estados de
-                    atenção, acompanhamento de progresso e comunicação de status.</p>
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Alertas com variantes, ícones, preenchimento sólido e dismiss.</li>
-                    <li>Barras de progresso simples e empilhadas.</li>
-                    <li>Composição adequada para feedback transacional e operacional.</li>
+                    <li *ngFor="let item of features">{{ item }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Alertas não substituem fluxo de confirmação crítica.</li>
-                    <li>Progress não faz polling ou sincronização automática.</li>
-                    <li>Estados muito densos pedem hierarquia visual no componente pai.</li>
+                    <li *ngFor="let item of limits">{{ item }}</li>
                   </ul>
                 </div>
               </div>
@@ -56,31 +48,28 @@
 
             <div class="card">
               <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Alerts</h5>
+                <h5 class="mb-0">{{ t.nav.alerts }}</h5>
                 <button class="btn btn-sm btn-light" type="button" (click)="restoreReleaseAlert()">
-                  Restaurar alerta
+                  {{ t.common.restoreAlert }}
                 </button>
               </div>
 
               <div class="card-body">
-                <p class="text-muted">
-                  Exemplos reais com variant, solid, dismissible, iconMode e iconPosition.
-                </p>
+                <p class="text-muted">{{ alertExamplesIntro }}</p>
 
                 <div class="demo-component-stack">
                   <li-alert variant="primary" iconClass="ph-rocket-launch" iconMode="inline"
                     [visible]="releaseAlertVisible" [dismissible]="true" (dismissed)="dismissReleaseAlert()">
-                    <strong>Deploy concluído.</strong> O pacote já está pronto para ser validado no navegador.
+                    <strong>{{ t.pages.alerts.releaseDone }}</strong> {{ alertReleaseBody }}
                   </li-alert>
 
                   <li-alert variant="warning" [solid]="true" iconClass="ph-warning-circle" [dismissible]="true">
-                    <strong>Atenção.</strong> Use solid=true quando quiser mais contraste em avisos importantes.
+                    <strong>{{ t.pages.alerts.attention }}</strong> {{ alertSolidBody }}
                   </li-alert>
 
                   <li-alert variant="indigo" iconClass="ph-info" iconMode="inline" iconPosition="end"
                     [borderless]="true">
-                    Borderless, roundedPill e alertClass permitem compor estilos mais específicos sem criar variantes
-                    novas.
+                    {{ borderlessBody }}
                   </li-alert>
                 </div>
               </div>
@@ -88,7 +77,7 @@
 
             <div class="card mt-4">
               <div class="card-header">
-                <h5 class="mb-0">Progress</h5>
+                <h5 class="mb-0">{{ t.nav.progress }}</h5>
               </div>
 
               <div class="card-body">
@@ -118,20 +107,13 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
             <div class="row g-4">
               <div class="col-xl-6">
-                <h6 class="mb-2">Como utilizar alerts</h6>
+                  <h6 class="mb-2">{{ alertApiTitle }}</h6>
                 <ul class="mb-3 ps-3">
-                  <li><code>variant</code> define a cor sem criar classes manuais.</li>
-                  <li><code>[solid]</code> aumenta contraste em avisos importantes.</li>
-                  <li><code>[dismissible]</code> e <code>[visible]</code> permitem ciclo controlado pelo componente pai.
-                  </li>
-                  <li><code>iconClass</code>, <code>iconMode</code> e <code>iconPosition</code> ajustam a leitura
-                    visual.</li>
-                  <li><code>[borderless]</code>, <code>[roundedPill]</code> e <code>alertClass</code> refinam o
-                    acabamento.</li>
+                    <li *ngFor="let item of alertApiItems">{{ item }}</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-alert
@@ -144,14 +126,9 @@
               </div>
 
               <div class="col-xl-6">
-                <h6 class="mb-2">Como utilizar progress</h6>
+                <h6 class="mb-2">{{ progressApiTitle }}</h6>
                 <ul class="mb-3 ps-3">
-                  <li><code>[height]</code> controla a espessura da barra.</li>
-                  <li><code>[rounded]</code>, <code>[striped]</code> e <code>[animated]</code> ajustam o tratamento
-                    visual.</li>
-                  <li><code>li-progress-bar</code> recebe <code>[value]</code>, <code>label</code> e
-                    <code>[showValueLabel]</code>.</li>
-                  <li>Barras empilhadas são úteis para composição de capacidade por grupo.</li>
+                  <li *ngFor="let item of progressApiItems">{{ item }}</li>
                 </ul>
 
                 <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-progress [height]="'1rem'" [striped]="true" [animated]="true"&gt;

@@ -1,0 +1,118 @@
+:host {
+  display: block;
+}
+
+.color-picker-wrapper {
+  display: inline-block;
+  max-width: 100%;
+  position: relative;
+}
+
+.color-picker-trigger {
+  display: inline-block;
+}
+
+.sp-replacer {
+  min-width: 2.5rem;
+}
+
+.sp-replacer.is-invalid {
+  border-color: var(--form-invalid-border-color, var(--danger));
+}
+
+.sp-replacer.is-valid {
+  border-color: var(--form-valid-border-color, var(--success));
+}
+
+.sp-replacer .sp-dd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sp-replacer .sp-dd::after,
+.sp-clear.sp-clear-display::after {
+  display: block;
+  font-family: var(--icon-font-family);
+  font-size: var(--icon-font-size);
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sp-clear.sp-clear-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sp-clear.sp-clear-display::after {
+  content: "\e939";
+}
+
+.sp-replacer .sp-dd::after {
+  content: "\e9fe";
+}
+
+.sp-preview .sp-clear-display::after,
+.sp-initial .sp-clear-display::after {
+  content: none;
+}
+
+.sp-container {
+  z-index: 1086;
+}
+
+.sp-preview {
+  background-image: none;
+  background-color: transparent;
+}
+
+.sp-preview-inner,
+.sp-thumb-inner {
+  background-clip: padding-box;
+}
+
+.sp-dragger {
+  transform: translate(-50%, -50%);
+}
+
+.sp-slider {
+  transform: translateY(-50%);
+}
+
+.sp-alpha-handle {
+  transform: translateX(-50%);
+}
+
+.sp-input-container .sp-input {
+  width: 100%;
+}
+
+.sp-palette-row + .sp-palette-row {
+  margin-top: var(--spacer-1);
+}
+
+.sp-palette-row-initial .sp-thumb-el + .sp-thumb-el {
+  margin-left: var(--spacer-1);
+}
+
+.sp-palette .sp-thumb-el,
+.sp-initial .sp-thumb-el {
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.sp-flat-host .sp-container {
+  display: inline-block;
+  max-width: 100%;
+}
+
+@media (max-width: 575.98px) {
+  .sp-container:not(.sp-flat) {
+    max-width: min(100vw - 1rem, 18rem);
+  }
+}

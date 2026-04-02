@@ -1,0 +1,26 @@
+/* -----------------------------------------
+   Variables
+----------------------------------------- */
+#subnav ul li {
+  display: flex;
+  display: -webkit-flex;
+  white-space: nowrap; }
+  #subnav ul li a {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline; }
+  #subnav ul li.previous {
+    float: left; }
+  #subnav ul li.previous:before {
+    display: inline;
+    color: #0175C2;
+    content: "\2329"; }
+  #subnav ul li.next {
+    justify-content: flex-end; }
+  #subnav ul li.next:after {
+    display: inline;
+    color: #0175C2;
+    content: "\232A"; }
+
+.ng-page-title a {
+  font-size: 16px; }

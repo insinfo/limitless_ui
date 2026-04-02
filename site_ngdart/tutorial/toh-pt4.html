@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create a reusable service to manage the hero data calls.">
+  <title>Services | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Services" />
+  <meta name="twitter:description" content="Create a reusable service to manage the hero data calls." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Services" />
+  <meta property="og:description" content="Create a reusable service to manage the hero data calls." />
+  <meta property="og:url" content="https://angulardart.xyz/tutorial/toh-pt4" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li >
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li class="active">
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#where-you-left-off">Where you left off</a></li>
+<li class="toc-entry toc-h2"><a href="#creating-a-hero-service">Creating a hero service</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#create-an-injectable-heroservice">Create an injectable HeroService</a></li>
+<li class="toc-entry toc-h3"><a href="#getting-hero-data">Getting hero data</a></li>
+<li class="toc-entry toc-h3"><a href="#use-the-hero-service">Use the hero service</a></li>
+<li class="toc-entry toc-h3"><a href="#dont-instantiate-services">Don’t instantiate services</a></li>
+<li class="toc-entry toc-h3"><a href="#inject-heroservice">Inject HeroService</a></li>
+<li class="toc-entry toc-h3"><a href="#the-appcomponentgetheroes-method">The AppComponent.getHeroes() method</a></li>
+<li class="toc-entry toc-h3"><a href="#the-ngoninit-lifecycle-hook">The ngOnInit lifecycle hook</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#async">Async hero services</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#the-hero-service-returns-a-future">The hero service returns a Future</a></li>
+<li class="toc-entry toc-h3"><a href="#processing-the-future">Processing the Future</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#use-asyncawait">Use async/await</a></li>
+<li class="toc-entry toc-h2"><a href="#review-the-app-structure">Review the app structure</a></li>
+<li class="toc-entry toc-h2"><a href="#the-road-youve-travelled">The road you’ve travelled</a></li>
+<li class="toc-entry toc-h2"><a href="#the-road-ahead">The road ahead</a></li>
+<li class="toc-entry toc-h2"><a href="#slow">Appendix: Take it slow</a></li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/tutorial/toh-pt3">Multiple Components</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/tutorial/toh-pt5">Routing</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/tutorial/toh-pt4.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Services' page issue&body=From URL: https://angulardart.xyz/tutorial/toh-pt4"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Services 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/toh-4”?&gt;</p>
+
+<p>As the Tour of Heroes app evolves, you’ll add more components that need access to hero data.</p>
+
+<p>Instead of copying and pasting the same code over and over,
+you’ll create a single reusable data service and
+inject it into the components that need it.
+Using a separate service keeps components lean and focused on supporting the view,
+and makes it easy to unit test components with a mock service.</p>
+
+<p>Because data services are invariably asynchronous,
+you’ll finish the page with a <em>Future</em>-based version of the data service.</p>
+
+<p>When you’re done with this page, the app should look like this <span><a href="/examples/toh-4" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/toh-4/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<h2 id="where-you-left-off">
+<a class="anchor" href="#where-you-left-off" aria-hidden="true"><span class="octicon octicon-link"></span></a>Where you left off</h2>
+
+<p>Before continuing with the Tour of Heroes, verify that you have the following structure.
+If not, go back to the previous pages.</p>
+
+<div class="ul-filetree">
+  <ul>
+    <li>angular_tour_of_heroes
+      <ul>
+        <li>lib
+          <ul>
+            <li>app_component.{css,dart,html}</li>
+            <li>src
+              <ul>
+                <li>hero.dart</li>
+                <li>hero_component.dart</li>
+                <li>mock_heroes.dart</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>test
+          <ul>
+            <li>…</li>
+          </ul>
+        </li>
+        <li>web
+          <ul>
+            <li>index.html</li>
+            <li>main.dart</li>
+            <li>styles.css</li>
+          </ul>
+        </li>
+        <li>analysis_options.yaml</li>
+        <li>pubspec.yaml</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<p>If the app isn’t running already,
+<a href="/guide/setup#run-the-app">launch the app</a>.
+As you make changes,
+<a href="/guide/setup#reload-the-app">keep it running</a>
+by reloading the browser window.</p>
+
+<h2 id="creating-a-hero-service">
+<a class="anchor" href="#creating-a-hero-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating a hero service</h2>
+
+<p>The stakeholders want to show the heroes in various ways on different pages.
+Users can already select a hero from a list.
+Soon you’ll add a dashboard with the top performing heroes and create a separate view for editing hero details.
+All three views need hero data.</p>
+
+<p>At the moment, the <code class="language-plaintext highlighter-rouge">AppComponent</code> defines mock heroes for display.
+However, <em>defining</em> heroes is not the component’s job,
+and you can’t easily share the list of heroes with other components and views.
+In this page, you’ll move the hero data acquisition business to a single service that provides the data and
+share that service with all components that need the data.</p>
+
+<h3 id="create-an-injectable-heroservice">
+<a class="anchor" href="#create-an-injectable-heroservice" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create an injectable <em>HeroService</em>
+</h3>
+
+<p>Create the file <code class="language-plaintext highlighter-rouge">hero_service.dart</code> under <code class="language-plaintext highlighter-rouge">lib/src</code>.</p>
+
+<div class="l-sub-section">
+  <p>The naming convention for service files is the service name in lowercase followed by <code class="language-plaintext highlighter-rouge">_service</code>.
+  For a multi-word service name, use lower <a href="/glossary#snake_case">snake_case</a>.
+  For example, the filename for <code class="language-plaintext highlighter-rouge">SpecialSuperHeroService</code> is <code class="language-plaintext highlighter-rouge">special_super_hero_service.dart</code>.</p>
+</div>
+
+<p>Name the class <code class="language-plaintext highlighter-rouge">HeroService</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_service_1.dart (empty class)” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class HeroService {
+  }
+</code></pre></div></div>
+
+<h3 id="getting-hero-data">
+<a class="anchor" href="#getting-hero-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting hero data</h3>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeroService</code> could get hero data from anywhere—a
+web service, local storage, or a mock data source.
+For now, import <code class="language-plaintext highlighter-rouge">Hero</code> and <code class="language-plaintext highlighter-rouge">mockHeroes</code>, and return the mock heroes from a <code class="language-plaintext highlighter-rouge">getAll()</code> method:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_service_1.dart” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'hero.dart';
+  import 'mock_heroes.dart';
+
+  class HeroService {
+    List&lt;Hero&gt; getAll() =&gt; mockHeroes;
+  }
+</code></pre></div></div>
+
+<h3 id="use-the-hero-service">
+<a class="anchor" href="#use-the-hero-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use the hero service</h3>
+
+<p>You’re ready to use the <code class="language-plaintext highlighter-rouge">HeroService</code> in other components, starting with <code class="language-plaintext highlighter-rouge">AppComponent</code>.</p>
+
+<p>Import the <code class="language-plaintext highlighter-rouge">HeroService</code> so that you can reference it in the code.</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (hero service import)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'src/hero_service.dart';
+</code></pre></div></div>
+
+<h3 id="dont-instantiate-services">
+<a class="anchor" href="#dont-instantiate-services" aria-hidden="true"><span class="octicon octicon-link"></span></a>Don’t instantiate services</h3>
+
+<p>How should the <code class="language-plaintext highlighter-rouge">AppComponent</code> get an instance of <code class="language-plaintext highlighter-rouge">HeroService</code>?</p>
+
+<p>You could create a new instance of the <code class="language-plaintext highlighter-rouge">HeroService</code> like this:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (excerpt)” region=”new-service” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  HeroService heroService = HeroService(); // DON'T do this
+</code></pre></div></div>
+
+<p>However, this option isn’t ideal for the following reasons:</p>
+
+<ul>
+  <li>The component has to know how to create a <code class="language-plaintext highlighter-rouge">HeroService</code>.
+If you change the <code class="language-plaintext highlighter-rouge">HeroService</code> constructor,
+you must find and update every place you created the service.
+Patching code in multiple places is error prone and adds to the test burden.</li>
+  <li>You create a service each time you invoke the constructor.
+What if the service caches heroes and shares that cache with others?
+You couldn’t do that.</li>
+  <li>With the <code class="language-plaintext highlighter-rouge">AppComponent</code> locked into a specific implementation of the <code class="language-plaintext highlighter-rouge">HeroService</code>,
+switching implementations for different scenarios, such as operating offline or using
+different mocked versions for testing, would be difficult.</li>
+</ul>
+
+<h3 id="inject-heroservice">
+<a class="anchor" href="#inject-heroservice" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inject <em>HeroService</em>
+</h3>
+
+<p>Instead of using the <em>new</em> expression, add these lines:</p>
+
+<ul>
+  <li>Add a private <code class="language-plaintext highlighter-rouge">HeroService</code> property.</li>
+  <li>Add a constructor that initializes the private property.</li>
+  <li>Add <code class="language-plaintext highlighter-rouge">HeroService</code> to the component’s <code class="language-plaintext highlighter-rouge">providers</code> metadata.</li>
+</ul>
+
+<p>Here are the property and the constructor:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (constructor)” region=”ctor” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  final HeroService _heroService;
+  AppComponent(this._heroService);
+</code></pre></div></div>
+
+<p>The constructor does nothing except set the <code class="language-plaintext highlighter-rouge">_heroService</code> property.
+The <code class="language-plaintext highlighter-rouge">HeroService</code> type of <code class="language-plaintext highlighter-rouge">_heroService</code> identifies the constructor’s parameter as
+a <code class="language-plaintext highlighter-rouge">HeroService</code> injection point.</p>
+
+<p>Now Angular knows to supply a <code class="language-plaintext highlighter-rouge">HeroService</code> instance when it creates a new <code class="language-plaintext highlighter-rouge">AppComponent</code>.</p>
+
+<div class="l-sub-section">
+  <p>Read more about dependency injection in the <a href="../guide/dependency-injection">Dependency Injection</a> page.</p>
+</div>
+
+<p>The <em>injector</em> doesn’t know yet how to create a <code class="language-plaintext highlighter-rouge">HeroService</code>.
+If you run the code now, Angular would fail with this error:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>EXCEPTION: No provider for HeroService! (AppComponent -&gt; HeroService)
+</code></pre></div></div>
+
+<p>To teach the injector how to make a <code class="language-plaintext highlighter-rouge">HeroService</code>,
+add the following <code class="language-plaintext highlighter-rouge">providers</code> list as the last parameter of the <code class="language-plaintext highlighter-rouge">@Component</code> annotation.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (providers)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  providers: [ClassProvider(HeroService)],
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">providers</code> parameter tells Angular to create a fresh instance of the <code class="language-plaintext highlighter-rouge">HeroService</code> when it creates an <code class="language-plaintext highlighter-rouge">AppComponent</code>.
+The <code class="language-plaintext highlighter-rouge">AppComponent</code>, as well as its child components, can use that service to get hero data.</p>
+
+<p><a id="child-component"></a></p>
+<h3 id="the-appcomponentgetheroes-method">
+<a class="anchor" href="#the-appcomponentgetheroes-method" aria-hidden="true"><span class="octicon octicon-link"></span></a>The <em>AppComponent.getHeroes()</em> method</h3>
+
+<p>Add a <code class="language-plaintext highlighter-rouge">getHeroes()</code> method to the app component,
+and give <code class="language-plaintext highlighter-rouge">heroes</code> an empty list as its initial value.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (heroes and getHeroes)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  List&lt;Hero&gt; heroes = &lt;Hero&gt;[];
+  // ···
+  void _getHeroes() {
+    heroes = _heroService.getAll();
+  }
+</code></pre></div></div>
+
+<p><strong>Note:</strong> we can absolutely mark <code class="language-plaintext highlighter-rouge">heroes</code> as <code class="language-plaintext highlighter-rouge">late</code> and remove its initializer.
+Our code will still run fine. However, we recommend avoid using <code class="language-plaintext highlighter-rouge">late</code>, because
+as your code gets complicated it’s harder to avoid using the variable before it
+is assigned. Instead, try giving it a default/dummy value that will not produce
+any unintended output even when it’s called, just like what we did here.
+Question to the avid developer: What would happen if <code class="language-plaintext highlighter-rouge">heroes</code> is always an empty
+list?</p>
+
+<p><a id="oninit"></a></p>
+
+<h3 id="the-ngoninit-lifecycle-hook">
+<a class="anchor" href="#the-ngoninit-lifecycle-hook" aria-hidden="true"><span class="octicon octicon-link"></span></a>The <em>ngOnInit</em> lifecycle hook</h3>
+
+<p><code class="language-plaintext highlighter-rouge">AppComponent</code> should fetch and display hero data with no issues.</p>
+
+<p>You might be tempted to call the <code class="language-plaintext highlighter-rouge">getHeroes()</code> method in a constructor, but
+a constructor should not contain complex logic,
+especially a constructor that calls a server, such as a data access method.
+A constructor is for simple initializations, like wiring constructor parameters to properties.</p>
+
+<p>To have Angular call <code class="language-plaintext highlighter-rouge">getHeroes()</code>, you can implement the Angular <em>ngOnInit lifecycle hook</em>.
+Angular offers interfaces for tapping into critical moments in the component lifecycle:
+at creation, after each change, and at its eventual destruction.</p>
+
+<p>Each interface has a single method. When the component implements that method, Angular calls it at the appropriate time.</p>
+
+<div class="l-sub-section">
+  <p>Read more about lifecycle hooks in the <a href="../guide/lifecycle-hooks">Lifecycle Hooks</a> page.</p>
+</div>
+
+<p>Add <a href="https://pub.dev/documentation/angular/6.0.1/angular/OnInit-class.html">OnInit</a> to the list of interfaces implemented by <code class="language-plaintext highlighter-rouge">AppComponent</code>, and
+write an <code class="language-plaintext highlighter-rouge">ngOnInit()</code> method with the initialization logic inside. Angular will call it
+at the right time. In this case, initialize by calling <code class="language-plaintext highlighter-rouge">getHeroes()</code>.</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (OnInit and ngOnInit)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class AppComponent implements OnInit {
+    // ···
+    void ngOnInit() =&gt; _getHeroes();
+    // ···
+  }
+</code></pre></div></div>
+
+<p><i class="material-icons">open_in_browser</i>
+ <strong>Refresh the browser.</strong> The app should show a list of heroes and a hero detail view
+when you click on a hero name.</p>
+
+<h2 id="async">
+<a class="anchor" href="#async" aria-hidden="true"><span class="octicon octicon-link"></span></a>Async hero services</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">HeroService</code> returns a list of mock heroes immediately;
+its <code class="language-plaintext highlighter-rouge">getAll()</code> signature is synchronous.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_service_1.dart (getAll)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  List&lt;Hero&gt; getAll() =&gt; mockHeroes;
+</code></pre></div></div>
+
+<p>Eventually, the hero data will come from a remote server.
+When using a remote server, users don’t have to wait for the server to respond;
+additionally, you aren’t able to block the UI during the wait.</p>
+
+<p>To coordinate the view with the response,
+you can use <em>Futures</em>, which is an asynchronous
+technique that changes the signature of the <code class="language-plaintext highlighter-rouge">getAll()</code> method.</p>
+
+<h3 id="the-hero-service-returns-a-future">
+<a class="anchor" href="#the-hero-service-returns-a-future" aria-hidden="true"><span class="octicon octicon-link"></span></a>The hero service returns a <em>Future</em>
+</h3>
+
+<p>A <a href="https://api.dart.dev/stable/dart-async/Future-class.html">Future</a> represents a future computation or value. Using a <code class="language-plaintext highlighter-rouge">Future</code>, you
+can register callback functions that will be invoked when the computation
+completes (and results are ready), or when a computational error needs to be
+reported.</p>
+
+<div class="l-sub-section">
+  <p>This is a simplified explanation. Read more about Futures in the
+  Dart language tutorial on <a href="https://dart.dev/tutorials/language/futures">Asynchronous Programming: Futures</a>.</p>
+
+</div>
+
+<p>Add an import of <a href="https://api.dart.dev/stable/dart-async/dart-async-library.html">dart:async</a> because it defines <code class="language-plaintext highlighter-rouge">Future</code>, and
+update the <code class="language-plaintext highlighter-rouge">HeroService</code> with this <code class="language-plaintext highlighter-rouge">Future</code>-returning <code class="language-plaintext highlighter-rouge">getAll()</code> method:</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_service.dart (getAll)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;List&lt;Hero&gt;&gt; getAll() async =&gt; mockHeroes;
+</code></pre></div></div>
+
+<p>You’re still mocking the data. You’re simulating the behavior of an ultra-fast, zero-latency server,
+by returning a <code class="language-plaintext highlighter-rouge">Future</code> whose mock heroes become available immediately.</p>
+
+<div class="l-sub-section">
+  <p>Marking a method as <code class="language-plaintext highlighter-rouge">async</code> automatically sets the return type to <code class="language-plaintext highlighter-rouge">Future</code>.
+  For more information on <code class="language-plaintext highlighter-rouge">async</code> functions, see
+  <a href="https://dart.dev/guides/language/language-tour#async">Declaring async functions</a> in the Dart language tour.</p>
+</div>
+
+<h3 id="processing-the-future">
+<a class="anchor" href="#processing-the-future" aria-hidden="true"><span class="octicon octicon-link"></span></a>Processing the <em>Future</em>
+</h3>
+
+<p>As a result of the change to <code class="language-plaintext highlighter-rouge">HeroService</code>, the app component’s <code class="language-plaintext highlighter-rouge">heroes</code>
+property is now a <code class="language-plaintext highlighter-rouge">Future</code> rather than a list of heroes.  You have to change
+the implementation to process the <code class="language-plaintext highlighter-rouge">Future</code> result when it completes.  When
+the <code class="language-plaintext highlighter-rouge">Future</code> completes successfully, you’ll have heroes to display.</p>
+
+<p>Here is the current implementation:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_1.dart (synchronous _getHeroes)” region=”_getHeroes” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  void _getHeroes() {
+    heroes = _heroService.getAll();
+  }
+</code></pre></div></div>
+
+<p>Pass the callback function as an argument to the <code class="language-plaintext highlighter-rouge">Future.then()</code> method:</p>
+
+<p>&lt;?code-excerpt “lib/app_component_2.dart (asynchronous _getHeroes)” region=”_getHeroes” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  void _getHeroes() {
+    _heroService.getAll().then((heroes) =&gt; this.heroes = heroes);
+  }
+</code></pre></div></div>
+
+<p>The callback sets the component’s <code class="language-plaintext highlighter-rouge">heroes</code> property to the list of heroes returned by the service.</p>
+
+<p><i class="material-icons">open_in_browser</i>
+ <strong>Refresh the browser.</strong> The app still runs, showing a list of heroes, and
+responding to a name selection with a detail view.</p>
+
+<h2 id="use-asyncawait">
+<a class="anchor" href="#use-asyncawait" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use <em>async</em>/<em>await</em>
+</h2>
+
+<p>An asynchronous method containing one or more <code class="language-plaintext highlighter-rouge">Future.then()</code> methods can be
+difficult to read and understand. Thankfully, Dart’s <code class="language-plaintext highlighter-rouge">async</code>/<code class="language-plaintext highlighter-rouge">await</code>
+language feature lets you write asynchronous code that looks just
+like synchronous code. Rewrite <code class="language-plaintext highlighter-rouge">getHeroes()</code>:</p>
+
+<p>&lt;?code-excerpt “lib/app_component.dart (revised async/await _getHeroes)” region=”_getHeroes” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;void&gt; _getHeroes() async {
+    heroes = await _heroService.getAll();
+  }
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">Future&lt;void&gt;</code> return type is the asynchronous equivalent of <code class="language-plaintext highlighter-rouge">void</code>.</p>
+
+<p>To learn more about using <code class="language-plaintext highlighter-rouge">async</code> and <code class="language-plaintext highlighter-rouge">await</code>, read the
+<a href="https://dart.dev/codelabs/async-await">asynchronous programming codelab.</a></p>
+
+<div class="l-sub-section">
+  <p>At the end of this page, <a href="#slow">Appendix: Take it slow</a> describes what the app might be like with a poor connection.</p>
+</div>
+
+<h2 id="review-the-app-structure">
+<a class="anchor" href="#review-the-app-structure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Review the app structure</h2>
+
+<p>Verify that you have the following structure after all of your refactoring:</p>
+
+<div class="ul-filetree">
+  <ul>
+    <li>angular_tour_of_heroes
+      <ul>
+        <li>lib
+          <ul>
+            <li>app_component.{css,dart,html}</li>
+            <li>src
+              <ul>
+                <li>hero.dart</li>
+                <li>hero_component.dart</li>
+                <li>hero_service.dart</li>
+                <li>mock_heroes.dart</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>test
+          <ul>
+            <li>…</li>
+          </ul>
+        </li>
+        <li>web
+          <ul>
+            <li>index.html</li>
+            <li>main.dart</li>
+            <li>styles.css</li>
+          </ul>
+        </li>
+        <li>analysis_options.yaml</li>
+        <li>pubspec.yaml</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<p>Here are the code files discussed in this page.</p>
+
+<code-tabs>
+  <?code-pane "lib/src/hero_service.dart" linenums?>
+  <?code-pane "lib/app_component.dart" linenums?>
+</code-tabs>
+
+<h2 id="the-road-youve-travelled">
+<a class="anchor" href="#the-road-youve-travelled" aria-hidden="true"><span class="octicon octicon-link"></span></a>The road you’ve travelled</h2>
+
+<p>Here’s what you achieved in this page:</p>
+
+<ul>
+  <li>You created a service class that can be shared by many components.</li>
+  <li>You used the <code class="language-plaintext highlighter-rouge">ngOnInit</code> lifecycle hook to get the hero data when the <code class="language-plaintext highlighter-rouge">AppComponent</code> activates.</li>
+  <li>You defined the <code class="language-plaintext highlighter-rouge">HeroService</code> as a provider for the <code class="language-plaintext highlighter-rouge">AppComponent</code>.</li>
+  <li>You designed the service to return a <code class="language-plaintext highlighter-rouge">Future</code> and the component to get the data from the <code class="language-plaintext highlighter-rouge">Future</code>.</li>
+</ul>
+
+<p>Your app should look like this <span><a href="/examples/toh-4" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/toh-4/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>.</p>
+
+<h2 id="the-road-ahead">
+<a class="anchor" href="#the-road-ahead" aria-hidden="true"><span class="octicon octicon-link"></span></a>The road ahead</h2>
+
+<p>The Tour of Heroes has become more reusable using shared components and services.
+The next goal is to create a dashboard, add menu links that route between the views, and format data in a template.
+As the app evolves, you’ll discover how to design it to make it easier to grow and maintain.</p>
+
+<p>Read about the Angular component router and navigation among the views in the <a href="toh-pt5">next tutorial</a> page.</p>
+
+<h2 id="slow">
+<a class="anchor" href="#slow" aria-hidden="true"><span class="octicon octicon-link"></span></a>Appendix: Take it slow</h2>
+
+<p>To simulate a slow connection,
+add the following <code class="language-plaintext highlighter-rouge">getAllSlowly()</code> method to the <code class="language-plaintext highlighter-rouge">HeroService</code>.</p>
+
+<p>&lt;?code-excerpt “lib/src/hero_service.dart (getAllSlowly)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;List&lt;Hero&gt;&gt; getAllSlowly() {
+    return Future.delayed(Duration(seconds: 2), getAll);
+  }
+</code></pre></div></div>
+
+<p>Like <code class="language-plaintext highlighter-rouge">getAll()</code>, it also returns a <code class="language-plaintext highlighter-rouge">Future</code>, but this <code class="language-plaintext highlighter-rouge">Future</code> waits two
+seconds before completing.</p>
+
+<p>Back in the <code class="language-plaintext highlighter-rouge">AppComponent</code>, replace <code class="language-plaintext highlighter-rouge">getAll()</code> with <code class="language-plaintext highlighter-rouge">getAllSlowly()</code>
+and see how the app behaves.</p>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/tutorial/toh-pt3">Multiple Components</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/tutorial/toh-pt5">Routing</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

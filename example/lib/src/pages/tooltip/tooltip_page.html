@@ -17,35 +17,30 @@
     <div class="card">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">{{ t.pages.tooltip.hoverText }}</p>
+            <p class="text-muted mb-3">{{ overviewIntro }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">Tooltips exibem informação contextual breve sem deslocar o usuário para
-                    outro bloco da tela.</p>
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Triggers por hover, click e modo manual.</li>
-                    <li>Posicionamento em múltiplas direções.</li>
-                    <li>Suporte a HTML e eventos de ciclo de vida.</li>
+                    <li *ngFor="let item of features">{{ item }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Tooltips não devem carregar conteúdo extenso.</li>
-                    <li>Uso excessivo gera ruído e dependência de hover.</li>
-                    <li>Fluxos mobile pedem cuidado com trigger e leitura.</li>
+                    <li *ngFor="let item of limits">{{ item }}</li>
                   </ul>
                 </div>
               </div>
@@ -75,25 +70,24 @@
             <div class="row g-3 mt-1">
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Automatic closing</h6>
-                  <p class="text-muted mb-3">Os exemplos abaixo continuam fechando com Escape e variam apenas o clique
-                    que dispara o fechamento.</p>
+                  <h6 class="mb-2">{{ autoCloseTitle }}</h6>
+                  <p class="text-muted mb-3">{{ autoCloseBody }}</p>
                   <div class="demo-tooltip-row">
                     <button class="btn btn-outline-primary" type="button"
-                      [liTooltip]="'Fecha ao clicar dentro do próprio tooltip.'" triggers="click" autoClose="inside"
+                      [liTooltip]="insideTooltipText" triggers="click" autoClose="inside"
                       placement="top">
-                      click inside
+                      {{ insideButton }}
                     </button>
 
                     <button class="btn btn-outline-secondary" type="button"
-                      [liTooltip]="'Fecha ao clicar fora do tooltip.'" triggers="click" autoClose="outside"
+                      [liTooltip]="outsideTooltipText" triggers="click" autoClose="outside"
                       placement="top">
-                      click outside
+                      {{ outsideButton }}
                     </button>
 
-                    <button class="btn btn-outline-dark" type="button" [liTooltip]="'Fecha em qualquer clique.'"
+                    <button class="btn btn-outline-dark" type="button" [liTooltip]="allClicksTooltipText"
                       triggers="click" [autoClose]="true" placement="top">
-                      all clicks
+                      {{ allClicksButton }}
                     </button>
                   </div>
                 </div>
@@ -101,14 +95,13 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Append tooltip in the body</h6>
-                  <p class="text-muted mb-3">Quando o gatilho vive dentro de uma área com clipping,
-                    <code>container="body"</code> tira o balão desse contexto local.</p>
+                  <h6 class="mb-2">{{ containerBodyTitle }}</h6>
+                  <p class="text-muted mb-3">{{ containerBodyText }}</p>
                   <div class="tooltip-clipped-shell">
                     <button class="btn btn-outline-primary" type="button"
-                      [liTooltip]="'Este tooltip foi anexado ao body para escapar do clipping local.'" triggers="click"
+                      [liTooltip]="bodyTooltipText" triggers="click"
                       container="body" placement="right">
-                      Tooltip no body
+                      {{ bodyTooltipButton }}
                     </button>
                   </div>
                 </div>
@@ -116,35 +109,32 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Custom target</h6>
-                  <p class="text-muted mb-3">O gatilho continua neste botão, mas o balão é posicionado em outro elemento
-                    do layout.</p>
+                  <h6 class="mb-2">{{ customTargetTitle }}</h6>
+                  <p class="text-muted mb-3">{{ customTargetBody }}</p>
                   <div class="tooltip-demo-target-stage">
                     <button #targetedTooltip="liTooltip" class="btn btn-outline-success" type="button"
-                      [liTooltip]="'O tooltip está ancorado no chip à direita.'" triggers="manual"
+                      [liTooltip]="targetedTooltipText" triggers="manual"
                       [positionTarget]="'#tooltip-target-anchor'" placement="right" (click)="toggleTargetedTooltip()">
-                      Abrir target customizado
+                      {{ targetedTooltipButton }}
                     </button>
 
-                    <span class="tooltip-target-anchor" id="tooltip-target-anchor">Âncora visual do tooltip</span>
+                    <span class="tooltip-target-anchor" id="tooltip-target-anchor">{{ targetedAnchorLabel }}</span>
                   </div>
                 </div>
               </div>
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">HTML and bindings via TemplateRef</h6>
-                  <p class="text-muted mb-3">O tooltip também pode receber um <code>TemplateRef</code> com bindings do
-                    componente hospedeiro.</p>
+                  <h6 class="mb-2">{{ templateTitle }}</h6>
+                  <p class="text-muted mb-3">{{ templateBody }}</p>
                   <template #richTooltipTemplate>
-                    <div class="fw-semibold mb-1">TemplateRef dentro do tooltip</div>
-                    <div class="small text-white-50">Os bindings continuam vivos porque a view AngularDart segue ativa.
-                    </div>
+                    <div class="fw-semibold mb-1">{{ templateHeader }}</div>
+                    <div class="small text-white-50">{{ templateSubtext }}</div>
                   </template>
                   <div class="demo-tooltip-row">
                     <button class="btn btn-outline-indigo" type="button" [liTooltip]="richTooltipTemplate"
                       triggers="click" placement="bottom" tooltipClass="tooltip-aurora">
-                      Tooltip com template
+                      {{ templateButton }}
                     </button>
                   </div>
                 </div>
@@ -152,14 +142,13 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Open and close delays</h6>
-                  <p class="text-muted mb-3">O hover pode esperar um pouco para abrir e continuar disponível enquanto o
-                    ponteiro entra no próprio balão.</p>
+                  <h6 class="mb-2">{{ delayTitle }}</h6>
+                  <p class="text-muted mb-3">{{ delayBody }}</p>
                   <div class="demo-tooltip-row">
                     <button class="btn btn-outline-warning" type="button"
-                      [liTooltip]="'openDelay 300ms e closeDelay 600ms.'" triggers="hover" [openDelay]="300"
+                      [liTooltip]="delayTooltipText" triggers="hover" [openDelay]="300"
                       [closeDelay]="600" placement="bottom">
-                      Tooltip com delay
+                      {{ delayButton }}
                     </button>
                   </div>
                 </div>
@@ -167,14 +156,13 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Custom class</h6>
-                  <p class="text-muted mb-3">Uma classe adicional permite trocar o tratamento visual sem criar outro
-                    componente.</p>
+                  <h6 class="mb-2">{{ customClassTitle }}</h6>
+                  <p class="text-muted mb-3">{{ customClassBody }}</p>
                   <div class="demo-tooltip-row">
                     <button class="btn btn-outline-info" type="button"
-                      [liTooltip]="'Tooltip com classe visual própria.'" triggers="click" tooltipClass="tooltip-aurora"
+                      [liTooltip]="customClassTooltipText" triggers="click" tooltipClass="tooltip-aurora"
                       placement="bottom">
-                      Tooltip customizado
+                      {{ customClassButton }}
                     </button>
                   </div>
                 </div>
@@ -182,9 +170,8 @@
 
               <div class="col-12">
                 <div class="card card-body">
-                  <h6 class="mb-2">Global configuration</h6>
-                  <p class="text-muted mb-3">Os defaults podem ser escopados por subtree usando
-                    <code>LiTooltipConfig</code> como provider local.</p>
+                  <h6 class="mb-2">{{ globalConfigTitle }}</h6>
+                  <p class="text-muted mb-3">{{ globalConfigBody }}</p>
                   <tooltip-global-config-demo></tooltip-global-config-demo>
                 </div>
               </div>
@@ -192,28 +179,11 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
-            <p class="text-muted mb-3">O componente envolve qualquer gatilho visual e adiciona exibição contextual com
-              configuração declarativa.</p>
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
             <ul class="mb-3 ps-3">
-              <li><code>[liTooltip]</code> aplica a API por diretiva diretamente no elemento gatilho.</li>
-              <li><code>[text]</code> define o conteúdo do tooltip.</li>
-              <li><code>placement</code> aceita topo, direita, base e esquerda.</li>
-              <li><code>trigger</code> ou <code>triggers</code> aceitam <code>hover</code>, <code>click</code> e
-                <code>manual</code>.</li>
-              <li><code>autoClose</code> aceita <code>true</code>, <code>false</code>, <code>inside</code> e
-                <code>outside</code>.</li>
-              <li><code>container="body"</code> tira o balão do contexto local e evita clipping por overflow.</li>
-              <li><code>positionTarget</code> permite posicionar o tooltip contra outro seletor ou elemento.</li>
-              <li><code>tooltipClass</code> aplica uma classe extra ao balão renderizado.</li>
-              <li><code>[liTooltip]</code> também aceita <code>TemplateRef</code> para conteúdo rico com bindings.</li>
-              <li><code>[html]</code> habilita renderização rica quando necessário.</li>
-              <li><code>[showDelayMs]</code>, <code>[hideDelayMs]</code>, <code>[openDelay]</code> e
-                <code>[closeDelay]</code> refinam o timing.</li>
-              <li><code>LiTooltipConfig</code> fornece defaults injetáveis para uma subtree inteira.</li>
-              <li><code>(show)</code>, <code>(shown)</code>, <code>(hide)</code> e <code>(hidden)</code> expõem o ciclo
-                de vida.</li>
+              <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
             <pre class="bg-light border rounded p-3 mb-3"><code>&lt;button

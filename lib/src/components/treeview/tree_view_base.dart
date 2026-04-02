@@ -17,16 +17,23 @@ class TreeViewLoadRequest {
 
 class TreeViewLoadResult {
   const TreeViewLoadResult({
-    required this.nodes,
+    this.nodes = const <TreeViewNode>[],
+    this.items,
     this.hasMore = false,
   });
 
+  const TreeViewLoadResult.raw({
+    required this.items,
+    this.hasMore = false,
+  }) : nodes = const <TreeViewNode>[];
+
   final List<TreeViewNode> nodes;
+  final dynamic items;
   final bool hasMore;
 }
 
 class TreeViewNode {
-  //late int id;
+  dynamic id;
   String treeViewNodeLabel;
 
   int treeViewNodeLevel;
@@ -39,6 +46,11 @@ class TreeViewNode {
   bool treeViewNodeIsLoadingChildren;
   bool treeViewNodeHasMoreChildren;
   dynamic value;
+  dynamic source;
+  Map<String, dynamic>? sourceMap;
+  String? icon;
+  String? color;
+  bool enabled;
 
   /// Children
   final List<TreeViewNode> _children = <TreeViewNode>[];
@@ -56,6 +68,7 @@ class TreeViewNode {
   List<TreeViewNode> get treeViewNodes => _children;
 
   TreeViewNode({
+    this.id,
     required this.treeViewNodeLabel,
     required this.treeViewNodeLevel,
     this.treeViewNodeFilter = true,
@@ -66,6 +79,11 @@ class TreeViewNode {
     this.treeViewNodeIsLoadingChildren = false,
     this.treeViewNodeHasMoreChildren = false,
     this.value,
+    this.source,
+    this.sourceMap,
+    this.icon,
+    this.color,
+    this.enabled = true,
   }) {
     //id = 1;
   }
@@ -132,6 +150,7 @@ class TreeViewNode {
     final listEquals = const DeepCollectionEquality().equals;
 
     return other.treeViewNodeLabel == treeViewNodeLabel &&
+        other.id == id &&
         listEquals(other.treeViewNodes, treeViewNodes) &&
         other.treeViewNodeLevel == treeViewNodeLevel &&
         other.treeViewNodeFilter == treeViewNodeFilter &&
@@ -141,12 +160,16 @@ class TreeViewNode {
         other.treeViewNodeChildrenLoaded == treeViewNodeChildrenLoaded &&
         other.treeViewNodeIsLoadingChildren == treeViewNodeIsLoadingChildren &&
         other.treeViewNodeHasMoreChildren == treeViewNodeHasMoreChildren &&
+        other.icon == icon &&
+        other.color == color &&
+        other.enabled == enabled &&
         other.value == value;
   }
 
   @override
   int get hashCode {
     return treeViewNodeLabel.hashCode ^
+        id.hashCode ^
         treeViewNodes.hashCode ^
         treeViewNodeLevel.hashCode ^
         treeViewNodeFilter.hashCode ^
@@ -156,6 +179,9 @@ class TreeViewNode {
         treeViewNodeChildrenLoaded.hashCode ^
         treeViewNodeIsLoadingChildren.hashCode ^
         treeViewNodeHasMoreChildren.hashCode ^
+        icon.hashCode ^
+        color.hashCode ^
+        enabled.hashCode ^
         value.hashCode;
   }
 }

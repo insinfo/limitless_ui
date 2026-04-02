@@ -165,6 +165,30 @@ class LiDateRangePickerComponent
   @Input()
   String locale = 'pt_BR';
 
+  @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
+  bool required = false;
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String helperText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
+
   @Output()
   Stream<DateTime?> get inicioChange => _inicioChangeController.stream;
 
@@ -192,12 +216,41 @@ class LiDateRangePickerComponent
   ChangeFunction<LiDateRangeValue?> _onChange =
       (LiDateRangeValue? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
+  bool _touched = false;
 
   LiDateRangePickerComponent(this._changeDetectorRef) {
     _refreshCalendars();
   }
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  bool get effectiveInvalid =>
+      invalid ||
+      dataInvalid ||
+      (required && _touched && inicio == null && fim == null);
+
+  bool get effectiveValid => !effectiveInvalid &&
+      (valid || (required && _touched && (inicio != null || fim != null)));
+
+  bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String get resolvedInputClass => _joinClasses(<String>[
+        'form-control',
+        'date-range-field',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
+      ]);
 
   List<String> get weekdayLabels =>
       _isEnglishLocale ? _weekdayLabelsEn : _weekdayLabelsPt;
@@ -433,7 +486,7 @@ class LiDateRangePickerComponent
     _inicioChangeController.add(inicioAplicado);
     _fimChangeController.add(fimAplicado);
     _emitModelChange();
-    _onTouched();
+    _markTouched();
     close();
     _markForCheck();
   }
@@ -448,12 +501,15 @@ class LiDateRangePickerComponent
     _inicioChangeController.add(null);
     _fimChangeController.add(null);
     _onChange(null);
-    _onTouched();
+    _markTouched();
     close();
     _markForCheck();
   }
 
   void close() {
+    if (isOpen) {
+      _markTouched();
+    }
     _unbindDocumentListeners();
     _overlay?.stopAutoUpdate();
     isOpen = false;
@@ -461,7 +517,7 @@ class LiDateRangePickerComponent
     isSelectingEnd = false;
     leftViewMode = DateRangePickerViewMode.day;
     rightViewMode = DateRangePickerViewMode.day;
-    _onTouched();
+    _markTouched();
     _markForCheck();
   }
 
@@ -700,6 +756,15 @@ class LiDateRangePickerComponent
     _changeDetectorRef.markForCheck();
   }
 
+  void _markTouched() {
+    if (_touched) {
+      _onTouched();
+      return;
+    }
+    _touched = true;
+    _onTouched();
+  }
+
   void _emitModelChange() {
     if (inicio == null && fim == null) {
       _onChange(null);
@@ -781,6 +846,13 @@ class LiDateRangePickerComponent
     }
 
     return DateRangePickerViewMode.day;
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
   }
 
     Object? trackByMonthOption(int index, dynamic option) =>

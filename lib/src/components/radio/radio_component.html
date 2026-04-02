@@ -5,6 +5,9 @@
       [id]="resolvedId"
       [attr.name]="resolvedName"
       [attr.aria-label]="resolvedAriaLabel"
+      [attr.aria-describedby]="resolvedDescribedBy"
+      [attr.aria-invalid]="resolvedAriaInvalid"
+      [attr.data-invalid]="resolvedDataInvalidAttr"
       [class]="resolvedInputClass"
       [checked]="checked"
       [disabled]="disabled"
@@ -14,4 +17,5 @@
       (blur)="handleBlur()">
   <span [class]="resolvedLabelClass">{{ label }}</span>
 </label>
+<div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
 <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>

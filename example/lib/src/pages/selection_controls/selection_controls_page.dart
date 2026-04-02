@@ -8,11 +8,19 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     coreDirectives,
     formDirectives,
     LiCheckboxComponent,
+    LiCheckboxGroupComponent,
     LiRadioComponent,
+    LiRadioGroupComponent,
     LiToggleComponent,
   ],
 )
 class SelectionControlsPageComponent {
+  SelectionControlsPageComponent(this.i18n);
+
+  final DemoI18nService i18n;
+
+  bool get isPt => i18n.isPortuguese;
+
   bool auditTrailEnabled = true;
   bool publicPortalEnabled = false;
   bool reviewQueueEnabled = true;
@@ -22,9 +30,9 @@ class SelectionControlsPageComponent {
   bool reverseAuditEnabled = true;
   bool reverseClientFeedEnabled = false;
   bool reverseSlaAlertsEnabled = false;
-  bool secondaryChecksEnabled = true;
-  bool dangerChecksEnabled = false;
-  bool successChecksEnabled = true;
+  dynamic secondaryChecksEnabled = 'enabled';
+  dynamic dangerChecksEnabled = 'disabled';
+  dynamic successChecksEnabled = 'enabled';
   bool inversePinEnabled = true;
   bool inverseReadonlyEnabled = false;
 
@@ -34,6 +42,7 @@ class SelectionControlsPageComponent {
   String contextualTone = 'secondary';
   String inverseFilter = 'internal';
   String? optionalFilter = 'active';
+  String approvalMode = '';
 
   bool nightlyDigest = true;
   String onboardingState = 'enabled';
@@ -47,19 +56,187 @@ class SelectionControlsPageComponent {
   bool toggleDarkEnabled = true;
   bool inverseMonitoringEnabled = true;
   bool inverseGuestsEnabled = false;
+  bool escalationToggleEnabled = false;
+
+  bool requiresValidationWindow = true;
+  String? requiredChannel;
+
+  String get pageTitle => isPt ? 'Forms' : 'Forms';
+  String get pageSubtitle =>
+      isPt ? 'Checkboxes, radios e toggles' : 'Checkboxes, radios, and toggles';
+  String get breadcrumb =>
+      isPt ? 'Controles de seleção' : 'Selection controls';
+  String get introTitle => isPt
+      ? 'Controles de seleção no padrão Limitless'
+      : 'Limitless-style selection controls';
+  String get introBody => isPt
+      ? 'A página combina demos visuais e cenários de formulário para mostrar como checkbox, radio e toggle podem sair do showcase e entrar em fluxos reais com validação e feedback.'
+      : 'This page combines visual demos and form scenarios to show how checkbox, radio, and toggle can move from showcase samples into real flows with validation and feedback.';
+
+  String get checkboxesTitle => 'Checkboxes';
+  String get checkboxesSubtitle => isPt
+      ? 'Empilhados, reversos, inline, cores, bloco inverso e caso de validação'
+      : 'Stacked, reversed, inline, color, inverse block, and validation scenario';
+  String get radiosTitle => 'Radios';
+  String get radiosSubtitle => isPt
+      ? 'Padrão neutro, cores contextuais e casos de formulário mais próximos do SALI'
+      : 'Neutral defaults, contextual colors, and form cases closer to SALI';
+  String get togglesTitle => 'Toggles';
+  String get togglesSubtitle => isPt
+      ? 'Booleanos, valores mapeados, bloco inverso e exemplo com feedback'
+      : 'Booleans, mapped values, inverse block, and feedback example';
+  String get summaryTitle => isPt ? 'Resumo' : 'Summary';
+
+  String get leftStackedTitle => isPt ? 'Pilha à esquerda' : 'Left stacked';
+  String get rightStackedTitle => isPt ? 'Pilha à direita' : 'Right stacked';
+  String get inlineTitle => 'Inline';
+  String get contextualTitle =>
+      isPt ? 'Cores contextuais' : 'Contextual colors';
+  String get inverseBlockTitle =>
+      isPt ? 'Bloco inverso' : 'Inverse block';
+  String get neutralTitle => isPt ? 'Padrão neutro' : 'Neutral defaults';
+  String get mappedValuesTitle =>
+      isPt ? 'Valores mapeados' : 'Mapped values';
+  String get inlineReverseTitle =>
+      isPt ? 'Inline e reverso' : 'Inline and reverse';
+  String get colorSwitchesTitle =>
+      isPt ? 'Switches coloridos' : 'Color switches';
+  String get formScenarioTitle =>
+      isPt ? 'Caso de formulário' : 'Form scenario';
+  String get optionalRadioTitle =>
+      isPt ? 'Filtro opcional' : 'Optional filter';
+  String get radioFormCaseTitle =>
+      isPt ? 'Fluxo de aprovação' : 'Approval flow';
+  String get toggleFormCaseTitle =>
+      isPt ? 'Escalação obrigatória' : 'Required escalation';
+
+  String get auditTrailLabel =>
+      isPt ? 'Trilha de auditoria' : 'Audit trail';
+  String get auditTrailHelp => isPt
+      ? 'Mantém histórico completo das alterações.'
+      : 'Keeps a full history of changes.';
+  String get publicPortalLabel =>
+      isPt ? 'Portal público' : 'Public portal';
+  String get publicPortalHelp => isPt
+      ? 'Expõe o status para acompanhamento externo.'
+      : 'Exposes status for external tracking.';
+  String get reviewQueueLabel =>
+      isPt ? 'Fila de revisão' : 'Review queue';
+  String get reviewQueueHelp => isPt
+      ? 'Mantém uma etapa manual de aprovação.'
+      : 'Keeps a manual approval step in place.';
+  String get reverseAuditLabel =>
+      isPt ? 'Auditoria externa' : 'External audit';
+  String get reverseClientFeedLabel =>
+      isPt ? 'Feed do cliente' : 'Client feed';
+  String get reverseSlaLabel => isPt ? 'Alertas de SLA' : 'SLA alerts';
+  String get smsLabel => 'SMS';
+  String get emailLabel => isPt ? 'E-mail' : 'Email';
+  String get pushLabel => 'Push';
+  String get secondaryLabel => 'Secondary';
+  String get dangerLabel => 'Danger';
+  String get successLabel => 'Success';
+  String get inversePinLabel => isPt
+      ? 'Fixar este card no dashboard'
+      : 'Pin this card on the dashboard';
+  String get inverseReadonlyLabel =>
+      isPt ? 'Modo somente leitura' : 'Read-only mode';
+  String get complianceLegend =>
+      isPt ? 'Checklist de conformidade' : 'Compliance checklist';
+  String get complianceHelp => isPt
+      ? 'Você pode reutilizar o grupo para um erro único do bloco, sem espalhar toast manual por cada campo.'
+      : 'You can reuse the group for a single block-level error instead of scattering manual toasts across each field.';
+  String get complianceError => isPt
+      ? 'Ative ao menos uma proteção antes de liberar o fluxo.'
+      : 'Enable at least one protection before releasing the flow.';
+  bool get complianceInvalid =>
+      !auditTrailEnabled && !publicPortalEnabled && !reviewQueueEnabled;
+
+  String get teamLabel => isPt ? 'Equipe interna' : 'Internal team';
+  String get customersLabel => isPt ? 'Clientes' : 'Customers';
+  String get publicLabel => isPt ? 'Público' : 'Public';
+  String get compactLabel => isPt ? 'Compacto' : 'Compact';
+  String get comfortableLabel => isPt ? 'Confortável' : 'Comfortable';
+  String get spaciousLabel => isPt ? 'Espaçado' : 'Spacious';
+  String get manualLabel => isPt ? 'Manual' : 'Manual';
+  String get assistedLabel => isPt ? 'Assistido' : 'Assisted';
+  String get automaticLabel => isPt ? 'Automático' : 'Automatic';
+  String get internalLabel => isPt ? 'Interno' : 'Internal';
+  String get partnersLabel => isPt ? 'Parceiros' : 'Partners';
+  String get activeLabel => isPt ? 'Ativo' : 'Active';
+  String get pendingLabel => isPt ? 'Pendente' : 'Pending';
+  String get radioUncheckableHelp => isPt
+      ? 'Aqui o rádio usa `[uncheckable]="true"` com `String?` no host.'
+      : 'This radio uses `[uncheckable]="true"` with `String?` on the host.';
+  String get radioFormLegend => isPt
+      ? 'Como a solicitação será aprovada?'
+      : 'How will this request be approved?';
+  String get radioFormHelp => isPt
+      ? 'Exemplo de grupo único com legenda, descrição e mensagem de erro para o conjunto.'
+      : 'Example of a single group with legend, description, and one error message for the whole set.';
+  String get radioFormError => isPt
+      ? 'Selecione um modo de aprovação antes de continuar.'
+      : 'Select an approval mode before continuing.';
+  bool get radioFormInvalid => approvalMode.trim().isEmpty;
+
+  String get digestLabel =>
+      isPt ? 'Digest noturno' : 'Nightly digest';
+  String get digestHelp => isPt
+      ? 'Envia um resumo automático no fim do expediente.'
+      : 'Sends an automatic summary at the end of the workday.';
+  String get onboardingLabel =>
+      isPt ? 'Fluxo de onboarding' : 'Onboarding flow';
+  String get onboardingHelp => isPt
+      ? 'Usa `trueValue` e `falseValue` customizados.'
+      : 'Uses custom `trueValue` and `falseValue`.';
+  String get incidentLabel =>
+      isPt ? 'Escalonamento crítico por SMS' : 'Critical escalation by SMS';
+  String get incidentHelp => isPt
+      ? 'Quando desligado, o fluxo cai para e-mail.'
+      : 'When off, the flow falls back to email.';
+  String get automationMirrorLabel =>
+      isPt ? 'Espelhar automações' : 'Mirror automations';
+  String get campaignMirrorLabel =>
+      isPt ? 'Campanhas externas' : 'External campaigns';
+  String get syncLabel => 'Sync';
+  String get archiveLabel => isPt ? 'Arquivo' : 'Archive';
+  String get warningLabel => 'Warning';
+  String get darkLabel => 'Dark';
+  String get inverseMonitoringLabel =>
+      isPt ? 'Monitoramento ativo' : 'Active monitoring';
+  String get inverseGuestsLabel =>
+      isPt ? 'Convidados liberados' : 'Guests enabled';
+  String get toggleFormLegend => isPt
+      ? 'Notificações de escalonamento'
+      : 'Escalation notifications';
+  String get toggleFormHelp => isPt
+      ? 'Caso comum de toggle usado como decisão obrigatória em formulário administrativo.'
+      : 'Common toggle case used as a required decision in an administrative form.';
+  String get toggleFormError => isPt
+      ? 'Ative a notificação antes de salvar o fluxo.'
+      : 'Enable the notification before saving the flow.';
+  String get toggleFormLabel => isPt
+      ? 'Enviar notificação de escalonamento'
+      : 'Send escalation notification';
+  String get toggleFormDescription => isPt
+      ? 'Replica o padrão do SALI em campos binários com feedback inline.'
+      : 'Mirrors the SALI pattern for binary fields with inline feedback.';
+  bool get toggleFormInvalid => requiresValidationWindow && !escalationToggleEnabled;
 
   String get checkboxSummary {
     final enabled = <String>[];
     if (auditTrailEnabled) {
-      enabled.add('Auditoria');
+      enabled.add(isPt ? 'Auditoria' : 'Audit');
     }
     if (publicPortalEnabled) {
-      enabled.add('Portal publico');
+      enabled.add(isPt ? 'Portal público' : 'Public portal');
     }
     if (reviewQueueEnabled) {
-      enabled.add('Fila de revisao');
+      enabled.add(isPt ? 'Fila de revisão' : 'Review queue');
     }
-    return enabled.isEmpty ? 'Nenhum recurso ativo.' : enabled.join(', ');
+    return enabled.isEmpty
+        ? (isPt ? 'Nenhum recurso ativo.' : 'No enabled capability.')
+        : enabled.join(', ');
   }
 
   String get checkboxChannelSummary {
@@ -68,32 +245,32 @@ class SelectionControlsPageComponent {
       enabled.add('SMS');
     }
     if (emailChannelEnabled) {
-      enabled.add('E-mail');
+      enabled.add(emailLabel);
     }
     if (pushChannelEnabled) {
       enabled.add('Push');
     }
-    return enabled.isEmpty ? 'Nenhum canal inline ativo.' : enabled.join(', ');
+    return enabled.isEmpty
+        ? (isPt ? 'Nenhum canal inline ativo.' : 'No inline channel enabled.')
+        : enabled.join(', ');
   }
 
-  String get radioSummary => 'Visibilidade: ${_visibilityLabel(visibility)} | '
-      'Densidade: ${_densityLabel(density)} | '
-      'Fluxo: ${_reviewFlowLabel(reviewFlow)} | '
-      'Filtro opcional: ${optionalFilter ?? 'limpo'}';
+  String get radioSummary => isPt
+      ? 'Visibilidade: ${_visibilityLabel(visibility)} | Densidade: ${_densityLabel(density)} | Aprovação: ${approvalMode.trim().isEmpty ? 'não definida' : _reviewFlowLabel(approvalMode)} | Filtro opcional: ${optionalFilter == null ? 'limpo' : _optionalFilterLabel(optionalFilter!)}'
+      : 'Visibility: ${_visibilityLabel(visibility)} | Density: ${_densityLabel(density)} | Approval: ${approvalMode.trim().isEmpty ? 'not set' : _reviewFlowLabel(approvalMode)} | Optional filter: ${optionalFilter == null ? 'cleared' : _optionalFilterLabel(optionalFilter!)}';
 
-  String get toggleSummary =>
-      'Digest: ${nightlyDigest ? 'ativo' : 'inativo'} | '
-      'Onboarding: $onboardingState | '
-      'Incidente: $incidentEscalation';
+  String get toggleSummary => isPt
+      ? 'Digest: ${nightlyDigest ? 'ativo' : 'inativo'} | Onboarding: ${_onboardingStateLabel(onboardingState)} | Incidente: ${_incidentLabel(incidentEscalation)}'
+      : 'Digest: ${nightlyDigest ? 'enabled' : 'disabled'} | Onboarding: ${_onboardingStateLabel(onboardingState)} | Incident: ${_incidentLabel(incidentEscalation)}';
 
   String _visibilityLabel(String value) {
     switch (value) {
       case 'team':
-        return 'Equipe interna';
+        return teamLabel;
       case 'customers':
-        return 'Clientes';
+        return customersLabel;
       case 'public':
-        return 'Público';
+        return publicLabel;
       default:
         return value;
     }
@@ -102,11 +279,11 @@ class SelectionControlsPageComponent {
   String _densityLabel(String value) {
     switch (value) {
       case 'compact':
-        return 'Compacto';
+        return compactLabel;
       case 'comfortable':
-        return 'Confortável';
+        return comfortableLabel;
       case 'spacious':
-        return 'Espaçado';
+        return spaciousLabel;
       default:
         return value;
     }
@@ -115,11 +292,44 @@ class SelectionControlsPageComponent {
   String _reviewFlowLabel(String value) {
     switch (value) {
       case 'manual':
-        return 'Manual';
+        return manualLabel;
       case 'assisted':
-        return 'Assistido';
+        return assistedLabel;
       case 'automatic':
-        return 'Automático';
+        return automaticLabel;
+      default:
+        return value;
+    }
+  }
+
+  String _optionalFilterLabel(String value) {
+    switch (value) {
+      case 'active':
+        return activeLabel;
+      case 'pending':
+        return pendingLabel;
+      default:
+        return value;
+    }
+  }
+
+  String _onboardingStateLabel(String value) {
+    switch (value) {
+      case 'enabled':
+        return isPt ? 'habilitado' : 'enabled';
+      case 'paused':
+        return isPt ? 'pausado' : 'paused';
+      default:
+        return value;
+    }
+  }
+
+  String _incidentLabel(String value) {
+    switch (value) {
+      case 'sms':
+        return 'SMS';
+      case 'email':
+        return emailLabel;
       default:
         return value;
     }

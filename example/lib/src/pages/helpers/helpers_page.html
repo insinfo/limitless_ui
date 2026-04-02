@@ -17,10 +17,9 @@
     <div class="card">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-0">Helpers cobrem overlays, diálogos, popovers e notificações rápidas reutilizáveis
-              no app administrativo.</p>
+            <p class="text-muted mb-0">{{ overviewIntro }}</p>
          
             <div class="row">
               <div class="col-xl-6">

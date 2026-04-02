@@ -4,12 +4,12 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">Toast <span class="fw-normal">feedback messages</span></h4>
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
       <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">Notifications inline e em stack</span>
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
       </div>
     </div>
   </div>
@@ -18,27 +18,24 @@
     <div class="card">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-4">
-              O novo <code>li-toast</code> cobre o uso declarativo inline e o fluxo global com
-              <code>LiToastService</code> + <code>li-toast-stack</code>, mais próximo do padrão Bootstrap/ng-bootstrap.
-            </p>
+            <p class="text-muted mb-4">{{ overviewIntro }}</p>
 
             <div class="row g-4">
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                     <div>
-                      <h6 class="mb-1">Toast declarativo básico</h6>
-                      <p class="mb-0 text-muted">Header, body e dismiss button controlados pelo componente.</p>
+                      <h6 class="mb-1">{{ basicToastTitle }}</h6>
+                      <p class="mb-0 text-muted">{{ basicToastBody }}</p>
                     </div>
                     <button class="btn btn-sm btn-outline-primary" type="button"
-                      (click)="reopenManualToast()">Reabrir</button>
+                      (click)="reopenManualToast()">{{ reopenLabel }}</button>
                   </div>
 
-                  <li-toast #manualToast header="Hello"
-                    body="I am a declarative toast that can be shown again via ViewChild." helperText="inline"
+                  <li-toast #manualToast [header]="manualHeader"
+                    [body]="manualBody" [helperText]="inlineHelper"
                     [autohide]="false">
                   </li-toast>
                 </div>
@@ -48,15 +45,14 @@
                 <div class="card card-body h-100">
                   <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                     <div>
-                      <h6 class="mb-1">Rounded toast</h6>
-                      <p class="mb-0 text-muted">A variação pill funciona melhor em mensagens curtas, compactas e sem
-                        muito chrome visual.</p>
+                      <h6 class="mb-1">{{ roundedTitle }}</h6>
+                      <p class="mb-0 text-muted">{{ roundedBody }}</p>
                     </div>
                     <button class="btn btn-sm btn-outline-primary" type="button"
-                      (click)="reopenRoundedToast()">Reabrir</button>
+                      (click)="reopenRoundedToast()">{{ reopenLabel }}</button>
                   </div>
 
-                  <li-toast #roundedToast body="Saved successfully" toastClass="toast-demo-pill"
+                  <li-toast #roundedToast [body]="roundedToastBody" toastClass="toast-demo-pill"
                     bodyClass="toast-demo-pill__body" [rounded]="true" [autohide]="false">
                   </li-toast>
                 </div>
@@ -66,8 +62,8 @@
             <div class="row g-4 mt-1">
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-3">Custom header background</h6>
-                  <li-toast header="Toast header" body="A contextual toast with colored header and close button."
+                  <h6 class="mb-3">{{ customHeaderTitle }}</h6>
+                  <li-toast [header]="customToastHeader" [body]="customToastBody"
                     iconClass="ph-check-circle" toastClass="border-success"
                     headerClass="bg-success text-white border-success" [autohide]="false">
                   </li-toast>
@@ -76,14 +72,14 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-3">Custom markup with action panel</h6>
-                  <li-toast header="Toast header" helperText="1 hour ago" [autohide]="false">
+                  <h6 class="mb-3">{{ customMarkupTitle }}</h6>
+                  <li-toast [header]="customToastHeader" [helperText]="oneHourAgo" [autohide]="false">
                     <div class="toast-body">
-                      Hello, world! This toast uses projected markup for a second action row.
+                      {{ projectedBody }}
                     </div>
                     <div class="toast-body border-top text-end">
-                      <button type="button" class="btn btn-light">Cancel</button>
-                      <button type="button" class="btn btn-primary ms-2">Confirm</button>
+                      <button type="button" class="btn btn-light">{{ t.common.close }}</button>
+                      <button type="button" class="btn btn-primary ms-2">{{ t.common.open }}</button>
                     </div>
                   </li-toast>
                 </div>
@@ -91,19 +87,19 @@
             </div>
           </div>
         </li-tabx>
-        <li-tabx header="Exemplos">
+        <li-tabx [header]="examplesTab">
           <div class="card-body">
             <div class="demo-action-grid">
-              <button class="btn btn-success" type="button" (click)="showSuccess()">Success stack</button>
-              <button class="btn btn-warning" type="button" (click)="showWarning()">Warning stack</button>
-              <button class="btn btn-outline-primary" type="button" (click)="showWithLink()">Persistent stack</button>
-              <button class="btn btn-light" type="button" (click)="clearStack()">Clear stack</button>
+              <button class="btn btn-success" type="button" (click)="showSuccess()">{{ t.pages.notification.successTitle }}</button>
+              <button class="btn btn-warning" type="button" (click)="showWarning()">{{ t.pages.notification.warningTitle }}</button>
+              <button class="btn btn-outline-primary" type="button" (click)="showWithLink()">{{ t.pages.notification.withLink }}</button>
+              <button class="btn btn-light" type="button" (click)="clearStack()">{{ clearStackLabel }}</button>
             </div>
 
             <div class="row g-4 mt-1">
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Como utilizar</h6>
+                  <h6 class="mb-2">{{ howToUseTitle }}</h6>
                   <ul class="mb-0 ps-3">
                     <li><code>li-toast</code> renderiza o markup do toast e expõe <code>show()</code>,
                       <code>hide()</code> e <code>isOpen</code>.</li>
@@ -115,7 +111,7 @@
               </div>
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Entradas principais</h6>
+                  <h6 class="mb-2">{{ mainInputsTitle }}</h6>
                   <ul class="mb-0 ps-3">
                     <li><code>header</code>, <code>body</code>, <code>helperText</code> e <code>badgeText</code>.</li>
                     <li><code>toastClass</code>, <code>headerClass</code> e <code>bodyClass</code> para contextualização
@@ -139,7 +135,7 @@ toastService.show(
   delay: 3500,
 );</code></pre>
 
-            <div class="demo-summary-box mt-3">{{ lastAction.isEmpty ? 'Toast: aguardando interação' : lastAction }}
+            <div class="demo-summary-box mt-3">{{ lastAction.isEmpty ? waitingState : lastAction }}
             </div>
           </div>
         </li-tabx>

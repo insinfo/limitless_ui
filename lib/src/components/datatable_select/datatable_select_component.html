@@ -1,21 +1,34 @@
 <div class="datatable-select-wrapper">
-    <button type="button" #triggerButton class="form-select datatable-select-trigger"
+    <button type="button" #triggerButton [class]="resolvedTriggerClass"
         [disabled]="isDisabled" (click)="openModal()" tabindex="0"
         role="combobox" aria-haspopup="dialog"
-        [attr.aria-expanded]="modal?.isOpen == true ? 'true' : 'false'">
+        [attr.aria-expanded]="modal?.isOpen == true ? 'true' : 'false'"
+        [attr.aria-describedby]="resolvedDescribedBy"
+        [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+        [attr.data-invalid]="effectiveInvalid ? 'true' : null">
         <span class="datatable-select-value"
             [class.datatable-select-placeholder]="selectedLabel.isEmpty">
-            {{selectedLabel.isEmpty ? placeholder : selectedLabel}}
+            <span *ngIf="triggerTemplate != null">
+                <template [ngTemplateOutlet]="triggerTemplate?.templateRef"
+                    [ngTemplateOutletValue]="triggerContext">
+                </template>
+            </span>
+            <span *ngIf="triggerTemplate == null">
+                {{selectedLabel.isEmpty ? resolvedPlaceholder : selectedLabel}}
+            </span>
         </span>
         <span class="datatable-select-icons">
             <i *ngIf="selectedValue != null" class="ph ph-x datatable-select-clear"
-                (click)="onClearClick($event)" title="Limpar seleção"></i>
+                (click)="onClearClick($event)" [attr.title]="resolvedClearButtonLabel"
+                [attr.aria-label]="resolvedClearButtonLabel"></i>
         </span>
     </button>
+    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+    <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 </div>
 
 <li-modal #modal
-    [title-text]="titleText"
+    [title-text]="resolvedTitleText"
     [size]="modalSize"
     [fullScreenOnMobile]="fullScreenOnMobile"
     [dialogScrollable]="false"
@@ -24,7 +37,11 @@
     [closeOnBackdropClick]="true"
     [enableRoundedCorners]="true">
 
-    <li-datatable #datatable
+    <template [ngTemplateOutlet]="modalContentTemplate == null ? null : modalContentTemplate?.templateRef"
+        [ngTemplateOutletValue]="modalContext">
+    </template>
+
+    <li-datatable *ngIf="modalContentTemplate == null" #datatable
         [dataTableFilter]="dataTableFilter"
         [settings]="settings"
         [data]="data"
@@ -32,7 +49,7 @@
         [limitPerPageOptions]="limitPerPageOptions"
         [showCheckboxToSelectRow]="showCheckboxToSelectRow"
         [showExportMenu]="showExportMenu"
-        [searchPlaceholder]="searchPlaceholder"
+        [searchPlaceholder]="resolvedSearchPlaceholder"
         [gridMode]="gridMode"
         [responsiveCollapse]="responsiveCollapse"
         [disableRowClick]="false"

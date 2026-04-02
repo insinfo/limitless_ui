@@ -16,10 +16,9 @@
   <div class="card mb-4">
 
     <li-tabsx type="tabs">
-      <li-tabx header="Visão geral" [active]="true">
+      <li-tabx [header]="t.common.tabOverview" [active]="true">
         <div class="card-body">
-          <p class="text-muted mb-0">Esta página reúne variações de cor, estilo, tamanho, alinhamento e estados do
-            componente de botão.</p>
+          <p class="text-muted mb-0">{{ t.pages.button.overviewIntro }}</p>
 
 
           <!-- Button colors -->
@@ -31,100 +30,100 @@
           <div class="row">
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Light button</h6>
-                <p class="mb-3">Use <code>.btn-[light|outline-light|flat-light]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.lightCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[light|outline-light|flat-light]</code></p>
                 <div>
-                  <li-button variant="light" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="light" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="light" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="light" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="light" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="light" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Dark button</h6>
-                <p class="mb-3">Use <code>.btn-[dark|outline-dark|flat-dark]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.darkCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[dark|outline-dark|flat-dark]</code></p>
                 <div>
-                  <li-button variant="dark" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="dark" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="dark" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="dark" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="dark" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="dark" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Primary button</h6>
-                <p class="mb-3">Use <code>.btn-[primary|outline-primary|flat-primary]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.primaryCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[primary|outline-primary|flat-primary]</code></p>
                 <div>
-                  <li-button variant="primary" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="primary" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="primary" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="primary" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="primary" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="primary" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Secondary button</h6>
-                <p class="mb-3">Use <code>.btn-[secondary|outline-secondary|flat-secondary]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.secondaryCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[secondary|outline-secondary|flat-secondary]</code></p>
                 <div>
-                  <li-button variant="secondary" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="secondary" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="secondary" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="secondary" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="secondary" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="secondary" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Danger button</h6>
-                <p class="mb-3">Use <code>.btn-[danger|outline-danger|flat-danger]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.dangerCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[danger|outline-danger|flat-danger]</code></p>
                 <div>
-                  <li-button variant="danger" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="danger" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="danger" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="danger" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="danger" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="danger" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Success button</h6>
-                <p class="mb-3">Use <code>.btn-[success|outline-success|flat-success]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.successCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[success|outline-success|flat-success]</code></p>
                 <div>
-                  <li-button variant="success" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="success" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="success" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="success" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="success" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="success" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Warning button</h6>
-                <p class="mb-3">Use <code>.btn-[warning|outline-warning|flat-warning]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.warningCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[warning|outline-warning|flat-warning]</code></p>
                 <div>
-                  <li-button variant="warning" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="warning" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="warning" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="warning" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="warning" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="warning" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Info button</h6>
-                <p class="mb-3">Use <code>.btn-[info|outline-info|flat-info]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.infoCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[info|outline-info|flat-info]</code></p>
                 <div>
-                  <li-button variant="info" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="info" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="info" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="info" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="info" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="info" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="card card-body">
-                <h6 class="fw-semibold">Indigo button</h6>
-                <p class="mb-3">Use <code>.btn-[indigo|outline-indigo|flat-indigo]</code></p>
+                <h6 class="fw-semibold">{{ t.pages.button.indigoCardTitle }}</h6>
+                <p class="mb-3">{{ t.pages.button.usePrefix }} <code>.btn-[indigo|outline-indigo|flat-indigo]</code></p>
                 <div>
-                  <li-button variant="indigo" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="indigo" buttonStyle="outline" buttonClass="my-1 me-2">Button</li-button>
-                  <li-button variant="indigo" buttonStyle="flat" buttonClass="my-1 me-2">Button</li-button>
+                  <li-button variant="indigo" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="indigo" buttonStyle="outline" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
+                  <li-button variant="indigo" buttonStyle="flat" buttonClass="my-1 me-2">{{ t.pages.button.demoButton }}</li-button>
                 </div>
               </div>
             </div>

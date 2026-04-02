@@ -59,10 +59,37 @@ class LiMultiSelectComponent
   bool isDisabled = false;
 
   @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String helperText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
+
+  @Input()
+  String locale = 'pt_BR';
+
+  @Input()
   bool showClearButton = true;
 
   @Input()
-  String clearButtonLabel = 'Limpar seleção';
+  String clearButtonLabel = '';
+
+  @Input()
+  bool searchable = true;
 
   LiMultiSelectComponent(this.nativeElement, this._changeDetectorRef) {
     final seq = _nextSequence++;
@@ -73,8 +100,45 @@ class LiMultiSelectComponent
   static int _nextSequence = 0;
   late final String listboxId;
   late final String _idPrefix;
+  TouchFunction _onTouched = () {};
+  bool _touched = false;
 
   String optionId(int index) => '$_idPrefix-$index';
+
+  bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  bool get effectiveInvalid => invalid || dataInvalid;
+
+  bool get effectiveValid => !effectiveInvalid && valid;
+
+  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+
+  bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String get searchPlaceholder => _isEnglishLocale ? 'Search' : 'Buscar';
+
+  String get searchAriaLabel =>
+      _isEnglishLocale ? 'Search options' : 'Buscar opções';
+
+  String get resolvedClearButtonLabel => clearButtonLabel.trim().isNotEmpty
+      ? clearButtonLabel.trim()
+      : (_isEnglishLocale ? 'Clear selection' : 'Limpar seleção');
+
+  String get resolvedButtonClass => _joinClasses(<String>[
+        'form-select',
+        'dropdown-button',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
+      ]);
 
   final StreamController<dynamic> _changeController =
       StreamController<dynamic>();
@@ -125,7 +189,9 @@ class LiMultiSelectComponent
 
   // optionally you can implement the rest interface methods
   @override
-  void registerOnTouched(TouchFunction callback) {}
+  void registerOnTouched(TouchFunction callback) {
+    _onTouched = callback;
+  }
 
   @override
   void onDisabledChanged(bool state) {
@@ -254,6 +320,7 @@ class LiMultiSelectComponent
     inputSearch?.value = '';
 
     _overlay?.stopAutoUpdate();
+    _markTouched();
 
     if (restoreFocus) {
       dropdownButtonElement?.focus();
@@ -331,6 +398,7 @@ class LiMultiSelectComponent
     if (_callback != null) {
       _callback!(selectedValues);
     }
+    _markTouched();
     _markForCheck();
     _scheduleOverlayUpdate();
   }
@@ -352,6 +420,26 @@ class LiMultiSelectComponent
     _changeController.add(selectedValues);
     if (_callback != null) {
       _callback!(selectedValues);
+    }
+    _markTouched();
+    _markForCheck();
+    _scheduleOverlayUpdate();
+  }
+
+  void searchHandle(String? searchString) {
+    final query = searchString?.trim() ?? '';
+    if (query.isEmpty) {
+      for (final option in options) {
+        option.visible = true;
+      }
+      _markForCheck();
+      _scheduleOverlayUpdate();
+      return;
+    }
+
+    for (final option in options) {
+      option.visible = option.text.containsIgnoreAccents(query) ||
+          option.value.toString() == query;
     }
     _markForCheck();
     _scheduleOverlayUpdate();
@@ -469,5 +557,21 @@ class LiMultiSelectComponent
 
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
+  }
+
+  void _markTouched() {
+    if (_touched) {
+      _onTouched();
+      return;
+    }
+    _touched = true;
+    _onTouched();
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
   }
 }

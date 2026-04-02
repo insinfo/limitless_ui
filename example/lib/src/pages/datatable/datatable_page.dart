@@ -1,6 +1,7 @@
 import 'dart:html';
 
 import 'package:essential_core/essential_core.dart';
+import 'package:limitless_ui_example/messages_en.i18n.dart' as en;
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 import 'datatable_demo_service.dart';
@@ -22,8 +23,10 @@ import 'datatable_demo_service.dart';
 )
 class DatatablePageComponent implements OnInit {
   DatatablePageComponent(this.i18n, this._changeDetectorRef)
-      : _datatableDemoService =
-            DatatableDemoService(_buildSeedRecords(i18n.t)) {
+      : _datatableDemoServicePt =
+            DatatableDemoService(_buildSeedRecords(Messages())),
+        _datatableDemoServiceEn =
+            DatatableDemoService(_buildSeedRecords(en.MessagesEn())) {
     tableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
     readonlyTableData = DataFrame<Map<String, dynamic>>(
@@ -37,7 +40,48 @@ class DatatablePageComponent implements OnInit {
     modalTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
 
-    tableSettings = DatatableSettings(
+    _tableSettingsPt = _buildTableSettings(Messages());
+    _tableSettingsEn = _buildTableSettings(en.MessagesEn());
+    _advancedTableSettingsPt = _buildAdvancedTableSettings(Messages());
+    _advancedTableSettingsEn = _buildAdvancedTableSettings(en.MessagesEn());
+    _advancedGridSettingsPt = _buildAdvancedGridSettings(Messages());
+    _advancedGridSettingsEn = _buildAdvancedGridSettings(en.MessagesEn());
+    _searchFieldsPt = _buildSearchFields(Messages());
+    _searchFieldsEn = _buildSearchFields(en.MessagesEn());
+  }
+
+  final DemoI18nService i18n;
+  final ChangeDetectorRef _changeDetectorRef;
+  final DatatableDemoService _datatableDemoServicePt;
+  final DatatableDemoService _datatableDemoServiceEn;
+  Messages get t => i18n.t;
+
+  late final DatatableSettings _tableSettingsPt;
+  late final DatatableSettings _tableSettingsEn;
+  late final DatatableSettings _advancedTableSettingsPt;
+  late final DatatableSettings _advancedTableSettingsEn;
+  late final DatatableSettings _advancedGridSettingsPt;
+  late final DatatableSettings _advancedGridSettingsEn;
+  late final List<DatatableSearchField> _searchFieldsPt;
+  late final List<DatatableSearchField> _searchFieldsEn;
+
+  DatatableSettings get tableSettings =>
+      i18n.isPortuguese ? _tableSettingsPt : _tableSettingsEn;
+
+  DatatableSettings get advancedTableSettings =>
+      i18n.isPortuguese ? _advancedTableSettingsPt : _advancedTableSettingsEn;
+
+  DatatableSettings get advancedGridSettings =>
+      i18n.isPortuguese ? _advancedGridSettingsPt : _advancedGridSettingsEn;
+
+  List<DatatableSearchField> get searchFields =>
+      i18n.isPortuguese ? _searchFieldsPt : _searchFieldsEn;
+
+  DatatableDemoService get _datatableDemoService =>
+      i18n.isPortuguese ? _datatableDemoServicePt : _datatableDemoServiceEn;
+
+  DatatableSettings _buildTableSettings(dynamic t) {
+    return DatatableSettings(
       colsDefinitions: <DatatableCol>[
         DatatableCol(
           key: 'feature',
@@ -66,12 +110,14 @@ class DatatablePageComponent implements OnInit {
         ),
       ],
     );
+  }
 
-    advancedTableSettings = DatatableSettings(
+  DatatableSettings _buildAdvancedTableSettings(dynamic t) {
+    return DatatableSettings(
       colsDefinitions: <DatatableCol>[
         DatatableCol(
           key: 'feature',
-          title: 'Funcionalidade',
+          title: t.pages.datatable.featureCol,
           enableSorting: true,
           sortingBy: 'feature',
           width: '260px',
@@ -81,13 +127,13 @@ class DatatablePageComponent implements OnInit {
         ),
         DatatableCol(
           key: 'owner',
-          title: 'Responsável',
+          title: t.pages.datatable.ownerCol,
           minWidth: '180px',
           hideOnMobile: true,
         ),
         DatatableCol(
           key: 'status',
-          title: 'Status',
+          title: t.pages.datatable.statusCol,
           width: '160px',
           minWidth: '160px',
           textAlign: 'center',
@@ -97,7 +143,7 @@ class DatatablePageComponent implements OnInit {
         ),
         DatatableCol(
           key: 'health',
-          title: 'Saúde',
+          title: t.pages.datatable.healthCol,
           width: '140px',
           textAlign: 'center',
           cellStyleResolver: _healthCellStyleResolver,
@@ -105,26 +151,30 @@ class DatatablePageComponent implements OnInit {
       ],
       rowStyleResolver: _advancedRowStyleResolver,
     );
+  }
 
-    advancedGridSettings = DatatableSettings(
+  DatatableSettings _buildAdvancedGridSettings(dynamic t) {
+    return DatatableSettings(
       colsDefinitions: <DatatableCol>[
         DatatableCol(
           key: 'feature',
-          title: 'Funcionalidade',
+          title: t.pages.datatable.featureCol,
           width: '240px',
           minWidth: '240px',
           nowrap: true,
         ),
-        DatatableCol(key: 'owner', title: 'Responsável'),
-        DatatableCol(key: 'status', title: 'Status'),
-        DatatableCol(key: 'health', title: 'Saúde'),
+        DatatableCol(key: 'owner', title: t.pages.datatable.ownerCol),
+        DatatableCol(key: 'status', title: t.pages.datatable.statusCol),
+        DatatableCol(key: 'health', title: t.pages.datatable.healthCol),
       ],
       gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
       gridGap: '1rem',
       customCardBuilder: _buildCustomCard,
     );
+  }
 
-    searchFields = <DatatableSearchField>[
+  List<DatatableSearchField> _buildSearchFields(dynamic t) {
+    return <DatatableSearchField>[
       DatatableSearchField(
         label: t.pages.datatable.featureCol,
         field: 'feature',
@@ -141,14 +191,7 @@ class DatatablePageComponent implements OnInit {
         operator: '=',
       ),
     ];
-
-    initialEventLog = t.pages.datatable.ready;
   }
-
-  final DemoI18nService i18n;
-  final ChangeDetectorRef _changeDetectorRef;
-  final DatatableDemoService _datatableDemoService;
-  Messages get t => i18n.t;
 
   @override
   Future<void> ngOnInit() async {
@@ -192,13 +235,9 @@ class DatatablePageComponent implements OnInit {
   late DataFrame<Map<String, dynamic>> customTableData;
   late DataFrame<Map<String, dynamic>> customGridData;
   late DataFrame<Map<String, dynamic>> modalTableData;
-  late final DatatableSettings tableSettings;
-  late final DatatableSettings advancedTableSettings;
-  late final DatatableSettings advancedGridSettings;
-  late final List<DatatableSearchField> searchFields;
-  late final String initialEventLog;
 
   List<DatatableSearchField> get readonlySearchFields => searchFields;
+  String get initialEventLog => t.pages.datatable.ready;
 
   Future<void> onTableRequest(Filters nextFilters) async {
     filters.fillFromFilters(nextFilters);
@@ -379,18 +418,18 @@ class DatatablePageComponent implements OnInit {
       t.pages.datatable.featureRow2,
       t.pages.datatable.featureRow3,
       t.pages.datatable.featureRow4,
-      'Sincronizar cadastro com ERP',
-      'Publicar relatório operacional',
-      'Revisar fila de integração',
-      'Atualizar painel de atendimento',
+      t.pages.datatable.featureRow5,
+      t.pages.datatable.featureRow6,
+      t.pages.datatable.featureRow7,
+      t.pages.datatable.featureRow8,
     ];
     final owners = <String>[
       t.pages.datatable.ownerProduct,
       t.pages.datatable.ownerBackoffice,
       t.pages.datatable.ownerOperations,
       t.pages.datatable.ownerInfra,
-      'Financeiro',
-      'Atendimento',
+      t.pages.datatable.ownerFinance,
+      t.pages.datatable.ownerSupport,
     ];
     final statuses = <String>[
       t.pages.datatable.statusInProgress,
@@ -438,11 +477,11 @@ class DatatablePageComponent implements OnInit {
     dynamic itemInstance,
   ) {
     switch (itemMap['health']?.toString() ?? '') {
-      case 'Crítica':
+      case var health when health == t.pages.datatable.healthCritical:
         return 'background-color: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444;';
-      case 'Atenção':
+      case var health when health == t.pages.datatable.healthWarning:
         return 'background-color: rgba(245, 134, 70, 0.08); border-left: 3px solid #f58646;';
-      case 'Saudável':
+      case var health when health == t.pages.datatable.healthOk:
         return 'background-color: rgba(5, 150, 105, 0.06); border-left: 3px solid #059669;';
       default:
         return null;
@@ -458,7 +497,7 @@ class DatatablePageComponent implements OnInit {
 
     final eyebrow = SpanElement()
       ..classes.add('datatable-api-card__eyebrow')
-      ..text = 'CustomCardBuilder';
+      ..text = t.pages.datatable.customCardEyebrow;
 
     final title = HeadingElement.h6()
       ..classes.add('datatable-api-card__title')
@@ -466,7 +505,7 @@ class DatatablePageComponent implements OnInit {
 
     final owner = DivElement()
       ..classes.add('datatable-api-card__meta')
-      ..text = 'Responsável: ${itemMap['owner']}';
+      ..text = '${t.pages.datatable.ownerPrefix}: ${itemMap['owner']}';
 
     final badgeRow = DivElement()..classes.add('datatable-api-card__badges');
 
@@ -486,8 +525,7 @@ class DatatablePageComponent implements OnInit {
 
     final summary = ParagraphElement()
       ..classes.add('datatable-api-card__summary')
-      ..text =
-          'O card foi montado manualmente para combinar título, estado e metadados sem depender do layout padrão.';
+      ..text = t.pages.datatable.customCardSummary;
 
     badgeRow.children.addAll(<Element>[statusBadge, healthBadge]);
     root.children.addAll(<Element>[eyebrow, title, owner, badgeRow, summary]);
@@ -497,13 +535,13 @@ class DatatablePageComponent implements OnInit {
 
   String _statusColor(String status) {
     switch (status) {
-      case 'Concluído':
+      case var value when value == t.pages.datatable.statusDone:
         return '#0f766e';
-      case 'Bloqueado':
+      case var value when value == t.pages.datatable.statusBlocked:
         return '#b91c1c';
-      case 'Planejado':
+      case var value when value == t.pages.datatable.statusPlanned:
         return '#1d4ed8';
-      case 'Em andamento':
+      case var value when value == t.pages.datatable.statusInProgress:
         return '#b45309';
       default:
         return '#334155';
@@ -512,11 +550,11 @@ class DatatablePageComponent implements OnInit {
 
   String _healthColor(String health) {
     switch (health) {
-      case 'Crítica':
+      case var value when value == t.pages.datatable.healthCritical:
         return '#b91c1c';
-      case 'Atenção':
+      case var value when value == t.pages.datatable.healthWarning:
         return '#b45309';
-      case 'Saudável':
+      case var value when value == t.pages.datatable.healthOk:
         return '#0f766e';
       default:
         return '#334155';
@@ -525,13 +563,13 @@ class DatatablePageComponent implements OnInit {
 
   String _statusBadgeClass(String status) {
     switch (status) {
-      case 'Concluído':
+      case var value when value == t.pages.datatable.statusDone:
         return 'datatable-api-card__badge--success';
-      case 'Bloqueado':
+      case var value when value == t.pages.datatable.statusBlocked:
         return 'datatable-api-card__badge--danger';
-      case 'Planejado':
+      case var value when value == t.pages.datatable.statusPlanned:
         return 'datatable-api-card__badge--info';
-      case 'Em andamento':
+      case var value when value == t.pages.datatable.statusInProgress:
         return 'datatable-api-card__badge--warning';
       default:
         return 'datatable-api-card__badge--muted';
@@ -540,11 +578,11 @@ class DatatablePageComponent implements OnInit {
 
   String _healthBadgeClass(String health) {
     switch (health) {
-      case 'Crítica':
+      case var value when value == t.pages.datatable.healthCritical:
         return 'datatable-api-card__badge--danger';
-      case 'Atenção':
+      case var value when value == t.pages.datatable.healthWarning:
         return 'datatable-api-card__badge--warning';
-      case 'Saudável':
+      case var value when value == t.pages.datatable.healthOk:
         return 'datatable-api-card__badge--success';
       default:
         return 'datatable-api-card__badge--muted';

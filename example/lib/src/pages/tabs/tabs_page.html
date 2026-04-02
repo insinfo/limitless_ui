@@ -17,36 +17,34 @@
     <div class="card">
 
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">A página de tabs demonstra composição horizontal, vertical, cabeçalhos
-              customizados e estados desabilitados.</p>
+            <p class="text-muted mb-3">{{ t.pages.tabs.overviewIntro }}</p>
 
             <div class="row g-3 mb-4">
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Descrição</h6>
-                  <p class="mb-0 text-muted">Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e
-                    funcionam bem para documentação, formulários segmentados e painéis administrativos.</p>
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ t.pages.tabs.descriptionBody }}</p>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Recursos</h6>
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Modo tabs e pills.</li>
-                    <li>Posicionamento horizontal ou lateral.</li>
-                    <li>Cabeçalho projetado e abas desabilitadas.</li>
+                    <li>{{ t.pages.tabs.featureOne }}</li>
+                    <li>{{ t.pages.tabs.featureTwo }}</li>
+                    <li>{{ t.pages.tabs.featureThree }}</li>
                   </ul>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="card card-body h-100">
-                  <h6 class="mb-2">Limitações</h6>
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li>Muitas abas no mesmo nível prejudicam escaneabilidade.</li>
-                    <li>Conteúdo longo demais pede hierarquia adicional.</li>
-                    <li>Abas aninhadas devem ser isoladas em subcomponentes.</li>
+                    <li>{{ t.pages.tabs.limitOne }}</li>
+                    <li>{{ t.pages.tabs.limitTwo }}</li>
+                    <li>{{ t.pages.tabs.limitThree }}</li>
                   </ul>
                 </div>
               </div>
@@ -54,27 +52,25 @@
 
             <div class="card">
               <div class="card-header">
-                <h5 class="mb-0">Exemplo visível</h5>
+                <h5 class="mb-0">{{ t.pages.tabs.previewTitle }}</h5>
               </div>
               <div class="card-body">
-                <p class="text-muted mb-3">O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba
-                  desabilitada, sem contaminar a navegação da página de documentação.</p>
+                <p class="text-muted mb-3">{{ t.pages.tabs.previewIntro }}</p>
                 <tabs-preview-component></tabs-preview-component>
               </div>
             </div>
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
-            <p class="text-muted mb-3">Use o componente para agrupar conteúdo relacionado quando a navegação por seções
-              fizer mais sentido do que empilhar cards ou abrir novas rotas.</p>
+            <p class="text-muted mb-3">{{ t.pages.tabs.apiIntro }}</p>
             <ul class="mb-3 ps-3">
-              <li><code>type</code> aceita <code>tabs</code> ou <code>pills</code>.</li>
-              <li><code>placement</code> controla a posição das abas, como topo ou lateral.</li>
-              <li><code>[justified]</code> distribui os gatilhos de forma uniforme.</li>
-              <li><code>[active]</code> e <code>[disabled]</code> controlam estado por aba.</li>
-              <li><code>template li-tabx-header</code> permite cabeçalhos customizados.</li>
+              <li>{{ t.pages.tabs.apiOne }}</li>
+              <li>{{ t.pages.tabs.apiTwo }}</li>
+              <li>{{ t.pages.tabs.apiThree }}</li>
+              <li>{{ t.pages.tabs.apiFour }}</li>
+              <li>{{ t.pages.tabs.apiFive }}</li>
             </ul>
 
             <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-tabsx type="pills" placement="left" [justified]="true"&gt;

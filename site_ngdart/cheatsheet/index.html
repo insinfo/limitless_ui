@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Community-maintained documentation to help you build high-quality AngularDart apps, using Dart tools and libraries.">
+  <title>Cheat Sheet | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="Cheat Sheet" />
+  <meta name="twitter:description" content="Community-maintained documentation to help you build high-quality AngularDart apps, using Dart tools and libraries." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Cheat Sheet" />
+  <meta property="og:description" content="Community-maintained documentation to help you build high-quality AngularDart apps, using Dart tools and libraries." />
+  <meta property="og:url" content="https://angulardart.xyz/cheatsheet/" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular hide_toc">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li >
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li >
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li class="active">
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/cheatsheet/index.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='Cheat Sheet' page issue&body=From URL: https://angulardart.xyz/cheatsheet/"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  Cheat Sheet 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <style>
+table { table-layout: fixed; width: 100%; }
+table td { overflow: auto; }
+td.nowrap, th.nowrap { white-space: nowrap; }
+td.nowrap { background-color: rgba(236, 239, 241, 0.18); }
+td.nowrap code, th.nowrap code { white-space: nowrap; padding: 0px;}
+.prettyprint { background: inherit; padding: 0; }
+.highlight { font-weight: bold; }
+td:nth-child(1), th:nth-child(1) { width: 35%; }
+</style>
+
+<p>&lt;?code-excerpt path-base=”examples/ng/doc”?&gt;</p>
+
+<div id="runApp" class="md-table table table-striped">
+
+  <ul class="md-thead">
+    <li>
+      <p>Bootstrapping</p>
+    </li>
+    <li>
+      <p><code class="prettyprint lang-dart">import &#39;package:angular/angular.dart&#39;;</code></p>
+    </li>
+  </ul>
+
+  <hr />
+
+  <ul>
+    <li>
+      <p><code class="prettyprint lang-dart">import &#39;package:angular_app/app_component.template.dart&#39; as ng;
+<br />
+&nbsp;&nbsp;void main() {
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">runApp</span>(ng.AppComponentNgFactory);
+<br />
+&nbsp;&nbsp;}</code></p>
+    </li>
+    <li>
+      <p>Launch the app, using <code class="language-plaintext highlighter-rouge">AppComponent</code> as the root component.</p>
+
+      <p>See: <a href="/guide/architecture">Architecture Overview</a>,
+<a href="/guide/dependency-injection">Dependency Injection</a></p>
+    </li>
+  </ul>
+
+  <hr />
+
+  <ul>
+    <li><code class="prettyprint lang-dart">import &#39;package:angular_router/angular_router.dart&#39;;
+<br />
+&nbsp;&nbsp;import &#39;package:angular_tour_of_heroes/app_component.template.dart&#39; as ng;
+<br /></code></li>
+  </ul>
+
+  <p><br />
+  import 'main.template.dart' as self;
+<br /></p>
+
+  <p><br />
+  <span class="highlight">@GenerateInjector</span>(
+<br />
+    routerProviders,
+<br />
+  )
+<br />
+  final InjectorFactory injector = self.injector$Injector;
+<br /></p>
+
+  <p><br />
+  void main() {
+<br />
+    runApp(ng.AppComponentNgFactory, <span class="highlight">createInjector</span>: injector);
+<br />
+  }&lt;/code&gt;</p>
+
+  <ul>
+    <li>
+      <p>Launch the app, using a compile-time generated root injector.</p>
+
+      <p>See: <a href="/guide/architecture">Architecture Overview</a>,
+<a href="/guide/dependency-injection">Dependency Injection</a></p>
+    </li>
+  </ul>
+
+</div>
+
+<table id="template-syntax">
+
+<tr>
+  <th>Template syntax</th>
+  <th></th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;input <b>[value]</b>="firstName"&gt;
+  </code></td>
+  <td>
+      <p>Binds property <code class="language-plaintext highlighter-rouge">value</code> to the result of expression <code class="language-plaintext highlighter-rouge">firstName</code>.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;div <b>[attr.role]</b>="myAriaRole"&gt;
+  </code></td>
+  <td>
+      <p>Binds attribute <code class="language-plaintext highlighter-rouge">role</code> to the result of expression <code class="language-plaintext highlighter-rouge">myAriaRole</code>.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;div <b>[class.extra-sparkle]</b>="isDelightful"&gt;
+  </code></td>
+  <td>
+      <p>Binds the presence of the CSS class <code class="language-plaintext highlighter-rouge">extra-sparkle</code> on the element to the truthiness of the expression <code class="language-plaintext highlighter-rouge">isDelightful</code>.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;div <b>[style.width.px]</b>="mySize"&gt;
+  </code></td>
+  <td>
+      <p>Binds style property <code class="language-plaintext highlighter-rouge">width</code> to the result of expression <code class="language-plaintext highlighter-rouge">mySize</code> in pixels. Units are optional.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;button <b>(click)</b>="readRainbow($event)"&gt;
+  </code></td>
+  <td>
+      <p>Calls method <code class="language-plaintext highlighter-rouge">readRainbow</code> when a click event is triggered on this button element (or its children) and passes in the event object.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;div title="Hello <b>{&#8203;{ponyName}}</b>"&gt;
+  </code></td>
+  <td>
+      <p>Binds a property to an interpolated string, for example, “Hello Seabiscuit”. Equivalent to:
+  <code class="language-plaintext highlighter-rouge">&lt;div [title]="'Hello' + ponyName"&gt;</code></p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;p&gt;Hello <b>{&#8203;{ponyName}}</b>&lt;/p&gt;
+  </code></td>
+  <td>
+      <p>Binds text content to an interpolated string, for example, “Hello Seabiscuit”.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;my-cmp <b>[(title)]</b>="name"&gt;
+  </code></td>
+  <td>
+      <p>Sets up two-way data binding. Equivalent to:
+  <code class="language-plaintext highlighter-rouge">&lt;my-cmp [title]="name" (titleChange)="name=$event"&gt;</code></p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+  &lt;video <b>#movieplayer</b> ...&gt;<br />
+  &nbsp;&nbsp;&lt;button <b>(click)</b>="movieplayer.play()"&gt;<br />
+  &lt;/video&gt;</code></td>
+  <td>
+      <p>Creates a local variable <code class="language-plaintext highlighter-rouge">movieplayer</code> that provides access to the <code class="language-plaintext highlighter-rouge">video</code> element instance in data-binding and event-binding expressions in the current template.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;p <b>*myUnless</b>="myExpression"&gt;...&lt;/p&gt;
+  </code></td>
+  <td>
+      <p>The <code class="language-plaintext highlighter-rouge">*</code> symbol turns the current element into an embedded template. Equivalent to:
+  <code class="language-plaintext highlighter-rouge">&lt;template [myUnless]="myExpression"&gt;&lt;p&gt;...&lt;/p&gt;&lt;/template&gt;</code></p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;p&gt;<br />
+    &nbsp;&nbsp;Card No.: <b>{&#8203;{cardNumber | myCardNumberFormatter}}</b><br />
+    &lt;/p&gt;
+  </code></td>
+  <td>
+      <p>Transforms the current value of expression <code class="language-plaintext highlighter-rouge">cardNumber</code> via the pipe called <code class="language-plaintext highlighter-rouge">myCardNumberFormatter</code>.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;p&gt;<br />
+    &nbsp;&nbsp;Employer: <b>{&#8203;{employer?.companyName}}</b><br />
+    &lt;/p&gt;
+  </code></td>
+  <td>
+      <p>The safe navigation operator (<code class="language-plaintext highlighter-rouge">?</code>) means that the <code class="language-plaintext highlighter-rouge">employer</code> field is optional and if <code class="language-plaintext highlighter-rouge">undefined</code>, the rest of the expression should be ignored.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a></p>
+    </td>
+</tr>
+
+</table>
+
+<table id="core-directives">
+
+<tr>
+  <th>Core directives</th>
+  <th>
+  <code class="language-plaintext highlighter-rouge">import 'package:angular/angular.dart';</code>
+  Available from <a href="https://pub.dev/documentation/angular/6.0.1/angular/CORE_DIRECTIVES-constant.html">CORE_DIRECTIVES</a>
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;section <b>*ngIf</b>="showSection"&gt;
+  </code></td>
+  <td>
+      <p>Removes or recreates a portion of the DOM tree based on the <code class="language-plaintext highlighter-rouge">showSection</code> expression.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/NgIf-class.html">NgIf class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;li <b>*ngFor</b>="let item of list"&gt;
+  </code></td>
+  <td>
+      <p>Turns the li element and its contents into a template, and uses that to instantiate a view for each item in list.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/NgFor-class.html">NgFor class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;div <b>[ngSwitch]</b>="conditionExpression"&gt;<br />
+    &nbsp;&nbsp;&lt;template <b>[ngSwitchCase]</b>="case1Exp"&gt;...&lt;/template&gt;<br />
+    &nbsp;&nbsp;&lt;template <b>ngSwitchCase</b>="case2LiteralString"&gt;...&lt;/template&gt;<br />
+    &nbsp;&nbsp;&lt;template <b>ngSwitchDefault</b>&gt;...&lt;/template&gt;<br />
+    &lt;/div&gt;
+  </code></td>
+  <td>
+      <p>Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of conditionExpression.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/NgSwitch-class.html">NgSwitch class</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/NgSwitchWhen-class.html">NgSwitchCase class</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/NgSwitchDefault-class.html">NgSwitchDefault class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;div <b>[ngClass]</b>="{active: isActive, disabled: isDisabled}"&gt;
+  </code></td>
+  <td>
+      <p>Binds the presence of CSS classes on the element to the truthiness of the associated map values. The right-hand expression should return {class-name: true/false} map.</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/NgClass-class.html">NgClass class</a></p>
+    </td>
+</tr>
+
+</table>
+
+<!-- TODO: Why isn't NgStyle in here or in the TS cheat sheet? -->
+
+<table id="forms">
+
+<tr>
+  <th>Forms</th>
+  <th>
+  <code class="language-plaintext highlighter-rouge">import 'package:angular_forms/angular_forms.dart';</code><br />
+  Available from <a href="https://pub.dev/documentation/angular_forms/6.0.1/angular_forms/formDirectives-constant.html">formDirectives</a>
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;input <b>[(ngModel)]</b>="userName"&gt;
+  </code></td>
+  <td>
+      <p>Provides two-way data-binding, parsing, and validation for form controls.</p>
+
+      <p>See: <a href="/guide/forms">Forms</a>,
+  <a href="https://pub.dev/documentation/angular_forms/6.0.1/angular_forms/NgModel-class.html">NgModel class</a></p>
+    </td>
+</tr>
+
+</table>
+
+<table id="class-decorators">
+
+<tr>
+  <th>Class decorators</th>
+  <th>
+  <code class="language-plaintext highlighter-rouge">import 'package:angular/angular.dart';</code>
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@Component(...)</b><br />
+    class MyComponent() {}
+  </code></td>
+  <td>
+      <p>Declares that a class is a component and provides metadata about the component.</p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@Directive(...)</b><br />
+    class MyDirective() {}
+  </code></td>
+  <td>
+      <p>Declares that a class is a directive and provides metadata about the directive.</p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@Pipe(...)</b><br />
+    class MyPipe() {}
+  </code></td>
+  <td>
+      <p>Declares that a class is a pipe and provides metadata about the pipe.</p>
+    </td>
+</tr>
+
+</table>
+
+<table id="directive-configuration">
+
+<tr>
+  <th>Directive configuration</th>
+  <th>
+    <code class="language-plaintext highlighter-rouge">@Directive(property1: value1, ...)</code>
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>selector:</b> '.cool-button:not(a)'
+  </code></td>
+  <td>
+      <p>Specifies a CSS selector that identifies this directive within a template. Supported selectors include <code class="language-plaintext highlighter-rouge">element</code>, <code class="language-plaintext highlighter-rouge">[attribute]</code>, <code class="language-plaintext highlighter-rouge">.class</code>, and <code class="language-plaintext highlighter-rouge">:not()</code>.</p>
+
+      <p>Does not support parent-child relationship selectors.</p>
+
+      <p>See: <a href="/guide/structural-directives">Structural Directives</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/Directive/selector.html">selector property</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>providers:</b> [MyService, Provider(...)]
+  </code></td>
+  <td>
+      <p>List of dependency injection providers for this directive and its children.</p>
+
+      <p>See:
+  <a href="/guide/attribute-directives">Attribute Directives</a>,
+  <a href="/guide/structural-directives">Structural Directives</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/Directive/providers.html">providers property</a></p>
+    </td>
+</tr>
+
+</table>
+
+<table id="component-configuration">
+
+<tr>
+  <th>Component configuration</th>
+  <th>
+  <code class="language-plaintext highlighter-rouge">@Component</code> extends <code class="language-plaintext highlighter-rouge">@Directive</code>,
+  so the <code class="language-plaintext highlighter-rouge">@Directive</code> configuration applies to components as well
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>viewProviders:</b> [MyService, Provider(...)]
+  </code></td>
+  <td>
+      <p>List of dependency injection providers scoped to this component’s view.</p>
+
+      <p>See: <a href="https://pub.dev/documentation/angular/6.0.1/di/Component/viewProviders.html">viewProviders property</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>template:</b> 'Hello {&#8203;{name}}',<br />
+    <b>templateUrl:</b> 'my-component.html'
+  </code></td>
+  <td>
+      <p>Inline template or external template URL of the component’s view.</p>
+
+      <p>See: <a href="/guide/architecture">Architecture Overview</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>styles:</b> ['.primary {color: red}']<br />
+    <b>styleUrls:</b> ['my-component.css']
+  </code></td>
+  <td>
+      <p>List of inline CSS styles or external stylesheet URLs for styling the component’s view.</p>
+
+      <p>See: <a href="/guide/component-styles">Component Styles</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>directives:</b> [CORE_DIRECTIVES, MyDirective, MyComponent]
+  </code></td>
+  <td>
+      <p>List of directives used in the component’s template.</p>
+
+      <p>See: <a href="/guide/architecture">Architecture Overview</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/CORE_DIRECTIVES-constant.html">CORE_DIRECTIVES</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>pipes:</b> [commonPipes, MyPipe, ...]
+  </code></td>
+  <td>
+      <p>List of pipes used in the component’s template.</p>
+
+      <p>See: <a href="/guide/pipes">Pipes</a>, <a href="https://pub.dev/documentation/angular/6.0.1/angular/commonPipes-constant.html">commonPipes</a></p>
+    </td>
+</tr>
+
+</table>
+
+<table id="class-field-decorators">
+
+<tr>
+  <th>Class field decorators for directives and components</th>
+  <th>
+  <code class="language-plaintext highlighter-rouge">import 'package:angular/angular.dart';</code>
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@Input()</b> myProperty;
+  </code></td>
+  <td>
+      <p>Declares an input property that you can update via property binding (example:
+  <code class="language-plaintext highlighter-rouge">&lt;my-cmp [myProperty]="someExpression"&gt;</code>).</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/Input-class.html">Input class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    final _myEvent = new StreamController&lt;T&gt;();<br />
+    <b>@Output()</b> Stream&lt;T&gt; get myEvent =&gt; _myEvent.stream;
+  </code></td>
+  <td>
+      <p>Declares an output property that fires events that you can subscribe to with an event binding (example: <code class="language-plaintext highlighter-rouge">&lt;my-cmp (myEvent)="doSomething()"&gt;</code>).</p>
+
+      <p>See: <a href="/guide/template-syntax">Template Syntax</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/Output-class.html">Output class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@HostBinding('class.valid')</b> isValid;
+  </code></td>
+  <td>
+      <p>Binds a host element property (here, the CSS class <code class="language-plaintext highlighter-rouge">valid</code>) to a directive/component property (<code class="language-plaintext highlighter-rouge">isValid</code>).</p>
+
+      <p>See: <a href="https://pub.dev/documentation/angular/6.0.1/angular/HostBinding-class.html">HostBinding class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@HostListener('click', ['$event'])</b><br />
+    onClick(e) {...}
+  </code></td>
+  <td>
+      <p>Subscribes to a host element event (<code class="language-plaintext highlighter-rouge">click</code>) with a directive/component method (<code class="language-plaintext highlighter-rouge">onClick</code>), optionally passing an argument (<code class="language-plaintext highlighter-rouge">$event</code>).</p>
+
+      <p>See: <a href="/guide/attribute-directives">Attribute Directives</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/angular/HostListener-class.html">HostListener class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@ContentChild(myPredicate)</b> myChildComponent;
+  </code></td>
+  <td>
+      <p>Binds the first result of the component content query (<code class="language-plaintext highlighter-rouge">myPredicate</code>) to a property (<code class="language-plaintext highlighter-rouge">myChildComponent</code>) of the class.</p>
+
+      <p>See: <a href="https://pub.dev/documentation/angular/6.0.1/angular/ContentChild-class.html">ContentChild class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@ContentChildren(myPredicate)</b> myChildComponents;
+  </code></td>
+  <td>
+      <p>Binds the results of the component content query (<code class="language-plaintext highlighter-rouge">myPredicate</code>) to a property (<code class="language-plaintext highlighter-rouge">myChildComponents</code>) of the class.</p>
+
+      <p>See: <a href="https://pub.dev/documentation/angular/6.0.1/angular/ContentChildren-class.html">ContentChildren class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@ViewChild(myPredicate)</b> myChildComponent;
+  </code></td>
+  <td>
+      <p>Binds the first result of the component view query (<code class="language-plaintext highlighter-rouge">myPredicate</code>) to a property (<code class="language-plaintext highlighter-rouge">myChildComponent</code>) of the class. Not available for directives.</p>
+
+      <p>See: <a href="https://pub.dev/documentation/angular/6.0.1/angular/ViewChild-class.html">ViewChild class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@ViewChildren(myPredicate)</b> myChildComponents;
+  </code></td>
+  <td>
+      <p>Binds the results of the component view query (<code class="language-plaintext highlighter-rouge">myPredicate</code>) to a property (<code class="language-plaintext highlighter-rouge">myChildComponents</code>) of the class. Not available for directives.</p>
+
+      <p>See: <a href="https://pub.dev/documentation/angular/6.0.1/angular/ViewChildren-class.html">ViewChildren class</a></p>
+    </td>
+</tr>
+
+</table>
+
+<table id="lifecycle-hooks">
+
+<tr>
+  <th>Directive and component change detection and lifecycle hooks</th>
+  <th>
+  (implemented as class methods)
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>MyAppComponent(MyService myService, ...)</b> { ... }
+  </code></td>
+  <td>
+      <p>Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a></p>
+
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>ngAfterChanges()</b> { ... }
+  </code></td>
+  <td>
+      <p>Called after every change to input properties and before processing content or child views.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>,
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/OnChanges-class.html">OnChanges class</a></p>
+
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>ngOnInit()</b> { ... }
+  </code></td>
+  <td>
+      <p>Called after the constructor, initializing input properties, and the first call to <code class="language-plaintext highlighter-rouge">ngAfterChanges</code>.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>,
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/OnInit-class.html">OnInit class</a></p>
+
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>ngDoCheck()</b> { ... }
+  </code></td>
+  <td>
+      <p>Called every time that the input properties of a component or a directive are checked. Use it to extend change detection by performing a custom check.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>,
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/DoCheck-class.html">DoCheck class</a></p>
+
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>ngAfterContentInit()</b> { ... }
+  </code></td>
+  <td>
+      <p>Called after ngOnInit when the component’s or directive’s content has been initialized.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>,
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/AfterContentInit-class.html">AfterContentInit class</a></p>
+
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>ngAfterContentChecked()</b> { ... }
+  </code></td>
+  <td>
+      <p>Called after every check of the component’s or directive’s content.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>,
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/AfterContentChecked-class.html">AfterContentChecked class</a></p>
+
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>ngAfterViewInit()</b> { ... }
+  </code></td>
+  <td>
+      <p>Called after <code class="language-plaintext highlighter-rouge">ngAfterContentInit</code> when the component’s view has been initialized. Applies to components only.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>,
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/AfterViewInit-class.html">AfterViewInit class</a></p>
+
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>ngAfterViewChecked()</b> { ... }
+  </code></td>
+  <td>
+      <p>Called after every check of the component’s view. Applies to components only.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>,
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/AfterViewChecked-class.html">AfterViewChecked class</a></p>
+
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>ngOnDestroy()</b> { ... }
+  </code></td>
+  <td>
+      <p>Called once, before the instance is destroyed.</p>
+
+      <p>See: <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>,
+<a href="https://pub.dev/documentation/angular/6.0.1/angular/OnDestroy-class.html">OnDestroy class</a></p>
+
+    </td>
+</tr>
+
+</table>
+
+<table id="dependency-injection">
+
+<tr>
+  <th>Dependency injection configuration</th>
+  <th>
+  <code class="language-plaintext highlighter-rouge">import 'package:angular/angular.dart';</code>
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>Provider</b>(MyService, <b>useClass</b>: MyMockService)
+  </code></td>
+  <td>
+      <p>Sets or overrides the provider for <code class="language-plaintext highlighter-rouge">MyService</code> to the <code class="language-plaintext highlighter-rouge">MyMockService</code> class.</p>
+
+      <p>See:
+  <a href="/guide/dependency-injection">Dependency Injection</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/provide.html">provide function</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/Provider-class.html">Provider class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>Provider</b>(MyService, <b>useFactory</b>: myFactory)
+  </code></td>
+  <td>
+      <p>Sets or overrides the provider for <code class="language-plaintext highlighter-rouge">MyService</code> to the <code class="language-plaintext highlighter-rouge">myFactory</code> factory function.</p>
+
+      <p>See:
+  <a href="/guide/dependency-injection">Dependency Injection</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/provide.html">provide function</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/Provider-class.html">Provider class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>Provider</b>(MyValue, <b>useValue</b>: 42)
+  </code></td>
+  <td>
+      <p>Sets or overrides the provider for <code class="language-plaintext highlighter-rouge">MyValue</code> to the value <code class="language-plaintext highlighter-rouge">42</code>.</p>
+
+      <p>See:
+  <a href="/guide/dependency-injection">Dependency Injection</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/provide.html">provide function</a>,
+  <a href="https://pub.dev/documentation/angular/6.0.1/di/Provider-class.html">Provider class</a></p>
+    </td>
+</tr>
+
+</table>
+
+<table id="routing">
+
+<tr>
+  <th>Routing and navigation</th>
+  <th>
+  <code class="language-plaintext highlighter-rouge">import 'package:angular_router/angular_router.dart';</code>
+  </th>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    new <b>RouteDefinition</b>(<br />
+    &nbsp;&nbsp;path: 'heroes',<br />
+    &nbsp;&nbsp;component: HeroesComponentNgFactory,<br />
+    )<br />
+  </code></td>
+  <td>
+      <p>Basic unit used to configure routes.</p>
+
+      <p>See:
+  <a href="/tutorial/toh-pt5">Tutorial: Routing</a>,
+  <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/RouteDefinition-class.html">RouteDefinition class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;<b>router-outlet</b> [routes]="routes"&gt;&lt;/router-outlet&gt;
+  </code></td>
+  <td>
+      <p>Reserves a location in the DOM as an outlet for the router.</p>
+
+      <p>See:
+  <a href="/tutorial/toh-pt5">Tutorial: Routing</a>,
+  <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/RouterOutlet-class.html">RouterOutlet class</a></p>
+    </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-html">
+    &lt;a <b>routerLink</b>="/heroes/{{hero.id}}"&gt;...&lt;/a&gt;<br />
+    &lt;a <b>[routerLink]</b>="heroesRoute"&gt;...&lt;/a&gt;
+  </code></td>
+  <td>
+      <p>Creates a link to a different view.</p>
+
+      <p>See:
+  <a href="/tutorial/toh-pt5">Tutorial: Routing</a>,
+  <a href="https://pub.dev/documentation/angular_router/6.0.1/angular_router/RouterLink-class.html">RouterLink class</a></p>
+    </td>
+</tr>
+
+<!--
+
+Needs updating for angular_router 2.0.0
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>@CanActivate</b>(() => ...)<br>
+    class MyComponent() {}
+  </code></td>
+  <td markdown="1">
+  A component decorator defining a function that the router should call first to determine if it should activate this component. Should return a boolean or a future.
+  <!-- TODO: link to good resource. >
+  </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>routerOnActivate</b>(nextInstruction, prevInstruction) { ... }
+  </code></td>
+  <td markdown="1">
+  After navigating to a component, the router calls the component's `routerOnActivate` method (if defined).
+
+  See: [OnActivate class](https://pub.dev/documentation/angular_router/6.0.1/angular_router/OnActivate-class.html)
+  </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>routerCanReuse</b>(nextInstruction, prevInstruction) { ... }
+  </code></td>
+  <td markdown="1">
+  The router calls a component's `routerCanReuse` method (if defined) to determine whether to reuse the instance or destroy it and create a new instance. Should return a boolean or a future.
+
+  See: [CanReuse class](https://pub.dev/documentation/angular_router/6.0.1/angular_router/CanReuse-class.html)
+  </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>routerOnReuse</b>(nextInstruction, prevInstruction) { ... }
+  </code></td>
+  <td markdown="1">
+  The router calls the component's `routerOnReuse` method (if defined) when it reuses a component instance.
+
+  See: [OnReuse class](https://pub.dev/documentation/angular_router/6.0.1/angular_router/OnReuse-class.html)
+  </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>canDeactivate</b>(nextInstruction, prevInstruction) { ... }
+  </code></td>
+  <td markdown="1">
+  The router calls the `canDeactivate()` methods (if defined) of every component that would be removed after a navigation. The navigation proceeds if and only if all such methods return true or a future that completes successfully.
+
+  See: [CanDeactivate class](https://pub.dev/documentation/angular_router/6.0.1/angular_router/CanDeactivate-class.html)
+  </td>
+</tr>
+
+<tr>
+  <td class="nowrap"><code class="prettyprint lang-dart">
+    <b>routerOnDeactivate</b>(nextInstruction, prevInstruction) { ... }
+  </code></td>
+  <td markdown="1">
+  Called before the directive is removed as the result of a route change. May return a future that pauses removing the directive until the future completes.
+
+  See: [OnDeactivate class](https://pub.dev/documentation/angular_router/6.0.1/angular_router/OnDeactivate-class.html)
+  </td>
+</tr>
+-->
+
+</table>
+
+
+          
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

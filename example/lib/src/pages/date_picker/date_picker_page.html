@@ -120,11 +120,11 @@
 
             <div class="alert alert-primary border-primary-subtle mt-4 mb-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
               <div>
-                <div class="fw-semibold">Precisa selecionar um período?</div>
-                <div class="text-muted">A demo dedicada do Date Range continua disponível com exemplos de início, fim e restrições.</div>
+                <div class="fw-semibold">{{ dateRangeCtaTitle }}</div>
+                <div class="text-muted">{{ dateRangeCtaBody }}</div>
               </div>
               <a class="btn btn-primary" [routerLink]="DemoRoutePaths.dateRange.toUrl()">
-                Abrir demo de Date Range
+                {{ dateRangeCtaButton }}
               </a>
             </div>
           </div>

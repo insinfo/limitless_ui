@@ -2,12 +2,12 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ t.pages.modal.title }} <span class="fw-normal">Offcanvas</span></h4>
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
       <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">Painéis laterais e overlays contextuais</span>
+        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
       </div>
     </div>
   </div>
@@ -15,85 +15,83 @@
   <div class="content">
     <div class="card">
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">
-              O <code>li-offcanvas</code> agora cobre o fluxo declarativo e também uma API de serviço/ref inspirada no ng-bootstrap: posições start/end/top/bottom, backdrop opcional, <code>beforeDismiss</code>, tamanhos, foco inicial, eventos <code>shown/hidden</code> e <code>lazyContent</code>.
-            </p>
+            <p class="text-muted mb-3">{{ overviewIntro }}</p>
 
             <div class="row g-3">
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Básico à direita</h6>
-                  <p class="text-muted mb-3">Padrão mais comum para filtros, detalhe de item e navegação auxiliar.</p>
-                  <button class="btn btn-primary" type="button" (click)="openBasic()">Abrir offcanvas</button>
+                  <h6 class="mb-2">{{ basicTitle }}</h6>
+                  <p class="text-muted mb-3">{{ basicBody }}</p>
+                  <button class="btn btn-primary" type="button" (click)="openBasic()">{{ basicButton }}</button>
                 </div>
               </div>
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Esquerda com autofocus</h6>
-                  <p class="text-muted mb-3">Move o foco para a ação principal usando <code>[attr.liOffcanvasAutofocus]</code>.</p>
-                  <button class="btn btn-outline-primary" type="button" (click)="openStart()">Abrir à esquerda</button>
+                  <h6 class="mb-2">{{ startTitle }}</h6>
+                  <p class="text-muted mb-3">{{ startBody }}</p>
+                  <button class="btn btn-outline-primary" type="button" (click)="openStart()">{{ startButton }}</button>
                 </div>
               </div>
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Topo para aviso</h6>
-                  <p class="text-muted mb-3">Bom para avisos largos, consentimento e ações rápidas sem tomar a tela toda.</p>
-                  <button class="btn btn-outline-dark" type="button" (click)="openTop()">Abrir no topo</button>
+                  <h6 class="mb-2">{{ topTitle }}</h6>
+                  <p class="text-muted mb-3">{{ topBody }}</p>
+                  <button class="btn btn-outline-dark" type="button" (click)="openTop()">{{ topButton }}</button>
                 </div>
               </div>
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Header e footer customizados</h6>
-                  <p class="text-muted mb-3">Usa slots com <code>liOffcanvasHeader</code> e <code>liOffcanvasFooter</code>.</p>
-                  <button class="btn btn-outline-indigo" type="button" (click)="openFooter()">Abrir customizado</button>
+                  <h6 class="mb-2">{{ footerTitle }}</h6>
+                  <p class="text-muted mb-3">{{ footerBody }}</p>
+                  <button class="btn btn-outline-indigo" type="button" (click)="openFooter()">{{ footerButton }}</button>
                 </div>
               </div>
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Sem backdrop</h6>
-                  <p class="text-muted mb-3">Mantém a página interativa, útil para painéis auxiliares de baixa fricção.</p>
-                  <button class="btn btn-outline-secondary" type="button" (click)="openNoBackdrop()">Abrir sem backdrop</button>
+                  <h6 class="mb-2">{{ noBackdropTitle }}</h6>
+                  <p class="text-muted mb-3">{{ noBackdropBody }}</p>
+                  <button class="btn btn-outline-secondary" type="button" (click)="openNoBackdrop()">{{ noBackdropButton }}</button>
                 </div>
               </div>
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Lazy content</h6>
-                  <p class="text-muted mb-3">Só monta o corpo quando abre, evitando custo inicial de renderização.</p>
-                  <button class="btn btn-outline-success" type="button" (click)="openLazy()">Abrir lazy</button>
+                  <h6 class="mb-2">{{ lazyTitle }}</h6>
+                  <p class="text-muted mb-3">{{ lazyBody }}</p>
+                  <button class="btn btn-outline-success" type="button" (click)="openLazy()">{{ lazyButton }}</button>
                 </div>
               </div>
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">API de serviço/ref</h6>
-                  <p class="text-muted mb-3">Abre um offcanvas registrado por id usando <code>LiOffcanvasService.open()</code>.</p>
+                  <h6 class="mb-2">{{ serviceTitle }}</h6>
+                  <p class="text-muted mb-3">{{ serviceBody }}</p>
                   <div class="d-flex gap-2 flex-wrap">
-                    <button class="btn btn-outline-indigo" type="button" (click)="openViaService()">Abrir via service</button>
-                    <button class="btn btn-light" type="button" (click)="closeViaServiceRef()">Fechar via ref</button>
+                    <button class="btn btn-outline-indigo" type="button" (click)="openViaService()">{{ openServiceButton }}</button>
+                    <button class="btn btn-light" type="button" (click)="closeViaServiceRef()">{{ closeRefButton }}</button>
                   </div>
                 </div>
               </div>
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">beforeDismiss</h6>
-                  <p class="text-muted mb-3">Bloqueia ESC e backdrop até o usuário liberar explicitamente a dispensa.</p>
-                  <button class="btn btn-outline-warning" type="button" (click)="openGuarded()">Abrir guardado</button>
+                  <h6 class="mb-2">{{ guardedTitle }}</h6>
+                  <p class="text-muted mb-3">{{ guardedBody }}</p>
+                  <button class="btn btn-outline-warning" type="button" (click)="openGuarded()">{{ guardedButton }}</button>
                 </div>
               </div>
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Tamanho grande</h6>
-                  <p class="text-muted mb-3">Demonstra o input <code>size</code> para painéis de revisão com mais densidade.</p>
-                  <button class="btn btn-outline-dark" type="button" (click)="openLarge()">Abrir tamanho lg</button>
+                  <h6 class="mb-2">{{ largeTitle }}</h6>
+                  <p class="text-muted mb-3">{{ largeBody }}</p>
+                  <button class="btn btn-outline-dark" type="button" (click)="openLarge()">{{ largeButton }}</button>
                 </div>
               </div>
             </div>
@@ -107,7 +105,7 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
             <div class="row g-3">
               <div class="col-12">
@@ -155,16 +153,16 @@ ref.close();</code></pre>
   </div>
 
   <li-offcanvas #basicOffcanvas
-                title-text="Resumo operacional"
+                [title-text]="basicPanelTitle"
                 position="end"
                 [lazyContent]="true"
-                (shown)="onShown('Offcanvas direito')"
-                (hidden)="onHidden('Offcanvas direito')"
-                (close)="onClosed('Offcanvas direito')"
-                (dismiss)="onDismissed('Offcanvas direito', $event)">
+                (shown)="onShown(basicTitle)"
+                (hidden)="onHidden(basicTitle)"
+                (close)="onClosed(basicTitle)"
+                (dismiss)="onDismissed(basicTitle, $event)">
     <div class="mb-3">
-      <h6 class="mb-2">Quando usar</h6>
-      <p class="text-muted mb-0">Prefira este formato quando o usuário precisa consultar detalhes ou filtros sem perder o contexto da página principal.</p>
+      <h6 class="mb-2">{{ basicPanelHeading }}</h6>
+      <p class="text-muted mb-0">{{ basicPanelBody }}</p>
     </div>
 
     <div class="list-group list-group-borderless">
@@ -176,17 +174,17 @@ ref.close();</code></pre>
   </li-offcanvas>
 
   <li-offcanvas #startOffcanvas
-                title-text="Atalhos rápidos"
+                [title-text]="startPanelTitle"
                 position="start"
                 size="sm"
-                (shown)="onShown('Offcanvas esquerdo')"
-                (close)="onClosed('Offcanvas esquerdo')"
-                (dismiss)="onDismissed('Offcanvas esquerdo', $event)">
-    <p class="text-muted">O primeiro foco vai para a ação marcada logo abaixo.</p>
+                (shown)="onShown(startTitle)"
+                (close)="onClosed(startTitle)"
+                (dismiss)="onDismissed(startTitle, $event)">
+    <p class="text-muted">{{ startPanelBody }}</p>
     <div class="d-grid gap-2">
-      <button class="btn btn-primary" type="button" [attr.liOffcanvasAutofocus]="'true'">Ação principal</button>
-      <button class="btn btn-light" type="button">Ação secundária</button>
-      <button class="btn btn-light" type="button">Configurar depois</button>
+      <button class="btn btn-primary" type="button" [attr.liOffcanvasAutofocus]="'true'">{{ primaryActionLabel }}</button>
+      <button class="btn btn-light" type="button">{{ secondaryActionLabel }}</button>
+      <button class="btn btn-light" type="button">{{ configureLaterLabel }}</button>
     </div>
   </li-offcanvas>
 
@@ -195,168 +193,162 @@ ref.close();</code></pre>
                 position="top"
                 size="sm"
                 panelClass="offcanvas-top-banner"
-                (shown)="onShown('Offcanvas superior')"
-                (hidden)="onHidden('Offcanvas superior')"
-                (close)="onClosed('Offcanvas superior')"
-                (dismiss)="onDismissed('Offcanvas superior', $event)">
+                (shown)="onShown(topTitle)"
+                (hidden)="onHidden(topTitle)"
+                (close)="onClosed(topTitle)"
+                (dismiss)="onDismissed(topTitle, $event)">
     <div class="d-lg-flex align-items-center gap-3">
       <div class="flex-grow-1">
-        <h6 class="mb-1">Janela de manutenção hoje às 22:00</h6>
-        <p class="mb-0 text-muted">Use o painel superior para anúncios e consentimentos que precisam aparecer em largura total.</p>
+        <h6 class="mb-1">{{ topHeadline }}</h6>
+        <p class="mb-0 text-muted">{{ topPanelBody }}</p>
       </div>
       <div class="mt-3 mt-lg-0 d-flex gap-2">
-        <button class="btn btn-success" type="button" (click)="topOffcanvas?.close()">Entendi</button>
-        <button class="btn btn-light" type="button" (click)="topOffcanvas?.close()">Depois</button>
+        <button class="btn btn-success" type="button" (click)="topOffcanvas?.close()">{{ understoodLabel }}</button>
+        <button class="btn btn-light" type="button" (click)="topOffcanvas?.close()">{{ laterLabel }}</button>
       </div>
     </div>
   </li-offcanvas>
 
   <li-offcanvas #footerOffcanvas
-                title-text="Ignorado pelo header customizado"
+                [title-text]="footerPanelTitle"
                 position="end"
                 size="lg"
-                (close)="onClosed('Offcanvas customizado')"
-                (dismiss)="onDismissed('Offcanvas customizado', $event)">
+                (close)="onClosed(footerTitle)"
+                (dismiss)="onDismissed(footerTitle, $event)">
     <div liOffcanvasHeader class="offcanvas-header bg-dark text-white">
       <div>
-        <h5 class="offcanvas-title fw-semibold mb-0">Checklist de publicação</h5>
-        <div class="small opacity-75">Header customizado com duas linhas</div>
+        <h5 class="offcanvas-title fw-semibold mb-0">{{ footerPanelTitle }}</h5>
+        <div class="small opacity-75">{{ footerPanelSubtitle }}</div>
       </div>
       <button type="button" class="btn-close btn-close-white" (click)="footerOffcanvas?.close()"></button>
     </div>
 
     <div class="border rounded p-3 bg-light">
-      <h6 class="mb-2">Corpo do painel</h6>
-      <p class="mb-0 text-muted">O conteúdo principal continua no fluxo padrão do componente, enquanto o footer fica separado para ações persistentes.</p>
+      <h6 class="mb-2">{{ footerPanelHeading }}</h6>
+      <p class="mb-0 text-muted">{{ footerPanelBody }}</p>
     </div>
 
     <div liOffcanvasFooter class="border-top p-3 d-flex justify-content-end gap-2">
-      <button class="btn btn-light" type="button" (click)="footerOffcanvas?.close()">Cancelar</button>
-      <button class="btn btn-primary" type="button" (click)="footerOffcanvas?.close()">Publicar</button>
+      <button class="btn btn-light" type="button" (click)="footerOffcanvas?.close()">{{ cancelLabel }}</button>
+      <button class="btn btn-primary" type="button" (click)="footerOffcanvas?.close()">{{ publishLabel }}</button>
     </div>
   </li-offcanvas>
 
   <li-offcanvas #noBackdropOffcanvas
-                title-text="Painel auxiliar"
+                [title-text]="helperPanelTitle"
                 position="end"
                 size="sm"
                 [enableBackdrop]="false"
                 [scroll]="true"
-                (close)="onClosed('Offcanvas sem backdrop')"
-                (dismiss)="onDismissed('Offcanvas sem backdrop', $event)">
-    <p class="text-muted mb-3">Com <code>enableBackdrop=false</code>, a tela continua clicável. Este modo funciona melhor para contextos não bloqueantes.</p>
-    <button class="btn btn-primary" type="button" (click)="noBackdropOffcanvas?.close()">Fechar painel</button>
+                (close)="onClosed(noBackdropTitle)"
+                (dismiss)="onDismissed(noBackdropTitle, $event)">
+    <p class="text-muted mb-3">{{ helperPanelBody }}</p>
+    <button class="btn btn-primary" type="button" (click)="noBackdropOffcanvas?.close()">{{ closePanelLabel }}</button>
   </li-offcanvas>
 
   <li-offcanvas #lazyOffcanvas
-                title-text="Conteúdo lazy sob demanda"
+                [title-text]="lazyPanelTitle"
                 position="bottom"
                 size="lg"
                 [lazyContent]="true"
                 panelClass="offcanvas-bottom-sheet"
-                (shown)="onShown('Offcanvas lazy')"
-                (hidden)="onHidden('Offcanvas lazy')"
-                (close)="onClosed('Offcanvas lazy')"
-                (dismiss)="onDismissed('Offcanvas lazy', $event)">
+                (shown)="onShown(lazyTitle)"
+                (hidden)="onHidden(lazyTitle)"
+                (close)="onClosed(lazyTitle)"
+                (dismiss)="onDismissed(lazyTitle, $event)">
     <div class="row g-3 align-items-start">
       <div class="col-lg-8">
-        <h6 class="mb-2">O que este exemplo valida</h6>
+        <h6 class="mb-2">{{ lazyPanelHeading }}</h6>
         <ul class="mb-0 ps-3">
-          <li>O corpo só é montado quando o painel abre.</li>
-          <li>Ao fechar, a subtree projetada é removida.</li>
-          <li>Fluxos pesados podem entrar aqui sem custo inicial na página.</li>
+          <li *ngFor="let item of lazyChecks">{{ item }}</li>
         </ul>
       </div>
       <div class="col-lg-4 text-lg-end">
-        <button class="btn btn-success" type="button" (click)="lazyOffcanvas?.close()">Fechar</button>
+        <button class="btn btn-success" type="button" (click)="lazyOffcanvas?.close()">{{ closeLabel }}</button>
       </div>
     </div>
   </li-offcanvas>
 
   <li-offcanvas #serviceOffcanvas
                 offcanvasId="service-demo"
-                title-text="Abertura via service"
+                [title-text]="servicePanelTitle"
                 position="end"
                 size="lg"
                 [lazyContent]="true"
-                (shown)="onShown('Offcanvas via service')"
-                (hidden)="onHidden('Offcanvas via service')"
-                (close)="onClosed('Offcanvas via service')"
-                (dismiss)="onDismissed('Offcanvas via service', $event)">
+                (shown)="onShown(serviceTitle)"
+                (hidden)="onHidden(serviceTitle)"
+                (close)="onClosed(serviceTitle)"
+                (dismiss)="onDismissed(serviceTitle, $event)">
     <div class="service-demo-stack">
       <div class="border rounded p-3 bg-light">
-        <h6 class="mb-2">Fluxo programático</h6>
-        <p class="mb-0 text-muted">Este painel foi registrado com <code>offcanvasId</code> e pode ser aberto em qualquer ponto da página usando <code>LiOffcanvasService</code>.</p>
+        <h6 class="mb-2">{{ serviceFlowTitle }}</h6>
+        <p class="mb-0 text-muted">{{ serviceFlowBody }}</p>
       </div>
 
       <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-primary" type="button" (click)="closeViaServiceRef()">Fechar pela ref</button>
-        <button class="btn btn-light" type="button" (click)="serviceOffcanvas?.dismiss()">Dismiss programático</button>
+        <button class="btn btn-primary" type="button" (click)="closeViaServiceRef()">{{ closeRefButton }}</button>
+        <button class="btn btn-light" type="button" (click)="serviceOffcanvas?.dismiss()">{{ dismissProgrammaticLabel }}</button>
       </div>
     </div>
   </li-offcanvas>
 
   <li-offcanvas #guardedOffcanvas
-                title-text="Painel com beforeDismiss"
+                [title-text]="guardedPanelTitle"
                 position="end"
                 size="sm"
                 [beforeDismiss]="guardBeforeDismiss"
                 [closeOnBackdropClick]="true"
                 [keyboard]="true"
-                (shown)="onShown('Offcanvas com beforeDismiss')"
-                (hidden)="onHidden('Offcanvas com beforeDismiss')"
-                (dismiss)="onDismissed('Offcanvas com beforeDismiss', $event)">
+                (shown)="onShown(guardedTitle)"
+                (hidden)="onHidden(guardedTitle)"
+                (dismiss)="onDismissed(guardedTitle, $event)">
     <div class="service-demo-stack">
       <div class="alert alert-warning mb-0">
-        ESC e clique no backdrop não fecham enquanto a guarda estiver ativa.
+        {{ guardedWarning }}
       </div>
 
       <div class="form-check form-switch">
         <input id="guard-toggle" class="form-check-input" type="checkbox" [checked]="!blockGuardDismiss" (change)="blockGuardDismiss = !blockGuardDismiss">
-        <label class="form-check-label" for="guard-toggle">Permitir dismiss automático</label>
+        <label class="form-check-label" for="guard-toggle">{{ allowAutoDismissLabel }}</label>
       </div>
 
       <div class="d-flex gap-2 flex-wrap">
-        <button class="btn btn-warning" type="button" (click)="guardedOffcanvas?.dismiss()">Tentar dismiss</button>
-        <button class="btn btn-primary" type="button" (click)="forceGuardDismiss()">Liberar e dispensar</button>
-        <button class="btn btn-light" type="button" (click)="guardedOffcanvas?.close()">Fechar sem dismiss</button>
+        <button class="btn btn-warning" type="button" (click)="guardedOffcanvas?.dismiss()">{{ tryDismissLabel }}</button>
+        <button class="btn btn-primary" type="button" (click)="forceGuardDismiss()">{{ releaseDismissLabel }}</button>
+        <button class="btn btn-light" type="button" (click)="guardedOffcanvas?.close()">{{ closeWithoutDismissLabel }}</button>
       </div>
     </div>
   </li-offcanvas>
 
   <li-offcanvas #largeOffcanvas
-                title-text="Revisão editorial completa"
+                [title-text]="largePanelTitle"
                 position="end"
                 size="xl"
                 [lazyContent]="true"
-                (shown)="onShown('Offcanvas largo')"
-                (hidden)="onHidden('Offcanvas largo')"
-                (close)="onClosed('Offcanvas largo')"
-                (dismiss)="onDismissed('Offcanvas largo', $event)">
+                (shown)="onShown(largeTitle)"
+                (hidden)="onHidden(largeTitle)"
+                (close)="onClosed(largeTitle)"
+                (dismiss)="onDismissed(largeTitle, $event)">
     <div class="row g-3">
       <div class="col-lg-7">
         <div class="border rounded p-3 h-100">
-          <h6 class="mb-2">Por que usar tamanho xl</h6>
-          <p class="text-muted mb-0">Painéis maiores funcionam melhor para filtros complexos, revisões de conteúdo, tabelas auxiliares e combinações de metadados com ações fixas.</p>
+          <h6 class="mb-2">{{ xlReasonTitle }}</h6>
+          <p class="text-muted mb-0">{{ xlReasonBody }}</p>
         </div>
       </div>
       <div class="col-lg-5">
         <div class="border rounded p-3 bg-light h-100">
-          <h6 class="mb-2">Eventos monitorados</h6>
+          <h6 class="mb-2">{{ monitoredEventsTitle }}</h6>
           <ul class="mb-0 ps-3">
-            <li><code>open</code> para início do fluxo</li>
-            <li><code>shown</code> quando a transição termina</li>
-            <li><code>close</code> para fechamento explícito</li>
-            <li><code>dismiss</code> com motivo detalhado</li>
-            <li><code>hidden</code> quando o painel já saiu do DOM visível</li>
+            <li *ngFor="let item of monitoredEvents">{{ item }}</li>
           </ul>
         </div>
       </div>
     </div>
 
     <div liOffcanvasFooter class="border-top p-3 d-flex justify-content-end gap-2">
-      <button class="btn btn-light" type="button" (click)="largeOffcanvas?.close()">Cancelar</button>
-      <button class="btn btn-primary" type="button" (click)="largeOffcanvas?.close()">Salvar revisão</button>
+      <button class="btn btn-light" type="button" (click)="largeOffcanvas?.close()">{{ cancelLabel }}</button>
+      <button class="btn btn-primary" type="button" (click)="largeOffcanvas?.close()">{{ saveReviewLabel }}</button>
     </div>
   </li-offcanvas>
 </div>

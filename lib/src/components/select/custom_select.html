@@ -1,11 +1,14 @@
 <div [attr.data-label]="'custom_select'" class="dropdown-collection">
     <button type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
-        class="form-select dropdown-button"
+        [class]="resolvedButtonClass"
         role="combobox"
         [attr.aria-expanded]="dropdownOpen.toString()"
         [attr.aria-controls]="listboxId"
         [attr.aria-activedescendant]="activeDescendantId"
+        [attr.aria-describedby]="resolvedDescribedBy"
+        [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
         aria-haspopup="listbox"
+        [attr.data-invalid]="effectiveInvalid ? 'true' : null"
         (click)="toggleDropdown()" tabindex="0" [disabled]="isDisabled">
 
         <span class="dropdown-value">{{currentValue?.text ?? placeholder}}</span>
@@ -15,10 +18,10 @@
         [class.dropdown-open]="dropdownOpen">
         <div *ngIf="searchable" class="dropdown-search" (click)="$event.stopPropagation()">
             <div class="form-control-feedback form-control-feedback-start m-2">
-                <input #inputSearch type="text" class="form-control" placeholder="Buscar"
+                <input #inputSearch type="text" class="form-control" [placeholder]="searchPlaceholder"
                     (input)="searchHandle($event.target.value)"
                     [attr.data-label]="'custom_select_input_search'"
-                    tabindex="-1" aria-label="Buscar opções">
+                    tabindex="-1" [attr.aria-label]="searchAriaLabel">
                 <div class="form-control-feedback-icon">
                     <i class="ph-magnifying-glass"></i>
                 </div>
@@ -34,4 +37,6 @@
                 [attr.data-label]="'custom_select_item_'+ idx.toString()">{{o.text}}</li>
         </ul>
     </div>
+    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+    <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 </div>

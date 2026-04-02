@@ -10,6 +10,64 @@ import '../datatable/datatable_component.dart';
 import '../datatable/datatable_settings.dart';
 import '../modal_component/modal_component.dart';
 
+class LiDatatableSelectTriggerContext {
+  LiDatatableSelectTriggerContext({
+    required this.selectedValue,
+    required this.selectedLabel,
+    required this.placeholder,
+    required this.hasSelection,
+    required this.disabled,
+    required this.open,
+    required this.clear,
+  });
+
+  final dynamic selectedValue;
+  final String selectedLabel;
+  final String placeholder;
+  final bool hasSelection;
+  final bool disabled;
+  final void Function() open;
+  final void Function() clear;
+}
+
+class LiDatatableSelectModalContext {
+  LiDatatableSelectModalContext({
+    required this.data,
+    required this.dataTableFilter,
+    required this.settings,
+    required this.searchInFields,
+    required this.selectedValue,
+    required this.selectedLabel,
+    required this.select,
+    required this.close,
+    required this.requestData,
+  });
+
+  final DataFrame data;
+  final Filters dataTableFilter;
+  final DatatableSettings settings;
+  final List<DatatableSearchField> searchInFields;
+  final dynamic selectedValue;
+  final String selectedLabel;
+  final void Function(dynamic instance) select;
+  final void Function() close;
+  final void Function(Filters filters) requestData;
+}
+
+@Directive(selector: 'template[liDatatableSelectTrigger]')
+class LiDatatableSelectTriggerDirective {
+  LiDatatableSelectTriggerDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
+@Directive(selector: 'template[liDatatableSelectModalContent]')
+class LiDatatableSelectModalContentDirective {
+  LiDatatableSelectModalContentDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
 /// A select-like input that opens a modal with a full [LiDataTableComponent]
 /// for searching, sorting, and paginating through large data sets.
 ///
@@ -40,6 +98,8 @@ import '../modal_component/modal_component.dart';
     formDirectives,
     LiDataTableComponent,
     LiModalComponent,
+    LiDatatableSelectTriggerDirective,
+    LiDatatableSelectModalContentDirective,
   ],
   providers: [
     ExistingProvider.forToken(ngValueAccessor, LiDatatableSelectComponent),
@@ -56,6 +116,8 @@ class LiDatatableSelectComponent
   // ---------------------------------------------------------------------------
 
   dynamic Function(dynamic, {String rawValue})? _onChange;
+  TouchFunction _onTouched = () {};
+  bool _touched = false;
 
   @override
   void writeValue(dynamic newVal) {
@@ -71,7 +133,9 @@ class LiDatatableSelectComponent
   }
 
   @override
-  void registerOnTouched(TouchFunction callback) {}
+  void registerOnTouched(TouchFunction callback) {
+    _onTouched = callback;
+  }
 
   @override
   void onDisabledChanged(bool state) {
@@ -86,6 +150,30 @@ class LiDatatableSelectComponent
   @Input('disabled')
   bool isDisabled = false;
 
+  @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String helperText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
+
+  @Input()
+  String locale = 'pt_BR';
+
   /// The key used to extract the display label from each data row map.
   @Input()
   String labelKey = 'label';
@@ -96,11 +184,11 @@ class LiDatatableSelectComponent
   String? valueKey;
 
   @Input()
-  String placeholder = 'Selecione';
+  String placeholder = '';
 
   /// Modal title text.
   @Input('title')
-  String titleText = 'Selecionar';
+  String titleText = '';
 
   /// Modal size. See [LiModalComponent.size].
   @Input()
@@ -135,7 +223,10 @@ class LiDatatableSelectComponent
   bool showExportMenu = false;
 
   @Input()
-  String searchPlaceholder = 'Digite para buscar';
+  String searchPlaceholder = '';
+
+  @Input()
+  String clearButtonLabel = '';
 
   /// When `true`, the datatable is rendered in grid/card mode.
   @Input()
@@ -184,6 +275,12 @@ class LiDatatableSelectComponent
   @ViewChild('triggerButton')
   html.Element? triggerButtonElement;
 
+  @ContentChild(LiDatatableSelectTriggerDirective)
+  LiDatatableSelectTriggerDirective? triggerTemplate;
+
+  @ContentChild(LiDatatableSelectModalContentDirective)
+  LiDatatableSelectModalContentDirective? modalContentTemplate;
+
   // ---------------------------------------------------------------------------
   // State
   // ---------------------------------------------------------------------------
@@ -197,6 +294,74 @@ class LiDatatableSelectComponent
   /// The display label of the currently selected item.
   String get selectedLabel => _selectedLabel;
 
+  bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  bool get hasSelection => selectedValue != null;
+
+  bool get effectiveInvalid => invalid || dataInvalid;
+
+  bool get effectiveValid => !effectiveInvalid && valid;
+
+  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+
+  bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String get resolvedPlaceholder => placeholder.trim().isNotEmpty
+      ? placeholder
+      : (_isEnglishLocale ? 'Select' : 'Selecione');
+
+  String get resolvedTitleText => titleText.trim().isNotEmpty
+      ? titleText
+      : (_isEnglishLocale ? 'Select item' : 'Selecionar');
+
+  String get resolvedSearchPlaceholder => searchPlaceholder.trim().isNotEmpty
+      ? searchPlaceholder
+      : (_isEnglishLocale ? 'Type to search' : 'Digite para buscar');
+
+  String get resolvedClearButtonLabel => clearButtonLabel.trim().isNotEmpty
+      ? clearButtonLabel
+      : (_isEnglishLocale ? 'Clear selection' : 'Limpar selecao');
+
+  String get resolvedTriggerClass => _joinClasses(<String>[
+        'form-select',
+        'datatable-select-trigger',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
+      ]);
+
+  LiDatatableSelectTriggerContext get triggerContext =>
+      LiDatatableSelectTriggerContext(
+        selectedValue: selectedValue,
+        selectedLabel: selectedLabel,
+        placeholder: resolvedPlaceholder,
+        hasSelection: hasSelection,
+        disabled: isDisabled,
+        open: openModal,
+        clear: clear,
+      );
+
+  LiDatatableSelectModalContext get modalContext =>
+      LiDatatableSelectModalContext(
+        data: data,
+        dataTableFilter: dataTableFilter,
+        settings: settings,
+        searchInFields: searchInFields,
+        selectedValue: selectedValue,
+        selectedLabel: selectedLabel,
+        select: onDatatableRowClick,
+        close: closeModal,
+        requestData: onDatatableDataRequest,
+      );
+
   // ---------------------------------------------------------------------------
   // Actions
   // ---------------------------------------------------------------------------
@@ -204,12 +369,19 @@ class LiDatatableSelectComponent
   void openModal() {
     if (isDisabled) return;
     modal?.open();
+    _markTouched();
+    _changeDetectorRef.markForCheck();
+  }
+
+  void closeModal() {
+    modal?.close();
+    _markTouched();
     _changeDetectorRef.markForCheck();
   }
 
   void onDatatableRowClick(dynamic instance) {
     _selectInstance(instance);
-    modal?.close();
+    closeModal();
     triggerButtonElement?.focus();
     _changeDetectorRef.markForCheck();
   }
@@ -232,6 +404,7 @@ class LiDatatableSelectComponent
     _selectedLabel = '';
     _valueChangeCtrl.add(null);
     _onChange?.call(null);
+    _markTouched();
     _changeDetectorRef.markForCheck();
   }
 
@@ -248,6 +421,7 @@ class LiDatatableSelectComponent
     _syncLabelFromValue();
     _valueChangeCtrl.add(_selectedValue);
     _onChange?.call(_selectedValue);
+    _markTouched();
     _changeDetectorRef.markForCheck();
   }
 
@@ -257,6 +431,7 @@ class LiDatatableSelectComponent
     _selectedLabel = label;
     _valueChangeCtrl.add(_selectedValue);
     _onChange?.call(_selectedValue);
+    _markTouched();
     _changeDetectorRef.markForCheck();
   }
 
@@ -291,6 +466,7 @@ class LiDatatableSelectComponent
 
     _valueChangeCtrl.add(_selectedValue);
     _onChange?.call(_selectedValue);
+    _markTouched();
   }
 
   void _syncLabelFromValue() {
@@ -333,5 +509,21 @@ class LiDatatableSelectComponent
     _dataRequestCtrl.close();
     _limitChangeCtrl.close();
     _searchRequestCtrl.close();
+  }
+
+  void _markTouched() {
+    if (_touched) {
+      _onTouched();
+      return;
+    }
+    _touched = true;
+    _onTouched();
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
   }
 }

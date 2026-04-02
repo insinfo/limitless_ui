@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html ng-app="angularIOApp">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en_US" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Use HTTP to talk to a remote server.">
+  <title>HTTP Client | AngularDart Community Documentation</title>
+
+  <!-- Favicon / Touch Icons -->
+  <link rel="icon" sizes="64x64" href="/assets/images/angulardart_64x64.png">
+  <link href="/assets/touch-icon-iphone-a46c306c4fbfae0b28d63f512b01d7cb2ccf1e4ca9d7f3aab15ba1170beed4a0.png" rel="apple-touch-icon">
+  <link href="/assets/touch-icon-ipad-d0181720760b3912858b6d40da1d5586b1e92c7c8656a485ea41005674401e6b.png" rel="apple-touch-icon" sizes="76x76">
+  <link href="/assets/touch-icon-iphone-retina-3d9821a631425376ac6203dea3c23c1940ab7b5c506a25406662fab76cee2e0b.png" rel="apple-touch-icon" sizes="120x120">
+  <link href="/assets/touch-icon-ipad-retina-b9715401952522f1daee2b4a4064a1bbfb5ffab78d0a47a7226dc87444d51c32.png" rel="apple-touch-icon" sizes="152x152">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@dart_lang" />
+  <meta name="twitter:title" content="HTTP Client" />
+  <meta name="twitter:description" content="Use HTTP to talk to a remote server." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="HTTP Client" />
+  <meta property="og:description" content="Use HTTP to talk to a remote server." />
+  <meta property="og:url" content="https://angulardart.xyz/guide/server-communication" />
+  <meta property="og:image" content="https://angulardart.xyz/assets/angulardart.png?4" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/assets/main-284fbcd6e14c151e36d1523978cdebdc84eb4dc84f5290ba988c43d55f489097.css">
+  <link rel="stylesheet" type="text/css" href="/assets/angular-7fafbda6232f7b772cdbe2aa3f146b1b194b0314193b95ef6e7ad47458b31cd5.css">
+  <script type="text/javascript" src="/assets/main-5ab0750d39bb41c29af8c0feb2b5a3dc7184e0882221da23e1a860521542ed1f.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-26406144-25', 'auto');
+  ga('send', 'pageview');
+</script>
+  <!-- VENDORS -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css"/>
+  <script type="text/javascript" src="/assets/ng/vendor/lodash-cbc72c28a41a036ff429f1e6d66c49a5bba09921902c1a2696ab0911af042964.js"></script>
+  <script type="text/javascript" src="/assets/ng/vendor/clipboard.min-c727619d8108938cf7736450134c1ab95b9c51ec5435a303c05b7438e6df0be6.js"></script>
+  <!-- Angular Material Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+  <!-- Angular.io Site JS -->
+  <script type="text/javascript" src="/assets/ng/site-33dd65dfcf8ed7b926e2d04890ec16a21412ebb2643f3f9a27877318c471ecb3.js"></script>
+  <script type="text/javascript" src="/assets/ng/controllers/app-controller-0251a788aab2c738c82e5fc1561f213816cd0566154b48aded6ac4636bc7d2c4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/bold-93971cb666d1678e81b70a390df08ee6e60da684f8332499c3dda17df56d4da4.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-4682a46812eeb660def83f528b96854615ea5495ef66075df3e82430bec4956a.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/copy-f44ee1b4f82644a5187e2f5afe6c01ea68755b647a88d6937de5bea0209ace5c.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-tabs-4c391677b14c1771675b2ef6af446cd98f70345dfb88d4a264aea49f25922aa5.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-pane-c9501fbde100a3d6af970cfbb4ad8715010a6082d7b86d16b87cfc364accbabf.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/code-example-f1c4fceee9e3f0e8fd41c4693bf06653dbb363db82c04548e2639b0c49647335.js"></script>
+  <script type="text/javascript" src="/assets/ng/directives/scroll-y-offset-element-d7e0583809bb6e159b93848120743c349abb6c4c90010a2893d803c88bce9aa7.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.4.0/diff2html-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/dart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>$(document).ready(function() {
+    var diff2htmlUi = new Diff2HtmlUI();
+    diff2htmlUi.highlightCode(".d2h-wrapper");
+  });</script>
+  </head>
+
+  <body ng-controller="AppCtrl as appCtrl" class="angular">
+    <header id="page-header">
+  <nav id="mainnav" scroll-y-offset-element>
+  <div id="menu-toggle"><i class="icon icon-menu"></i></div>
+  <a href="/" class="brand" title="angulardart.xyz">
+    <img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" alt="angulardart.xyz">
+    AngularDart
+  </a>
+  <ul>
+    <li><a href="/guide/setup">Get started</a></li>
+    <li><a href="/version">Versions</a></li>
+    <li><a href="/tools">Tools</a></li>
+    <li class="searchfield">
+      <form class="navbar-search" action="/search" id="cse-search-box">
+        <input type="hidden" name="cx" value="011220921317074318178:ta2gkewbtuu">
+        <input type="hidden" name="ie" value="UTF-8">
+        <input type="hidden" name="hl" value="en">
+        <input type="search" name="q" id="q" autocomplete="off" placeholder="Search">
+        <button type="submit"><i class="icon icon-search"></i></button>
+      </form>
+    </li>
+  </ul>
+</nav>
+
+  
+</header>
+    <main id="page-content">
+      <div id="sidenav" class="">
+  <div class="content">
+    <a href="/" class="brand" title="angulardart.xyz">
+      <img src="/assets/shared/dart/logo+text/horizontal/default-50a9d396d6092dd131d4f9af1dbaa7a25723ff310c5ffb22add4e3b1b87340bd.svg" alt="angulardart.xyz">
+    </a>
+
+    <div class="sidenav__search">
+      <p>
+        <a href="/search">Search <i class="icon icon-search"></i></a>
+      </p>
+    </div>
+
+    <h4 >Docs</h4>
+  <ul>
+        
+        <li class="active">
+          <a href="/guide" title="Guide">Guide</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li class="active">
+                <a href="/guide" title="Overview">Overview</a>
+              </li><li >
+                <a href="/guide/setup" title="Setup">Setup</a>
+              </li><li >
+                <a href="/guide/learning-angular" title="Learning Angular">Learning Angular</a>
+              </li><li >
+                <a href="/guide/architecture" title="Architecture">Architecture</a>
+              </li><li >
+                <a href="/guide/displaying-data" title="Displaying Data">Displaying Data</a>
+              </li><li >
+                <a href="/guide/user-input" title="User Input">User Input</a>
+              </li><li >
+                <a href="/guide/forms" title="Forms">Forms</a>
+              </li><li >
+                <a href="/guide/dependency-injection" title="Dependency Injection">Dependency Injection</a>
+              </li><li >
+                <a href="/guide/template-syntax" title="Template Syntax">Template Syntax</a>
+              </li>
+          </ul>
+        
+        <li >
+          <a href="/tutorial" title="Tutorial">Tutorial</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/tutorial" title="Introduction">Introduction</a>
+              </li><li >
+                <a href="/tutorial/toh-pt0" title="0. The Starter App">0. The Starter App</a>
+              </li><li >
+                <a href="/tutorial/toh-pt1" title="1. The Hero Editor">1. The Hero Editor</a>
+              </li><li >
+                <a href="/tutorial/toh-pt2" title="2. Master/Detail">2. Master/Detail</a>
+              </li><li >
+                <a href="/tutorial/toh-pt3" title="3. Multiple Components">3. Multiple Components</a>
+              </li><li >
+                <a href="/tutorial/toh-pt4" title="4. Services">4. Services</a>
+              </li><li >
+                <a href="/tutorial/toh-pt5" title="5. Routing">5. Routing</a>
+              </li><li >
+                <a href="/tutorial/toh-pt6" title="6. HTTP">6. HTTP</a>
+              </li>
+          </ul>
+        
+        <li class="active">
+          <a href="/guide/attribute-directives" title="Advanced">Advanced</a>
+          <i class="icon icon-arrow"></i>
+          <ul><li >
+                <a href="/guide/attribute-directives" title="Attribute Directives">Attribute Directives</a>
+              </li><li >
+                <a href="/guide/component-styles" title="Component Styles">Component Styles</a>
+              </li><li >
+                <a href="/guide/deployment" title="Deployment">Deployment</a>
+              </li><li >
+                <a href="/guide/hierarchical-dependency-injection" title="Hierarchical Injectors">Hierarchical Injectors</a>
+              </li><li class="active">
+                <a href="/guide/server-communication" title="HTTP Client">HTTP Client</a>
+              </li><li >
+                <a href="/guide/lifecycle-hooks" title="Lifecycle Hooks">Lifecycle Hooks</a>
+              </li><li >
+                <a href="/guide/pipes" title="Pipes">Pipes</a>
+              </li><li >
+                <a href="/guide/router" title="Router">Router</a>
+              </li><li >
+                <a href="/guide/security" title="Security">Security</a>
+              </li><li >
+                <a href="/guide/structural-directives" title="Structural Directives">Structural Directives</a>
+              </li><li >
+                <a href="/guide/testing" title="Testing">Testing</a>
+              </li>
+          </ul>
+  </ul><h4 >Components</h4>
+  <ul><li >
+          <a href="https://gallery.angulardart.xyz" title="Components Gallery">Components Gallery</a>
+        </li>
+  </ul><h4 >Resources</h4>
+  <ul><li >
+          <a href="/cheatsheet" title="Cheat Sheet">Cheat Sheet</a>
+        </li><li >
+          <a href="/glossary" title="Glossary">Glossary</a>
+        </li><li >
+          <a href="/faq" title="FAQ">FAQ</a>
+        </li><li >
+          <a href="/tools" title="Tools">Tools</a>
+        </li><li >
+          <a href="/community" title="Community and Support">Community and Support</a>
+        </li>
+  </ul><h4 >Reference</h4>
+  <ul><li >
+          <a href="/reference/videos" title="Videos">Videos</a>
+        </li><li >
+          <a href="/api" title="API Documentation">API Documentation</a>
+        </li>
+  </ul>
+  </div>
+</div>
+
+      
+<div id="toc">
+  <div class="content">
+    <h4>On this page
+      <a href="#page-content" title="Back to top" class="pull-right"><i class="icon icon-caret-up"></i></a>
+    </h4>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#http-providers">Providing HTTP services</a></li>
+<li class="toc-entry toc-h2"><a href="#http-client-demo-tour-of-heroes">HTTP client demo: Tour of Heroes</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#the-herolistcomponent-class">The HeroListComponent class</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#fetch-data">Fetching data</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#use-a-client-object">Use a Client object</a></li>
+<li class="toc-entry toc-h3"><a href="#mock-the-server">Mock the server</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#processing-the-response-object">Processing the response object</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#decode-json">Decode JSON</a></li>
+<li class="toc-entry toc-h3"><a href="#dont-return-the-response-object">Don’t return the response object</a></li>
+<li class="toc-entry toc-h3"><a href="#always-handle-errors">Always handle errors</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#post">Sending data to the server</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#headers">Headers</a></li>
+<li class="toc-entry toc-h3"><a href="#json-results">JSON results</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#cors">Cross-origin requests: Wikipedia example</a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#search-wikipedia">Search Wikipedia</a></li>
+</ul>
+</li>
+</ul>
+  </div>
+</div>
+
+
+      <article>
+        <div class="content">
+          <div class="alert alert-info"><p class="banner__text">
+      <i class="material-icons"> new_releases </i>
+      We're currently in the progress of migrating this site from Angular
+			version 5.3.1 to 7.0.0.
+      Package versions might be out-of-date or inconsistent!
+      Visit <a href="https://github.com/angulardart-community/site-angulardart">the repo</a> for more info.
+    </p>
+  </div>
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/hierarchical-dependency-injection">Hierarchical Dependency Injectors</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+          <div class="ng-page-title">
+              <a href="/"><img src="/assets/shared/angular/icon/default-819f0e5ea0c59ac5d1e55ea4e5e191c1103667d28e7df57e7faf99676a4395f7.svg" width="40px"></a>
+              <ul class="page-github-links-menu" role="group">
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/tree/master/src/guide/server-communication.md"
+      class="no-automatic-external"
+      title="View page source"
+      target="_blank" rel="noopener">
+      <i class="fab fa-github fa-sm"></i>
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/angulardart-community/site-angulardart/issues/new?title='HTTP Client' page issue&body=From URL: https://angulardart.xyz/guide/server-communication"
+      class="no-automatic-external"
+      title="Report a bug on this page" target="_blank" rel="noopener">
+      <i class="fas fa-bug fa-sm"></i>
+    </a>
+  </li>
+</ul>
+              <h1>
+                  
+                  HTTP Client 
+                  <a href="/version">6.0</a>
+                  </h1>
+          </div>
+          <hr>
+          
+          <p>&lt;?code-excerpt path-base=”examples/ng/doc/server-communication”?&gt;</p>
+
+<p>Most frontend apps communicate with backend services
+using the HTTP protocol.
+Dart web apps typically do this using the XMLHttpRequest (XHR) API,
+using either <a href="https://api.dart.dev/stable/dart-html/HttpRequest-class.html">HttpRequest</a> from the <a href="https://api.dart.dev/stable/dart-html/dart-html-library.html">dart:html</a> library
+or a higher level API, such as what the <a href="https://pub.dev/packages/http">http package</a> provides.</p>
+
+<p>The following demos, which use the http package,
+illustrate server communication:</p>
+
+<ul>
+  <li>
+<a href="#http-client">HTTP client demo: Tour of Heroes</a>.</li>
+  <li>
+<a href="#cors">Cross-origin requests: Wikipedia example</a>.</li>
+</ul>
+
+<p>Try the <span><a href="/examples/server-communication" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/server-communication/tree/master" target="_blank" rel="noopener">view source</a></span>)</span>, which hosts both demos.</p>
+
+<h2 id="http-providers">
+<a class="anchor" href="#http-providers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Providing HTTP services</h2>
+
+<p>The demos in this page use the http package’s <a href="https://pub.dev/documentation/http/latest/http/Client-class.html">Client</a> interface.
+The following code registers a <a href="dependency-injection#factory-providers">factory provider</a>
+(which creates a <a href="https://pub.dev/documentation/http/latest/browser_client/BrowserClient-class.html">BrowserClient</a> instance) for <code class="language-plaintext highlighter-rouge">Client</code>:</p>
+
+<p>&lt;?code-excerpt “web/main_1.dart” replace=”/_1//g” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:angular/angular.dart';
+  import 'package:http/browser_client.dart';
+  import 'package:http/http.dart';
+  import 'package:server_communication/app_component.template.dart' as ng;
+
+  import 'main.template.dart' as self;
+
+  @GenerateInjector([
+    ClassProvider(Client, useClass: BrowserClient),
+  ])
+  final InjectorFactory injector = self.injector$Injector;
+
+  void main() {
+    runApp(ng.AppComponentNgFactory, createInjector: injector);
+  }
+</code></pre></div></div>
+
+<div id="http-client"></div>
+<h2 id="http-client-demo-tour-of-heroes">
+<a class="anchor" href="#http-client-demo-tour-of-heroes" aria-hidden="true"><span class="octicon octicon-link"></span></a>HTTP client demo: Tour of Heroes</h2>
+
+<p>This demo is a shorter version of the <a href="/tutorial">Tour of Heroes</a> app.
+It receives heroes from a server and displays them as a list.
+The user can add new heroes and save them to the server.</p>
+
+<p>Here’s what the app’s UI looks like:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/server-communication/http-toh-d2f58809afe850103052adb98c36b9f416b6f3b5e35eb86d0e58f4253c467846.gif" alt="ToH mini app" width="282"></p>
+
+<p>This demo has a single component, the <code class="language-plaintext highlighter-rouge">HeroListComponent</code>. Here is its template:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_list_component.html” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  &lt;h1&gt;Tour of Heroes&lt;/h1&gt;
+  &lt;h3&gt;Heroes:&lt;/h3&gt;
+  &lt;ul&gt;
+    &lt;li *ngFor="let hero of heroes"&gt;{{hero.name}}&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;label&gt;New hero name: &lt;input #newHeroName /&gt;&lt;/label&gt;
+  &lt;button (click)="add(newHeroName.value); newHeroName.value=''"&gt;Add Hero&lt;/button&gt;
+
+  &lt;p class="error" *ngIf="errorMessage != null"&gt;{{errorMessage}}&lt;/p&gt;
+</code></pre></div></div>
+
+<p>The template’s <code class="language-plaintext highlighter-rouge">ngFor</code> directive displays the list of heroes.
+Below the list are an input box and an <em>Add Hero</em> button,
+which allow the user to add new heroes.</p>
+
+<p>A <a href="template-syntax#ref-vars">template reference variable</a>, <code class="language-plaintext highlighter-rouge">newHeroName</code>,
+gives the <code class="language-plaintext highlighter-rouge">(click)</code> event binding access to the value of the input box. When the
+user clicks the button, the click handler passes the input value to
+the <code class="language-plaintext highlighter-rouge">addHero()</code> method of the component. The click handler also clears the
+input box.</p>
+
+<p>Below the button is an area for an error message.</p>
+
+<div id="oninit"></div>
+<div id="HeroListComponent"></div>
+<h3 id="the-herolistcomponent-class">
+<a class="anchor" href="#the-herolistcomponent-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>The <em>HeroListComponent</em> class</h3>
+
+<p>Here’s the component class:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_list_component.dart (class)” region=”component” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class HeroListComponent implements OnInit {
+    final HeroService _heroService;
+    String errorMessage;
+    List&lt;Hero&gt; heroes = [];
+
+    HeroListComponent(this._heroService);
+
+    @override
+    void ngOnInit() =&gt; _getHeroes();
+
+    Future&lt;void&gt; _getHeroes() async {
+      try {
+        heroes = await _heroService.getAll();
+      } catch (e) {
+        errorMessage = e.toString();
+      }
+    }
+
+    Future&lt;void&gt; add(String name) async {
+      name = name.trim();
+      if (name.isEmpty) return null;
+      try {
+        heroes.add(await _heroService.create(name));
+      } catch (e) {
+        errorMessage = e.toString();
+      }
+    }
+  }
+</code></pre></div></div>
+
+<p>Angular injects a <code class="language-plaintext highlighter-rouge">HeroService</code> into the constructor,
+and the component calls that service to fetch and save data.</p>
+
+<p>The component doesn’t interact directly with the <code class="language-plaintext highlighter-rouge">Client</code>.
+Instead, it delegates data access to the <code class="language-plaintext highlighter-rouge">HeroService</code>.</p>
+
+<div class="alert alert-warning">
+  <p><strong>Always delegate data access to a supporting service class.</strong></p>
+</div>
+
+<p>Although <em>at runtime</em> the component requests heroes immediately after creation,
+this request is <strong>not</strong> in the component’s constructor.
+Instead, the request is in the <code class="language-plaintext highlighter-rouge">ngOnInit</code> <a href="lifecycle-hooks">lifecycle hook</a>.</p>
+
+<div class="alert alert-info">
+  <p><strong>Keep constructors simple.</strong>
+  Components are easier to test and debug when
+  their constructors are simple, with all real work (such as
+  calling a remote server) handled by a separate method.</p>
+</div>
+
+<p>The asynchronous methods in the hero service, <code class="language-plaintext highlighter-rouge">getAll()</code> and <code class="language-plaintext highlighter-rouge">create()</code>,
+return the <a href="https://api.dart.dev/stable/dart-async/Future-class.html">Future</a> values of the current hero list and the newly added
+hero, respectively. The methods in the hero list component, <code class="language-plaintext highlighter-rouge">_getHeroes()</code> and
+<code class="language-plaintext highlighter-rouge">add()</code>, specify the actions to be taken when the asynchronous method
+calls succeed or fail.</p>
+
+<p>For more information about <code class="language-plaintext highlighter-rouge">Future</code>, see the
+<a href="https://dart.dev/tutorials/language/futures">futures tutorial</a>
+and the resources at the end of that tutorial.</p>
+
+<div id="HeroService"></div>
+<h2 id="fetch-data">
+<a class="anchor" href="#fetch-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fetching data</h2>
+
+<p>In the previous samples, the app faked interaction with the server by
+returning mock heroes in a service:</p>
+
+<p>&lt;?code-excerpt “../toh-4/lib/src/hero_service.dart” plaster=”none”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:async';
+
+  import 'hero.dart';
+  import 'mock_heroes.dart';
+
+  class HeroService {
+    Future&lt;List&lt;Hero&gt;&gt; getAll() async =&gt; mockHeroes;
+  }
+</code></pre></div></div>
+
+<p>It’s time to get real data. The following code makes <code class="language-plaintext highlighter-rouge">HeroService</code> get
+the heroes from the server:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_service.dart (revised)” region=”v1” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:async';
+  import 'dart:convert';
+
+  import 'package:http/http.dart';
+
+  import 'hero.dart';
+
+  class HeroService {
+    static final _headers = {'Content-Type': 'application/json'};
+    static const _heroesUrl = 'api/heroes'; // URL to web API
+    final Client _http;
+
+    HeroService(this._http);
+
+    Future&lt;List&lt;Hero&gt;&gt; getAll() async {
+      try {
+        final response = await _http.get(_heroesUrl);
+        final heroes = (_extractData(response) as List)
+            .map((value) =&gt; Hero.fromJson(value))
+            .toList();
+        return heroes;
+      } catch (e) {
+        throw _handleError(e);
+      }
+    }
+</code></pre></div></div>
+
+<div id="client-object"></div>
+<h3 id="use-a-client-object">
+<a class="anchor" href="#use-a-client-object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use a <em>Client</em> object</h3>
+
+<p>This demo uses a <code class="language-plaintext highlighter-rouge">Client</code> object
+that’s injected into the <code class="language-plaintext highlighter-rouge">HeroService</code> constructor:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_service.dart (ctor)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  HeroService(this._http);
+</code></pre></div></div>
+
+<p>Here’s the code that uses the client’s <code class="language-plaintext highlighter-rouge">get()</code> method to fetch data:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_service.dart (getAll)” region=”http-get” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  static const _heroesUrl = 'api/heroes'; // URL to web API
+  // ···
+  Future&lt;List&lt;Hero&gt;&gt; getAll() async {
+    try {
+      final response = await _http.get(_heroesUrl);
+      final heroes = (_extractData(response) as List)
+          .map((value) =&gt; Hero.fromJson(value))
+          .toList();
+      return heroes;
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">get()</code> method takes a resource URL, which it uses to contact the server
+that returns heroes.</p>
+
+<div id="mock-server"></div>
+<h3 id="mock-the-server">
+<a class="anchor" href="#mock-the-server" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mock the server</h3>
+
+<p>When no server exists yet or you want to
+avoid network reliability issues during testing,
+don’t use a <code class="language-plaintext highlighter-rouge">BrowserClient</code> as the <code class="language-plaintext highlighter-rouge">Client</code> object.
+Instead, you can mock the server by using the
+<a href="/tutorial/toh-pt6#simulate-the-web-api">in-memory web API</a>,
+which is what the <span><a href="/examples/server-communication" class="no-automatic-external" target="_blank" rel="noopener">live example</a> (<span class="text-nowrap"><a href="https://github.com/angulardart-community/server-communication/tree/master" target="_blank" rel="noopener">view source</a></span>)</span> does.</p>
+
+<p>Alternatively, use a JSON file:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_service.dart (endpoint-json)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  static const _heroesUrl = 'heroes.json'; // URL to JSON file
+</code></pre></div></div>
+
+<div id="extract-data"></div>
+<h2 id="processing-the-response-object">
+<a class="anchor" href="#processing-the-response-object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Processing the response object</h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">getAll()</code> method uses an <code class="language-plaintext highlighter-rouge">_extractData()</code> helper method to
+map the <code class="language-plaintext highlighter-rouge">_http.get()</code> response object to heroes:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_service.dart (excerpt)” region=”extract-data” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  dynamic _extractData(Response resp) =&gt; json.decode(resp.body)['data'];
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">response</code> object doesn’t hold the data in a form that
+the app can use directly.
+To use the response data, you must first decode it.</p>
+
+<div id="parse-to-json"></div>
+<h3 id="decode-json">
+<a class="anchor" href="#decode-json" aria-hidden="true"><span class="octicon octicon-link"></span></a>Decode JSON</h3>
+
+<p>The response data is in JSON string form.
+You must deserialize that string into objects, which you can do by calling
+the <code class="language-plaintext highlighter-rouge">JSON.decode()</code> method from the <a href="https://api.dart.dev/stable/dart-convert/dart-convert-library.html">dart:convert</a> library.
+For examples of decoding and encoding JSON, see the
+<a href="https://dart.dev/guides/libraries/library-tour#dartconvert---decoding-and-encoding-json-utf-8-and-more">dart:convert section</a> of the Dart library tour.</p>
+
+<div class="l-sub-section">
+  <p>The decoded JSON doesn’t list the heroes.
+  Instead, the server wraps JSON results in an object with a <code class="language-plaintext highlighter-rouge">data</code> property.
+  This is conventional web API behavior, driven by
+  <a href="https://cheatsheetseries.owasp.org/cheatsheets/AJAX_Security_Cheat_Sheet.html#always-return-json-with-an-object-on-the-outside">security concerns.</a></p>
+</div>
+
+<div class="alert alert-warning">
+  <p><strong>Assume nothing about the server API.</strong>
+  Not all servers return an object with a <code class="language-plaintext highlighter-rouge">data</code> property.</p>
+</div>
+
+<div id="no-return-response-object"></div>
+<h3 id="dont-return-the-response-object">
+<a class="anchor" href="#dont-return-the-response-object" aria-hidden="true"><span class="octicon octicon-link"></span></a>Don’t return the response object</h3>
+
+<p>Although it’s possible for <code class="language-plaintext highlighter-rouge">getAll()</code> to return the HTTP response,
+that’s not a good practice. The point of a data service is to hide the server
+interaction details from consumers. A component that calls the <code class="language-plaintext highlighter-rouge">HeroService</code>
+only wants the heroes. It is separated from from the code that’s responsible
+for getting the data, and from the response object.</p>
+
+<div id="error-handling"></div>
+<h3 id="always-handle-errors">
+<a class="anchor" href="#always-handle-errors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Always handle errors</h3>
+
+<p>An important part of dealing with I/O is anticipating errors by preparing to catch them
+and do something with them. One way to handle errors is to pass an error message
+back to the component for presentation to the user,
+but only if the message is something that the user can understand and act upon.</p>
+
+<p>This simple app handles a <code class="language-plaintext highlighter-rouge">getAll()</code> error as follows:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_service.dart (excerpt)” region=”error-handling” plaster=”none” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;List&lt;Hero&gt;&gt; getAll() async {
+    try {
+      final response = await _http.get(_heroesUrl);
+      final heroes = (_extractData(response) as List)
+          .map((value) =&gt; Hero.fromJson(value))
+          .toList();
+      return heroes;
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Exception _handleError(dynamic e) {
+    print(e); // for demo purposes only
+    return Exception('Server error; cause: $e');
+  }
+</code></pre></div></div>
+
+<div id="subscribe"></div>
+<h4 id="hero-list-component">
+<em>HeroListComponent</em> error handling</h4>
+
+<p>In <code class="language-plaintext highlighter-rouge">HeroListComponent</code>, the call to
+<code class="language-plaintext highlighter-rouge">_heroService.getAll()</code> is in a <code class="language-plaintext highlighter-rouge">try</code> clause, and the
+<code class="language-plaintext highlighter-rouge">errorMessage</code> variable is conditionally bound in the template.
+When an exception occurs,
+the <code class="language-plaintext highlighter-rouge">errorMessage</code> variable is assigned a value as follows:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_list_component.dart (_getHeroes)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;void&gt; _getHeroes() async {
+    try {
+      heroes = await _heroService.getAll();
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+</code></pre></div></div>
+
+<div class="l-sub-section">
+  <p>To create a failure scenario,
+  reset the API endpoint to a bad value in <code class="language-plaintext highlighter-rouge">HeroService</code>.
+  Afterward, remember to restore its original value.</p>
+
+</div>
+
+<div id="create"></div>
+<div id="update"></div>
+<h2 id="post">
+<a class="anchor" href="#post" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sending data to the server</h2>
+
+<p>So far you’ve seen how to retrieve data from a remote location using an HTTP service.
+The next task is adding the ability to create new heroes and
+save them in the backend.</p>
+
+<p>First, the service needs a method that the component can call to create
+and save a hero.
+For this demo, the method is called <code class="language-plaintext highlighter-rouge">create()</code> and takes the name of a new hero:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_service.dart (create-sig)”?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;Hero&gt; create(String name) async {
+</code></pre></div></div>
+
+<p>To implement the method, you must know the server’s API for creating heroes.
+<a href="/tutorial/toh-pt6#simulate-the-web-api">This sample’s data server</a>
+follows typical REST guidelines.
+It supports a <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5"><code class="language-plaintext highlighter-rouge">POST</code></a> request
+at the same endpoint as <code class="language-plaintext highlighter-rouge">GET</code> heroes.
+The new hero data must be in the body of the request,
+structured like a <code class="language-plaintext highlighter-rouge">Hero</code> entity but without the <code class="language-plaintext highlighter-rouge">id</code> property.
+Here’s an example of the body of the request:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Windstorm"</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The server generates the <code class="language-plaintext highlighter-rouge">id</code> and returns the JSON representation of the
+new hero, including the generated ID. The hero is inside a response object
+with its own <code class="language-plaintext highlighter-rouge">data</code> property.</p>
+
+<p>Now that you know the server’s API, here’s the implementation of <code class="language-plaintext highlighter-rouge">create()</code>:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_service.dart (create)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;Hero&gt; create(String name) async {
+    try {
+      final response = await _http.post(_heroesUrl,
+          headers: _headers, body: json.encode({'name': name}));
+      return Hero.fromJson(_extractData(response));
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+</code></pre></div></div>
+
+<h3 id="headers">
+<a class="anchor" href="#headers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Headers</h3>
+
+<p>In the <code class="language-plaintext highlighter-rouge">_headers</code> object, the <code class="language-plaintext highlighter-rouge">Content-Type</code> specifies that
+the body represents JSON.</p>
+
+<h3 id="json-results">
+<a class="anchor" href="#json-results" aria-hidden="true"><span class="octicon octicon-link"></span></a>JSON results</h3>
+
+<p>As in <code class="language-plaintext highlighter-rouge">_getHeroes()</code>, the <code class="language-plaintext highlighter-rouge">_extractData()</code> helper
+<a href="#extract-data">extracts the data</a> from the response.</p>
+
+<p>Back in <code class="language-plaintext highlighter-rouge">HeroListComponent</code>, the <code class="language-plaintext highlighter-rouge">addHero()</code> method
+waits for the service’s asynchronous <code class="language-plaintext highlighter-rouge">create()</code> method to create a hero.
+When <code class="language-plaintext highlighter-rouge">create()</code> is finished,
+<code class="language-plaintext highlighter-rouge">addHero()</code> puts the new hero in the <code class="language-plaintext highlighter-rouge">heroes</code> list:</p>
+
+<p>&lt;?code-excerpt “lib/src/toh/hero_list_component.dart (add)” title?&gt;</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  Future&lt;void&gt; add(String name) async {
+    name = name.trim();
+    if (name.isEmpty) return null;
+    try {
+      heroes.add(await _heroService.create(name));
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+</code></pre></div></div>
+
+<h2 id="cors">
+<a class="anchor" href="#cors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cross-origin requests: Wikipedia example</h2>
+
+<p>Although making XMLHttpRequests
+(often with a helper API, such as <code class="language-plaintext highlighter-rouge">BrowserClient</code>)
+is a common approach to server communication in Dart web apps,
+this approach isn’t always possible.</p>
+
+<p>For security reasons, web browsers block XHR calls to a remote server whose origin is different from the origin of the web page.
+The <em>origin</em> is the combination of URI scheme, hostname, and port number.
+This is called the <a href="https://en.wikipedia.org/wiki/Same-origin_policy">same-origin policy.</a></p>
+
+<div class="l-sub-section">
+  <p>Modern browsers allow XHR requests to servers from a different origin if the server supports the
+  <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> protocol.
+  You can enable user credentials in <a href="#headers">request headers</a>.</p>
+</div>
+
+<p>Some servers do not support CORS but do support an older, read-only alternative called <a href="https://en.wikipedia.org/wiki/JSONP">JSONP.</a></p>
+
+<div class="l-sub-section">
+
+  <p>For more information about JSONP, see
+<a href="http://stackoverflow.com/questions/2067472/what-is-jsonp-all-about/2067584#2067584">this Stack Overflow answer.</a></p>
+</div>
+
+<h3 id="search-wikipedia">
+<a class="anchor" href="#search-wikipedia" aria-hidden="true"><span class="octicon octicon-link"></span></a>Search Wikipedia</h3>
+
+<p>The following simple search shows suggestions from Wikipedia as the user
+types in a text box:</p>
+
+<p><img class="image-display" src="/assets/ng/devguide/server-communication/wiki-1-55e734d41dfde94a0da2409a002dc42b928fd3b6e85202d89ff26e71c177a0e5.gif" alt="Wikipedia search app (v.1)" width="282"></p>
+
+<p>Wikipedia offers a modern <strong>CORS</strong> API and a legacy <strong>JSONP</strong> search API.</p>
+
+<div class="alert alert-warning">
+  <p>This page is under construction.
+  For now, see the
+  <a href="https://github.com/angulardart-community/server-communication/tree/master">demo source code</a>
+  for an example of using Wikipedia’s JSONP API.</p>
+</div>
+
+
+          
+<nav id="subnav">
+  <ul>
+    <li class="previous">
+      
+        <a href="/guide/hierarchical-dependency-injection">Hierarchical Dependency Injectors</a>
+      
+    </li>
+    <li class="next">
+      
+        <a href="/guide/lifecycle-hooks">Lifecycle Hooks</a>
+      
+    </li>
+  </ul>
+</nav>
+
+
+        </div>
+      </article>
+    </main>
+    <footer id="page-footer">
+	<div class="container">
+		<div class="content">
+			<div class="text-center" martdown="1">
+				<style>
+					.menu .material-icons {
+						font-size: 14px;
+					}
+				</style><ul class="menu">
+					<li><a href="/terms">Terms</a></li>
+					<li><a href="http://www.google.com/intl/en/policies/privacy/" class="no-automatic-external">Privacy</a></li>
+					<li>Site&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/"
+							class="no-automatic-external">CC&nbsp;BY&nbsp;3.0</a></li>
+					<li>
+						<a href="https://github.com/angulardart-community/site-angulardart" title="This site's source is on GitHub." class="no-automatic-external"><i
+								class="fab fa-github fa-sm"></i></a>
+						&nbsp;
+						<a href="https://github.com/angulardart-community/site-angulardart/issues" title="File an issue about this site." class="no-automatic-external"><i
+								class="fas fa-bug fa-sm"></i></a>
+						&nbsp;
+						<a  title="Site built on 2026/04/01 20:39 UTC" 
+							class="no-automatic-external"><i class="material-icons">build</i></a>
+					</li>
+				</ul>
+
+				<ul class="version">
+					<li>
+						<a href="/version">
+							angular 6.0.1 (currently in migration)
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<b class="version">Disclaimer:</b> This website is solely a fork of the AngularDart documentation maintained by the <a
+							href="https://github.com/angulardart-community" target="_blank">AngularDart Community</a>. This website and AngularDart are not
+						Google products in any way, official or unofficial. The AngularDart Community does <b class="version">NOT</b> maintain AngularDart.
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
+</footer>
+
+  </body>
+</html>

@@ -15,7 +15,7 @@
   <div class="content">
     <div class="card">
       <li-tabsx type="tabs">
-        <li-tabx header="Visão geral" [active]="true">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-4">{{ intro }}</p>
 
@@ -55,36 +55,36 @@
             </div>
 
             <div class="card card-body mt-3">
-              <h6 class="mb-2">Directive trigger</h6>
+              <h6 class="mb-2">{{ isPt ? 'Gatilho por diretiva' : 'Directive trigger' }}</h6>
               <p class="text-muted mb-3">{{ directiveIntro }}</p>
 
               <div class="demo-action-grid">
-                <button class="btn btn-outline-primary" type="button" liSweetAlert="A diretiva abriu um modal padrão."
-                  liSweetAlertTitle="Directive modal" liSweetAlertType="info" [liSweetAlertShowCloseButton]="true"
+                <button class="btn btn-outline-primary" type="button" [liSweetAlert]="isPt ? 'A diretiva abriu um modal padrão.' : 'The directive opened a standard modal.'"
+                  [liSweetAlertTitle]="isPt ? 'Modal por diretiva' : 'Directive modal'" liSweetAlertType="info" [liSweetAlertShowCloseButton]="true"
                   (liSweetAlertResult)="handleDirectiveResult($event)">
-                  Directive modal
+                  {{ isPt ? 'Modal por diretiva' : 'Directive modal' }}
                 </button>
 
-                <button class="btn btn-outline-dark" type="button" liSweetAlert="Publicar alterações agora?"
-                  liSweetAlertTitle="Directive confirm" liSweetAlertMode="confirm" liSweetAlertType="question"
-                  liSweetAlertConfirmText="Publicar" liSweetAlertCancelText="Revisar" [liSweetAlertReverseButtons]="true"
+                <button class="btn btn-outline-dark" type="button" [liSweetAlert]="isPt ? 'Publicar alterações agora?' : 'Publish changes now?'"
+                  [liSweetAlertTitle]="isPt ? 'Confirmação por diretiva' : 'Directive confirm'" liSweetAlertMode="confirm" liSweetAlertType="question"
+                  [liSweetAlertConfirmText]="isPt ? 'Publicar' : 'Publish'" [liSweetAlertCancelText]="isPt ? 'Revisar' : 'Review'" [liSweetAlertReverseButtons]="true"
                   (liSweetAlertResult)="handleDirectiveResult($event)">
-                  Directive confirm
+                  {{ isPt ? 'Confirmação por diretiva' : 'Directive confirm' }}
                 </button>
 
-                <button class="btn btn-outline-info" type="button" liSweetAlert="Informe o nome da versão."
-                  liSweetAlertTitle="Directive prompt" liSweetAlertMode="prompt" liSweetAlertType="info"
-                  liSweetAlertPromptPlaceholder="release-2026.04" liSweetAlertConfirmText="Salvar"
-                  liSweetAlertCancelText="Cancelar" liSweetAlertWidth="36rem"
+                <button class="btn btn-outline-info" type="button" [liSweetAlert]="isPt ? 'Informe o nome da versão.' : 'Enter the version name.'"
+                  [liSweetAlertTitle]="isPt ? 'Prompt por diretiva' : 'Directive prompt'" liSweetAlertMode="prompt" liSweetAlertType="info"
+                  liSweetAlertPromptPlaceholder="release-2026.04" [liSweetAlertConfirmText]="isPt ? 'Salvar' : 'Save'"
+                  [liSweetAlertCancelText]="isPt ? 'Cancelar' : 'Cancel'" liSweetAlertWidth="36rem"
                   (liSweetAlertResult)="handleDirectiveResult($event)">
-                  Directive prompt
+                  {{ isPt ? 'Prompt por diretiva' : 'Directive prompt' }}
                 </button>
 
-                <button class="btn btn-outline-success" type="button" liSweetAlert="Trigger declarativo concluído."
-                  liSweetAlertTitle="Directive toast" liSweetAlertMode="toast" liSweetAlertType="success"
+                <button class="btn btn-outline-success" type="button" [liSweetAlert]="isPt ? 'Gatilho declarativo concluído.' : 'Declarative trigger completed.'"
+                  [liSweetAlertTitle]="isPt ? 'Toast por diretiva' : 'Directive toast'" liSweetAlertMode="toast" liSweetAlertType="success"
                   liSweetAlertPosition="bottom-right" [liSweetAlertTimerMs]="2400"
                   (liSweetAlertResult)="handleDirectiveResult($event)">
-                  Directive toast
+                  {{ isPt ? 'Toast por diretiva' : 'Directive toast' }}
                 </button>
               </div>
             </div>
@@ -94,10 +94,10 @@
               <p class="text-muted mb-3">{{ visualActionsBody }}</p>
 
               <div class="demo-action-grid">
-                <button class="btn btn-outline-primary" type="button" (click)="showNoBackdropModal()">No backdrop modal</button>
-                <button class="btn btn-outline-success" type="button" (click)="showHtmlModal()">HTML modal</button>
-                <button class="btn btn-outline-warning" type="button" (click)="showTimedModal()">Timed modal</button>
-                <button class="btn btn-outline-info" type="button" (click)="showBottomToast()">Bottom toast</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showNoBackdropModal()">{{ isPt ? 'Modal sem backdrop' : 'No backdrop modal' }}</button>
+                <button class="btn btn-outline-success" type="button" (click)="showHtmlModal()">{{ isPt ? 'Modal com HTML' : 'HTML modal' }}</button>
+                <button class="btn btn-outline-warning" type="button" (click)="showTimedModal()">{{ isPt ? 'Modal com timer' : 'Timed modal' }}</button>
+                <button class="btn btn-outline-info" type="button" (click)="showBottomToast()">{{ isPt ? 'Toast inferior' : 'Bottom toast' }}</button>
               </div>
             </div>
 
@@ -105,117 +105,117 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="Tipos e básicos">
+        <li-tabx [header]="isPt ? 'Tipos e básicos' : 'Types and basics'">
           <div class="card-body">
             <p class="text-muted mb-4">{{ notificationIntro }}</p>
 
             <div class="card card-body mb-3">
-              <h6 class="mb-2">Notification types</h6>
-              <p class="text-muted mb-3">Versões de sucesso, erro, aviso, informação, pergunta e fluxo combinado.</p>
+              <h6 class="mb-2">{{ isPt ? 'Tipos de notificação' : 'Notification types' }}</h6>
+              <p class="text-muted mb-3">{{ isPt ? 'Versões de sucesso, erro, aviso, informação, pergunta e fluxo combinado.' : 'Success, error, warning, info, question, and combined flow versions.' }}</p>
               <div class="demo-action-grid">
-                <button class="btn btn-success" type="button" (click)="showTypedAlert('success')">Success type</button>
-                <button class="btn btn-danger" type="button" (click)="showTypedAlert('error')">Error type</button>
-                <button class="btn btn-warning" type="button" (click)="showTypedAlert('warning')">Warning type</button>
-                <button class="btn btn-info" type="button" (click)="showTypedAlert('info')">Info type</button>
-                <button class="btn btn-dark" type="button" (click)="showTypedAlert('question')">Question type</button>
-                <button class="btn btn-outline-primary" type="button" (click)="showCombinedFlow()">Combine messages</button>
+                <button class="btn btn-success" type="button" (click)="showTypedAlert('success')">{{ isPt ? 'Tipo sucesso' : 'Success type' }}</button>
+                <button class="btn btn-danger" type="button" (click)="showTypedAlert('error')">{{ isPt ? 'Tipo erro' : 'Error type' }}</button>
+                <button class="btn btn-warning" type="button" (click)="showTypedAlert('warning')">{{ isPt ? 'Tipo aviso' : 'Warning type' }}</button>
+                <button class="btn btn-info" type="button" (click)="showTypedAlert('info')">{{ isPt ? 'Tipo info' : 'Info type' }}</button>
+                <button class="btn btn-dark" type="button" (click)="showTypedAlert('question')">{{ isPt ? 'Tipo pergunta' : 'Question type' }}</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showCombinedFlow()">{{ isPt ? 'Combinar mensagens' : 'Combine messages' }}</button>
               </div>
             </div>
 
             <div class="card card-body mb-3">
-              <h6 class="mb-2">Basic examples</h6>
-              <p class="text-muted mb-3">Casos base próximos da vitrine original, incluindo validação assíncrona, imagem e fluxo encadeado.</p>
+              <h6 class="mb-2">{{ isPt ? 'Exemplos básicos' : 'Basic examples' }}</h6>
+              <p class="text-muted mb-3">{{ isPt ? 'Casos base próximos da vitrine original, incluindo validação assíncrona, imagem e fluxo encadeado.' : 'Base cases close to the original showcase, including async validation, image, and chained flow.' }}</p>
               <div class="demo-action-grid">
-                <button class="btn btn-light" type="button" (click)="showBasicAlert()">Basic alert</button>
-                <button class="btn btn-light" type="button" (click)="showTitleTextAlert()">Title with text</button>
-                <button class="btn btn-light" type="button" (click)="showCloseButtonExample()">Close button</button>
-                <button class="btn btn-light" type="button" (click)="showPaddingAlert()">Custom padding</button>
-                <button class="btn btn-light" type="button" (click)="showWidthAlert()">Custom width</button>
-                <button class="btn btn-light" type="button" (click)="showAjaxValidationAlert()">Async validation</button>
-                <button class="btn btn-light" type="button" (click)="showHtmlModal()">With HTML message</button>
-                <button class="btn btn-light" type="button" (click)="showImageAlert()">With custom image</button>
-                <button class="btn btn-light" type="button" (click)="showBackgroundAlert()">Background image</button>
-                <button class="btn btn-light" type="button" (click)="showChainedAlerts()">Chaining notifications</button>
+                <button class="btn btn-light" type="button" (click)="showBasicAlert()">{{ isPt ? 'Alerta básico' : 'Basic alert' }}</button>
+                <button class="btn btn-light" type="button" (click)="showTitleTextAlert()">{{ isPt ? 'Título com texto' : 'Title with text' }}</button>
+                <button class="btn btn-light" type="button" (click)="showCloseButtonExample()">{{ isPt ? 'Botão de fechar' : 'Close button' }}</button>
+                <button class="btn btn-light" type="button" (click)="showPaddingAlert()">{{ isPt ? 'Padding customizado' : 'Custom padding' }}</button>
+                <button class="btn btn-light" type="button" (click)="showWidthAlert()">{{ isPt ? 'Largura customizada' : 'Custom width' }}</button>
+                <button class="btn btn-light" type="button" (click)="showAjaxValidationAlert()">{{ isPt ? 'Validação assíncrona' : 'Async validation' }}</button>
+                <button class="btn btn-light" type="button" (click)="showHtmlModal()">{{ isPt ? 'Com HTML' : 'With HTML message' }}</button>
+                <button class="btn btn-light" type="button" (click)="showImageAlert()">{{ isPt ? 'Com imagem customizada' : 'With custom image' }}</button>
+                <button class="btn btn-light" type="button" (click)="showBackgroundAlert()">{{ isPt ? 'Imagem de fundo' : 'Background image' }}</button>
+                <button class="btn btn-light" type="button" (click)="showChainedAlerts()">{{ isPt ? 'Fluxo encadeado' : 'Chaining notifications' }}</button>
               </div>
             </div>
 
             <div class="card card-body">
-              <h6 class="mb-2">Visual and interaction options</h6>
-              <p class="text-muted mb-3">Botões invertidos, grow modes e restrições de fechamento.</p>
+              <h6 class="mb-2">{{ isPt ? 'Opções visuais e de interação' : 'Visual and interaction options' }}</h6>
+              <p class="text-muted mb-3">{{ isPt ? 'Botões invertidos, grow modes e restrições de fechamento.' : 'Reversed buttons, grow modes, and closing restrictions.' }}</p>
               <div class="demo-action-grid">
-                <button class="btn btn-outline-dark" type="button" (click)="showReverseButtonsAlert()">Reversed buttons</button>
+                <button class="btn btn-outline-dark" type="button" (click)="showReverseButtonsAlert()">{{ isPt ? 'Botões invertidos' : 'Reversed buttons' }}</button>
                 <button class="btn btn-outline-primary" type="button" (click)="showGrowExample('fullscreen')">Fullscreen</button>
-                <button class="btn btn-outline-primary" type="button" (click)="showGrowExample('column')">Stretched vertically</button>
-                <button class="btn btn-outline-primary" type="button" (click)="showGrowExample('row')">Stretched horizontally</button>
-                <button class="btn btn-outline-warning" type="button" (click)="showDisabledKeyboardAlert()">Disabled keyboard</button>
-                <button class="btn btn-outline-secondary" type="button" (click)="showDisabledAnimationAlert()">Disabled animation</button>
-                <button class="btn btn-outline-info" type="button" (click)="showDisabledBackdropAlert()">Disabled backdrop</button>
-                <button class="btn btn-outline-danger" type="button" (click)="showDisabledOutsideClickAlert()">Disabled outside click</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showGrowExample('column')">{{ isPt ? 'Expandido na vertical' : 'Stretched vertically' }}</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showGrowExample('row')">{{ isPt ? 'Expandido na horizontal' : 'Stretched horizontally' }}</button>
+                <button class="btn btn-outline-warning" type="button" (click)="showDisabledKeyboardAlert()">{{ isPt ? 'Teclado desabilitado' : 'Disabled keyboard' }}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showDisabledAnimationAlert()">{{ isPt ? 'Animação desabilitada' : 'Disabled animation' }}</button>
+                <button class="btn btn-outline-info" type="button" (click)="showDisabledBackdropAlert()">{{ isPt ? 'Backdrop desabilitado' : 'Disabled backdrop' }}</button>
+                <button class="btn btn-outline-danger" type="button" (click)="showDisabledOutsideClickAlert()">{{ isPt ? 'Clique externo desabilitado' : 'Disabled outside click' }}</button>
               </div>
             </div>
           </div>
         </li-tabx>
 
-        <li-tabx header="Inputs e posições">
+        <li-tabx [header]="isPt ? 'Inputs e posições' : 'Inputs and positions'">
           <div class="card-body">
             <p class="text-muted mb-4">{{ inputIntro }}</p>
 
             <div class="card card-body mb-3">
-              <h6 class="mb-2">Input types</h6>
-              <p class="text-muted mb-3">Inputs nativos suportados pelo wrapper atual.</p>
+              <h6 class="mb-2">{{ isPt ? 'Tipos de input' : 'Input types' }}</h6>
+              <p class="text-muted mb-3">{{ isPt ? 'Inputs nativos suportados pelo wrapper atual.' : 'Native inputs supported by the current wrapper.' }}</p>
               <div class="demo-action-grid">
-                <button class="btn btn-light" type="button" (click)="showInputExample('text')">Text input</button>
-                <button class="btn btn-light" type="button" (click)="showInputExample('email')">Email input</button>
-                <button class="btn btn-light" type="button" (click)="showInputExample('url')">URL input</button>
-                <button class="btn btn-light" type="button" (click)="showInputExample('password')">Password input</button>
-                <button class="btn btn-light" type="button" (click)="showInputExample('textarea')">Textarea input</button>
-                <button class="btn btn-light" type="button" (click)="showInputExample('select')">Select input</button>
-                <button class="btn btn-light" type="button" (click)="showInputExample('radio')">Radio input</button>
-                <button class="btn btn-light" type="button" (click)="showInputExample('checkbox')">Checkbox input</button>
-                <button class="btn btn-light" type="button" (click)="showInputExample('range')">Range input</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('text')">{{ isPt ? 'Texto' : 'Text input' }}</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('email')">{{ isPt ? 'Email' : 'Email input' }}</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('url')">{{ isPt ? 'URL' : 'URL input' }}</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('password')">{{ isPt ? 'Senha' : 'Password input' }}</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('textarea')">{{ isPt ? 'Textarea' : 'Textarea input' }}</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('select')">{{ isPt ? 'Select' : 'Select input' }}</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('radio')">{{ isPt ? 'Radio' : 'Radio input' }}</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('checkbox')">{{ isPt ? 'Checkbox' : 'Checkbox input' }}</button>
+                <button class="btn btn-light" type="button" (click)="showInputExample('range')">{{ isPt ? 'Range' : 'Range input' }}</button>
               </div>
             </div>
 
             <div class="card card-body mb-3">
-              <h6 class="mb-2">Positions</h6>
-              <p class="text-muted mb-3">Posições suportadas para modal/toast, incluindo centro lateral.</p>
+              <h6 class="mb-2">{{ isPt ? 'Posições' : 'Positions' }}</h6>
+              <p class="text-muted mb-3">{{ isPt ? 'Posições suportadas para modal/toast, incluindo centro lateral.' : 'Supported positions for modal/toast, including side center.' }}</p>
               <div class="demo-action-grid">
-                <button class="btn btn-light" type="button" (click)="showPositionExample('top')">Top</button>
-                <button class="btn btn-light" type="button" (click)="showPositionExample('top-left')">Top left</button>
-                <button class="btn btn-light" type="button" (click)="showPositionExample('top-right')">Top right</button>
-                <button class="btn btn-light" type="button" (click)="showPositionExample('center-left')">Center left</button>
-                <button class="btn btn-light" type="button" (click)="showPositionExample('center-right')">Center right</button>
-                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom')">Bottom</button>
-                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom-left')">Bottom left</button>
-                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom-right')">Bottom right</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('top')">{{ isPt ? 'Topo' : 'Top' }}</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('top-left')">{{ isPt ? 'Topo esquerdo' : 'Top left' }}</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('top-right')">{{ isPt ? 'Topo direito' : 'Top right' }}</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('center-left')">{{ isPt ? 'Centro esquerdo' : 'Center left' }}</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('center-right')">{{ isPt ? 'Centro direito' : 'Center right' }}</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom')">{{ isPt ? 'Base' : 'Bottom' }}</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom-left')">{{ isPt ? 'Base esquerda' : 'Bottom left' }}</button>
+                <button class="btn btn-light" type="button" (click)="showPositionExample('bottom-right')">{{ isPt ? 'Base direita' : 'Bottom right' }}</button>
               </div>
             </div>
 
             <div class="card card-body mb-3">
-              <h6 class="mb-2">Toasts</h6>
-              <p class="text-muted mb-3">Tipos de toast e distribuição por posição, como na página original.</p>
+              <h6 class="mb-2">{{ isPt ? 'Toasts' : 'Toasts' }}</h6>
+              <p class="text-muted mb-3">{{ isPt ? 'Tipos de toast e distribuição por posição, como na página original.' : 'Toast types and placement distribution, like on the original page.' }}</p>
               <div class="demo-action-grid mb-3">
-                <button class="btn btn-success" type="button" (click)="showTypedToast('success')">Success toast</button>
-                <button class="btn btn-danger" type="button" (click)="showTypedToast('error')">Error toast</button>
-                <button class="btn btn-warning" type="button" (click)="showTypedToast('warning')">Warning toast</button>
-                <button class="btn btn-info" type="button" (click)="showTypedToast('info')">Info toast</button>
-                <button class="btn btn-dark" type="button" (click)="showTypedToast('question')">Question toast</button>
+                <button class="btn btn-success" type="button" (click)="showTypedToast('success')">{{ isPt ? 'Toast de sucesso' : 'Success toast' }}</button>
+                <button class="btn btn-danger" type="button" (click)="showTypedToast('error')">{{ isPt ? 'Toast de erro' : 'Error toast' }}</button>
+                <button class="btn btn-warning" type="button" (click)="showTypedToast('warning')">{{ isPt ? 'Toast de aviso' : 'Warning toast' }}</button>
+                <button class="btn btn-info" type="button" (click)="showTypedToast('info')">{{ isPt ? 'Toast info' : 'Info toast' }}</button>
+                <button class="btn btn-dark" type="button" (click)="showTypedToast('question')">{{ isPt ? 'Toast de pergunta' : 'Question toast' }}</button>
               </div>
               <div class="demo-action-grid">
-                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('top')">Top</button>
-                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('top-left')">Top left</button>
-                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center-left')">Center left</button>
-                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center')">Center</button>
-                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center-right')">Center right</button>
-                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom')">Bottom</button>
-                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom-left')">Bottom left</button>
-                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom-right')">Bottom right</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('top')">{{ isPt ? 'Topo' : 'Top' }}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('top-left')">{{ isPt ? 'Topo esquerdo' : 'Top left' }}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center-left')">{{ isPt ? 'Centro esquerdo' : 'Center left' }}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center')">{{ isPt ? 'Centro' : 'Center' }}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('center-right')">{{ isPt ? 'Centro direito' : 'Center right' }}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom')">{{ isPt ? 'Base' : 'Bottom' }}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom-left')">{{ isPt ? 'Base esquerda' : 'Bottom left' }}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="showToastPositionExample('bottom-right')">{{ isPt ? 'Base direita' : 'Bottom right' }}</button>
               </div>
             </div>
 
             <div class="card card-body">
-              <h6 class="mb-2">Callbacks</h6>
-              <p class="text-muted mb-3">Validação dos callbacks de abertura e fechamento.</p>
+              <h6 class="mb-2">{{ isPt ? 'Callbacks' : 'Callbacks' }}</h6>
+              <p class="text-muted mb-3">{{ isPt ? 'Validação dos callbacks de abertura e fechamento.' : 'Validation of open and close callbacks.' }}</p>
               <div class="demo-action-grid">
                 <button class="btn btn-outline-primary" type="button" (click)="showOnOpenCallbackAlert()">onOpen</button>
                 <button class="btn btn-outline-dark" type="button" (click)="showOnCloseCallbackAlert()">onClose</button>
@@ -226,7 +226,7 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API AngularDart">
+        <li-tabx [header]="isPt ? 'API AngularDart' : 'AngularDart API'">
           <div class="card-body">
             <p class="text-muted mb-3">{{ apiIntro }}</p>
             <li-highlight [code]="providerSnippet" language="dart"></li-highlight>
@@ -242,14 +242,14 @@
           </div>
         </li-tabx>
 
-        <li-tabx header="API estática">
+        <li-tabx [header]="isPt ? 'API estática' : 'Static API'">
           <div class="card-body">
-            <p class="text-muted mb-3">SweetAlert também continua disponível diretamente para chamadas imperativas fora do ciclo de DI.</p>
+            <p class="text-muted mb-3">{{ isPt ? 'SweetAlert também continua disponível diretamente para chamadas imperativas fora do ciclo de DI.' : 'SweetAlert also remains directly available for imperative calls outside the DI cycle.' }}</p>
             <li-highlight [code]="staticSnippet" language="dart"></li-highlight>
           </div>
         </li-tabx>
 
-        <li-tabx header="Diretiva">
+        <li-tabx [header]="isPt ? 'Diretiva' : 'Directive'">
           <div class="card-body">
             <p class="text-muted mb-3">{{ directiveIntro }}</p>
             <li-highlight [code]="directiveSnippet" language="html"></li-highlight>

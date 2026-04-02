@@ -70,6 +70,30 @@ class LiTimePickerComponent
   @Input()
   bool use24Hour = false;
 
+  @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
+  bool required = false;
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String helperText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
+
   @Output()
   Stream<Duration?> get valueChange => _valueChangeController.stream;
 
@@ -103,8 +127,35 @@ class LiTimePickerComponent
 
   ChangeFunction<Duration?> _onChange = (Duration? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
+  bool _touched = false;
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  bool get effectiveInvalid =>
+      invalid || dataInvalid || (required && _touched && value == null);
+
+  bool get effectiveValid =>
+      !effectiveInvalid && (valid || (required && _touched && value != null));
+
+  bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String get resolvedInputClass => _joinClasses(<String>[
+        'form-control',
+        'time-picker-field',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
+      ]);
 
   bool get isHourMode => dialMode == TimePickerDialMode.hour;
 
@@ -387,11 +438,14 @@ class LiTimePickerComponent
     );
     _valueChangeController.add(value);
     _onChange(value);
-    _onTouched();
+    _markTouched();
     close();
   }
 
   void close() {
+    if (isOpen) {
+      _markTouched();
+    }
     _unbindDocumentListeners();
     _stopClockDrag();
     _overlay?.stopAutoUpdate();
@@ -400,7 +454,7 @@ class LiTimePickerComponent
     _syncInputTexts();
     _isEditingHour = false;
     _isEditingMinute = false;
-    _onTouched();
+    _markTouched();
     _markForCheck();
   }
 
@@ -809,6 +863,22 @@ class LiTimePickerComponent
 
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
+  }
+
+  void _markTouched() {
+    if (_touched) {
+      _onTouched();
+      return;
+    }
+    _touched = true;
+    _onTouched();
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
   }
 
   @override

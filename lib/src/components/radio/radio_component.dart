@@ -40,6 +40,15 @@ class LiRadioComponent implements ControlValueAccessor<dynamic> {
   String helperText = '';
 
   @Input()
+  String errorText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
+
+  @Input()
   String ariaLabel = '';
 
   @Input()
@@ -53,6 +62,15 @@ class LiRadioComponent implements ControlValueAccessor<dynamic> {
 
   @Input()
   String variant = '';
+
+  @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
 
   @Input()
   bool inline = false;
@@ -83,6 +101,21 @@ class LiRadioComponent implements ControlValueAccessor<dynamic> {
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
+  bool get hasErrorText => errorText.trim().isNotEmpty;
+
+  bool get showErrorFeedback => hasErrorText && effectiveInvalid;
+
+  bool get effectiveInvalid => invalid || dataInvalid;
+
+  bool get effectiveValid => !effectiveInvalid && valid;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String? get resolvedAriaInvalid => effectiveInvalid ? 'true' : null;
+
+  String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
+
   String get resolvedContainerClass => _joinClasses(<String>[
         'form-check',
         inline ? 'form-check-inline' : '',
@@ -93,12 +126,20 @@ class LiRadioComponent implements ControlValueAccessor<dynamic> {
   String get resolvedInputClass => _joinClasses(<String>[
         'form-check-input',
         variant.trim().isNotEmpty ? 'form-check-input-${variant.trim()}' : '',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
         inputClass,
       ]);
 
   String get resolvedLabelClass => _joinClasses(<String>[
         'form-check-label',
         labelClass,
+      ]);
+
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
       ]);
 
   @HostBinding('class.d-block')
