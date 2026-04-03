@@ -114,6 +114,21 @@
                 falseValue="disabled"
                 [(ngModel)]="successChecksEnabled">
             </li-checkbox>
+
+            <div class="selection-subsection mt-4">
+              <p class="selection-demo-title mb-2">{{ disabledStateTitle }}</p>
+              <p class="text-muted small mb-3">{{ selectionReadonlyHint }}</p>
+              <li-checkbox
+                  [label]="auditTrailLabel"
+                  [disabled]="true"
+                  [(ngModel)]="disabledAuditTrailEnabled">
+              </li-checkbox>
+              <li-checkbox
+                  [label]="publicPortalLabel"
+                  [disabled]="true"
+                  [(ngModel)]="disabledPortalEnabled">
+              </li-checkbox>
+            </div>
           </div>
         </div>
 
@@ -332,6 +347,26 @@
                 variant="warning"
                 [(ngModel)]="optionalFilter">
             </li-radio>
+
+            <div class="selection-subsection mt-4">
+              <p class="selection-demo-title mb-2">{{ disabledStateTitle }}</p>
+              <p class="text-muted small mb-3">{{ selectionReadonlyHint }}</p>
+              <li-radio
+                  name="disabledVisibility"
+                  [label]="customersLabel"
+                  value="customers"
+                  [disabled]="true"
+                  [(ngModel)]="disabledVisibility">
+              </li-radio>
+              <li-radio
+                  name="disabledVisibility"
+                  [label]="publicLabel"
+                  value="public"
+                  [disabled]="true"
+                  variant="warning"
+                  [(ngModel)]="disabledVisibility">
+              </li-radio>
+            </div>
           </div>
         </div>
 
@@ -457,6 +492,24 @@
                 variant="dark"
                 [(ngModel)]="toggleDarkEnabled">
             </li-toggle>
+
+            <div class="selection-subsection mt-4">
+              <p class="selection-demo-title mb-2">{{ disabledStateTitle }}</p>
+              <p class="text-muted small mb-3">{{ selectionReadonlyHint }}</p>
+              <li-toggle
+                  [label]="digestLabel"
+                  [disabled]="true"
+                  [(ngModel)]="disabledDigestEnabled">
+              </li-toggle>
+              <li-toggle
+                  [label]="onboardingLabel"
+                  trueValue="enabled"
+                  falseValue="paused"
+                  [disabled]="true"
+                  variant="success"
+                  [(ngModel)]="disabledOnboardingState">
+              </li-toggle>
+            </div>
           </div>
         </div>
 

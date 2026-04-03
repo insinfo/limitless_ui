@@ -112,9 +112,10 @@ void main() {
     expect(host.stepChangeCount, 1);
     expect(host.lastPreviousIndex, 0);
     expect(host.lastCurrentIndex, 1);
-    expect(fixture.rootElement.querySelectorAll('.steps li.done'), hasLength(1));
+    expect(
+        fixture.rootElement.querySelectorAll('.steps li.done'), hasLength(1));
     expect(_pseudoContent(fixture.rootElement, '.steps li.done .number'),
-      contains('\\ea30'));
+        contains('\\ea30'));
     expect(_currentStepItem(fixture.rootElement)?.text, contains('Profile'));
 
     await fixture.update((_) {
@@ -233,7 +234,16 @@ String _pseudoContent(html.Element root, String selector) {
     return '';
   }
 
-  return element.getComputedStyle('::after').content;
+  final content = element.getComputedStyle('::after').content;
+  if (content.length >= 2 && content.startsWith('"') && content.endsWith('"')) {
+    final unquoted = content.substring(1, content.length - 1);
+    if (unquoted.runes.length == 1) {
+      final codepoint = unquoted.runes.first.toRadixString(16).padLeft(4, '0');
+      return '\\$codepoint';
+    }
+  }
+
+  return content;
 }
 
 Future<void> _settle(NgTestFixture<WizardTestHostComponent> fixture) async {

@@ -1,0 +1,13 @@
+:host {
+	display: block;
+}
+
+.demo-code-surface {
+	background: color-mix(in srgb, var(--card-bg, var(--body-bg, #fff)) 90%, var(--body-color) 10%);
+	color: var(--body-color);
+	border-color: var(--border-color) !important;
+}
+
+.demo-code-surface code {
+	color: inherit;
+}

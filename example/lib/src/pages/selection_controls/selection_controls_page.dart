@@ -36,6 +36,11 @@ class SelectionControlsPageComponent {
   dynamic successChecksEnabled = 'enabled';
   bool inversePinEnabled = true;
   bool inverseReadonlyEnabled = false;
+  bool disabledAuditTrailEnabled = true;
+  bool disabledPortalEnabled = false;
+  String disabledVisibility = 'customers';
+  bool disabledDigestEnabled = true;
+  String disabledOnboardingState = 'paused';
 
   String visibility = 'team';
   String density = 'comfortable';
@@ -106,6 +111,11 @@ class SelectionControlsPageComponent {
       isPt ? 'Caso de formulário' : 'Form scenario';
   String get optionalRadioTitle =>
       isPt ? 'Filtro opcional' : 'Optional filter';
+    String get disabledStateTitle =>
+      isPt ? 'Estado desabilitado' : 'Disabled state';
+    String get selectionReadonlyHint => isPt
+      ? 'Checkbox, radio e toggle não têm readonly nativo; para exibir o valor sem permitir edição, use disabled.'
+      : 'Checkbox, radio, and toggle do not have a native readonly state; use disabled to keep the value visible without allowing edits.';
   String get radioFormCaseTitle =>
       isPt ? 'Fluxo de aprovação' : 'Approval flow';
   String get toggleFormCaseTitle =>

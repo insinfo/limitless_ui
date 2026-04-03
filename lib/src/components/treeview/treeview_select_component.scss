@@ -76,8 +76,11 @@
     width: 100%;
     padding: 0;
     overflow: hidden;
-    background: var(--card-bg, color-mix(in srgb, var(--body-bg) 94%, var(--body-color) 6%));
-    border-color: var(--border-color);
+    color: var(--dropdown-color, var(--body-color));
+    background-color: var(--dropdown-bg, var(--white));
+    border-color: var(--dropdown-border-color, var(--border-color-translucent));
+    border-radius: var(--dropdown-border-radius, var(--border-radius));
+    box-shadow: var(--dropdown-box-shadow, var(--box-shadow-lg));
 }
 
 .treeview-dropdown-select__search {
@@ -112,7 +115,7 @@
 }
 
 .treeview-dropdown-select__row.is-selected {
-    background: rgba(var(--primary-rgb), 0.12);
+    background: var(--dropdown-link-active-bg, rgba(var(--primary-rgb), 0.12));
 }
 
 .treeview-dropdown-select__row.is-disabled {
@@ -184,12 +187,12 @@
 .treeview-dropdown-select__checkbox:hover,
 .treeview-dropdown-select__clear:hover,
 .treeview-dropdown-select__load-more:hover {
-    background: rgba(var(--primary-rgb), 0.08);
-    color: var(--primary);
+    background: var(--dropdown-link-hover-bg, rgba(var(--primary-rgb), 0.08));
+    color: var(--dropdown-link-hover-color, var(--primary));
 }
 
 .treeview-dropdown-select__label.is-selected {
-    color: var(--primary);
+    color: var(--dropdown-link-active-color, var(--primary));
     font-weight: 600;
 }
 

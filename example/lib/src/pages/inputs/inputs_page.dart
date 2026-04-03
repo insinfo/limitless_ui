@@ -82,6 +82,12 @@ class InputsPageComponent {
   String searchTerm = 'deploy canary';
   String adminPassword = 'Limitless@2026';
   String readonlyToken = 'REL-2026.03.31';
+  String disabledOwner = 'Conta sincronizada';
+  String disabledBatch = '314';
+  String disabledPriority = 'p0';
+  List<dynamic> disabledChannels = <dynamic>['email', 'webhook'];
+  DateTime? frozenRangeStart = DateTime(2026, 4, 18);
+  DateTime? frozenRangeEnd = DateTime(2026, 4, 22);
 
   bool get isPt => i18n.isPortuguese;
     List<Map<String, dynamic>> get statusOptions =>
@@ -145,6 +151,17 @@ class InputsPageComponent {
     String get tokenHelp => isPt
       ? 'Campo somente leitura para referências imutáveis.'
       : 'Read-only field for immutable references.';
+    String get stateExamplesTitle =>
+      isPt ? 'Readonly e disabled' : 'Read-only and disabled';
+    String get disabledOwnerLabel =>
+      isPt ? 'Responsável bloqueado' : 'Locked owner';
+    String get disabledOwnerHelp => isPt
+      ? 'Campo desabilitado mantendo o valor visível para consulta.'
+      : 'Disabled field while keeping the visible value for consultation.';
+    String get disabledBatchLabel => isPt ? 'Lote travado' : 'Locked batch';
+    String get disabledBatchHelp => isPt
+      ? 'Exemplo de input desabilitado com addon ativo apenas visualmente.'
+      : 'Disabled input example with the addon kept only for visual context.';
     String get shortSummaryLabel => isPt ? 'Resumo curto' : 'Short summary';
     String get shortSummaryHelp => isPt
       ? 'Combina maxlength com textarea curta.'
@@ -158,6 +175,13 @@ class InputsPageComponent {
       isPt ? 'Canais de notificacao' : 'Notification channels';
     String get priorityLabel => isPt ? 'Prioridade operacional' : 'Operational priority';
     String get escalationLabel => isPt ? 'Escalações automáticas' : 'Automatic escalations';
+    String get disabledPriorityLabel =>
+      isPt ? 'Prioridade bloqueada' : 'Locked priority';
+    String get disabledChannelsLabel =>
+      isPt ? 'Canais bloqueados' : 'Locked channels';
+    String get disabledSelectionHelp => isPt
+      ? 'Estado desabilitado para fluxos em que o valor deve aparecer, mas não pode ser alterado.'
+      : 'Disabled state for flows where the value must remain visible but cannot be changed.';
     String get statusSummaryLabel => t.common.status;
     String get channelsSummaryLabel => isPt ? 'Canais' : 'Channels';
     String get prioritySummaryLabel => isPt ? 'Prioridade' : 'Priority';
@@ -173,6 +197,12 @@ class InputsPageComponent {
     String get contractReviewPlaceholder => 'Contract review window';
     String get parallelWindowLabel => isPt ? 'Janela paralela' : 'Parallel window';
     String get undefinedWindowLabel => isPt ? 'Nao definida' : 'Undefined';
+    String get frozenWindowLabel => isPt ? 'Janela congelada' : 'Frozen window';
+    String get frozenWindowPlaceholder =>
+      isPt ? 'Periodo bloqueado para edicao' : 'Window locked for editing';
+    String get frozenWindowNote => isPt
+      ? 'Use disabled quando o periodo precisar ser exibido sem permitir ajuste no calendário.'
+      : 'Use disabled when the range must be displayed without allowing calendar changes.';
     String get secondaryRangeNote => isPt
       ? 'Segundo range com locale em inglês para validar a API em contextos distintos.'
       : 'Second range with English locale to validate the API in distinct contexts.';
