@@ -5,6 +5,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   templateUrl: 'sweet_alert_page.html',
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiHighlightComponent,

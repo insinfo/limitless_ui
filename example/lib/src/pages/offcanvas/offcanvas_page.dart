@@ -7,6 +7,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   providers: [ClassProvider(LiOffcanvasService)],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     liOffcanvasDirectives,

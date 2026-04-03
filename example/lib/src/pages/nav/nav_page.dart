@@ -5,6 +5,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   templateUrl: 'nav_page.html',
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiNavDirective,

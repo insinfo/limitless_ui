@@ -10,9 +10,7 @@
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
-      <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">{{ t.pages.overview.breadcrumb }}</span>
-      </div>
+      <demo-page-breadcrumb [currentLabel]="t.pages.overview.breadcrumb"></demo-page-breadcrumb>
     </div>
   </div>
 
@@ -56,7 +54,20 @@
       <div class="card-body">
         <div class="row g-3">
           <div *ngFor="let item of featureCards; trackBy: trackByFeatureCard" class="col-md-6 col-xl-3">
-            <a [routerLink]="item.url" [class]="featureCardClass(item)">
+            <a *ngIf="item.isExternal"
+               [attr.href]="item.href"
+               [attr.target]="'_blank'"
+               rel="noreferrer"
+               [class]="featureCardClass(item)">
+              <div class="overview-feature-icon">
+                <i [class]="item.iconClass"></i>
+              </div>
+              <div class="overview-feature-content">
+                <div class="overview-feature-title">{{ item.title }}</div>
+                <p class="overview-feature-body">{{ item.body }}</p>
+              </div>
+            </a>
+            <a *ngIf="!item.isExternal" [routerLink]="item.internalUrl" [class]="featureCardClass(item)">
               <div class="overview-feature-icon">
                 <i [class]="item.iconClass"></i>
               </div>

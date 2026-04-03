@@ -20,6 +20,17 @@ class LiTabsComponent implements OnInit, AfterContentInit {
   /// if `true` tabs will be placed vertically
   bool get vertical => placement == 'left' || placement == 'right';
 
+  bool get usesTabNavigation => type != 'pills';
+
+  @HostBinding('class.d-flex')
+  bool get usesFlexLayout => vertical || placementBottom;
+
+  @HostBinding('class.gap-3')
+  bool get usesFlexGap => vertical || placementBottom;
+
+  @HostBinding('class.align-items-start')
+  bool get alignItemsStart => vertical;
+
   @HostBinding('class.flex-row')
   bool get placementLeft => placement == 'left';
 
@@ -37,7 +48,8 @@ class LiTabsComponent implements OnInit, AfterContentInit {
   @Input()
   bool justified = false;
 
-  /// navigation context class: 'tabs' or 'pills'
+  /// navigation context class: 'tabs', 'highlight', 'underline',
+  /// 'overline', 'solid' or 'pills'.
   @Input()
   String? type;
 

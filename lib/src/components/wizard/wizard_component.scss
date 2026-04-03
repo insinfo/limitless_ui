@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+/* Limitless 4 ships wizard pseudo-element codepoints from an older Phosphor map.
+   Override them to the 2.0.3 font actually loaded by the demo/app.
+   Use :host instead of .wizard because .wizard is on the host element
+   (_nghost-*), not on a child (_ngcontent-*), so scoped selectors
+   starting with .wizard never match under emulated encapsulation. */
+:host > .steps > ul > li .number::after {
+  font-family: var(--icon-font-family), "Phosphor" !important;
+}
+
+:host > .steps > ul > li.current .number::after {
+  content: "\ec56" !important;
+}
+
+:host > .steps > ul > li.done .number::after {
+  content: "\ea30" !important;
+}
+
+:host > .steps > ul > li.error .number::after {
+  content: "\eddb" !important;
+}
+
+:host > .content > .body:focus {
+  outline: none;
+}

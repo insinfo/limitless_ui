@@ -12,6 +12,7 @@ import 'datatable_demo_service.dart';
   styleUrls: ['datatable_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiAccordionComponent,
     LiAccordionBodyDirective,
     LiAccordionItemComponent,

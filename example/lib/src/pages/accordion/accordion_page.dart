@@ -6,6 +6,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['accordion_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiAccordionBodyComponent,
     LiAccordionBodyTemplateDirective,
     LiAccordionButtonDirective,
@@ -20,6 +21,9 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiAccordionItemComponent,
     LiAccordionItemDirective,
     LiAccordionToggleDirective,
+  ],
+  pipes: [
+    commonPipes,
   ],
 )
 class AccordionPageComponent {

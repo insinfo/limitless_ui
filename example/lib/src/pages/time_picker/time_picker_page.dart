@@ -6,6 +6,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['time_picker_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     formDirectives,
     LiTabsComponent,
     LiTabxDirective,

@@ -118,7 +118,7 @@
       </div>
 
       <div class="sidebar-section demo-sidebar-search-section">
-        <div class="sidebar-section-body demo-sidebar-search-body">
+        <div class="sidebar-section-body demo-sidebar-search-body py-1 px-2">
           <div class="input-group input-group-sm demo-sidebar-search-input sidebar-resize-hide">
             <span class="input-group-text">
               <i class="ph-magnifying-glass"></i>
@@ -153,10 +153,10 @@
 
       <div class="sidebar-section">
         <ul class="nav nav-sidebar" [attr.data-nav-type]="'accordion'">
-          <li *ngIf="showMainHeader" class="nav-item-header pt-0">
+          <!-- <li *ngIf="showMainHeader" class="nav-item-header pt-0">
             <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">{{ mainLabel }}</div>
             <i class="ph-dots-three sidebar-resize-show"></i>
-          </li>
+          </li> -->
           <li *ngFor="let item of filteredPrimaryItems" class="nav-item">
             <a [routerLink]="item.url"
                (click)="onNavItemActivate()"

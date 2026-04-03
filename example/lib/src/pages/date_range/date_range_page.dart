@@ -5,6 +5,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['date_range_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiDateRangePickerComponent,

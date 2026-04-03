@@ -8,13 +8,7 @@
   </div>
 
   <div class="page-header-content d-lg-flex border-top">
-    <div class="d-flex">
-      <div class="breadcrumb py-2">
-        <a [routerLink]="DemoRoutePaths.overview.toUrl()" class="breadcrumb-item"><i class="ph-house"></i></a>
-        <a href="#" class="breadcrumb-item">Pickers</a>
-        <span class="breadcrumb-item active">{{ breadcrumb }}</span>
-      </div>
-    </div>
+    <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
   </div>
 </div>
 

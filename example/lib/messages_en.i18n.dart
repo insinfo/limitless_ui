@@ -527,6 +527,17 @@ class OverviewPagesMessagesEn extends OverviewPagesMessages {
       """Direct links to real showcase pages instead of placeholder cards.""";
 
   /// ```dart
+  /// "AngularDart documentation"
+  /// ```
+  String get featureAngularDartDocsTitle => """AngularDart documentation""";
+
+  /// ```dart
+  /// "Open the setup guide published under site_ngdart."
+  /// ```
+  String get featureAngularDartDocsBody =>
+      """Open the setup guide published under site_ngdart.""";
+
+  /// ```dart
   /// "Date Picker"
   /// ```
   String get featureDatePickerTitle => """Date Picker""";
@@ -1115,10 +1126,10 @@ class TabsPagesMessagesEn extends TabsPagesMessages {
   String get cardTitle => """Pills with custom header""";
 
   /// ```dart
-  /// "The tabs page demonstrates horizontal and vertical composition, custom headers, and disabled states."
+  /// "The tabs page demonstrates horizontal and vertical composition, distributed alignment, custom headers, and on-demand rendering."
   /// ```
   String get overviewIntro =>
-      """The tabs page demonstrates horizontal and vertical composition, custom headers, and disabled states.""";
+      """The tabs page demonstrates horizontal and vertical composition, distributed alignment, custom headers, and on-demand rendering.""";
 
   /// ```dart
   /// "Tabs organize content in layers without breaking page context and work well for documentation, segmented forms, and administrative panels."
@@ -1165,10 +1176,10 @@ class TabsPagesMessagesEn extends TabsPagesMessages {
   String get previewTitle => """Visible example""";
 
   /// ```dart
-  /// "The example below shows side pills with a custom header and one disabled tab, without polluting the documentation page navigation."
+  /// "The gallery below covers basic layouts, justified variants, side navigation, projected headers, and lifecycle behavior with lazyLoad and destroyOnHide."
   /// ```
   String get previewIntro =>
-      """The example below shows side pills with a custom header and one disabled tab, without polluting the documentation page navigation.""";
+      """The gallery below covers basic layouts, justified variants, side navigation, projected headers, and lifecycle behavior with lazyLoad and destroyOnHide.""";
 
   /// ```dart
   /// "Use the component to group related content when section-based navigation makes more sense than stacking cards or opening new routes."
@@ -1203,6 +1214,142 @@ class TabsPagesMessagesEn extends TabsPagesMessages {
   String get apiFive => """template li-tabx-header allows custom headers.""";
 
   /// ```dart
+  /// "Core combinations"
+  /// ```
+  String get galleryLayoutsTitle => """Core combinations""";
+
+  /// ```dart
+  /// "Horizontal and side variations for documentation, operational dashboards, and review areas."
+  /// ```
+  String get galleryLayoutsIntro =>
+      """Horizontal and side variations for documentation, operational dashboards, and review areas.""";
+
+  /// ```dart
+  /// "Composition and lifecycle"
+  /// ```
+  String get galleryAdvancedTitle => """Composition and lifecycle""";
+
+  /// ```dart
+  /// "Examples with projected headers, richer visual semantics, and panes rendered on demand."
+  /// ```
+  String get galleryAdvancedIntro =>
+      """Examples with projected headers, richer visual semantics, and panes rendered on demand.""";
+
+  /// ```dart
+  /// "Basic tabs"
+  /// ```
+  String get basicCardTitle => """Basic tabs""";
+
+  /// ```dart
+  /// "A simple horizontal structure to split summary, metrics, and history without leaving the page."
+  /// ```
+  String get basicCardBody =>
+      """A simple horizontal structure to split summary, metrics, and history without leaving the page.""";
+
+  /// ```dart
+  /// "Config: type=tabs"
+  /// ```
+  String get basicCardConfig => """Config: type=tabs""";
+
+  /// ```dart
+  /// "Summary"
+  /// ```
+  String get basicSummary => """Summary""";
+
+  /// ```dart
+  /// "Keep goals, context, and recent decisions in a short opening panel optimized for first-pass reading."
+  /// ```
+  String get basicSummaryBody =>
+      """Keep goals, context, and recent decisions in a short opening panel optimized for first-pass reading.""";
+
+  /// ```dart
+  /// "Metrics"
+  /// ```
+  String get basicMetrics => """Metrics""";
+
+  /// ```dart
+  /// "Use the second tab for indicators that support the narrative without competing with the main content."
+  /// ```
+  String get basicMetricsBody =>
+      """Use the second tab for indicators that support the narrative without competing with the main content.""";
+
+  /// ```dart
+  /// "History"
+  /// ```
+  String get basicHistory => """History""";
+
+  /// ```dart
+  /// "Reserve the third tab for events, changelog items, or auditable notes when the flow requires traceability."
+  /// ```
+  String get basicHistoryBody =>
+      """Reserve the third tab for events, changelog items, or auditable notes when the flow requires traceability.""";
+
+  /// ```dart
+  /// "Justified tabs"
+  /// ```
+  String get justifiedCardTitle => """Justified tabs""";
+
+  /// ```dart
+  /// "Distributes the main screen areas with equal width to keep the visual hierarchy stable."
+  /// ```
+  String get justifiedCardBody =>
+      """Distributes the main screen areas with equal width to keep the visual hierarchy stable.""";
+
+  /// ```dart
+  /// "Config: type=tabs, justified=true"
+  /// ```
+  String get justifiedCardConfig => """Config: type=tabs, justified=true""";
+
+  /// ```dart
+  /// "Backlog"
+  /// ```
+  String get justifiedBacklog => """Backlog""";
+
+  /// ```dart
+  /// "When each stage carries the same weight, the justified layout helps communicate equal priority across sections."
+  /// ```
+  String get justifiedBacklogBody =>
+      """When each stage carries the same weight, the justified layout helps communicate equal priority across sections.""";
+
+  /// ```dart
+  /// "Delivery"
+  /// ```
+  String get justifiedDelivery => """Delivery""";
+
+  /// ```dart
+  /// "This format works well in compact cards, status boards, and documentation pages with limited horizontal space."
+  /// ```
+  String get justifiedDeliveryBody =>
+      """This format works well in compact cards, status boards, and documentation pages with limited horizontal space.""";
+
+  /// ```dart
+  /// "Risks"
+  /// ```
+  String get justifiedRisks => """Risks""";
+
+  /// ```dart
+  /// "It is also useful to place critical areas side by side without relying on extra helper text to balance the navigation."
+  /// ```
+  String get justifiedRisksBody =>
+      """It is also useful to place critical areas side by side without relying on extra helper text to balance the navigation.""";
+
+  /// ```dart
+  /// "Side pills"
+  /// ```
+  String get sideCardTitle => """Side pills""";
+
+  /// ```dart
+  /// "A good option when navigation behaves like a context menu and content needs more horizontal room."
+  /// ```
+  String get sideCardBody =>
+      """A good option when navigation behaves like a context menu and content needs more horizontal room.""";
+
+  /// ```dart
+  /// "Config: type=pills, placement=left"
+  /// ```
+  String get sideCardConfig => """Config: type=pills, placement=left""";
+
+  /// ```dart
   /// "Tokens"
   /// ```
   String get tokens => """Tokens""";
@@ -1218,21 +1365,185 @@ class TabsPagesMessagesEn extends TabsPagesMessages {
   String get blocked => """Blocked""";
 
   /// ```dart
-  /// "Use tabs to separate documentation, examples, and API notes."
+  /// "Use the side rail to group visual variants, tokens, or example families without overloading the top navigation."
   /// ```
   String get tokensBody =>
-      """Use tabs to separate documentation, examples, and API notes.""";
+      """Use the side rail to group visual variants, tokens, or example families without overloading the top navigation.""";
 
   /// ```dart
-  /// "The component respects Bootstrap and Limitless composition."
+  /// "A side layout works well for dependency-heavy journeys, especially when each pane needs more explanatory text."
   /// ```
   String get flowBody =>
-      """The component respects Bootstrap and Limitless composition.""";
+      """A side layout works well for dependency-heavy journeys, especially when each pane needs more explanatory text.""";
 
   /// ```dart
-  /// "Disabled tab."
+  /// "Disable entries temporarily when a stage depends on permissions, rollout, or data that is not available yet."
   /// ```
-  String get blockedBody => """Disabled tab.""";
+  String get blockedBody =>
+      """Disable entries temporarily when a stage depends on permissions, rollout, or data that is not available yet.""";
+
+  /// ```dart
+  /// "Right-aligned tabs"
+  /// ```
+  String get rightCardTitle => """Right-aligned tabs""";
+
+  /// ```dart
+  /// "Useful for review and approval flows when the main content should remain on the left reading axis."
+  /// ```
+  String get rightCardBody =>
+      """Useful for review and approval flows when the main content should remain on the left reading axis.""";
+
+  /// ```dart
+  /// "Config: type=tabs, placement=right"
+  /// ```
+  String get rightCardConfig => """Config: type=tabs, placement=right""";
+
+  /// ```dart
+  /// "Review"
+  /// ```
+  String get review => """Review""";
+
+  /// ```dart
+  /// "Place checklist, decision notes, and rationale in a dedicated pane to reduce context switching during validation."
+  /// ```
+  String get reviewBody =>
+      """Place checklist, decision notes, and rationale in a dedicated pane to reduce context switching during validation.""";
+
+  /// ```dart
+  /// "Approvers"
+  /// ```
+  String get approvers => """Approvers""";
+
+  /// ```dart
+  /// "The middle tab works well for owners, roles, and acceptance criteria when governance is more formal."
+  /// ```
+  String get approversBody =>
+      """The middle tab works well for owners, roles, and acceptance criteria when governance is more formal.""";
+
+  /// ```dart
+  /// "SLA"
+  /// ```
+  String get sla => """SLA""";
+
+  /// ```dart
+  /// "The third tab can consolidate deadlines, release windows, and escalation rules without competing with the main content."
+  /// ```
+  String get slaBody =>
+      """The third tab can consolidate deadlines, release windows, and escalation rules without competing with the main content.""";
+
+  /// ```dart
+  /// "Projected header"
+  /// ```
+  String get workflowCardTitle => """Projected header""";
+
+  /// ```dart
+  /// "Combines icons, badges, and subtitles in the tab trigger to signal status and workload density."
+  /// ```
+  String get workflowCardBody =>
+      """Combines icons, badges, and subtitles in the tab trigger to signal status and workload density.""";
+
+  /// ```dart
+  /// "Config: template li-tabx-header"
+  /// ```
+  String get workflowCardConfig => """Config: template li-tabx-header""";
+
+  /// ```dart
+  /// "Discovery"
+  /// ```
+  String get discovery => """Discovery""";
+
+  /// ```dart
+  /// "Scope and dependencies"
+  /// ```
+  String get discoveryHint => """Scope and dependencies""";
+
+  /// ```dart
+  /// "Execution"
+  /// ```
+  String get execution => """Execution""";
+
+  /// ```dart
+  /// "Implementation and QA"
+  /// ```
+  String get executionHint => """Implementation and QA""";
+
+  /// ```dart
+  /// "Publish"
+  /// ```
+  String get publish => """Publish""";
+
+  /// ```dart
+  /// "Rollout and communication"
+  /// ```
+  String get publishHint => """Rollout and communication""";
+
+  /// ```dart
+  /// "Use projected headers when a plain label is no longer enough and the tab needs to carry visible operational context."
+  /// ```
+  String get workflowDiscoveryBody =>
+      """Use projected headers when a plain label is no longer enough and the tab needs to carry visible operational context.""";
+
+  /// ```dart
+  /// "Badges and subtitles help signal volume, stage, or criticality without requiring extra legends in the page body."
+  /// ```
+  String get workflowExecutionBody =>
+      """Badges and subtitles help signal volume, stage, or criticality without requiring extra legends in the page body.""";
+
+  /// ```dart
+  /// "This pattern brings the demo closer to the Limitless visual language in richer, status-oriented navigation scenarios."
+  /// ```
+  String get workflowPublishBody =>
+      """This pattern brings the demo closer to the Limitless visual language in richer, status-oriented navigation scenarios.""";
+
+  /// ```dart
+  /// "Lazy loading and teardown"
+  /// ```
+  String get lifecycleCardTitle => """Lazy loading and teardown""";
+
+  /// ```dart
+  /// "Renders panes on demand and removes inactive content from the DOM to reduce cost in heavy tab sets."
+  /// ```
+  String get lifecycleCardBody =>
+      """Renders panes on demand and removes inactive content from the DOM to reduce cost in heavy tab sets.""";
+
+  /// ```dart
+  /// "Config: lazyLoad=true, destroyOnHide=true"
+  /// ```
+  String get lifecycleCardConfig =>
+      """Config: lazyLoad=true, destroyOnHide=true""";
+
+  /// ```dart
+  /// "Dataset"
+  /// ```
+  String get dataset => """Dataset""";
+
+  /// ```dart
+  /// "Open with a light overview and leave expensive steps for the moment the user actually navigates to those tabs."
+  /// ```
+  String get datasetBody =>
+      """Open with a light overview and leave expensive steps for the moment the user actually navigates to those tabs.""";
+
+  /// ```dart
+  /// "Transform"
+  /// ```
+  String get transform => """Transform""";
+
+  /// ```dart
+  /// "lazyLoad prevents complex charts, grids, or forms from mounting before the corresponding tab is first activated."
+  /// ```
+  String get transformBody =>
+      """lazyLoad prevents complex charts, grids, or forms from mounting before the corresponding tab is first activated.""";
+
+  /// ```dart
+  /// "Export"
+  /// ```
+  String get export => """Export""";
+
+  /// ```dart
+  /// "destroyOnHide is useful when inactive content keeps listeners, tables, or state that should not live outside focus."
+  /// ```
+  String get exportBody =>
+      """destroyOnHide is useful when inactive content keeps listeners, tables, or state that should not live outside focus.""";
 }
 
 class ModalPagesMessagesEn extends ModalPagesMessages {
@@ -5253,6 +5564,10 @@ Map<String, String> get messagesEnMap => {
       """pages.overview.featureSectionTitle""": """Featured pages""",
       """pages.overview.featureSectionBody""":
           """Direct links to real showcase pages instead of placeholder cards.""",
+      """pages.overview.featureAngularDartDocsTitle""":
+          """AngularDart documentation""",
+      """pages.overview.featureAngularDartDocsBody""":
+          """Open the setup guide published under site_ngdart.""",
       """pages.overview.featureDatePickerTitle""": """Date Picker""",
       """pages.overview.featureDatePickerBody""":
           """Dedicated page with variations, API, and locale support for single-date selection.""",
@@ -5408,7 +5723,7 @@ Map<String, String> get messagesEnMap => {
       """pages.tabs.breadcrumb""": """Horizontal and vertical tabs""",
       """pages.tabs.cardTitle""": """Pills with custom header""",
       """pages.tabs.overviewIntro""":
-          """The tabs page demonstrates horizontal and vertical composition, custom headers, and disabled states.""",
+          """The tabs page demonstrates horizontal and vertical composition, distributed alignment, custom headers, and on-demand rendering.""",
       """pages.tabs.descriptionBody""":
           """Tabs organize content in layers without breaking page context and work well for documentation, segmented forms, and administrative panels.""",
       """pages.tabs.featureOne""": """Tabs and pills modes.""",
@@ -5422,7 +5737,7 @@ Map<String, String> get messagesEnMap => {
           """Nested tabs should be isolated into subcomponents.""",
       """pages.tabs.previewTitle""": """Visible example""",
       """pages.tabs.previewIntro""":
-          """The example below shows side pills with a custom header and one disabled tab, without polluting the documentation page navigation.""",
+          """The gallery below covers basic layouts, justified variants, side navigation, projected headers, and lifecycle behavior with lazyLoad and destroyOnHide.""",
       """pages.tabs.apiIntro""":
           """Use the component to group related content when section-based navigation makes more sense than stacking cards or opening new routes.""",
       """pages.tabs.apiOne""": """type accepts tabs or pills.""",
@@ -5433,14 +5748,97 @@ Map<String, String> get messagesEnMap => {
           """[active] and [disabled] control state per tab.""",
       """pages.tabs.apiFive""":
           """template li-tabx-header allows custom headers.""",
+      """pages.tabs.galleryLayoutsTitle""": """Core combinations""",
+      """pages.tabs.galleryLayoutsIntro""":
+          """Horizontal and side variations for documentation, operational dashboards, and review areas.""",
+      """pages.tabs.galleryAdvancedTitle""": """Composition and lifecycle""",
+      """pages.tabs.galleryAdvancedIntro""":
+          """Examples with projected headers, richer visual semantics, and panes rendered on demand.""",
+      """pages.tabs.basicCardTitle""": """Basic tabs""",
+      """pages.tabs.basicCardBody""":
+          """A simple horizontal structure to split summary, metrics, and history without leaving the page.""",
+      """pages.tabs.basicCardConfig""": """Config: type=tabs""",
+      """pages.tabs.basicSummary""": """Summary""",
+      """pages.tabs.basicSummaryBody""":
+          """Keep goals, context, and recent decisions in a short opening panel optimized for first-pass reading.""",
+      """pages.tabs.basicMetrics""": """Metrics""",
+      """pages.tabs.basicMetricsBody""":
+          """Use the second tab for indicators that support the narrative without competing with the main content.""",
+      """pages.tabs.basicHistory""": """History""",
+      """pages.tabs.basicHistoryBody""":
+          """Reserve the third tab for events, changelog items, or auditable notes when the flow requires traceability.""",
+      """pages.tabs.justifiedCardTitle""": """Justified tabs""",
+      """pages.tabs.justifiedCardBody""":
+          """Distributes the main screen areas with equal width to keep the visual hierarchy stable.""",
+      """pages.tabs.justifiedCardConfig""":
+          """Config: type=tabs, justified=true""",
+      """pages.tabs.justifiedBacklog""": """Backlog""",
+      """pages.tabs.justifiedBacklogBody""":
+          """When each stage carries the same weight, the justified layout helps communicate equal priority across sections.""",
+      """pages.tabs.justifiedDelivery""": """Delivery""",
+      """pages.tabs.justifiedDeliveryBody""":
+          """This format works well in compact cards, status boards, and documentation pages with limited horizontal space.""",
+      """pages.tabs.justifiedRisks""": """Risks""",
+      """pages.tabs.justifiedRisksBody""":
+          """It is also useful to place critical areas side by side without relying on extra helper text to balance the navigation.""",
+      """pages.tabs.sideCardTitle""": """Side pills""",
+      """pages.tabs.sideCardBody""":
+          """A good option when navigation behaves like a context menu and content needs more horizontal room.""",
+      """pages.tabs.sideCardConfig""": """Config: type=pills, placement=left""",
       """pages.tabs.tokens""": """Tokens""",
       """pages.tabs.flow""": """Flow""",
       """pages.tabs.blocked""": """Blocked""",
       """pages.tabs.tokensBody""":
-          """Use tabs to separate documentation, examples, and API notes.""",
+          """Use the side rail to group visual variants, tokens, or example families without overloading the top navigation.""",
       """pages.tabs.flowBody""":
-          """The component respects Bootstrap and Limitless composition.""",
-      """pages.tabs.blockedBody""": """Disabled tab.""",
+          """A side layout works well for dependency-heavy journeys, especially when each pane needs more explanatory text.""",
+      """pages.tabs.blockedBody""":
+          """Disable entries temporarily when a stage depends on permissions, rollout, or data that is not available yet.""",
+      """pages.tabs.rightCardTitle""": """Right-aligned tabs""",
+      """pages.tabs.rightCardBody""":
+          """Useful for review and approval flows when the main content should remain on the left reading axis.""",
+      """pages.tabs.rightCardConfig""":
+          """Config: type=tabs, placement=right""",
+      """pages.tabs.review""": """Review""",
+      """pages.tabs.reviewBody""":
+          """Place checklist, decision notes, and rationale in a dedicated pane to reduce context switching during validation.""",
+      """pages.tabs.approvers""": """Approvers""",
+      """pages.tabs.approversBody""":
+          """The middle tab works well for owners, roles, and acceptance criteria when governance is more formal.""",
+      """pages.tabs.sla""": """SLA""",
+      """pages.tabs.slaBody""":
+          """The third tab can consolidate deadlines, release windows, and escalation rules without competing with the main content.""",
+      """pages.tabs.workflowCardTitle""": """Projected header""",
+      """pages.tabs.workflowCardBody""":
+          """Combines icons, badges, and subtitles in the tab trigger to signal status and workload density.""",
+      """pages.tabs.workflowCardConfig""":
+          """Config: template li-tabx-header""",
+      """pages.tabs.discovery""": """Discovery""",
+      """pages.tabs.discoveryHint""": """Scope and dependencies""",
+      """pages.tabs.execution""": """Execution""",
+      """pages.tabs.executionHint""": """Implementation and QA""",
+      """pages.tabs.publish""": """Publish""",
+      """pages.tabs.publishHint""": """Rollout and communication""",
+      """pages.tabs.workflowDiscoveryBody""":
+          """Use projected headers when a plain label is no longer enough and the tab needs to carry visible operational context.""",
+      """pages.tabs.workflowExecutionBody""":
+          """Badges and subtitles help signal volume, stage, or criticality without requiring extra legends in the page body.""",
+      """pages.tabs.workflowPublishBody""":
+          """This pattern brings the demo closer to the Limitless visual language in richer, status-oriented navigation scenarios.""",
+      """pages.tabs.lifecycleCardTitle""": """Lazy loading and teardown""",
+      """pages.tabs.lifecycleCardBody""":
+          """Renders panes on demand and removes inactive content from the DOM to reduce cost in heavy tab sets.""",
+      """pages.tabs.lifecycleCardConfig""":
+          """Config: lazyLoad=true, destroyOnHide=true""",
+      """pages.tabs.dataset""": """Dataset""",
+      """pages.tabs.datasetBody""":
+          """Open with a light overview and leave expensive steps for the moment the user actually navigates to those tabs.""",
+      """pages.tabs.transform""": """Transform""",
+      """pages.tabs.transformBody""":
+          """lazyLoad prevents complex charts, grids, or forms from mounting before the corresponding tab is first activated.""",
+      """pages.tabs.export""": """Export""",
+      """pages.tabs.exportBody""":
+          """destroyOnHide is useful when inactive content keeps listeners, tables, or state that should not live outside focus.""",
       """pages.modal.title""": """Components""",
       """pages.modal.subtitle""": """Modal""",
       """pages.modal.breadcrumb""": """Dialogs and layout variations""",

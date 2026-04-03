@@ -7,6 +7,7 @@ import 'package:limitless_ui_example/messages_en.i18n.dart' as en;
   styleUrls: ['fab_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiFabComponent,

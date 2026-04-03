@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml/badge.svg)](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml)
 
-Reusable AngularDart UI components, directives, and browser helpers for applications built on the Limitless visual language and Bootstrap-based CSS: https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css.
+Reusable AngularDart UI components, directives, and browser helpers for applications built on the Limitless visual language and Bootstrap-based CSS: https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css.
 
 This package is browser-only. It depends on `dart:html`, `ngdart`, `ngforms` and `ngrouter`.
 
@@ -92,6 +92,12 @@ The package follows the Limitless visual language, but some visual affordances a
 
 The demo application loads Limitless CSS plus the Phosphor icon font in [example/web/index.html](example/web/index.html). One practical detail is the dropdown caret: if your theme renders `.dropdown-toggle::after` with a glyph that does not exist in the loaded icon font, the caret will appear broken.
 
+For this repository, the canonical icon mapping is always the Phosphor stylesheet loaded from `https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css`.
+
+Do not treat the icon `content` values embedded inside `https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css` as the source of truth. That theme bundle still contains selectors authored against an older Phosphor codepoint map, so components that depend on pseudo-element icons may need local `content` overrides to stay visually correct with the newer `2.0.3` font file actually loaded by the demo.
+
+`LiWizardComponent` is one of those cases: the wizard step icons are overridden in [lib/src/components/wizard/wizard_component.scss](lib/src/components/wizard/wizard_component.scss) so the `current`, `done` and `error` states resolve against Phosphor `2.0.3` instead of the older codepoints baked into `all.min.css`.
+
 The demo fixes that with a global override in [example/web/style.scss](example/web/style.scss):
 
 ```scss
@@ -112,10 +118,10 @@ The demo fixes that with a global override in [example/web/style.scss](example/w
 
 ## Included modules
 
-- Inputs: checkbox, radio, toggle, rating, file upload, currency input, date picker, time picker, date range picker, select, multi-select, typeahead.
-- Data display: datatable, datatable select, tree view.
-- Structure: accordion, collapse, buttons, carousel, modal, tabs, nav.
-- Overlay and menus: dropdown, tooltip, popover, sweet alert, notification toast.
+- Inputs: checkbox, radio, toggle, rating, file upload, currency input, date picker, time picker, date range picker, color picker, select, multi-select, typeahead.
+- Data display: datatable, datatable select, tree view, highlight.
+- Structure: accordion, collapse, buttons, carousel, modal, tabs, nav, wizard, breadcrumbs, pagination, offcanvas, floating action button.
+- Overlay and menus: dropdown, dropdown menu, tooltip, popover, sweet alert, notification toast.
 - Navigation helpers: scrollspy service and directives.
 - Utilities: HTML directives, form value accessors, pipes, PDF generator and XLSX generator.
 
@@ -131,10 +137,13 @@ Beyond visual components, the package also exposes small browser-oriented helper
 - `TextMaskDirective`, `OnlyNumberDirective` and `CustomHrefDirective`: helpers for generic masked inputs, digit-only fields and attribute-driven href synchronization.
 - `CustomNumberValueAccessor`, `DateTimeValueAccessor` and `MinMaxDirective`: form helpers for `<input type="number">`, `<input type="datetime-local">` and constrained numeric inputs.
 
+In `ngdart` 8, template pipes are invoked through `$pipe` instead of the legacy `value | pipeName` syntax. That applies both to built-in pipes such as `date` and to custom pipes registered in the component.
+
 Example:
 
 ```dart
 import 'package:limitless_ui/limitless_ui.dart';
+import 'package:ngdart/angular.dart';
 
 @Component(
   selector: 'demo-form-helpers',
@@ -143,12 +152,13 @@ import 'package:limitless_ui/limitless_ui.dart';
     <input type="number" min="1" max="10" [(ngModel)]="quantity">
     <input type="datetime-local" [(ngModel)]="scheduledAt">
 
-    <p>{{ cpf | cpfFormatter }}</p>
-    <p>{{ cpf | cpfHidden:'asteriskStart' }}</p>
-    <p>{{ note | hideString:3:'#' }}</p>
+    <p>{{ $pipe.date(scheduledAt, 'medium') }}</p>
+    <p>{{ $pipe.cpfFormatter(cpf) }}</p>
+    <p>{{ $pipe.cpfHidden(cpf, 'asteriskStart') }}</p>
+    <p>{{ $pipe.hideString(note, 3, '#') }}</p>
   ''',
   directives: [coreDirectives, formDirectives, CpfMaskDirective],
-  pipes: [CpfFormatterPipe, CpfHiddenPipe, HideStringPipe],
+  pipes: [commonPipes, CpfFormatterPipe, CpfHiddenPipe, HideStringPipe],
 )
 class DemoFormHelpersComponent {
   String cpf = '';
@@ -183,9 +193,28 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiDropdownDirective`, `LiDropdownMenuDirective`, `LiDropdownAnchorDirective`,
   `LiDropdownToggleDirective`, `LiDropdownItemDirective`,
   `LiDropdownButtonItemDirective`, `LiDropdownConfig`.
+- Dropdown menu:
+  `LiDropdownMenuComponent`, `LiDropdownMenuOption`.
+- Breadcrumbs:
+  `LiBreadcrumbComponent`, `LiBreadcrumbItemDirective`,
+  `LiBreadcrumbStartDirective`, `LiBreadcrumbEndDirective`.
 - Nav:
   `LiNavDirective`, `LiNavItemDirective`, `LiNavLinkDirective`,
   `LiNavOutletDirective`, `LiNavContentDirective`, `LiNavConfig`.
+- Pagination:
+  `LiPaginationComponent`, `liPaginationDirectives`,
+  `LiPaginationEllipsisDirective`, `LiPaginationFirstDirective`,
+  `LiPaginationLastDirective`, `LiPaginationNextDirective`,
+  `LiPaginationNumberDirective`, `LiPaginationPagesDirective`,
+  `LiPaginationPreviousDirective`.
+- Wizard:
+  `LiWizardComponent`, `LiWizardStepComponent`, `LiWizardStepChange`,
+  `LiWizardStepHeaderContext`, `LiWizardActionsContext`,
+  `liWizardDirectives`.
+- Offcanvas:
+  `LiOffcanvasComponent`, `LiOffcanvasService`, `LiOffcanvasRef`,
+  `LiOffcanvasDismissReason`, `LiOffcanvasHeaderDirective`,
+  `LiOffcanvasFooterDirective`.
 - Popover and tooltip:
   `LiPopoverComponent`, `LiPopoverDirective`, `LiPopoverConfig`,
   `LiTooltipComponent`, `LiTooltipDirective`, `LiTooltipConfig`.
@@ -197,6 +226,13 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiModalComponent` with lazy content support.
 - Toast:
   `LiToastComponent`, `LiToastStackComponent`, `LiToastService`.
+- Color picker:
+  `LiColorPickerComponent`, `LiColorPickerEvent`, plus palette inputs,
+  selection-history inputs, and `pickerShow`, `pickerHide`, `pickerChange`,
+  `pickerMove`, `pickerDragStart`, `pickerDragStop` streams.
+- Floating action button:
+  `LiFabComponent`, `LiFabAction`, `LiFabShortcut`,
+  `LiFabTriggerDirective`, `LiFabActionDirective`.
 - Typeahead:
   `LiTypeaheadComponent`, `LiTypeaheadItem`, `LiTypeaheadSelectItemEvent`, `LiTypeaheadConfig`, `LiTypeaheadHighlightComponent`.
 - Selection controls and upload:
@@ -218,13 +254,28 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
 - Expanded the demo app with pages for dropdown, nav, popover and scrollspy, plus richer modal, tooltip, accordion and datatable examples.
 - Added tests for the new surface area, including accordion lazy rendering, modal lazy content and overlay/navigation components.
 - Added the new toast component family, toast stack service flow and a dedicated demo page.
+- Refined the toast demo presentation, including a more compact rounded toast variant.
 - Added CI coverage for toast browser tests and documented the AngularDart `.scss` to `.css` stylesheet convention used in this repository.
 - Added `li-typeahead` for autocomplete-style selection with local filtering, keyboard navigation and `ngModel`.
 - Expanded `li-typeahead` with async search, rich result markup, a separate highlight component and injectable defaults via `LiTypeaheadConfig`.
 - Added `li-checkbox`, `li-radio`, `li-toggle`, `li-rating` and `li-file-upload`, plus low-level file select/drop directives.
-- Expanded the demo app with pages for selection controls, rating and file upload.
+- Expanded the demo app with dedicated pages for selection controls, rating, file upload, breadcrumbs, pagination, offcanvas, floating action button, highlight and color picker.
 - Added `li-treeview-select` for dropdown selection over hierarchical data.
-- Expanded `li-treeview-select` with lazy page loading, remote search via `pageLoader(searchTerm)`, `multiple`, `labelBuilder`, `canSelectNode` and projected templates for trigger and node rendering.
+- Expanded `li-treeview-select` with lazy page loading, remote search term forwarding through `TreeViewLoadRequest.searchTerm`, `multiple`, `labelBuilder`, `canSelectNode` and projected templates for trigger and node rendering.
+- Renamed legacy package paths from `br_currency_input` to `currency_input` and aligned select/multi-select internals with the current public API layout.
+- Added `li-breadcrumb`, `li-pagination`, `li-offcanvas`, `li-fab` and `li-color-picker` to the public API and demo application.
+- Expanded `li-color-picker` with palette support, selection history, toggleable palette-only mode and `LiColorPickerEvent` streams.
+- Extended `li-tabsx` with Limitless 4-aligned `underline`, `overline` and `solid` variants, plus richer demo coverage for justified layouts, projected headers, `lazyLoad` and `destroyOnHide`.
+- Added `li-wizard` and `li-wizard-step` for guided multi-step flows styled against the native Limitless 4 `.wizard` markup.
+- Expanded `li-wizard` with `[headerTemplate]` and `[actionsTemplate]`, plus `LiWizardStepHeaderContext` and `LiWizardActionsContext` so hosts can customize labels and footer actions without breaking the native step icons.
+- Refined the example shell with sidebar filtering, navbar route search powered by `li-typeahead`, a shared breadcrumb component based on `li-breadcrumb`, richer tabs examples, a dedicated scrollbar stylesheet and a wizard/form wizard page.
+- Updated the demo i18n bootstrap to detect the browser locale and default to Portuguese only when the language starts with `pt`, falling back to English otherwise.
+- Added an AngularDart documentation link to the example overview and bundled `site_ngdart` for local and GitHub Pages publication.
+- Expanded the package documentation with toast usage, stack placement, AngularDart stylesheet guidance, dependency/contract notes and richer component coverage.
+- Expanded browser and integration coverage for breadcrumbs, offcanvas, pagination, typeahead, treeview select, selection controls, rating, file upload flows, directives, form integrations and wizard navigation.
+- Stabilized focus-sensitive browser scenarios across input, offcanvas and multi-select interactions.
+- Added GitHub Actions Pages deployment plus `scripts/prepare-pages.ps1` to publish a combined artifact with the example app and `site_ngdart`.
+- Improved GitHub Pages path rewriting and pretty URL generation for repository-prefixed `site_ngdart` hosting.
 
 ## Quick examples
 
@@ -613,21 +664,97 @@ References:
 
 ### Tabs
 
-`li-tabsx` organizes content into sections without changing routes. It supports `type="tabs"` or `type="pills"`, horizontal or side placement, `[justified]`, disabled tabs, and projected headers with `template li-tabx-header`.
+`li-tabsx` organizes content into sections without changing routes. It supports `type="tabs"`, `type="highlight"`, `type="underline"`, `type="overline"`, `type="solid"`, or `type="pills"`, horizontal or side placement, `[justified]`, disabled tabs, `[lazyLoad]`, `[destroyOnHide]`, and projected headers with `template li-tabx-header`.
 
 ```html
-<li-tabsx type="pills" placement="left" [justified]="true">
-  <li-tabx header="Tokens" [active]="true">
+<li-tabsx type="underline" [justified]="true">
+  <li-tabx header="Summary" [active]="true">
     <div class="p-3">Content</div>
   </li-tabx>
 
+  <li-tabx header="Activity"></li-tabx>
   <li-tabx [disabled]="true" header="Disabled"></li-tabx>
 </li-tabsx>
 ```
 
-Use tabs for documentation, segmented forms, and administrative panels. When tab content becomes heavy or deeply nested, move it into subcomponents.
+Use tabs for documentation, segmented forms, and administrative panels. `highlight`, `underline`, `overline`, and `solid` map directly to native Limitless 4 tab styles, while `pills` remains useful for side navigation. Use `[lazyLoad]` when inactive panes are expensive to create and `[destroyOnHide]` when they should leave the DOM after tab changes. When tab content becomes heavy or deeply nested, move it into subcomponents.
 
-The demo shows side pills, disabled tabs, and custom headers in [example/lib/src/pages/tabs/tabs_page.dart](example/lib/src/pages/tabs/tabs_page.dart) and [example/lib/src/pages/tabs/tabs_page.html](example/lib/src/pages/tabs/tabs_page.html).
+The demo shows side pills, Limitless 4 variants, disabled tabs, and custom headers in [example/lib/src/pages/tabs/tabs_page.dart](example/lib/src/pages/tabs/tabs_page.dart) and [example/lib/src/pages/tabs/tabs_page.html](example/lib/src/pages/tabs/tabs_page.html).
+
+### Wizard
+
+`li-wizard` covers guided multi-step flows with native Limitless 4 `.wizard` markup, projected `li-wizard-step` bodies, `[(activeIndex)]`, linear navigation, clickable visited steps, guard callbacks through `[beforeChange]` and `[beforeFinish]`, custom step labels through `[headerTemplate]`, and custom footer actions through `[actionsTemplate]`.
+
+```html
+<template #wizardHeader let-ctx>
+  <span class="d-block">{{ ctx.step.title }}</span>
+  <small class="text-muted">{{ ctx.isDone ? 'Completed' : 'Current flow' }}</small>
+</template>
+
+<template #wizardActions let-ctx>
+  <div class="d-flex justify-content-between gap-3 flex-wrap">
+    <span>Step {{ ctx.activeIndex + 1 }} of {{ ctx.stepCount }}</span>
+    <div class="d-flex gap-2">
+      <button *ngIf="ctx.hasPrevious" type="button" [class]="ctx.previousButtonClass" (click)="ctx.goPrevious()">
+        {{ ctx.previousLabel }}
+      </button>
+      <button *ngIf="!ctx.isLastStep" type="button" [class]="ctx.nextButtonClass" (click)="ctx.goNext()">
+        {{ ctx.nextLabel }}
+      </button>
+      <button *ngIf="ctx.isLastStep" type="button" [class]="ctx.finishButtonClass" (click)="ctx.finish()">
+        {{ ctx.finishLabel }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<li-wizard
+  [(activeIndex)]="currentStep"
+  [beforeChange]="canMoveToStep"
+  [beforeFinish]="canFinishWizard"
+  [actionsTemplate]="wizardActions"
+  (finish)="completeWizard(
+    $event,
+  )">
+  <li-wizard-step title="Account" [headerTemplate]="wizardHeader">
+    <div class="p-3">Account details</div>
+  </li-wizard-step>
+
+  <li-wizard-step
+    title="Profile"
+    subtitle="Optional details"
+    [headerTemplate]="wizardHeader">
+    <div class="p-3">Profile details</div>
+  </li-wizard-step>
+
+  <li-wizard-step title="Review">
+    <div class="p-3">Review and submit</div>
+  </li-wizard-step>
+</li-wizard>
+```
+
+`LiWizardStepHeaderContext` exposes `step`, `index`, `displayIndex`, `isCurrent`, `isDone`, `hasError`, and `isDisabled`. `LiWizardActionsContext` exposes `goPrevious()`, `goNext()`, `finish()`, `hasPrevious`, `isLastStep`, `activeIndex`, `stepCount`, and the current labels/classes for the footer buttons. The wizard keeps rendering the numeric marker internally, so custom headers do not break the native Limitless current/done/error icon states.
+
+The dedicated wizard/form wizard example is in [example/lib/src/pages/wizard/wizard_page.dart](example/lib/src/pages/wizard/wizard_page.dart) and [example/lib/src/pages/wizard/wizard_page.html](example/lib/src/pages/wizard/wizard_page.html).
+
+### Color Picker
+
+`li-color-picker` integrates with `[(ngModel)]` and can be used as a compact swatch trigger or a richer picker with alpha, palette rows, selection history, and event streams for open, close, change, move, drag start, and drag stop.
+
+```html
+<li-color-picker
+  [(ngModel)]="brandColor"
+  [showPalette]="true"
+  [showSelectionPalette]="true"
+  [maxSelectionPalette]="6"
+  [togglePaletteOnly]="true"
+  (pickerChange)="onColorChange(
+    $event,
+  )">
+</li-color-picker>
+```
+
+Use `palette` to provide curated swatches, `showSelectionPalette` to keep a short history of recent selections, and `hideAfterPaletteSelect` when the interaction should behave like a fast swatch picker.
 
 ### Date Picker
 
@@ -839,7 +966,7 @@ dart test test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/
 Run browser and AngularDart tests in Chrome:
 
 ```bash
-dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/typeahead/li_typeahead_component_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart
+dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/typeahead/li_typeahead_component_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart test/wizard/li_wizard_component_test.dart
 ```
 
 When validating dependency upgrades for `ngdart`, `ngforms`, or `ngrouter`, add focused runs for the form value accessors and input bindings before broader test suites. Those accessors depend on internal `ngforms` APIs and behavior due to framework limitations, and they are usually the first compatibility boundary to break.
@@ -877,18 +1004,7 @@ dart pub publish --dry-run
 
 ## Demo application
 
-The demo app under [example](example) now includes dedicated routes for:
-
-- accordion
-- datatable
-- dropdown
-- modal
-- nav
-- popover
-- scrollspy
-- toast
-- typeahead
-- tooltip
+The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, datatable, dropdown, fab, file upload, modal, nav, offcanvas, pagination, popover, rating, scrollspy, tabs, toast, treeview, typeahead, tooltip, wizard, and selection-control examples.
 
 Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, and overlay components that depend on browser geometry.
 

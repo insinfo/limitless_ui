@@ -1,5 +1,15 @@
-<ul class="nav nav-tabs-highlight" [class.flex-column]="vertical" [class.nav-justified]="justified"
-    [class.nav-tabs]="type == 'tabs'" [class.nav-pills]="type == 'pills'" (click)="$event.preventDefault()">
+<ul class="nav"
+    [class.flex-column]="vertical"
+    [class.nav-justified]="justified"
+    [class.nav-tabs]="usesTabNavigation"
+    [class.nav-pills]="type == 'pills'"
+    [class.nav-tabs-highlight]="type == 'tabs' || type == 'highlight'"
+    [class.nav-tabs-underline]="type == 'underline'"
+    [class.nav-tabs-overline]="type == 'overline'"
+    [class.nav-tabs-solid]="type == 'solid'"
+    [class.nav-tabs-vertical]="vertical"
+    [class.border]="type == 'solid'"
+    (click)="$event.preventDefault()">
   
     <li *ngFor="let tab of tabs" class="nav-item" [class.active]="tab.active" [class.disabled]="tab.disabled">
         <a href class="nav-link" [class.active]="tab.active" [class.disabled]="tab.disabled" (click)="activateTab(tab)">

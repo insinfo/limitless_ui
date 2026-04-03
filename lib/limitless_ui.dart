@@ -51,6 +51,7 @@ export 'src/components/typeahead/typeahead_highlight_component.dart';
 export 'src/components/dynamic_tabs/dynamic_tab_directive.dart';
 export 'src/components/dynamic_tabs/dynamic_tab_header_directive.dart';
 export 'src/components/dynamic_tabs/dynamic_tabs.dart';
+export 'src/components/wizard/wizard_component.dart';
 export 'src/components/dropdown_menu/dropdown_menu_component.dart';
 export 'src/components/dropdown/dropdown.dart';
 export 'src/components/dropdown/dropdown_config.dart';

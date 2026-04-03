@@ -7,6 +7,7 @@ import 'package:ngrouter/ngrouter.dart';
   styleUrls: ['color_picker_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     formDirectives,
     LiColorPickerComponent,
     RouterLink,

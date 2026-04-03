@@ -8,6 +8,7 @@ import 'tabs_preview_component.dart';
   styleUrls: ['tabs_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiTabxHeaderDirective,
@@ -19,4 +20,5 @@ class TabsPageComponent {
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+  bool get isPt => i18n.isPortuguese;
 }

@@ -189,6 +189,7 @@ class AppComponent implements OnDestroy {
   String get offcanvasLabel => 'Offcanvas';
   String get breadcrumbsLabel => 'Breadcrumbs';
   String get paginationLabel => 'Pagination';
+  String get wizardLabel => 'Wizard';
   String get checkboxRadioLabel =>
       i18n.isPortuguese ? 'Checkbox e radios' : 'Checkboxes and radios';
 
@@ -307,6 +308,11 @@ class AppComponent implements OnDestroy {
               label: 'Typeahead',
               iconClass: 'ph-magnifying-glass',
               url: DemoRoutePaths.typeahead.toUrl(),
+            ),
+            DemoNavItem(
+              label: wizardLabel,
+              iconClass: 'ph-list-numbers',
+              url: DemoRoutePaths.wizard.toUrl(),
             ),
             DemoNavItem(
               label: t.nav.multiSelect,
@@ -434,6 +440,7 @@ class AppComponent implements OnDestroy {
     '/sweet-alert': <String>['sweetalert', 'dialog', 'popup'],
     '/highlight': <String>['codigo', 'syntax', 'highlight'],
     '/typeahead': <String>['autocomplete', 'busca', 'suggestions'],
+    '/wizard': <String>['steps', 'stepper', 'form wizard', 'etapas'],
   };
 
   List<DemoNavbarSearchEntry> _buildNavbarSearchEntries() {

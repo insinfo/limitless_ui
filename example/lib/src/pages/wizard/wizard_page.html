@@ -1,0 +1,399 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ title }} <span class="fw-normal">{{ subtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ overviewIntro }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ featureOne }}</li>
+                    <li>{{ featureTwo }}</li>
+                    <li>{{ featureThree }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ limitOne }}</li>
+                    <li>{{ limitTwo }}</li>
+                    <li>{{ limitThree }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-12">
+                <div class="card wizard-demo-card mb-0">
+                  <div class="card-header bg-white header-elements-inline">
+                    <h6 class="card-title mb-0">Basic example</h6>
+                  </div>
+                  <div class="card-body">
+                    <template #wizardStepHeaderTemplate let-ctx>
+                      <span class="d-block">{{ ctx.step.title }}</span>
+                      <small class="d-block text-muted">{{ wizardStepStateLabel(ctx) }}</small>
+                    </template>
+
+                    <template #wizardActionsTemplate let-ctx>
+                      <div class="wizard-actions-template">
+                        <div class="wizard-actions-template__meta">{{ wizardActionSummary(ctx) }}</div>
+                        <div class="wizard-actions-template__buttons">
+                          <button *ngIf="ctx.hasPrevious"
+                                  type="button"
+                                  [class]="ctx.previousButtonClass"
+                                  (click)="ctx.goPrevious()">
+                            {{ ctx.previousLabel }}
+                          </button>
+                          <button *ngIf="!ctx.isLastStep"
+                                  type="button"
+                                  [class]="ctx.nextButtonClass"
+                                  (click)="ctx.goNext()">
+                            {{ ctx.nextLabel }}
+                          </button>
+                          <button *ngIf="ctx.isLastStep"
+                                  type="button"
+                                  [class]="ctx.finishButtonClass"
+                                  (click)="ctx.finish()">
+                            {{ ctx.finishLabel }}
+                          </button>
+                        </div>
+                      </div>
+                    </template>
+
+                    <li-wizard
+                      [previousLabel]="isPt ? 'Anterior' : 'Previous'"
+                      [nextLabel]="isPt ? 'Próximo' : 'Next'"
+                      [finishLabel]="isPt ? 'Enviar formulário' : 'Submit form'"
+                      [actionsTemplate]="wizardActionsTemplate"
+                      (finish)="onBasicFinish($event)">
+                      <li-wizard-step [title]="isPt ? 'Dados pessoais' : 'Personal data'"
+                                      [headerTemplate]="wizardStepHeaderTemplate">
+                        <div class="row g-3">
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Selecione a localidade:' : 'Select location:' }}</label>
+                            <select class="form-select" [(ngModel)]="basicLocation" name="basicLocation">
+                              <option value="">{{ isPt ? 'Selecione' : 'Select' }}</option>
+                              <option *ngFor="let option of locationOptions" [value]="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Selecione a posição:' : 'Select position:' }}</label>
+                            <select class="form-select" [(ngModel)]="basicPosition" name="basicPosition">
+                              <option value="">{{ isPt ? 'Selecione' : 'Select' }}</option>
+                              <option *ngFor="let option of positionOptions" [value]="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Nome do candidato:' : 'Applicant name:' }}</label>
+                            <input class="form-control" [(ngModel)]="basicName" name="basicName" [placeholder]="isPt ? 'Victoria Baker' : 'Victoria Baker'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Endereço de e-mail:' : 'Email address:' }}</label>
+                            <input class="form-control" [(ngModel)]="basicEmail" name="basicEmail" [placeholder]="isPt ? 'voce@empresa.com' : 'your@email.com'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Telefone:' : 'Phone #:' }}</label>
+                            <input class="form-control" [(ngModel)]="basicPhone" name="basicPhone" [placeholder]="'+99-99-9999-9999'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Data de nascimento:' : 'Date of birth:' }}</label>
+                            <div class="row g-2">
+                              <div class="col-5">
+                                <select class="form-select" [(ngModel)]="basicBirthMonth" name="basicBirthMonth">
+                                  <option *ngFor="let option of monthValues" [value]="option">{{ monthLabel(option) }}</option>
+                                </select>
+                              </div>
+                              <div class="col-3">
+                                <select class="form-select" [(ngModel)]="basicBirthDay" name="basicBirthDay">
+                                  <option *ngFor="let option of days" [value]="option">{{ option }}</option>
+                                </select>
+                              </div>
+                              <div class="col-4">
+                                <select class="form-select" [(ngModel)]="basicBirthYear" name="basicBirthYear">
+                                  <option *ngFor="let option of years" [value]="option">{{ option }}</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li-wizard-step>
+
+                      <li-wizard-step [title]="isPt ? 'Formação' : 'Your education'"
+                                      [headerTemplate]="wizardStepHeaderTemplate">
+                        <div class="row g-3">
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Formação principal:' : 'Degree:' }}</label>
+                            <input class="form-control" [(ngModel)]="basicDegree" name="basicDegree" [placeholder]="isPt ? 'Ciência da computação' : 'Computer science'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Instituição:' : 'University:' }}</label>
+                            <input class="form-control" [(ngModel)]="basicUniversity" name="basicUniversity" [placeholder]="isPt ? 'Universidade Federal' : 'State university'">
+                          </div>
+                        </div>
+                      </li-wizard-step>
+
+                      <li-wizard-step [title]="isPt ? 'Sua experiência' : 'Your experience'"
+                                      [headerTemplate]="wizardStepHeaderTemplate">
+                        <div class="row g-3">
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Empresa:' : 'Company:' }}</label>
+                            <input class="form-control" [(ngModel)]="basicCompany" name="basicCompany" [placeholder]="isPt ? 'Nome da empresa' : 'Company name'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Cargo:' : 'Position:' }}</label>
+                            <input class="form-control" [(ngModel)]="basicRole" name="basicRole" [placeholder]="isPt ? 'Especialista sênior' : 'Sales Engineer'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'De:' : 'From:' }}</label>
+                            <div class="row g-2">
+                              <div class="col-6">
+                                <select class="form-select" [(ngModel)]="basicFromMonth" name="basicFromMonth">
+                                  <option *ngFor="let option of monthValues" [value]="option">{{ monthLabel(option) }}</option>
+                                </select>
+                              </div>
+                              <div class="col-6">
+                                <select class="form-select" [(ngModel)]="basicFromYear" name="basicFromYear">
+                                  <option *ngFor="let option of years" [value]="option">{{ option }}</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Até:' : 'To:' }}</label>
+                            <div class="row g-2">
+                              <div class="col-6">
+                                <select class="form-select" [(ngModel)]="basicToMonth" name="basicToMonth">
+                                  <option *ngFor="let option of monthValues" [value]="option">{{ monthLabel(option) }}</option>
+                                </select>
+                              </div>
+                              <div class="col-6">
+                                <select class="form-select" [(ngModel)]="basicToYear" name="basicToYear">
+                                  <option *ngFor="let option of years" [value]="option">{{ option }}</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Descrição resumida:' : 'Brief description:' }}</label>
+                            <textarea class="form-control wizard-textarea" [(ngModel)]="basicDescription" name="basicDescription" [placeholder]="isPt ? 'Tarefas e responsabilidades' : 'Tasks and responsibilities'"></textarea>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Recomendações:' : 'Recommendations:' }}</label>
+                            <input class="form-control" type="file" name="basicRecommendationFile">
+                            <div class="wizard-field-note">{{ isPt ? 'Formatos aceitos: pdf, doc. Tamanho máximo 2Mb' : 'Accepted formats: pdf, doc. Max file size 2Mb' }}</div>
+                          </div>
+                        </div>
+                      </li-wizard-step>
+
+                      <li-wizard-step [title]="isPt ? 'Informações adicionais' : 'Additional info'"
+                                      [headerTemplate]="wizardStepHeaderTemplate">
+                        <div class="row g-3">
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Currículo do candidato:' : 'Applicant resume:' }}</label>
+                            <input class="form-control" type="file" name="basicResumeFile">
+                            <div class="wizard-field-note">{{ isPt ? 'Formatos aceitos: pdf, doc. Tamanho máximo 2Mb' : 'Accepted formats: pdf, doc. Max file size 2Mb' }}</div>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Onde encontrou a vaga?' : 'Where did you find us?' }}</label>
+                            <select class="form-select" [(ngModel)]="basicSource" name="basicSource">
+                              <option value="">{{ isPt ? 'Selecione' : 'Select' }}</option>
+                              <option *ngFor="let option of sourceOptions" [value]="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label d-block mb-3">{{ isPt ? 'Disponibilidade:' : 'Availability:' }}</label>
+                            <div class="wizard-radio-stack">
+                              <label class="form-check">
+                                <input class="form-check-input" type="radio" name="basicAvailability" [(ngModel)]="basicAvailabilityImmediate">
+                                <span class="form-check-label">{{ isPt ? 'Imediatamente' : 'Immediately' }}</span>
+                              </label>
+                              <label class="form-check">
+                                <input class="form-check-input" type="radio" name="basicAvailability" [(ngModel)]="basicAvailabilityOneTwoWeeks">
+                                <span class="form-check-label">{{ isPt ? '1 - 2 semanas' : '1 - 2 weeks' }}</span>
+                              </label>
+                              <label class="form-check">
+                                <input class="form-check-input" type="radio" name="basicAvailability" [(ngModel)]="basicAvailabilityThreeFourWeeks">
+                                <span class="form-check-label">{{ isPt ? '3 - 4 semanas' : '3 - 4 weeks' }}</span>
+                              </label>
+                              <label class="form-check mb-0">
+                                <input class="form-check-input" type="radio" name="basicAvailability" [(ngModel)]="basicAvailabilityOneMonthPlus">
+                                <span class="form-check-label">{{ isPt ? 'Mais de 1 mês' : 'More than 1 month' }}</span>
+                              </label>
+                            </div>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Informações adicionais:' : 'Additional information:' }}</label>
+                            <textarea class="form-control wizard-textarea" [(ngModel)]="basicAdditionalInfo" name="basicAdditionalInfo" [placeholder]="isPt ? 'Se quiser adicionar qualquer informação, faça isso aqui.' : 'If you want to add any info, do it here.'"></textarea>
+                          </div>
+                        </div>
+
+                        <div class="wizard-review-surface mt-4">
+                          <h6 class="mb-3">{{ isPt ? 'Resumo do fluxo' : 'Flow summary' }}</h6>
+                          <div class="row g-3 small text-muted">
+                            <div class="col-md-6"><strong>{{ isPt ? 'Nome:' : 'Name:' }}</strong> {{ basicName.isEmpty ? '-' : basicName }}</div>
+                            <div class="col-md-6"><strong>{{ isPt ? 'Posição:' : 'Position:' }}</strong> {{ basicPosition.isEmpty ? '-' : basicPosition }}</div>
+                            <div class="col-md-6"><strong>{{ isPt ? 'Empresa:' : 'Company:' }}</strong> {{ basicCompany.isEmpty ? '-' : basicCompany }}</div>
+                            <div class="col-md-6"><strong>{{ isPt ? 'Origem:' : 'Source:' }}</strong> {{ basicSource.isEmpty ? '-' : basicSource }}</div>
+                          </div>
+                          <div *ngIf="basicSummary.isNotEmpty" class="alert alert-success mt-3 mb-0">
+                            <strong>{{ basicSubmittedLabel }}</strong> {{ basicSummary }}
+                          </div>
+                        </div>
+                      </li-wizard-step>
+                    </li-wizard>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="card wizard-demo-card mb-0">
+                  <div class="card-header bg-white header-elements-inline">
+                    <h6 class="card-title mb-0">Wizard with validation</h6>
+                  </div>
+                  <div class="card-body">
+                    <li-wizard
+                      [previousLabel]="isPt ? 'Anterior' : 'Previous'"
+                      [nextLabel]="isPt ? 'Próximo' : 'Next'"
+                      [finishLabel]="isPt ? 'Enviar formulário' : 'Submit form'"
+                      [beforeChange]="handleValidationChange"
+                      [beforeFinish]="handleValidationFinish"
+                      (finish)="onValidationFinish($event)">
+                      <li-wizard-step [title]="isPt ? 'Dados pessoais' : 'Personal data'" [error]="validationErrors[0]">
+                        <div class="row g-3">
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Localidade *' : 'Location *' }}</label>
+                            <select class="form-select" [(ngModel)]="validationLocation" name="validationLocation" [class.is-invalid]="validationErrors[0] && validationLocation.trim().isEmpty">
+                              <option value="">{{ isPt ? 'Selecione' : 'Select' }}</option>
+                              <option *ngFor="let option of locationOptions" [value]="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Posição *' : 'Position *' }}</label>
+                            <select class="form-select" [(ngModel)]="validationPosition" name="validationPosition" [class.is-invalid]="validationErrors[0] && validationPosition.trim().isEmpty">
+                              <option value="">{{ isPt ? 'Selecione' : 'Select' }}</option>
+                              <option *ngFor="let option of positionOptions" [value]="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Nome *' : 'Name *' }}</label>
+                            <input class="form-control" [(ngModel)]="validationName" name="validationName" [class.is-invalid]="validationErrors[0] && validationName.trim().isEmpty" [placeholder]="'John Doe'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'E-mail *' : 'Email *' }}</label>
+                            <input class="form-control" [(ngModel)]="validationEmail" name="validationEmail" [class.is-invalid]="validationErrors[0] && validationEmail.trim().isEmpty" [placeholder]="isPt ? 'voce@empresa.com' : 'your@email.com'">
+                          </div>
+                        </div>
+                      </li-wizard-step>
+
+                      <li-wizard-step [title]="isPt ? 'Formação' : 'Your education'" [error]="validationErrors[1]">
+                        <div class="row g-3">
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Formação *' : 'Degree *' }}</label>
+                            <input class="form-control" [(ngModel)]="validationDegree" name="validationDegree" [class.is-invalid]="validationErrors[1] && validationDegree.trim().isEmpty" [placeholder]="isPt ? 'Engenharia de software' : 'Software engineering'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Instituição *' : 'University *' }}</label>
+                            <input class="form-control" [(ngModel)]="validationUniversity" name="validationUniversity" [class.is-invalid]="validationErrors[1] && validationUniversity.trim().isEmpty" [placeholder]="isPt ? 'Universidade Federal' : 'State university'">
+                          </div>
+                        </div>
+                      </li-wizard-step>
+
+                      <li-wizard-step [title]="isPt ? 'Sua experiência' : 'Your experience'" [error]="validationErrors[2]">
+                        <div class="row g-3">
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Empresa *' : 'Company *' }}</label>
+                            <input class="form-control" [(ngModel)]="validationCompany" name="validationCompany" [class.is-invalid]="validationErrors[2] && validationCompany.trim().isEmpty" [placeholder]="'Limitless Labs'">
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Cargo *' : 'Position *' }}</label>
+                            <input class="form-control" [(ngModel)]="validationRole" name="validationRole" [class.is-invalid]="validationErrors[2] && validationRole.trim().isEmpty" [placeholder]="isPt ? 'Tech lead' : 'Tech lead'">
+                          </div>
+                        </div>
+                      </li-wizard-step>
+
+                      <li-wizard-step [title]="isPt ? 'Informações adicionais' : 'Additional info'" [error]="validationErrors[3]">
+                        <div class="row g-3">
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Origem *' : 'Source *' }}</label>
+                            <select class="form-select" [(ngModel)]="validationSource" name="validationSource" [class.is-invalid]="validationErrors[3] && validationSource.trim().isEmpty">
+                              <option value="">{{ isPt ? 'Selecione' : 'Select' }}</option>
+                              <option *ngFor="let option of sourceOptions" [value]="option">{{ option }}</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-6">
+                            <label class="form-label">{{ isPt ? 'Disponibilidade *' : 'Availability *' }}</label>
+                            <input class="form-control" [(ngModel)]="validationAvailability" name="validationAvailability" [class.is-invalid]="validationErrors[3] && validationAvailability.trim().isEmpty" [placeholder]="isPt ? 'Imediata' : 'Immediate'">
+                          </div>
+                        </div>
+
+                        <div *ngIf="validationStatus.isNotEmpty" class="alert alert-info mt-3 mb-0">
+                          <strong>{{ validationStatusLabel }}</strong> {{ validationStatus }}
+                        </div>
+                      </li-wizard-step>
+                    </li-wizard>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
+            <ul class="mb-3 ps-3">
+              <li><code>activeIndex</code> e <code>(activeIndexChange)</code> permitem controle programático do passo atual.</li>
+              <li><code>beforeChange</code> bloqueia a navegação para frente quando a aplicação precisar validar o passo corrente.</li>
+              <li><code>beforeFinish</code> permite validar a etapa final antes do envio.</li>
+              <li><code>allowStepClick</code> e <code>linear</code> controlam o comportamento de clique nos steps já visitados.</li>
+              <li><code>[headerTemplate]</code> permite customizar o texto do cabeçalho mantendo o número e os ícones do wizard.</li>
+              <li><code>[actionsTemplate]</code> permite substituir o rodapé padrão preservando os callbacks de navegação.</li>
+            </ul>
+
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-wizard
+  [previousLabel]="'Anterior'"
+  [nextLabel]="'Próximo'"
+  [finishLabel]="'Enviar'"
+  [actionsTemplate]="wizardActionsTemplate"
+  [beforeChange]="validateStep"
+  (finish)="submitWizard($event)"&gt;
+  &lt;li-wizard-step
+      title="Dados pessoais"
+      [headerTemplate]="wizardStepHeaderTemplate"&gt;
+    &lt;input class="form-control" [(ngModel)]="name" name="name"&gt;
+  &lt;/li-wizard-step&gt;
+
+  &lt;li-wizard-step title="Confirmação" [error]="hasReviewError"&gt;
+    &lt;div class="alert alert-info"&gt;Revisão final&lt;/div&gt;
+  &lt;/li-wizard-step&gt;
+&lt;/li-wizard&gt;</code></pre>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

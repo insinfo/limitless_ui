@@ -1,10 +1,16 @@
 
+import 'dart:html';
+
 import 'package:limitless_ui_example/messages.i18n.dart';
 import 'package:limitless_ui_example/messages_en.i18n.dart' as en;
 
 enum DemoLocale { pt, en }
 
 class DemoI18nService {
+  DemoI18nService() {
+    useBrowserLocale();
+  }
+
   DemoLocale _locale = DemoLocale.pt;
   Messages _messages = Messages();
 
@@ -21,5 +27,23 @@ class DemoI18nService {
   void useEnglish() {
     _locale = DemoLocale.en;
     _messages = en.MessagesEn();
+  }
+
+  void useBrowserLocale() {
+    final navigator = window.navigator as dynamic;
+    final List<dynamic>? languages = navigator.languages as List<dynamic>?;
+    final locale = (languages != null && languages.isNotEmpty
+            ? languages.first?.toString()
+            : window.navigator.language)
+        ?.toLowerCase() ??
+        'en';
+    final language = locale.split(RegExp('[-_]')).first;
+
+    if (language == 'pt') {
+      usePortuguese();
+      return;
+    }
+
+    useEnglish();
   }
 }

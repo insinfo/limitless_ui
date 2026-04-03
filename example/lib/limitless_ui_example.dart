@@ -4,6 +4,7 @@ export  'package:limitless_ui/limitless_ui.dart';
 
 export 'messages.i18n.dart';
 export 'src/i18n/demo_i18n_service.dart';
+export 'src/shared/demo_page_breadcrumb_component.dart';
 
 export 'src/shared/routes/route_paths.dart';
 

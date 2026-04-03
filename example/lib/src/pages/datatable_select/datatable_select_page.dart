@@ -9,6 +9,7 @@ import '../datatable/datatable_demo_service.dart';
   styleUrls: ['datatable_select_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     formDirectives,
     LiDatatableSelectComponent,
     LiDatatableSelectTriggerDirective,

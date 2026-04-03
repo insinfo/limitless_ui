@@ -8,6 +8,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['popover_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiPopoverComponent,

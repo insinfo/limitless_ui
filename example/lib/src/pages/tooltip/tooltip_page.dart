@@ -48,6 +48,7 @@ class TooltipGlobalConfigDemoComponent {
   encapsulation: ViewEncapsulation.none,
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiTooltipComponent,

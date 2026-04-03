@@ -85,6 +85,8 @@ pages:
     showcaseBody: Carousel, tooltip e datatable em layout editorial.
     featureSectionTitle: Páginas em destaque
     featureSectionBody: Links diretos para telas reais da vitrine, sem cards fictícios.
+    featureAngularDartDocsTitle: "Documentação AngularDart"
+    featureAngularDartDocsBody: "Abrir o guia de setup publicado em site_ngdart."
     featureDatePickerTitle: Date Picker
     featureDatePickerBody: Página dedicada com variações, API e locale do seletor de data única.
     featureTimePickerTitle: Time Picker
@@ -195,7 +197,7 @@ pages:
     subtitle: Abas
     breadcrumb: Abas horizontais e verticais
     cardTitle: Pills com header customizado
-    overviewIntro: "A página de tabs demonstra composição horizontal, vertical, cabeçalhos customizados e estados desabilitados."
+    overviewIntro: "A página de tabs demonstra composição horizontal, vertical, alinhamento distribuído, cabeçalhos customizados e renderização sob demanda."
     descriptionBody: "Tabs organizam conteúdo em camadas sem quebrar o contexto da tela e funcionam bem para documentação, formulários segmentados e painéis administrativos."
     featureOne: "Modo tabs e pills."
     featureTwo: "Posicionamento horizontal ou lateral."
@@ -204,19 +206,74 @@ pages:
     limitTwo: "Conteúdo longo demais pede hierarquia adicional."
     limitThree: "Abas aninhadas devem ser isoladas em subcomponentes."
     previewTitle: "Exemplo visível"
-    previewIntro: "O exemplo abaixo mostra pills laterais com cabeçalho customizado e uma aba desabilitada, sem contaminar a navegação da página de documentação."
+    previewIntro: "A galeria abaixo cobre layouts básicos, versões justificadas, navegação lateral, headers projetados e o ciclo de vida com lazyLoad e destroyOnHide."
     apiIntro: "Use o componente para agrupar conteúdo relacionado quando a navegação por seções fizer mais sentido do que empilhar cards ou abrir novas rotas."
     apiOne: "type aceita tabs ou pills."
     apiTwo: "placement controla a posição das abas, como topo ou lateral."
     apiThree: "[justified] distribui os gatilhos de forma uniforme."
     apiFour: "[active] e [disabled] controlam estado por aba."
     apiFive: "template li-tabx-header permite cabeçalhos customizados."
+    galleryLayoutsTitle: "Combinações principais"
+    galleryLayoutsIntro: "Variações horizontais e laterais para documentação, painéis operacionais e áreas de revisão."
+    galleryAdvancedTitle: "Composição e ciclo de vida"
+    galleryAdvancedIntro: "Exemplos com header projetado, semântica visual mais rica e painéis renderizados sob demanda."
+    basicCardTitle: "Tabs básicas"
+    basicCardBody: "Estrutura horizontal simples para separar resumo, métricas e histórico sem sair da página."
+    basicCardConfig: "Config: type=tabs"
+    basicSummary: "Resumo"
+    basicSummaryBody: "Centralize objetivos, contexto e decisões recentes em um primeiro painel curto, ótimo para leitura inicial."
+    basicMetrics: "Métricas"
+    basicMetricsBody: "Use a segunda aba para indicadores que complementam a leitura, sem competir com a narrativa principal."
+    basicHistory: "Histórico"
+    basicHistoryBody: "Reserve a terceira aba para eventos, changelog ou observações auditáveis quando o fluxo pedir rastreabilidade."
+    justifiedCardTitle: "Tabs justificadas"
+    justifiedCardBody: "Distribui as áreas principais da tela com a mesma largura para manter hierarquia visual estável."
+    justifiedCardConfig: "Config: type=tabs, justified=true"
+    justifiedBacklog: "Backlog"
+    justifiedBacklogBody: "Quando cada etapa tem o mesmo peso, a versão justificada ajuda a comunicar prioridade equivalente entre seções."
+    justifiedDelivery: "Entregas"
+    justifiedDeliveryBody: "Esse formato funciona bem em cards compactos, status boards e páginas de documentação com pouco espaço horizontal."
+    justifiedRisks: "Riscos"
+    justifiedRisksBody: "Também é útil para destacar áreas críticas lado a lado, sem depender de texto auxiliar para equilibrar a navegação."
+    sideCardTitle: "Pills laterais"
+    sideCardBody: "Boa opção quando a navegação funciona como menu de contexto e o conteúdo precisa de mais largura."
+    sideCardConfig: "Config: type=pills, placement=left"
     tokens: Tokens
     flow: Fluxo
     blocked: Bloqueada
-    tokensBody: Use tabs para separar documentação, exemplos e notas de API.
-    flowBody: O componente respeita a composição do Bootstrap e do Limitless.
-    blockedBody: Tab desabilitada.
+    tokensBody: "Use a coluna lateral para agrupar variantes, tokens visuais ou famílias de exemplos sem poluir o topo da página."
+    flowBody: "A disposição lateral favorece jornadas com várias dependências, especialmente quando cada painel precisa de mais texto."
+    blockedBody: "Desabilite entradas temporariamente quando uma etapa depender de permissões, rollout ou dados ainda indisponíveis."
+    rightCardTitle: "Tabs à direita"
+    rightCardBody: "Útil para revisão e aprovação quando o conteúdo principal deve permanecer no eixo esquerdo da leitura."
+    rightCardConfig: "Config: type=tabs, placement=right"
+    review: "Revisão"
+    reviewBody: "Coloque checklist, parecer e justificativa em um painel dedicado para reduzir troca de contexto durante a validação."
+    approvers: "Aprovadores"
+    approversBody: "A aba intermediária funciona bem para responsáveis, papéis e critérios de aceite quando há governança formal."
+    sla: "SLA"
+    slaBody: "A terceira aba pode consolidar prazo, janela de publicação e regras de escalonamento sem disputar atenção com o conteúdo central."
+    workflowCardTitle: "Header projetado"
+    workflowCardBody: "Combina ícones, badges e subtítulos no gatilho da aba para sinalizar status e densidade de trabalho."
+    workflowCardConfig: "Config: template li-tabx-header"
+    discovery: "Descoberta"
+    discoveryHint: "Escopo e dependências"
+    execution: "Execução"
+    executionHint: "Implementação e QA"
+    publish: "Publicação"
+    publishHint: "Rollout e comunicação"
+    workflowDiscoveryBody: "Use headers projetados quando o rótulo simples já não basta e a aba precisa carregar contexto operacional visível."
+    workflowExecutionBody: "Badges e subtítulos ajudam a sinalizar volume, estágio ou criticidade sem exigir legendas extras no corpo da página."
+    workflowPublishBody: "Esse padrão aproxima a demo do visual do Limitless em cenários com navegação mais rica e foco em status."
+    lifecycleCardTitle: "Carga tardia e teardown"
+    lifecycleCardBody: "Renderiza painéis sob demanda e remove conteúdo inativo do DOM para reduzir custo em abas pesadas."
+    lifecycleCardConfig: "Config: lazyLoad=true, destroyOnHide=true"
+    dataset: "Dataset"
+    datasetBody: "Abra o primeiro painel com visão geral leve e deixe etapas mais custosas para o momento em que o usuário realmente navegar até elas."
+    transform: "Transformação"
+    transformBody: "lazyLoad evita montar gráficos, grids ou formulários complexos antes da primeira ativação da aba correspondente."
+    export: "Exportação"
+    exportBody: "destroyOnHide é útil quando o conteúdo inativo mantém listeners, tabelas ou estados que não precisam persistir fora de foco."
   modal:
     title: Componentes
     subtitle: Modal

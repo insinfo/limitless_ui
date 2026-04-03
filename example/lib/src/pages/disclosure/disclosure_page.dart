@@ -6,6 +6,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['disclosure_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiAccordionComponent,
     LiAccordionItemComponent,
     LiModalComponent,

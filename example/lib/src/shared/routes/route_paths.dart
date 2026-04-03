@@ -14,6 +14,7 @@ class DemoRoutePaths {
   static final select = RoutePath(path: 'select');
   static final rating = RoutePath(path: 'rating');
   static final typeahead = RoutePath(path: 'typeahead');
+  static final wizard = RoutePath(path: 'wizard');
   static final multiSelect = RoutePath(path: 'multi-select');
   static final currency = RoutePath(path: 'currency');
   static final colorPicker = RoutePath(path: 'color-picker');

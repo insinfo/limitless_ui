@@ -16,6 +16,13 @@ responda sempre em portugues
 - Do not create or commit manual duplicate `.css` files next to component `.scss` sources just to satisfy `styleUrls`.
 - If a component has `toast_component.scss`, the correct AngularDart annotation is `styleUrls: ['toast_component.css']`.
 
+## Icon mapping source of truth
+
+- In this repository, icon codepoints must follow `https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css`.
+- Do not assume the `content` values embedded inside `https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css` are correct for the font actually loaded by the demo.
+- When a Limitless selector from `all.min.css` points to an older Phosphor codepoint map, add the narrowest possible override in the component or demo stylesheet so the rendered icon matches Phosphor `2.0.3`.
+- Treat the Phosphor `2.0.3` stylesheet as authoritative for pseudo-element icons such as dropdown carets, wizard step states, validation glyphs, and similar `content:`-based UI markers.
+
 ## i18n YAML rules
 
 - In `example/lib/messages.i18n.yaml` and `example/lib/messages_en.i18n.yaml`, always wrap text values in double quotes.
@@ -32,6 +39,13 @@ responda sempre em portugues
   - or force an immediate refresh only in the narrowest possible place when the async update completes;
   - or restructure the flow so the data is ready before the deferred child is created.
 - Never claim a bug is fixed just because `markForCheck()` was added to a default-strategy page. Confirm the rendered DOM actually updates without extra user interaction.
+
+## AngularDart emulated encapsulation and host selectors
+
+- In emulated view encapsulation (the default), AngularDart rewrites each simple selector to include a `[_ngcontent-xxx]` attribute. A class applied to the **host element** via `@HostBinding('class.foo')` lives on the `_nghost-xxx` attribute, **not** `_ngcontent-xxx`.
+- Therefore, a component SCSS selector like `.foo > .child` will be compiled to `.foo[_ngcontent-xxx] > .child[_ngcontent-xxx]` and **will never match** the host element.
+- When you need to select from the host element downward, use `:host > .child` instead of `.foo > .child`. AngularDart compiles `:host` to `[_nghost-xxx]`, which correctly targets the host.
+- Real example: the wizard component had `@HostBinding('class.wizard')` on its host, but `.wizard > .steps > ul > li .number::after` in the SCSS never matched. Replacing `.wizard >` with `:host >` fixed the icon rendering.
 
 ## Popover-specific lesson learned
 

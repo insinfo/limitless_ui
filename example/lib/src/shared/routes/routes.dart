@@ -66,6 +66,8 @@ import 'package:limitless_ui_example/src/pages/sweet_alert/sweet_alert_page.temp
   as sweet_alert_page;
 import 'package:limitless_ui_example/src/pages/typeahead/typeahead_page.template.dart'
     as typeahead_page;
+import 'package:limitless_ui_example/src/pages/wizard/wizard_page.template.dart'
+  as wizard_page;
 import 'package:limitless_ui_example/src/pages/dropdown/dropdown_page.template.dart'
     as dropdown_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
@@ -143,6 +145,11 @@ class DemoRoutes {
   static final typeahead = RouteDefinition(
     routePath: DemoRoutePaths.typeahead,
     component: typeahead_page.TypeaheadPageComponentNgFactory,
+  );
+
+  static final wizard = RouteDefinition(
+    routePath: DemoRoutePaths.wizard,
+    component: wizard_page.WizardPageComponentNgFactory,
   );
 
   static final multiSelect = RouteDefinition(
@@ -279,6 +286,7 @@ class DemoRoutes {
     select,
     rating,
     typeahead,
+    wizard,
     multiSelect,
     currency,
     colorPicker,

@@ -59,6 +59,7 @@ class TypeaheadGlobalConfigDemoComponent {
   styleUrls: ['typeahead_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     formDirectives,
     LiTabsComponent,
     LiTabxDirective,

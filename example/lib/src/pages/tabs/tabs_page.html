@@ -7,9 +7,7 @@
       </div>
     </div>
     <div class="page-header-content d-lg-flex border-top">
-      <div class="breadcrumb py-2">
-        <span class="breadcrumb-item active">{{ t.pages.tabs.breadcrumb }}</span>
-      </div>
+      <demo-page-breadcrumb [currentLabel]="t.pages.tabs.breadcrumb"></demo-page-breadcrumb>
     </div>
   </div>
 
@@ -65,6 +63,7 @@
         <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
             <p class="text-muted mb-3">{{ t.pages.tabs.apiIntro }}</p>
+            <p class="text-muted mb-3">{{ isPt ? 'Além de tabs e pills, li-tabsx agora aceita os tipos underline, overline e solid usando as classes nativas do Limitless 4.' : 'Besides tabs and pills, li-tabsx now accepts underline, overline, and solid types using the native Limitless 4 classes.' }}</p>
             <ul class="mb-3 ps-3">
               <li>{{ t.pages.tabs.apiOne }}</li>
               <li>{{ t.pages.tabs.apiTwo }}</li>
@@ -73,12 +72,17 @@
               <li>{{ t.pages.tabs.apiFive }}</li>
             </ul>
 
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-tabsx type="pills" placement="left" [justified]="true"&gt;
-  &lt;li-tabx header="Tokens" [active]="true"&gt;
+            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-tabsx type="underline"&gt;
+  &lt;li-tabx header="Summary" [active]="true"&gt;
     &lt;div class="p-3"&gt;Conteúdo&lt;/div&gt;
   &lt;/li-tabx&gt;
 
-  &lt;li-tabx header="Bloqueada" [disabled]="true"&gt;&lt;/li-tabx&gt;
+  &lt;li-tabx header="Activity"&gt;&lt;/li-tabx&gt;
+&lt;/li-tabsx&gt;
+
+&lt;li-tabsx type="solid" [justified]="true"&gt;
+  &lt;li-tabx header="Operation" [active]="true"&gt;&lt;/li-tabx&gt;
+  &lt;li-tabx header="Monitoring"&gt;&lt;/li-tabx&gt;
 &lt;/li-tabsx&gt;</code></pre>
           </div>
         </li-tabx>

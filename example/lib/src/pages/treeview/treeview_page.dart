@@ -9,6 +9,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['treeview_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     formDirectives,
     LiTabsComponent,
     LiTabxDirective,

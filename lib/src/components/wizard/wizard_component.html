@@ -1,0 +1,54 @@
+<div class="steps" *ngIf="hasSteps">
+  <ul>
+    <li *ngFor="let step of steps; let i = index"
+        [class.current]="i == activeIndex"
+        [class.done]="i < activeIndex || (actionsContext.isLastStep && i == activeIndex && stepHeaderContexts[i].isDone)"
+        [class.error]="step.error"
+        [class.disabled]="step.disabled">
+      <a href
+         [attr.aria-current]="i == activeIndex ? 'step' : null"
+         [attr.aria-disabled]="step.disabled ? 'true' : null"
+         (click)="handleStepClick(i, $event)">
+        <span class="number">{{ i + 1 }}</span>
+        <span *ngIf="step.headerTemplate != null">
+          <template [ngTemplateOutlet]="step.headerTemplate"
+                    [ngTemplateOutletValue]="stepHeaderContexts[i]">
+          </template>
+        </span>
+        <span *ngIf="step.headerTemplate == null">
+          <span class="d-block">{{ step.title }}</span>
+          <small *ngIf="step.hasSubtitle"
+                 class="d-block text-muted">{{ step.subtitle }}</small>
+        </span>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<div class="content mb-3" *ngIf="hasSteps">
+  <ng-content></ng-content>
+</div>
+
+<div class="actions" *ngIf="showActions && hasSteps">
+  <div *ngIf="actionsTemplate != null">
+    <template [ngTemplateOutlet]="actionsTemplate"
+              [ngTemplateOutletValue]="actionsContext">
+    </template>
+  </div>
+
+  <ul *ngIf="actionsTemplate == null">
+    <li *ngIf="hasPrevious">
+      <button type="button" [class]="previousButtonClass" (click)="goPrevious()">{{ previousLabel }}</button>
+    </li>
+    <li>
+      <button *ngIf="!isLastStep"
+              type="button"
+              [class]="nextButtonClass"
+              (click)="goNext()">{{ nextLabel }}</button>
+      <button *ngIf="isLastStep"
+              type="button"
+              [class]="finishButtonClass"
+              (click)="onFinishAction()">{{ finishLabel }}</button>
+    </li>
+  </ul>
+</div>

@@ -8,6 +8,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['file_upload_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     formDirectives,
     LiFileUploadComponent,
     LiFileDropDirective,

@@ -1,25 +1,355 @@
-<div class="card border-0 shadow-none mb-0">
-  <div class="card-body p-0">
-    <li-tabsx type="pills" placement="left" [justified]="true">
-      <li-tabx [header]="t.pages.tabs.tokens" [active]="true">
-        <template li-tabx-header>
-          <span class="d-inline-flex align-items-center gap-2">
-            <i class="ph-paint-brush"></i>
-            <span>{{ t.pages.tabs.tokens }}</span>
-          </span>
-        </template>
-        <div class="p-3">
-          {{ t.pages.tabs.tokensBody }}
+<div class="tabs-preview-gallery">
+  <section class="tabs-preview-section">
+    <div class="tabs-preview-section-header">
+      <h6 class="mb-1">{{ t.pages.tabs.galleryLayoutsTitle }}</h6>
+      <p class="text-muted mb-0">{{ t.pages.tabs.galleryLayoutsIntro }}</p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-xl-6">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">{{ t.pages.tabs.basicCardTitle }}</h6>
+              <p class="text-muted small mb-0">{{ t.pages.tabs.basicCardBody }}</p>
+            </div>
+            <span class="badge bg-primary bg-opacity-10 text-primary tabs-example-config">{{ t.pages.tabs.basicCardConfig }}</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="tabs">
+              <li-tabx [header]="t.pages.tabs.basicSummary" [active]="true">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.basicSummaryBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="t.pages.tabs.basicMetrics">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.basicMetricsBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="t.pages.tabs.basicHistory">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.basicHistoryBody }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
         </div>
-      </li-tabx>
-      <li-tabx [header]="t.pages.tabs.flow">
-        <div class="p-3">
-          {{ t.pages.tabs.flowBody }}
+      </div>
+
+      <div class="col-xl-6">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">{{ t.pages.tabs.justifiedCardTitle }}</h6>
+              <p class="text-muted small mb-0">{{ t.pages.tabs.justifiedCardBody }}</p>
+            </div>
+            <span class="badge bg-success bg-opacity-10 text-success tabs-example-config">{{ t.pages.tabs.justifiedCardConfig }}</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="tabs" [justified]="true">
+              <li-tabx [header]="t.pages.tabs.justifiedBacklog" [active]="true">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.justifiedBacklogBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="t.pages.tabs.justifiedDelivery">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.justifiedDeliveryBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="t.pages.tabs.justifiedRisks">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.justifiedRisksBody }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
         </div>
-      </li-tabx>
-      <li-tabx [header]="t.pages.tabs.blocked" [disabled]="true">
-        <div class="p-3">{{ t.pages.tabs.blockedBody }}</div>
-      </li-tabx>
-    </li-tabsx>
-  </div>
+      </div>
+
+      <div class="col-xl-6">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">{{ t.pages.tabs.sideCardTitle }}</h6>
+              <p class="text-muted small mb-0">{{ t.pages.tabs.sideCardBody }}</p>
+            </div>
+            <span class="badge bg-info bg-opacity-10 text-info tabs-example-config">{{ t.pages.tabs.sideCardConfig }}</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="pills" placement="left" [justified]="true">
+              <li-tabx [active]="true">
+                <template li-tabx-header>
+                  <span class="d-inline-flex align-items-center gap-2">
+                    <i class="ph-paint-brush"></i>
+                    <span>{{ t.pages.tabs.tokens }}</span>
+                  </span>
+                </template>
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.tokensBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx>
+                <template li-tabx-header>
+                  <span class="d-inline-flex align-items-center gap-2">
+                    <i class="ph-arrows-clockwise"></i>
+                    <span>{{ t.pages.tabs.flow }}</span>
+                  </span>
+                </template>
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.flowBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [disabled]="true">
+                <template li-tabx-header>
+                  <span class="d-inline-flex align-items-center gap-2">
+                    <i class="ph-lock-key"></i>
+                    <span>{{ t.pages.tabs.blocked }}</span>
+                  </span>
+                </template>
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.blockedBody }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-6">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">{{ t.pages.tabs.rightCardTitle }}</h6>
+              <p class="text-muted small mb-0">{{ t.pages.tabs.rightCardBody }}</p>
+            </div>
+            <span class="badge bg-secondary bg-opacity-10 text-secondary tabs-example-config">{{ t.pages.tabs.rightCardConfig }}</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="tabs" placement="right">
+              <li-tabx [header]="t.pages.tabs.review" [active]="true">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.reviewBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="t.pages.tabs.approvers">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.approversBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="t.pages.tabs.sla">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.slaBody }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabs-preview-section">
+    <div class="tabs-preview-section-header">
+      <h6 class="mb-1">{{ t.pages.tabs.galleryAdvancedTitle }}</h6>
+      <p class="text-muted mb-0">{{ t.pages.tabs.galleryAdvancedIntro }}</p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-xl-6">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">{{ t.pages.tabs.workflowCardTitle }}</h6>
+              <p class="text-muted small mb-0">{{ t.pages.tabs.workflowCardBody }}</p>
+            </div>
+            <span class="badge bg-warning bg-opacity-10 text-warning tabs-example-config">{{ t.pages.tabs.workflowCardConfig }}</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="tabs" [justified]="true">
+              <li-tabx [active]="true">
+                <template li-tabx-header>
+                  <span class="tabs-rich-header">
+                    <span class="tabs-rich-header__icon"><i class="ph-compass"></i></span>
+                    <span class="tabs-rich-header__copy">
+                      <span class="tabs-rich-header__title">{{ t.pages.tabs.discovery }}</span>
+                      <span class="tabs-rich-header__meta">{{ t.pages.tabs.discoveryHint }}</span>
+                    </span>
+                    <span class="badge bg-primary rounded-pill tabs-rich-header__badge">03</span>
+                  </span>
+                </template>
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.workflowDiscoveryBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx>
+                <template li-tabx-header>
+                  <span class="tabs-rich-header">
+                    <span class="tabs-rich-header__icon"><i class="ph-lightning"></i></span>
+                    <span class="tabs-rich-header__copy">
+                      <span class="tabs-rich-header__title">{{ t.pages.tabs.execution }}</span>
+                      <span class="tabs-rich-header__meta">{{ t.pages.tabs.executionHint }}</span>
+                    </span>
+                    <span class="badge bg-success rounded-pill tabs-rich-header__badge">07</span>
+                  </span>
+                </template>
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.workflowExecutionBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx>
+                <template li-tabx-header>
+                  <span class="tabs-rich-header">
+                    <span class="tabs-rich-header__icon"><i class="ph-rocket-launch"></i></span>
+                    <span class="tabs-rich-header__copy">
+                      <span class="tabs-rich-header__title">{{ t.pages.tabs.publish }}</span>
+                      <span class="tabs-rich-header__meta">{{ t.pages.tabs.publishHint }}</span>
+                    </span>
+                    <span class="badge bg-secondary rounded-pill tabs-rich-header__badge">02</span>
+                  </span>
+                </template>
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.workflowPublishBody }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-6">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">{{ t.pages.tabs.lifecycleCardTitle }}</h6>
+              <p class="text-muted small mb-0">{{ t.pages.tabs.lifecycleCardBody }}</p>
+            </div>
+            <span class="badge bg-danger bg-opacity-10 text-danger tabs-example-config">{{ t.pages.tabs.lifecycleCardConfig }}</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="tabs" [lazyLoad]="true" [destroyOnHide]="true">
+              <li-tabx [header]="t.pages.tabs.dataset" [active]="true">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.datasetBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="t.pages.tabs.transform">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.transformBody }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="t.pages.tabs.export">
+                <div class="tabs-pane-surface">
+                  <p class="mb-0">{{ t.pages.tabs.exportBody }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tabs-preview-section">
+    <div class="tabs-preview-section-header">
+      <h6 class="mb-1">{{ isPt ? 'Variantes Limitless 4' : 'Limitless 4 variants' }}</h6>
+      <p class="text-muted mb-0">{{ isPt ? 'As classes nativas nav-tabs-underline, nav-tabs-overline e nav-tabs-solid agora podem ser usadas diretamente em li-tabsx.' : 'The native nav-tabs-underline, nav-tabs-overline, and nav-tabs-solid classes can now be used directly from li-tabsx.' }}</p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-xl-4">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">Underline</h6>
+              <p class="text-muted small mb-0">{{ isPt ? 'Indicador inferior discreto, ideal para áreas de conteúdo contínuo.' : 'Subtle bottom indicator, ideal for continuous content areas.' }}</p>
+            </div>
+            <span class="badge bg-primary bg-opacity-10 text-primary tabs-example-config">type=&quot;underline&quot;</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="underline">
+              <li-tabx [header]="isPt ? 'Resumo' : 'Summary'" [active]="true">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'Use esta variante quando o conteúdo principal já estiver contido em cards ou superfícies neutras.' : 'Use this variant when the main content already lives inside cards or neutral surfaces.' }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="isPt ? 'Atividade' : 'Activity'">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'A leitura continua fluindo sem o peso visual de bordas completas.' : 'Reading keeps flowing without the visual weight of full borders.' }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="isPt ? 'Arquivos' : 'Files'">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'Muito próxima do estilo de referência do Limitless para painéis de detalhe.' : 'Very close to the Limitless reference style for detail panels.' }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-4">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">Overline</h6>
+              <p class="text-muted small mb-0">{{ isPt ? 'Acento superior útil para cabeçalhos compactos e barras utilitárias.' : 'Top accent useful for compact headers and utility bars.' }}</p>
+            </div>
+            <span class="badge bg-warning bg-opacity-10 text-warning tabs-example-config">type=&quot;overline&quot;</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="overline" [justified]="true">
+              <li-tabx [header]="isPt ? 'Timeline' : 'Timeline'" [active]="true">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'O overline funciona bem em topos de cards onde a borda inferior precisa ficar limpa.' : 'Overline works well at the top of cards where the bottom edge should stay clean.' }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="isPt ? 'Entregas' : 'Deliveries'">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'Também ajuda quando os tabs ficam próximos de filtros ou toolbars horizontais.' : 'It also helps when tabs sit close to filters or horizontal toolbars.' }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="isPt ? 'Bloqueios' : 'Blockers'">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'A referência do Limitless usa esse padrão em layouts mais densos e administrativos.' : 'The Limitless reference uses this pattern in denser, more administrative layouts.' }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-4">
+        <div class="card tabs-example-card h-100 mb-0">
+          <div class="card-header d-flex flex-wrap align-items-start gap-2 justify-content-between">
+            <div>
+              <h6 class="mb-1">Solid</h6>
+              <p class="text-muted small mb-0">{{ isPt ? 'Blocos preenchidos para fluxos mais destacados, status ou alternâncias principais.' : 'Filled blocks for more prominent flows, statuses, or primary toggles.' }}</p>
+            </div>
+            <span class="badge bg-success bg-opacity-10 text-success tabs-example-config">type=&quot;solid&quot;</span>
+          </div>
+          <div class="card-body">
+            <li-tabsx type="solid" [justified]="true">
+              <li-tabx [header]="isPt ? 'Operação' : 'Operation'" [active]="true">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'A versão solid aproxima o resultado visual dos exemplos de navegação destacada do Limitless 4.' : 'The solid version brings the look closer to the highlighted navigation examples from Limitless 4.' }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="isPt ? 'Monitoramento' : 'Monitoring'">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'Boa opção para estados mutuamente exclusivos em painéis de controle.' : 'A good option for mutually exclusive states in control panels.' }}</p>
+                </div>
+              </li-tabx>
+              <li-tabx [header]="isPt ? 'Publicação' : 'Publish'">
+                <div class="tabs-pane-surface tabs-pane-surface--compact">
+                  <p class="mb-0">{{ isPt ? 'Mantém o conteúdo abaixo desacoplado da navegação, mas com hierarquia visual mais forte.' : 'It keeps the content below decoupled from the navigation while giving the tabs a stronger hierarchy.' }}</p>
+                </div>
+              </li-tabx>
+            </li-tabsx>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>

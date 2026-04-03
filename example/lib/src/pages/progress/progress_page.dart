@@ -8,6 +8,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['progress_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiProgressComponent,

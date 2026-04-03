@@ -7,6 +7,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   styleUrls: ['showcase_page.css'],
   directives: [
     coreDirectives,
+    DemoPageBreadcrumbComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiCarouselComponent,
