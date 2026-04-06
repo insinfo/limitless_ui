@@ -32,6 +32,11 @@
   background: rgba(15, 23, 42, 0.16);
 }
 
+.li-fab__trigger {
+  position: relative;
+  z-index: 999;
+}
+
 .fab-menu .fab-menu-inner .btn {
   text-decoration: none;
 }
@@ -76,8 +81,8 @@
   padding-inline: 0.875rem;
 }
 
-.li-fab__trigger-template i,
-.li-fab__action-template i {
+.li-fab__trigger--template .li-fab__trigger-template i,
+.li-fab__action--template .li-fab__action-template i {
   position: static;
   inset: auto;
   width: auto;

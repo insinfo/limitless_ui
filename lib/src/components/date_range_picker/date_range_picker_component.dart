@@ -8,6 +8,8 @@ import 'package:ngforms/ngforms.dart'
 
 import 'package:popper/popper.dart';
 
+import '../../core/overlay_positioning.dart';
+
 enum DateRangePickerViewMode { day, month, year }
 
 class DateRangePickerMonthOption {
@@ -229,7 +231,8 @@ class LiDateRangePickerComponent
       dataInvalid ||
       (required && _touched && inicio == null && fim == null);
 
-  bool get effectiveValid => !effectiveInvalid &&
+  bool get effectiveValid =>
+      !effectiveInvalid &&
       (valid || (required && _touched && (inicio != null || fim != null)));
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
@@ -256,8 +259,7 @@ class LiDateRangePickerComponent
       _isEnglishLocale ? _weekdayLabelsEn : _weekdayLabelsPt;
 
   List<DateRangePickerMonthOption> get monthOptions {
-    final labels =
-        _isEnglishLocale ? _monthShortLabelsEn : _monthShortLabelsPt;
+    final labels = _isEnglishLocale ? _monthShortLabelsEn : _monthShortLabelsPt;
     return List<DateRangePickerMonthOption>.generate(
       12,
       (int index) => DateRangePickerMonthOption(
@@ -289,7 +291,8 @@ class LiDateRangePickerComponent
 
   String get draftDisplayValue => _formatRange(draftInicio, draftFim);
 
-  String get effectivePlaceholder => placeholder ??
+  String get effectivePlaceholder =>
+      placeholder ??
       (_isEnglishLocale ? 'Select the period' : 'Selecione o periodo');
 
   String get emptySelectionLabel =>
@@ -337,11 +340,13 @@ class LiDateRangePickerComponent
     if (isLeftYearView) {
       leftMonth = DateTime(
           leftMonth.year - leftVisibleYears.length, leftMonth.month, 1);
-      rightMonth = _monthStart(DateTime(leftMonth.year, leftMonth.month + 1, 1));
+      rightMonth =
+          _monthStart(DateTime(leftMonth.year, leftMonth.month + 1, 1));
       _refreshCalendars();
     } else if (isLeftMonthView) {
       leftMonth = DateTime(leftMonth.year - 1, leftMonth.month, 1);
-      rightMonth = _monthStart(DateTime(leftMonth.year, leftMonth.month + 1, 1));
+      rightMonth =
+          _monthStart(DateTime(leftMonth.year, leftMonth.month + 1, 1));
       _refreshCalendars();
     } else {
       _setVisibleMonths(DateTime(leftMonth.year, leftMonth.month - 1, 1));
@@ -353,11 +358,13 @@ class LiDateRangePickerComponent
     if (isRightYearView) {
       rightMonth = DateTime(
           rightMonth.year + rightVisibleYears.length, rightMonth.month, 1);
-      leftMonth = _monthStart(DateTime(rightMonth.year, rightMonth.month - 1, 1));
+      leftMonth =
+          _monthStart(DateTime(rightMonth.year, rightMonth.month - 1, 1));
       _refreshCalendars();
     } else if (isRightMonthView) {
       rightMonth = DateTime(rightMonth.year + 1, rightMonth.month, 1);
-      leftMonth = _monthStart(DateTime(rightMonth.year, rightMonth.month - 1, 1));
+      leftMonth =
+          _monthStart(DateTime(rightMonth.year, rightMonth.month - 1, 1));
       _refreshCalendars();
     } else {
       _setVisibleMonths(DateTime(leftMonth.year, leftMonth.month + 1, 1));
@@ -575,7 +582,7 @@ class LiDateRangePickerComponent
         hostZIndex: '1085',
         floatingZIndex: '1086',
       ),
-      popperOptions: const PopperOptions(
+      popperOptions: PopperOptions(
         placement: 'bottom-start',
         fallbackPlacements: <String>[
           'top-start',
@@ -585,7 +592,15 @@ class LiDateRangePickerComponent
         strategy: PopperStrategy.fixed,
         padding: PopperInsets.all(8),
         offset: PopperOffset(mainAxis: 8),
+        onLayout: _handleOverlayLayout,
       ),
+    );
+  }
+
+  void _handleOverlayLayout(PopperLayout layout) {
+    normalizeOverlayVerticalPosition(
+      floatingElement: panelElement,
+      layout: layout,
     );
   }
 
@@ -855,17 +870,17 @@ class LiDateRangePickerComponent
         .join(' ');
   }
 
-    Object? trackByMonthOption(int index, dynamic option) =>
+  Object? trackByMonthOption(int index, dynamic option) =>
       (option as DateRangePickerMonthOption).month;
 
-    Object? trackByYear(int index, dynamic year) => year;
+  Object? trackByYear(int index, dynamic year) => year;
 
-    Object? trackByWeek(int index, dynamic week) {
+  Object? trackByWeek(int index, dynamic week) {
     final typedWeek = week as List<CalendarCell>;
     return '${typedWeek.first.date.year}-${typedWeek.first.date.month}-${typedWeek.first.date.day}';
-    }
+  }
 
-    Object? trackByCell(int index, dynamic cell) =>
+  Object? trackByCell(int index, dynamic cell) =>
       (cell as CalendarCell).date.millisecondsSinceEpoch;
 
   @override

@@ -36,7 +36,7 @@ class LiSweetAlertDirective implements OnDestroy {
   String type = 'info';
 
   @Input('liSweetAlertPosition')
-  String position = 'topEnd';
+  String position = '';
 
   @Input('liSweetAlertInputType')
   String inputType = 'text';
@@ -232,7 +232,12 @@ class LiSweetAlertDirective implements OnDestroy {
   }
 
   SweetAlertPosition get _resolvedPosition {
-    switch (position.trim().toLowerCase()) {
+    final normalizedPosition = position.trim().toLowerCase();
+    if (normalizedPosition.isEmpty) {
+      return _defaultPosition;
+    }
+
+    switch (normalizedPosition) {
       case 'center':
         return SweetAlertPosition.center;
       case 'centerstart':
@@ -260,9 +265,16 @@ class LiSweetAlertDirective implements OnDestroy {
         return SweetAlertPosition.bottomEnd;
       case 'topend':
       case 'top-end':
-      default:
         return SweetAlertPosition.topEnd;
+      default:
+        return _defaultPosition;
     }
+  }
+
+  SweetAlertPosition get _defaultPosition {
+    return _normalizedMode == 'toast'
+        ? SweetAlertPosition.topEnd
+        : SweetAlertPosition.center;
   }
 
   SweetAlertInputType get _resolvedInputType {

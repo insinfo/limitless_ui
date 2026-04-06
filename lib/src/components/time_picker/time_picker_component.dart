@@ -7,6 +7,8 @@ import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 import 'package:popper/popper.dart';
 
+import '../../core/overlay_positioning.dart';
+
 enum TimePickerDialMode { hour, minute }
 
 class TimePickerDialLabel {
@@ -528,7 +530,7 @@ class LiTimePickerComponent
         hostZIndex: '1085',
         floatingZIndex: '1086',
       ),
-      popperOptions: const PopperOptions(
+      popperOptions: PopperOptions(
         placement: 'bottom-start',
         fallbackPlacements: <String>[
           'top-start',
@@ -538,7 +540,15 @@ class LiTimePickerComponent
         strategy: PopperStrategy.fixed,
         padding: PopperInsets.all(8),
         offset: PopperOffset(mainAxis: 8),
+        onLayout: _handleOverlayLayout,
       ),
+    );
+  }
+
+  void _handleOverlayLayout(PopperLayout layout) {
+    normalizeOverlayVerticalPosition(
+      floatingElement: panelElement,
+      layout: layout,
     );
   }
 

@@ -316,7 +316,7 @@ class LiFabComponent implements OnDestroy {
   bool get usesCustomActionTemplate => resolvedActionTemplate != null;
 
   String get resolvedTriggerClass => _joinClasses(<String>[
-        'fab-menu-btn',
+        usesCustomTriggerTemplate ? 'li-fab__trigger' : 'fab-menu-btn',
         'btn',
         _buttonColorClass(variant, buttonStyle),
         _buttonSizeClass(size),

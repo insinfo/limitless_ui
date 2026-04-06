@@ -58,6 +58,7 @@ class FabTestHostComponent {
   template: '''
     <template #customTrigger let-trigger>
       <span class="custom-trigger-content">
+        <i class="custom-trigger-icon ph" [class.ph-plus]="!trigger.expanded" [class.ph-x]="trigger.expanded"></i>
         {{ trigger.expanded ? 'Fechar ações' : 'Abrir ações' }}
       </span>
     </template>
@@ -105,6 +106,7 @@ void main() {
   tearDown(() {
     html.window.location.hash = '';
   });
+  tearDown(_removeInjectedFabIconStyles);
 
   final testBed = NgTestBed<FabTestHostComponent>(
     ng.FabTestHostComponentNgFactory,
@@ -175,7 +177,8 @@ void main() {
     expect(host.lastAction?.value, 'docs');
   });
 
-  test('renders custom trigger and action templates from TemplateRef inputs', () async {
+  test('renders custom trigger and action templates from TemplateRef inputs',
+      () async {
     final fixture = await templateTestBed.create();
     await _settleTemplate(fixture);
 
@@ -184,7 +187,7 @@ void main() {
       contains('Abrir ações'),
     );
 
-    final trigger = fixture.rootElement.querySelector('.fab-menu-btn')
+    final trigger = fixture.rootElement.querySelector('.li-fab__trigger')
         as html.ButtonElement;
 
     await fixture.update((_) {
@@ -201,6 +204,20 @@ void main() {
       contains('Run'),
     );
   });
+
+  test(
+      'keeps custom trigger icons in normal flow when global fab icon rules are present',
+      () async {
+    final fixture = await templateTestBed.create();
+    await _settleTemplate(fixture);
+    _injectFabIconStyles();
+
+    final triggerIcon = fixture.rootElement
+        .querySelector('.custom-trigger-icon') as html.Element;
+
+    expect(triggerIcon.getComputedStyle().position, 'static');
+    expect(triggerIcon.getComputedStyle().transform, 'none');
+  });
 }
 
 Future<void> _settle(NgTestFixture<FabTestHostComponent> fixture) async {
@@ -213,4 +230,29 @@ Future<void> _settleTemplate(
 ) async {
   await Future<void>.delayed(const Duration(milliseconds: 20));
   await fixture.update((_) {});
+}
+
+void _injectFabIconStyles() {
+  if (html.document.head!.querySelector('#fab-icon-style-test') != null) {
+    return;
+  }
+
+  final style = html.StyleElement()
+    ..id = 'fab-icon-style-test'
+    ..text = '''
+.fab-menu-btn i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -10px;
+  margin-left: -10px;
+  transform: translate(0, 0);
+}
+''';
+
+  html.document.head!.append(style);
+}
+
+void _removeInjectedFabIconStyles() {
+  html.document.head!.querySelector('#fab-icon-style-test')?.remove();
 }

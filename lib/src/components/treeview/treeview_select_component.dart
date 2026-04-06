@@ -8,6 +8,7 @@ import 'package:ngforms/ngforms.dart'
 import 'package:popper/popper.dart';
 import 'package:essential_core/essential_core.dart';
 
+import '../../core/overlay_positioning.dart';
 import 'tree_view_base.dart';
 import 'treeview_settings.dart';
 
@@ -901,7 +902,7 @@ class LiTreeviewSelectComponent
         hostZIndex: '10000',
         floatingZIndex: '1056',
       ),
-      popperOptions: const PopperOptions(
+      popperOptions: PopperOptions(
         placement: 'bottom-start',
         fallbackPlacements: <String>[
           'top-start',
@@ -912,8 +913,17 @@ class LiTreeviewSelectComponent
         padding: PopperInsets.all(8),
         offset: PopperOffset(mainAxis: 4),
         matchReferenceWidth: true,
+        onLayout: _handleOverlayLayout,
       ),
     );
+  }
+
+  void _handleOverlayLayout(PopperLayout layout) {
+    normalizeOverlayVerticalPosition(
+      floatingElement: dropdownPanelElement,
+      layout: layout,
+    );
+    _syncPopupMaxHeight();
   }
 
   void _scheduleOverlayUpdate() {

@@ -7,6 +7,7 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 import 'package:popper/popper.dart';
 
+import '../../core/overlay_positioning.dart';
 import '../../exceptions/invalid_argument_exception.dart';
 import 'custom_option.dart';
 
@@ -307,7 +308,7 @@ class LiSelectComponent
         ],
         strategy: PopperStrategy.fixed,
         padding: const PopperInsets.all(8),
-        offset: const PopperOffset(mainAxis: 4),
+        offset: const PopperOffset(mainAxis: 8),
         matchReferenceWidth: true,
         onLayout: _handleOverlayLayout,
       ),
@@ -540,6 +541,8 @@ class LiSelectComponent
   }
 
   void _handleOverlayLayout(PopperLayout layout) {
+    _normalizeOverlayVerticalPosition(layout);
+
     final basePlacement = layout.placement.split('-').first;
     final clippingTop = layout.clippingRect.top.toDouble();
     final clippingBottom =
@@ -563,6 +566,13 @@ class LiSelectComponent
     if (listElement.style.maxHeight != desiredMaxHeight) {
       listElement.style.maxHeight = desiredMaxHeight;
     }
+  }
+
+  void _normalizeOverlayVerticalPosition(PopperLayout layout) {
+    normalizeOverlayVerticalPosition(
+      floatingElement: dropdownContainerEle,
+      layout: layout,
+    );
   }
 
   void _scheduleOverlayUpdate() {

@@ -41,6 +41,9 @@ class SelectTestHostComponent {
 
 void main() {
   tearDown(disposeAnyRunningTest);
+  tearDown(() {
+    html.document.documentElement?.attributes.remove('data-color-theme');
+  });
 
   final testBed = NgTestBed<SelectTestHostComponent>(
     ng.SelectTestHostComponentNgFactory,
@@ -96,6 +99,50 @@ void main() {
 
     expect(host.selectedStatus, 'review');
     expect(trigger.text, contains('Em revisao'));
+  });
+
+  test('opens overlay aligned directly below the trigger', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final panel = html.document.querySelector(
+      '.dropdown-container.dropdown-open',
+    ) as html.Element;
+    final triggerRect = trigger.getBoundingClientRect();
+    final panelRect = panel.getBoundingClientRect();
+
+    expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
+    expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
+  });
+
+  test('keeps dark theme styling delegated to dropdown-menu classes', () async {
+    html.document.documentElement?.setAttribute('data-color-theme', 'dark');
+
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final panel = html.document.querySelector(
+      '.dropdown-container.dropdown-open',
+    ) as html.Element;
+
+    expect(panel.classes.contains('dropdown-menu'), isTrue);
+    expect(panel.style.backgroundColor, isEmpty);
+    expect(panel.style.boxShadow, isEmpty);
+    expect(panel.style.borderColor, isEmpty);
   });
 }
 

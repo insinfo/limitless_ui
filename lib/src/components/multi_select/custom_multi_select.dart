@@ -8,6 +8,7 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 import 'package:popper/popper.dart';
 
+import '../../core/overlay_positioning.dart';
 import '../../directives/click_outside.dart';
 import '../../exceptions/invalid_argument_exception.dart';
 import 'custom_multi_option.dart';
@@ -328,7 +329,8 @@ class LiMultiSelectComponent
     } else if (_canPreserveFocus(preserveFocusTarget)) {
       Future<void>.microtask(() {
         final focusTarget = preserveFocusTarget;
-        if (focusTarget is html.HtmlElement && focusTarget.isConnected == true) {
+        if (focusTarget is html.HtmlElement &&
+            focusTarget.isConnected == true) {
           focusTarget.focus();
         }
       });
@@ -541,6 +543,8 @@ class LiMultiSelectComponent
   }
 
   void _handleOverlayLayout(PopperLayout layout) {
+    _normalizeOverlayVerticalPosition(layout);
+
     final basePlacement = layout.placement.split('-').first;
     final clippingTop = layout.clippingRect.top.toDouble();
     final clippingBottom =
@@ -563,6 +567,13 @@ class LiMultiSelectComponent
       listElement.style.maxHeight = desiredMaxHeight;
       listElement.style.minHeight = desiredMinHeight;
     }
+  }
+
+  void _normalizeOverlayVerticalPosition(PopperLayout layout) {
+    normalizeOverlayVerticalPosition(
+      floatingElement: dropdownContainerEle,
+      layout: layout,
+    );
   }
 
   void _scheduleOverlayUpdate() {

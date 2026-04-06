@@ -7,6 +7,7 @@ import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 import 'package:popper/popper.dart';
 
+import '../../core/overlay_positioning.dart';
 import '../../directives/css_style_directive.dart';
 
 class _LiColorValue {
@@ -906,13 +907,21 @@ class LiColorPickerComponent
         hostZIndex: '1085',
         floatingZIndex: '1086',
       ),
-      popperOptions: const PopperOptions(
+      popperOptions: PopperOptions(
         placement: 'bottom-start',
         fallbackPlacements: <String>['top-start', 'bottom-end', 'top-end'],
         strategy: PopperStrategy.fixed,
         padding: PopperInsets.all(8),
         offset: PopperOffset(mainAxis: 8),
+        onLayout: _handleOverlayLayout,
       ),
+    );
+  }
+
+  void _handleOverlayLayout(PopperLayout layout) {
+    normalizeOverlayVerticalPosition(
+      floatingElement: panelElement,
+      layout: layout,
     );
   }
 

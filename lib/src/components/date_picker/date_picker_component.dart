@@ -6,6 +6,8 @@ import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 import 'package:popper/popper.dart';
 
+import '../../core/overlay_positioning.dart';
+
 enum DatePickerViewMode { day, month, year }
 
 class DatePickerMonthOption {
@@ -194,8 +196,7 @@ class LiDatePickerComponent
   bool isOpen = false;
   DatePickerViewMode viewMode = DatePickerViewMode.day;
 
-  ChangeFunction<DateTime?> _onChange =
-      (DateTime? _, {String? rawValue}) {};
+  ChangeFunction<DateTime?> _onChange = (DateTime? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
   bool _touched = false;
 
@@ -231,8 +232,7 @@ class LiDatePickerComponent
       _isEnglishLocale ? _weekdayLabelsEn : _weekdayLabelsPt;
 
   List<DatePickerMonthOption> get monthOptions {
-    final labels =
-        _isEnglishLocale ? _monthShortLabelsEn : _monthShortLabelsPt;
+    final labels = _isEnglishLocale ? _monthShortLabelsEn : _monthShortLabelsPt;
     return List<DatePickerMonthOption>.generate(
       12,
       (int index) => DatePickerMonthOption(
@@ -314,8 +314,8 @@ class LiDatePickerComponent
 
   void navigateBackward() {
     if (isYearView) {
-      visibleMonth = DateTime(visibleMonth.year - visibleYearRange.length,
-          visibleMonth.month, 1);
+      visibleMonth = DateTime(
+          visibleMonth.year - visibleYearRange.length, visibleMonth.month, 1);
     } else if (isMonthView) {
       visibleMonth = DateTime(visibleMonth.year - 1, visibleMonth.month, 1);
     } else {
@@ -327,8 +327,8 @@ class LiDatePickerComponent
 
   void navigateForward() {
     if (isYearView) {
-      visibleMonth = DateTime(visibleMonth.year + visibleYearRange.length,
-          visibleMonth.month, 1);
+      visibleMonth = DateTime(
+          visibleMonth.year + visibleYearRange.length, visibleMonth.month, 1);
     } else if (isMonthView) {
       visibleMonth = DateTime(visibleMonth.year + 1, visibleMonth.month, 1);
     } else {
@@ -440,7 +440,7 @@ class LiDatePickerComponent
         hostZIndex: '1085',
         floatingZIndex: '1086',
       ),
-      popperOptions: const PopperOptions(
+      popperOptions: PopperOptions(
         placement: 'bottom-start',
         fallbackPlacements: <String>[
           'top-start',
@@ -450,7 +450,15 @@ class LiDatePickerComponent
         strategy: PopperStrategy.fixed,
         padding: PopperInsets.all(8),
         offset: PopperOffset(mainAxis: 8),
+        onLayout: _handleOverlayLayout,
       ),
+    );
+  }
+
+  void _handleOverlayLayout(PopperLayout layout) {
+    normalizeOverlayVerticalPosition(
+      floatingElement: panelElement,
+      layout: layout,
     );
   }
 

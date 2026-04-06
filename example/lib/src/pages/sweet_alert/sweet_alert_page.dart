@@ -113,9 +113,7 @@ class ReviewPageComponent {
     liSweetAlert="Atalho declarativo acionado."
     liSweetAlertTitle="SweetAlert directive"
     liSweetAlertType="info"
-    liSweetAlertPosition="top-end"
     liSweetAlertWidth="34rem"
-    [liSweetAlertReverseButtons]="true"
     (liSweetAlertResult)="handleDirectiveResult(\$event)">
   Trigger declarativo
 </button>''';

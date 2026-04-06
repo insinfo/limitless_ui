@@ -131,6 +131,27 @@ void main() {
     expect(host.rangeStart, isNull);
     expect(host.rangeEnd, isNull);
   });
+
+  test('opens overlay aligned directly below the trigger', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final panel =
+        html.document.querySelector('.date-range-open') as html.Element;
+    final triggerRect = trigger.getBoundingClientRect();
+    final panelRect = panel.getBoundingClientRect();
+
+    expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
+    expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
+  });
 }
 
 Future<void> _settle(

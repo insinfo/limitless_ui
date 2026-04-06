@@ -18,6 +18,15 @@ import 'li_sweet_alert_directive_test.template.dart' as ng;
   selector: 'li-sweet-alert-directive-test-host',
   template: '''
     <button
+        id="show-button"
+        type="button"
+        [liSweetAlert]="'Directive modal body'"
+        liSweetAlertTitle="Directive modal"
+        liSweetAlertType="info">
+      Show
+    </button>
+
+    <button
         id="confirm-button"
         type="button"
         [liSweetAlert]="'Delete item?'"
@@ -56,6 +65,27 @@ void main() {
   final testBed = NgTestBed<SweetAlertDirectiveTestHostComponent>(
     ng.SweetAlertDirectiveTestHostComponentNgFactory,
   );
+
+  test('uses centered positioning by default for modal mode', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final button =
+        fixture.rootElement.querySelector('#show-button') as html.ButtonElement;
+
+    await fixture.update((_) {
+      button.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(html.document.querySelector('.swal2-container.swal2-center'),
+        isNotNull);
+    expect(html.document.querySelector('.swal2-popup.swal2-modal'), isNotNull);
+
+    await fixture.update((_) {
+      _click('.swal2-confirm');
+    });
+    await _settle(fixture);
+  });
 
   test('opens confirm dialogs and emits the confirmation result', () async {
     final fixture = await testBed.create();
