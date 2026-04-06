@@ -1,3 +1,7 @@
+## 1.0.0-dev.4
+
+- Updated the `essential_core` dependency constraint to `^1.1.0`.
+
 ## 1.0.0-dev.3
 
 - Fixed Popper-based overlay positioning so `li-select`, `li-multi-select`, `li-date-picker`, `li-date-range-picker`, `li-time-picker`, `li-color-picker`, and `li-treeview-select` open directly below their triggers instead of overlapping them vertically.
