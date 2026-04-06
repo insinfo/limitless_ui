@@ -314,8 +314,8 @@ see <a href="https://dart.dev/get-dart">the Dart site</a>:</p>
 
 <ul>
   <li>
-<strong>Dart SDK</strong> 2.10.0 or a compatible version. For
-AngularDart 7, SDK &gt;= 2.17.0 is required.</li>
+<strong>Dart SDK</strong> 3.6.0 or a compatible version. For
+projects using <code class="language-plaintext highlighter-rouge">ngdart: 8.0.0-dev.4</code>, <code class="language-plaintext highlighter-rouge">ngforms: 5.0.0-dev.3</code>, and <code class="language-plaintext highlighter-rouge">ngrouter: 4.0.0-dev.3</code>, use Dart 3.6.0 or a compatible 3.6 SDK.</li>
   <li>Your favorite IDE &amp; code editor, such as WebStorm, Eclipse, or <strong>Visual Studio Code</strong> (recommended).</li>
 </ul>
 
@@ -367,6 +367,31 @@ AngularDart 7, SDK &gt;= 2.17.0 is required.</li>
 <a class="anchor" href="#get" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get dependencies</h2>
 
 <div class="language-terminal highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>dart pub get
+</code></pre></div></div>
+
+<p>If you are configuring a project manually, use a <code class="language-plaintext highlighter-rouge">pubspec.yaml</code> similar to:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">name</span><span class="pi">:</span> <span class="s">limitless_ui_example</span>
+<span class="na">description</span><span class="pi">:</span> <span class="s">Showcase application for limitless_ui components.</span>
+<span class="na">publish_to</span><span class="pi">:</span> <span class="s">none</span>
+
+<span class="na">environment</span><span class="pi">:</span>
+  <span class="na">sdk</span><span class="pi">:</span> <span class="s">^3.6.0</span>
+
+<span class="na">dependencies</span><span class="pi">:</span>
+  <span class="na">essential_core</span><span class="pi">:</span> <span class="s">^1.0.0</span>
+  <span class="na">i18n</span><span class="pi">:</span> <span class="s">^4.2.1</span>
+  <span class="na">limitless_ui</span><span class="pi">:</span>
+    <span class="na">path</span><span class="pi">:</span> <span class="s">..</span>
+  <span class="na">ngdart</span><span class="pi">:</span> <span class="s">8.0.0-dev.4</span>
+  <span class="na">ngforms</span><span class="pi">:</span> <span class="s">5.0.0-dev.3</span>
+  <span class="na">ngrouter</span><span class="pi">:</span> <span class="s">4.0.0-dev.3</span>
+
+<span class="na">dev_dependencies</span><span class="pi">:</span>
+  <span class="na">build_runner</span><span class="pi">:</span> <span class="s">^2.4.12</span>
+  <span class="na">build_web_compilers</span><span class="pi">:</span> <span class="s">^4.0.11</span>
+  <span class="na">lints</span><span class="pi">:</span> <span class="s">^5.0.0</span>
+  <span class="na">sass_builder</span><span class="pi">:</span> <span class="s">^2.2.1</span>
 </code></pre></div></div>
 
 <h2 id="customize-the-project">

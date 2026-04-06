@@ -1,3 +1,15 @@
+## 1.0.0-dev.3
+
+- Fixed Popper-based overlay positioning so `li-select`, `li-multi-select`, `li-date-picker`, `li-date-range-picker`, `li-time-picker`, `li-color-picker`, and `li-treeview-select` open directly below their triggers instead of overlapping them vertically.
+- Added the shared `overlay_positioning.dart` helper to normalize overlay vertical placement across components that render floating panels with Popper.
+- Restored `li-select` and `li-multi-select` dropdown panels to rely on the global Limitless `dropdown-menu` styling, preserving dark theme compatibility and avoiding regressions caused by local hardcoded panel styles.
+- Updated the `liSweetAlert` directive to default modal-like flows to centered positioning while keeping toast notifications aligned to `top-end`.
+- Fixed custom `li-fab` trigger templates so projected icons no longer inherit the global absolute icon positioning from `.fab-menu-btn i`, preventing icons from overlapping text labels.
+- Updated the SweetAlert demo documentation snippet to reflect the corrected directive defaults.
+- Added browser regression tests covering overlay alignment for `select`, `multi-select`, `date picker`, `date range picker`, `time picker`, and `color picker`.
+- Added regression tests to protect dark theme styling delegation for `select` and `multi-select`.
+- Added regression tests for SweetAlert directive positioning defaults and FAB custom trigger template rendering.
+
 ## 1.0.0-dev.2
 
 - Added `li-checkbox`, `li-radio`, `li-toggle`, `li-rating` and `li-file-upload`.
