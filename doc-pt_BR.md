@@ -675,7 +675,7 @@ dev_dependencies:
 
 ## 14. Inicialização do backend e bootstrap multi-isolate
 
-O backend `salus` mostra a direção correta para um servidor Dart pronto para produção:
+Essa estrutura de backend mostra a direção correta para um servidor Dart pronto para produção:
 
 - parse de argumentos de linha de comando;
 - configuração da aplicação uma vez por isolate;
@@ -783,7 +783,7 @@ void registerRoutes(Router app) {
 
 ## 17. Injeção de dependências no backend
 
-O backend `salus` usa `get_it`, o que é uma escolha pragmática e eficiente para um backend Dart modular.
+Usar `get_it` aqui é uma escolha pragmática e eficiente para um backend Dart modular.
 
 Exemplo:
 
@@ -963,7 +963,7 @@ Se você está construindo hoje um sistema full stack sério em Dart com Angular
 - `eloquent` para persistência relacional estruturada quando fizer sentido;
 - múltiplos isolates em produção em vez de um único isolate gigante.
 
-Essa arquitetura é consistente com a referência `salus` e é muito mais sustentável do que uma aplicação achatada em um pacote único.
+Essa arquitetura é muito mais sustentável do que uma aplicação achatada em um pacote único.
 
 ## 26. Exemplo completo de CRUD de `projects` com estrutura real de arquivos
 
@@ -1332,7 +1332,7 @@ void main() {
 
 Esse exemplo é simples de propósito, mas já é um slice vertical real: tabela, repositório, controller, rotas, service, página de UI e teste.
 
-Observação importante: para listagens, siga o padrão do `salus` e retorne `DataFrame` já no repositório. Isso mantém paginação, `totalRecords` e compatibilidade com `li-datatable` e com `DataFrame.fromMapWithFactory(...)` no frontend.
+Observação importante: para listagens, retorne `DataFrame` já no repositório. Isso mantém paginação, `totalRecords` e compatibilidade com `li-datatable` e com `DataFrame.fromMapWithFactory(...)` no frontend.
 
 ## 27. Tutorial de autenticação JWT ponta a ponta
 
@@ -1344,7 +1344,7 @@ O setup mais limpo de JWT para esse stack é:
 - rotas privadas ficam montadas atrás de middleware de auth;
 - route guards no AngularDart redirecionam usuários não autenticados para longe das páginas protegidas.
 
-A referência `new_sali` mostra um ecossistema mais amplo de OIDC/auth. Para este guia, a baseline mais reaproveitável é validação direta de bearer token no `shelf`.
+Em sistemas maiores, você pode adotar um ecossistema mais amplo de OIDC/auth. Para este guia, a baseline mais reaproveitável é validação direta de bearer token no `shelf`.
 
 ### Fluxo JWT
 
@@ -1559,7 +1559,7 @@ class AuthGuard extends RouterHook {
 
 ## 28. Guia de deploy com Nginx + systemd + isolates
 
-O repositório `new_sali` contém material real de Nginx e gerenciamento de serviço. Os arquivos exatos lá são específicos do projeto, mas o modelo de deploy é reaproveitável:
+Este modelo de deploy segue um arranjo prático de produção. Os arquivos exatos variam por projeto, mas o modelo geral é reaproveitável:
 
 - frontend compilado em arquivos estáticos;
 - backend `shelf` rodando como serviço Linux;

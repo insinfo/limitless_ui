@@ -675,7 +675,7 @@ dev_dependencies:
 
 ## 14. Backend startup and multi-isolate bootstrap
 
-The `salus` backend shows the right idea for a production-capable Dart server:
+This backend structure shows the right idea for a production-capable Dart server:
 
 - parse command-line arguments;
 - configure the app once per isolate;
@@ -783,7 +783,7 @@ void registerRoutes(Router app) {
 
 ## 17. Dependency injection in the backend
 
-The `salus` backend uses `get_it`, which is a pragmatic and effective choice for a modular Dart backend.
+Using `get_it` here is a pragmatic and effective choice for a modular Dart backend.
 
 Example:
 
@@ -963,7 +963,7 @@ If you are building a serious Dart full-stack system today with AngularDart, the
 - `eloquent` for structured relational persistence when useful;
 - multiple isolates in production instead of a single giant isolate.
 
-That architecture is consistent with the `salus` reference and is substantially more maintainable than a flat all-in-one package.
+That architecture is substantially more maintainable than a flat all-in-one package.
 
 ## 26. Full `projects` CRUD example with real file layout
 
@@ -1332,7 +1332,7 @@ The cleanest JWT setup for this stack is:
 - private routes are mounted behind auth middleware;
 - AngularDart route guards redirect unauthenticated users away from protected pages.
 
-The `new_sali` reference shows a broader OIDC/auth ecosystem. For this guide, the simplest reusable baseline is direct bearer-token validation in `shelf`.
+In larger systems you may adopt a broader OIDC/auth ecosystem. For this guide, the simplest reusable baseline is direct bearer-token validation in `shelf`.
 
 ### JWT flow
 
@@ -1547,7 +1547,7 @@ class AuthGuard extends RouterHook {
 
 ## 28. Deployment guide with Nginx + systemd + isolates
 
-The `new_sali` repository contains real-world Nginx and service-management material. The exact files there are project-specific, but the deployment model is reusable:
+This deployment model is based on a practical production-style layout. The exact files will vary by project, but the overall model is reusable:
 
 - frontend built to static files;
 - `shelf` backend running as a Linux service;
