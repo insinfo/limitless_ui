@@ -116,6 +116,22 @@ The demo fixes that with a global override in [example/web/style.scss](example/w
 - Do not create or commit manual duplicate `.css` files next to component `.scss` sources just to satisfy `styleUrls`.
 - If a component has `toast_component.scss`, the correct AngularDart annotation is `styleUrls: ['toast_component.css']`.
 
+### Why `sass_builder` is a regular dependency
+
+`limitless_ui` declares `sass_builder` in `dependencies`, not `dev_dependencies`, because this package publishes components whose files under `lib/` depend on Sass compilation during the consumer application's build.
+
+This is required for two reasons:
+
+- Dart `dev_dependencies` do not propagate to package consumers.
+- `sass_builder` is auto-applied to dependents, so the builder must be available as a direct runtime dependency of the package that exposes `.scss` files requiring compilation during the downstream build.
+
+In practice, if `sass_builder` existed only in `dev_dependencies` here, it would work for developing `limitless_ui` itself, but not reliably when an application depends on `limitless_ui` and needs the package's `lib/**/*.scss` sources compiled into the `.css` files referenced by AngularDart `styleUrls`.
+
+Practical rule:
+
+- Published library that requires a builder so assets under `lib/` work when consumed: keep that builder in `dependencies`.
+- Root application that only compiles its own local Sass files: keep `sass_builder` in `dev_dependencies`.
+
 ## Included modules
 
 - Inputs: checkbox, radio, toggle, rating, file upload, currency input, date picker, time picker, date range picker, color picker, select, multi-select, typeahead.

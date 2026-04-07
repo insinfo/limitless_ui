@@ -15,7 +15,7 @@ dependencies:
   ngforms: ^5.0.0-dev.3
   ngrouter: ^4.0.0-dev.3
   intl: ^0.18.1
-
+  # é obrigatorio para o consumidor funcionar corretamente 
   sass_builder: ^2.2.1
   
 dev_dependencies:
