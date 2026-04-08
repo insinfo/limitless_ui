@@ -26,7 +26,7 @@
                   <div class="card-header">
                     <h5 class="mb-0">General attachments</h5>
                   </div>
-                  <div class="card-body">
+                  <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="attachments"
                         helperText="Use `maxFiles`, `accept`, `showPreview` e `[(ngModel)]` no componente principal."
@@ -46,7 +46,7 @@
                   <div class="card-header">
                     <h5 class="mb-0">Single cover image</h5>
                   </div>
-                  <div class="card-body">
+                  <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="coverFiles"
                         accept="image/*"
@@ -70,7 +70,7 @@
                   <div class="card-header">
                     <h5 class="mb-0">Hidden preview</h5>
                   </div>
-                  <div class="card-body">
+                  <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="compactFiles"
                         [showPreview]="false"
@@ -94,7 +94,7 @@
                   <div class="card-header">
                     <h5 class="mb-0">Accepted file types</h5>
                   </div>
-                  <div class="card-body">
+                  <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="mediaFiles"
                         accept="image/*,video/*"
@@ -118,7 +118,7 @@
                   <div class="card-header">
                     <h5 class="mb-0">Disabled state</h5>
                   </div>
-                  <div class="card-body">
+                  <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [disabled]="true"
                         [multiple]="false"
@@ -141,7 +141,7 @@
                   <div class="card-header">
                     <h5 class="mb-0">Low-level directives</h5>
                   </div>
-                  <div class="card-body">
+                  <div class="card-body demo-upload-card-body">
                     <div
                         liFileDrop
                         class="upload-directive-zone"
