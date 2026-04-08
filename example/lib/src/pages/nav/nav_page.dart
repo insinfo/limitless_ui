@@ -6,6 +6,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiNavDirective,
@@ -19,6 +20,33 @@ class NavPageComponent {
   NavPageComponent(this.i18n) : eventLog = '' {
     eventLog = waitingState;
   }
+
+  static const String apiSnippet = '''
+<ul liNav #nav="liNav" class="nav nav-tabs" [(activeId)]="activeId">
+  <li [liNavItem]="1">
+    <button liNavLink>First</button>
+    <template liNavContent>First content</template>
+  </li>
+  <li [liNavItem]="2">
+    <button liNavLink>Second</button>
+    <template liNavContent>Second content</template>
+  </li>
+</ul>
+
+<div [liNavOutlet]="nav"></div>''';
+
+  static const String verticalApiSnippet = '''
+<div
+  liNav
+  orientation="vertical"
+  keyboard="changeWithArrows"
+  [activeId]="verticalActiveId"
+  (activeIdChange)="verticalActiveId = \$event">
+  <div liNavItem="overview">
+    <button liNavLink>Overview</button>
+    <template liNavContent>...</template>
+  </div>
+</div>''';
 
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;

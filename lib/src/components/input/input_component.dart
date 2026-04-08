@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:ngdart/angular.dart';
@@ -27,6 +28,16 @@ class LiInputComponent
   final html.HtmlElement _hostElement;
   final ChangeDetectorRef _changeDetectorRef;
   final String _generatedId;
+  final StreamController<html.Event> _blurController =
+      StreamController<html.Event>.broadcast();
+  final StreamController<html.Event> _focusController =
+      StreamController<html.Event>.broadcast();
+  final StreamController<html.MouseEvent> _clickController =
+      StreamController<html.MouseEvent>.broadcast();
+  final StreamController<html.KeyboardEvent> _keydownController =
+      StreamController<html.KeyboardEvent>.broadcast();
+  final StreamController<html.KeyboardEvent> _enterController =
+      StreamController<html.KeyboardEvent>.broadcast();
 
   @Input()
   String id = '';
@@ -174,6 +185,21 @@ class LiInputComponent
 
   @ViewChild('inputElement')
   html.Element? inputElement;
+
+  @Output('inputBlur')
+  Stream<html.Event> get inputBlur => _blurController.stream;
+
+  @Output('inputFocus')
+  Stream<html.Event> get inputFocus => _focusController.stream;
+
+  @Output('inputClick')
+  Stream<html.MouseEvent> get inputClick => _clickController.stream;
+
+  @Output('inputKeydown')
+  Stream<html.KeyboardEvent> get inputKeydown => _keydownController.stream;
+
+  @Output('inputEnter')
+  Stream<html.KeyboardEvent> get inputEnter => _enterController.stream;
 
   String _value = '';
   bool _touched = false;
@@ -425,11 +451,27 @@ class LiInputComponent
     _markForCheck();
   }
 
-  void handleBlur() {
+  void handleBlur(html.Event event) {
     _touched = true;
     _onTouched();
     _syncRequiredValidationState();
+    _blurController.add(event);
     _markForCheck();
+  }
+
+  void handleFocus(html.Event event) {
+    _focusController.add(event);
+  }
+
+  void handleClick(html.MouseEvent event) {
+    _clickController.add(event);
+  }
+
+  void handleKeydown(html.KeyboardEvent event) {
+    _keydownController.add(event);
+    if (event.key == 'Enter' || event.code == 'Enter' || event.code == 'NumpadEnter') {
+      _enterController.add(event);
+    }
   }
 
   @HostListener('focus')
@@ -587,5 +629,10 @@ class LiInputComponent
   @override
   void ngOnDestroy() {
     _hostClassObserver?.disconnect();
+    _blurController.close();
+    _focusController.close();
+    _clickController.close();
+    _keydownController.close();
+    _enterController.close();
   }
 }

@@ -41,6 +41,49 @@ class MultiSelectTestHostComponent {
   ];
 }
 
+class MultiSelectCompareValue {
+  const MultiSelectCompareValue(this.id, this.label);
+
+  final int id;
+  final String label;
+}
+
+@Component(
+  selector: 'li-multi-select-compare-test-host',
+  template: '''
+    <li-multi-select
+      [dataSource]="channelOptions"
+      labelKey="label"
+      valueKey="value"
+      [compareWith]="compareById"
+      [(ngModel)]="selectedChannels">
+    </li-multi-select>
+  ''',
+  directives: [coreDirectives, formDirectives, LiMultiSelectComponent],
+)
+class MultiSelectCompareTestHostComponent {
+  List<dynamic> selectedChannels = <dynamic>[
+    const MultiSelectCompareValue(2, 'Push antigo'),
+  ];
+
+  final List<Map<String, dynamic>> channelOptions = <Map<String, dynamic>>[
+    <String, dynamic>{
+      'label': 'E-mail',
+      'value': const MultiSelectCompareValue(1, 'E-mail'),
+    },
+    <String, dynamic>{
+      'label': 'Push',
+      'value': const MultiSelectCompareValue(2, 'Push'),
+    },
+  ];
+
+  bool compareById(dynamic optionValue, dynamic modelValue) {
+    return optionValue is MultiSelectCompareValue &&
+        modelValue is MultiSelectCompareValue &&
+        optionValue.id == modelValue.id;
+  }
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
@@ -49,6 +92,9 @@ void main() {
 
   final testBed = NgTestBed<MultiSelectTestHostComponent>(
     ng.MultiSelectTestHostComponentNgFactory,
+  );
+  final compareTestBed = NgTestBed<MultiSelectCompareTestHostComponent>(
+    ng.MultiSelectCompareTestHostComponentNgFactory,
   );
 
   test('toggles options and updates ngModel', () async {
@@ -164,10 +210,24 @@ void main() {
     expect(panel.style.boxShadow, isEmpty);
     expect(panel.style.borderColor, isEmpty);
   });
+
+  test('matches object values with compareWith', () async {
+    final fixture = await compareTestBed.create();
+    await _settleCompare(fixture);
+
+    expect(fixture.rootElement.querySelectorAll('.badge').length, 1);
+    expect(fixture.rootElement.text, contains('Push'));
+  });
 }
 
 Future<void> _settle(
     NgTestFixture<MultiSelectTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleCompare(
+    NgTestFixture<MultiSelectCompareTestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});
 }

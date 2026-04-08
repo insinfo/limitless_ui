@@ -10,6 +10,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     coreDirectives,
     formDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     liWizardDirectives,
@@ -17,6 +18,25 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class WizardPageComponent {
   WizardPageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-wizard
+  [previousLabel]="'Anterior'"
+  [nextLabel]="'Próximo'"
+  [finishLabel]="'Enviar'"
+  [actionsTemplate]="wizardActionsTemplate"
+  [beforeChange]="validateStep"
+  (finish)="submitWizard(\$event)">
+  <li-wizard-step
+      title="Dados pessoais"
+      [headerTemplate]="wizardStepHeaderTemplate">
+    <input class="form-control" [(ngModel)]="name" name="name">
+  </li-wizard-step>
+
+  <li-wizard-step title="Confirmação" [error]="hasReviewError">
+    <div class="alert alert-info">Revisão final</div>
+  </li-wizard-step>
+</li-wizard>''';
 
   final DemoI18nService i18n;
 

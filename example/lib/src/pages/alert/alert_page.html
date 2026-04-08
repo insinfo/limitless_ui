@@ -104,13 +104,7 @@
               <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-alert
-  variant="warning"
-  [solid]="true"
-  iconClass="ph-warning-circle"
-  [dismissible]="true"&gt;
-  &lt;strong&gt;Atenção.&lt;/strong&gt; {{ apiSnippetBody }}
-&lt;/li-alert&gt;</code></pre>
+            <li-highlight [code]="apiSnippet" language="html"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

@@ -7,6 +7,9 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
+    LiPageHeaderComponent,
+    LiPageHeaderBreadcrumbItemDirective,
     LiTabsComponent,
     LiTabxDirective,
     liBreadcrumbDirectives,
@@ -14,6 +17,18 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class BreadcrumbsPageComponent {
   BreadcrumbsPageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-breadcrumb divider="dash" helperText="You are here:">
+  <a liBreadcrumbItem href="#home">Home</a>
+  <a liBreadcrumbItem href="#components">Components</a>
+  <span liBreadcrumbItem [active]="true">Breadcrumbs</span>
+
+  <div liBreadcrumbEnd class="d-flex gap-2">
+    <button class="btn btn-sm btn-light">Duplicate</button>
+    <button class="btn btn-sm btn-primary">Publish</button>
+  </div>
+</li-breadcrumb>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

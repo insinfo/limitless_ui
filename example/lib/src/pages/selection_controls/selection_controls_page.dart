@@ -10,8 +10,11 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     formDirectives,
     LiCheckboxComponent,
     LiCheckboxGroupComponent,
+    LiHighlightComponent,
     LiRadioComponent,
     LiRadioGroupComponent,
+    LiTabsComponent,
+    LiTabxDirective,
     LiToggleComponent,
   ],
 )
@@ -19,8 +22,38 @@ class SelectionControlsPageComponent {
   SelectionControlsPageComponent(this.i18n);
 
   final DemoI18nService i18n;
+  Messages get t => i18n.t;
 
   bool get isPt => i18n.isPortuguese;
+
+  static const String checkboxSnippet = '''
+<li-checkbox
+    [label]="auditTrailLabel"
+    [helperText]="auditTrailHelp"
+    [(ngModel)]="auditTrailEnabled">
+</li-checkbox>''';
+
+  static const String radioSnippet = '''
+<li-radio-group
+    [legend]="radioFormLegend"
+    [helperText]="radioFormHelp"
+    [errorText]="radioFormError"
+    [invalid]="radioFormInvalid">
+  <li-radio
+      name="approvalMode"
+      value="manual"
+      [(ngModel)]="approvalMode">
+  </li-radio>
+</li-radio-group>''';
+
+  static const String toggleSnippet = '''
+<li-toggle
+    [label]="toggleFormLabel"
+    [helperText]="toggleFormDescription"
+    [errorText]="toggleFormError"
+    [invalid]="toggleFormInvalid"
+    [(ngModel)]="escalationToggleEnabled">
+</li-toggle>''';
 
   bool auditTrailEnabled = true;
   bool publicPortalEnabled = false;
@@ -78,6 +111,9 @@ class SelectionControlsPageComponent {
   String get introBody => isPt
       ? 'A página combina demos visuais e cenários de formulário para mostrar como checkbox, radio e toggle podem sair do showcase e entrar em fluxos reais com validação e feedback.'
       : 'This page combines visual demos and form scenarios to show how checkbox, radio, and toggle can move from showcase samples into real flows with validation and feedback.';
+  String get apiIntro => isPt
+      ? 'Os três componentes compartilham o mesmo padrão: `[(ngModel)]`, estados visuais, helper text e mensagens inline quando o caso pede validação.'
+      : 'All three components share the same pattern: `[(ngModel)]`, visual states, helper text, and inline messages when validation is needed.';
 
   String get checkboxesTitle => 'Checkboxes';
   String get checkboxesSubtitle => isPt
@@ -92,6 +128,10 @@ class SelectionControlsPageComponent {
       ? 'Booleanos, valores mapeados, bloco inverso e exemplo com feedback'
       : 'Booleans, mapped values, inverse block, and feedback example';
   String get summaryTitle => isPt ? 'Resumo' : 'Summary';
+  String get mainInputsTitle => isPt ? 'Pontos principais' : 'Main points';
+  String get checkboxSnippetTitle => 'Checkbox';
+  String get radioSnippetTitle => 'Radio group';
+  String get toggleSnippetTitle => 'Toggle';
 
   String get leftStackedTitle => isPt ? 'Pilha à esquerda' : 'Left stacked';
   String get rightStackedTitle => isPt ? 'Pilha à direita' : 'Right stacked';

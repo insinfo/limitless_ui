@@ -240,6 +240,10 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiScrollSpyMenuDirective`, `LiScrollSpyConfig`.
 - Modal:
   `LiModalComponent` with lazy content support.
+- Page header:
+  `LiPageHeaderComponent`, `LiPageHeaderBreadcrumbItemDirective`,
+  `LiPageHeaderBottomDirective`, `LiPageHeaderActionsDirective`,
+  `liPageHeaderDirectives`.
 - Toast:
   `LiToastComponent`, `LiToastStackComponent`, `LiToastService`.
 - Color picker:
@@ -454,6 +458,27 @@ Best practices:
 
 The most complete demo is in [example/lib/src/pages/datatable/datatable_page.dart](example/lib/src/pages/datatable/datatable_page.dart) and [example/lib/src/pages/datatable/datatable_page.html](example/lib/src/pages/datatable/datatable_page.html).
 
+### Input
+
+`li-input` is the base form field for text, number, search, password, textarea, masks, and prefix or suffix addons. It integrates with `[(ngModel)]` and now also exposes field-level DOM-style outputs so the host can react without dropping back to a native `<input>`.
+
+Most relevant inputs and features:
+
+- `label`, `helperText`, `placeholder`, `floatingLabel`, `multiline`, and `rows`;
+- `prefixText`, `suffixText`, `prefixIconClass`, and `suffixIconClass`;
+- `mask`, `inputMode`, `maxLength`, `readonly`, `disabled`, and numeric attributes such as `min`, `max`, and `step`;
+- `inputBlur`, `inputFocus`, `inputClick`, `inputKeydown`, and `inputEnter`.
+
+```html
+<li-input
+  label="CGM"
+  type="number"
+  (inputBlur)="loadPersonByCode($event.target.value)"
+  (inputEnter)="loadPersonByCode($event.target.value)"
+  [(ngModel)]="cgm">
+</li-input>
+```
+
 ### Datatable Select
 
 `li-datatable-select` is the right fit when a simple select is not enough because users need to search, paginate, and sort before choosing an item. It combines a `form-select`-style trigger with an internal `li-modal` that hosts a `li-datatable`.
@@ -468,7 +493,11 @@ Main flow:
 Most relevant inputs and features:
 
 - `labelKey` and `valueKey` to separate the visible label from the persisted value;
+- `itemLabelBuilder` and `itemValueBuilder` when the list is typed and the host does not want to rely on `Map` keys;
+- `compareWith` when the selected value is an object or when rows may be recreated by new backend responses;
 - `searchInFields` for the search selector inside the modal;
+- projected `template liDatatableSelectModalContent` for replacing the internal modal body with arbitrary content;
+- modal context helpers `ctx.select(item)` and `ctx.selectItem(label, value)`;
 - `modalSize`, `title`, `placeholder`, `disabled`, and `fullScreenOnMobile`;
 - public methods such as `clear()`, `setSelectedItem(...)`, and `selectedLabel`.
 
@@ -500,11 +529,47 @@ Most relevant inputs and features:
 </li-datatable-select>
 ```
 
+For typed rows and object comparison:
+
+```html
+<li-datatable-select
+  [settings]="personSettings"
+  [dataTableFilter]="personFilter"
+  [data]="personFrame"
+  [searchInFields]="personSearchFields"
+  [itemLabelBuilder]="personLabel"
+  [itemValueBuilder]="personId"
+  [compareWith]="comparePersonById"
+  [(ngModel)]="selectedPerson"
+  (dataRequest)="loadPeople($event)">
+</li-datatable-select>
+```
+
+For arbitrary modal content such as an existing search page:
+
+```html
+<li-datatable-select
+  [itemLabelBuilder]="cgmLabel"
+  [itemValueBuilder]="cgmValue"
+  [compareWith]="compareCgm"
+  [(ngModel)]="selectedPerson">
+  <template liDatatableSelectModalContent let-ctx>
+    <consultar-cgm-page
+      [insideModal]="true"
+      [filtroAtivo]="true"
+      (onSelect)="ctx.select($event)">
+    </consultar-cgm-page>
+  </template>
+</li-datatable-select>
+```
+
 Best practices:
 
 - keep `Filters`, `DatatableSettings`, and `searchInFields` stable;
 - handle data loading in the parent, just as you would for a regular datatable;
 - use `valueKey` to persist only IDs instead of the full map when the field belongs to a form;
+- use `itemLabelBuilder` and `itemValueBuilder` for strongly typed entities;
+- use `ctx.selectItem(label, value)` when the modal content already knows the final pair and does not need to emit a full row object;
 - use `@ViewChild` only for focused programmatic actions such as `clear()` or `setSelectedItem(...)`.
 
 The reference demo is in [example/lib/src/pages/datatable_select/datatable_select_page.dart](example/lib/src/pages/datatable_select/datatable_select_page.dart) and [example/lib/src/pages/datatable_select/datatable_select_page.html](example/lib/src/pages/datatable_select/datatable_select_page.html).
@@ -523,18 +588,20 @@ The reference demo is in [example/lib/src/pages/datatable_select/datatable_selec
   [dataSource]="users"
   labelKey="name"
   valueKey="id"
+  [compareWith]="compareUserById"
   placeholder="Selecione"
-  [(ngModel)]="selectedUserId">
+  [(ngModel)]="selectedUser">
 </li-select>
 ```
 
-`li-multi-select` follows the same idea, but `ngModel` becomes a `List<dynamic>`:
+`li-multi-select` follows the same idea, but `ngModel` becomes a `List<dynamic>` or a typed object list when combined with `compareWith`:
 
 ```html
 <li-multi-select
   [dataSource]="channelOptions"
   labelKey="label"
   valueKey="id"
+  [compareWith]="compareChannelById"
   [(ngModel)]="selectedChannels">
 </li-multi-select>
 ```
@@ -553,8 +620,40 @@ Best practices:
 
 - do not recreate `dataSource` in getters used by the template;
 - keep lists stable and update only `ngModel`;
+- use `compareWith` whenever object identity is not stable across reloads;
 - for very large collections, handle search and pagination in the parent component;
 - prefer `li-datatable-select` when the choice requires a table, columns, and structured search.
+
+### Page Header
+
+`li-pg-header` packages the common administrative page shell: title, optional prefix, breadcrumb row, projected actions, and an optional projected bottom row for tabs, filters, or toolbars.
+
+Supported selectors and migration aliases:
+
+- `li-pg-header`
+- `li-pg-crumb-item`
+- `li-pg-breadcrumb-item`
+- `[liPgHeaderActions]`
+- `[liPgHeaderBottom]`
+
+Main features:
+
+- `titlePrefix`, `titlePrefixSeparator`, `title`, and `titleClass`;
+- breadcrumb items from `[breadcrumbItems]` or projected `li-pg-crumb-item`;
+- projected action slot with `[liPgHeaderActions]`;
+- projected second row with `[liPgHeaderBottom]`;
+- compatibility input `showFavoriteAction` for gradual migrations, while the preferred package pattern is to project the real action content explicitly.
+
+```html
+<li-pg-header titlePrefix="Protocolo" title="Incluir Processo">
+  <li-pg-crumb-item label="Protocolo"></li-pg-crumb-item>
+  <li-pg-crumb-item label="Incluir Processo" [active]="true"></li-pg-crumb-item>
+
+  <div liPgHeaderActions class="collapse d-lg-block ms-lg-auto">
+    <acao-favorita-comp></acao-favorita-comp>
+  </div>
+</li-pg-header>
+```
 
 References:
 
@@ -1020,7 +1119,7 @@ dart pub publish --dry-run
 
 ## Demo application
 
-The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, datatable, dropdown, fab, file upload, modal, nav, offcanvas, pagination, popover, rating, scrollspy, tabs, toast, treeview, typeahead, tooltip, wizard, and selection-control examples.
+The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, datatable, datatable select, dropdown, fab, file upload, inputs, modal, nav, offcanvas, page header, pagination, popover, rating, scrollspy, select, multi-select, tabs, toast, treeview, typeahead, tooltip, wizard, and selection-control examples.
 
 Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, and overlay components that depend on browser geometry.
 

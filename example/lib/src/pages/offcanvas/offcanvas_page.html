@@ -107,41 +107,15 @@
           <div class="card-body">
             <div class="row g-3">
               <div class="col-12">
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-offcanvas
-  title-text="Detalhes"
-  position="end"
-  size="lg"
-  [lazyContent]="true"
-  [keyboard]="true"
-  [beforeDismiss]="guardBeforeDismiss"
-  (shown)="onShown('Detalhes')"
-  (hidden)="onHidden('Detalhes')"
-  (close)="onClosed()"
-  (dismiss)="onDismissed($event)"&gt;
-  &lt;div&gt;Conteúdo projetado&lt;/div&gt;
-&lt;/li-offcanvas&gt;</code></pre>
+                <li-highlight [code]="apiSnippet" language="html"></li-highlight>
               </div>
 
               <div class="col-12">
-                <pre class="bg-light border rounded p-3 mb-0"><code>final ref = offcanvasService.open('service-demo');
-ref.shown.listen((_) =&gt; print('shown'));
-ref.hidden.listen((_) =&gt; print('hidden'));
-ref.close();</code></pre>
+                <li-highlight [code]="serviceSnippet" language="dart"></li-highlight>
               </div>
 
               <div class="col-12">
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-offcanvas #panel offcanvasId="service-demo" title-text="Ações"&gt;
-  &lt;div liOffcanvasHeader class="offcanvas-header bg-dark text-white"&gt;
-    &lt;h5 class="offcanvas-title mb-0"&gt;Header customizado&lt;/h5&gt;
-    &lt;button class="btn-close btn-close-white" (click)="panel.close()"&gt;&lt;/button&gt;
-  &lt;/div&gt;
-
-  &lt;div&gt;Corpo padrão com projeção.&lt;/div&gt;
-
-  &lt;div liOffcanvasFooter class="border-top p-3"&gt;
-    &lt;button class="btn btn-primary"&gt;Salvar&lt;/button&gt;
-  &lt;/div&gt;
-&lt;/li-offcanvas&gt;</code></pre>
+                <li-highlight [code]="projectedSnippet" language="html"></li-highlight>
               </div>
             </div>
           </div>

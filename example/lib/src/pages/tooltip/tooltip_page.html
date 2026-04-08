@@ -184,54 +184,23 @@
               <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;button
-  [liTooltip]="'Tooltip direto no botão'"
-  placement="top"
-  triggers="hover focus"&gt;
-  Hover tooltip
-&lt;/button&gt;</code></pre>
+            <div class="mb-3">
+              <li-highlight [code]="basicApiSnippet" language="html"></li-highlight>
+            </div>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;button
-  [liTooltip]="tooltipTemplate"
-  triggers="click"
-  container="body"
-  tooltipClass="tooltip-aurora"&gt;
-  Tooltip com template
-&lt;/button&gt;
+            <div class="mb-3">
+              <li-highlight [code]="templateApiSnippet" language="html"></li-highlight>
+            </div>
 
-&lt;template #tooltipTemplate&gt;
-  &lt;div class="fw-semibold mb-1"&gt;TemplateRef dentro do tooltip&lt;/div&gt;
-  &lt;div class="small text-white-50"&gt;Bindings continuam vivos.&lt;/div&gt;
-&lt;/template&gt;</code></pre>
+            <div class="mb-3">
+              <li-highlight [code]="targetApiSnippet" language="html"></li-highlight>
+            </div>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;button
-  #tooltip="liTooltip"
-  [liTooltip]="'Ancorado em outro elemento'"
-  triggers="manual"
-  [positionTarget]="'#target-anchor'"
-  (click)="tooltip.toggle()"&gt;
-  Abrir tooltip manual
-&lt;/button&gt;
+            <div class="mb-3">
+              <li-highlight [code]="configApiSnippet" language="dart"></li-highlight>
+            </div>
 
-&lt;span id="target-anchor"&gt;Âncora visual&lt;/span&gt;</code></pre>
-
-            <pre class="bg-light border rounded p-3 mb-3"><code>@Component(
-  providers: [ClassProvider(LiTooltipConfig)],
-)
-class DemoTooltipDefaults {
-  DemoTooltipDefaults(LiTooltipConfig config) {
-    config.triggers = 'click';
-    config.placement = 'right';
-    config.tooltipClass = 'tooltip-config-demo';
-  }
-}</code></pre>
-
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-tooltip
-  [text]="'Mostra dicas ao passar o mouse.'"
-  placement="top"
-  trigger="hover"&gt;
-  &lt;button class="btn btn-outline-primary" type="button"&gt;Hover tooltip&lt;/button&gt;
-&lt;/li-tooltip&gt;</code></pre>
+            <li-highlight [code]="componentApiSnippet" language="html"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

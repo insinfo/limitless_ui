@@ -9,6 +9,7 @@ class DemoRoutePaths {
   static final modal = RoutePath(path: 'modal');
   static final offcanvas = RoutePath(path: 'offcanvas');
   static final breadcrumbs = RoutePath(path: 'breadcrumbs');
+  static final pageHeader = RoutePath(path: 'page-header');
   static final pagination = RoutePath(path: 'pagination');
   static final selectionControls = RoutePath(path: 'selection-controls');
   static final select = RoutePath(path: 'select');

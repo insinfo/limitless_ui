@@ -149,30 +149,11 @@
               <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;ul liNav #nav="liNav" class="nav nav-tabs" [(activeId)]="activeId"&gt;
-  &lt;li [liNavItem]="1"&gt;
-    &lt;button liNavLink&gt;First&lt;/button&gt;
-    &lt;template liNavContent&gt;First content&lt;/template&gt;
-  &lt;/li&gt;
-  &lt;li [liNavItem]="2"&gt;
-    &lt;button liNavLink&gt;Second&lt;/button&gt;
-    &lt;template liNavContent&gt;Second content&lt;/template&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
+            <div class="mb-3">
+              <li-highlight [code]="apiSnippet" language="html"></li-highlight>
+            </div>
 
-&lt;div [liNavOutlet]="nav"&gt;&lt;/div&gt;</code></pre>
-
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;div
-  liNav
-  orientation="vertical"
-  keyboard="changeWithArrows"
-  [activeId]="verticalActiveId"
-  (activeIdChange)="verticalActiveId = $event"&gt;
-  &lt;div liNavItem="overview"&gt;
-    &lt;button liNavLink&gt;Overview&lt;/button&gt;
-    &lt;template liNavContent&gt;...&lt;/template&gt;
-  &lt;/div&gt;
-&lt;/div&gt;</code></pre>
+            <li-highlight [code]="verticalApiSnippet" language="html"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

@@ -9,7 +9,10 @@ import 'package:ngrouter/ngrouter.dart';
     coreDirectives,
     DemoPageBreadcrumbComponent,
     formDirectives,
+    LiHighlightComponent,
     LiColorPickerComponent,
+    LiTabsComponent,
+    LiTabxDirective,
     RouterLink,
   ],
   exports: [DemoRoutePaths],
@@ -18,8 +21,32 @@ class ColorPickerPageComponent {
   ColorPickerPageComponent(this.i18n);
 
   final DemoI18nService i18n;
+  Messages get t => i18n.t;
 
   bool get isPt => i18n.isPortuguese;
+
+  static const String basicUsageSnippet = '''
+<li-color-picker
+    [(ngModel)]="basicColor">
+</li-color-picker>''';
+
+  static const String paletteSnippet = '''
+<li-color-picker
+    [(ngModel)]="paletteColor"
+    [showPalette]="true"
+    [showSelectionPalette]="true"
+    [palette]="limitlessPalette">
+</li-color-picker>''';
+
+  static const String eventsSnippet = '''
+<li-color-picker
+    [(ngModel)]="eventColor"
+    [showAlpha]="true"
+    [showPalette]="true"
+    [showInput]="true"
+    (pickerChange)="onPickerEvent('change', \$event)"
+    (pickerHide)="onPickerEvent('hide', \$event)">
+</li-color-picker>''';
 
   String? basicColor = '#20BF7E';
   String? customButtonsColor = '#20BF7E';
@@ -126,6 +153,17 @@ class ColorPickerPageComponent {
   String get title => isPt ? 'Pickers - ' : 'Pickers - ';
   String get subtitle => isPt ? 'Color' : 'Color';
   String get breadcrumb => isPt ? 'Color picker' : 'Color picker';
+  String get overviewIntro => isPt
+      ? 'A página reúne os principais modos do color picker: uso básico, botões customizados, paletas, formatos, eventos e flat mode.'
+      : 'This page brings together the main color picker modes: basic usage, custom buttons, palettes, formats, events, and flat mode.';
+  String get apiIntro => isPt
+      ? 'A API principal fica concentrada em `[(ngModel)]`, recursos visuais opcionais e eventos do picker.'
+      : 'The main API is centered around `[(ngModel)]`, optional visual features, and picker events.';
+  String get mainInputsTitle => isPt ? 'Entradas principais' : 'Main inputs';
+  String get snippetsTitle => isPt ? 'Snippets rápidos' : 'Quick snippets';
+  String get basicSnippetTitle => isPt ? 'Uso básico' : 'Basic usage';
+  String get paletteSnippetTitle => isPt ? 'Paleta e seleção' : 'Palette and selection';
+  String get eventsSnippetTitle => isPt ? 'Eventos' : 'Events';
 
   String get enableLabel => isPt ? 'Habilitar' : 'Enable';
 

@@ -92,6 +92,9 @@ class LiMultiSelectComponent
   @Input()
   bool searchable = true;
 
+  @Input()
+  bool Function(dynamic optionValue, dynamic modelValue)? compareWith;
+
   LiMultiSelectComponent(this.nativeElement, this._changeDetectorRef) {
     final seq = _nextSequence++;
     listboxId = 'li-multi-select-listbox-$seq';
@@ -171,7 +174,7 @@ class LiMultiSelectComponent
     if (newVal is List) {
       for (final value in newVal) {
         for (final option in options) {
-          if (value == option.value) {
+          if (_areValuesEqual(option.value, value)) {
             option.selected = true;
           }
         }
@@ -482,7 +485,9 @@ class LiMultiSelectComponent
     final selectedValueSet = selectedValues.toSet();
     options = nextOptions;
     for (final option in options) {
-      option.selected = selectedValueSet.contains(option.value);
+      option.selected = selectedValueSet.any(
+        (selectedValue) => _areValuesEqual(option.value, selectedValue),
+      );
     }
     _markForCheck();
   }
@@ -508,10 +513,12 @@ class LiMultiSelectComponent
       return;
     }
 
-    final selectedValueSet = selectedValues.toSet();
+    final selectedValueSet = selectedValues.toList(growable: false);
     options = nextOptions;
     for (final option in options) {
-      option.selected = selectedValueSet.contains(option.value);
+      option.selected = selectedValueSet.any(
+        (selectedValue) => _areValuesEqual(option.value, selectedValue),
+      );
     }
 
     if (markForCheck) {
@@ -609,5 +616,13 @@ class LiMultiSelectComponent
         .map((value) => value.trim())
         .where((value) => value.isNotEmpty)
         .join(' ');
+  }
+
+  bool _areValuesEqual(dynamic optionValue, dynamic modelValue) {
+    final customCompare = compareWith;
+    if (customCompare != null) {
+      return customCompare(optionValue, modelValue);
+    }
+    return optionValue == modelValue;
   }
 }

@@ -368,31 +368,7 @@
 
             <li-tabx [header]="t.common.tabApi">
                 <div class="card-body">
-                    <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-pagination
-  appearance="datatable"
-  variant="flat"
-  linkClass="rounded"
-  [collectionSize]="totalRecords"
-  [pageSize]="10"
-  [page]="page"
-  [maxSize]="5"
-  [rotate]="true"
-  [ellipses]="false"
-  [boundaryLinks]="true"
-  (pageChange)="page = $event"&gt;
-  &lt;template liPaginationFirst&gt;
-    &lt;i class="ph ph-arrow-line-left"&gt;&lt;/i&gt;
-  &lt;/template&gt;
-  &lt;template liPaginationPrevious&gt;
-    &lt;i class="ph ph-caret-left"&gt;&lt;/i&gt;
-  &lt;/template&gt;
-  &lt;template liPaginationNext&gt;
-    &lt;i class="ph ph-caret-right"&gt;&lt;/i&gt;
-  &lt;/template&gt;
-  &lt;template liPaginationLast&gt;
-    &lt;i class="ph ph-arrow-line-right"&gt;&lt;/i&gt;
-  &lt;/template&gt;
-&lt;/li-pagination&gt;</code></pre>
+                    <li-highlight [code]="apiSnippet" language="html"></li-highlight>
                 </div>
             </li-tabx>
         </li-tabsx>

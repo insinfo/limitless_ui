@@ -114,13 +114,7 @@
                     <li *ngFor="let item of alertApiItems">{{ item }}</li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-alert
-  variant="warning"
-  [solid]="true"
-  iconClass="ph-warning-circle"
-  [dismissible]="true"&gt;
-  &lt;strong&gt;Atenção.&lt;/strong&gt; Revise a operação.
-&lt;/li-alert&gt;</code></pre>
+                <li-highlight [code]="alertApiSnippet" language="html"></li-highlight>
               </div>
 
               <div class="col-xl-6">
@@ -129,10 +123,7 @@
                   <li *ngFor="let item of progressApiItems">{{ item }}</li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-progress [height]="'1rem'" [striped]="true" [animated]="true"&gt;
-  &lt;li-progress-bar class="bg-success" [value]="42" label="Produto"&gt;&lt;/li-progress-bar&gt;
-  &lt;li-progress-bar class="bg-info" [value]="28" label="UX"&gt;&lt;/li-progress-bar&gt;
-&lt;/li-progress&gt;</code></pre>
+                <li-highlight [code]="progressApiSnippet" language="html"></li-highlight>
               </div>
             </div>
           </div>

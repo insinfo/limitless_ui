@@ -406,40 +406,19 @@
               <li>{{ t.pages.accordion.apiFour }}</li>
               <li>{{ t.pages.accordion.apiFive }}</li>
             </ul>
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-accordion [allowMultipleOpen]="true" [flush]="true" [bodyPadding]="false"&gt;
-  &lt;li-accordion-item [header]="'Dados do Requerente'" [expanded]="true"&gt;
-    &lt;div class="p-3"&gt;...conteúdo da seção...&lt;/div&gt;
-  &lt;/li-accordion-item&gt;
+            <div class="mb-3">
+              <li-highlight [code]="componentApiSnippet" language="html"></li-highlight>
+            </div>
 
-  &lt;li-accordion-item [header]="'Dados do Processo'"&gt;
-    &lt;div class="p-3"&gt;...conteúdo da seção...&lt;/div&gt;
-  &lt;/li-accordion-item&gt;
-&lt;/li-accordion&gt;</code></pre>
+            <div class="mb-3">
+              <li-highlight [code]="itemApiSnippet" language="html"></li-highlight>
+            </div>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-accordion [allowMultipleOpen]="true"&gt;
-  &lt;li-accordion-item
-    [header]="'Título'"
-    [expanded]="true"
-    (expandedChange)="onChange($event)"&gt;
-  &lt;/li-accordion-item&gt;
-&lt;/li-accordion&gt;</code></pre>
+            <div class="mb-3">
+              <li-highlight [code]="directiveApiSnippet" language="html"></li-highlight>
+            </div>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;div liAccordion [closeOthers]="true" [destroyOnHide]="true" #accordion="liAccordion"&gt;
-  &lt;div liAccordionItem="first" #first="liAccordionItem" [collapsed]="false"&gt;
-    &lt;h2 liAccordionHeader&gt;
-      &lt;button liAccordionButton&gt;Primeiro&lt;/button&gt;
-    &lt;/h2&gt;
-    &lt;div liAccordionCollapse&gt;
-      &lt;template liAccordionBody&gt;
-        &lt;div liAccordionBody&gt;Conteúdo do primeiro item&lt;/div&gt;
-      &lt;/template&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-&lt;/div&gt;</code></pre>
-
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;div [liCollapse]="isCollapsed"&gt;
-  &lt;div class="border rounded p-3"&gt;Conteúdo colapsável&lt;/div&gt;
-&lt;/div&gt;</code></pre>
+            <li-highlight [code]="collapseApiSnippet" language="html"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

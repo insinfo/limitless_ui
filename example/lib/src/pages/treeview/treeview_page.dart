@@ -11,6 +11,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     coreDirectives,
     DemoPageBreadcrumbComponent,
     formDirectives,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiTreeViewComponent,
@@ -29,6 +30,21 @@ class TreeviewPageComponent {
             _buildLazySerializableCatalog(i18n.isPortuguese) {
     rawFrameLookup = rawFrameSettings.normalize(rawFrameNodes);
   }
+
+  static const String apiSnippet = '''
+<li-treeview
+  [data]="treeNodes"
+  [searchPlaceholder]="'Buscar nó'">
+</li-treeview>''';
+
+  static const String selectApiSnippet = '''
+<li-treeview-select
+  [pageLoader]="loadRawTreeChunk"
+  [settings]="lazySerializableSettings"
+  [pageSize]="20"
+  placeholder="Selecione um nó"
+  [(ngModel)]="selectedValue">
+</li-treeview-select>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

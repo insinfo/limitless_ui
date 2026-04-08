@@ -176,49 +176,19 @@
 
             <div class="row g-3">
               <div class="col-12">
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-popover
-  [popoverTitle]="'Popover com click'"
-  [popover]="'Abre por click e fecha com clique externo ou ESC.'"
-  trigger="click"
-  placement="bottom"&gt;
-  &lt;button class="btn btn-outline-primary" type="button"&gt;Click popover&lt;/button&gt;
-&lt;/li-popover&gt;</code></pre>
+                <li-highlight [code]="componentApiSnippet" language="html"></li-highlight>
               </div>
 
               <div class="col-12">
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;template #richTitle let-data&gt;
-  &lt;span&gt;&#123;&#123; data?.title &#125;&#125;&lt;/span&gt;
-&lt;/template&gt;
-
-&lt;template #richBody let-data&gt;
-  &lt;div&gt;&#123;&#123; data?.body &#125;&#125;&lt;/div&gt;
-&lt;/template&gt;
-
-&lt;button
-  [liPopover]="richBody"
-  [popoverTitle]="richTitle"
-  [popoverContext]="contextoInicial"
-  container="body"&gt;
-  Popover com TemplateRef
-&lt;/button&gt;</code></pre>
+                <li-highlight [code]="templateApiSnippet" language="html"></li-highlight>
               </div>
 
               <div class="col-lg-6">
-                <pre class="bg-light border rounded p-3 mb-0"><code>SimplePopover.showWarning(
-  target,
-  'Use este padrão para feedback curto.',
-  title: 'Aviso rápido',
-  timeout: const Duration(seconds: 4),
-);</code></pre>
+                <li-highlight [code]="helperApiSnippet" language="dart"></li-highlight>
               </div>
 
               <div class="col-lg-6">
-                <pre class="bg-light border rounded p-3 mb-0"><code>SweetAlertPopover.showPopover(
-  target,
-  '&lt;strong&gt;Popover com HTML&lt;/strong&gt;&lt;br&gt;Mais contexto.',
-  title: 'Popover ancorado',
-  timeout: const Duration(seconds: 5),
-);</code></pre>
+                <li-highlight [code]="sweetAlertApiSnippet" language="dart"></li-highlight>
               </div>
             </div>
           </div>

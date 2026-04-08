@@ -8,6 +8,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     coreDirectives,
     DemoPageBreadcrumbComponent,
     formDirectives,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiInputComponent,
@@ -21,6 +22,48 @@ class InputsPageComponent {
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+
+  static const String inputSnippet = '''
+<li-input
+    [label]="clientLabel"
+    [helperText]="clientHelp"
+    [(ngModel)]="customerName">
+</li-input>''';
+
+  static const String inputEventsSnippet = '''
+<li-input
+    label="CGM"
+    type="number"
+    (inputBlur)="loadPersonByCode(\$event.target.value)"
+    (inputFocus)="onFocusField(\$event)"
+    (inputClick)="openPicker()"
+    (inputKeydown)="onFieldKeydown(\$event)"
+    (inputEnter)="loadPersonByCode(\$event.target.value)">
+</li-input>''';
+
+  static const String selectSnippet = '''
+<li-select
+    [dataSource]="statusOptions"
+    labelKey="label"
+    valueKey="id"
+    [(ngModel)]="selectedStatus">
+</li-select>
+
+<li-multi-select
+    [dataSource]="channelOptions"
+    labelKey="label"
+    valueKey="id"
+    [(ngModel)]="selectedChannels">
+</li-multi-select>''';
+
+  static const String dateRangeSnippet = '''
+<li-date-range-picker
+    [inicio]="rangeStart"
+    [fim]="rangeEnd"
+    [placeholder]="sprintRangePlaceholder"
+    (inicioChange)="onRangeStartChange(\$event)"
+    (fimChange)="onRangeEndChange(\$event)">
+</li-date-range-picker>''';
 
   late final List<Map<String, dynamic>> _statusOptionsPt = <Map<String, dynamic>>[
     <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
@@ -88,6 +131,8 @@ class InputsPageComponent {
   List<dynamic> disabledChannels = <dynamic>['email', 'webhook'];
   DateTime? frozenRangeStart = DateTime(2026, 4, 18);
   DateTime? frozenRangeEnd = DateTime(2026, 4, 22);
+  String eventDrivenLookup = '1024';
+  String lastInputEvent = '';
 
   bool get isPt => i18n.isPortuguese;
     List<Map<String, dynamic>> get statusOptions =>
@@ -105,7 +150,13 @@ class InputsPageComponent {
   String get intro => isPt
       ? 'LiInput cobre o básico de formulários com integração de ngModel, floating label opcional e addons de prefixo ou sufixo sem exigir markup repetitivo.'
       : 'LiInput covers common form basics with ngModel integration, optional floating label, and prefix or suffix addons without repeated markup.';
-    String get examplesTabLabel => isPt ? 'Exemplos' : 'Examples';
+    String get apiIntro => isPt
+      ? 'A API desta página se divide em três blocos: `li-input`, selects/multi-select e date range picker.'
+      : 'The API on this page is split into three blocks: `li-input`, select/multi-select, and the date range picker.';
+    String get inputSnippetTitle => 'LiInput';
+    String get inputEventsSnippetTitle => isPt ? 'Eventos do LiInput' : 'LiInput events';
+    String get selectSnippetTitle => isPt ? 'Select e multi-select' : 'Select and multi-select';
+    String get dateRangeSnippetTitle => isPt ? 'Date range picker' : 'Date range picker';
     String get basicInputsTitle => 'LiInput';
     String get clientLabel => isPt ? 'Cliente' : 'Customer';
     String get clientHelp => isPt
@@ -169,6 +220,12 @@ class InputsPageComponent {
     String get advancedSummaryLabel =>
       isPt ? 'Entradas avançadas' : 'Advanced inputs';
     String get tokenSummaryLabel => isPt ? 'Token' : 'Token';
+    String get eventsTitle => isPt ? 'Eventos de input' : 'Input events';
+    String get eventsHelp => isPt
+      ? 'Use os outputs para blur, foco, clique, keydown e Enter quando o formulário precisar reagir sem acessar o elemento nativo.'
+      : 'Use the outputs for blur, focus, click, keydown, and Enter when the form must react without reaching into the native element.';
+    String get eventsLabel => isPt ? 'CGM com callbacks' : 'CGM with callbacks';
+    String get lastEventLabel => isPt ? 'Último evento' : 'Last event';
     String get selectsTitle => isPt ? 'Selects' : 'Selects';
     String get deliveryStatusLabel => isPt ? 'Status da entrega' : 'Delivery status';
     String get notificationChannelsLabel =>
@@ -253,6 +310,27 @@ class InputsPageComponent {
 
   void onContractEndChange(DateTime? value) {
     contractEnd = value;
+  }
+
+  void onInputBlur(dynamic _) {
+    lastInputEvent = isPt ? 'blur: buscar pessoa por código' : 'blur: lookup person by code';
+  }
+
+  void onInputFocus(dynamic _) {
+    lastInputEvent = isPt ? 'focus: campo ativo' : 'focus: field focused';
+  }
+
+  void onInputClick(dynamic _) {
+    lastInputEvent = isPt ? 'click: abrir busca modal' : 'click: open modal picker';
+  }
+
+  void onInputKeydown(dynamic event) {
+    final key = event?.key?.toString() ?? '?';
+    lastInputEvent = isPt ? 'keydown: tecla $key' : 'keydown: key $key';
+  }
+
+  void onInputEnter(dynamic _) {
+    lastInputEvent = isPt ? 'enter: confirmar busca por código' : 'enter: confirm lookup by code';
   }
 
   String _labelFor(String id, List<Map<String, dynamic>> source) {

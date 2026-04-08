@@ -8,6 +8,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     liOffcanvasDirectives,
@@ -18,6 +19,41 @@ class OffcanvasPageComponent {
       : eventLog = i18n.isPortuguese
             ? 'Abra um exemplo para validar posição, backdrop, foco e lazy content.'
             : 'Open an example to validate position, backdrop, focus, and lazy content.';
+
+  static const String apiSnippet = '''
+<li-offcanvas
+  title-text="Detalhes"
+  position="end"
+  size="lg"
+  [lazyContent]="true"
+  [keyboard]="true"
+  [beforeDismiss]="guardBeforeDismiss"
+  (shown)="onShown('Detalhes')"
+  (hidden)="onHidden('Detalhes')"
+  (close)="onClosed()"
+  (dismiss)="onDismissed(\$event)">
+  <div>Conteúdo projetado</div>
+</li-offcanvas>''';
+
+  static const String serviceSnippet = '''
+final ref = offcanvasService.open('service-demo');
+ref.shown.listen((_) => print('shown'));
+ref.hidden.listen((_) => print('hidden'));
+ref.close();''';
+
+  static const String projectedSnippet = '''
+<li-offcanvas #panel offcanvasId="service-demo" title-text="Ações">
+  <div liOffcanvasHeader class="offcanvas-header bg-dark text-white">
+    <h5 class="offcanvas-title mb-0">Header customizado</h5>
+    <button class="btn-close btn-close-white" (click)="panel.close()"></button>
+  </div>
+
+  <div>Corpo padrão com projeção.</div>
+
+  <div liOffcanvasFooter class="border-top p-3">
+    <button class="btn btn-primary">Salvar</button>
+  </div>
+</li-offcanvas>''';
 
   final DemoI18nService i18n;
   final LiOffcanvasService offcanvasService;

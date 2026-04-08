@@ -10,6 +10,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiAlertComponent,
@@ -19,6 +20,15 @@ class AlertPageComponent {
   AlertPageComponent(this.i18n) {
     alertEventLog = i18n.t.pages.alerts.waiting;
   }
+
+  static const String apiSnippetTemplate = '''
+<li-alert
+  variant="warning"
+  [solid]="true"
+  iconClass="ph-warning-circle"
+  [dismissible]="true">
+  <strong>Atenção.</strong> __BODY__
+</li-alert>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
@@ -75,6 +85,8 @@ class AlertPageComponent {
         ];
 
   String get apiSnippetBody => _isPt ? 'Revise a operação.' : 'Review the operation.';
+
+  String get apiSnippet => apiSnippetTemplate.replaceFirst('__BODY__', apiSnippetBody);
 
   void restoreReleaseAlert() {
     releaseAlertVisible = true;

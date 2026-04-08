@@ -9,6 +9,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiPopoverComponent,
@@ -17,6 +18,48 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class PopoverPageComponent {
   PopoverPageComponent(this.i18n);
+
+  static const String componentApiSnippet = '''
+<li-popover
+  [popoverTitle]="'Popover com click'"
+  [popover]="'Abre por click e fecha com clique externo ou ESC.'"
+  trigger="click"
+  placement="bottom">
+  <button class="btn btn-outline-primary" type="button">Click popover</button>
+</li-popover>''';
+
+  static const String templateApiSnippet = '''
+<template #richTitle let-data>
+  <span>{{ data?.title }}</span>
+</template>
+
+<template #richBody let-data>
+  <div>{{ data?.body }}</div>
+</template>
+
+<button
+  [liPopover]="richBody"
+  [popoverTitle]="richTitle"
+  [popoverContext]="contextoInicial"
+  container="body">
+  Popover com TemplateRef
+</button>''';
+
+  static const String helperApiSnippet = '''
+SimplePopover.showWarning(
+  target,
+  'Use este padrão para feedback curto.',
+  title: 'Aviso rápido',
+  timeout: const Duration(seconds: 4),
+);''';
+
+  static const String sweetAlertApiSnippet = '''
+SweetAlertPopover.showPopover(
+  target,
+  '<strong>Popover com HTML</strong><br>Mais contexto.',
+  title: 'Popover ancorado',
+  timeout: const Duration(seconds: 5),
+);''';
 
   final DemoI18nService i18n;
   List<PopoverPaletteDemo>? _palettePopoversPt;

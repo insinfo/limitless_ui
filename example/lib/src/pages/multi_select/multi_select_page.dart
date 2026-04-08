@@ -8,6 +8,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     coreDirectives,
     DemoPageBreadcrumbComponent,
     formDirectives,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiMultiOptionComponent,
@@ -16,6 +17,29 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class MultiSelectPageComponent {
   MultiSelectPageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-multi-select
+  [dataSource]="channelOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="selectedChannels">
+</li-multi-select>''';
+
+  static const String notesSnippet = '''
+// Bom: opções criadas uma única vez
+late final List<Map<String, dynamic>> channelOptions;
+
+// O ngModel muda, mas o dataSource continua estável
+List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
+
+  static const String compareWithSnippet = '''
+<li-multi-select
+  [dataSource]="people"
+  labelKey="name"
+  [compareWith]="comparePersonById"
+  [(ngModel)]="selectedPeople">
+</li-multi-select>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

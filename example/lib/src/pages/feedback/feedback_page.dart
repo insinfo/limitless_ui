@@ -6,6 +6,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiAlertComponent,
@@ -15,6 +16,21 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class FeedbackPageComponent {
   FeedbackPageComponent(this.i18n);
+
+  static const String alertApiSnippet = '''
+<li-alert
+  variant="warning"
+  [solid]="true"
+  iconClass="ph-warning-circle"
+  [dismissible]="true">
+  <strong>Atenção.</strong> Revise a operação.
+</li-alert>''';
+
+  static const String progressApiSnippet = '''
+<li-progress [height]="'1rem'" [striped]="true" [animated]="true">
+  <li-progress-bar class="bg-success" [value]="42" label="Produto"></li-progress-bar>
+  <li-progress-bar class="bg-info" [value]="28" label="UX"></li-progress-bar>
+</li-progress>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

@@ -8,6 +8,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     coreDirectives,
     DemoPageBreadcrumbComponent,
     formDirectives,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiCurrencyInputComponent,
@@ -15,6 +16,14 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class CurrencyPageComponent {
   CurrencyPageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-currency-input
+  [(ngModel)]="amountMinorUnits"
+  currencyCode="USD"
+  locale="en_US"
+  [required]="true">
+</li-currency-input>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

@@ -28,6 +28,7 @@ class DemoPageBreadcrumbComponent {
     'modal',
     'offcanvas',
     'breadcrumbs',
+    'page-header',
     'pagination',
     'carousel',
     'tooltip',

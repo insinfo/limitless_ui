@@ -191,18 +191,11 @@
               <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-treeview
-  [data]="treeNodes"
-  [searchPlaceholder]="'Buscar nó'"&gt;
-&lt;/li-treeview&gt;</code></pre>
+            <div class="mb-3">
+              <li-highlight [code]="apiSnippet" language="html"></li-highlight>
+            </div>
 
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-treeview-select
-  [pageLoader]="loadRawTreeChunk"
-  [settings]="lazySerializableSettings"
-  [pageSize]="20"
-  placeholder="Selecione um nó"
-  [(ngModel)]="selectedValue"&gt;
-&lt;/li-treeview-select&gt;</code></pre>
+            <li-highlight [code]="selectApiSnippet" language="html"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

@@ -308,6 +308,37 @@
             </div>
           </div>
         </li-tabx>
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ apiIntro }}</p>
+
+            <div class="row g-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ mainInputsTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>li-carousel-item</code> projeta cada slide.</li>
+                    <li><code>showIndicators</code>, <code>showControls</code>, <code>autoPlay</code> e <code>intervalMs</code> cobrem o fluxo comum.</li>
+                    <li><code>gridMode</code> e <code>transition</code> ajustam apresentação e animação.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-xl-8">
+                <div class="card card-body">
+                  <h6 class="mb-3">{{ standardSnippetTitle }}</h6>
+                  <li-highlight [code]="standardSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">{{ gridSnippetTitle }}</h6>
+                  <li-highlight [code]="gridSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">{{ transitionSnippetTitle }}</h6>
+                  <li-highlight [code]="transitionSnippet" language="html"></li-highlight>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
       </li-tabsx>
     </div>
   </div>

@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.page-header .li-breadcrumb {
+  width: 100%;
+}
+
+.page-header .page-title {
+  min-width: 0;
+}
+
+.page-header .page-title > span {
+  display: inline;
+}

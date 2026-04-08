@@ -70,6 +70,7 @@ export 'src/components/popover/popover_config.dart';
 export 'src/components/progress/progress_bar_component.dart';
 export 'src/components/progress/progress_component.dart';
 export 'src/components/pagination/pagination_component.dart';
+export 'src/components/page_header/page_header_component.dart';
 export 'src/components/radio/radio_component.dart';
 export 'src/components/radio/radio_group_component.dart';
 export 'src/components/rating/rating_component.dart';

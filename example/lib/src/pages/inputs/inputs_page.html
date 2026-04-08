@@ -16,11 +16,8 @@
       <li-tabsx type="tabs">
         <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-0">{{ intro }}</p>
-          </div>
-        </li-tabx>
-        <li-tabx [header]="examplesTabLabel">
-          <div class="card-body">
+            <p class="text-muted mb-4">{{ intro }}</p>
+
             <div class="row">
               <div class="col-xl-6">
                 <div class="card">
@@ -137,6 +134,26 @@
                     </div>
                   </div>
                 </div>
+
+                <div class="card mt-4">
+                  <div class="card-header">
+                    <h5 class="mb-0">{{ eventsTitle }}</h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="text-muted mb-3">{{ eventsHelp }}</p>
+
+                    <li-input [label]="eventsLabel" type="number" [(ngModel)]="eventDrivenLookup"
+                      (inputBlur)="onInputBlur($event)" (inputFocus)="onInputFocus($event)"
+                      (inputClick)="onInputClick($event)" (inputKeydown)="onInputKeydown($event)"
+                      (inputEnter)="onInputEnter($event)">
+                    </li-input>
+
+                    <div class="demo-summary-box mt-3">
+                      <div><strong>{{ t.common.value }}:</strong> {{ eventDrivenLookup }}</div>
+                      <div><strong>{{ lastEventLabel }}:</strong> {{ lastInputEvent.isEmpty ? '—' : lastInputEvent }}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="col-xl-6">
@@ -238,6 +255,40 @@
                       <div class="text-muted">{{ frozenWindowNote }}</div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ apiIntro }}</p>
+
+            <div class="row g-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.common.sectionHowToUse }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>li-input</code> cobre texto, email, password, textarea, máscaras, prefixos e sufixos.</li>
+                    <li><code>li-select</code> e <code>li-multi-select</code> usam <code>dataSource</code>, <code>labelKey</code> e <code>valueKey</code>.</li>
+                    <li><code>li-date-range-picker</code> recebe início, fim, placeholder e eventos de alteração.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-xl-8">
+                <div class="card card-body">
+                  <h6 class="mb-3">{{ inputSnippetTitle }}</h6>
+                  <li-highlight [code]="inputSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">{{ inputEventsSnippetTitle }}</h6>
+                  <li-highlight [code]="inputEventsSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">{{ selectSnippetTitle }}</h6>
+                  <li-highlight [code]="selectSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">{{ dateRangeSnippetTitle }}</h6>
+                  <li-highlight [code]="dateRangeSnippet" language="html"></li-highlight>
                 </div>
               </div>
             </div>

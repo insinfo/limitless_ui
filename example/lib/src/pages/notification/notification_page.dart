@@ -7,6 +7,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiToastComponent,
@@ -15,6 +16,18 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class NotificationPageComponent {
   NotificationPageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
+
+toastService.show(
+  header: 'Processamento concluído',
+  body: 'A operação foi concluída com sucesso.',
+  iconClass: 'ph-check-circle',
+  toastClass: 'bg-success text-white border-0',
+  headerClass: 'bg-black bg-opacity-10 text-white',
+  delay: 3500,
+);''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
@@ -47,7 +60,9 @@ class NotificationPageComponent {
     String get projectedBody => _isPt ? 'Olá, mundo! Este toast usa markup projetado para uma segunda linha de ações.' : 'Hello, world! This toast uses projected markup for a second action row.';
     String get oneHourAgo => _isPt ? '1 hora atrás' : '1 hour ago';
     String get clearStackLabel => _isPt ? 'Limpar pilha' : 'Clear stack';
-    String get examplesTab => _isPt ? 'Exemplos' : 'Examples';
+    String get apiIntro => _isPt
+      ? 'Use `li-toast` para o modo declarativo e `LiToastService` + `li-toast-stack` quando a notificação precisar ser disparada fora do template atual.'
+      : 'Use `li-toast` for declarative mode and `LiToastService` + `li-toast-stack` when the notification must be triggered outside the current template.';
     String get howToUseTitle => _isPt ? 'Como utilizar' : 'How to use';
     String get mainInputsTitle => _isPt ? 'Entradas principais' : 'Main inputs';
     String get waitingState => _isPt ? 'Toast: aguardando interação' : 'Toast: waiting for interaction';

@@ -82,17 +82,16 @@
                   <li><code>labelKey</code>: {{ t.pages.select.apiLabelKey }}</li>
                   <li><code>valueKey</code>: {{ t.pages.select.apiValueKey }}</li>
                   <li><code>disabledKey</code>: {{ t.pages.select.apiDisabledKey }}</li>
+                  <li><code>[compareWith]</code>: compara objetos por identidade sem depender da mesma instância.</li>
                   <li><code>[(ngModel)]</code>: {{ t.pages.select.apiNgModel }}</li>
                   <li><code>[placeholder]</code>: {{ t.pages.select.apiPlaceholder }}</li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-select
-  [dataSource]="statusOptions"
-  labelKey="label"
-  valueKey="id"
-  disabledKey="disabled"
-  [(ngModel)]="selectedStatus"&gt;
-&lt;/li-select&gt;</code></pre>
+                <li-highlight [code]="apiSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">compareWith</h6>
+                <p class="text-muted mb-3">Use quando o valor do formulário for um objeto e o data source puder ser recriado com novas instâncias.</p>
+                <li-highlight [code]="compareWithSnippet" language="html"></li-highlight>
               </div>
 
               <div class="col-xl-6">
@@ -103,11 +102,7 @@
                   <li>{{ t.pages.select.noteThree }}</li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>// Bom: lista estável criada uma vez
-late final List&lt;Map&lt;String, dynamic&gt;&gt; statusOptions;
-
-// Evite: getter que recria a lista a cada change detection
-// List&lt;Map&lt;String, dynamic&gt;&gt; get statusOptions =&gt; [...];</code></pre>
+                <li-highlight [code]="notesSnippet" language="dart"></li-highlight>
               </div>
             </div>
           </div>

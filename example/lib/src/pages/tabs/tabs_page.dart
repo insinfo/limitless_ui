@@ -9,6 +9,7 @@ import 'tabs_preview_component.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiTabxHeaderDirective,
@@ -17,6 +18,20 @@ import 'tabs_preview_component.dart';
 )
 class TabsPageComponent {
   TabsPageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-tabsx type="underline">
+  <li-tabx header="Summary" [active]="true">
+    <div class="p-3">Conteúdo</div>
+  </li-tabx>
+
+  <li-tabx header="Activity"></li-tabx>
+</li-tabsx>
+
+<li-tabsx type="solid" [justified]="true">
+  <li-tabx header="Operation" [active]="true"></li-tabx>
+  <li-tabx header="Monitoring"></li-tabx>
+</li-tabsx>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

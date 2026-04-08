@@ -10,6 +10,7 @@ import 'package:ngrouter/ngrouter.dart';
     DemoPageBreadcrumbComponent,
     formDirectives,
     RouterLink,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiDatePickerComponent,
@@ -18,6 +19,15 @@ import 'package:ngrouter/ngrouter.dart';
 )
 class DatePickerPageComponent {
   DatePickerPageComponent(this.i18n);
+
+  static const String ngModelApiSnippet = '''
+<li-date-picker
+  [(ngModel)]="selectedDate"
+  [minDate]="minDate"
+  [maxDate]="maxDate"
+  [placeholder]="placeholder"
+  locale="en_US">
+</li-date-picker>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

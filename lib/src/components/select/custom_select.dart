@@ -106,6 +106,9 @@ class LiSelectComponent
   @Input()
   bool searchable = true;
 
+  @Input()
+  bool Function(dynamic optionValue, dynamic modelValue)? compareWith;
+
   @Output('currentValueChange')
   Stream<dynamic> get onValueChange => _changeController.stream;
 
@@ -211,7 +214,7 @@ class LiSelectComponent
 
     currentValue = null;
     for (final option in options) {
-      if (option.value == newVal) {
+      if (_areValuesEqual(option.value, newVal)) {
         currentValue = option;
         break;
       }
@@ -367,7 +370,7 @@ class LiSelectComponent
     bool isCallCurrentValueChange = true,
   }) {
     for (final option in options) {
-      if (option.value != value || option.disabled) {
+      if (!_areValuesEqual(option.value, value) || option.disabled) {
         continue;
       }
 
@@ -650,7 +653,7 @@ class LiSelectComponent
     final currentSelectedValue = currentValue?.value;
     options = nextOptions;
     currentValue = options
-        .where((option) => option.value == currentSelectedValue)
+        .where((option) => _areValuesEqual(option.value, currentSelectedValue))
         .firstOrNull;
     _markForCheck();
   }
@@ -679,7 +682,7 @@ class LiSelectComponent
     final currentSelectedValue = currentValue?.value;
     options = nextOptions;
     currentValue = options
-        .where((option) => option.value == currentSelectedValue)
+        .where((option) => _areValuesEqual(option.value, currentSelectedValue))
         .firstOrNull;
 
     if (markForCheck) {
@@ -730,5 +733,13 @@ class LiSelectComponent
         .map((value) => value.trim())
         .where((value) => value.isNotEmpty)
         .join(' ');
+  }
+
+  bool _areValuesEqual(dynamic optionValue, dynamic modelValue) {
+    final customCompare = compareWith;
+    if (customCompare != null) {
+      return customCompare(optionValue, modelValue);
+    }
+    return optionValue == modelValue;
   }
 }

@@ -156,15 +156,11 @@
               </div>
             </div>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-date-picker
-  [(ngModel)]="selectedDate"
-  [minDate]="minDate"
-  [maxDate]="maxDate"
-  [placeholder]="placeholder"
-  locale="en_US"&gt;
-&lt;/li-date-picker&gt;</code></pre>
+            <li-highlight [code]="ngModelApiSnippet" language="html"></li-highlight>
 
-            <pre class="bg-light border rounded p-3 mb-0"><code>{{ t.pages.datePicker.apiUsageExample }}</code></pre>
+            <div class="mt-3">
+              <li-highlight [code]="t.pages.datePicker.apiUsageExample" language="html"></li-highlight>
+            </div>
           </div>
         </li-tabx>
 

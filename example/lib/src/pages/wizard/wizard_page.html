@@ -374,23 +374,7 @@
               <li><code>[actionsTemplate]</code> permite substituir o rodapé padrão preservando os callbacks de navegação.</li>
             </ul>
 
-            <pre class="demo-code-surface border rounded p-3 mb-0"><code>&lt;li-wizard
-  [previousLabel]="'Anterior'"
-  [nextLabel]="'Próximo'"
-  [finishLabel]="'Enviar'"
-  [actionsTemplate]="wizardActionsTemplate"
-  [beforeChange]="validateStep"
-  (finish)="submitWizard($event)"&gt;
-  &lt;li-wizard-step
-      title="Dados pessoais"
-      [headerTemplate]="wizardStepHeaderTemplate"&gt;
-    &lt;input class="form-control" [(ngModel)]="name" name="name"&gt;
-  &lt;/li-wizard-step&gt;
-
-  &lt;li-wizard-step title="Confirmação" [error]="hasReviewError"&gt;
-    &lt;div class="alert alert-info"&gt;Revisão final&lt;/div&gt;
-  &lt;/li-wizard-step&gt;
-&lt;/li-wizard&gt;</code></pre>
+            <li-highlight [code]="apiSnippet" language="html"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

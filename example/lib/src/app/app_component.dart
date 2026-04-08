@@ -188,6 +188,7 @@ class AppComponent implements OnDestroy {
   String get colorPickerLabel => i18n.isPortuguese ? 'Color picker' : 'Color picker';
   String get offcanvasLabel => 'Offcanvas';
   String get breadcrumbsLabel => 'Breadcrumbs';
+  String get pageHeaderLabel => 'Page Header';
   String get paginationLabel => 'Pagination';
   String get wizardLabel => 'Wizard';
   String get checkboxRadioLabel =>
@@ -241,6 +242,11 @@ class AppComponent implements OnDestroy {
               label: breadcrumbsLabel,
               iconClass: 'ph-path',
               url: DemoRoutePaths.breadcrumbs.toUrl(),
+            ),
+            DemoNavItem(
+              label: pageHeaderLabel,
+              iconClass: 'ph-layout',
+              url: DemoRoutePaths.pageHeader.toUrl(),
             ),
             DemoNavItem(
               label: paginationLabel,
@@ -436,6 +442,7 @@ class AppComponent implements OnDestroy {
     '/date-range': <String>['periodo', 'intervalo', 'range'],
     '/datatable': <String>['tabela', 'grid', 'table'],
     '/datatable-select': <String>['tabela seletiva', 'grid select'],
+    '/page-header': <String>['header', 'cabecalho', 'page title', 'breadcrumb header'],
     '/treeview': <String>['arvore', 'tree', 'hierarquia'],
     '/sweet-alert': <String>['sweetalert', 'dialog', 'popup'],
     '/highlight': <String>['codigo', 'syntax', 'highlight'],

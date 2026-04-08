@@ -7,6 +7,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiScrollSpyDirective,
@@ -17,6 +18,19 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class ScrollspyPageComponent {
   ScrollspyPageComponent(this.i18n);
+
+  static const String menuApiSnippet = '''
+<nav [liScrollSpyMenu]="spy" class="nav nav-pills flex-column">
+  <button class="nav-link" type="button" liScrollSpyItem="overview">Overview</button>
+  <button class="nav-link" type="button" [liScrollSpyItem]="[spy, 'items', 'directive']">Items</button>
+</nav>''';
+
+  static const String containerApiSnippet = '''
+<div liScrollSpy #spy="liScrollSpy" (activeChange)="onActiveChange(\$event)">
+  <section liScrollSpyFragment="overview">...</section>
+  <section liScrollSpyFragment="service">...</section>
+  <section liScrollSpyFragment="directive">...</section>
+</div>''';
 
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;

@@ -1,0 +1,89 @@
+<div class="page-header page-header-light shadow">
+  <div class="page-header-content d-lg-flex">
+    <div class="d-flex">
+      <h4 class="page-title mb-0">
+        <ng-container *ngIf="hasTitlePrefix">{{titlePrefix}}{{titlePrefixSeparator}}</ng-container>
+        <span [class]="titleClass">{{title}}</span>
+      </h4>
+    </div>
+  </div>
+
+  <div *ngIf="showBreadcrumbSection && (hasProjectedBottom || shouldRenderAutoBottom)"
+    class="page-header-content d-lg-flex border-top">
+    <ng-content select="[liPgHeaderBottom]"></ng-content>
+
+    <nav *ngIf="!hasProjectedBottom && shouldRenderAutoBottom" class="li-breadcrumb" aria-label="Breadcrumb">
+      <div [class]="shellClasses">
+        <div class="li-breadcrumb-main">
+          <div [class]="breadcrumbClasses">
+            <a *ngIf="showHomeBreadcrumb && hasHomeRouterLink" liBreadcrumbItem [routerLink]="homeRouterLink"
+              [attr.aria-label]="homeAriaLabel">
+              <i [class]="homeIconClass"></i>
+            </a>
+
+            <a *ngIf="showHomeBreadcrumb && !hasHomeRouterLink" liBreadcrumbItem [attr.href]="homeHref"
+              [attr.aria-label]="homeAriaLabel">
+              <i [class]="homeIconClass"></i>
+            </a>
+
+            <template ngFor let-item [ngForOf]="breadcrumbItems">
+              <a *ngIf="!item.active && item.hasRouterLink" liBreadcrumbItem [routerLink]="item.routerLinkValue"
+                [disabled]="item.disabled" [attr.aria-label]="attrOrEmpty(item.ariaLabel)">
+                <i *ngIf="item.hasIcon" [class]="item.iconClassValue"></i>
+                <span *ngIf="item.label.isNotEmpty">{{item.label}}</span>
+              </a>
+
+              <a *ngIf="!item.active && !item.hasRouterLink && item.hasHref" liBreadcrumbItem [attr.href]="item.hrefValue"
+                [disabled]="item.disabled" [attr.aria-label]="attrOrEmpty(item.ariaLabel)">
+                <i *ngIf="item.hasIcon" [class]="item.iconClassValue"></i>
+                <span *ngIf="item.label.isNotEmpty">{{item.label}}</span>
+              </a>
+
+              <span *ngIf="!item.active && !item.hasRouterLink && !item.hasHref" liBreadcrumbItem
+                [disabled]="item.disabled" [attr.aria-label]="attrOrEmpty(item.ariaLabel)">
+                <i *ngIf="item.hasIcon" [class]="item.iconClassValue"></i>
+                <span *ngIf="item.label.isNotEmpty">{{item.label}}</span>
+              </span>
+
+              <span *ngIf="item.active" liBreadcrumbItem [active]="true"
+                [attr.aria-label]="attrOrEmpty(item.ariaLabel)">
+                <i *ngIf="item.hasIcon" [class]="item.iconClassValue"></i>
+                <span *ngIf="item.label.isNotEmpty">{{item.label}}</span>
+              </span>
+            </template>
+
+            <template ngFor let-item [ngForOf]="projectedBreadcrumbItems">
+              <a *ngIf="!item.active && item.hasRouterLink" liBreadcrumbItem [routerLink]="item.routerLinkValue"
+                [disabled]="item.disabled" [attr.aria-label]="attrOrEmpty(item.ariaLabel)">
+                <i *ngIf="item.hasIcon" [class]="item.iconClassValue"></i>
+                <span *ngIf="item.label.isNotEmpty">{{item.label}}</span>
+              </a>
+
+              <a *ngIf="!item.active && !item.hasRouterLink && item.hasHref" liBreadcrumbItem [attr.href]="item.hrefValue"
+                [disabled]="item.disabled" [attr.aria-label]="attrOrEmpty(item.ariaLabel)">
+                <i *ngIf="item.hasIcon" [class]="item.iconClassValue"></i>
+                <span *ngIf="item.label.isNotEmpty">{{item.label}}</span>
+              </a>
+
+              <span *ngIf="!item.active && !item.hasRouterLink && !item.hasHref" liBreadcrumbItem
+                [disabled]="item.disabled" [attr.aria-label]="attrOrEmpty(item.ariaLabel)">
+                <i *ngIf="item.hasIcon" [class]="item.iconClassValue"></i>
+                <span *ngIf="item.label.isNotEmpty">{{item.label}}</span>
+              </span>
+
+              <span *ngIf="item.active" liBreadcrumbItem [active]="true"
+                [attr.aria-label]="attrOrEmpty(item.ariaLabel)">
+                <i *ngIf="item.hasIcon" [class]="item.iconClassValue"></i>
+                <span *ngIf="item.label.isNotEmpty">{{item.label}}</span>
+              </span>
+            </template>
+          </div>
+        </div>
+
+        <div *ngIf="hasProjectedActions || showFavoriteAction" class="li-breadcrumb-slot li-breadcrumb-end">
+          <ng-content select="[liPgHeaderActions]"></ng-content>
+        </div>
+      </div>
+    </nav>
+  </div>
+</div>

@@ -6,6 +6,7 @@
 library;
 
 import 'dart:html' as html;
+import 'dart:js';
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngdart/angular.dart';
@@ -22,9 +23,14 @@ import 'li_input_component_test.template.dart' as ng;
         id="name-input"
         label="Name"
         helperText="Required field"
-      invalidFeedbackText="Name is required"
-      validFeedbackText="Looks good"
+        invalidFeedbackText="Name is required"
+        validFeedbackText="Looks good"
         [required]="true"
+        (inputBlur)="onBlur(\$event)"
+        (inputFocus)="onFocus(\$event)"
+        (inputClick)="onClick(\$event)"
+        (inputKeydown)="onKeydown(\$event)"
+        (inputEnter)="onEnter(\$event)"
         [(ngModel)]="name">
     </li-input>
 
@@ -82,6 +88,21 @@ class InputTestHostComponent {
   String cpf = '';
   String quantity = '1';
   String password = 'Secret@123';
+  int blurCount = 0;
+  int focusCount = 0;
+  int clickCount = 0;
+  int keydownCount = 0;
+  int enterCount = 0;
+
+  void onBlur(dynamic _) => blurCount++;
+
+  void onFocus(dynamic _) => focusCount++;
+
+  void onClick(dynamic _) => clickCount++;
+
+  void onKeydown(dynamic _) => keydownCount++;
+
+  void onEnter(dynamic _) => enterCount++;
 }
 
 void main() {
@@ -217,9 +238,61 @@ void main() {
 
     expect(html.document.activeElement, same(input));
   });
+
+  test('emits focus, click, blur, keydown and enter outputs', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input =
+        fixture.rootElement.querySelector('input#name-input') as html.InputElement;
+
+    await fixture.update((_) {
+      input.dispatchEvent(html.Event('focus', canBubble: true));
+      input.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      input.dispatchEvent(createKeyEvent('keydown', key: 'A'));
+      input.dispatchEvent(createKeyEvent('keydown', key: 'Enter', code: 'Enter'));
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.focusCount, greaterThanOrEqualTo(1));
+    expect(host.clickCount, 1);
+    expect(host.keydownCount, 2);
+    expect(host.enterCount, 1);
+    expect(host.blurCount, 1);
+  });
 }
 
 Future<void> _settle(NgTestFixture<InputTestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 20));
   await fixture.update((_) {});
+}
+
+const _createKeyEventName = '__dart_createLiInputKeyboardEvent';
+const _createKeyEventScript = '''
+window['$_createKeyEventName'] = function(type, key, code) {
+  return new KeyboardEvent(type, {
+    key: key,
+    code: code || key,
+    bubbles: true
+  });
+}
+''';
+
+html.Event createKeyEvent(
+  String type, {
+  required String key,
+  String? code,
+}) {
+  if (!context.hasProperty(_createKeyEventName)) {
+    final script = html.document.createElement('script')
+      ..setAttribute('type', 'text/javascript')
+      ..text = _createKeyEventScript;
+    html.document.body!.append(script);
+  }
+
+  return context.callMethod(
+    _createKeyEventName,
+    <Object>[type, key, code ?? key],
+  ) as html.Event;
 }

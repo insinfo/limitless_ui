@@ -7,6 +7,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiToastComponent,
@@ -15,6 +16,18 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class ToastPageComponent {
   ToastPageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
+
+toastService.show(
+  header: 'Processamento concluído',
+  body: 'A operação foi concluída com sucesso.',
+  iconClass: 'ph-check-circle',
+  toastClass: 'bg-success text-white border-0',
+  headerClass: 'bg-black bg-opacity-10 text-white',
+  delay: 3500,
+);''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
@@ -70,7 +83,9 @@ class ToastPageComponent {
       : 'Hello, world! This toast uses projected markup for a second action row.';
   String get cancelLabel => _isPt ? 'Cancelar' : 'Cancel';
   String get confirmLabel => _isPt ? 'Confirmar' : 'Confirm';
-  String get apiTabLabel => _isPt ? 'API e stack' : 'API and stack';
+  String get apiIntro => _isPt
+      ? 'A API combina o componente declarativo para casos locais e `LiToastService` com `li-toast-stack` para mensagens globais.'
+      : 'The API combines the declarative component for local cases and `LiToastService` with `li-toast-stack` for global messages.';
   String get successStackLabel => _isPt ? 'Stack success' : 'Success stack';
   String get warningStackLabel => _isPt ? 'Stack warning' : 'Warning stack';
   String get persistentStackLabel =>

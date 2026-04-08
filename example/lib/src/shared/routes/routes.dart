@@ -8,6 +8,8 @@ import 'package:limitless_ui_example/src/pages/alert/alert_page.template.dart'
     as alert_page;
 import 'package:limitless_ui_example/src/pages/breadcrumbs/breadcrumbs_page.template.dart'
     as breadcrumbs_page;
+import 'package:limitless_ui_example/src/pages/page_header/page_header_page.template.dart'
+    as page_header_page;
 import 'package:limitless_ui_example/src/pages/pagination/pagination_page.template.dart'
     as pagination_page;
 import 'package:limitless_ui_example/src/pages/selection_controls/selection_controls_page.template.dart'
@@ -120,6 +122,11 @@ class DemoRoutes {
   static final breadcrumbs = RouteDefinition(
     routePath: DemoRoutePaths.breadcrumbs,
     component: breadcrumbs_page.BreadcrumbsPageComponentNgFactory,
+  );
+
+  static final pageHeader = RouteDefinition(
+    routePath: DemoRoutePaths.pageHeader,
+    component: page_header_page.PageHeaderPageComponentNgFactory,
   );
 
   static final pagination = RouteDefinition(
@@ -281,6 +288,7 @@ class DemoRoutes {
     modal,
     offcanvas,
     breadcrumbs,
+    pageHeader,
     pagination,
     selectionControls,
     select,

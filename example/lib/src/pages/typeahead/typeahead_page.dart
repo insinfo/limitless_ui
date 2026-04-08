@@ -61,6 +61,7 @@ class TypeaheadGlobalConfigDemoComponent {
     coreDirectives,
     DemoPageBreadcrumbComponent,
     formDirectives,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiTypeaheadComponent,
@@ -98,6 +99,27 @@ class TypeaheadPageComponent {
     _cityOptionsEn = List<Map<String, dynamic>>.from(_cityOptionsPt);
     lastEvent = idleState;
   }
+
+  static const String apiSnippet = '''
+<li-typeahead
+  [searchCallback]="remoteCitySearch"
+  [inputFormatter]="cityInputFormatter"
+  [resultMarkupBuilder]="remoteResultMarkup"
+  [debounceMs]="220"
+  placeholder="Remote city search"
+  [(ngModel)]="remoteSelection">
+</li-typeahead>''';
+
+  static const String bestPracticesSnippet = '''
+final cities = <Map<String, dynamic>>[
+  {'code': 'gru', 'name': 'Sao Paulo', 'region': 'BR'},
+  {'code': 'lis', 'name': 'Lisbon', 'region': 'PT'},
+];
+
+Future<List<Map<String, dynamic>>> remoteCitySearch(String term) async {
+  await Future<void>.delayed(const Duration(milliseconds: 350));
+  return cities.where((item) => item['name'].toLowerCase().contains(term.toLowerCase())).toList();
+}''';
 
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;

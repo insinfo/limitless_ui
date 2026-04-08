@@ -9,6 +9,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     liPaginationDirectives,
@@ -19,6 +20,33 @@ class PaginationPageComponent {
       : eventLog = i18n.isPortuguese
             ? 'Troque de página para validar layouts, estilos, tamanhos e a variação usada no Datatable.'
             : 'Change pages to validate layouts, styles, sizes, and the variation used in the Datatable.';
+
+  static const String apiSnippet = '''
+<li-pagination
+  appearance="datatable"
+  variant="flat"
+  linkClass="rounded"
+  [collectionSize]="totalRecords"
+  [pageSize]="10"
+  [page]="page"
+  [maxSize]="5"
+  [rotate]="true"
+  [ellipses]="false"
+  [boundaryLinks]="true"
+  (pageChange)="page = \$event">
+  <template liPaginationFirst>
+    <i class="ph ph-arrow-line-left"></i>
+  </template>
+  <template liPaginationPrevious>
+    <i class="ph ph-caret-left"></i>
+  </template>
+  <template liPaginationNext>
+    <i class="ph ph-caret-right"></i>
+  </template>
+  <template liPaginationLast>
+    <i class="ph ph-arrow-line-right"></i>
+  </template>
+</li-pagination>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

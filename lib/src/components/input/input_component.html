@@ -20,7 +20,8 @@
         [attr.min]="resolvedMin" [attr.max]="resolvedMax" [attr.step]="resolvedStep"
         [attr.minlength]="resolvedMinLength?.toString()" [attr.maxlength]="resolvedMaxLength?.toString()"
         [attr.pattern]="resolvedPattern" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
-        (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()">
+        (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur($event)"
+        (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)">
 
       <button type="button" class="li-input__password-toggle li-input__password-toggle--overlay"
         [attr.aria-label]="passwordToggleAriaLabel" [attr.aria-pressed]="passwordVisible.toString()"
@@ -39,7 +40,8 @@
       [attr.min]="resolvedMin" [attr.max]="resolvedMax" [attr.step]="resolvedStep"
       [attr.minlength]="resolvedMinLength?.toString()" [attr.maxlength]="resolvedMaxLength?.toString()"
       [attr.pattern]="resolvedPattern" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
-      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()">
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur($event)"
+      (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)">
 
     <textarea *ngIf="multiline" #inputElement [id]="resolvedId" [class]="resolvedInputClass" [rows]="resolvedRows"
       [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
@@ -49,7 +51,8 @@
       [attr.data-lpignore]="resolvedDataLpignore" [attr.data-1p-ignore]="resolvedData1pIgnore"
       [attr.data-bwignore]="resolvedDataBwignore" [attr.minlength]="resolvedMinLength?.toString()"
       [attr.maxlength]="resolvedMaxLength?.toString()" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
-      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()"></textarea>
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur($event)"
+      (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)"></textarea>
 
     <span *ngIf="hasSuffix" class="input-group-text li-input__suffix">
       <span *ngIf="suffixText.trim().isNotEmpty">{{ suffixText }}</span>
@@ -74,7 +77,8 @@
       [attr.min]="resolvedMin" [attr.max]="resolvedMax" [attr.step]="resolvedStep"
       [attr.minlength]="resolvedMinLength?.toString()" [attr.maxlength]="resolvedMaxLength?.toString()"
       [attr.pattern]="resolvedPattern" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
-      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()">
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur($event)"
+      (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)">
 
     <button *ngIf="usesOverlayPasswordToggle" type="button"
       class="li-input__password-toggle li-input__password-toggle--overlay"
@@ -92,7 +96,8 @@
       [attr.data-lpignore]="resolvedDataLpignore" [attr.data-1p-ignore]="resolvedData1pIgnore"
       [attr.data-bwignore]="resolvedDataBwignore" [attr.minlength]="resolvedMinLength?.toString()"
       [attr.maxlength]="resolvedMaxLength?.toString()" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
-      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()"></textarea>
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur($event)"
+      (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)"></textarea>
 
     <label [attr.for]="resolvedId">{{ label }}</label>
   </div>
@@ -110,7 +115,8 @@
       [attr.min]="resolvedMin" [attr.max]="resolvedMax" [attr.step]="resolvedStep"
       [attr.minlength]="resolvedMinLength?.toString()" [attr.maxlength]="resolvedMaxLength?.toString()"
       [attr.pattern]="resolvedPattern" [attr.title]="resolvedTitleText"
-      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()">
+      (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur($event)"
+      (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)">
 
     <button *ngIf="usesOverlayPasswordToggle" type="button"
       class="li-input__password-toggle li-input__password-toggle--overlay"
@@ -129,7 +135,8 @@
     [attr.data-lpignore]="resolvedDataLpignore" [attr.data-1p-ignore]="resolvedData1pIgnore"
     [attr.data-bwignore]="resolvedDataBwignore" [attr.minlength]="resolvedMinLength?.toString()"
     [attr.maxlength]="resolvedMaxLength?.toString()" [attr.title]="resolvedTitleText" [placeholder]="resolvedPlaceholder"
-    (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur()"></textarea>
+    (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur($event)"
+    (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)"></textarea>
 
   <div *ngIf="showInvalidFeedback" [class]="resolvedInvalidFeedbackClass">
     {{ invalidFeedbackText }}

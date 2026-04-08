@@ -5,6 +5,7 @@ This folder contains the AngularDart showcase application for the `limitless_ui`
 ## What is included
 
 - Component demo pages under `example/lib/src/pages`
+- Dedicated demos for inputs, select, multi-select, datatable-select, and page-header migration scenarios
 - Hash-based routing for static hosting via `routerProvidersHash`
 - Localized demo content in Portuguese and English
 - SCSS-based component styling compiled by `sass_builder`

@@ -39,6 +39,7 @@ class LiDatatableSelectModalContext {
     required this.selectedValue,
     required this.selectedLabel,
     required this.select,
+    required this.selectItem,
     required this.close,
     required this.requestData,
   });
@@ -50,6 +51,7 @@ class LiDatatableSelectModalContext {
   final dynamic selectedValue;
   final String selectedLabel;
   final void Function(dynamic instance) select;
+  final void Function(String label, dynamic value) selectItem;
   final void Function() close;
   final void Function(Filters filters) requestData;
 }
@@ -182,6 +184,21 @@ class LiDatatableSelectComponent
   /// When `null`, the entire row instance is used as the value.
   @Input()
   String? valueKey;
+
+  /// Optional custom extractor for labels when rows are typed objects instead
+  /// of maps or when the selected content comes from an arbitrary component.
+  @Input()
+  String Function(dynamic instance)? itemLabelBuilder;
+
+  /// Optional custom extractor for values when rows are typed objects instead
+  /// of maps or when the selected content comes from an arbitrary component.
+  @Input()
+  dynamic Function(dynamic instance)? itemValueBuilder;
+
+  /// Optional value comparer used to keep the trigger label synchronized when
+  /// the selected value is an object rebuilt outside the component.
+  @Input()
+  bool Function(dynamic itemValue, dynamic selectedValue)? compareWith;
 
   @Input()
   String placeholder = '';
@@ -358,6 +375,7 @@ class LiDatatableSelectComponent
         selectedValue: selectedValue,
         selectedLabel: selectedLabel,
         select: onDatatableRowClick,
+        selectItem: setSelectedItemFromTemplate,
         close: closeModal,
         requestData: onDatatableDataRequest,
       );
@@ -435,6 +453,12 @@ class LiDatatableSelectComponent
     _changeDetectorRef.markForCheck();
   }
 
+  void setSelectedItemFromTemplate(String label, dynamic value) {
+    setSelectedItem(label: label, value: value);
+    closeModal();
+    triggerButtonElement?.focus();
+  }
+
   // ---------------------------------------------------------------------------
   // Internal
   // ---------------------------------------------------------------------------
@@ -442,27 +466,8 @@ class LiDatatableSelectComponent
   void _selectInstance(dynamic instance) {
     if (instance == null) return;
 
-    String label;
-    dynamic value;
-
-    if (instance is Map<String, dynamic>) {
-      label = (instance[labelKey] ?? '').toString();
-      value = valueKey != null ? instance[valueKey] : instance;
-    } else {
-      // Fallback: try to access as a generic object via noSuchMethod or
-      // toString. This covers typed model classes.
-      try {
-        final map = (instance as dynamic).toMap() as Map<String, dynamic>;
-        label = (map[labelKey] ?? '').toString();
-        value = valueKey != null ? map[valueKey] : instance;
-      } catch (_) {
-        label = instance.toString();
-        value = instance;
-      }
-    }
-
-    _selectedValue = value;
-    _selectedLabel = label;
+    _selectedValue = _extractValue(instance);
+    _selectedLabel = _extractLabel(instance);
 
     _valueChangeCtrl.add(_selectedValue);
     _onChange?.call(_selectedValue);
@@ -477,22 +482,10 @@ class LiDatatableSelectComponent
 
     // Try to find the label from currently loaded data.
     for (final item in data.items) {
-      Map<String, dynamic>? map;
-      if (item is Map<String, dynamic>) {
-        map = item;
-      } else {
-        try {
-          map = (item as dynamic).toMap() as Map<String, dynamic>;
-        } catch (_) {
-          // ignore
-        }
-      }
-
-      if (map == null) continue;
-
-      final itemValue = valueKey != null ? map[valueKey] : item;
-      if (itemValue == _selectedValue) {
-        _selectedLabel = (map[labelKey] ?? '').toString();
+      final map = _tryMap(item);
+      final itemValue = _extractValue(item, fallbackMap: map);
+      if (_areValuesEqual(itemValue, _selectedValue)) {
+        _selectedLabel = _extractLabel(item, fallbackMap: map);
         return;
       }
     }
@@ -525,5 +518,59 @@ class LiDatatableSelectComponent
         .map((value) => value.trim())
         .where((value) => value.isNotEmpty)
         .join(' ');
+  }
+
+  String _extractLabel(
+    dynamic instance, {
+    Map<String, dynamic>? fallbackMap,
+  }) {
+    final customBuilder = itemLabelBuilder;
+    if (customBuilder != null) {
+      return customBuilder(instance);
+    }
+
+    final map = fallbackMap ?? _tryMap(instance);
+    if (map != null) {
+      return (map[labelKey] ?? '').toString();
+    }
+
+    return instance.toString();
+  }
+
+  dynamic _extractValue(
+    dynamic instance, {
+    Map<String, dynamic>? fallbackMap,
+  }) {
+    final customBuilder = itemValueBuilder;
+    if (customBuilder != null) {
+      return customBuilder(instance);
+    }
+
+    final map = fallbackMap ?? _tryMap(instance);
+    if (map != null) {
+      return valueKey != null ? map[valueKey] : instance;
+    }
+
+    return instance;
+  }
+
+  Map<String, dynamic>? _tryMap(dynamic instance) {
+    if (instance is Map<String, dynamic>) {
+      return instance;
+    }
+
+    try {
+      return (instance as dynamic).toMap() as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool _areValuesEqual(dynamic itemValue, dynamic selectedValue) {
+    final customCompare = compareWith;
+    if (customCompare != null) {
+      return customCompare(itemValue, selectedValue);
+    }
+    return itemValue == selectedValue;
   }
 }

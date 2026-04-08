@@ -87,6 +87,34 @@
             </div>
           </div>
         </li-tabx>
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ apiIntro }}</p>
+
+            <div class="row g-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ mainInputsTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>title-text</code>, <code>headerColor</code> e <code>size</code> definem a estrutura principal.</li>
+                    <li><code>lazyContent</code>, <code>dialogScrollable</code> e <code>verticalCenter</code> cobrem comportamento.</li>
+                    <li><code>closeOnBackdropClick</code>, <code>enableCloseBtn</code> e <code>fullScreenOnMobile</code> refinam a UX.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-xl-8">
+                <div class="card card-body">
+                  <h6 class="mb-3">{{ basicSnippetTitle }}</h6>
+                  <li-highlight [code]="basicSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">{{ advancedSnippetTitle }}</h6>
+                  <li-highlight [code]="advancedSnippet" language="html"></li-highlight>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
       </li-tabsx>
     </div>
   </div>

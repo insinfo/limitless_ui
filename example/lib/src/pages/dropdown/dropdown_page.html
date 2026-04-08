@@ -157,29 +157,15 @@
               <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;div liDropdown&gt;
-  &lt;button liDropdownToggle&gt;Actions&lt;/button&gt;
-  &lt;div liDropdownMenu&gt;
-    &lt;button liDropdownItem&gt;View details&lt;/button&gt;
-    &lt;button liDropdownItem&gt;Archive&lt;/button&gt;
-  &lt;/div&gt;
-&lt;/div&gt;</code></pre>
+            <div class="mb-3">
+              <li-highlight [code]="basicApiSnippet" language="html"></li-highlight>
+            </div>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;div liDropdown autoClose="inside" container="body"&gt;
-  &lt;button liDropdownToggle&gt;Open on body&lt;/button&gt;
-  &lt;div liDropdownMenu&gt;
-    &lt;button liDropdownItem&gt;Item 1&lt;/button&gt;
-    &lt;button liDropdownItem [disabled]="true"&gt;Disabled&lt;/button&gt;
-  &lt;/div&gt;
-&lt;/div&gt;</code></pre>
+            <div class="mb-3">
+              <li-highlight [code]="bodyApiSnippet" language="html"></li-highlight>
+            </div>
 
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;div liDropdown #drop="liDropdown" [autoClose]="false"&gt;
-  &lt;button liDropdownAnchor&gt;Anchor only&lt;/button&gt;
-  &lt;button type="button" (click)="drop.toggle()"&gt;Toggle by API&lt;/button&gt;
-  &lt;div liDropdownMenu&gt;
-    &lt;button liDropdownItem (click)="drop.close()"&gt;Close&lt;/button&gt;
-  &lt;/div&gt;
-&lt;/div&gt;</code></pre>
+            <li-highlight [code]="manualApiSnippet" language="html"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

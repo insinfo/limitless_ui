@@ -15,6 +15,7 @@ import '../datatable/datatable_demo_service.dart';
     LiDatatableSelectTriggerDirective,
     LiDatatableSelectModalContentDirective,
     LiDataTableComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
   ],
@@ -35,6 +36,59 @@ class DatatableSelectPageComponent implements OnInit {
           departmentFinance: 'Finance',
           departmentHr: 'HR',
         ));
+
+  static const String basicApiSnippet = '''
+<li-datatable-select
+  [settings]="dtSettings"
+  [dataTableFilter]="filtro"
+  [data]="items"
+  [searchInFields]="sInFields"
+  [labelKey]="'name'"
+  [valueKey]="'id'"
+  [title]="'Selecionar pessoa'"
+  [placeholder]="'Clique para selecionar...'"
+  (dataRequest)="onDataRequest(\$event)"
+  (currentValueChange)="onValueChanged(\$event)">
+</li-datatable-select>''';
+
+  static const String ngModelApiSnippet = '''
+<li-datatable-select
+  [settings]="dtSettings"
+  [dataTableFilter]="filtro"
+  [data]="items"
+  [searchInFields]="sInFields"
+  [labelKey]="'name'"
+  [valueKey]="'id'"
+  [(ngModel)]="selectedValue"
+  (dataRequest)="onDataRequest(\$event)">
+</li-datatable-select>''';
+
+  static const String builderApiSnippet = '''
+<li-datatable-select
+  [settings]="dtSettings"
+  [dataTableFilter]="filtro"
+  [data]="items"
+  [searchInFields]="sInFields"
+  [itemLabelBuilder]="personLabel"
+  [itemValueBuilder]="personId"
+  [compareWith]="comparePersonById"
+  [(ngModel)]="selectedPerson">
+</li-datatable-select>''';
+
+  static const String arbitraryModalSnippet = '''
+<li-datatable-select
+  [itemLabelBuilder]="cgmLabel"
+  [itemValueBuilder]="cgmValue"
+  [compareWith]="compareCgm"
+  [(ngModel)]="pessoaSelecionada">
+  <template liDatatableSelectModalContent let-ctx>
+    <consultar-cgm-page
+      [insideModal]="true"
+      [filtroAtivo]="true"
+      (onSelect)="ctx.select(\$event)">
+    </consultar-cgm-page>
+  </template>
+</li-datatable-select>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
@@ -199,6 +253,12 @@ class DatatableSelectPageComponent implements OnInit {
 
   String get customTemplateOpenCaption =>
       i18n.isPortuguese ? 'Abrir busca' : 'Open picker';
+  String get arbitraryModalTitle => i18n.isPortuguese
+      ? 'Conteúdo arbitrário no modal'
+      : 'Arbitrary modal content';
+  String get arbitraryModalBody => i18n.isPortuguese
+      ? 'Além do datatable interno, o modal pode hospedar um componente inteiro de busca. Nesses casos, use `ctx.select(item)` quando o componente emite o objeto completo ou `ctx.selectItem(label, value)` quando você já possui os dois valores.'
+      : 'Besides the built-in datatable, the modal can host a full search component. In those cases, use `ctx.select(item)` when the child emits the full object or `ctx.selectItem(label, value)` when you already have both values.';
 
   static DatatableSettings _buildBasicSettings({
     required String idTitle,

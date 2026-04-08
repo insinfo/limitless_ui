@@ -39,6 +39,47 @@ class SelectTestHostComponent {
   ];
 }
 
+class SelectCompareValue {
+  const SelectCompareValue(this.id, this.label);
+
+  final int id;
+  final String label;
+}
+
+@Component(
+  selector: 'li-select-compare-test-host',
+  template: '''
+    <li-select
+      [dataSource]="categoryOptions"
+      labelKey="label"
+      valueKey="value"
+      [compareWith]="compareById"
+      [(ngModel)]="selectedCategory">
+    </li-select>
+  ''',
+  directives: [coreDirectives, formDirectives, LiSelectComponent],
+)
+class SelectCompareTestHostComponent {
+  SelectCompareValue selectedCategory = const SelectCompareValue(2, 'B');
+
+  final List<Map<String, dynamic>> categoryOptions = <Map<String, dynamic>>[
+    <String, dynamic>{
+      'label': 'Categoria A',
+      'value': const SelectCompareValue(1, 'A'),
+    },
+    <String, dynamic>{
+      'label': 'Categoria B',
+      'value': const SelectCompareValue(2, 'B atualizado'),
+    },
+  ];
+
+  bool compareById(dynamic optionValue, dynamic modelValue) {
+    return optionValue is SelectCompareValue &&
+        modelValue is SelectCompareValue &&
+        optionValue.id == modelValue.id;
+  }
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
@@ -47,6 +88,9 @@ void main() {
 
   final testBed = NgTestBed<SelectTestHostComponent>(
     ng.SelectTestHostComponentNgFactory,
+  );
+  final compareTestBed = NgTestBed<SelectCompareTestHostComponent>(
+    ng.SelectCompareTestHostComponentNgFactory,
   );
 
   test('selects enabled options and updates ngModel', () async {
@@ -144,9 +188,24 @@ void main() {
     expect(panel.style.boxShadow, isEmpty);
     expect(panel.style.borderColor, isEmpty);
   });
+
+  test('matches object values with compareWith', () async {
+    final fixture = await compareTestBed.create();
+    await _settleCompare(fixture);
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    expect(trigger.text, contains('Categoria B'));
+  });
 }
 
 Future<void> _settle(NgTestFixture<SelectTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleCompare(
+    NgTestFixture<SelectCompareTestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});
 }

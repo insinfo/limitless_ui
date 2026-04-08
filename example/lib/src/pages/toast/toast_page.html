@@ -20,6 +20,13 @@
           <div class="card-body">
             <p class="text-muted mb-4">{{ overviewIntro }}</p>
 
+            <div class="demo-action-grid mb-4">
+              <button class="btn btn-success" type="button" (click)="showSuccess()">{{ successStackLabel }}</button>
+              <button class="btn btn-warning" type="button" (click)="showWarning()">{{ warningStackLabel }}</button>
+              <button class="btn btn-outline-primary" type="button" (click)="showPersistent()">{{ persistentStackLabel }}</button>
+              <button class="btn btn-light" type="button" (click)="clearStack()">{{ clearStackLabel }}</button>
+            </div>
+
             <div class="row g-4">
               <div class="col-xl-6">
                 <div class="card card-body h-100">
@@ -83,18 +90,16 @@
                 </div>
               </div>
             </div>
+
+            <div class="demo-summary-box mt-3">{{ lastAction.isEmpty ? idleState : lastAction }}
+            </div>
           </div>
         </li-tabx>
-        <li-tabx [header]="apiTabLabel">
+        <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
-            <div class="demo-action-grid">
-              <button class="btn btn-success" type="button" (click)="showSuccess()">{{ successStackLabel }}</button>
-              <button class="btn btn-warning" type="button" (click)="showWarning()">{{ warningStackLabel }}</button>
-              <button class="btn btn-outline-primary" type="button" (click)="showPersistent()">{{ persistentStackLabel }}</button>
-              <button class="btn btn-light" type="button" (click)="clearStack()">{{ clearStackLabel }}</button>
-            </div>
+            <p class="text-muted mb-4">{{ apiIntro }}</p>
 
-            <div class="row g-4 mt-1">
+            <div class="row g-4">
               <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">{{ howToUseTitle }}</h6>
@@ -122,19 +127,7 @@
               </div>
             </div>
 
-            <pre class="bg-light border rounded p-3 mt-4 mb-0"><code>&lt;li-toast-stack [service]="toastService" placement="top-end"&gt;&lt;/li-toast-stack&gt;
-
-toastService.show(
-  header: 'Processamento concluído',
-  body: 'A operação foi concluída com sucesso.',
-  iconClass: 'ph-check-circle',
-  toastClass: 'bg-success text-white border-0',
-  headerClass: 'bg-black bg-opacity-10 text-white',
-  delay: 3500,
-);</code></pre>
-
-            <div class="demo-summary-box mt-3">{{ lastAction.isEmpty ? idleState : lastAction }}
-            </div>
+            <li-highlight [code]="apiSnippet" language="dart"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

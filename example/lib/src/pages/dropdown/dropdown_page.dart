@@ -6,6 +6,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiDropdownDirective,
@@ -20,6 +21,33 @@ class DropdownPageComponent {
   DropdownPageComponent(this.i18n) {
     dropdownState = waitingState;
   }
+
+  static const String basicApiSnippet = '''
+<div liDropdown>
+  <button liDropdownToggle>Actions</button>
+  <div liDropdownMenu>
+    <button liDropdownItem>View details</button>
+    <button liDropdownItem>Archive</button>
+  </div>
+</div>''';
+
+  static const String bodyApiSnippet = '''
+<div liDropdown autoClose="inside" container="body">
+  <button liDropdownToggle>Open on body</button>
+  <div liDropdownMenu>
+    <button liDropdownItem>Item 1</button>
+    <button liDropdownItem [disabled]="true">Disabled</button>
+  </div>
+</div>''';
+
+  static const String manualApiSnippet = '''
+<div liDropdown #drop="liDropdown" [autoClose]="false">
+  <button liDropdownAnchor>Anchor only</button>
+  <button type="button" (click)="drop.toggle()">Toggle by API</button>
+  <div liDropdownMenu>
+    <button liDropdownItem (click)="drop.close()">Close</button>
+  </div>
+</div>''';
 
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;

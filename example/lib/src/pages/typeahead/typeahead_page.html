@@ -144,14 +144,7 @@
                   <li *ngFor="let item of apiUsageItems">{{ item }}</li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-typeahead
-  [searchCallback]="remoteCitySearch"
-  [inputFormatter]="cityInputFormatter"
-  [resultMarkupBuilder]="remoteResultMarkup"
-  [debounceMs]="220"
-  placeholder="Remote city search"
-  [(ngModel)]="remoteSelection"&gt;
-&lt;/li-typeahead&gt;</code></pre>
+                <li-highlight [code]="apiSnippet" language="html"></li-highlight>
               </div>
 
               <div class="col-xl-6">
@@ -160,15 +153,7 @@
                   <li *ngFor="let item of bestPractices">{{ item }}</li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>final cities = &lt;Map&lt;String, dynamic&gt;&gt;[
-  {'code': 'gru', 'name': 'Sao Paulo', 'region': 'BR'},
-  {'code': 'lis', 'name': 'Lisbon', 'region': 'PT'},
-];
-
-Future&lt;List&lt;Map&lt;String, dynamic&gt;&gt;&gt; remoteCitySearch(String term) async {
-  await Future&lt;void&gt;.delayed(const Duration(milliseconds: 350));
-  return cities.where((item) =&gt; item['name'].toLowerCase().contains(term.toLowerCase())).toList();
-}</code></pre>
+                <li-highlight [code]="bestPracticesSnippet" language="dart"></li-highlight>
               </div>
             </div>
           </div>

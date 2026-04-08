@@ -6,6 +6,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiModalComponent,
@@ -13,6 +14,26 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class ModalPageComponent {
   ModalPageComponent(this.i18n);
+
+  static const String basicSnippet = '''
+<li-modal
+    #demoModal
+    title-text="Revisar publicação"
+    headerColor="indigo"
+    [verticalCenter]="true"
+    [lazyContent]="true">
+  <p>Conteúdo do modal.</p>
+</li-modal>''';
+
+  static const String advancedSnippet = '''
+<li-modal
+    #scrollableModal
+    title-text="Checklist"
+    size="large"
+    [dialogScrollable]="true"
+    [closeOnBackdropClick]="false"
+    [fullScreenOnMobile]="true">
+</li-modal>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
@@ -56,6 +77,12 @@ class ModalPageComponent {
     String get overviewIntro => _isPt
       ? 'A implementação cobre os cenários mais comuns de Bootstrap/Limitless: modal básico, scroll interno, backdrop bloqueado, tamanho amplo e conteúdo lazy para evitar renderização antecipada.'
       : 'The implementation covers the most common Bootstrap/Limitless scenarios: basic modal, internal scrolling, locked backdrop, wide size, and lazy content to avoid early rendering.';
+    String get apiIntro => _isPt
+      ? 'A configuração principal passa por `title-text`, `headerColor`, tamanho, backdrop, lazy content e comportamento no mobile.'
+      : 'The main configuration goes through `title-text`, `headerColor`, size, backdrop, lazy content, and mobile behavior.';
+    String get mainInputsTitle => _isPt ? 'Entradas principais' : 'Main inputs';
+    String get basicSnippetTitle => _isPt ? 'Modal básico' : 'Basic modal';
+    String get advancedSnippetTitle => _isPt ? 'Combinações avançadas' : 'Advanced combinations';
     String get basicTitle => _isPt ? 'Básico centralizado' : 'Centered basic';
     String get basicBody => _isPt
       ? 'Header colorido, sombra e alinhamento vertical no centro.'

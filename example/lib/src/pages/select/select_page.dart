@@ -8,6 +8,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     coreDirectives,
     DemoPageBreadcrumbComponent,
     formDirectives,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiOptionComponent,
@@ -16,6 +17,30 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class SelectPageComponent {
   SelectPageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  disabledKey="disabled"
+  [(ngModel)]="selectedStatus">
+</li-select>''';
+
+  static const String notesSnippet = '''
+// Bom: lista estável criada uma vez
+late final List<Map<String, dynamic>> statusOptions;
+
+// Evite: getter que recria a lista a cada change detection
+// List<Map<String, dynamic>> get statusOptions => [...];''';
+
+  static const String compareWithSnippet = '''
+<li-select
+  [dataSource]="users"
+  labelKey="name"
+  [compareWith]="compareUserById"
+  [(ngModel)]="selectedUser">
+</li-select>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

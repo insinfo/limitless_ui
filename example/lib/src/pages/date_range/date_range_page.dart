@@ -6,6 +6,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiDateRangePickerComponent,
@@ -13,6 +14,16 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 )
 class DateRangePageComponent {
   DateRangePageComponent(this.i18n);
+
+  static const String apiSnippet = '''
+<li-date-range-picker
+  [inicio]="rangeStart"
+  [fim]="rangeEnd"
+  [minDate]="minDate"
+  [maxDate]="maxDate"
+  (inicioChange)="onRangeStartChange(\$event)"
+  (fimChange)="onRangeEndChange(\$event)">
+</li-date-range-picker>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

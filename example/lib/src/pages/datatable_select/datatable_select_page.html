@@ -48,18 +48,7 @@
               </div>
             </div>
 
-            <pre class="bg-light border rounded p-3 mb-4"><code>&lt;li-datatable-select
-  [settings]="dtSettings"
-  [dataTableFilter]="filtro"
-  [data]="items"
-  [searchInFields]="sInFields"
-  [labelKey]="'name'"
-  [valueKey]="'id'"
-  [title]="'Selecionar pessoa'"
-  [placeholder]="'Clique para selecionar...'"
-  (dataRequest)="onDataRequest($event)"
-  (currentValueChange)="onValueChanged($event)"&gt;
-&lt;/li-datatable-select&gt;</code></pre>
+            <li-highlight [code]="basicApiSnippet" language="html"></li-highlight>
 
             <!-- Demo: basic usage -->
             <div class="demo-doc-section">
@@ -177,6 +166,13 @@
                 <div *ngIf="customTemplateEventLog.isNotEmpty"><strong>{{ t.common.event }}:</strong> {{ customTemplateEventLog }}</div>
               </div>
             </div>
+
+            <div class="demo-doc-section">
+              <div class="card card-body bg-light-subtle border">
+                <h6 class="mb-2">{{ arbitraryModalTitle }}</h6>
+                <p class="mb-0 text-muted">{{ arbitraryModalBody }}</p>
+              </div>
+            </div>
           </div>
         </li-tabx>
 
@@ -200,18 +196,14 @@
                   <li>{{ t.pages.datatableSelect.optionNine }}</li>
                   <li>{{ t.pages.datatableSelect.optionTen }}</li>
                   <li>{{ t.pages.datatableSelect.optionEleven }}</li>
+                  <li><code>[itemLabelBuilder]</code> e <code>[itemValueBuilder]</code> funcionam bem com listas tipadas, sem exigir <code>Map</code>.</li>
+                  <li><code>[compareWith]</code> resolve seleção quando o modal recebe novas instâncias do backend.</li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-datatable-select
-  [settings]="dtSettings"
-  [dataTableFilter]="filtro"
-  [data]="items"
-  [searchInFields]="sInFields"
-  [labelKey]="'name'"
-  [valueKey]="'id'"
-  [(ngModel)]="selectedValue"
-  (dataRequest)="onDataRequest($event)"&gt;
-&lt;/li-datatable-select&gt;</code></pre>
+                <li-highlight [code]="ngModelApiSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">Builders + compareWith</h6>
+                <li-highlight [code]="builderApiSnippet" language="html"></li-highlight>
               </div>
 
               <div class="col-xl-6">
@@ -236,6 +228,10 @@
                   <li>{{ t.pages.datatableSelect.noteTwo }}</li>
                   <li>{{ t.pages.datatableSelect.noteThree }}</li>
                 </ul>
+
+                <h6 class="mb-2 mt-4">{{ arbitraryModalTitle }}</h6>
+                <p class="text-muted mb-3">{{ arbitraryModalBody }}</p>
+                <li-highlight [code]="arbitraryModalSnippet" language="html"></li-highlight>
               </div>
             </div>
           </div>

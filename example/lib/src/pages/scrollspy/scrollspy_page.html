@@ -103,16 +103,11 @@
               <li *ngFor="let item of apiItems">{{ item }}</li>
             </ul>
 
-            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;nav [liScrollSpyMenu]="spy" class="nav nav-pills flex-column"&gt;
-  &lt;button class="nav-link" type="button" liScrollSpyItem="overview"&gt;Overview&lt;/button&gt;
-  &lt;button class="nav-link" type="button" [liScrollSpyItem]="[spy, 'items', 'directive']"&gt;Items&lt;/button&gt;
-&lt;/nav&gt;</code></pre>
+            <div class="mb-3">
+              <li-highlight [code]="menuApiSnippet" language="html"></li-highlight>
+            </div>
 
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;div liScrollSpy #spy="liScrollSpy" (activeChange)="onActiveChange($event)"&gt;
-  &lt;section liScrollSpyFragment="overview"&gt;...&lt;/section&gt;
-  &lt;section liScrollSpyFragment="service"&gt;...&lt;/section&gt;
-  &lt;section liScrollSpyFragment="directive"&gt;...&lt;/section&gt;
-&lt;/div&gt;</code></pre>
+            <li-highlight [code]="containerApiSnippet" language="html"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

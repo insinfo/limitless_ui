@@ -49,6 +49,7 @@ class TooltipGlobalConfigDemoComponent {
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiTooltipComponent,
@@ -58,6 +59,60 @@ class TooltipGlobalConfigDemoComponent {
 )
 class TooltipPageComponent {
   TooltipPageComponent(this.i18n);
+
+  static const String basicApiSnippet = '''
+<button
+  [liTooltip]="'Tooltip direto no botão'"
+  placement="top"
+  triggers="hover focus">
+  Hover tooltip
+</button>''';
+
+  static const String templateApiSnippet = '''
+<button
+  [liTooltip]="tooltipTemplate"
+  triggers="click"
+  container="body"
+  tooltipClass="tooltip-aurora">
+  Tooltip com template
+</button>
+
+<template #tooltipTemplate>
+  <div class="fw-semibold mb-1">TemplateRef dentro do tooltip</div>
+  <div class="small text-white-50">Bindings continuam vivos.</div>
+</template>''';
+
+  static const String targetApiSnippet = '''
+<button
+  #tooltip="liTooltip"
+  [liTooltip]="'Ancorado em outro elemento'"
+  triggers="manual"
+  [positionTarget]="'#target-anchor'"
+  (click)="tooltip.toggle()">
+  Abrir tooltip manual
+</button>
+
+<span id="target-anchor">Âncora visual</span>''';
+
+  static const String configApiSnippet = '''
+@Component(
+  providers: [ClassProvider(LiTooltipConfig)],
+)
+class DemoTooltipDefaults {
+  DemoTooltipDefaults(LiTooltipConfig config) {
+    config.triggers = 'click';
+    config.placement = 'right';
+    config.tooltipClass = 'tooltip-config-demo';
+  }
+}''';
+
+  static const String componentApiSnippet = '''
+<li-tooltip
+  [text]="'Mostra dicas ao passar o mouse.'"
+  placement="top"
+  trigger="hover">
+  <button class="btn btn-outline-primary" type="button">Hover tooltip</button>
+</li-tooltip>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

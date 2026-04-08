@@ -1,0 +1,96 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx [header]="isPt ? 'Visão geral' : 'Overview'" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ overviewIntro }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ featuresTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li>{{ featureOne }}</li>
+                    <li>{{ featureTwo }}</li>
+                    <li>{{ featureThree }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="demo-page-header-shell mb-4 border rounded overflow-hidden">
+              <li-pg-header titlePrefix="Protocolo" title="Incluir Processo">
+                <li-pg-crumb-item label="Protocolo"></li-pg-crumb-item>
+                <li-pg-crumb-item label="Incluir Processo" [active]="true"></li-pg-crumb-item>
+
+                <div liPgHeaderActions class="collapse d-lg-block ms-lg-auto">
+                  <div class="d-lg-flex mb-2 mb-lg-0 gap-2">
+                    <button type="button" class="btn btn-sm btn-light">Cancelar</button>
+                    <button type="button" class="btn btn-sm btn-primary">Salvar</button>
+                  </div>
+                </div>
+              </li-pg-header>
+            </div>
+
+            <div class="demo-page-header-shell border rounded overflow-hidden">
+              <li-pg-header title="Visualiza Processo">
+                <div liPgHeaderBottom class="w-100">
+                  <div class="d-flex">
+                    <ul class="nav nav-tabs nav-tabs-underline rounded-top mb-0">
+                      <li class="nav-item">
+                        <a class="nav-link active">Visão Geral</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link">Trâmites do Processo</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </li-pg-header>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="'API'">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
+
+            <div class="mb-4">
+              <h6 class="mb-2">{{ isPt ? 'Cabeçalho com breadcrumb e ações' : 'Header with breadcrumb and actions' }}</h6>
+              <li-highlight [code]="basicSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mb-4">
+              <h6 class="mb-2">{{ isPt ? 'Cabeçalho com faixa inferior customizada' : 'Header with projected bottom row' }}</h6>
+              <li-highlight [code]="customBottomSnippet" language="html"></li-highlight>
+            </div>
+
+            <div>
+              <h6 class="mb-2">{{ compatibilityTitle }}</h6>
+              <p class="text-muted mb-3">{{ compatibilityBody }}</p>
+              <li-highlight [code]="migrationSnippet" language="html"></li-highlight>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

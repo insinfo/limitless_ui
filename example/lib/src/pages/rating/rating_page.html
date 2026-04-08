@@ -10,81 +10,121 @@
 </div>
 
 <div class="content">
-  <div class="card card-body mb-4">
-    <h5 class="mb-2">{{ introTitle }}</h5>
-    <p class="text-muted mb-0">{{ introBody }}</p>
-  </div>
-
-  <div class="row g-4">
-    <div class="col-xl-4">
-      <div class="card h-100">
-        <div class="card-header">
-          <h5 class="mb-0">{{ interactiveTitle }}</h5>
-        </div>
+  <div class="card">
+    <li-tabsx type="tabs">
+      <li-tabx [header]="t.common.tabOverview" [active]="true">
         <div class="card-body">
-          <label class="form-label fw-semibold">{{ productLabel }}</label>
-          <li-rating
-              [(ngModel)]="productRating"
-              (hover)="hoverPreview = $event"
-              (leave)="hoverPreview = 0">
-          </li-rating>
-          <div class="rating-summary-box mt-3">
-            <div><strong>{{ currentValueLabel }}:</strong> {{ productRating }}</div>
-            <div class="text-muted">{{ hoverLabel }}</div>
-          </div>
+          <h5 class="mb-2">{{ introTitle }}</h5>
+          <p class="text-muted mb-0">{{ introBody }}</p>
         </div>
-      </div>
-    </div>
 
-    <div class="col-xl-4">
-      <div class="card h-100">
-        <div class="card-header">
-          <h5 class="mb-0">{{ resettableTitle }}</h5>
-        </div>
-        <div class="card-body">
-          <label class="form-label fw-semibold">{{ serviceLabel }}</label>
-          <li-rating
-              [(ngModel)]="serviceRating"
-              [resettable]="true"
-              size="md">
-          </li-rating>
+        <div class="card border-0 shadow-none">
+          <div class="card-body">
+            <div class="row g-4">
+              <div class="col-xl-4">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h5 class="mb-0">{{ interactiveTitle }}</h5>
+                  </div>
+                  <div class="card-body">
+                    <label class="form-label fw-semibold">{{ productLabel }}</label>
+                    <li-rating
+                        [(ngModel)]="productRating"
+                        (hover)="hoverPreview = $event"
+                        (leave)="hoverPreview = 0">
+                    </li-rating>
+                    <div class="rating-summary-box mt-3">
+                      <div><strong>{{ currentValueLabel }}:</strong> {{ productRating }}</div>
+                      <div class="text-muted">{{ hoverLabel }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <div class="mt-4">
-            <div class="fw-semibold mb-2">{{ sizesLabel }}</div>
-            <div class="d-flex flex-column gap-2">
-              <li-rating [rate]="2" size="sm" [readonly]="true"></li-rating>
-              <li-rating [rate]="3" size="md" [readonly]="true"></li-rating>
-              <li-rating [rate]="5" size="lg" [readonly]="true"></li-rating>
+              <div class="col-xl-4">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h5 class="mb-0">{{ resettableTitle }}</h5>
+                  </div>
+                  <div class="card-body">
+                    <label class="form-label fw-semibold">{{ serviceLabel }}</label>
+                    <li-rating
+                        [(ngModel)]="serviceRating"
+                        [resettable]="true"
+                        size="md">
+                    </li-rating>
+
+                    <div class="mt-4">
+                      <div class="fw-semibold mb-2">{{ sizesLabel }}</div>
+                      <div class="d-flex flex-column gap-2">
+                        <li-rating [rate]="2" size="sm" [readonly]="true"></li-rating>
+                        <li-rating [rate]="3" size="md" [readonly]="true"></li-rating>
+                        <li-rating [rate]="5" size="lg" [readonly]="true"></li-rating>
+                      </div>
+                    </div>
+
+                    <div class="rating-summary-box mt-3">
+                      <div><strong>{{ serviceValueLabel }}:</strong> {{ serviceRating }}</div>
+                      <div class="text-muted">{{ resettableHelp }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h5 class="mb-0">{{ readonlyTitle }}</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-4">
+                      <label class="form-label fw-semibold">{{ readonlyLabel }}</label>
+                      <li-rating [rate]="readonlyRating" [readonly]="true"></li-rating>
+                      <div class="text-muted mt-2">{{ readonlyHelp }}</div>
+                    </div>
+
+                    <div>
+                      <label class="form-label fw-semibold">{{ disabledLabel }}</label>
+                      <li-rating [rate]="disabledRating" [disabled]="true"></li-rating>
+                      <div class="text-muted mt-2">{{ disabledHelp }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="rating-summary-box mt-3">
-            <div><strong>{{ serviceValueLabel }}:</strong> {{ serviceRating }}</div>
-            <div class="text-muted">{{ resettableHelp }}</div>
-          </div>
         </div>
-      </div>
-    </div>
+      </li-tabx>
 
-    <div class="col-xl-4">
-      <div class="card h-100">
-        <div class="card-header">
-          <h5 class="mb-0">{{ readonlyTitle }}</h5>
-        </div>
+      <li-tabx [header]="t.common.tabApi">
         <div class="card-body">
-          <div class="mb-4">
-            <label class="form-label fw-semibold">{{ readonlyLabel }}</label>
-            <li-rating [rate]="readonlyRating" [readonly]="true"></li-rating>
-            <div class="text-muted mt-2">{{ readonlyHelp }}</div>
-          </div>
+          <p class="text-muted mb-4">{{ apiIntro }}</p>
 
-          <div>
-            <label class="form-label fw-semibold">{{ disabledLabel }}</label>
-            <li-rating [rate]="disabledRating" [disabled]="true"></li-rating>
-            <div class="text-muted mt-2">{{ disabledHelp }}</div>
+          <div class="row g-4">
+            <div class="col-xl-4">
+              <div class="card card-body h-100">
+                <h6 class="mb-2">{{ mainInputsTitle }}</h6>
+                <ul class="mb-0 ps-3">
+                  <li><code>[(ngModel)]</code> liga o rating a um valor mutável.</li>
+                  <li><code>[rate]</code> cobre exibição simples sem two-way binding.</li>
+                  <li><code>readonly</code>, <code>disabled</code>, <code>resettable</code> e <code>size</code> controlam os estados.</li>
+                  <li><code>(hover)</code> e <code>(leave)</code> ajudam no preview instantâneo.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-xl-8">
+              <div class="card card-body">
+                <h6 class="mb-3">{{ interactiveSnippetTitle }}</h6>
+                <li-highlight [code]="interactiveSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-3 mt-4">{{ readonlySnippetTitle }}</h6>
+                <li-highlight [code]="readonlySnippet" language="html"></li-highlight>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </li-tabx>
+    </li-tabsx>
   </div>
 </div>
