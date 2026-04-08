@@ -36,8 +36,11 @@ class LiTabxDirective {
   String? header;
 
   /// Template reference to the heading template
-  @ContentChild(LiTabxHeaderDirective)
-  LiTabxHeaderDirective? headerTemplate;
+  @ContentChildren(LiTabxHeaderDirective, descendants: false)
+  List<LiTabxHeaderDirective> headerTemplates = [];
+
+  LiTabxHeaderDirective? get headerTemplate =>
+      headerTemplates.isEmpty ? null : headerTemplates.first;
 
   final _selectCtrl = StreamController<LiTabxDirective>.broadcast();
 
@@ -57,6 +60,9 @@ class LiTabxDirective {
   /// if tab is active equals true, or set `true` to activate tab
   @HostBinding('class.active')
   bool get active => _active;
+
+  @HostBinding('class.show')
+  bool get show => _active;
 
   bool get shouldRenderBody {
     if (!resolvedLazyLoad) {

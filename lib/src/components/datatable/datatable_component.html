@@ -74,7 +74,7 @@
             </div>
 
             <select #selectItemsPerPage (change)="changeItemsPerPageHandler(selectItemsPerPage)"
-                name="DataTables_length" class="form-select" style="width: fit-content; max-width: 12.5rem;">
+                name="DataTables_length" class="form-select datatable-items-per-page-select">
                 <option *ngFor="let ipp of limitPerPageOptions" value="{{ipp}}"
                     [selected]="ipp == dataTableFilter.limit">
                     {{ipp}}
@@ -113,7 +113,7 @@
                         [attr.data-index]="view.row.index.toString()"
                         [attr.data-label]="'datatable_row_' + idxR.toString()" [cssStyle]="view.row.styleCss"
                         (click)="rowClickHandler(view.row)">
-                        <td *ngIf="showCheckboxToSelectRow" class="datatable-first-col"
+                        <td *ngIf="showCheckboxToSelectRow && view.row.type == DatatableRowType.normal" class="datatable-first-col"
                             (click)="$event.stopPropagation()">
                             <input class="cursor-pointer form-check-input m-0 me-3" (click)="onSelect($event, view.row)"
                                 type="checkbox" [checked]="view.row.selected" autocomplete="off" tabindex="-1"
@@ -151,7 +151,8 @@
         </table>
     </div>
 
-    <div class="grid-container" *ngIf="gridMode == true">
+    <div *ngIf="gridMode == true" [attr.class]="gridContainerClass"
+        [cssStyle]="settings.gridContainerStyle">
 
 
 
@@ -169,7 +170,9 @@
 
             <div *ngFor="let row of rows; let i = index; trackBy: trackByRow" class="grid-item"
                 [class.content-divider]="row.type == DatatableRowType.groupTitle"
-                [class.card]="row.type == DatatableRowType.normal" [cssStyle]="row.styleCss">
+                [class.card]="row.type == DatatableRowType.normal && row.customCardElement == null"
+                [class.datatable-grid-item-custom]="row.customCardElement != null"
+                [cssStyle]="row.styleCss">
 
                 <span *ngIf="row.type == DatatableRowType.groupTitle" class="text-center text-muted p-2">
                     <span *ngFor="let column of row.columns; trackBy: trackByColumnKey" [safeHtml]="column.value"
@@ -213,7 +216,7 @@
             Mostrando de {{dataTableFilter.offset}} a {{getCurrentTotalItems}} de {{totalRecords}} entradas,
             {{numPages}} paginas
         </div>
-        <div class="dataTables_paginate paging_simple_numbers" style="overflow-x:auto;">
+        <div class="dataTables_paginate paging_simple_numbers datatable-pagination-scroll">
             <li-pagination
                 appearance="datatable"
                 variant="flat"
@@ -221,7 +224,7 @@
                 [collectionSize]="totalRecords"
                 [pageSize]="dataTableFilter.limit ?? 0"
                 [page]="getCurrentPage"
-                [maxSize]="paginationButtonQuantity"
+                [maxSize]="resolvedPaginationButtonQuantity"
                 [rotate]="true"
                 [ellipses]="false"
                 [boundaryLinks]="numPages > 1"

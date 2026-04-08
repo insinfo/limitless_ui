@@ -52,6 +52,18 @@ class LiAccordionComponent implements AfterContentInit {
   @Input()
   bool destroyOnCollapse = false;
 
+  /// Applies the default padding to each accordion body.
+  @Input()
+  bool bodyPadding = true;
+
+  /// Extra CSS classes applied to each accordion item button.
+  @Input()
+  String buttonClass = '';
+
+  /// Applies the semibold utility class to item buttons.
+  @Input()
+  bool buttonSemibold = true;
+
   @HostBinding('class.accordion')
   bool hostAccordionClass = true;
 

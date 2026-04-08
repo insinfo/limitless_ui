@@ -388,6 +388,199 @@ void main() {
     expect(host.table!.rows.every((row) => !row.selected), isTrue);
   });
 
+  test('agrupamento não renderiza checkbox na linha divisora', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'grupoId': 1,
+            'grupoNome': 'Compras',
+            'assuntoId': 10,
+            'assuntoNome': 'Compra direta',
+            'nome': 'Ana',
+            'idade': 30,
+          },
+          <String, dynamic>{
+            'grupoId': 1,
+            'grupoNome': 'Compras',
+            'assuntoId': 10,
+            'assuntoNome': 'Compra direta',
+            'nome': 'Bruno',
+            'idade': 40,
+          },
+        ],
+        totalRecords: 2,
+      );
+      component.settings = DatatableSettings(
+        enableGrouping: true,
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'grupoNome',
+            title: 'Grupo',
+            visibility: false,
+            enableGrouping: true,
+            groupByKey: 'grupoId',
+          ),
+          DatatableCol(
+            key: 'assuntoNome',
+            title: 'Assunto',
+            visibility: false,
+            enableGrouping: true,
+            groupByKey: 'assuntoId',
+          ),
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade'),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final groupRow = fixture.rootElement.querySelector(
+      'tbody tr.datatable-group-title-row',
+    ) as TableRowElement?;
+
+    expect(groupRow, isNotNull);
+    expect(groupRow!.querySelector('input.form-check-input'), isNull);
+    expect(groupRow.querySelectorAll('td'), hasLength(1));
+    expect(groupRow.text, contains('Compras'));
+    expect(groupRow.text, contains('Compra direta'));
+  });
+
+  test('select all com agrupamento seleciona apenas linhas normais', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'grupoId': 1,
+            'grupoNome': 'Compras',
+            'assuntoId': 10,
+            'assuntoNome': 'Compra direta',
+            'nome': 'Ana',
+            'idade': 30,
+          },
+          <String, dynamic>{
+            'grupoId': 2,
+            'grupoNome': 'Pessoal',
+            'assuntoId': 20,
+            'assuntoNome': 'Férias',
+            'nome': 'Bruno',
+            'idade': 40,
+          },
+        ],
+        totalRecords: 2,
+      );
+      component.settings = DatatableSettings(
+        enableGrouping: true,
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'grupoNome',
+            title: 'Grupo',
+            visibility: false,
+            enableGrouping: true,
+            groupByKey: 'grupoId',
+          ),
+          DatatableCol(
+            key: 'assuntoNome',
+            title: 'Assunto',
+            visibility: false,
+            enableGrouping: true,
+            groupByKey: 'assuntoId',
+          ),
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade'),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+    final selectAllCheckbox = fixture.rootElement.querySelector(
+      'thead .datatable-first-col input.form-check-input',
+    ) as CheckboxInputElement?;
+
+    expect(selectAllCheckbox, isNotNull);
+    expect(host.table!.rows.where((row) => row.type == DatatableRowType.groupTitle), hasLength(2));
+    expect(host.table!.rows.where((row) => row.type == DatatableRowType.normal), hasLength(2));
+
+    await fixture.update((_) {
+      selectAllCheckbox!.click();
+    });
+
+    expect(
+      host.table!.rows
+          .where((row) => row.type == DatatableRowType.groupTitle)
+          .every((row) => row.selected == false),
+      isTrue,
+    );
+    expect(
+      host.table!.rows
+          .where((row) => row.type == DatatableRowType.normal)
+          .every((row) => row.selected),
+      isTrue,
+    );
+    expect(host.table!.getAllSelected<Map<String, dynamic>>(), hasLength(2));
+    expect(host.lastSelectedRows, hasLength(2));
+  });
+
+  test('onSelect ignora linha de agrupamento', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'grupoId': 1,
+            'grupoNome': 'Compras',
+            'assuntoId': 10,
+            'assuntoNome': 'Compra direta',
+            'nome': 'Ana',
+            'idade': 30,
+          },
+          <String, dynamic>{
+            'grupoId': 1,
+            'grupoNome': 'Compras',
+            'assuntoId': 10,
+            'assuntoNome': 'Compra direta',
+            'nome': 'Bruno',
+            'idade': 40,
+          },
+        ],
+        totalRecords: 2,
+      );
+      component.settings = DatatableSettings(
+        enableGrouping: true,
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'grupoNome',
+            title: 'Grupo',
+            visibility: false,
+            enableGrouping: true,
+            groupByKey: 'grupoId',
+          ),
+          DatatableCol(
+            key: 'assuntoNome',
+            title: 'Assunto',
+            visibility: false,
+            enableGrouping: true,
+            groupByKey: 'assuntoId',
+          ),
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade'),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+    final groupRow = host.table!.rows.firstWhere(
+      (row) => row.type == DatatableRowType.groupTitle,
+    );
+
+    await fixture.update((component) {
+      component.table!.onSelect(MouseEvent('click'), groupRow);
+    });
+
+    expect(groupRow.selected, isFalse);
+    expect(host.table!.getAllSelected<Map<String, dynamic>>(), isEmpty);
+    expect(host.lastSelectedRows, anyOf(isNull, isEmpty));
+  });
+
   test('unSelectAll limpa selecao existente', () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
@@ -524,6 +717,45 @@ void main() {
     expect((tableContainer as HtmlElement).classes.contains('hide'), isTrue);
     expect(fixture.text, contains('Ana'));
     expect(fixture.text, contains('Bruno'));
+  });
+
+  test('preserva a classe padrao do grid-container sem customização', () async {
+    final fixture = await testBed.create();
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.table!.changeViewMode();
+    });
+    await _settleTable(fixture);
+
+    final gridContainer = fixture.rootElement.querySelector('.grid-container');
+
+    expect(gridContainer, isNotNull);
+    expect(gridContainer!.className, contains('grid-container'));
+  });
+
+  test('adiciona classe customizada ao grid-container sem remover a classe padrao', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade'),
+        ],
+        gridContainerClass: 'grid-shell-demo',
+      );
+    });
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.table!.changeViewMode();
+    });
+    await _settleTable(fixture);
+
+    final gridContainer = fixture.rootElement.querySelector('.grid-container');
+
+    expect(gridContainer, isNotNull);
+    expect(gridContainer!.className, contains('grid-container'));
+    expect(gridContainer.className, contains('grid-shell-demo'));
   });
 
   test('aplica classes e estilos customizados nas colunas', () async {

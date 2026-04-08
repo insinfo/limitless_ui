@@ -1,3 +1,12 @@
+## 1.0.0-dev.5
+
+- Expanded `li-datatable` with grouped and multi-column sorting demos, customizable grid container class/style hooks, responsive pagination sizing, safer grouped-row selection behavior, and new regression coverage for grouping and grid rendering.
+- Expanded the datatable example and documentation with richer AngularDart integration snippets, backend/frontend usage guidance, and updated localized README/docs instructions for `build_runner serve` and optional `webdev` usage.
+- Expanded `li-accordion` with `bodyPadding`, `buttonClass`, and `buttonSemibold` so host apps can match Limitless/SALI accordion body density and header typography without forking the component.
+- Added a SALI-inspired "Visualiza Processo" accordion demo to the example app, including underline tabs, flush accordion sections, neutral active tab text, and muted non-bold accordion headers.
+- Fixed `li-tabsx` nested tab/header projection so inner tabs no longer leak into outer tab headers, ensured active panes also receive the `show` class, and added configurable tab content padding and active-text body coloring.
+- Added browser regression tests covering accordion body padding/button styling, datatable grouped selection/grid container behavior, and tab content padding.
+
 ## 1.0.0-dev.4
 
 - Updated the `essential_core` dependency constraint to `^1.1.0`.

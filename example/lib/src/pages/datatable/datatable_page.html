@@ -13,50 +13,55 @@
 
   <div class="content">
     <div class="card">
-
-
-      <li-tabsx type="tabs" [lazyLoad]="true" [destroyOnHide]="true">
+      <li-tabsx type="tabs" [lazyLoad]="true" [destroyOnHide]="true" [contentPadding]="false">
         <li-tabx [header]="t.common.tabOverview" [active]="true">
-          <div class="card-body demo-doc-body">
+          <div class="card-body">
             <p class="text-muted mb-3">{{ t.pages.datatable.overviewIntro }}</p>
 
-            <div class="demo-doc-grid">
-              <div class="demo-doc-card">
-                <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
-                <p class="mb-0 text-muted">{{ t.pages.datatable.descriptionBody }}</p>
+            <div class="row g-3 mb-4">
+              <div class="col-xl-4 col-md-6">
+                <div class="card h-100 mb-0">
+                  <div class="card-body">
+                    <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                    <p class="mb-0 text-muted">{{ t.pages.datatable.descriptionBody }}</p>
+                  </div>
+                </div>
               </div>
 
-              <div class="demo-doc-card">
-                <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
-                <ul class="mb-0 ps-3">
-                  <li>{{ t.pages.datatable.featureOne }}</li>
-                  <li>{{ t.pages.datatable.featureTwo }}</li>
-                  <li>{{ t.pages.datatable.featureThree }}</li>
-                  <li>{{ t.pages.datatable.featureFour }}</li>
-                  <li>{{ t.pages.datatable.featureFive }}</li>
-                </ul>
+              <div class="col-xl-4 col-md-6">
+                <div class="card h-100 mb-0">
+                  <div class="card-body">
+                    <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
+                    <ul class="mb-0 ps-3">
+                      <li>{{ t.pages.datatable.featureOne }}</li>
+                      <li>{{ t.pages.datatable.featureTwo }}</li>
+                      <li>{{ t.pages.datatable.featureThree }}</li>
+                      <li>{{ t.pages.datatable.featureFour }}</li>
+                      <li>{{ t.pages.datatable.featureFive }}</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
-              <div class="demo-doc-card">
-                <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
-                <ul class="mb-0 ps-3">
-                  <li>{{ t.pages.datatable.limitOne }}</li>
-                  <li>{{ t.pages.datatable.limitTwo }}</li>
-                  <li>{{ t.pages.datatable.limitThree }}</li>
-                </ul>
+              <div class="col-xl-4 col-md-12">
+                <div class="card h-100 mb-0">
+                  <div class="card-body">
+                    <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
+                    <ul class="mb-0 ps-3">
+                      <li>{{ t.pages.datatable.limitOne }}</li>
+                      <li>{{ t.pages.datatable.limitTwo }}</li>
+                      <li>{{ t.pages.datatable.limitThree }}</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <pre class="bg-light border rounded p-3 mb-0"><code>&lt;li-datatable
-  [dataTableFilter]="filters"
-  [data]="tableData"
-  [settings]="tableSettings"
-  [searchInFields]="searchFields"
-  [responsiveCollapse]="true"
-  (dataRequest)="onTableRequest($event)"&gt;
-&lt;/li-datatable&gt;</code></pre>
+            <div class="mb-4">
+              <li-highlight [code]="overviewSnippet" language="html"></li-highlight>
+            </div>
 
-            <div class="demo-doc-section">
+            <div class="mb-0">
               <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
                 <p class="text-muted mb-0">{{ t.pages.datatable.demoIntro }}</p>
                 <div class="d-flex flex-wrap gap-2">
@@ -68,85 +73,158 @@
                   <button class="btn btn-sm btn-outline-primary" type="button" (click)="exportPdf()">PDF</button>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <li-datatable #demoTable [dataTableFilter]="filters" [data]="tableData" [settings]="tableSettings"
-                [responsiveCollapse]="true" [gridMode]="datatableGridMode"
-                [allowSingleSelectionOnly]="singleSelectionOnly" [searchInFields]="searchFields"
-                [searchLabel]="t.pages.datatable.searchLabel" [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                (dataRequest)="onTableRequest($event)" (limitChange)="onTableRequest($event)"
-                (searchRequest)="onTableRequest($event)" (onRowClick)="onRowClick($event)"
-                (selectAll)="onSelectionChange($event)">
-              </li-datatable>
+          <div>
+            <li-datatable #demoTable [dataTableFilter]="filters" [data]="tableData" [settings]="tableSettings"
+              [responsiveCollapse]="true" [gridMode]="datatableGridMode" [allowSingleSelectionOnly]="singleSelectionOnly"
+              [searchInFields]="searchFields" [searchLabel]="t.pages.datatable.searchLabel"
+              [searchPlaceholder]="t.pages.datatable.searchPlaceholder" (dataRequest)="onTableRequest($event)"
+              (limitChange)="onTableRequest($event)" (searchRequest)="onTableRequest($event)"
+              (onRowClick)="onRowClick($event)" (selectAll)="onSelectionChange($event)">
+            </li-datatable>
 
-              <div class="demo-summary-box mt-3">{{ datatableEventLog.isEmpty ? initialEventLog : datatableEventLog }}
+            <div class="card-body pt-3">
+              <div class="bg-light rounded border p-3">{{ datatableEventLog.isEmpty ? initialEventLog :
+                datatableEventLog }}</div>
+            </div>
+
+            <div class="card-body pt-1">
+              <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                <div>
+                  <h6 class="mb-2">Agrupamento com seleção</h6>
+                  <p class="text-muted mb-0">
+                    Esta demonstração reproduz o cenário com <code>enableGrouping</code> e
+                    <code>showCheckboxToSelectRow</code> ativos. O checkbox deve aparecer apenas nas linhas de dados,
+                    nunca na linha divisora do grupo.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <li-highlight [code]="groupedSnippet" language="dart"></li-highlight>
               </div>
             </div>
 
-            <div class="demo-doc-section">
-              <h6 class="mb-2">{{ t.pages.datatable.onDemandTitle }}</h6>
-              <p class="text-muted mb-3">{{ t.pages.datatable.onDemandIntro }}</p>
+            <li-datatable #groupedDemoTable [dataTableFilter]="groupedFilters" [data]="groupedTableData"
+              [settings]="groupedTableSettings" [searchInFields]="groupedSearchFields"
+              [searchPlaceholder]="'Busque por descrição, classificação ou assunto'"
+              (dataRequest)="onGroupedTableRequest($event)" (limitChange)="onGroupedTableRequest($event)"
+              (searchRequest)="onGroupedTableRequest($event)" (selectAll)="onGroupedSelectionChange($event)">
+            </li-datatable>
 
-              <li-accordion [lazy]="true" [destroyOnCollapse]="true">
-                <li-accordion-item [header]="t.pages.datatable.readonlyTitle"
-                  [description]="t.pages.datatable.readonlyDescription"
-                  (expandedChange)="onReadonlyDemoExpanded($event)">
-                  <template li-accordion-body>
-                    <li-datatable #readonlyDemoTable *ngIf="showReadonlyDemo" [dataTableFilter]="readonlyFilters"
-                      [data]="readonlyTableData" [settings]="tableSettings" [responsiveCollapse]="true"
-                      [disableRowClick]="true" [showCheckboxToSelectRow]="false" [searchInFields]="readonlySearchFields"
-                      [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                      (dataRequest)="onReadonlyTableRequest($event)" (limitChange)="onReadonlyTableRequest($event)"
-                      (searchRequest)="onReadonlyTableRequest($event)">
-                    </li-datatable>
-                  </template>
-                </li-accordion-item>
-
-                <li-accordion-item [header]="t.pages.datatable.gridPreviewTitle"
-                  [description]="t.pages.datatable.gridPreviewDescription"
-                  (expandedChange)="onGridPreviewDemoExpanded($event)">
-                  <template li-accordion-body>
-                    <li-datatable #gridPreviewDemoTable *ngIf="showGridPreviewDemo"
-                      [dataTableFilter]="gridPreviewFilters" [data]="gridPreviewTableData" [settings]="tableSettings"
-                      [gridMode]="true" [disableRowClick]="true" [showCheckboxToSelectRow]="false"
-                      [searchInFields]="searchFields" [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                      (dataRequest)="onGridPreviewTableRequest($event)"
-                      (limitChange)="onGridPreviewTableRequest($event)"
-                      (searchRequest)="onGridPreviewTableRequest($event)">
-                    </li-datatable>
-                  </template>
-                </li-accordion-item>
-
-                <li-accordion-item [header]="t.pages.datatable.customTableTitle"
-                  [description]="t.pages.datatable.customTableDescription"
-                  (expandedChange)="onCustomTableDemoExpanded($event)">
-                  <template li-accordion-body>
-                    <li-datatable #customTableDemoTable *ngIf="showCustomTableDemo"
-                      [dataTableFilter]="customTableFilters" [data]="customTableData" [settings]="advancedTableSettings"
-                      [searchInFields]="searchFields" [disableRowClick]="true" [showCheckboxToSelectRow]="false"
-                      [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                      (dataRequest)="onCustomTableRequest($event)" (limitChange)="onCustomTableRequest($event)"
-                      (searchRequest)="onCustomTableRequest($event)">
-                    </li-datatable>
-                  </template>
-                </li-accordion-item>
-
-                <li-accordion-item [header]="t.pages.datatable.customGridTitle"
-                  [description]="t.pages.datatable.customGridDescription"
-                  (expandedChange)="onCustomGridDemoExpanded($event)">
-                  <template li-accordion-body>
-                    <li-datatable #customGridDemoTable *ngIf="showCustomGridDemo" [dataTableFilter]="customGridFilters"
-                      [data]="customGridData" [settings]="advancedGridSettings" [gridMode]="true"
-                      [disableRowClick]="true" [showCheckboxToSelectRow]="false" [searchInFields]="searchFields"
-                      [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                      (dataRequest)="onCustomGridRequest($event)" (limitChange)="onCustomGridRequest($event)"
-                      (searchRequest)="onCustomGridRequest($event)">
-                    </li-datatable>
-                  </template>
-                </li-accordion-item>
-              </li-accordion>
+            <div class="card-body pt-3">
+              <div class="bg-light rounded border p-3">{{ groupedSelectionLog }}</div>
             </div>
 
-            <div class="demo-doc-section">
+            <div class="card-body pt-1">
+              <h6 class="mb-2">{{ t.pages.datatable.onDemandTitle }}</h6>
+              <p class="text-muted mb-3">{{ t.pages.datatable.onDemandIntro }}</p>
+            </div>
+
+            <li-accordion [lazy]="true" [destroyOnCollapse]="true" [bodyPadding]="false">
+              <li-accordion-item [header]="t.pages.datatable.readonlyTitle"
+                [description]="t.pages.datatable.readonlyDescription" (expandedChange)="onReadonlyDemoExpanded($event)">
+                <template li-accordion-body>
+                  <li-datatable #readonlyDemoTable *ngIf="showReadonlyDemo" [dataTableFilter]="readonlyFilters"
+                    [data]="readonlyTableData" [settings]="tableSettings" [responsiveCollapse]="true"
+                    [disableRowClick]="true" [showCheckboxToSelectRow]="false" [searchInFields]="readonlySearchFields"
+                    [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                    (dataRequest)="onReadonlyTableRequest($event)" (limitChange)="onReadonlyTableRequest($event)"
+                    (searchRequest)="onReadonlyTableRequest($event)">
+                  </li-datatable>
+                </template>
+              </li-accordion-item>
+
+              <li-accordion-item [header]="'Ordenação múltipla'"
+                [description]="'Acumula critérios ao clicar em colunas diferentes e reflete a ordem atual no resumo.'"
+                (expandedChange)="onMultiSortDemoExpanded($event)">
+                <template li-accordion-body>
+                  <div class="card-body pt-3">
+                    <div class="datatable-multisort-summary">
+                      <div class="datatable-multisort-summary__header">
+                        <div>
+                          <h6 class="mb-2">Ordenação atual</h6>
+                          <p class="text-muted mb-0">
+                            Com <code>enableMultiColumnSorting</code> ativo, cada nova coluna clicada entra em
+                            <code>orderFields</code>. Repetir o clique na mesma coluna apenas troca a direção.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="datatable-multisort-summary__chips">
+                        <div *ngFor="let orderField of multiSortOrderFields; let i = index"
+                          class="datatable-multisort-chip"
+                          [attr.title]="multiSortFieldLabel(orderField.field) + ' - ' + multiSortDirectionLabel(orderField.direction)">
+                          <span class="datatable-multisort-chip__position">{{i + 1}}º</span>
+                          <span class="datatable-multisort-chip__label">{{multiSortFieldLabel(orderField.field)}}</span>
+                          <span class="datatable-multisort-chip__direction">{{multiSortDirectionArrow(orderField.direction)}}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <li-highlight [code]="multiSortSnippet" language="dart"></li-highlight>
+                    </div>
+                  </div>
+
+                  <li-datatable #multiSortDemoTable *ngIf="showMultiSortDemo" [dataTableFilter]="multiSortFilters"
+                    [data]="multiSortTableData" [settings]="multiSortTableSettings" [responsiveCollapse]="true"
+                    [enableMultiColumnSorting]="true" [disableRowClick]="true" [showCheckboxToSelectRow]="false"
+                    [searchInFields]="multiSortSearchFields" [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                    (dataRequest)="onMultiSortTableRequest($event)" (limitChange)="onMultiSortTableRequest($event)"
+                    (searchRequest)="onMultiSortTableRequest($event)">
+                  </li-datatable>
+                </template>
+              </li-accordion-item>
+
+              <li-accordion-item [header]="t.pages.datatable.gridPreviewTitle"
+                [description]="t.pages.datatable.gridPreviewDescription"
+                (expandedChange)="onGridPreviewDemoExpanded($event)">
+                <template li-accordion-body>
+                  <li-datatable #gridPreviewDemoTable *ngIf="showGridPreviewDemo" [dataTableFilter]="gridPreviewFilters"
+                    [data]="gridPreviewTableData" [settings]="tableSettings" [gridMode]="true"
+                    [disableRowClick]="true" [showCheckboxToSelectRow]="false" [searchInFields]="searchFields"
+                    [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                    (dataRequest)="onGridPreviewTableRequest($event)"
+                    (limitChange)="onGridPreviewTableRequest($event)"
+                    (searchRequest)="onGridPreviewTableRequest($event)">
+                  </li-datatable>
+                </template>
+              </li-accordion-item>
+
+              <li-accordion-item [header]="t.pages.datatable.customTableTitle"
+                [description]="t.pages.datatable.customTableDescription"
+                (expandedChange)="onCustomTableDemoExpanded($event)">
+                <template li-accordion-body>
+                  <li-datatable #customTableDemoTable *ngIf="showCustomTableDemo" [dataTableFilter]="customTableFilters"
+                    [data]="customTableData" [settings]="advancedTableSettings" [searchInFields]="searchFields"
+                    [disableRowClick]="true" [showCheckboxToSelectRow]="false"
+                    [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                    (dataRequest)="onCustomTableRequest($event)" (limitChange)="onCustomTableRequest($event)"
+                    (searchRequest)="onCustomTableRequest($event)">
+                  </li-datatable>
+                </template>
+              </li-accordion-item>
+
+              <li-accordion-item [header]="t.pages.datatable.customGridTitle"
+                [description]="t.pages.datatable.customGridDescription"
+                (expandedChange)="onCustomGridDemoExpanded($event)">
+                <template li-accordion-body>
+                  <li-datatable #customGridDemoTable *ngIf="showCustomGridDemo" [dataTableFilter]="customGridFilters"
+                    [data]="customGridData" [settings]="advancedGridSettings" [gridMode]="true"
+                    [disableRowClick]="true" [showCheckboxToSelectRow]="false" [searchInFields]="searchFields"
+                    [limitPerPageOptions]="customGridLimitOptions"
+                    [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                    (dataRequest)="onCustomGridRequest($event)" (limitChange)="onCustomGridRequest($event)"
+                    (searchRequest)="onCustomGridRequest($event)">
+                  </li-datatable>
+                </template>
+              </li-accordion-item>
+            </li-accordion>
+
+            <div class="card-body pt-4">
               <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
                 <div>
                   <h6 class="mb-2">{{ t.pages.datatable.lazyModalTitle }}</h6>
@@ -157,24 +235,19 @@
                 </button>
               </div>
 
-              <li-modal #lazyDatatableModal [title-text]="t.pages.datatable.modalTitle" size="xtra-large" [lazyContent]="true"
-                [dialogScrollable]="true" [enableShadow]="true">
-                <div class="p-1">
-                  <p class="text-muted mb-3">{{ t.pages.datatable.modalBody }}</p>
-
-                  <li-datatable [dataTableFilter]="modalTableFilters" [data]="modalTableData"
-                    [settings]="advancedTableSettings" [searchInFields]="searchFields" [disableRowClick]="true"
-                    [showCheckboxToSelectRow]="false" [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
-                    (dataRequest)="onModalTableRequest($event)" (limitChange)="onModalTableRequest($event)"
-                    (searchRequest)="onModalTableRequest($event)">
-                  </li-datatable>
-
-                  <div class="d-flex justify-content-end mt-3">
-                    <button class="btn btn-light" type="button" (click)="lazyDatatableModal?.close()">
-                      {{ t.common.close }}
-                    </button>
-                  </div>
+              <li-modal #lazyDatatableModal [title-text]="t.pages.datatable.modalTitle" size="xtra-large"
+                [lazyContent]="true" [dialogScrollable]="true" [enableShadow]="true" [enableModalBodyClass]="false">
+                <div class="modal-body">
+                  <p class="text-muted mb-0">{{ t.pages.datatable.modalBody }}</p>
                 </div>
+
+                <li-datatable [dataTableFilter]="modalTableFilters" [data]="modalTableData"
+                  [settings]="advancedTableSettings" [searchInFields]="searchFields" [disableRowClick]="true"
+                  [showCheckboxToSelectRow]="false" [searchPlaceholder]="t.pages.datatable.searchPlaceholder"
+                  (dataRequest)="onModalTableRequest($event)" (limitChange)="onModalTableRequest($event)"
+                  (searchRequest)="onModalTableRequest($event)">
+                </li-datatable>
+
               </li-modal>
             </div>
           </div>
@@ -182,29 +255,41 @@
 
         <li-tabx [header]="t.common.tabApi">
           <div class="card-body demo-doc-body">
-            <div class="demo-doc-grid">
-              <div class="demo-doc-card">
-                <h6 class="mb-2">{{ t.common.sectionHowToUse }}</h6>
-                <p class="mb-0 text-muted">{{ t.pages.datatable.howToUseBody }}</p>
+            <div class="row g-3 mb-4">
+              <div class="col-xl-4 col-md-6">
+                <div class="card h-100 mb-0">
+                  <div class="card-body">
+                    <h6 class="mb-2">{{ t.common.sectionHowToUse }}</h6>
+                    <p class="mb-0 text-muted">{{ t.pages.datatable.howToUseBody }}</p>
+                  </div>
+                </div>
               </div>
 
-              <div class="demo-doc-card">
-                <h6 class="mb-2">{{ t.common.sectionMainOptions }}</h6>
-                <ul class="mb-0 ps-3">
-                  <li>{{ t.pages.datatable.optionOne }}</li>
-                  <li>{{ t.pages.datatable.optionTwo }}</li>
-                  <li>{{ t.pages.datatable.optionThree }}</li>
-                  <li>{{ t.pages.datatable.optionFour }}</li>
-                </ul>
+              <div class="col-xl-4 col-md-6">
+                <div class="card h-100 mb-0">
+                  <div class="card-body">
+                    <h6 class="mb-2">{{ t.common.sectionMainOptions }}</h6>
+                    <ul class="mb-0 ps-3">
+                      <li>{{ t.pages.datatable.optionOne }}</li>
+                      <li>{{ t.pages.datatable.optionTwo }}</li>
+                      <li>{{ t.pages.datatable.optionThree }}</li>
+                      <li>{{ t.pages.datatable.optionFour }}</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
-              <div class="demo-doc-card">
-                <h6 class="mb-2">{{ t.common.sectionBestPractices }}</h6>
-                <ul class="mb-0 ps-3">
-                  <li>{{ t.pages.datatable.practiceOne }}</li>
-                  <li>{{ t.pages.datatable.practiceTwo }}</li>
-                  <li>{{ t.pages.datatable.practiceThree }}</li>
-                </ul>
+              <div class="col-xl-4 col-md-12">
+                <div class="card h-100 mb-0">
+                  <div class="card-body">
+                    <h6 class="mb-2">{{ t.common.sectionBestPractices }}</h6>
+                    <ul class="mb-0 ps-3">
+                      <li>{{ t.pages.datatable.practiceOne }}</li>
+                      <li>{{ t.pages.datatable.practiceTwo }}</li>
+                      <li>{{ t.pages.datatable.practiceThree }}</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -219,19 +304,7 @@
                   <li>{{ t.pages.datatable.columnStyleFive }}</li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>DatatableCol(
-  key: 'status',
-  title: 'Status',
-  width: '160px',
-  textAlign: 'center',
-  nowrap: true,
-  cellStyleResolver: (itemMap, itemInstance) {
-    final status = itemMap['status']?.toString() ?? '';
-    return status == 'Bloqueado'
-        ? 'color: #b91c1c; font-weight: 700;'
-        : 'color: #0f766e; font-weight: 700;';
-  },
-)</code></pre>
+                <li-highlight [code]="columnStylesSnippet" language="dart"></li-highlight>
               </div>
 
               <div class="col-xl-6">
@@ -241,29 +314,15 @@
                   <li><code>gridTemplateColumns</code> define a malha do grid.</li>
                   <li><code>gridGap</code> controla o espaçamento entre cartões.</li>
                   <li><code>customCardBuilder</code> recebe <code>itemMap</code>, <code>itemInstance</code> e
-                    <code>row</code> para montar um <code>Element</code> completo.</li>
+                    <code>row</code> para montar um <code>Element</code> completo.
+                  </li>
                 </ul>
 
-                <pre class="bg-light border rounded p-3 mb-0"><code>DatatableSettings(
-  colsDefinitions: cols,
-  rowStyleResolver: (itemMap, itemInstance) {
-    if (itemMap['health'] == 'Crítica') {
-      return 'background-color: rgba(239, 68, 68, 0.08);';
-    }
-    return null;
-  },
-  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-  gridGap: '1rem',
-  customCardBuilder: (itemMap, itemInstance, row) {
-    final root = DivElement()..classes.add('my-card');
-    root.text = itemMap['feature']?.toString() ?? '';
-    return root;
-  },
-)</code></pre>
+                <li-highlight [code]="rowStyleGridSnippet" language="dart"></li-highlight>
               </div>
             </div>
 
-            <div class="demo-doc-section">
+            <div class="mb-4">
               <h6 class="mb-2">Fluxo mínimo full stack com Product</h6>
               <p class="text-muted mb-3">
                 Abaixo está um fluxo mínimo, baseado no padrão real de <strong>backend</strong> e
@@ -273,187 +332,59 @@
 
               <div class="row g-4">
                 <div class="col-xl-6">
-                  <div class="demo-code-card">
-                    <h6 class="mb-2">1. Model Product</h6>
-                    <p class="text-muted mb-3">Estrutura mínima seguindo o padrão de models do core com
-                      <code>SerializeBase</code>.</p>
-                    <pre class="demo-code-block mb-0"><code>import 'serialize_base.dart';
-
-class Product implements SerializeBase {
-  static const tableName = 'products';
-  static const fqtn = 'public.$tableName';
-  static const idCol = 'id';
-  static const nameCol = 'name';
-  static const priceCol = 'price';
-  static const statusCol = 'status';
-
-  int id;
-  String name;
-  double price;
-  String status;
-
-  Product({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.status,
-  });
-
-  @override
-  Map&lt;String, dynamic&gt; toMap() {
-    return {
-      idCol: id,
-      nameCol: name,
-      priceCol: price,
-      statusCol: status,
-    };
-  }
-
-  Map&lt;String, dynamic&gt; toInsertMap() =&gt; toMap()..remove(idCol);
-
-  Map&lt;String, dynamic&gt; toUpdateMap() =&gt; toMap()..remove(idCol);
-
-  factory Product.fromMap(Map&lt;String, dynamic&gt; map) {
-    return Product(
-      id: map[idCol] as int,
-      name: map[nameCol] as String,
-      price: (map[priceCol] as num).toDouble(),
-      status: map[statusCol] as String,
-    );
-  }
-}</code></pre>
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">1. Model Product</h6>
+                      <p class="text-muted mb-3">Estrutura mínima seguindo o padrão de models do core com
+                        <code>SerializeBase</code>.
+                      </p>
+                      <li-highlight [code]="productModelSnippet" language="dart"></li-highlight>
+                    </div>
                   </div>
                 </div>
 
                 <div class="col-xl-6">
-                  <div class="demo-code-card">
-                    <h6 class="mb-2">2. Backend com Eloquent + DataFrame</h6>
-                    <p class="text-muted mb-3">O repositório consulta a tabela, aplica filtros, paginação e ordenação, e
-                      retorna um <code>DataFrame</code> pronto para serialização.</p>
-                    <pre class="demo-code-block mb-0"><code>class ProductRepository {
-  final Connection db;
-
-  ProductRepository(this.db);
-
-  Future&lt;DataFrame&lt;Map&lt;String, dynamic&gt;&gt;&gt; list({Filters? filtros}) async {
-    final query = db.table(Product.fqtn);
-    query.selectRaw('*');
-
-    if (filtros?.isSearch == true) {
-      final search = '%${filtros!.searchString!.toLowerCase()}%';
-      query.whereRaw('unaccent(name) ilike unaccent(?)', [search]);
-    }
-
-    final totalRecords = await query.count();
-
-    if (filtros?.isOrder == true) {
-      query.orderBy(filtros!.orderBy!, filtros.orderDir!);
-    } else {
-      query.orderBy(Product.nameCol, 'asc');
-    }
-
-    if (filtros?.isLimit == true) {
-      query.limit(filtros!.limit!);
-    }
-    if (filtros?.isOffset == true) {
-      query.offset(filtros!.offset!);
-    }
-
-    final rows = await query.get();
-    return DataFrame&lt;Map&lt;String, dynamic&gt;&gt;(
-      items: rows,
-      totalRecords: totalRecords,
-    );
-  }
-}
-
-class ProductController {
-  static Future&lt;Response&gt; list(Request req) async {
-    final filtros = Filters.fromMap(req.url.queryParameters);
-    final repo = req.make&lt;ProductRepository&gt;();
-    final data = await repo.list(filtros: filtros);
-    return responseDataFrame(data);
-  }
-}</code></pre>
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">2. Backend com Eloquent + DataFrame</h6>
+                      <p class="text-muted mb-3">O repositório consulta a tabela, aplica filtros, paginação e ordenação, e
+                        retorna um <code>DataFrame</code> pronto para serialização.</p>
+                      <li-highlight [code]="backendSnippet" language="dart"></li-highlight>
+                    </div>
                   </div>
                 </div>
 
                 <div class="col-xl-6">
-                  <div class="demo-code-card">
-                    <h6 class="mb-2">3. Service no frontend</h6>
-                    <p class="text-muted mb-3">O service consome a rota e transforma o JSON em
-                      <code>DataFrame&lt;Product&gt;</code> usando o builder.</p>
-                    <pre class="demo-code-block mb-0"><code>class ProductService extends RestServiceBase {
-  ProductService(RestConfig conf) : super(conf);
-
-  final String path = '/products';
-
-  Future&lt;DataFrame&lt;Product&gt;&gt; list(Filters filtros) async {
-    return getDataFrame&lt;Product&gt;(
-      path,
-      builder: Product.fromMap,
-      filtros: filtros,
-    );
-  }
-}</code></pre>
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">3. Service no frontend</h6>
+                      <p class="text-muted mb-3">O service consome a rota e transforma o JSON em
+                        <code>DataFrame&lt;Product&gt;</code> usando o builder.
+                      </p>
+                      <li-highlight [code]="frontendServiceSnippet" language="dart"></li-highlight>
+                    </div>
                   </div>
                 </div>
 
                 <div class="col-xl-6">
-                  <div class="demo-code-card">
-                    <h6 class="mb-2">4. Page AngularDart</h6>
-                    <p class="text-muted mb-3">A page mantém <code>Filters</code>, <code>DatatableSettings</code> e
-                      chama o service sempre que o datatable emite <code>dataRequest</code>.</p>
-                    <pre class="demo-code-block mb-0"><code>class ListaProdutoPage implements OnActivate {
-  ListaProdutoPage(this.hostElement, this.productService);
-
-  final Element hostElement;
-  final ProductService productService;
-
-  final filtro = Filters(limit: 12, offset: 0);
-  DataFrame&lt;Product&gt; items = DataFrame&lt;Product&gt;.newClear();
-
-  final DatatableSettings dtSettings = DatatableSettings(
-    colsDefinitions: [
-      DatatableCol(key: 'id', title: 'Id', sortingBy: 'id', enableSorting: true),
-      DatatableCol(key: 'name', title: 'Nome', sortingBy: 'name', enableSorting: true),
-      DatatableCol(key: 'price', title: 'Preço'),
-      DatatableCol(key: 'status', title: 'Status', hideOnMobile: true),
-    ],
-  );
-
-  final List&lt;DatatableSearchField&gt; sInFields = &lt;DatatableSearchField&gt;[
-    DatatableSearchField(field: 'name', operator: 'like', label: 'Nome'),
-    DatatableSearchField(field: 'status', operator: '=', label: 'Status'),
-  ];
-
-  Future&lt;void&gt; load() async {
-    final loading = SimpleLoading();
-    try {
-      loading.show(target: hostElement);
-      items = await productService.list(filtro);
-    } finally {
-      loading.hide();
-    }
-  }
-}</code></pre>
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">4. Page AngularDart</h6>
+                      <p class="text-muted mb-3">A page mantém <code>Filters</code>, <code>DatatableSettings</code> e
+                        chama o service sempre que o datatable emite <code>dataRequest</code>.</p>
+                      <li-highlight [code]="angularPageSnippet" language="dart"></li-highlight>
+                    </div>
                   </div>
                 </div>
 
                 <div class="col-12">
-                  <div class="demo-code-card">
-                    <h6 class="mb-2">5. Template com li-datatable</h6>
-                    <p class="text-muted mb-3">No template, o datatable recebe o filtro, os dados e as definições de
-                      coluna, reproduzindo o padrão das páginas reais do frontend.</p>
-                    <pre class="demo-code-block mb-0"><code>&lt;div class="card"&gt;
-  &lt;li-datatable
-      [dataTableFilter]="filtro"
-      [data]="items"
-      [settings]="dtSettings"
-      [searchInFields]="sInFields"
-      (dataRequest)="onDtRequestData($event)"&gt;
-  &lt;/li-datatable&gt;
-&lt;/div&gt;</code></pre>
+                  <div class="card mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">5. Template com li-datatable</h6>
+                      <p class="text-muted mb-3">No template, o datatable recebe o filtro, os dados e as definições de
+                        coluna, reproduzindo o padrão das páginas reais do frontend.</p>
+                      <li-highlight [code]="angularTemplateSnippet" language="html"></li-highlight>
+                    </div>
                   </div>
                 </div>
               </div>

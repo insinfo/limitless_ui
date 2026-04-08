@@ -902,7 +902,13 @@ dart run bin/server.dart --address 0.0.0.0 --port 8080 --isolates 4
 Typical frontend command:
 
 ```bash
-dart run build_runner serve web:8081
+dart run build_runner serve web:8081 --delete-conflicting-outputs
+```
+
+Alternative local command when `webdev` is available:
+
+```bash
+webdev serve web:8081 --auto refresh --hostname localhost -- --delete-conflicting-outputs
 ```
 
 ## 22. Production deployment guidance

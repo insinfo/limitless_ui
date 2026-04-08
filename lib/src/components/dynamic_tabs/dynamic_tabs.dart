@@ -15,6 +15,7 @@ const esDynamicTabsDirectives = [
 @Component(
     selector: 'li-tabsx',
     templateUrl: 'dynamic_tabs.html',
+    styleUrls: ['dynamic_tabs.css'],
     directives: [coreDirectives])
 class LiTabsComponent implements OnInit, AfterContentInit {
   /// if `true` tabs will be placed vertically
@@ -40,6 +41,9 @@ class LiTabsComponent implements OnInit, AfterContentInit {
   @HostBinding('class.flex-column-reverse')
   bool get placementBottom => placement == 'bottom';
 
+  @HostBinding('class.li-tabsx-active-text-body-color')
+  bool get usesBodyColorOnActiveTab => activeTextBodyColor;
+
   @Input()
   @HostBinding('attr.placement')
   String? placement;
@@ -61,13 +65,23 @@ class LiTabsComponent implements OnInit, AfterContentInit {
   @Input()
   bool destroyOnHide = false;
 
+  /// Applies the default padding to the tab content wrapper.
+  @Input()
+  bool contentPadding = true;
+
+  /// Uses the regular body color for the active tab text instead of the theme accent.
+  ///
+  /// Useful for underline/highlight variants that should keep emphasis only in the tab indicator.
+  @Input()
+  bool activeTextBodyColor = false;
+
   /*Map get navTypeMap =>
       {'flex-column': vertical, 'nav-justified': justified, 'nav-tabs': type == 'tabs', 'nav-pills': type == 'pills'};*/
 
   //Map tabTypeMap(EsTabxDirective tab) => {'active': tab.active, 'disabled': tab.disabled};
 
   /// List of sub tabs
-  @ContentChildren(LiTabxDirective)
+  @ContentChildren(LiTabxDirective, descendants: false)
   List<LiTabxDirective> tabs = [];
 
   /// initialize attributes

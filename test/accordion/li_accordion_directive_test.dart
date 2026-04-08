@@ -58,16 +58,23 @@ import 'li_accordion_directive_test.template.dart' as ng;
 
       <button id="api-expand-second" type="button" (click)="accordion?.expand('second')">Expand second</button>
 
-      <li-accordion [lazy]="true" [destroyOnCollapse]="false">
-        <li-accordion-item
-            #componentItem
-            header="Component item"
-            description="Body should remain mounted after first open">
-          <div liAccordionBody>
-            <span id="component-body-content">Component content</span>
-          </div>
-        </li-accordion-item>
-      </li-accordion>
+      <div id="component-accordion-host">
+        <li-accordion
+            [lazy]="true"
+            [destroyOnCollapse]="false"
+            [bodyPadding]="componentAccordionBodyPadding"
+            [buttonClass]="componentAccordionButtonClass"
+            [buttonSemibold]="componentAccordionButtonSemibold">
+          <li-accordion-item
+              #componentItem
+              header="Component item"
+              description="Body should remain mounted after first open">
+            <div liAccordionBody>
+              <span id="component-body-content">Component content</span>
+            </div>
+          </li-accordion-item>
+        </li-accordion>
+      </div>
 
       <div id="collapse-panel" [liCollapse]="panelCollapsed" [animation]="false"
         (shown)="collapseShownCount = collapseShownCount + 1"
@@ -107,6 +114,9 @@ class TestHostComponent {
   LiAccordionItemComponent? componentItem;
 
   final List<String> accordionEvents = <String>[];
+  bool componentAccordionBodyPadding = true;
+  String componentAccordionButtonClass = '';
+  bool componentAccordionButtonSemibold = true;
   bool panelCollapsed = true;
   int collapseShownCount = 0;
   int collapseHiddenCount = 0;
@@ -244,6 +254,67 @@ void main() {
       fixture.rootElement.querySelector('#component-body-content'),
       isNotNull,
     );
+  });
+
+  test('component accordion keeps body padding by default and can disable it',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    html.Element? body = fixture.rootElement
+        .querySelector('#component-accordion-host .accordion-body');
+    expect(body, isNotNull);
+    expect(body!.classes.contains('p-0'), isFalse);
+
+    await fixture.update((component) {
+      component.componentAccordionBodyPadding = false;
+    });
+    await _settle(fixture);
+
+    body = fixture.rootElement
+        .querySelector('#component-accordion-host .accordion-body');
+    expect(body, isNotNull);
+    expect(body!.classes.contains('p-0'), isTrue);
+  });
+
+  test('component accordion can forward custom button classes', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    html.Element? button = fixture.rootElement
+        .querySelector('#component-accordion-host .accordion-button');
+    expect(button, isNotNull);
+    expect(button!.classes.contains('text-muted'), isFalse);
+
+    await fixture.update((component) {
+      component.componentAccordionButtonClass = 'text-muted';
+    });
+    await _settle(fixture);
+
+    button = fixture.rootElement
+        .querySelector('#component-accordion-host .accordion-button');
+    expect(button, isNotNull);
+    expect(button!.classes.contains('text-muted'), isTrue);
+  });
+
+  test('component accordion can disable semibold button text', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    html.Element? button = fixture.rootElement
+        .querySelector('#component-accordion-host .accordion-button');
+    expect(button, isNotNull);
+    expect(button!.classes.contains('fw-semibold'), isTrue);
+
+    await fixture.update((component) {
+      component.componentAccordionButtonSemibold = false;
+    });
+    await _settle(fixture);
+
+    button = fixture.rootElement
+        .querySelector('#component-accordion-host .accordion-button');
+    expect(button, isNotNull);
+    expect(button!.classes.contains('fw-semibold'), isFalse);
   });
 
   test('liCollapse toggles classes and emits lifecycle events', () async {

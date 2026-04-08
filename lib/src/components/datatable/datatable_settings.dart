@@ -37,6 +37,8 @@ class DatatableSettings {
   DatatableCardBuilder? customCardBuilder;
   String gridTemplateColumns;
   String gridGap;
+  String? gridContainerClass;
+  String? gridContainerStyle;
 
   /// [colsDefinitions] define as colunas que vão aparecer na tabela
   /// [showOrderNumberColumn] exibe uma coluna com um numero que enumera as linhas dos dados exbidos no dataTable
@@ -48,6 +50,8 @@ class DatatableSettings {
     this.customCardBuilder,
     this.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))',
     this.gridGap = '1.25rem',
+    this.gridContainerClass,
+    this.gridContainerStyle,
   }) {
     if (showOrderNumberColumn) {
       final col = DatatableCol(

@@ -98,10 +98,49 @@
     margin-bottom: 0;
 }
 
+.datatable-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .75rem 1rem;
+    padding-top: 1rem;
+}
+
+.datatable-footer .dataTables_info,
+.datatable-footer .dataTables_paginate {
+    float: none;
+}
+
+.datatable-footer .dataTables_info {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.datatable-footer .dataTables_paginate {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-left: auto;
+}
+
+.datatable-pagination-scroll {
+    display: flex;
+    justify-content: flex-end;
+    overflow-x: auto;
+}
+
+.datatable-pagination-scroll .li-pagination {
+    flex: 0 0 auto;
+}
+
 .datatable-header-actions > .dropdown,
 .datatable-header-actions > button,
 .datatable-header-actions > select {
     margin-right: 0 !important;
+}
+
+.datatable-items-per-page-select {
+    width: fit-content;
+    max-width: 12.5rem;
 }
 
 .datatable-empty-state {
@@ -317,7 +356,8 @@
         flex: 0 0 auto;
     }
 
-    .datatable-header-actions > select {
+    .datatable-header-actions > select,
+    .datatable-items-per-page-select {
         width: 100% !important;
         max-width: 7rem !important;
     }
@@ -371,6 +411,39 @@
         min-width: 92px;
         width: 92px;
         padding-right: .75rem;
+    }
+
+    .datatable-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .75rem;
+    }
+
+    .datatable-footer .dataTables_info,
+    .datatable-footer .dataTables_paginate {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .datatable-pagination-scroll {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .datatable-pagination-scroll .li-pagination {
+        margin: 0 auto;
+    }
+
+    .datatable-footer .pagination.li-pagination-datatable {
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: .125rem;
+    }
+
+    .datatable-footer .pagination.li-pagination-datatable .page-link.li-pagination-datatable__link {
+        min-width: 2rem;
+        height: 2rem;
+        padding: .25rem .4rem;
     }
 }
 

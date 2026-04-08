@@ -83,6 +83,238 @@
               accordionEventLog }}</div>
 
             <div class="card card-body mt-4">
+              <div class="d-flex flex-column flex-xl-row align-items-xl-start justify-content-between gap-3 mb-3">
+                <div>
+                  <h6 class="mb-2">Demo estilo "Visualiza Processo"</h6>
+                  <p class="text-muted mb-0">
+                    A API atual já suporta esse padrão sem ajustes no componente: use apenas
+                    <code>[header]</code>, omita <code>[description]</code> e <code>iconClass</code>,
+                    ative <code>[flush]="true"</code> e, se quiser um corpo mais seco como no SALI,
+                    combine com <code>[bodyPadding]="false"</code>. Para a aba ativa não ficar azul,
+                    use <code>[activeTextBodyColor]="true"</code>. Para o título do accordion ficar
+                    cinza e sem negrito, use <code>buttonClass="text-muted"</code> com
+                    <code>[buttonSemibold]="false"</code>.
+                  </p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-light text-body border">[flush]="true"</span>
+                  <span class="badge bg-light text-body border">header sem descrição</span>
+                  <span class="badge bg-light text-body border">header sem ícone</span>
+                  <span class="badge bg-light text-body border">[bodyPadding]="false"</span>
+                  <span class="badge bg-light text-body border">[activeTextBodyColor]="true"</span>
+                  <span class="badge bg-light text-body border">buttonClass="text-muted"</span>
+                  <span class="badge bg-light text-body border">[buttonSemibold]="false"</span>
+                </div>
+              </div>
+
+              <div class="process-demo-shell rounded-0">
+                <li-tabsx class="process-demo-tabs" type="underline" [contentPadding]="false"
+                  [activeTextBodyColor]="true">
+                  <li-tabx [active]="true">
+                    <template li-tabx-header>
+                      <span class="process-demo-tab-header">
+                        <i class="ph-file-text"></i>
+                        <span>Visão Geral</span>
+                      </span>
+                    </template>
+
+                    <li-accordion [allowMultipleOpen]="true" [flush]="true" [bodyPadding]="false"
+                      buttonClass="text-muted" [buttonSemibold]="false">
+                      <li-accordion-item [header]="'Dados do Requerente'" [expanded]="true">
+                        <div class="process-demo-section">
+                          <div class="row g-3">
+                            <div class="col-md-2 col-xl-1">
+                              <label class="form-label">CGM</label>
+                              <input class="form-control" type="text" value="00000" disabled>
+                            </div>
+                            <div class="col-md-4 col-xl-5">
+                              <label class="form-label">Nome</label>
+                              <input class="form-control" type="text" value="Lorem ipsum dolor sit amet" disabled>
+                            </div>
+                            <div class="col-md-2">
+                              <label class="form-label">Doc</label>
+                              <input class="form-control" type="text" value="***.***.***-**" disabled>
+                            </div>
+                            <div class="col-md-2">
+                              <label class="form-label">Tipo CGM</label>
+                              <input class="form-control" type="text" value="Lorem" disabled>
+                            </div>
+                            <div class="col-md-2">
+                              <label class="form-label">Tipo Pessoa</label>
+                              <input class="form-control" type="text" value="Ipsum" disabled>
+                            </div>
+                          </div>
+                        </div>
+                      </li-accordion-item>
+
+                      <li-accordion-item [header]="'Dados do Processo'" [expanded]="true">
+                        <div class="process-demo-section">
+                          <div class="row g-3 mb-3">
+                            <div class="col-md-2">
+                              <label class="form-label">Digital</label>
+                              <input class="form-control" type="text" value="Lorem" disabled>
+                            </div>
+                            <div class="col-md-2">
+                              <label class="form-label">Código</label>
+                              <input class="form-control fw-semibold" type="text" value="0000/00" disabled>
+                            </div>
+                            <div class="col-md-3">
+                              <label class="form-label">Situação</label>
+                              <input class="form-control" type="text" value="Lorem ipsum" disabled>
+                            </div>
+                            <div class="col-md-3">
+                              <label class="form-label">Incluído em</label>
+                              <input class="form-control" type="text" value="00/00/0000 00:00" disabled>
+                            </div>
+                            <div class="col-md-5">
+                              <label class="form-label">Classificação</label>
+                              <input class="form-control" type="text" value="Lorem ipsum dolor" disabled>
+                            </div>
+                            <div class="col-md-5">
+                              <label class="form-label">Assunto</label>
+                              <input class="form-control" type="text" value="Lorem ipsum" disabled>
+                            </div>
+                          </div>
+
+                          <div class="row g-3">
+                            <div class="col-12">
+                              <label class="form-label">Objeto/Observação</label>
+                              <textarea class="form-control" rows="4" disabled>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</textarea>
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Assunto reduzido</label>
+                              <input class="form-control" type="text"
+                                value="Lorem ipsum dolor sit amet" disabled>
+                            </div>
+                            <div class="col-md-4">
+                              <label class="form-label">Incluído por</label>
+                              <input class="form-control" type="text"
+                                value="Lorem | ipsum | dolor sit amet" disabled>
+                            </div>
+                          </div>
+                        </div>
+                      </li-accordion-item>
+
+                      <li-accordion-item [header]="'Anexos/Documentos do processo'" [expanded]="true">
+                        <div class="process-demo-empty">
+                          <div class="process-demo-empty-icon">
+                            <i class="ph-files"></i>
+                          </div>
+                          <div class="process-demo-empty-title">Lorem ipsum dolor sit amet.</div>
+                        </div>
+                      </li-accordion-item>
+
+                      <li-accordion-item [header]="'Atributos de processo'" [expanded]="true">
+                        <div class="process-demo-section">
+                          <div class="row g-3">
+                            <div class="col-md-6">
+                              <label class="form-label">Anotações</label>
+                              <input class="form-control" type="text" value="Lorem ipsum" disabled>
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Referência anterior</label>
+                              <input class="form-control" type="text" value="Dolor sit amet" disabled>
+                            </div>
+                          </div>
+                        </div>
+                      </li-accordion-item>
+
+                      <li-accordion-item [header]="'Processos em Apenso'">
+                        <div class="process-demo-section">
+                          <div class="process-demo-empty process-demo-empty--compact">
+                            <div class="process-demo-empty-icon">
+                              <i class="ph-link-break"></i>
+                            </div>
+                            <div class="process-demo-empty-title">Lorem ipsum dolor sit amet.</div>
+                          </div>
+                        </div>
+                      </li-accordion-item>
+
+                      <li-accordion-item [header]="'Trâmites do Processo'">
+                        <div class="process-demo-section">
+                          <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                              <thead>
+                                <tr>
+                                  <th>Nº</th>
+                                  <th>Data</th>
+                                  <th>Nome CGM</th>
+                                  <th>Organograma destino</th>
+                                  <th>Recebimento</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>1</td>
+                                  <td>00/00/0000 00:00</td>
+                                  <td>Lorem ipsum</td>
+                                  <td>Lorem ipsum dolor sit amet</td>
+                                  <td>00/00/0000 00:00</td>
+                                </tr>
+                                <tr>
+                                  <td>2</td>
+                                  <td>00/00/0000 00:00</td>
+                                  <td>Dolor sit amet</td>
+                                  <td>Consectetur adipiscing elit</td>
+                                  <td>00/00/0000 00:00</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </li-accordion-item>
+                    </li-accordion>
+                  </li-tabx>
+
+                  <li-tabx>
+                    <template li-tabx-header>
+                      <span class="process-demo-tab-header">
+                        <i class="ph-article"></i>
+                        <span>Trâmites do Processo</span>
+                      </span>
+                    </template>
+
+                    <div class="process-demo-pane">
+                      <div class="row g-3">
+                        <div class="col-lg-4">
+                          <div class="list-group process-demo-step-list">
+                            <a class="list-group-item list-group-item-action active" href="javascript:void(0)">
+                              <div class="fw-semibold">Lorem ipsum 01</div>
+                              <small class="d-block opacity-75">00/00/0000 00:00</small>
+                            </a>
+                            <a class="list-group-item list-group-item-action" href="javascript:void(0)">
+                              <div class="fw-semibold">Lorem ipsum 02</div>
+                              <small class="d-block text-muted">00/00/0000 00:00</small>
+                            </a>
+                            <a class="list-group-item list-group-item-action" href="javascript:void(0)">
+                              <div class="fw-semibold">Lorem ipsum 03</div>
+                              <small class="d-block text-muted">00/00/0000 00:00</small>
+                            </a>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-8">
+                          <div class="card card-body h-100 rounded-0 border-0 process-demo-preview">
+                            <h6 class="mb-2">Lorem ipsum dolor sit amet</h6>
+                            <p class="text-muted mb-3">
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                              ut labore et dolore magna aliqua.
+                            </p>
+                            <p class="text-muted mb-0">
+                              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                              commodo consequat.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li-tabx>
+                </li-tabsx>
+              </div>
+            </div>
+
+            <div class="card card-body mt-4">
               <h6 class="mb-2">{{ t.pages.accordion.directiveApiTitle }}</h6>
               <p class="text-muted mb-3">{{ t.pages.accordion.directiveApiIntro }}</p>
               <p class="text-muted small mb-3">{{ t.pages.accordion.directiveApiNote }}</p>
@@ -174,6 +406,16 @@
               <li>{{ t.pages.accordion.apiFour }}</li>
               <li>{{ t.pages.accordion.apiFive }}</li>
             </ul>
+            <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-accordion [allowMultipleOpen]="true" [flush]="true" [bodyPadding]="false"&gt;
+  &lt;li-accordion-item [header]="'Dados do Requerente'" [expanded]="true"&gt;
+    &lt;div class="p-3"&gt;...conteúdo da seção...&lt;/div&gt;
+  &lt;/li-accordion-item&gt;
+
+  &lt;li-accordion-item [header]="'Dados do Processo'"&gt;
+    &lt;div class="p-3"&gt;...conteúdo da seção...&lt;/div&gt;
+  &lt;/li-accordion-item&gt;
+&lt;/li-accordion&gt;</code></pre>
+
             <pre class="bg-light border rounded p-3 mb-3"><code>&lt;li-accordion [allowMultipleOpen]="true"&gt;
   &lt;li-accordion-item
     [header]="'Título'"

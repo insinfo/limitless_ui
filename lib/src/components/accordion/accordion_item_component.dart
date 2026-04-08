@@ -53,6 +53,15 @@ class LiAccordionItemComponent implements AfterContentInit, OnDestroy {
   bool? destroyOnCollapse;
 
   @Input()
+  bool? bodyPadding;
+
+  @Input()
+  String? buttonClass;
+
+  @Input()
+  bool? buttonSemibold;
+
+  @Input()
   set expanded(bool value) {
     _expanded = value;
     if (_expanded) {
@@ -103,6 +112,12 @@ class LiAccordionItemComponent implements AfterContentInit, OnDestroy {
 
   bool get resolvedDestroyOnCollapse =>
       destroyOnCollapse ?? parent?.destroyOnCollapse ?? false;
+
+  bool get resolvedBodyPadding => bodyPadding ?? parent?.bodyPadding ?? true;
+
+  String get resolvedButtonClass => (buttonClass ?? parent?.buttonClass ?? '').trim();
+
+  bool get resolvedButtonSemibold => buttonSemibold ?? parent?.buttonSemibold ?? true;
 
   bool get hasLazyBodyTemplate => bodyTemplate != null;
 
@@ -162,7 +177,13 @@ class LiAccordionItemComponent implements AfterContentInit, OnDestroy {
   }
 
   String get buttonClassName {
-    final classes = <String>['accordion-button', 'fw-semibold'];
+    final classes = <String>['accordion-button'];
+    if (resolvedButtonSemibold) {
+      classes.add('fw-semibold');
+    }
+    if (resolvedButtonClass.isNotEmpty) {
+      classes.add(resolvedButtonClass);
+    }
     if (!_expanded) {
       classes.add('collapsed');
     }

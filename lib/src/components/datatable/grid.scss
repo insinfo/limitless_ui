@@ -13,6 +13,7 @@
 .grid-item {
     min-width: 0;
     width: auto;
+    max-width: 100%;
     margin: 0;
 }
 
@@ -46,10 +47,13 @@
 .datatable-custom-card {
     display: block;
     width: 100%;
+    max-width: 100%;
 }
 
 .datatable-custom-card > * {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .content-divider {
@@ -62,4 +66,15 @@
 
 .content-divider>span {
     background-color: #f1f4f9 !important;
+}
+
+@media (max-width: 767.98px) {
+    .grid-container {
+        padding: 1rem;
+    }
+
+    .grid-layout {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 1rem !important;
+    }
 }

@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+:host(.li-tabsx-active-text-body-color) .nav:not(.nav-pills):not(.nav-tabs-solid) .nav-link.active,
+:host(.li-tabsx-active-text-body-color) .nav:not(.nav-pills):not(.nav-tabs-solid) .nav-link.active:hover,
+:host(.li-tabsx-active-text-body-color) .nav:not(.nav-pills):not(.nav-tabs-solid) .nav-link.active:focus {
+  color: var(--body-color);
+}

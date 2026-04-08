@@ -1,52 +1,85 @@
-# limitless_ui example
+# `limitless_ui` Example
 
-Aplicacao demo para explorar os componentes do pacote `limitless_ui`.
-use  webdev serve --auto refresh --hostname localhost -v -- --delete-conflicting-outputs
-## Executar
+This folder contains the AngularDart showcase application for the `limitless_ui` package. It is the reference demo used to exercise the current components, pages, routing setup, theme integration, and browser build pipeline.
+
+## What is included
+
+- Component demo pages under `example/lib/src/pages`
+- Hash-based routing for static hosting via `routerProvidersHash`
+- Localized demo content in Portuguese and English
+- SCSS-based component styling compiled by `sass_builder`
+- A production build flow used by the GitHub Pages workflow
+
+## Requirements
+
+- Dart SDK `^3.6.0`
+- Chrome or another supported browser for local testing
+
+## Install dependencies
+
+From the repository root:
 
 ```bash
-cd packages/limitless_ui/example
 dart pub get
-webdev serve --auto refresh --hostname localhost
+cd example
+dart pub get
 ```
 
-Abra `http://localhost:8080`.
+## Run locally
 
-O `example` mantém os arquivos `lib/messages.i18n.dart` e
-`lib/messages_en.i18n.dart` versionados e desabilita o builder automático do
-`i18n` em [build.yaml](/c:/MyDartProjects/limitless_ui/example/build.yaml),
-então o comando acima deve funcionar sozinho, sem etapa prévia.
-
-Se você reativar a geração automática do `i18n` ou alterar manualmente a
-configuração de builders, o `webdev` também aceita repassar flags para o
-`build_runner` usando `--`:
+From `example/`:
 
 ```bash
-webdev serve --auto refresh --hostname localhost -- --delete-conflicting-outputs
+dart run build_runner serve web:8081 --delete-conflicting-outputs
 ```
 
-Esse `--delete-conflicting-outputs` não é uma opção nativa do `webdev`; ele é
-encaminhado para o `build_runner`. Já `dart run webdev ...` só funciona se o
-pacote `webdev` estiver listado nas dependências do projeto, o que não é o caso
-deste `example`.
+Then open:
 
-## GitHub Pages
+```text
+http://localhost:8081
+```
 
-O repositório inclui um workflow em
-[pages.yml](/c:/MyDartProjects/limitless_ui/.github/workflows/pages.yml) que
-gera uma versão estática do `example` com:
+Notes:
+
+- This project uses `build_runner` directly for local serving.
+- `--delete-conflicting-outputs` is recommended when generated outputs are stale.
+
+You can also run the demo with `webdev` if it is available in your environment:
+
+```bash
+webdev serve web:8081 --auto refresh --hostname localhost -- --delete-conflicting-outputs
+```
+
+Additional notes for `webdev`:
+
+- `webdev` is an alternative local workflow, not the primary documented one in this repository.
+- The trailing `-- --delete-conflicting-outputs` forwards the flag to `build_runner`.
+- `webdev` must be installed or otherwise available in your shell for this command to work.
+
+## Build for production
+
+From `example/`:
 
 ```bash
 dart run build_runner build --release --delete-conflicting-outputs --output web:build
 ```
 
-Como a demo usa `routerProvidersHash`, ela funciona bem em subcaminhos do
-GitHub Pages sem precisar de fallback de rota no servidor.
+This generates a static build in `example/build/`.
 
-## Estilos obrigatórios
+## GitHub Pages
 
-A biblioteca **só funciona corretamente** se os estilos abaixo estiverem
-incluídos no `index.html` da aplicação host:
+The repository includes a Pages workflow at [`.github/workflows/pages.yml`](/c:/MyDartProjects/limitless_ui/.github/workflows/pages.yml). The workflow:
+
+1. Installs dependencies for the root package and the example app
+2. Builds the example with `build_runner`
+3. Prepares a deployable `dist/` artifact
+4. Publishes the result to GitHub Pages
+
+Because the app uses hash-based routing, it works correctly when served from a repository subpath on GitHub Pages.
+
+## Required host assets
+
+The demo depends on the following external stylesheets declared in [`example/web/index.html`](/c:/MyDartProjects/limitless_ui/example/web/index.html):
 
 ```html
 <link href="https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css"
@@ -57,67 +90,34 @@ incluídos no `index.html` da aplicação host:
   rel="stylesheet" type="text/css">
 ```
 
-Sem esses links, ícones (Phosphor), fontes (Inter) e estilos base dos
-componentes não serão renderizados.
+Without them, icons, typography, and part of the base visual styling will not render as expected.
 
-## Notas de performance para templates AngularDart
+## Project structure
 
-Estas regras se aplicam a todos os componentes do `limitless_ui` e a qualquer
-template AngularDart neste workspace.
+- [`example/lib/src/app`](/c:/MyDartProjects/limitless_ui/example/lib/src/app): shell application and navigation
+- [`example/lib/src/pages`](/c:/MyDartProjects/limitless_ui/example/lib/src/pages): component showcase pages
+- [`example/lib/src/routes`](/c:/MyDartProjects/limitless_ui/example/lib/src/routes): route definitions
+- [`example/lib/src/shared`](/c:/MyDartProjects/limitless_ui/example/lib/src/shared): shared layout, DI, and helpers
+- [`example/lib/src/theme`](/c:/MyDartProjects/limitless_ui/example/lib/src/theme): demo theme setup
+- [`example/web`](/c:/MyDartProjects/limitless_ui/example/web): entrypoint and host page
 
-### Nunca use `[attr.style]` para propriedades CSS de layout
+## Localization
 
-`[attr.style]="minhaString"` passa a string inteira pelo sanitizador de
-atributos DOM a **cada** ciclo de change detection. Quando combinado com
-regras de geometria complexas (ex: `grid-template-columns: repeat(auto-fit,
-minmax(280px, 1fr))`), o browser entra em layout thrashing e congela por
-5–20 segundos.
+The example app ships with Portuguese and English localized content. If you update localized source files, make sure the generated message artifacts stay consistent with the current repository setup.
 
-```html
-<!-- ERRADO — trava o navegador -->
-<div class="grid-layout" [attr.style]="gridLayoutStyle">
+## Styling notes
 
-<!-- CORRETO — injeta direto em element.style.*, sem sanitizador -->
-<div class="grid-layout"
-     [style.grid-template-columns]="settings.gridTemplateColumns"
-     [style.gap]="settings.gridGap">
+- Component styles are authored in `.scss`
+- AngularDart components reference generated `.css` files in `styleUrls`
+- The build relies on `sass_builder` during development and production builds
+
+## Testing and validation
+
+Useful commands while working on the example:
+
+```bash
+dart analyze
+dart run build_runner test -- -p chrome -j 1
 ```
 
-### Sempre use `trackBy` em todo `*ngFor`
-
-Sem `trackBy`, o Angular destrói e recria todos os elementos DOM quando a
-referência da lista muda, mesmo que os dados sejam idênticos.
-
-```html
-<!-- ERRADO -->
-<div *ngFor="let row of rows">
-
-<!-- CORRETO -->
-<div *ngFor="let row of rows; trackBy: trackByRow">
-```
-
-### Use `SafeHtmlDirective` em vez das diretivas separadas
-
-O par antigo `[safeInnerHtml]` + `[safeAppendHtml]` no mesmo elemento causa
-double-render (race condition). Use a diretiva unificada:
-
-```html
-<!-- ERRADO — double render -->
-<td [safeInnerHtml]="column.value" [safeAppendHtml]="column.htmlElement">
-
-<!-- CORRETO — render único -->
-<td [safeHtml]="column.value" [safeHtmlNode]="column.htmlElement">
-```
-
-### Prefira `[class.hide]` em vez de `*ngIf` para alternar visões
-
-`*ngIf` destrói e recria a subárvore inteira. Para seções que alternam com
-frequência (tabela ↔ grid), use CSS:
-
-```html
-<!-- ERRADO — recria todo o DOM -->
-<div *ngIf="gridMode == false">
-
-<!-- CORRETO — só alterna display: none -->
-<div [class.hide]="gridMode">
-```
+Run them from the repository root unless you intentionally want to target only the example app.

@@ -206,6 +206,15 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   DatatableSettings get settings => _settings;
 
+  String get gridContainerClass {
+    final customClass = _settings.gridContainerClass?.trim();
+    if (customClass == null || customClass.isEmpty) {
+      return 'grid-container';
+    }
+
+    return 'grid-container $customClass';
+  }
+
   DataFrame _data = DataFrame(items: <dynamic>[], totalRecords: 0);
 
   @Input('data')
@@ -448,7 +457,22 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return totalPages <= 0 ? 1 : totalPages;
   }
 
-  final int paginationButtonQuantity = 5;
+  @Input()
+  int paginationButtonQuantity = 5;
+
+  @Input()
+  int compactPaginationButtonQuantity = 1;
+
+  @Input()
+  int compactPaginationMaxWidth = 767;
+
+  bool get isCompactPaginationViewport =>
+      window.innerWidth != null && window.innerWidth! <= compactPaginationMaxWidth;
+
+  int get resolvedPaginationButtonQuantity =>
+      isCompactPaginationViewport
+          ? compactPaginationButtonQuantity
+          : paginationButtonQuantity;
   
   void _syncCurrentPageFromOffset() {
     final resolvedLimit = dataTableFilter.limit ?? 1;
@@ -593,7 +617,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   bool isSelectAll = false;
 
-  List<T> getAllSelected<T>() => rows
+  Iterable<DatatableRow> get _selectableRows =>
+      rows.where((row) => row.type == DatatableRowType.normal);
+
+  List<T> getAllSelected<T>() => _selectableRows
       .where((row) => row.selected)
       .map<T>((row) => row.instance as T)
       .toList();
@@ -607,7 +634,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     final checkbox = event.target as InputElement;
     isSelectAll = checkbox.checked ?? false;
 
-    for (final row in rows) {
+    for (final row in _selectableRows) {
       row.selected = isSelectAll;
     }
 
@@ -616,7 +643,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void unSelectAll() {
-    for (final row in rows) {
+    for (final row in _selectableRows) {
       row.selected = false;
     }
     isSelectAll = false;
@@ -634,11 +661,15 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   void onSelect(MouseEvent event, DatatableRow item) {
     event.stopPropagation();
+    if (item.type != DatatableRowType.normal) {
+      return;
+    }
+
     final intendedSelectionState = !item.selected;
 
     if (allowSingleSelectionOnly) {
       if (intendedSelectionState) {
-        for (final row in rows) {
+        for (final row in _selectableRows) {
           if (!identical(row, item)) {
             row.selected = false;
           }
@@ -653,7 +684,9 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       item.selected = intendedSelectionState;
       if (item.selected) {
         _selectStreamController.add(item.instance);
-        isSelectAll = rows.isNotEmpty && rows.every((row) => row.selected);
+        final selectableRows = _selectableRows.toList(growable: false);
+        isSelectAll =
+            selectableRows.isNotEmpty && selectableRows.every((row) => row.selected);
       } else {
         isSelectAll = false;
       }
@@ -665,7 +698,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   void _emitSelectedRows() {
     _selectAllStreamController.add(
-      rows.where((row) => row.selected).map((row) => row.instance).toList(),
+      _selectableRows
+          .where((row) => row.selected)
+          .map((row) => row.instance)
+          .toList(),
     );
   }
 
