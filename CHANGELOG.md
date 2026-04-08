@@ -1,7 +1,7 @@
 ## 1.0.0-dev.6
 
 - Added `li-pg-header` with projected breadcrumb/action/bottom slots, exported it from the public barrel, added a dedicated example route, and covered the new API with browser tests.
-- Expanded form-oriented APIs with `li-input` event outputs (`inputBlur`, `inputFocus`, `inputClick`, `inputKeydown`, `inputEnter`) plus `compareWith` support in `li-select` and `li-multi-select`, with regression coverage for the new behavior.
+- Expanded form-oriented APIs with `li-input` event outputs (`inputBlur`, `inputFocus`, `inputClick`, `inputKeydown`, `inputEnter`) plus `compareWith` and `modelChange` support in `li-select` and `li-multi-select`, with regression coverage for the new behavior.
 - Expanded `li-datatable-select` with `itemLabelBuilder`, `itemValueBuilder`, `compareWith`, and modal context helpers for arbitrary projected content such as embedded search components, and added browser tests for typed rows and custom modal selection flows.
 - Standardized and enriched the example app documentation pages, including broader `li-highlight` adoption, Overview/API tab structure updates, new migration snippets, and README/example README updates covering the new component and form APIs.
 

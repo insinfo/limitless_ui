@@ -23,6 +23,7 @@ import 'li_multi_select_component_test.template.dart' as ng;
         [dataSource]="channelOptions"
         labelKey="label"
         valueKey="id"
+        (modelChange)="selectedChannelModels = \$event"
         [(ngModel)]="selectedChannels">
     </li-multi-select>
   ''',
@@ -33,6 +34,7 @@ class MultiSelectTestHostComponent {
   LiMultiSelectComponent? multi;
 
   List<dynamic> selectedChannels = <dynamic>['email'];
+  List<dynamic> selectedChannelModels = <dynamic>[];
 
   final List<Map<String, dynamic>> channelOptions = <Map<String, dynamic>>[
     <String, dynamic>{'id': 'email', 'label': 'E-mail'},
@@ -120,6 +122,11 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedChannels, containsAll(<String>['email', 'push']));
+    expect(
+      host.selectedChannelModels
+          .map((dynamic item) => (item as Map<String, dynamic>)['id']),
+      containsAll(<String>['email', 'push']),
+    );
 
     await fixture.update((_) {
       pushOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
@@ -127,6 +134,11 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedChannels, <String>['email']);
+    expect(
+      host.selectedChannelModels
+          .map((dynamic item) => (item as Map<String, dynamic>)['id']),
+      <String>['email'],
+    );
   });
 
   test('reset clears selected values and badges', () async {
@@ -142,6 +154,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedChannels, isEmpty);
+    expect(host.selectedChannelModels, isEmpty);
     expect(fixture.rootElement.querySelectorAll('.badge'), isEmpty);
   });
 

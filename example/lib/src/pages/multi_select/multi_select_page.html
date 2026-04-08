@@ -52,7 +52,7 @@
             <div class="mb-4">
               <label class="form-label fw-semibold">{{ t.pages.multiSelect.channels }}</label>
               <li-multi-select [dataSource]="channelOptions" labelKey="label" valueKey="id"
-                [(ngModel)]="selectedChannels">
+                [(ngModel)]="selectedChannels" (modelChange)="onChannelModelsChange($event)">
               </li-multi-select>
             </div>
 
@@ -67,6 +67,7 @@
 
             <div class="demo-summary-box">
               <div><strong>{{ t.pages.multiSelect.channels }}:</strong> {{ selectedChannelsLabel }}</div>
+              <div><strong>modelChange:</strong> {{ selectedChannelModelsLabel }}</div>
               <div><strong>{{ t.pages.multiSelect.projectedLabel }}:</strong> {{ projectedChannelsLabel }}</div>
             </div>
           </div>
@@ -84,6 +85,7 @@
                   <li><code>labelKey</code>: {{ t.pages.multiSelect.apiLabelKey }}</li>
                   <li><code>valueKey</code>: {{ t.pages.multiSelect.apiValueKey }}</li>
                   <li><code>[compareWith]</code>: compara objetos selecionados por regra customizada quando a lista for recriada.</li>
+                  <li><code>(modelChange)</code>: entrega a lista de instâncias selecionadas, mesmo quando o <code>ngModel</code> usa apenas os valores.</li>
                   <li><code>[(ngModel)]</code>: {{ t.pages.multiSelect.apiNgModel }}</li>
                   <li><code>[placeholder]</code>: {{ t.pages.multiSelect.apiPlaceholder }}</li>
                   <li><code>[showClearButton]</code>: {{ t.pages.multiSelect.apiShowClearButton }}</li>
@@ -94,6 +96,10 @@
                 <h6 class="mb-2 mt-4">compareWith</h6>
                 <p class="text-muted mb-3">Útil quando o valor selecionado é uma lista de objetos e o backend devolve novas instâncias a cada consulta.</p>
                 <li-highlight [code]="compareWithSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">modelChange</h6>
+                <p class="text-muted mb-3">Útil quando a tela persiste só os ids, mas ainda precisa acessar os modelos completos para renderizar dependências ou preencher outros campos.</p>
+                <li-highlight [code]="modelChangeSnippet" language="html"></li-highlight>
               </div>
 
               <div class="col-xl-6">

@@ -41,6 +41,15 @@ List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
   [(ngModel)]="selectedPeople">
 </li-multi-select>''';
 
+  static const String modelChangeSnippet = '''
+<li-multi-select
+  [dataSource]="people"
+  labelKey="name"
+  valueKey="id"
+  [(ngModel)]="selectedPeopleIds"
+  (modelChange)="onSelectedPeopleModelsChange(\$event)">
+</li-multi-select>''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
 
@@ -65,6 +74,7 @@ List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
 
   List<dynamic> selectedChannels = <dynamic>['email', 'push'];
   List<dynamic> projectedChannels = <dynamic>['portal', 'api'];
+  List<dynamic> selectedChannelModels = <dynamic>[];
 
   String get selectedChannelsLabel => selectedChannels
       .map((dynamic id) => _labelFor(id.toString(), channelOptions))
@@ -73,6 +83,15 @@ List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
   String get projectedChannelsLabel => projectedChannels
       .map((dynamic id) => _labelFor(id.toString(), projectedOptions))
       .join(', ');
+
+  String get selectedChannelModelsLabel {
+    if (selectedChannelModels.isEmpty) {
+      return selectedChannelsLabel;
+    }
+    return selectedChannelModels
+        .map((dynamic item) => (item as Map<String, dynamic>)['label'])
+        .join(', ');
+  }
 
   List<Map<String, dynamic>> _buildChannelOptions() => <Map<String, dynamic>>[
         <String, dynamic>{'id': 'email', 'label': t.pages.multiSelect.optionEmail},
@@ -95,5 +114,9 @@ List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
       }
     }
     return id;
+  }
+
+  void onChannelModelsChange(List<dynamic> models) {
+    selectedChannelModels = models;
   }
 }

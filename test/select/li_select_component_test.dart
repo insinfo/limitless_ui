@@ -23,6 +23,7 @@ import 'li_select_component_test.template.dart' as ng;
         labelKey="label"
         valueKey="id"
         disabledKey="disabled"
+        (modelChange)="selectedStatusModel = \$event"
         [(ngModel)]="selectedStatus">
     </li-select>
   ''',
@@ -30,6 +31,7 @@ import 'li_select_component_test.template.dart' as ng;
 )
 class SelectTestHostComponent {
   String selectedStatus = 'review';
+  Map<String, dynamic>? selectedStatusModel;
 
   final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
     <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
@@ -116,6 +118,8 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedStatus, 'approved');
+    expect(host.selectedStatusModel?['id'], 'approved');
+    expect(host.selectedStatusModel?['label'], 'Aprovado');
     expect(trigger.text, contains('Aprovado'));
   });
 

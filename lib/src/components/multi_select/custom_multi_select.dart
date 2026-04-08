@@ -146,10 +146,15 @@ class LiMultiSelectComponent
 
   final StreamController<dynamic> _changeController =
       StreamController<dynamic>();
+  final StreamController<List<dynamic>> _modelChangeController =
+      StreamController<List<dynamic>>();
   bool _overlayRelayoutPending = false;
 
   @Output('currentValueChange')
   Stream<dynamic> get onValueChange => _changeController.stream;
+
+  @Output('modelChange')
+  Stream<List<dynamic>> get onModelChange => _modelChangeController.stream;
 
   @ContentChildren(LiMultiOptionComponent)
   List<LiMultiOptionComponent> childrenSelectOptions = [];
@@ -214,6 +219,9 @@ class LiMultiSelectComponent
 
   List<dynamic> get selectedValues =>
       options.where((opt) => opt.selected).map((e) => e.value).toList();
+
+  List<dynamic> get selectedModels =>
+      options.where((opt) => opt.selected).map((e) => e.instanceObj).toList();
 
   List<String> get selectedLabels =>
       options.where((opt) => opt.selected).map((e) => e.text).toList();
@@ -401,6 +409,7 @@ class LiMultiSelectComponent
     closeDropdown(markForCheck: false);
     _overlay?.dispose();
     _changeController.close();
+    _modelChangeController.close();
   }
 
   void reset() {
@@ -408,6 +417,7 @@ class LiMultiSelectComponent
       element.selected = false;
     }
     _changeController.add(selectedValues);
+    _modelChangeController.add(selectedModels);
     if (_callback != null) {
       _callback!(selectedValues);
     }
@@ -431,6 +441,7 @@ class LiMultiSelectComponent
     option.selected = !option.selected;
 
     _changeController.add(selectedValues);
+    _modelChangeController.add(selectedModels);
     if (_callback != null) {
       _callback!(selectedValues);
     }

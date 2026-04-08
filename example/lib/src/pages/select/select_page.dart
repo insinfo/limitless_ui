@@ -42,6 +42,15 @@ late final List<Map<String, dynamic>> statusOptions;
   [(ngModel)]="selectedUser">
 </li-select>''';
 
+  static const String modelChangeSnippet = '''
+<li-select
+  [dataSource]="classificacoes"
+  labelKey="nom_classificacao"
+  valueKey="cod_classificacao"
+  [(ngModel)]="filtros.codClassificacao"
+  (modelChange)="onClassificacaoModelChange(\$event)">
+</li-select>''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
 
@@ -66,10 +75,18 @@ late final List<Map<String, dynamic>> statusOptions;
 
   String selectedStatus = 'review';
   String projectedStatus = 'priority';
+  Map<String, dynamic>? selectedStatusModel;
 
   String get selectedStatusLabel => _labelFor(selectedStatus, statusOptions);
 
+  String get selectedStatusModelLabel =>
+      (selectedStatusModel?['label'] as String?) ?? selectedStatusLabel;
+
   String get projectedStatusLabel => _labelFor(projectedStatus, projectedOptions);
+
+  void onStatusModelChange(dynamic model) {
+    selectedStatusModel = model is Map<String, dynamic> ? model : null;
+  }
 
   List<Map<String, dynamic>> _buildStatusOptions() => <Map<String, dynamic>>[
         <String, dynamic>{'id': 'draft', 'label': t.pages.select.optionDraft},

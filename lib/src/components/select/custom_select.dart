@@ -61,6 +61,8 @@ class LiSelectComponent
   PopperAnchoredOverlay? _overlay;
   final StreamController<dynamic> _changeController =
       StreamController<dynamic>();
+  final StreamController<dynamic> _modelChangeController =
+      StreamController<dynamic>();
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   bool _overlayRelayoutPending = false;
@@ -111,6 +113,9 @@ class LiSelectComponent
 
   @Output('currentValueChange')
   Stream<dynamic> get onValueChange => _changeController.stream;
+
+  @Output('modelChange')
+  Stream<dynamic> get onModelChange => _modelChangeController.stream;
 
   @ContentChildren(LiOptionComponent)
   List<LiOptionComponent> childrenSelectOptions = [];
@@ -381,6 +386,7 @@ class LiSelectComponent
       }
       if (isCallCurrentValueChange) {
         _changeController.add(currentValue?.value);
+        _modelChangeController.add(currentValue?.instanceObj);
       }
       if (isCallNgModelChange && _ngModelValueChangeCallback != null) {
         _ngModelValueChangeCallback!(currentValue?.value);
@@ -398,6 +404,7 @@ class LiSelectComponent
     currentValue = selItem;
     closeDropdown();
     _changeController.add(currentValue?.value);
+    _modelChangeController.add(currentValue?.instanceObj);
     _ngModelValueChangeCallback?.call(currentValue?.value);
     _markTouched();
     _markForCheck();
@@ -541,6 +548,7 @@ class LiSelectComponent
     closeDropdown(markForCheck: false);
     _overlay?.dispose();
     _changeController.close();
+    _modelChangeController.close();
   }
 
   void _handleOverlayLayout(PopperLayout layout) {

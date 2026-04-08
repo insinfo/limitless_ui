@@ -589,8 +589,21 @@ The reference demo is in [example/lib/src/pages/datatable_select/datatable_selec
   labelKey="name"
   valueKey="id"
   [compareWith]="compareUserById"
+  (modelChange)="selectedUserModel = $event"
   placeholder="Selecione"
   [(ngModel)]="selectedUser">
+</li-select>
+```
+
+When `valueKey` is defined, `[(ngModel)]` continues to store only that reduced value. Use `(modelChange)` when the form should persist an id or code, but the screen also needs the full selected instance:
+
+```html
+<li-select
+  [dataSource]="classificacoes"
+  labelKey="nom_classificacao"
+  valueKey="cod_classificacao"
+  [(ngModel)]="filtros.codClassificacao"
+  (modelChange)="classificacaoSelecionada = $event">
 </li-select>
 ```
 
@@ -602,7 +615,20 @@ The reference demo is in [example/lib/src/pages/datatable_select/datatable_selec
   labelKey="label"
   valueKey="id"
   [compareWith]="compareChannelById"
+  (modelChange)="selectedChannelModels = $event"
   [(ngModel)]="selectedChannels">
+</li-multi-select>
+```
+
+For the multi-select, `(modelChange)` emits the list of selected instances while `[(ngModel)]` may continue to hold only the reduced values:
+
+```html
+<li-multi-select
+  [dataSource]="people"
+  labelKey="name"
+  valueKey="id"
+  [(ngModel)]="selectedPeopleIds"
+  (modelChange)="selectedPeople = $event">
 </li-multi-select>
 ```
 
@@ -621,6 +647,7 @@ Best practices:
 - do not recreate `dataSource` in getters used by the template;
 - keep lists stable and update only `ngModel`;
 - use `compareWith` whenever object identity is not stable across reloads;
+- use `modelChange` when you need the selected model instance without changing the reduced value stored by `ngModel`;
 - for very large collections, handle search and pagination in the parent component;
 - prefer `li-datatable-select` when the choice requires a table, columns, and structured search.
 

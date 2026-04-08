@@ -1,8 +1,15 @@
 .upload-summary-box {
+  min-width: 0;
   padding: 1rem 1.125rem;
   border: 1px solid rgba(var(--body-color-rgb), 0.12);
   border-radius: var(--border-radius-lg);
   background: rgba(var(--primary-rgb), 0.04);
+}
+
+.upload-summary-box > div:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .upload-directive-zone {
