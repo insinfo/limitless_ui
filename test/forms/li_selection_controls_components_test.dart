@@ -23,6 +23,15 @@ import 'li_selection_controls_components_test.template.dart' as ng;
         [(ngModel)]="checkboxValue">
     </li-checkbox>
 
+    <li-checkbox
+      id="required-checkbox"
+      label="Terms"
+      [required]="true"
+      [liMessages]="checkboxMessages"
+      liValidationMode="touchedOrDirty"
+      [(ngModel)]="requiredCheckboxValue">
+    </li-checkbox>
+
     <li-radio
         name="visibility"
         label="Team"
@@ -55,9 +64,14 @@ import 'li_selection_controls_components_test.template.dart' as ng;
 )
 class SelectionControlsTestHostComponent {
   bool checkboxValue = false;
+  bool requiredCheckboxValue = false;
   String? radioValue = 'team';
   String toggleValue = 'paused';
   bool allowRadioUncheck = false;
+
+  final Map<String, String> checkboxMessages = const <String, String>{
+    'requiredTrue': 'Confirme o aceite.',
+  };
 }
 
 void main() {
@@ -81,6 +95,33 @@ void main() {
     await _settle(fixture);
 
     expect(host.checkboxValue, isTrue);
+  });
+
+  test('checkbox supports declarative requiredTrue validation', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final checkbox = fixture.rootElement.querySelector('input#required-checkbox')
+        as html.InputElement;
+
+    await fixture.update((_) {
+      checkbox.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.requiredCheckboxValue, isFalse);
+    expect(checkbox.classes.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.text, contains('Confirme o aceite.'));
+
+    await fixture.update((_) {
+      checkbox.checked = true;
+      checkbox.dispatchEvent(html.Event('change', canBubble: true));
+      checkbox.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.requiredCheckboxValue, isTrue);
+    expect(checkbox.classes.contains('is-invalid'), isFalse);
   });
 
   test('radio keeps the current value when clicked again by default', () async {

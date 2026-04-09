@@ -5,6 +5,6 @@
     [attr.data-invalid]="resolvedDataInvalidAttr">
   <legend *ngIf="hasLegend" [class]="resolvedLegendClass">{{ legend }}</legend>
   <ng-content></ng-content>
-  <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+  <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
   <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 </fieldset>

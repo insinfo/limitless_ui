@@ -284,6 +284,20 @@
                   <h6 class="mb-3 mt-4">{{ inputEventsSnippetTitle }}</h6>
                   <li-highlight [code]="inputEventsSnippet" language="html"></li-highlight>
 
+                  <h6 class="mb-3 mt-4">Validação declarativa</h6>
+                  <p class="text-muted mb-3">
+                    Use <code>liType</code> para presets comuns de design system, complemente com <code>liRules</code> quando a regra for específica,
+                    sobrescreva mensagens por código com <code>liMessages</code> e ajuste quando o feedback aparece com <code>liValidationMode</code>.
+                  </p>
+                  <li-highlight [code]="validationSnippet" language="html"></li-highlight>
+
+                  <ul class="mb-0 ps-3 mt-3">
+                    <li><code>liType</code> resolve presets como <code>cpf</code>, <code>email</code>, <code>phone</code> e <code>requiredText</code>.</li>
+                    <li><code>liRules</code> compõe regras extras sem perder compatibilidade com <code>required</code>, <code>minLength</code>, <code>maxLength</code> e <code>validator</code>.</li>
+                    <li><code>liMessages</code> troca a mensagem por código de regra como <code>required</code>, <code>cpf</code> ou <code>minLength</code>.</li>
+                    <li><code>liValidationMode</code> aceita modos como <code>dirty</code>, <code>touchedOrDirty</code> e <code>submitted</code>.</li>
+                  </ul>
+
                   <h6 class="mb-3 mt-4">{{ selectSnippetTitle }}</h6>
                   <li-highlight [code]="selectSnippet" language="html"></li-highlight>
 

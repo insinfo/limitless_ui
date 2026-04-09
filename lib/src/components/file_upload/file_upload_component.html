@@ -1,6 +1,7 @@
 <div class="li-file-upload">
   <div
       liFileDrop
+      [attr.data-li-form-focus-target]="'true'"
       [class]="resolvedDropzoneClass"
       [attr.tabindex]="disabled ? '-1' : '0'"
       [attr.role]="'button'"
@@ -37,7 +38,7 @@
     </div>
   </div>
 
-  <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+  <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
   <div *ngIf="hasHelperText" class="form-text mt-2">{{ helperText }}</div>
 
   <div *ngIf="showPreview && hasFiles" class="mt-3">

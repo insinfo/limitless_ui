@@ -1,0 +1,540 @@
+<div class="demo-page">
+  <li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
+
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ overviewIntro }}</p>
+
+            <div class="person-demo-toolbar mb-4">
+              <button class="btn btn-outline-success" type="button" (click)="fillApprovedScenario()">
+                {{ fillApprovedLabel }}
+              </button>
+              <button class="btn btn-outline-warning" type="button" (click)="fillBackendConflictScenario()">
+                {{ fillRejectedLabel }}
+              </button>
+              <button class="btn btn-light" type="button" (click)="resetForm()">
+                {{ resetLabel }}
+              </button>
+            </div>
+
+            <div *ngIf="inlineMessages.isNotEmpty" class="alert alert-warning border-warning-subtle mb-4">
+              <div class="fw-semibold mb-2">Backend</div>
+              <ul class="mb-0 ps-3">
+                <li *ngFor="let item of inlineMessages">{{ item }}</li>
+              </ul>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-xl-8">
+                <div liForm #personForm="liForm" class="person-form-shell">
+                  <div class="person-section">
+                    <div class="person-section__header">
+                      <h5 class="mb-1">{{ isPt ? 'Dados principais' : 'Main data' }}</h5>
+                      <p class="text-muted mb-0">
+                        {{ isPt ? 'Mistura inputs, máscaras, password toggle e pickers para um formulário de cadastro realista.' : 'Mixes inputs, masks, password toggle, and pickers for a realistic registration form.' }}
+                      </p>
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-md-7" [attr.data-person-field]="'fullName'" liFormField="fullName" [liFormFieldOrder]="10">
+                        <li-input
+                            [label]="fullNameLabel"
+                            [helperText]="isPt ? 'Frontend valida tamanho mínimo; o backend ainda pode recusar nomes sintéticos.' : 'Frontend validates a minimum size; the backend can still reject synthetic names.'"
+                            liType="requiredText"
+                            [liRules]="fullNameRules"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [(ngModel)]="draft.fullName">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-5" liFormField="preferredName" [liFormFieldOrder]="20">
+                        <li-input
+                            [label]="preferredNameLabel"
+                            [helperText]="isPt ? 'Opcional, útil para exibição em cards e listas.' : 'Optional, useful for cards and list displays.'"
+                            [(ngModel)]="draft.preferredName">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-4" [attr.data-person-field]="'cpf'" liFormField="cpf" [liFormFieldOrder]="30">
+                        <li-input
+                            [label]="cpfLabel"
+                            liType="cpf"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [ngModel]="draft.cpf"
+                            (ngModelChange)="onFieldChange('cpf', $event)"
+                            [invalid]="hasBackendError('cpf')"
+                            [errorText]="backendFieldError('cpf')">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-4" [attr.data-person-field]="'email'" liFormField="email" [liFormFieldOrder]="40">
+                        <li-input
+                            [label]="emailLabel"
+                            liType="email"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [ngModel]="draft.email"
+                            (ngModelChange)="onFieldChange('email', $event)"
+                            [invalid]="hasBackendError('email')"
+                            [errorText]="backendFieldError('email')">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-4" [attr.data-person-field]="'phone'" liFormField="phone" [liFormFieldOrder]="50">
+                        <li-input
+                            [label]="phoneLabel"
+                            liType="phone"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [ngModel]="draft.phone"
+                            (ngModelChange)="onFieldChange('phone', $event)"
+                            [invalid]="hasFieldError('phone')"
+                            [errorText]="fieldError('phone')">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-6" [attr.data-person-field]="'password'" liFormField="password" [liFormFieldOrder]="60">
+                        <li-input
+                            [label]="passwordLabel"
+                            type="password"
+                            [passwordToggle]="true"
+                            [passwordToggleOverlay]="true"
+                            autocomplete="new-password"
+                            [helperText]="isPt ? 'Aqui a validação é local; o backend só recebe a string final.' : 'Validation is local here; the backend only receives the final string.'"
+                            [liRules]="passwordRules"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [(ngModel)]="draft.password">
+                        </li-input>
+                      </div>
+
+                      <div class="col-md-3" [attr.data-person-field]="'birthDate'" liFormField="birthDate" [liFormFieldOrder]="70">
+                        <label class="form-label fw-semibold">{{ birthDateLabel }}</label>
+                        <li-date-picker
+                            [ngModel]="draft.birthDate"
+                            (ngModelChange)="onBirthDateChange($event)"
+                            triggerIconMode="overlay"
+                            [placeholder]="isPt ? 'Selecionar data' : 'Select date'"
+                            [invalid]="hasFieldError('birthDate')"
+                            [errorText]="fieldError('birthDate')">
+                        </li-date-picker>
+                      </div>
+
+                      <div class="col-md-3" [attr.data-person-field]="'preferredContactTime'" liFormField="preferredContactTime" [liFormFieldOrder]="80">
+                        <label class="form-label fw-semibold">{{ contactTimeLabel }}</label>
+                        <li-time-picker
+                            [ngModel]="draft.preferredContactTime"
+                            (ngModelChange)="onPreferredContactTimeChange($event)"
+                            triggerIconMode="overlay"
+                            [placeholder]="isPt ? 'Selecionar horário' : 'Select time'"
+                            [invalid]="hasFieldError('preferredContactTime')"
+                            [errorText]="fieldError('preferredContactTime')">
+                        </li-time-picker>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <div class="person-section">
+                    <div class="person-section__header">
+                      <h5 class="mb-1">{{ isPt ? 'Vínculo e capacidade' : 'Relationship and capabilities' }}</h5>
+                      <p class="text-muted mb-0">
+                        {{ isPt ? 'Aqui entram rádio, select, multi-select e date range com erros por campo.' : 'This section uses radio, select, multi-select, and date range with field-level errors.' }}
+                      </p>
+                    </div>
+
+                    <div class="mb-3" [attr.data-person-field]="'personType'" liFormField="personType" [liFormFieldOrder]="90">
+                      <li-radio-group
+                          [legend]="personTypeLegend"
+                          [errorText]="fieldError('personType')"
+                          [invalid]="hasPersonTypeError">
+                        <li-radio
+                            name="personType"
+                            [label]="isPt ? 'Colaborador' : 'Employee'"
+                            value="employee"
+                            [ngModel]="draft.personType"
+                            (ngModelChange)="onFieldChange('personType', $event)"
+                            [dataInvalid]="hasPersonTypeError">
+                        </li-radio>
+                        <li-radio
+                            name="personType"
+                            [label]="isPt ? 'Prestador' : 'Contractor'"
+                            value="contractor"
+                            [ngModel]="draft.personType"
+                            (ngModelChange)="onFieldChange('personType', $event)"
+                            [dataInvalid]="hasPersonTypeError">
+                        </li-radio>
+                        <li-radio
+                            name="personType"
+                            [label]="isPt ? 'Estagiário' : 'Intern'"
+                            value="intern"
+                            [ngModel]="draft.personType"
+                            (ngModelChange)="onFieldChange('personType', $event)"
+                            [dataInvalid]="hasPersonTypeError">
+                        </li-radio>
+                      </li-radio-group>
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-md-5" [attr.data-person-field]="'departmentId'" liFormField="departmentId" [liFormFieldOrder]="100">
+                        <label class="form-label fw-semibold">{{ departmentLabel }}</label>
+                        <li-select
+                            [dataSource]="departmentOptions"
+                            labelKey="label"
+                            valueKey="id"
+                            [liRules]="requiredSelectionRules"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [helperText]="isPt ? 'O backend usa o departamento para validar anexos e permissões.' : 'The backend uses the department to validate attachments and permissions.'"
+                            [invalid]="hasBackendError('departmentId')"
+                            [errorText]="backendFieldError('departmentId')"
+                            [ngModel]="draft.departmentId"
+                            (ngModelChange)="onFieldChange('departmentId', $event)"
+                            (modelChange)="onDepartmentModelChange($event)">
+                        </li-select>
+                      </div>
+
+                      <div class="col-md-7" [attr.data-person-field]="'skills'" liFormField="skills" [liFormFieldOrder]="110">
+                        <label class="form-label fw-semibold">{{ skillsLabel }}</label>
+                        <li-multi-select
+                            [dataSource]="skillOptions"
+                            labelKey="label"
+                            valueKey="id"
+                            [liRules]="skillsRules"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [helperText]="isPt ? 'Selecione ao menos duas. O backend veta combinações específicas.' : 'Select at least two. The backend blocks specific combinations.'"
+                            [invalid]="hasFieldError('skills')"
+                            [errorText]="fieldError('skills')"
+                            [ngModel]="draft.skillIds"
+                            (ngModelChange)="onFieldChange('skillIds', $event, 'skills')"
+                            (modelChange)="onSkillModelsChange($event)">
+                        </li-multi-select>
+                      </div>
+
+                      <div class="col-12">
+                        <div class="person-inline-note">
+                          <strong>{{ isPt ? 'Campos extras desta demo:' : 'Extra demo fields:' }}</strong>
+                          {{ isPt ? ' abaixo estão o li-currency-input, o li-datatable-select e o li-treeview-select no mesmo formulário.' : ' the form below also showcases li-currency-input, li-datatable-select, and li-treeview-select together.' }}
+                        </div>
+                      </div>
+
+                      <div class="col-md-4" [attr.data-person-field]="'expectedCompensation'" liFormField="expectedCompensation" [liFormFieldOrder]="114">
+                        <label class="form-label fw-semibold">{{ expectedCompensationLabel }}</label>
+                        <li-currency-input
+                            currencyCode="BRL"
+                            [locale]="validationLocale"
+                            [required]="true"
+                            inputClass="form-control"
+                            [class.is-invalid]="hasFieldError('expectedCompensation')"
+                            [attr.data-invalid]="hasFieldError('expectedCompensation') ? 'true' : null"
+                            [ngModel]="draft.expectedCompensationMinorUnits"
+                            (ngModelChange)="onExpectedCompensationChange($event)">
+                        </li-currency-input>
+                        <div *ngIf="hasFieldError('expectedCompensation')" class="invalid-feedback d-block">
+                          {{ fieldError('expectedCompensation') }}
+                        </div>
+                        <div class="form-text mt-1">
+                          {{ isPt ? 'Entrada monetária integrada ao mesmo fluxo de validação do formulário.' : 'Currency input integrated into the same form validation flow.' }}
+                        </div>
+                      </div>
+
+                      <div class="col-md-8" [attr.data-person-field]="'reviewerIds'" liFormField="reviewerIds" [liFormFieldOrder]="115">
+                        <label class="form-label fw-semibold">{{ reviewerLabel }}</label>
+                        <li-datatable-select
+                            [settings]="reviewerSettings"
+                            [dataTableFilter]="reviewerFilter"
+                            [data]="reviewerData"
+                            [searchInFields]="reviewerSearchFields"
+                            [labelKey]="'name'"
+                            [valueKey]="'id'"
+                            [title]="reviewerLabel"
+                            [placeholder]="isPt ? 'Escolha um ou mais responsáveis' : 'Choose one or more reviewers'"
+                            [searchPlaceholder]="isPt ? 'Buscar responsável' : 'Search reviewer'"
+                            [multiple]="true"
+                            [triggerIconMode]="'addon'"
+                            [triggerIconClass]="'ph ph-users-three'"
+                            [liRules]="reviewerRules"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [helperText]="isPt ? 'Exemplo adicional com datatable-select sem substituir o multi-select original.' : 'Additional example with datatable-select without replacing the original multi-select.'"
+                            [ngModel]="draft.reviewerIds"
+                            (ngModelChange)="onReviewerIdsChange($event)"
+                            (dataRequest)="onReviewerDataRequest($event)">
+                        </li-datatable-select>
+                      </div>
+
+                      <div class="col-md-6" [attr.data-person-field]="'workflowNode'" liFormField="workflowNode" [liFormFieldOrder]="117">
+                        <label class="form-label fw-semibold">{{ workflowLabel }}</label>
+                        <li-treeview-select
+                            [data]="workflowNodes"
+                            [liRules]="workflowRules"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [placeholder]="isPt ? 'Selecione a etapa do workflow' : 'Select the workflow stage'"
+                            [searchPlaceholder]="isPt ? 'Buscar etapa' : 'Search stage'"
+                            [helperText]="isPt ? 'Exemplo adicional com treeview-select para fluxos hierárquicos.' : 'Additional example with treeview-select for hierarchical flows.'"
+                            [ngModel]="draft.workflowNode"
+                            (ngModelChange)="onWorkflowNodeChange($event)">
+                        </li-treeview-select>
+                      </div>
+                    </div>
+
+                    <div class="mt-3" [attr.data-person-field]="'availability'" liFormField="availability" [liFormFieldOrder]="120">
+                      <label class="form-label fw-semibold">{{ availabilityLabel }}</label>
+                      <li-date-range-picker
+                          [inicio]="draft.availabilityStart"
+                          [fim]="draft.availabilityEnd"
+                          triggerIconMode="overlay"
+                          [placeholder]="isPt ? 'Selecione o período' : 'Select the range'"
+                          [invalid]="hasAvailabilityError"
+                          [errorText]="fieldError('availability')"
+                          (inicioChange)="onAvailabilityStartChange($event)"
+                          (fimChange)="onAvailabilityEndChange($event)">
+                      </li-date-range-picker>
+                    </div>
+                  </div>
+
+                  <div class="person-section">
+                    <div class="person-section__header">
+                      <h5 class="mb-1">{{ isPt ? 'Controles de seleção' : 'Selection controls' }}</h5>
+                      <p class="text-muted mb-0">
+                        {{ isPt ? 'Checkboxes, grupo de consentimento e toggles trabalham no mesmo estado da tela.' : 'Checkboxes, consent group, and toggles share the same page state.' }}
+                      </p>
+                    </div>
+
+                    <div class="mb-3" [attr.data-person-field]="'contactChannel'" liFormField="contactChannel" [liFormFieldOrder]="130">
+                      <li-radio-group
+                          [legend]="contactChannelLegend"
+                          [errorText]="fieldError('contactChannel')"
+                          [invalid]="hasContactChannelError">
+                        <li-radio
+                            name="contactChannel"
+                            label="E-mail"
+                            value="email"
+                            [ngModel]="draft.contactChannel"
+                            (ngModelChange)="onFieldChange('contactChannel', $event)"
+                            [dataInvalid]="hasContactChannelError">
+                        </li-radio>
+                        <li-radio
+                            name="contactChannel"
+                            label="SMS"
+                            value="sms"
+                            [ngModel]="draft.contactChannel"
+                            (ngModelChange)="onFieldChange('contactChannel', $event)"
+                            [dataInvalid]="hasContactChannelError">
+                        </li-radio>
+                        <li-radio
+                            name="contactChannel"
+                            [label]="isPt ? 'Ligação' : 'Phone call'"
+                            value="phone"
+                            [ngModel]="draft.contactChannel"
+                            (ngModelChange)="onFieldChange('contactChannel', $event)"
+                            [dataInvalid]="hasContactChannelError">
+                        </li-radio>
+                      </li-radio-group>
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <li-checkbox
+                            [label]="isPt ? 'Aceita regime remoto' : 'Accepts remote work'"
+                            [helperText]="isPt ? 'Exemplo simples de checkbox booleano.' : 'Simple boolean checkbox example.'"
+                            [(ngModel)]="draft.remoteEnabled">
+                        </li-checkbox>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-checkbox
+                            [label]="isPt ? 'Precisa de acessibilidade adicional' : 'Needs additional accessibility'"
+                            [helperText]="isPt ? 'Útil para fluxos de onboarding inclusivos.' : 'Useful for inclusive onboarding flows.'"
+                            [(ngModel)]="draft.accessibilityNeeded">
+                        </li-checkbox>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-toggle
+                            [label]="isPt ? 'Notificações automáticas' : 'Automatic notifications'"
+                            [helperText]="isPt ? 'Toggle com helper text e binding booleano.' : 'Toggle with helper text and boolean binding.'"
+                            [(ngModel)]="draft.notificationsEnabled">
+                        </li-toggle>
+                      </div>
+
+                      <div class="col-md-6">
+                        <li-toggle
+                            [label]="isPt ? 'Perfil público' : 'Public profile'"
+                            [helperText]="isPt ? 'Se ativar, o backend passa a exigir uma imagem no upload.' : 'When enabled, the backend requires an image attachment.'"
+                            [(ngModel)]="draft.publicProfile">
+                        </li-toggle>
+                      </div>
+                    </div>
+
+                    <div class="mt-3" [attr.data-person-field]="'consents'" liFormField="consents" [liFormFieldOrder]="140">
+                      <li-checkbox-group
+                          [legend]="consentsLegend"
+                          [helperText]="isPt ? 'O grupo mostra erro único para consentimentos obrigatórios.' : 'The group renders a single error for required consents.'"
+                          [errorText]="fieldError('consents')"
+                          [invalid]="hasConsentError">
+                        <li-checkbox
+                            [label]="isPt ? 'Aceito os termos de uso' : 'I accept the terms of use'"
+                            [ngModel]="draft.acceptTerms"
+                            (ngModelChange)="onFieldChange('acceptTerms', $event, 'consents')"
+                            [dataInvalid]="hasConsentError">
+                        </li-checkbox>
+                        <li-checkbox
+                            [label]="isPt ? 'Aceito a política de privacidade' : 'I accept the privacy policy'"
+                            [ngModel]="draft.acceptPrivacy"
+                            (ngModelChange)="onFieldChange('acceptPrivacy', $event, 'consents')"
+                            [dataInvalid]="hasConsentError">
+                        </li-checkbox>
+                      </li-checkbox-group>
+                    </div>
+                  </div>
+
+                  <div class="person-section">
+                    <div class="person-section__header">
+                      <h5 class="mb-1">{{ isPt ? 'Observações e arquivos' : 'Notes and files' }}</h5>
+                      <p class="text-muted mb-0">
+                        {{ isPt ? 'Textarea com feedback inline e uploader pronto para regras de frontend e backend.' : 'Textarea with inline feedback and uploader ready for frontend and backend rules.' }}
+                      </p>
+                    </div>
+
+                    <div class="mb-3" [attr.data-person-field]="'notes'" liFormField="notes" [liFormFieldOrder]="150">
+                      <li-input
+                          [label]="notesLabel"
+                          [multiline]="true"
+                          [rows]="4"
+                          [helperText]="isPt ? 'O backend fake também procura palavras proibidas neste texto.' : 'The fake backend also scans this text for forbidden words.'"
+                          [liRules]="notesRules"
+                          liValidationMode="submittedOrTouchedOrDirty"
+                          [locale]="validationLocale"
+                          [ngModel]="draft.notes"
+                          (ngModelChange)="onFieldChange('notes', $event)"
+                          [invalid]="hasBackendError('notes')"
+                          [errorText]="backendFieldError('notes')">
+                      </li-input>
+                    </div>
+
+                    <div [attr.data-person-field]="'attachments'" liFormField="attachments" [liFormFieldOrder]="160">
+                      <label class="form-label fw-semibold">{{ uploadsLabel }}</label>
+                      <li-file-upload
+                          [ngModel]="draft.attachments"
+                          accept="application/pdf,image/*"
+                          [required]="true"
+                          [maxFiles]="3"
+                          [maxSize]="3145728"
+                          [liRules]="attachmentRules"
+                          liValidationMode="submittedOrTouchedOrDirty"
+                          [locale]="validationLocale"
+                          [helperText]="isPt ? 'Adicione ao menos um PDF ou imagem. O backend usa nome, tipo e contexto do formulário para validar.' : 'Add at least one PDF or image. The backend validates name, type, and form context.'"
+                          [invalid]="hasFieldError('attachments')"
+                          [errorText]="fieldError('attachments')"
+                          (ngModelChange)="onFieldChange('attachments', $event)">
+                      </li-file-upload>
+                    </div>
+                  </div>
+
+                  <div class="person-form-actions">
+                    <button class="btn btn-outline-primary" type="button" (click)="validateFrontendOnly(personForm)">
+                      {{ frontendOnlyLabel }}
+                    </button>
+                    <button class="btn btn-primary" type="button" [disabled]="isSubmitting" (click)="submit(personForm)">
+                      <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                      {{ submitButtonLabel }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4">
+                <div class="person-aside-stack">
+                  <div class="person-aside-card">
+                    <div class="person-aside-card__title">{{ summaryTitle }}</div>
+                    <div class="person-summary-list">
+                      <div><strong>{{ fullNameLabel }}:</strong> {{ draft.fullName.trim().isEmpty ? '—' : draft.fullName }}</div>
+                      <div><strong>{{ departmentLabel }}:</strong> {{ selectedDepartmentLabel }}</div>
+                      <div><strong>{{ skillsLabel }}:</strong> {{ selectedSkillsLabel }}</div>
+                      <div><strong>{{ reviewerLabel }}:</strong> {{ selectedReviewerLabel }}</div>
+                      <div><strong>{{ workflowLabel }}:</strong> {{ selectedWorkflowLabel }}</div>
+                      <div><strong>{{ expectedCompensationLabel }}:</strong> {{ expectedCompensationLabelText }}</div>
+                      <div><strong>{{ uploadsLabel }}:</strong> {{ attachmentSummary }}</div>
+                      <div><strong>{{ contactTimeLabel }}:</strong> {{ formatDuration(draft.preferredContactTime) }}</div>
+                      <div><strong>Status:</strong> {{ currentStatusLabel }}</div>
+                    </div>
+                  </div>
+
+                  <div class="person-aside-card person-aside-card--warn">
+                    <div class="person-aside-card__title">{{ backendRulesTitle }}</div>
+                    <ul class="mb-0 ps-3">
+                      <li *ngFor="let hint of backendRuleHints">{{ hint }}</li>
+                    </ul>
+                  </div>
+
+                  <div class="person-aside-card">
+                    <div class="person-aside-card__title">{{ responseTitle }}</div>
+                    <pre class="person-json-preview">{{ responsePreview }}</pre>
+                  </div>
+
+                  <div class="person-aside-card">
+                    <div class="person-aside-card__title">{{ payloadTitle }}</div>
+                    <pre class="person-json-preview">{{ payloadPreview }}</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ apiIntro }}</p>
+
+            <div class="row g-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ isPt ? 'O que esta demo cobre' : 'What this demo covers' }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>li-input</code> com máscara, feedback inline e password toggle.</li>
+                    <li><code>li-select</code> e <code>li-multi-select</code> com retorno do modelo selecionado.</li>
+                    <li><code>li-datatable-select</code> adicionado como campo extra para responsáveis, sem substituir o select original.</li>
+                    <li><code>li-treeview-select</code> adicionado como campo extra para etapa de workflow hierárquica.</li>
+                    <li><code>li-currency-input</code> integrado ao mesmo formulário com foco, required e erro inline.</li>
+                    <li><code>li-radio-group</code>, <code>li-checkbox-group</code> e <code>li-toggle</code> no mesmo formulário.</li>
+                    <li><code>li-date-picker</code>, <code>li-time-picker</code> e <code>li-date-range-picker</code> em regras combinadas.</li>
+                    <li><code>li-file-upload</code> com regras declarativas no frontend e validação complementar no backend fake.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-xl-8">
+                <div class="card card-body">
+                  <h6 class="mb-3">{{ isPt ? 'Recorte do template' : 'Template excerpt' }}</h6>
+                  <li-highlight [code]="markupSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">{{ isPt ? 'Recorte do service simulado' : 'Mock service excerpt' }}</h6>
+                  <li-highlight [code]="serviceSnippet" language="dart"></li-highlight>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

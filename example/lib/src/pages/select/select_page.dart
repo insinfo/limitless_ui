@@ -51,6 +51,19 @@ late final List<Map<String, dynamic>> statusOptions;
   (modelChange)="onClassificacaoModelChange(\$event)">
 </li-select>''';
 
+  static const String validationSnippet = '''
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [liRules]="[LiRule.required()]"
+  [liMessages]="{
+    'required': 'Escolha um status.'
+  }"
+  liValidationMode="submitted"
+  [(ngModel)]="selectedStatus">
+</li-select>''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
 

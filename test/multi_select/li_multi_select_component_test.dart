@@ -1,6 +1,6 @@
 // Run this browser test from the package root with:
 // dart run build_runner test -- -p chrome -j 1 test/multi_select/li_multi_select_component_test.dart
-// ignore_for_file: uri_has_not_been_generated
+// ignore_for_file: uri_has_not_been_generated, undefined_prefixed_name
 
 @TestOn('browser')
 library;
@@ -23,6 +23,7 @@ import 'li_multi_select_component_test.template.dart' as ng;
         [dataSource]="channelOptions"
         labelKey="label"
         valueKey="id"
+        triggerIconMode="overlay"
         (modelChange)="selectedChannelModels = \$event"
         [(ngModel)]="selectedChannels">
     </li-multi-select>
@@ -86,6 +87,42 @@ class MultiSelectCompareTestHostComponent {
   }
 }
 
+@Component(
+  selector: 'li-multi-select-validation-test-host',
+  template: '''
+    <div id="validation-multi-select-field">
+      <li-multi-select
+          [dataSource]="channelOptions"
+          labelKey="label"
+          valueKey="id"
+          [liRules]="channelRules"
+          liValidationMode="dirty"
+          [(ngModel)]="selectedChannels">
+      </li-multi-select>
+    </div>
+  ''',
+  directives: [coreDirectives, formDirectives, LiMultiSelectComponent],
+)
+class MultiSelectValidationTestHostComponent {
+  List<dynamic> selectedChannels = <dynamic>['email', 'push'];
+
+  final List<LiRule> channelRules = <LiRule>[
+    LiRule.custom(
+      (dynamic value) {
+        final total = value is Iterable ? value.length : 0;
+        return total >= 2 ? null : 'Selecione ao menos 2 canais.';
+      },
+      code: 'minItems',
+    ),
+  ];
+
+  final List<Map<String, dynamic>> channelOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 'email', 'label': 'E-mail'},
+    <String, dynamic>{'id': 'push', 'label': 'Push'},
+    <String, dynamic>{'id': 'sms', 'label': 'SMS'},
+  ];
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
@@ -97,6 +134,9 @@ void main() {
   );
   final compareTestBed = NgTestBed<MultiSelectCompareTestHostComponent>(
     ng.MultiSelectCompareTestHostComponentNgFactory,
+  );
+  final validationTestBed = NgTestBed<MultiSelectValidationTestHostComponent>(
+    ng.MultiSelectValidationTestHostComponentNgFactory,
   );
 
   test('toggles options and updates ngModel', () async {
@@ -231,6 +271,49 @@ void main() {
     expect(fixture.rootElement.querySelectorAll('.badge').length, 1);
     expect(fixture.rootElement.text, contains('Push'));
   });
+
+  test('applies declarative validation rules on selection changes', () async {
+    final fixture = await validationTestBed.create();
+    await _settleValidation(fixture);
+    final host = fixture.assertOnlyInstance;
+    final field = fixture.rootElement.querySelector('#validation-multi-select-field')!;
+    final trigger = field.querySelector('.dropdown-button') as html.ButtonElement;
+    final clearButton = field.querySelector('.dropdown-clear') as html.Element;
+
+    await fixture.update((_) {
+      clearButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleValidation(fixture);
+
+    expect(host.selectedChannels, isEmpty);
+    expect(trigger.classes.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.text, contains('Selecione ao menos 2 canais.'));
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleValidation(fixture);
+
+    final options = html.document
+        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .cast<html.Element>()
+        .toList(growable: false);
+    final emailOption = options.firstWhere(
+      (element) => (element.text ?? '').contains('E-mail'),
+    );
+    final pushOption = options.firstWhere(
+      (element) => (element.text ?? '').contains('Push'),
+    );
+
+    await fixture.update((_) {
+      emailOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      pushOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleValidation(fixture);
+
+    expect(host.selectedChannels, containsAll(<String>['email', 'push']));
+    expect(trigger.classes.contains('is-invalid'), isFalse);
+  });
 }
 
 Future<void> _settle(
@@ -241,6 +324,12 @@ Future<void> _settle(
 
 Future<void> _settleCompare(
     NgTestFixture<MultiSelectCompareTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleValidation(
+    NgTestFixture<MultiSelectValidationTestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});
 }

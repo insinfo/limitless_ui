@@ -10,6 +10,8 @@ import 'package:limitless_ui_example/src/pages/breadcrumbs/breadcrumbs_page.temp
     as breadcrumbs_page;
 import 'package:limitless_ui_example/src/pages/page_header/page_header_page.template.dart'
     as page_header_page;
+import 'package:limitless_ui_example/src/pages/person_registration/person_registration_page.template.dart'
+    as person_registration_page;
 import 'package:limitless_ui_example/src/pages/pagination/pagination_page.template.dart'
     as pagination_page;
 import 'package:limitless_ui_example/src/pages/selection_controls/selection_controls_page.template.dart'
@@ -239,6 +241,11 @@ class DemoRoutes {
     component: file_upload_page.FileUploadPageComponentNgFactory,
   );
 
+  static final personRegistration = RouteDefinition(
+    routePath: DemoRoutePaths.personRegistration,
+    component: person_registration_page.PersonRegistrationPageComponentNgFactory,
+  );
+
   static final toast = RouteDefinition(
     routePath: DemoRoutePaths.toast,
     component: toast_page.ToastPageComponentNgFactory,
@@ -312,6 +319,7 @@ class DemoRoutes {
     toast,
     notification,
     fileUpload,
+    personRegistration,
     treeview,
     helpers,
     sweetAlert,

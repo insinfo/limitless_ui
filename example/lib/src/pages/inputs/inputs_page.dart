@@ -41,6 +41,28 @@ class InputsPageComponent {
     (inputEnter)="loadPersonByCode(\$event.target.value)">
 </li-input>''';
 
+  static const String validationSnippet = '''
+<li-input
+    label="CPF"
+    liType="cpf"
+    [liMessages]="{
+      'required': 'Informe o CPF.',
+      'cpf': 'Digite um CPF valido.'
+    }"
+    liValidationMode="submitted"
+    [(ngModel)]="cpf">
+</li-input>
+
+<li-input
+    label="Nome completo"
+    liType="requiredText"
+    [liRules]="[LiRule.minLength(3)]"
+    [liMessages]="{
+      'minLength': 'Informe ao menos 3 caracteres.'
+    }"
+    [(ngModel)]="customerName">
+</li-input>''';
+
   static const String selectSnippet = '''
 <li-select
     [dataSource]="statusOptions"

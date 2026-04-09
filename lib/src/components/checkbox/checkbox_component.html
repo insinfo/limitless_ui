@@ -1,6 +1,7 @@
 <label [class]="resolvedContainerClass">
   <input
       #inputElement
+      [attr.data-li-form-focus-target]="'true'"
       type="checkbox"
       [id]="resolvedId"
       [attr.name]="resolvedName"
@@ -16,5 +17,5 @@
       (blur)="handleBlur()">
   <span [class]="resolvedLabelClass">{{ label }}</span>
 </label>
-<div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+<div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
 <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>

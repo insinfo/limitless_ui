@@ -1,5 +1,18 @@
 ## 1.0.0-dev.6
 
+- Changed the default `liValidationMode` across declarative form components to `submittedOrTouchedOrDirty`, so fields surface errors after submit, after blur, or while typing once they become dirty.
+- Added declarative form validation across `li-input`, `li-select`, `li-multi-select`, `li-checkbox`, `li-radio-group`, `li-date-picker`, `li-time-picker`, and `li-file-upload`, with `liRules`, `liMessages`, `liValidationMode`, preset support through `liType` on `li-input`, and `liForm`-aware submit-time validation flows.
+- Reduced verbose manual validation in the registration demo, documented the new validation model in `README.md`, `doc-pt_BR.md`, and the affected example component pages, and added browser coverage for the new submitted-mode declarative validation flow.
+- Expanded `li-treeview-select` with in-panel actions for expand-all, clear selection, and confirm/close flows, plus regression coverage for the new overlay action bar behavior.
+- Refined `li-treeview-select` actions with configurable footer visibility, a toggleable expand/collapse-all control that can also render beside the search field, and compact `btn-sm` action styling.
+- Expanded `li-input` with high-level `validator` and `maskFormatter` callbacks so custom validation/masking can be configured directly on the component without replacing the existing declarative `mask` API.
+- Added `multiple` selection mode to `li-datatable-select`, reusing datatable checkbox selection with modal confirm/clear actions and regression coverage for the new selection workflow.
+- Expanded composite form controls with configurable clear-button visibility and trigger icon presentation modes (`default`, `overlay`, `addon`, `hidden`) across date/time pickers, selects, datatable select, and treeview select, plus updated registration demo usage for the new overlay trigger style.
+- Added `liForm`, an exportable form/container directive with agnostic APIs to mark AngularDart controls as touched, validate rendered UI, and focus the first invalid field without page-level DOM hacks.
+- Expanded `liForm` with `liFormField`, explicit priority hooks, preferred focus-target markers, and DOM-order fallback when `liFormFieldOrder` is omitted, then applied that flow across the example app form demos.
+- Added a dedicated `person-registration` example route that combines declarative validation, fake backend responses, `li-datatable-select`, `li-treeview-select`, `li-currency-input`, and `li-file-upload` in one realistic end-to-end form flow.
+- Refined the `li-datatable-select` and `li-treeview-select` demos/docs with clearer `ngModel` summaries, typed-row modal coverage, trigger icon examples, search/footer action bars, and compact multi-selection UX updates.
+- Improved `li-file-upload` with stronger invalid/valid dropzone visual states and refined solid `li-toast` chrome so headers, badges, helper text, and close buttons stay legible on light-text toasts.
 - Added `li-pg-header` with projected breadcrumb/action/bottom slots, exported it from the public barrel, added a dedicated example route, and covered the new API with browser tests.
 - Expanded form-oriented APIs with `li-input` event outputs (`inputBlur`, `inputFocus`, `inputClick`, `inputKeydown`, `inputEnter`) plus `compareWith` and `modelChange` support in `li-select` and `li-multi-select`, with regression coverage for the new behavior.
 - Expanded `li-datatable-select` with `itemLabelBuilder`, `itemValueBuilder`, `compareWith`, and modal context helpers for arbitrary projected content such as embedded search components, and added browser tests for typed rows and custom modal selection flows.

@@ -110,8 +110,53 @@
               </div>
 
               <div class="demo-summary-box mt-3">
-                <div><strong>ngModel value:</strong> {{ ngModelValue ?? 'null' }}</div>
+                <div><strong>{{ isPt ? 'ngModel simples:' : 'Single ngModel:' }}</strong> {{ ngModelValue ?? 'null' }}</div>
                 <div *ngIf="ngModelEventLog.isNotEmpty"><strong>{{ t.common.event }}:</strong> {{ ngModelEventLog }}</div>
+              </div>
+            </div>
+
+            <div class="demo-doc-section">
+              <p class="text-muted mb-3">{{ multipleSelectIntro }}</p>
+
+              <div class="row">
+                <div class="col-md-7 mb-3">
+                  <label class="form-label">{{ multipleSelectLabel }}</label>
+                  <li-datatable-select #multipleSelect [settings]="basicSettings" [dataTableFilter]="multipleFilter"
+                    [data]="multipleData" [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
+                    [title]="multipleSelectModalTitle" [placeholder]="multipleSelectPlaceholder"
+                    [searchPlaceholder]="t.pages.datatableSelect.searchPlaceholder" [multiple]="true"
+                    [clearButtonLabel]="multipleSelectClearButtonLabel" [triggerIconMode]="'addon'"
+                    [triggerIconClass]="'ph ph-users-three'" [(ngModel)]="multipleSelectedIds"
+                    (dataRequest)="onMultipleDataRequest($event)">
+                  </li-datatable-select>
+                </div>
+              </div>
+
+              <div class="demo-summary-box mt-3">
+                <div><strong>{{ isPt ? 'ngModel múltiplo:' : 'Multiple ngModel:' }}</strong> {{ multipleSelectedValueText }}</div>
+                <div><strong>{{ t.common.label }}:</strong> {{ multipleSelectedLabelText }}</div>
+              </div>
+            </div>
+
+            <div class="demo-doc-section">
+              <p class="text-muted mb-3">{{ builderDemoIntro }}</p>
+
+              <div class="row">
+                <div class="col-md-7 mb-3">
+                  <label class="form-label">{{ builderDemoLabel }}</label>
+                  <li-datatable-select #typedBuilderSelect [settings]="typedBuilderSettings"
+                    [dataTableFilter]="typedBuilderFilter" [data]="typedBuilderData"
+                    [searchInFields]="basicSearchFields" [itemLabelBuilder]="personLabel"
+                    [itemValueBuilder]="personValue" [compareWith]="compareById"
+                    [title]="builderDemoModalTitle" [placeholder]="builderDemoPlaceholder"
+                    [(ngModel)]="selectedTypedPerson">
+                  </li-datatable-select>
+                </div>
+              </div>
+
+              <div class="demo-summary-box mt-3">
+                <div><strong>{{ t.common.value }}:</strong> {{ selectedTypedPersonValueText }}</div>
+                <div><strong>{{ t.common.label }}:</strong> {{ selectedTypedPersonLabelText }}</div>
               </div>
             </div>
 
@@ -196,11 +241,17 @@
                   <li>{{ t.pages.datatableSelect.optionNine }}</li>
                   <li>{{ t.pages.datatableSelect.optionTen }}</li>
                   <li>{{ t.pages.datatableSelect.optionEleven }}</li>
+                  <li>{{ multipleOptionText }}</li>
+                  <li>{{ triggerIconOptionText }}</li>
+                  <li>{{ modalActionOptionText }}</li>
                   <li><code>[itemLabelBuilder]</code> e <code>[itemValueBuilder]</code> funcionam bem com listas tipadas, sem exigir <code>Map</code>.</li>
                   <li><code>[compareWith]</code> resolve seleção quando o modal recebe novas instâncias do backend.</li>
                 </ul>
 
                 <li-highlight [code]="ngModelApiSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">{{ multipleApiTitle }}</h6>
+                <li-highlight [code]="multipleApiSnippet" language="html"></li-highlight>
 
                 <h6 class="mb-2 mt-4">Builders + compareWith</h6>
                 <li-highlight [code]="builderApiSnippet" language="html"></li-highlight>

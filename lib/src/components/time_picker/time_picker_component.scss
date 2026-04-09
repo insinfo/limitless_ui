@@ -3,6 +3,15 @@
     width: 100%;
 }
 
+.time-picker-trigger-shell {
+    position: relative;
+}
+
+.time-picker-trigger-shell.disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
 .time-picker-field {
     cursor: pointer;
 }
@@ -15,6 +24,74 @@
 .time-picker-wrapper .input-group.disabled {
     opacity: 0.65;
     cursor: not-allowed;
+}
+
+.time-picker-field--overlay {
+    padding-right: 0.875rem;
+}
+
+.time-picker-field--overlay.time-picker-field--overlay-trigger {
+    padding-right: 3rem;
+}
+
+.time-picker-field--overlay.time-picker-field--overlay-clear {
+    padding-right: 3rem;
+}
+
+.time-picker-field--overlay.time-picker-field--overlay-trigger.time-picker-field--overlay-clear {
+    padding-right: 5rem;
+}
+
+.time-picker-field--overlay.is-invalid,
+.time-picker-field--overlay.is-valid {
+    padding-right: 3rem;
+}
+
+.time-picker-field--overlay.time-picker-field--overlay-trigger.is-invalid,
+.time-picker-field--overlay.time-picker-field--overlay-trigger.is-valid,
+.time-picker-field--overlay.time-picker-field--overlay-clear.is-invalid,
+.time-picker-field--overlay.time-picker-field--overlay-clear.is-valid {
+    padding-right: 5rem;
+}
+
+.time-picker-field--overlay.time-picker-field--overlay-trigger.time-picker-field--overlay-clear.is-invalid,
+.time-picker-field--overlay.time-picker-field--overlay-trigger.time-picker-field--overlay-clear.is-valid {
+    padding-right: 7.1rem;
+}
+
+.time-picker-overlay-actions {
+    position: absolute;
+    top: 50%;
+    right: 0.625rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    z-index: 3;
+}
+
+.time-picker-trigger-shell > .time-picker-field--overlay.is-invalid ~ .time-picker-overlay-actions,
+.time-picker-trigger-shell > .time-picker-field--overlay.is-valid ~ .time-picker-overlay-actions {
+    right: 2.5rem;
+}
+
+.time-picker-overlay-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.time-picker-overlay-button:not(:disabled):hover,
+.time-picker-overlay-button:not(:disabled):focus {
+    color: var(--body-color);
+    background: color-mix(in srgb, var(--body-color) 8%, transparent);
 }
 
 .time-picker-trigger-button {

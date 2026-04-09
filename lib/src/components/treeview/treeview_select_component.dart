@@ -9,6 +9,11 @@ import 'package:popper/popper.dart';
 import 'package:essential_core/essential_core.dart';
 
 import '../../core/overlay_positioning.dart';
+import '../../directives/li_form_directive.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
 import 'tree_view_base.dart';
 import 'treeview_settings.dart';
 
@@ -83,14 +88,25 @@ class LiTreeviewSelectTriggerDirective {
 )
 class LiTreeviewSelectComponent
     implements ControlValueAccessor<dynamic>, OnInit, AfterChanges, OnDestroy {
-  LiTreeviewSelectComponent(this._changeDetectorRef) {
+  LiTreeviewSelectComponent(
+    this._changeDetectorRef, [
+    @Optional() this._formDirective,
+  ]) {
     final seq = _nextSequence++;
     listboxId = 'li-treeview-dropdown-$seq';
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription =
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _markForCheck();
+    });
   }
 
   static int _nextSequence = 0;
 
   final ChangeDetectorRef _changeDetectorRef;
+  final LiFormDirective? _formDirective;
   final StreamController<dynamic> _changeController =
       StreamController<dynamic>.broadcast();
 
@@ -105,6 +121,12 @@ class LiTreeviewSelectComponent
   ChangeFunction<dynamic>? _ngModelValueChangeCallback;
   TouchFunction _touchCallback = () {};
   bool _touched = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
+  StreamSubscription<bool>? _formSubmissionSubscription;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
 
   dynamic _sourceData;
   TreeViewSettings _settings = const TreeViewSettings();
@@ -137,6 +159,18 @@ class LiTreeviewSelectComponent
 
   @Input()
   String locale = 'pt_BR';
+
+  @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
 
   @Input()
   bool invalid = false;
@@ -196,6 +230,27 @@ class LiTreeviewSelectComponent
   String clearButtonLabel = '';
 
   @Input()
+  String expandAllButtonLabel = '';
+
+  @Input()
+  String collapseAllButtonLabel = '';
+
+  @Input()
+  String confirmButtonLabel = '';
+
+  @Input()
+  bool showPanelActions = true;
+
+  @Input()
+  String expandTogglePlacement = 'actions';
+
+  @Input()
+  String triggerIconMode = 'default';
+
+  @Input()
+  String triggerIconClass = '';
+
+  @Input()
   String summarySuffix = '';
 
   @Input()
@@ -246,11 +301,29 @@ class LiTreeviewSelectComponent
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveInvalid => invalid || dataInvalid;
+  bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
 
-  bool get effectiveValid => !effectiveInvalid && valid;
+  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
 
-  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+  bool get effectiveValid =>
+      !effectiveInvalid &&
+      (valid ||
+          (_shouldShowValidation &&
+              _effectiveRules.isNotEmpty &&
+              _autoValidationIssue == null));
+
+  String get effectiveErrorText {
+    final externalMessage = errorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
+
+    return _autoValidationIssue?.message ?? '';
+  }
+
+  bool get showErrorFeedback =>
+      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
@@ -281,6 +354,56 @@ class LiTreeviewSelectComponent
       ? clearButtonLabel
       : (_isEnglishLocale ? 'Clear' : 'Limpar');
 
+  String get resolvedExpandAllButtonLabel => expandAllButtonLabel.trim().isNotEmpty
+      ? expandAllButtonLabel
+      : (_isEnglishLocale ? 'Expand all' : 'Expandir tudo');
+
+  String get resolvedCollapseAllButtonLabel =>
+      collapseAllButtonLabel.trim().isNotEmpty
+          ? collapseAllButtonLabel
+          : (_isEnglishLocale ? 'Collapse all' : 'Recolher tudo');
+
+  String get resolvedConfirmButtonLabel => confirmButtonLabel.trim().isNotEmpty
+      ? confirmButtonLabel
+      : 'OK';
+
+  String get normalizedExpandTogglePlacement {
+    switch (expandTogglePlacement.trim().toLowerCase()) {
+      case 'search':
+        return 'search';
+      case 'hidden':
+        return 'hidden';
+      default:
+        return 'actions';
+    }
+  }
+
+  String get normalizedTriggerIconMode {
+    switch (triggerIconMode.trim().toLowerCase()) {
+      case 'overlay':
+        return 'overlay';
+      case 'addon':
+        return 'addon';
+      case 'hidden':
+        return 'hidden';
+      default:
+        return 'default';
+    }
+  }
+
+  bool get usesOverlayTriggerIcon => normalizedTriggerIconMode == 'overlay';
+
+  bool get usesAddonTriggerIcon => normalizedTriggerIconMode == 'addon';
+
+  bool get showsTriggerIcon =>
+      normalizedTriggerIconMode == 'overlay' ||
+      normalizedTriggerIconMode == 'addon';
+
+  String get resolvedTriggerIconClass {
+    final custom = triggerIconClass.trim();
+    return custom.isNotEmpty ? custom : 'ph ph-caret-down';
+  }
+
   String get resolvedSummarySuffix => summarySuffix.trim().isNotEmpty
       ? summarySuffix
       : (_isEnglishLocale ? 'items' : 'itens');
@@ -291,6 +414,12 @@ class LiTreeviewSelectComponent
   String get resolvedTriggerClass => _joinClasses(<String>[
         'form-select',
         'treeview-dropdown-select__trigger',
+        usesOverlayTriggerIcon
+            ? 'treeview-dropdown-select__trigger--with-overlay-icon'
+            : '',
+        showClearButton && hasSelection
+            ? 'treeview-dropdown-select__trigger--with-clear'
+            : '',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
       ]);
@@ -337,6 +466,37 @@ class LiTreeviewSelectComponent
   bool get isEmptyStateVisible =>
       !loadingRootNodes && visibleRootNodes.isEmpty && !hasMoreRootNodes;
 
+  bool get hasExpandableNodes => _hasExpandableNodes(rootNodes);
+
+  bool get allExpandableNodesExpanded =>
+      hasExpandableNodes && _areAllExpandableNodesExpanded(rootNodes);
+
+  String get resolvedExpandToggleLabel => allExpandableNodesExpanded
+      ? resolvedCollapseAllButtonLabel
+      : resolvedExpandAllButtonLabel;
+
+  String get resolvedExpandToggleIconClass => allExpandableNodesExpanded
+      ? 'ph ph-arrows-in-simple'
+      : 'ph ph-arrows-out-simple';
+
+  bool get showSearchExpandToggle =>
+      searchable &&
+      normalizedExpandTogglePlacement == 'search' &&
+      hasExpandableNodes;
+
+  bool get showFooterExpandToggle =>
+      hasExpandableNodes &&
+      (normalizedExpandTogglePlacement == 'actions' ||
+          (normalizedExpandTogglePlacement == 'search' && !searchable));
+
+  bool get showActionBar =>
+      showPanelActions &&
+      (showFooterExpandToggle || hasSelection || multiple || !closeOnSelect);
+
+  bool _togglingAll = false;
+
+  bool get togglingAll => _togglingAll;
+
   @override
   void ngOnInit() {
     _staticNodes = _settings.normalize(_sourceData);
@@ -348,6 +508,7 @@ class LiTreeviewSelectComponent
 
   @override
   void ngAfterChanges() {
+    _rebuildValidationConfig();
     if (pageLoader == null || _staticNodes.isNotEmpty) {
       _applyInitialData();
     }
@@ -356,6 +517,7 @@ class LiTreeviewSelectComponent
   @override
   void ngOnDestroy() {
     _destroyed = true;
+    _formSubmissionSubscription?.cancel();
     _searchDebounceTimer?.cancel();
     _unbindDocumentListeners();
     _overlay?.dispose();
@@ -372,6 +534,7 @@ class LiTreeviewSelectComponent
     } else {
       selectedNode = _findNodeByValue(rootNodes, value);
     }
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -528,6 +691,7 @@ class LiTreeviewSelectComponent
             .toList(growable: false);
       }
       _pendingModelValue = _selectedValues();
+      _dirty = true;
       _changeController.add(_pendingModelValue);
       _ngModelValueChangeCallback?.call(_pendingModelValue);
       _markTouched();
@@ -540,6 +704,7 @@ class LiTreeviewSelectComponent
 
     selectedNode = node;
     _pendingModelValue = _selectedValueFor(node);
+  _dirty = true;
     _changeController.add(_pendingModelValue);
     _ngModelValueChangeCallback?.call(_pendingModelValue);
     _markTouched();
@@ -583,10 +748,70 @@ class LiTreeviewSelectComponent
     selectedNode = null;
     _clearSelectedState(rootNodes);
     selectedNodes = <TreeViewNode>[];
+    _dirty = true;
     _changeController.add(_pendingModelValue);
     _ngModelValueChangeCallback?.call(_pendingModelValue);
     _markTouched();
     _markForCheck();
+  }
+
+  Future<void> toggleAllNodes() async {
+    if (_togglingAll || isDisabled) {
+      return;
+    }
+
+    if (allExpandableNodesExpanded) {
+      collapseAllNodes();
+      return;
+    }
+
+    await expandAllNodes();
+  }
+
+  Future<void> expandAllNodes() async {
+    if (_togglingAll || isDisabled) {
+      return;
+    }
+
+    _togglingAll = true;
+    _markForCheck();
+
+    try {
+      if (pageLoader != null && rootNodes.isEmpty && !loadingRootNodes) {
+        await _loadRootNodes(reset: true);
+      }
+
+      while (pageLoader != null && hasMoreRootNodes) {
+        await _loadRootNodes(reset: false);
+      }
+
+      for (final node in rootNodes) {
+        await _expandNodeRecursively(node);
+      }
+    } finally {
+      _togglingAll = false;
+      _markForCheck();
+      _scheduleOverlayUpdate();
+    }
+  }
+
+  void collapseAllNodes() {
+    if (_togglingAll || isDisabled) {
+      return;
+    }
+
+    _collapseNodesRecursively(rootNodes);
+    _markForCheck();
+    _scheduleOverlayUpdate();
+  }
+
+  void confirmSelection() {
+    closeDropdown();
+    triggerButtonElement?.focus();
+  }
+
+  void onPanelClick(html.Event event) {
+    event.stopPropagation();
   }
 
   bool showLoadMoreForNode(TreeViewNode node) =>
@@ -883,6 +1108,58 @@ class LiTreeviewSelectComponent
         .toList(growable: false);
   }
 
+  bool _hasExpandableNodes(List<TreeViewNode> nodes) {
+    for (final node in nodes) {
+      if (node.canExpand || _hasExpandableNodes(node.treeViewNodes)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _areAllExpandableNodesExpanded(List<TreeViewNode> nodes) {
+    for (final node in nodes) {
+      if (node.canExpand && node.treeViewNodeIsCollapse) {
+        return false;
+      }
+
+      if (!_areAllExpandableNodesExpanded(node.treeViewNodes)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  Future<void> _expandNodeRecursively(TreeViewNode node) async {
+    if (!node.canExpand) {
+      return;
+    }
+
+    node.treeViewNodeIsCollapse = false;
+
+    if (_shouldLoadNodeChildren(node)) {
+      await _loadNodeChildren(node, reset: true);
+    }
+
+    while (pageLoader != null && node.treeViewNodeHasMoreChildren) {
+      await _loadNodeChildren(node, reset: false);
+    }
+
+    for (final child in node.treeViewNodes) {
+      await _expandNodeRecursively(child);
+    }
+  }
+
+  void _collapseNodesRecursively(List<TreeViewNode> nodes) {
+    for (final node in nodes) {
+      if (node.canExpand) {
+        node.treeViewNodeIsCollapse = true;
+      }
+      _collapseNodesRecursively(node.treeViewNodes);
+    }
+  }
+
   void _ensureOverlay() {
     if (container != 'body') {
       return;
@@ -1007,11 +1284,47 @@ class LiTreeviewSelectComponent
   void _markTouched() {
     if (_touched) {
       _touchCallback();
+      _runAutoValidation();
       return;
     }
     _touched = true;
     _touchCallback();
+    _runAutoValidation();
   }
+
+  void _rebuildValidationConfig() {
+    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
+      ...liRules,
+    ]);
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...liMessages,
+    });
+    _runAutoValidation();
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
+      return;
+    }
+
+    _autoValidationIssue = liValidateValue(
+      value: multiple ? _selectedValues() : _pendingModelValue,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        fieldName: resolvedPlaceholder.trim().isEmpty ? null : resolvedPlaceholder,
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
+  }
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
+      );
 
   String _joinClasses(List<String> values) {
     return values

@@ -184,6 +184,254 @@ class DemoFormHelpersComponent {
 }
 ```
 
+## Declarative form validation
+
+The form API now supports a declarative validation layer designed to reduce template verbosity without removing control from the host application. The goal is to keep the common case short, preserve backend-driven errors, and reuse the same mental model across `li-input`, `li-select`, `li-multi-select`, `li-checkbox` and adjacent field components.
+
+The public building blocks are:
+
+- `liType`: string preset for common field shapes such as CPF, email or phone.
+- `liInputType`: object-based escape hatch for custom reusable field presets.
+- `liRules`: declarative validation rules that compose with presets.
+- `liMessages`: per-field message overrides keyed by rule code.
+- `liValidationMode`: controls when automatic validation becomes visible.
+- `invalid`, `dataInvalid` and `errorText`: explicit external overrides, typically used for backend errors.
+
+### Why this path
+
+This API follows the same separation of concerns used by modern form systems:
+
+- value binding stays simple in the template;
+- validation rules are modeled separately from the HTML input type;
+- field state and error presentation are computed by the component instead of being hand-wired in every page;
+- presets exist as a design-system convenience layer, not as a replacement for explicit rules.
+
+That puts `limitless_ui` close to the direction used by the current market:
+
+- Angular reactive forms and Signal Forms: validators are composed separately from the field value and errors come from field state.
+- React plus React Hook Form: binding is primitive, while validation is registered declaratively per field.
+- Vue and Svelte: the ergonomics emphasis is on concise value binding, with validation layered on top by the framework or by libraries.
+
+In practice, `liRules` is the most universal part of the model, `liType` is the design-system convenience layer, and `liInputType` is the escape hatch for advanced reuse.
+
+### Simple presets
+
+```html
+<li-input
+  name="cpf"
+  label="CPF"
+  liType="cpf"
+  [(ngModel)]="person.cpf">
+</li-input>
+
+<li-input
+  name="email"
+  label="E-mail"
+  liType="email"
+  [(ngModel)]="person.email">
+</li-input>
+
+<li-input
+  name="phone"
+  label="Telefone"
+  liType="phone"
+  [(ngModel)]="person.phone">
+</li-input>
+```
+
+Built-in presets currently include `cpf`, `cnpj`, `cpfOrCnpj`, `email`, `phone`, `textMin3`, `requiredText` and `onlyNumbers`.
+
+### Preset plus additional rules
+
+```html
+<li-input
+  name="fullName"
+  label="Nome completo"
+  liType="requiredText"
+  [liRules]="[
+    LiRule.custom(validateFullName, code: 'fullName')
+  ]"
+  [(ngModel)]="person.fullName">
+</li-input>
+```
+
+```dart
+String? validateFullName(dynamic value) {
+  final normalized = '${value ?? ''}'.trim();
+  return normalized.length >= 6
+      ? null
+      : 'Informe nome e sobrenome com pelo menos 6 caracteres.';
+}
+```
+
+### Custom reusable field type
+
+```dart
+final LiInputType inventoryCodeType = LiPresetInputType(
+  htmlType: 'text',
+  inputMode: 'numeric',
+  maxLength: 10,
+  rules: <LiRule>[
+    LiRule.required(),
+    LiRule.pattern(r'^[0-9]{10}$'),
+  ],
+  messages: <String, String>{
+    'pattern': 'Use exatamente 10 digitos.',
+  },
+);
+```
+
+```html
+<li-input
+  label="Codigo"
+  [liInputType]="inventoryCodeType"
+  [(ngModel)]="item.code">
+</li-input>
+```
+
+### Overriding messages
+
+```html
+<li-input
+  label="CPF"
+  liType="cpf"
+  [liMessages]="{
+    'required': 'Informe o CPF do cidadao.',
+    'cpf': 'CPF invalido.'
+  }"
+  [(ngModel)]="person.cpf">
+</li-input>
+```
+
+### Backend errors still win
+
+Automatic validation is intentionally not the only source of truth. When the backend returns a field error, the host can keep that precedence explicitly:
+
+```html
+<li-input
+  label="CPF"
+  liType="cpf"
+  [(ngModel)]="person.cpf"
+  [invalid]="backendErrors.containsKey('cpf')"
+  [errorText]="backendErrors['cpf'] ?? ''">
+</li-input>
+```
+
+This preserves the common frontend/backend split used in real applications.
+
+### Validation modes
+
+`liValidationMode` controls when automatic validation is shown. Supported values are:
+
+- `never`
+- `dirty`
+- `touched`
+- `touchedOrDirty`
+- `submitted`
+- `submittedOrTouched`
+- `submittedOrTouchedOrDirty`
+
+Default: `submittedOrTouchedOrDirty`.
+
+### Precedence model
+
+The validation pipeline uses a fixed precedence model so component behavior stays predictable:
+
+- field preset: `liInputType` wins over `liType`;
+- field options: explicit component inputs win over preset defaults;
+- validation rules: preset rules run first, then `liRules`, then compatibility rules derived from inputs such as `required`, `minLength`, `maxLength`, `pattern` and legacy `validator`;
+- error message source: `errorText` wins over automatic messages;
+- invalid state source: `invalid` and `dataInvalid` win over automatic invalid state.
+
+### Using the same model in selects and checkboxes
+
+```html
+<li-select
+  [dataSource]="departments"
+  labelKey="label"
+  valueKey="id"
+  [liRules]="[LiRule.required()]"
+  [(ngModel)]="person.departmentId">
+</li-select>
+
+<li-multi-select
+  [dataSource]="skills"
+  labelKey="label"
+  valueKey="id"
+  [liRules]="[
+    LiRule.custom(validateAtLeastTwoSkills, code: 'skills')
+  ]"
+  [(ngModel)]="person.skillIds">
+</li-multi-select>
+
+<li-checkbox
+  label="Aceito os termos"
+  [liRules]="[
+    LiRule.requiredTrue('Voce precisa aceitar os termos.')
+  ]"
+  [(ngModel)]="person.acceptTerms">
+</li-checkbox>
+```
+
+### Pairing field validation with `liForm`
+
+`liForm` remains the container-level API for submit flows, especially when you want to mark everything as touched and focus the first invalid field.
+
+```html
+<div liForm #personForm="liForm">
+  <li-input liType="cpf" [(ngModel)]="person.cpf"></li-input>
+  <li-select [liRules]="[LiRule.required()]" [(ngModel)]="person.departmentId"></li-select>
+
+  <button type="button" (click)="save(personForm)">Salvar</button>
+</div>
+```
+
+```dart
+Future<void> save(LiFormDirective form) async {
+  final isValid = await form.validateAndFocusFirstInvalid();
+  if (!isValid) {
+    return;
+  }
+
+  // submit
+}
+```
+
+This is the recommended path for robust forms because it keeps field validation local to each component and submit orchestration local to the form container.
+
+When the page mixes native inputs, projected buttons, and composite components, pair `liForm` with `liFormField` so focus order stays explicit where needed and still falls back to DOM order when `[liFormFieldOrder]` is omitted.
+
+```html
+<form liForm #personForm="liForm">
+  <div liFormField="departmentId" [liFormFieldOrder]="10">
+    <li-select
+      [dataSource]="departments"
+      labelKey="label"
+      valueKey="id"
+      [liRules]="[LiRule.required()]"
+      [(ngModel)]="person.departmentId">
+    </li-select>
+  </div>
+
+  <div liFormField="reviewerIds">
+    <li-datatable-select
+      [settings]="reviewerSettings"
+      [dataTableFilter]="reviewerFilter"
+      [data]="reviewerData"
+      [searchInFields]="reviewerSearchFields"
+      [multiple]="true"
+      [(ngModel)]="person.reviewerIds">
+    </li-datatable-select>
+  </div>
+</form>
+```
+
+Practical notes:
+
+- use `[liFormFieldOrder]` only when the desired focus order differs from the rendered DOM;
+- when a composite field should focus a nested trigger instead of the outer host, mark that element with `data-li-form-focus-target="true"`;
+- if no explicit order is provided, `liForm` now falls back to the page order.
+
 ## Generic vs `essential_core`-backed components
 
 Use these groups as the practical adoption boundary:
@@ -493,13 +741,34 @@ Main flow:
 Most relevant inputs and features:
 
 - `labelKey` and `valueKey` to separate the visible label from the persisted value;
+- `multiple` to switch the value model to `List<dynamic>` and reuse datatable checkbox selection inside the modal;
 - `itemLabelBuilder` and `itemValueBuilder` when the list is typed and the host does not want to rely on `Map` keys;
 - `compareWith` when the selected value is an object or when rows may be recreated by new backend responses;
 - `searchInFields` for the search selector inside the modal;
+- `showClearButton`, `clearButtonLabel`, `triggerIconMode`, and `triggerIconClass` for trigger and multi-selection UX tuning;
 - projected `template liDatatableSelectModalContent` for replacing the internal modal body with arbitrary content;
-- modal context helpers `ctx.select(item)` and `ctx.selectItem(label, value)`;
+- modal context helpers `ctx.select(item)`, `ctx.selectItem(label, value)`, `ctx.clear()`, `ctx.apply()`, and `ctx.close()`;
 - `modalSize`, `title`, `placeholder`, `disabled`, and `fullScreenOnMobile`;
 - public methods such as `clear()`, `setSelectedItem(...)`, and `selectedLabel`.
+
+In multiple mode, the component keeps the modal open while the user marks rows, mirrors the current page selection through the datatable checkboxes, and commits the pending selection when the modal is confirmed or closed.
+
+```html
+<li-datatable-select
+  [settings]="personSettings"
+  [dataTableFilter]="personFilter"
+  [data]="personFrame"
+  [searchInFields]="personSearchFields"
+  labelKey="name"
+  valueKey="id"
+  [multiple]="true"
+  triggerIconMode="addon"
+  triggerIconClass="ph ph-users-three"
+  clearButtonLabel="Limpar modal"
+  [(ngModel)]="selectedPeopleIds"
+  (dataRequest)="loadPeople($event)">
+</li-datatable-select>
+```
 
 ```html
 <li-datatable-select
@@ -766,6 +1035,9 @@ Main features:
 - `canSelectNode` to enforce per-item selection rules
 - `template[liTreeviewSelectNode]` and `template[liTreeviewSelectTrigger]` for custom rendering
 - `closeOnSelect`, `showClearButton`, `searchable`, and `openOnFocus`
+- `showPanelActions` to toggle the footer action bar with confirm, clear, and expand-or-collapse-all actions
+- `expandTogglePlacement` to move the expand/collapse-all toggle between the footer, the search row, or hide it
+- `expandAllButtonLabel`, `collapseAllButtonLabel`, and `confirmButtonLabel` to localize the action labels
 
 ```html
 <li-treeview-select
@@ -797,6 +1069,7 @@ Best practices:
 - use `[pageLoader]` for large catalogs or deep hierarchies
 - keep remote search on the backend through `request.searchTerm`
 - use `canSelectNode` for rules such as leaf-only selection
+- use `showPanelActions="false"` plus `expandTogglePlacement="search"` when the footer would be redundant and the user still needs a fast expand/collapse control
 
 References:
 
@@ -946,6 +1219,8 @@ This pattern is useful for expensive content such as datatables, large forms, or
 ### Toast
 
 `li-toast` covers the inline declarative case. It renders the toast markup, exposes `show()`, `hide()`, and `isOpen`, and supports `header`, `body`, `helperText`, `badgeText`, `iconClass`, `autohide`, `delay`, `dismissible`, `pauseOnHover`, and `rounded`.
+
+When `toastClass` or `headerClass` uses light text such as `text-white`, the component now adapts the header chrome automatically so the badge, helper text, and close button remain legible without extra host CSS.
 
 ```html
 <li-toast
@@ -1146,9 +1421,9 @@ dart pub publish --dry-run
 
 ## Demo application
 
-The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, datatable, datatable select, dropdown, fab, file upload, inputs, modal, nav, offcanvas, page header, pagination, popover, rating, scrollspy, select, multi-select, tabs, toast, treeview, typeahead, tooltip, wizard, and selection-control examples.
+The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, datatable, datatable select, dropdown, fab, file upload, inputs, modal, nav, offcanvas, page header, pagination, person registration, popover, rating, scrollspy, select, multi-select, tabs, toast, treeview, typeahead, tooltip, wizard, and selection-control examples.
 
-Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, and overlay components that depend on browser geometry.
+Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, overlay components that depend on browser geometry, and the new `person-registration` route that demonstrates an end-to-end form with declarative frontend rules plus fake backend validation.
 
 ## Release checklist
 

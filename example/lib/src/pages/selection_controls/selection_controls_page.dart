@@ -55,6 +55,28 @@ class SelectionControlsPageComponent {
     [(ngModel)]="escalationToggleEnabled">
 </li-toggle>''';
 
+  static const String validationSnippet = '''
+<li-checkbox
+    label="Aceito os termos"
+    [required]="true"
+    [liMessages]="{
+      'requiredTrue': 'Confirme o aceite.'
+    }"
+    liValidationMode="submitted"
+    [(ngModel)]="acceptedTerms">
+</li-checkbox>
+
+<li-radio-group
+    [legend]="radioFormLegend"
+    [value]="approvalMode"
+    [liRules]="[LiRule.required()]"
+    [liMessages]="{
+      'required': 'Selecione um modo de aprovação.'
+    }"
+    liValidationMode="submitted">
+  ...
+</li-radio-group>''';
+
   bool auditTrailEnabled = true;
   bool publicPortalEnabled = false;
   bool reviewQueueEnabled = true;

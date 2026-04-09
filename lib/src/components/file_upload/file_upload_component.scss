@@ -16,6 +16,16 @@
   transform: translateY(-1px);
 }
 
+.li-file-upload__dropzone.is-invalid {
+  border-color: var(--danger);
+  background: rgba(var(--danger-rgb), 0.05);
+}
+
+.li-file-upload__dropzone.is-valid {
+  border-color: var(--success);
+  background: rgba(var(--success-rgb), 0.05);
+}
+
 .li-file-upload__dropzone.is-disabled {
   opacity: 0.6;
 }
@@ -36,6 +46,16 @@
   font-size: 1.5rem;
   background: rgba(var(--primary-rgb), 0.12);
   color: var(--primary);
+}
+
+.li-file-upload__dropzone.is-invalid .li-file-upload__icon {
+  background: rgba(var(--danger-rgb), 0.12);
+  color: var(--danger);
+}
+
+.li-file-upload__dropzone.is-valid .li-file-upload__icon {
+  background: rgba(var(--success-rgb), 0.12);
+  color: var(--success);
 }
 
 .li-file-upload__title {

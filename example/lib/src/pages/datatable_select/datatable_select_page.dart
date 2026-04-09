@@ -63,6 +63,21 @@ class DatatableSelectPageComponent implements OnInit {
   (dataRequest)="onDataRequest(\$event)">
 </li-datatable-select>''';
 
+  static const String multipleApiSnippet = '''
+<li-datatable-select
+  [settings]="dtSettings"
+  [dataTableFilter]="filtro"
+  [data]="items"
+  [searchInFields]="sInFields"
+  [labelKey]="'name'"
+  [valueKey]="'id'"
+  [multiple]="true"
+  [clearButtonLabel]="'Limpar'"
+  [triggerIconMode]="'addon'"
+  [triggerIconClass]="'ph ph-users-three'"
+  [(ngModel)]="selectedValues">
+</li-datatable-select>''';
+
   static const String builderApiSnippet = '''
 <li-datatable-select
   [settings]="dtSettings"
@@ -92,6 +107,7 @@ class DatatableSelectPageComponent implements OnInit {
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+  bool get isPt => i18n.isPortuguese;
 
   final List<int> limitPerPageOptions = <int>[5, 10, 12, 20, 25];
 
@@ -118,8 +134,38 @@ class DatatableSelectPageComponent implements OnInit {
     emailTitle: 'Email',
     departmentTitle: 'Department',
   );
+  late final DatatableSettings _typedBuilderSettingsPt = _buildTypedBuilderSettings(
+    idTitle: 'ID',
+    nameTitle: 'Nome',
+    emailTitle: 'E-mail',
+    departmentTitle: 'Departamento',
+  );
+  late final DatatableSettings _typedBuilderSettingsEn = _buildTypedBuilderSettings(
+    idTitle: 'ID',
+    nameTitle: 'Name',
+    emailTitle: 'Email',
+    departmentTitle: 'Department',
+  );
   DataFrame<Map<String, dynamic>> basicData = DataFrame<Map<String, dynamic>>(
       items: <Map<String, dynamic>>[], totalRecords: 0);
+  final Filters multipleFilter = Filters(limit: 5, offset: 0);
+  DataFrame<Map<String, dynamic>> multipleData =
+      DataFrame<Map<String, dynamic>>(
+          items: <Map<String, dynamic>>[], totalRecords: 0);
+  List<dynamic> multipleSelectedIds = <dynamic>[];
+  final Filters typedBuilderFilter = Filters(limit: 5, offset: 0);
+  late final DataFrame<TypedPersonRecord> _typedBuilderDataPt =
+      _buildTypedBuilderData(
+    departmentEngineering: 'Engenharia',
+    departmentDesign: 'Design',
+    departmentMarketing: 'Marketing',
+  );
+  late final DataFrame<TypedPersonRecord> _typedBuilderDataEn =
+      _buildTypedBuilderData(
+    departmentEngineering: 'Engineering',
+    departmentDesign: 'Design',
+    departmentMarketing: 'Marketing',
+  );
   late final List<DatatableSearchField> _basicSearchFieldsPt =
       _buildSearchFields(
     nameLabel: 'Nome',
@@ -136,14 +182,27 @@ class DatatableSelectPageComponent implements OnInit {
   DatatableSettings get basicSettings =>
       i18n.isPortuguese ? _basicSettingsPt : _basicSettingsEn;
 
+    DatatableSettings get typedBuilderSettings =>
+      i18n.isPortuguese ? _typedBuilderSettingsPt : _typedBuilderSettingsEn;
+
   List<DatatableSearchField> get basicSearchFields =>
       i18n.isPortuguese ? _basicSearchFieldsPt : _basicSearchFieldsEn;
 
+  DataFrame<TypedPersonRecord> get typedBuilderData =>
+      i18n.isPortuguese ? _typedBuilderDataPt : _typedBuilderDataEn;
+
   String? selectedPersonId;
   String selectedPersonLabel = '';
+  dynamic selectedTypedPerson = const SelectedPersonRef(2);
 
   @ViewChild('basicSelect')
   LiDatatableSelectComponent? basicSelect;
+
+  @ViewChild('multipleSelect')
+  LiDatatableSelectComponent? multipleSelect;
+
+  @ViewChild('typedBuilderSelect')
+  LiDatatableSelectComponent? typedBuilderSelect;
 
   // ---------------------------------------------------------------------------
   // Disabled example
@@ -189,6 +248,11 @@ class DatatableSelectPageComponent implements OnInit {
     ngModelData = await _demoService.query(ngModelFilter);
   }
 
+  Future<void> onMultipleDataRequest(Filters filters) async {
+    multipleFilter.fillFromFilters(filters);
+    multipleData = await _demoService.query(multipleFilter);
+  }
+
   Future<void> onCustomTemplateDataRequest(Filters filters) async {
     customTemplateFilter.fillFromFilters(filters);
     customTemplateData = await _demoService.query(customTemplateFilter);
@@ -227,8 +291,90 @@ class DatatableSelectPageComponent implements OnInit {
     basicData = await _demoService.query(filters);
     // Also load the same data into the ngModel example.
     ngModelData = await _demoService.query(ngModelFilter);
+    multipleData = await _demoService.query(multipleFilter);
     customTemplateData = await _demoService.query(customTemplateFilter);
   }
+
+  String personLabel(dynamic instance) => (instance as TypedPersonRecord).name;
+
+  dynamic personValue(dynamic instance) =>
+      SelectedPersonRef((instance as TypedPersonRecord).id);
+
+  bool compareById(dynamic itemValue, dynamic selectedValue) {
+    return itemValue is SelectedPersonRef &&
+        selectedValue is SelectedPersonRef &&
+        itemValue.id == selectedValue.id;
+  }
+
+  String get multipleSelectedValueText => multipleSelectedIds.isEmpty
+      ? t.common.none
+      : multipleSelectedIds.join(', ');
+
+  String get multipleSelectedLabelText {
+    final labels = multipleSelect?.selectedLabels ?? const <String>[];
+    return labels.isEmpty ? t.common.none : labels.join(', ');
+  }
+
+  String get selectedTypedPersonValueText {
+    final value = selectedTypedPerson;
+    if (value is SelectedPersonRef) {
+      return value.id.toString();
+    }
+    return t.common.none;
+  }
+
+  String get selectedTypedPersonLabelText {
+    final label = typedBuilderSelect?.selectedLabel ?? '';
+    return label.isEmpty ? t.common.none : label;
+  }
+
+  String get multipleSelectIntro => i18n.isPortuguese
+      ? 'A seleção múltipla reutiliza os checkboxes do datatable e confirma a escolha quando o usuário fecha o modal, sem exigir um passo extra de confirmação.'
+      : 'Multiple selection reuses the datatable checkboxes and commits the choice when the user closes the modal, without requiring an extra confirmation step.';
+
+  String get multipleSelectLabel => i18n.isPortuguese
+      ? 'Selecionar responsáveis da frente'
+      : 'Select squad owners';
+
+  String get multipleSelectModalTitle =>
+      i18n.isPortuguese ? 'Selecionar responsáveis' : 'Select owners';
+
+  String get multipleSelectPlaceholder => i18n.isPortuguese
+      ? 'Escolha uma ou mais pessoas'
+      : 'Choose one or more people';
+
+  String get multipleSelectClearButtonLabel =>
+      i18n.isPortuguese ? 'Limpar modal' : 'Clear modal';
+
+  String get builderDemoIntro => i18n.isPortuguese
+      ? 'Quando o modal trabalha com linhas tipadas, os builders mantêm o modelo forte e o compareWith preserva o rótulo sincronizado mesmo com novas instâncias. Para a tabela interna renderizar colunas por chave, a linha tipada expõe toMap().' 
+      : 'When the modal works with typed rows, the builders keep the model strongly typed and compareWith preserves the synchronized label even with fresh instances. For the internal table to render key-based columns, the typed row exposes toMap().';
+
+  String get builderDemoLabel => i18n.isPortuguese
+      ? 'Lista tipada com builders'
+      : 'Typed list with builders';
+
+  String get builderDemoModalTitle =>
+      i18n.isPortuguese ? 'Selecionar pessoa tipada' : 'Select typed person';
+
+  String get builderDemoPlaceholder =>
+      i18n.isPortuguese ? 'Abra a lista tipada' : 'Open the typed list';
+
+  String get multipleOptionText => i18n.isPortuguese
+      ? '[multiple] muda o modelo para List<dynamic>, usa os checkboxes da tabela e confirma a seleção ao fechar o modal.'
+      : '[multiple] switches the model to List<dynamic>, uses the table checkboxes, and commits the selection when the modal closes.';
+
+  String get triggerIconOptionText => i18n.isPortuguese
+      ? '[triggerIconMode] e [triggerIconClass] ajustam o ícone do trigger sem exigir template customizado.'
+      : '[triggerIconMode] and [triggerIconClass] adjust the trigger icon without requiring a custom template.';
+
+  String get modalActionOptionText => i18n.isPortuguese
+      ? '[showClearButton] e [clearButtonLabel] refinam o fluxo da seleção múltipla sem exigir um botão de confirmação.'
+      : '[showClearButton] and [clearButtonLabel] refine the multiple selection flow without requiring a confirmation button.';
+
+  String get multipleApiTitle => i18n.isPortuguese
+      ? 'Seleção múltipla + ícone do trigger'
+      : 'Multiple selection + trigger icon';
 
   String get customTemplateIntro => i18n.isPortuguese
       ? 'Exemplo mais proximo do SALI: o trigger pode mostrar resumo rico e o modal pode incluir contexto extra sem perder os callbacks de selecao.'
@@ -257,8 +403,8 @@ class DatatableSelectPageComponent implements OnInit {
       ? 'Conteúdo arbitrário no modal'
       : 'Arbitrary modal content';
   String get arbitraryModalBody => i18n.isPortuguese
-      ? 'Além do datatable interno, o modal pode hospedar um componente inteiro de busca. Nesses casos, use `ctx.select(item)` quando o componente emite o objeto completo ou `ctx.selectItem(label, value)` quando você já possui os dois valores.'
-      : 'Besides the built-in datatable, the modal can host a full search component. In those cases, use `ctx.select(item)` when the child emits the full object or `ctx.selectItem(label, value)` when you already have both values.';
+      ? 'Além do datatable interno, o modal pode hospedar um componente inteiro de busca. Nesses casos, use `ctx.select(item)` quando o componente emite o objeto completo, `ctx.selectItem(label, value)` quando você já possui os dois valores e recorra a `ctx.clear()`, `ctx.apply()` ou `ctx.close()` para controlar o fluxo do modal.'
+      : 'Besides the built-in datatable, the modal can host a full search component. In those cases, use `ctx.select(item)` when the child emits the full object, `ctx.selectItem(label, value)` when you already have both values, and rely on `ctx.clear()`, `ctx.apply()`, or `ctx.close()` to control the modal flow.';
 
   static DatatableSettings _buildBasicSettings({
     required String idTitle,
@@ -322,6 +468,72 @@ class DatatableSelectPageComponent implements OnInit {
         operator: 'like',
       ),
     ];
+  }
+
+  static DataFrame<TypedPersonRecord> _buildTypedBuilderData({
+    required String departmentEngineering,
+    required String departmentDesign,
+    required String departmentMarketing,
+  }) {
+    return DataFrame<TypedPersonRecord>(
+      items: <TypedPersonRecord>[
+        TypedPersonRecord(
+          id: 1,
+          name: 'Ana Souza',
+          email: 'ana@example.com',
+          department: departmentEngineering,
+        ),
+        TypedPersonRecord(
+          id: 2,
+          name: 'Maria Silva',
+          email: 'maria@example.com',
+          department: departmentDesign,
+        ),
+        TypedPersonRecord(
+          id: 3,
+          name: 'Pedro Santos',
+          email: 'pedro@example.com',
+          department: departmentMarketing,
+        ),
+      ],
+      totalRecords: 3,
+    );
+  }
+
+  static DatatableSettings _buildTypedBuilderSettings({
+    required String idTitle,
+    required String nameTitle,
+    required String emailTitle,
+    required String departmentTitle,
+  }) {
+    return DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(
+          key: 'id',
+          title: idTitle,
+          customRenderString: (_, dynamic instance) =>
+              '${(instance as TypedPersonRecord).id}',
+        ),
+        DatatableCol(
+          key: 'name',
+          title: nameTitle,
+          customRenderString: (_, dynamic instance) =>
+              (instance as TypedPersonRecord).name,
+        ),
+        DatatableCol(
+          key: 'email',
+          title: emailTitle,
+          customRenderString: (_, dynamic instance) =>
+              (instance as TypedPersonRecord).email,
+        ),
+        DatatableCol(
+          key: 'department',
+          title: departmentTitle,
+          customRenderString: (_, dynamic instance) =>
+              (instance as TypedPersonRecord).department,
+        ),
+      ],
+    );
   }
 
   static List<Map<String, dynamic>> _buildSeedRecords({
@@ -442,4 +654,33 @@ class DatatableSelectPageComponent implements OnInit {
       },
     ];
   }
+}
+
+class TypedPersonRecord {
+  const TypedPersonRecord({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.department,
+  });
+
+  final int id;
+  final String name;
+  final String email;
+  final String department;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'name': name,
+      'email': email,
+      'department': department,
+    };
+  }
+}
+
+class SelectedPersonRef {
+  const SelectedPersonRef(this.id);
+
+  final int id;
 }

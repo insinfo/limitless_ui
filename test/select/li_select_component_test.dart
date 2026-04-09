@@ -1,6 +1,6 @@
 // Run this browser test from the package root with:
 // dart run build_runner test -- -p chrome -j 1 test/select/li_select_component_test.dart
-// ignore_for_file: uri_has_not_been_generated
+// ignore_for_file: uri_has_not_been_generated, undefined_prefixed_name
 
 @TestOn('browser')
 library;
@@ -82,6 +82,42 @@ class SelectCompareTestHostComponent {
   }
 }
 
+@Component(
+  selector: 'li-select-validation-test-host',
+  template: '''
+    <div id="validation-select-field">
+      <li-select
+          [dataSource]="statusOptions"
+          labelKey="label"
+          valueKey="id"
+          [showClearButton]="true"
+          [liRules]="requiredRules"
+          [liMessages]="validationMessages"
+          liValidationMode="dirty"
+          [(ngModel)]="selectedStatus">
+      </li-select>
+    </div>
+  ''',
+  directives: [coreDirectives, formDirectives, LiSelectComponent],
+)
+class SelectValidationTestHostComponent {
+  String? selectedStatus = 'review';
+
+  final List<LiRule> requiredRules = const <LiRule>[
+    LiRule.required(),
+  ];
+
+  final Map<String, String> validationMessages = const <String, String>{
+    'required': 'Escolha um status.',
+  };
+
+  final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
+    <String, dynamic>{'id': 'review', 'label': 'Em revisao'},
+    <String, dynamic>{'id': 'approved', 'label': 'Aprovado'},
+  ];
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
@@ -93,6 +129,9 @@ void main() {
   );
   final compareTestBed = NgTestBed<SelectCompareTestHostComponent>(
     ng.SelectCompareTestHostComponentNgFactory,
+  );
+  final validationTestBed = NgTestBed<SelectValidationTestHostComponent>(
+    ng.SelectValidationTestHostComponentNgFactory,
   );
 
   test('selects enabled options and updates ngModel', () async {
@@ -201,6 +240,43 @@ void main() {
 
     expect(trigger.text, contains('Categoria B'));
   });
+
+  test('applies declarative validation rules and messages', () async {
+    final fixture = await validationTestBed.create();
+    await _settleValidation(fixture);
+    final host = fixture.assertOnlyInstance;
+    final field = fixture.rootElement.querySelector('#validation-select-field')!;
+    final trigger =
+        field.querySelector('.dropdown-button') as html.ButtonElement;
+    final clearButton = field.querySelector('.dropdown-clear') as html.Element;
+
+    await fixture.update((_) {
+      clearButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleValidation(fixture);
+
+    expect(host.selectedStatus, isNull);
+    expect(trigger.classes.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.text, contains('Escolha um status.'));
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleValidation(fixture);
+
+    final option = html.document
+        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .cast<html.Element>()
+        .firstWhere((element) => (element.text ?? '').contains('Aprovado'));
+
+    await fixture.update((_) {
+      option.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleValidation(fixture);
+
+    expect(host.selectedStatus, 'approved');
+    expect(trigger.classes.contains('is-invalid'), isFalse);
+  });
 }
 
 Future<void> _settle(NgTestFixture<SelectTestHostComponent> fixture) async {
@@ -210,6 +286,12 @@ Future<void> _settle(NgTestFixture<SelectTestHostComponent> fixture) async {
 
 Future<void> _settleCompare(
     NgTestFixture<SelectCompareTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleValidation(
+    NgTestFixture<SelectValidationTestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});
 }

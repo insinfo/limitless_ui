@@ -10,8 +10,8 @@
     </span>
 
     <div *ngIf="!multiline && usesOverlayPasswordToggle" class="li-input__field-shell li-input__field-shell--group">
-      <input #inputElement [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
-        [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+      <input #inputElement [attr.data-li-form-focus-target]="'true'" [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
+        [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="effectiveRequired"
         [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
         [attr.inputmode]="resolvedInputMode" [attr.enterkeyhint]="resolvedEnterKeyHint"
         [attr.autocorrect]="resolvedAutocorrect" [attr.autocapitalize]="resolvedAutocapitalize"
@@ -30,8 +30,8 @@
       </button>
     </div>
 
-    <input *ngIf="!multiline && !usesOverlayPasswordToggle" #inputElement [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
-      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+    <input *ngIf="!multiline && !usesOverlayPasswordToggle" #inputElement [attr.data-li-form-focus-target]="'true'" [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
+      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="effectiveRequired"
       [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
       [attr.inputmode]="resolvedInputMode" [attr.enterkeyhint]="resolvedEnterKeyHint"
       [attr.autocorrect]="resolvedAutocorrect" [attr.autocapitalize]="resolvedAutocapitalize"
@@ -43,8 +43,8 @@
       (input)="handleInput(inputElement.value ?? '')" (blur)="handleBlur($event)"
       (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)">
 
-    <textarea *ngIf="multiline" #inputElement [id]="resolvedId" [class]="resolvedInputClass" [rows]="resolvedRows"
-      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+    <textarea *ngIf="multiline" #inputElement [attr.data-li-form-focus-target]="'true'" [id]="resolvedId" [class]="resolvedInputClass" [rows]="resolvedRows"
+      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="effectiveRequired"
       [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
       [attr.enterkeyhint]="resolvedEnterKeyHint" [attr.autocorrect]="resolvedAutocorrect"
       [attr.autocapitalize]="resolvedAutocapitalize" [attr.spellcheck]="resolvedSpellcheck"
@@ -67,8 +67,8 @@
 
   <div *ngIf="usesFloatingLabel" class="form-floating li-input__floating-shell"
     [class.li-input__floating-shell--toggle]="usesOverlayPasswordToggle">
-    <input *ngIf="!multiline" #inputElement [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
-      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+    <input *ngIf="!multiline" #inputElement [attr.data-li-form-focus-target]="'true'" [id]="resolvedId" [type]="resolvedType" [class]="resolvedInputClass"
+      [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="effectiveRequired"
       [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
       [attr.inputmode]="resolvedInputMode" [attr.enterkeyhint]="resolvedEnterKeyHint"
       [attr.autocorrect]="resolvedAutocorrect" [attr.autocapitalize]="resolvedAutocapitalize"
@@ -87,9 +87,9 @@
       <i [class]="passwordToggleIconClass"></i>
     </button>
 
-    <textarea *ngIf="multiline" #inputElement [id]="resolvedId" [class]="resolvedInputClass"
+    <textarea *ngIf="multiline" #inputElement [attr.data-li-form-focus-target]="'true'" [id]="resolvedId" [class]="resolvedInputClass"
       [class.li-input__textarea-floating]="true"
-      [rows]="resolvedRows" [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="required"
+      [rows]="resolvedRows" [value]="currentValue" [disabled]="disabled" [readOnly]="readonly" [required]="effectiveRequired"
       [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
       [attr.enterkeyhint]="resolvedEnterKeyHint" [attr.autocorrect]="resolvedAutocorrect"
       [attr.autocapitalize]="resolvedAutocapitalize" [attr.spellcheck]="resolvedSpellcheck"
@@ -104,9 +104,9 @@
 
   <div *ngIf="!hasAddons && !usesFloatingLabel && !multiline"
     [class.li-input__field-shell]="usesOverlayPasswordToggle">
-    <input #inputElement [id]="resolvedId" [type]="resolvedType"
+    <input #inputElement [attr.data-li-form-focus-target]="'true'" [id]="resolvedId" [type]="resolvedType"
       [class]="resolvedInputClass" [value]="currentValue" [disabled]="disabled" [readOnly]="readonly"
-      [required]="required" [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel"
+      [required]="effectiveRequired" [attr.name]="resolvedName" [attr.aria-label]="resolvedAriaLabel"
       [attr.autocomplete]="resolvedAutocomplete" [attr.enterkeyhint]="resolvedEnterKeyHint"
       [attr.autocorrect]="resolvedAutocorrect" [attr.autocapitalize]="resolvedAutocapitalize"
       [attr.spellcheck]="resolvedSpellcheck" [attr.data-lpignore]="resolvedDataLpignore"
@@ -126,9 +126,9 @@
     </button>
   </div>
 
-  <textarea *ngIf="!hasAddons && !usesFloatingLabel && multiline" #inputElement [id]="resolvedId"
+  <textarea *ngIf="!hasAddons && !usesFloatingLabel && multiline" #inputElement [attr.data-li-form-focus-target]="'true'" [id]="resolvedId"
     [class]="resolvedInputClass" [rows]="resolvedRows" [value]="currentValue" [disabled]="disabled"
-    [readOnly]="readonly" [required]="required" [attr.name]="resolvedName"
+    [readOnly]="readonly" [required]="effectiveRequired" [attr.name]="resolvedName"
     [attr.aria-label]="resolvedAriaLabel" [attr.autocomplete]="resolvedAutocomplete"
     [attr.enterkeyhint]="resolvedEnterKeyHint" [attr.autocorrect]="resolvedAutocorrect"
     [attr.autocapitalize]="resolvedAutocapitalize" [attr.spellcheck]="resolvedSpellcheck"
@@ -139,7 +139,7 @@
     (focus)="handleFocus($event)" (click)="handleClick($event)" (keydown)="handleKeydown($event)"></textarea>
 
   <div *ngIf="showInvalidFeedback" [class]="resolvedInvalidFeedbackClass">
-    {{ invalidFeedbackText }}
+    {{ resolvedInvalidFeedbackText }}
   </div>
 
   <div *ngIf="showValidFeedback" [class]="resolvedValidFeedbackClass">

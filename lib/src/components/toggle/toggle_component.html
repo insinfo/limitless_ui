@@ -1,6 +1,7 @@
 <label [class]="resolvedContainerClass">
   <input
       #inputElement
+      [attr.data-li-form-focus-target]="'true'"
       type="checkbox"
       [id]="resolvedId"
       [attr.name]="resolvedName"

@@ -20,6 +20,106 @@ Este não é um setup de demonstração simples. O objetivo é uma estrutura que
 
 Observação importante de terminologia: em servidores Dart, "multithread" normalmente significa **multi-isolate**. Isolates Dart não compartilham memória da mesma forma que threads nativas do sistema operacional. Esse é o modelo mental correto para backend escalável em Dart.
 
+## Validação declarativa de formulários no `limitless_ui`
+
+Para formulários AngularDart com `limitless_ui`, a direção recomendada agora é concentrar as validações simples e repetitivas no próprio componente, em vez de espalhar `invalid`, `errorText`, `class.is-invalid` e helpers manuais por toda a página.
+
+Os blocos principais dessa API são:
+
+- `liType`: preset de alto nível para `li-input`, útil para casos comuns como `cpf`, `email`, `phone` e `requiredText`.
+- `liRules`: regras declarativas compostas por `LiRule.required()`, `LiRule.minLength(...)`, `LiRule.cpf()`, `LiRule.custom(...)` e outras.
+- `liMessages`: sobrescrita por código de regra, como `required`, `cpf`, `requiredTrue` e `minLength`.
+- `liValidationMode`: controla quando o erro aparece, com modos como `dirty`, `touchedOrDirty`, `submitted`, `submittedOrTouched` e `submittedOrTouchedOrDirty`. O padrão do pacote é `submittedOrTouchedOrDirty`.
+
+Exemplo com `li-input`:
+
+```html
+<li-input
+    label="CPF"
+    liType="cpf"
+    [liMessages]="{
+      'required': 'Informe o CPF.',
+      'cpf': 'Digite um CPF valido.'
+    }"
+    liValidationMode="submitted"
+    [(ngModel)]="person.cpf">
+</li-input>
+```
+
+Exemplo com selects e seleção múltipla:
+
+```html
+<li-select
+    [dataSource]="departments"
+    labelKey="label"
+    valueKey="id"
+    [liRules]="[LiRule.required()]"
+    [liMessages]="{'required': 'Escolha um departamento.'}"
+    liValidationMode="submitted"
+    [(ngModel)]="person.departmentId">
+</li-select>
+
+<li-multi-select
+    [dataSource]="channels"
+    labelKey="label"
+    valueKey="id"
+    [liRules]="[
+      LiRule.custom((value) =>
+        value is Iterable && value.length >= 2
+          ? null
+          : 'Selecione ao menos 2 canais.')
+    ]"
+    liValidationMode="submitted"
+    [(ngModel)]="person.channelIds">
+</li-multi-select>
+```
+
+Exemplo com checkbox e rádio:
+
+```html
+<li-checkbox
+    label="Aceito os termos"
+    [required]="true"
+    [liMessages]="{'requiredTrue': 'Confirme o aceite.'}"
+    liValidationMode="submitted"
+    [(ngModel)]="acceptedTerms">
+</li-checkbox>
+
+<li-radio-group
+    [legend]="approvalLegend"
+    [value]="approvalMode"
+    [liRules]="[LiRule.required()]"
+    [liMessages]="{'required': 'Selecione um modo de aprovação.'}"
+    liValidationMode="submitted">
+  ...
+</li-radio-group>
+```
+
+Essa mesma base também vale para `li-date-picker`, `li-time-picker` e `li-file-upload`, com a vantagem de manter a precedência antiga:
+
+- `invalid`, `dataInvalid` e `errorText` externos continuam tendo prioridade;
+- `required`, `minLength`, `maxLength`, `pattern` e `validator` legado ainda funcionam onde já existiam;
+- regras declarativas entram para reduzir verbosidade e centralizar mensagens.
+
+Quando o formulário é maior, combine os campos com `liForm`:
+
+```html
+<form liForm #ui="liForm">
+  <li-input liType="cpf" [(ngModel)]="person.cpf"></li-input>
+  <li-select [liRules]="[LiRule.required()]" [(ngModel)]="person.departmentId"></li-select>
+</form>
+```
+
+```dart
+final isValid = await ui.validateAndFocusFirstInvalid();
+```
+
+Esse fluxo é o ponto de equilíbrio recomendado no projeto:
+
+- regras universais ficam nos componentes;
+- regras contextuais continuam na página ou no serviço;
+- erros de backend ainda podem sobrescrever a mensagem final do campo.
+
 ## 1. O que você está construindo
 
 O sistema alvo tem três pacotes:

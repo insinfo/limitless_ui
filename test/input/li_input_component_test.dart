@@ -79,6 +79,31 @@ import 'li_input_component_test.template.dart' as ng;
       [minLength]="8"
       [(ngModel)]="password">
     </li-input>
+
+    <li-input
+        id="protocol-input"
+        label="Protocol"
+        [maskFormatter]="formatProtocol"
+        [validator]="validateProtocol"
+        [(ngModel)]="protocol">
+    </li-input>
+
+    <li-input
+      id="validation-cpf-input"
+      label="CPF validation"
+      liType="cpf"
+      [liMessages]="cpfValidationMessages"
+      liValidationMode="dirty"
+      [(ngModel)]="validatedCpf">
+    </li-input>
+
+    <li-input
+      id="default-validation-cpf-input"
+      label="CPF default validation"
+      liType="cpf"
+      [liMessages]="cpfValidationMessages"
+      [(ngModel)]="defaultValidatedCpf">
+    </li-input>
   ''',
   directives: [coreDirectives, formDirectives, LiInputComponent],
 )
@@ -88,11 +113,19 @@ class InputTestHostComponent {
   String cpf = '';
   String quantity = '1';
   String password = 'Secret@123';
+  String protocol = '';
+  String validatedCpf = '';
+  String defaultValidatedCpf = '';
   int blurCount = 0;
   int focusCount = 0;
   int clickCount = 0;
   int keydownCount = 0;
   int enterCount = 0;
+
+  final Map<String, String> cpfValidationMessages = const <String, String>{
+    'required': 'Informe o CPF.',
+    'cpf': 'CPF invalido customizado',
+  };
 
   void onBlur(dynamic _) => blurCount++;
 
@@ -103,6 +136,26 @@ class InputTestHostComponent {
   void onKeydown(dynamic _) => keydownCount++;
 
   void onEnter(dynamic _) => enterCount++;
+
+  String formatProtocol(String value) {
+    final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.isEmpty) {
+      return '';
+    }
+    if (digits.length <= 3) {
+      return digits;
+    }
+    final limited = digits.substring(0, digits.length > 6 ? 6 : digits.length);
+    return '${limited.substring(0, 3)}-${limited.substring(3)}';
+  }
+
+  String? validateProtocol(String value) {
+    final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.length == 6) {
+      return null;
+    }
+    return 'Protocol must contain 6 digits';
+  }
 }
 
 void main() {
@@ -171,6 +224,94 @@ void main() {
     expect(input.value, '123.456.789-01');
   });
 
+  test('supports a custom mask formatter callback', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input =
+        fixture.rootElement.querySelector('input#protocol-input') as dynamic;
+
+    await fixture.update((_) {
+      input.value = '123456';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.protocol, '123-456');
+    expect(input.value, '123-456');
+  });
+
+  test('supports a custom validator callback', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final input = fixture.rootElement.querySelector('input#protocol-input')
+        as html.InputElement;
+
+    await fixture.update((_) {
+      input.value = '123';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(input.classes.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.text, contains('Protocol must contain 6 digits'));
+
+    await fixture.update((_) {
+      input.value = '123456';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(input.classes.contains('is-invalid'), isFalse);
+  });
+
+  test('applies declarative liType and liMessages validation rules', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement
+        .querySelector('input#validation-cpf-input') as html.InputElement;
+
+    await fixture.update((_) {
+      input.value = '123';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.validatedCpf, '123');
+    expect(input.classes.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.text, contains('CPF invalido customizado'));
+
+    await fixture.update((_) {
+      input.value = '52998224725';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.validatedCpf, '529.982.247-25');
+    expect(input.classes.contains('is-invalid'), isFalse);
+  });
+
+  test('uses submittedOrTouchedOrDirty as the default declarative validation mode', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement
+        .querySelector('input#default-validation-cpf-input') as html.InputElement;
+
+    await fixture.update((_) {
+      input.value = '123';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.defaultValidatedCpf, '123');
+    expect(input.classes.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.text, contains('CPF invalido customizado'));
+  });
+
   test('renders numeric attributes for number inputs', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
@@ -226,17 +367,17 @@ void main() {
   test('delegates host focus to the inner control', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final hostElement =
-        fixture.rootElement.querySelectorAll('li-input').last;
     final input = fixture.rootElement.querySelector('input#password-input')
         as html.InputElement;
+    final hostElement = input.closest('li-input')!;
 
     await fixture.update((_) {
       hostElement.focus();
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement, same(input));
+    final activeElement = html.document.activeElement;
+    expect(activeElement?.id, 'password-input');
   });
 
   test('emits focus, click, blur, keydown and enter outputs', () async {

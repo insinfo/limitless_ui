@@ -1,6 +1,14 @@
+import 'dart:async';
+
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
+
+import '../../directives/li_form_directive.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
 
 @Component(
   selector: 'li-checkbox',
@@ -11,16 +19,28 @@ import 'package:ngforms/ngforms.dart'
   ],
   changeDetection: ChangeDetectionStrategy.onPush,
 )
-class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
-  LiCheckboxComponent(this._changeDetectorRef)
+class LiCheckboxComponent
+    implements ControlValueAccessor<dynamic>, AfterChanges, OnDestroy {
+  LiCheckboxComponent(
+    this._changeDetectorRef, [
+    @Optional() this._formDirective,
+  ])
       : _generatedId = 'li-checkbox-${_nextId++}';
 
   static int _nextId = 0;
 
   final ChangeDetectorRef _changeDetectorRef;
+  final LiFormDirective? _formDirective;
   final String _generatedId;
 
   dynamic _value = false;
+  bool _touched = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
+  StreamSubscription<bool>? _formSubmissionSubscription;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
 
   @Input()
   dynamic trueValue = true;
@@ -48,6 +68,9 @@ class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
 
   @Input()
   String describedBy = '';
+
+  @Input()
+  String locale = 'pt_BR';
 
   @Input()
   String ariaLabel = '';
@@ -85,6 +108,18 @@ class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
   @Input()
   bool required = false;
 
+  @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
+
   ChangeFunction<dynamic> _onChange = (dynamic _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
 
@@ -101,11 +136,25 @@ class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
 
   bool get hasErrorText => errorText.trim().isNotEmpty;
 
-  bool get showErrorFeedback => hasErrorText && effectiveInvalid;
+  String get effectiveErrorText {
+    final externalMessage = errorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
 
-  bool get effectiveInvalid => invalid || dataInvalid;
+    return _autoValidationIssue?.message ?? '';
+  }
 
-  bool get effectiveValid => !effectiveInvalid && valid;
+  bool get showErrorFeedback =>
+      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
+
+  bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
+
+  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+
+  bool get effectiveValid =>
+      !effectiveInvalid && (valid || (_shouldShowValidation && _effectiveRules.isNotEmpty && _autoValidationIssue == null));
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
@@ -143,14 +192,26 @@ class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
   @HostBinding('class.d-block')
   bool get hostClass => true;
 
+  @override
+  void ngAfterChanges() {
+    _rebuildValidationConfig();
+    _markForCheck();
+  }
+
   void handleChange(bool? value) {
+    _dirty = true;
     _value = (value ?? false) ? trueValue : falseValue;
     _onChange(_value, rawValue: _value?.toString() ?? '');
+    if (validateOnInput || _shouldShowValidation || _autoValidationIssue != null) {
+      _runAutoValidation();
+    }
     _markForCheck();
   }
 
   void handleBlur() {
+    _touched = true;
     _onTouched();
+    _runAutoValidation();
   }
 
   @override
@@ -166,6 +227,7 @@ class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
   @override
   void writeValue(dynamic value) {
     _value = value ?? falseValue;
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -173,6 +235,11 @@ class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
   void onDisabledChanged(bool isDisabled) {
     disabled = isDisabled;
     _markForCheck();
+  }
+
+  @override
+  void ngOnDestroy() {
+    _formSubmissionSubscription?.cancel();
   }
 
   String _joinClasses(List<String> values) {
@@ -185,4 +252,47 @@ class LiCheckboxComponent implements ControlValueAccessor<dynamic> {
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
   }
+
+  void _rebuildValidationConfig() {
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription ??=
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _markForCheck();
+    });
+
+    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
+      if (required) const LiRequiredTrueRule(),
+      ...liRules,
+    ]);
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...liMessages,
+    });
+    _runAutoValidation();
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
+      return;
+    }
+
+    _autoValidationIssue = liValidateValue(
+      value: checked,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        fieldName: resolvedName,
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
+  }
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
+      );
 }

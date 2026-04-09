@@ -93,6 +93,10 @@ class LiToastComponent implements OnInit, OnDestroy {
   bool get hasIcon => iconClass.trim().isNotEmpty;
   bool get hasBadge => badgeText.trim().isNotEmpty;
   bool get hasHelperText => helperText.trim().isNotEmpty;
+  bool get usesLightText =>
+      toastClass.contains('text-white') || headerClass.contains('text-white');
+  bool get useSolidHeaderChrome =>
+      headerClass.trim().isEmpty && toastClass.contains('text-white');
 
   String get resolvedToastClasses => _joinClasses(<String>[
         'toast',
@@ -104,6 +108,7 @@ class LiToastComponent implements OnInit, OnDestroy {
 
   String get resolvedHeaderClasses => _joinClasses(<String>[
         'toast-header',
+        useSolidHeaderChrome ? 'bg-black bg-opacity-10 text-white' : '',
         headerClass,
       ]);
 
@@ -115,6 +120,22 @@ class LiToastComponent implements OnInit, OnDestroy {
   String get resolvedIconClasses => _joinClasses(<String>[
         iconClass,
         'me-2',
+      ]);
+
+  String get resolvedBadgeClasses => _joinClasses(<String>[
+        'badge',
+        usesLightText ? 'bg-black bg-opacity-20 text-white' : 'bg-primary text-white',
+        'me-2',
+      ]);
+
+  String get resolvedHelperTextClasses => _joinClasses(<String>[
+        usesLightText ? 'text-white text-opacity-75' : 'text-muted',
+        'me-2',
+      ]);
+
+  String get resolvedCloseButtonClasses => _joinClasses(<String>[
+        'btn-close',
+        usesLightText ? 'btn-close-white' : '',
       ]);
 
   @override

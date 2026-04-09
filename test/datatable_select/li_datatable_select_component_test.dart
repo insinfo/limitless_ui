@@ -22,6 +22,14 @@ class PersonRecord {
   final int id;
   final String name;
   final String email;
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'name': name,
+      'email': email,
+    };
+  }
 }
 
 class SelectedPersonRef {
@@ -58,6 +66,19 @@ class SelectedPersonRef {
         </div>
       </template>
     </li-datatable-select>
+
+    <li-datatable-select
+      #selectMultiple
+      [settings]="settings"
+      [dataTableFilter]="filter"
+      [data]="data"
+      [searchInFields]="searchFields"
+      [itemLabelBuilder]="personLabel"
+      [itemValueBuilder]="personValue"
+      [compareWith]="compareById"
+      [multiple]="true"
+      [(ngModel)]="selectedPeople">
+    </li-datatable-select>
   ''',
   directives: [
     coreDirectives,
@@ -79,8 +100,18 @@ class DatatableSelectTestHostComponent {
 
   DatatableSettings settings = DatatableSettings(
     colsDefinitions: <DatatableCol>[
-      DatatableCol(key: 'name', title: 'Nome'),
-      DatatableCol(key: 'email', title: 'E-mail'),
+      DatatableCol(
+        key: 'name',
+        title: 'Nome',
+        customRenderString: (Map<String, dynamic> _, dynamic row) =>
+            (row as PersonRecord).name,
+      ),
+      DatatableCol(
+        key: 'email',
+        title: 'E-mail',
+        customRenderString: (Map<String, dynamic> _, dynamic row) =>
+            (row as PersonRecord).email,
+      ),
     ],
   );
 
@@ -89,12 +120,16 @@ class DatatableSelectTestHostComponent {
   ];
 
   dynamic selectedPerson = const SelectedPersonRef(2);
+  List<dynamic> selectedPeople = <dynamic>[];
 
   @ViewChild('selectWithBuilders')
   LiDatatableSelectComponent? selectWithBuilders;
 
   @ViewChild('selectWithCustomContent')
   LiDatatableSelectComponent? selectWithCustomContent;
+
+  @ViewChild('selectMultiple')
+  LiDatatableSelectComponent? selectMultiple;
 
   String personLabel(dynamic instance) => (instance as PersonRecord).name;
 
@@ -115,20 +150,46 @@ void main() {
     ng.DatatableSelectTestHostComponentNgFactory,
   );
 
-  test('syncs trigger label from typed rows using builders and compareWith', () async {
+  test('syncs trigger label from typed rows using builders and compareWith',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final triggers = fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final triggers =
+        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
     expect(triggers.first.text, contains('Maria Silva'));
   });
 
-  test('allows arbitrary modal content to set label and value explicitly', () async {
+  test('opens the typed modal with the configured datatable structure',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final triggers =
+        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final typedTrigger = triggers.first as html.ButtonElement;
+
+    await fixture.update((_) {
+      typedTrigger.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    final modalText =
+        html.document.querySelector('.modal.show .modal-content')?.text ?? '';
+
+    expect(modalText, contains('Nome'));
+    expect(modalText, contains('E-mail'));
+    expect(modalText, contains('Mostrando de 0 a 2 de 2'));
+  });
+
+  test('allows arbitrary modal content to set label and value explicitly',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final triggers = fixture.rootElement.querySelectorAll('.datatable-select-trigger');
-    final customTrigger = triggers.last as html.ButtonElement;
+    final triggers =
+        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final customTrigger = triggers[1] as html.ButtonElement;
 
     await fixture.update((_) {
       customTrigger.click();
@@ -148,10 +209,57 @@ void main() {
     expect(host.selectWithCustomContent!.selectedLabel, 'Maria Silva');
     expect(customTrigger.text, contains('Maria Silva'));
   });
+
+  test(
+      'supports multiple selection with datatable checkboxes and commits on modal close',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final triggers =
+        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final multipleTrigger = triggers.last as html.ButtonElement;
+
+    await fixture.update((_) {
+      multipleTrigger.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    expect(host.selectMultiple!.useCheckboxSelection, isTrue);
+
+    await fixture.update((_) {
+      host.selectMultiple!.onDatatableSelectionChange(
+        host.data.items.toList(growable: false),
+      );
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    await fixture.update((_) {
+      host.selectMultiple!.modal?.close();
+    });
+    await _settle(fixture);
+
+    expect(host.selectedPeople, hasLength(2));
+    expect(
+      host.selectedPeople
+          .map((item) => (item as SelectedPersonRef).id)
+          .toList(growable: false),
+      <int>[1, 2],
+    );
+    expect(
+        host.selectMultiple!.selectedLabels,
+        containsAll(<String>[
+          'Ana Souza',
+          'Maria Silva',
+        ]));
+    expect(multipleTrigger.text, contains('Ana Souza'));
+  });
 }
 
 Future<void> _settle(
-    NgTestFixture<DatatableSelectTestHostComponent> fixture) async {
-  await Future<void>.delayed(const Duration(milliseconds: 30));
+  NgTestFixture<DatatableSelectTestHostComponent> fixture, {
+  int milliseconds = 30,
+}) async {
+  await Future<void>.delayed(Duration(milliseconds: milliseconds));
   await fixture.update((_) {});
 }

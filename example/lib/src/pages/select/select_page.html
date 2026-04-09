@@ -98,6 +98,15 @@
                 <h6 class="mb-2 mt-4">modelChange</h6>
                 <p class="text-muted mb-3">Use quando o formulário persiste um identificador, mas a tela também precisa da instância completa para carregar dados dependentes.</p>
                 <li-highlight [code]="modelChangeSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">Validação declarativa</h6>
+                <p class="text-muted mb-3">Para selects, a base declarativa fica em <code>liRules</code>, <code>liMessages</code> e <code>liValidationMode</code>. <code>liType</code> é exclusivo do <code>li-input</code>.</p>
+                <li-highlight [code]="validationSnippet" language="html"></li-highlight>
+                <ul class="mb-0 ps-3 mt-3">
+                  <li><code>LiRule.required()</code> cobre o caso mais comum de seleção obrigatória.</li>
+                  <li><code>liMessages</code> troca o texto do erro sem precisar controlar <code>invalid</code> manualmente.</li>
+                  <li><code>liValidationMode="submitted"</code> combina bem com <code>liForm.validateAndFocusFirstInvalid()</code>.</li>
+                </ul>
               </div>
 
               <div class="col-xl-6">

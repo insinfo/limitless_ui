@@ -1,6 +1,7 @@
 import 'package:ngforms/ngforms.dart';
 
 import 'indexed_name_directive.dart';
+import 'li_form_directive.dart';
 import 'value_accessors/custom_checkbox_control_value_accessor.dart';
 import 'value_accessors/custom_number_value_acessor.dart';
 import 'value_accessors/custom_select_control_value_acessor.dart';
@@ -29,4 +30,6 @@ const List<Type> limitlessFormDirectives = [
   DateValueAccessor,
   DateTimeValueAccessor,
   IndexedNameDirective,
+  LiFormDirective,
+  LiFormFieldDirective,
 ];

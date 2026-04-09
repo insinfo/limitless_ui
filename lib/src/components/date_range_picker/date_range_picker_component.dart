@@ -191,6 +191,16 @@ class LiDateRangePickerComponent
   @Input()
   String describedBy = '';
 
+  /// Supported values: `default`, `overlay`, `addon`, `hidden`.
+  @Input()
+  String triggerIconMode = 'default';
+
+  @Input()
+  String triggerIconClass = '';
+
+  @Input()
+  bool showClearButton = true;
+
   @Output()
   Stream<DateTime?> get inicioChange => _inicioChangeController.stream;
 
@@ -300,9 +310,46 @@ class LiDateRangePickerComponent
 
   String get clearLabel => _isEnglishLocale ? 'Clear' : 'Limpar';
 
+  String get clearAriaLabel => _isEnglishLocale
+      ? 'Clear selected period'
+      : 'Limpar período selecionado';
+
   String get cancelLabel => _isEnglishLocale ? 'Cancel' : 'Cancelar';
 
   String get applyLabel => _isEnglishLocale ? 'Apply' : 'Aplicar';
+
+  bool get hasValue => inicio != null || fim != null;
+
+  String get normalizedTriggerIconMode {
+    switch (triggerIconMode.trim().toLowerCase()) {
+      case 'overlay':
+        return 'overlay';
+      case 'hidden':
+        return 'hidden';
+      case 'addon':
+        return 'addon';
+      default:
+        return 'default';
+    }
+  }
+
+  bool get usesOverlayTriggerIcon => normalizedTriggerIconMode == 'overlay';
+
+  bool get showsTriggerIcon => normalizedTriggerIconMode != 'hidden';
+
+  bool get showsClearButton => showClearButton && hasValue;
+
+  String get resolvedTriggerIconClass {
+    final custom = triggerIconClass.trim();
+    return custom.isNotEmpty ? custom : 'ph ph-calendar-blank';
+  }
+
+  String get resolvedOverlayInputClass => _joinClasses(<String>[
+        resolvedInputClass,
+        'date-range-field--overlay',
+        showsClearButton ? 'date-range-field--overlay-clear' : '',
+        showsTriggerIcon ? 'date-range-field--overlay-trigger' : '',
+      ]);
 
   String get leftHeaderLabel => _headerLabel(leftMonth, leftViewMode);
 
@@ -511,6 +558,16 @@ class LiDateRangePickerComponent
     _markTouched();
     close();
     _markForCheck();
+  }
+
+  void clearFromTrigger(html.MouseEvent event) {
+    event.preventDefault();
+    event.stopPropagation();
+    clear();
+  }
+
+  void onPanelClick(html.Event event) {
+    event.stopPropagation();
   }
 
   void close() {

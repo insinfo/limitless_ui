@@ -8,7 +8,12 @@ import 'package:ngforms/ngforms.dart';
 import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
+import '../../directives/li_form_directive.dart';
 import '../../exceptions/invalid_argument_exception.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
 import 'custom_option.dart';
 
 class CustomSelectItem {
@@ -44,13 +49,19 @@ class CustomSelectItem {
 class LiSelectComponent
     implements
         ControlValueAccessor<dynamic>,
+        AfterChanges,
         OnInit,
         OnDestroy,
         AfterContentInit {
   final html.Element nativeElement;
   final ChangeDetectorRef _changeDetectorRef;
+  final LiFormDirective? _formDirective;
 
-  LiSelectComponent(this.nativeElement, this._changeDetectorRef) {
+  LiSelectComponent(
+    this.nativeElement,
+    this._changeDetectorRef, [
+    @Optional() this._formDirective,
+  ]) {
     final seq = _nextSequence++;
     listboxId = 'li-select-listbox-$seq';
     _idPrefix = 'li-select-opt-$seq';
@@ -65,11 +76,17 @@ class LiSelectComponent
       StreamController<dynamic>();
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<bool>? _formSubmissionSubscription;
   bool _overlayRelayoutPending = false;
 
   dynamic Function(dynamic, {String rawValue})? _ngModelValueChangeCallback;
   TouchFunction _onTouched = () {};
   bool _touched = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
 
   @Input('disabled')
   bool isDisabled = false;
@@ -96,7 +113,29 @@ class LiSelectComponent
   String describedBy = '';
 
   @Input()
+  bool showClearButton = false;
+
+  /// Supported values: `default`, `overlay`, `addon`, `hidden`.
+  @Input()
+  String triggerIconMode = 'default';
+
+  @Input()
+  String triggerIconClass = '';
+
+  @Input()
   String locale = 'pt_BR';
+
+  @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
 
   /// Whether the search input is displayed in the dropdown.
   ///
@@ -147,11 +186,25 @@ class LiSelectComponent
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveInvalid => invalid || dataInvalid;
+  bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
 
-  bool get effectiveValid => !effectiveInvalid && valid;
+  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
 
-  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+  bool get effectiveValid =>
+      !effectiveInvalid && (valid || (_shouldShowValidation && _effectiveRules.isNotEmpty && _autoValidationIssue == null));
+
+  String get effectiveErrorText {
+    final externalMessage = errorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
+
+    return _autoValidationIssue?.message ?? '';
+  }
+
+  bool get showErrorFeedback =>
+      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
@@ -163,9 +216,47 @@ class LiSelectComponent
   String get searchAriaLabel =>
       _isEnglishLocale ? 'Search options' : 'Buscar opções';
 
+  String get resolvedClearButtonLabel =>
+      _isEnglishLocale ? 'Clear selection' : 'Limpar seleção';
+
+  String get normalizedTriggerIconMode {
+    switch (triggerIconMode.trim().toLowerCase()) {
+      case 'overlay':
+        return 'overlay';
+      case 'addon':
+        return 'addon';
+      case 'hidden':
+        return 'hidden';
+      default:
+        return 'default';
+    }
+  }
+
+  bool get usesOverlayTriggerIcon => normalizedTriggerIconMode == 'overlay';
+
+  bool get usesAddonTriggerIcon => normalizedTriggerIconMode == 'addon';
+
+  bool get hidesNativeIndicator => normalizedTriggerIconMode != 'default';
+
+  bool get showsTriggerIcon =>
+      normalizedTriggerIconMode == 'overlay' ||
+      normalizedTriggerIconMode == 'addon';
+
+  bool get hasSelection => currentValue != null;
+
+  bool get showsClearButton => showClearButton && hasSelection;
+
+  String get resolvedTriggerIconClass {
+    final custom = triggerIconClass.trim();
+    return custom.isNotEmpty ? custom : 'ph ph-caret-down';
+  }
+
   String get resolvedButtonClass => _joinClasses(<String>[
         'form-select',
         'dropdown-button',
+        hidesNativeIndicator ? 'dropdown-button--no-native-indicator' : '',
+        usesOverlayTriggerIcon ? 'dropdown-button--with-overlay-icon' : '',
+        showsClearButton ? 'dropdown-button--with-clear' : '',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
       ]);
@@ -210,9 +301,16 @@ class LiSelectComponent
   }
 
   @override
+  void ngAfterChanges() {
+    _rebuildValidationConfig();
+    _markForCheck();
+  }
+
+  @override
   void writeValue(dynamic newVal) {
     if (newVal == null) {
       currentValue = null;
+      _runAutoValidation();
       _markForCheck();
       return;
     }
@@ -224,6 +322,7 @@ class LiSelectComponent
         break;
       }
     }
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -287,7 +386,16 @@ class LiSelectComponent
 
   @override
   void ngOnInit() {
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription =
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _markForCheck();
+    });
+    _rebuildValidationConfig();
     currentValue = options.where((option) => !option.disabled).firstOrNull;
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -324,6 +432,8 @@ class LiSelectComponent
   }
 
   void closeDropdown({bool markForCheck = true}) {
+    final wasOpen = dropdownOpen;
+
     for (final element in dropdownContainerEle!.querySelectorAll('li')) {
       element.classes.remove('dropdown-item-hover');
     }
@@ -338,9 +448,14 @@ class LiSelectComponent
     inputSearch?.value = '';
     _overlay?.stopAutoUpdate();
     _unbindDocumentListeners();
-    _markTouched();
 
-    dropdownButtonElement?.focus();
+    if (wasOpen) {
+      _markTouched();
+    }
+
+    if (wasOpen) {
+      dropdownButtonElement?.focus();
+    }
 
     if (markForCheck) {
       _markForCheck();
@@ -380,6 +495,7 @@ class LiSelectComponent
       }
 
       currentValue = option;
+      _runAutoValidation();
 
       if (isCloseDropDown && dropdownOpen) {
         closeDropdown();
@@ -401,12 +517,32 @@ class LiSelectComponent
       return;
     }
 
+    _dirty = true;
     currentValue = selItem;
     closeDropdown();
     _changeController.add(currentValue?.value);
     _modelChangeController.add(currentValue?.instanceObj);
     _ngModelValueChangeCallback?.call(currentValue?.value);
     _markTouched();
+    _runAutoValidation();
+    _markForCheck();
+  }
+
+  void clearSelection([html.Event? event]) {
+    event?.stopPropagation();
+    if (isDisabled || currentValue == null) {
+      return;
+    }
+
+    _dirty = true;
+    currentValue = null;
+    _changeController.add(null);
+    _modelChangeController.add(null);
+    if (_ngModelValueChangeCallback != null) {
+      _ngModelValueChangeCallback!(null);
+    }
+    _markTouched();
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -447,7 +583,11 @@ class LiSelectComponent
   }
 
   @HostListener('keydown')
-  void handleKeydownEvents(html.KeyboardEvent event) {
+  void handleKeydownEvents(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
     if (dropdownOpen) {
       return;
     }
@@ -547,6 +687,7 @@ class LiSelectComponent
     _unbindDocumentListeners();
     closeDropdown(markForCheck: false);
     _overlay?.dispose();
+    _formSubmissionSubscription?.cancel();
     _changeController.close();
     _modelChangeController.close();
   }
@@ -663,6 +804,7 @@ class LiSelectComponent
     currentValue = options
         .where((option) => _areValuesEqual(option.value, currentSelectedValue))
         .firstOrNull;
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -692,6 +834,7 @@ class LiSelectComponent
     currentValue = options
         .where((option) => _areValuesEqual(option.value, currentSelectedValue))
         .firstOrNull;
+    _runAutoValidation();
 
     if (markForCheck) {
       _markForCheck();
@@ -727,6 +870,33 @@ class LiSelectComponent
     _changeDetectorRef.markForCheck();
   }
 
+  void _rebuildValidationConfig() {
+    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
+      ...liRules,
+    ]);
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...liMessages,
+    });
+    _runAutoValidation();
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
+      return;
+    }
+
+    _autoValidationIssue = liValidateValue(
+      value: currentValue?.value,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        fieldName: id.trim().isEmpty ? null : id.trim(),
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
+  }
+
   void _markTouched() {
     if (_touched) {
       _onTouched();
@@ -734,7 +904,15 @@ class LiSelectComponent
     }
     _touched = true;
     _onTouched();
+    _runAutoValidation();
   }
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
+      );
 
   String _joinClasses(List<String> values) {
     return values

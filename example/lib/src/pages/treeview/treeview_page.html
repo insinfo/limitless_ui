@@ -134,6 +134,51 @@
                 </div>
               </div>
 
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ panelActionsTitle }}</h6>
+                  <p class="text-muted mb-3">{{ panelActionsBody }}</p>
+
+                  <label class="form-label fw-semibold">{{ panelActionsLabel }}</label>
+                  <li-treeview-select [data]="staticDropdownNodes"
+                    [multiple]="true"
+                    [closeOnSelect]="false"
+                    [showPanelActions]="true"
+                    [expandAllButtonLabel]="panelExpandAllLabel"
+                    [collapseAllButtonLabel]="panelCollapseAllLabel"
+                    [confirmButtonLabel]="panelConfirmButtonLabel"
+                    [placeholder]="panelActionsPlaceholder"
+                    [(ngModel)]="selectedPanelActionTreeValues">
+                  </li-treeview-select>
+
+                  <div class="treeview-demo-note mt-3">
+                    <strong>{{ currentValuesLabel }}:</strong> {{ selectedPanelActionTreeValueText }}<br>
+                    <strong>{{ currentLabelsLabel }}:</strong> {{ selectedPanelActionTreeLabel }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ searchToggleTitle }}</h6>
+                  <p class="text-muted mb-3">{{ searchToggleBody }}</p>
+
+                  <label class="form-label fw-semibold">{{ searchToggleLabel }}</label>
+                  <li-treeview-select [data]="staticDropdownNodes"
+                    [showPanelActions]="false"
+                    [expandTogglePlacement]="'search'"
+                    [searchPlaceholder]="searchToggleSearchPlaceholder"
+                    [placeholder]="searchTogglePlaceholder"
+                    [(ngModel)]="selectedSearchToggleTreeValue">
+                  </li-treeview-select>
+
+                  <div class="treeview-demo-note mt-3">
+                    <strong>{{ currentValueLabel }}:</strong> {{ selectedSearchToggleTreeValueText }}<br>
+                    <strong>{{ currentLabelLabel }}:</strong> {{ selectedSearchToggleTreeLabel }}
+                  </div>
+                </div>
+              </div>
+
               <div class="col-12">
                 <div class="card card-body">
                   <h6 class="mb-2">{{ customRenderTitle }}</h6>

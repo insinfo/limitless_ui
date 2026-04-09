@@ -7,6 +7,11 @@ import 'package:ngforms/ngforms.dart'
 import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
+import '../../directives/li_form_directive.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
 
 enum DatePickerViewMode { day, month, year }
 
@@ -46,8 +51,11 @@ class DatePickerCalendarCell {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiDatePickerComponent
-    implements ControlValueAccessor<DateTime?>, OnDestroy {
-  LiDatePickerComponent(this._changeDetectorRef) {
+    implements ControlValueAccessor<DateTime?>, AfterChanges, OnDestroy {
+  LiDatePickerComponent(
+    this._changeDetectorRef, [
+    @Optional() this._formDirective,
+  ]) {
     _refreshCalendar();
   }
 
@@ -132,12 +140,14 @@ class LiDatePickerComponent
   ];
 
   final ChangeDetectorRef _changeDetectorRef;
+  final LiFormDirective? _formDirective;
   final StreamController<DateTime?> _valueChangeController =
       StreamController<DateTime?>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
   DateTime? value;
@@ -176,10 +186,40 @@ class LiDatePickerComponent
   String helperText = '';
 
   @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
+
+  @Input()
   String feedbackClass = '';
 
   @Input()
   String describedBy = '';
+
+  /// Controls how the trigger icon is rendered.
+  ///
+  /// Supported values:
+  /// - `default`: current appended trigger button
+  /// - `overlay`: icon inside the input, like password/search fields
+  /// - `addon`: alias of `default`
+  /// - `hidden`: hides the trigger icon
+  @Input()
+  String triggerIconMode = 'default';
+
+  /// Custom icon class for the trigger icon.
+  @Input()
+  String triggerIconClass = '';
+
+  /// Whether the clear button should be rendered when a value exists.
+  @Input()
+  bool showClearButton = true;
 
   @Output()
   Stream<DateTime?> get valueChange => _valueChangeController.stream;
@@ -199,18 +239,39 @@ class LiDatePickerComponent
   ChangeFunction<DateTime?> _onChange = (DateTime? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
   bool _touched = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveInvalid =>
-      invalid || dataInvalid || (required && _touched && value == null);
+    bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
+
+    bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
 
   bool get effectiveValid =>
-      !effectiveInvalid && (valid || (required && _touched && value != null));
+      !effectiveInvalid &&
+      (valid ||
+        (_shouldShowValidation &&
+          _effectiveRules.isNotEmpty &&
+          _autoValidationIssue == null));
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
-  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+    String get effectiveErrorText {
+    final externalMessage = errorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
+
+    return _autoValidationIssue?.message ?? '';
+    }
+
+    bool get showErrorFeedback =>
+      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
@@ -262,7 +323,71 @@ class LiDatePickerComponent
 
   String get clearLabel => _isEnglishLocale ? 'Clear' : 'Limpar';
 
+  String get clearAriaLabel =>
+      _isEnglishLocale ? 'Clear selected date' : 'Limpar data selecionada';
+
+  bool get hasValue => value != null;
+
+  String get normalizedTriggerIconMode {
+    switch (triggerIconMode.trim().toLowerCase()) {
+      case 'overlay':
+        return 'overlay';
+      case 'hidden':
+        return 'hidden';
+      case 'addon':
+        return 'addon';
+      default:
+        return 'default';
+    }
+  }
+
+  bool get usesOverlayTriggerIcon => normalizedTriggerIconMode == 'overlay';
+
+  bool get showsTriggerIcon => normalizedTriggerIconMode != 'hidden';
+
+  bool get showsClearButton => showClearButton && hasValue;
+
+  String get resolvedTriggerIconClass {
+    final custom = triggerIconClass.trim();
+    return custom.isNotEmpty ? custom : 'ph ph-calendar-blank';
+  }
+
+  String get resolvedOverlayInputClass => _joinClasses(<String>[
+        resolvedInputClass,
+        'date-picker-field--overlay',
+        showsClearButton ? 'date-picker-field--overlay-clear' : '',
+        showsTriggerIcon ? 'date-picker-field--overlay-trigger' : '',
+      ]);
+
   String get cancelLabel => _isEnglishLocale ? 'Cancel' : 'Cancelar';
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
+      );
+
+  @override
+  void ngAfterChanges() {
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription ??=
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _markForCheck();
+    });
+
+    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
+      if (required) const LiRequiredRule(),
+      ...liRules,
+    ]);
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...liMessages,
+    });
+    _runAutoValidation();
+    _markForCheck();
+  }
 
   String get currentHeaderLabel {
     if (isYearView) {
@@ -368,9 +493,11 @@ class LiDatePickerComponent
 
     draftValue = normalized;
     value = _normalize(draftValue);
+    _dirty = true;
     _valueChangeController.add(value);
     _onChange(value);
     _markTouched();
+    _runAutoValidation();
     close();
     _markForCheck();
   }
@@ -378,11 +505,19 @@ class LiDatePickerComponent
   void clear() {
     draftValue = null;
     value = null;
+    _dirty = true;
     _valueChangeController.add(null);
     _onChange(null);
     _markTouched();
+    _runAutoValidation();
     close();
     _markForCheck();
+  }
+
+  void clearFromTrigger(html.MouseEvent event) {
+    event.preventDefault();
+    event.stopPropagation();
+    clear();
   }
 
   void close() {
@@ -402,6 +537,7 @@ class LiDatePickerComponent
     this.value = _normalize(value);
     draftValue = this.value;
     _syncVisibleMonth();
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -595,10 +731,31 @@ class LiDatePickerComponent
   void _markTouched() {
     if (_touched) {
       _onTouched();
+      if (_shouldShowValidation || _autoValidationIssue != null) {
+        _runAutoValidation();
+      }
       return;
     }
     _touched = true;
     _onTouched();
+    _runAutoValidation();
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
+      return;
+    }
+
+    _autoValidationIssue = liValidateValue(
+      value: value,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        fieldName: 'datePicker',
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
   }
 
   String _joinClasses(List<String> values) {
@@ -669,6 +826,7 @@ class LiDatePickerComponent
   void ngOnDestroy() {
     _unbindDocumentListeners();
     _overlay?.dispose();
+    _formSubmissionSubscription?.cancel();
     _valueChangeController.close();
   }
 }

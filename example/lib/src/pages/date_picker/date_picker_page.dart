@@ -29,6 +29,16 @@ class DatePickerPageComponent {
   locale="en_US">
 </li-date-picker>''';
 
+  static const String validationSnippet = '''
+<li-date-picker
+  [(ngModel)]="selectedDate"
+  [liRules]="[LiRule.required()]"
+  [liMessages]="{
+    'required': 'Selecione uma data.'
+  }"
+  liValidationMode="submitted">
+</li-date-picker>''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
   bool get _isPt => i18n.isPortuguese;

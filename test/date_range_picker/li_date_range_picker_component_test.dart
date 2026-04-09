@@ -152,6 +152,54 @@ void main() {
     expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
   });
+
+  test('keeps overlay open when changing year and month views', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      host.picker!.toggleLeftViewMode();
+      host.picker!.toggleLeftViewMode();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      final panel =
+          html.document.querySelector('.date-range-open') as html.Element;
+      final yearButton = panel.querySelector(
+        '.date-range-selection-grid-years .date-range-selection-item.active',
+      );
+      expect(yearButton, isNotNull);
+      yearButton!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.picker!.isOpen, isTrue);
+    expect(host.picker!.leftViewMode, DateRangePickerViewMode.month);
+
+    await fixture.update((_) {
+      final panel =
+          html.document.querySelector('.date-range-open') as html.Element;
+      final monthButton = panel.querySelector(
+        '.date-range-selection-grid .date-range-selection-item.active',
+      );
+      expect(monthButton, isNotNull);
+      monthButton!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.picker!.isOpen, isTrue);
+    expect(host.picker!.leftViewMode, DateRangePickerViewMode.day);
+  });
 }
 
 Future<void> _settle(

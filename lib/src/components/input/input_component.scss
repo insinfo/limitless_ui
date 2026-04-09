@@ -58,6 +58,18 @@
   padding-right: 2.75rem;
 }
 
+.li-input__control--with-overlay-toggle.is-invalid,
+.li-input__control--with-overlay-toggle.is-valid {
+  padding-right: 5rem;
+}
+
+.li-input__field-shell > .li-input__control--with-overlay-toggle.is-invalid ~ .li-input__password-toggle--overlay,
+.li-input__field-shell > .li-input__control--with-overlay-toggle.is-valid ~ .li-input__password-toggle--overlay,
+.li-input__floating-shell > .li-input__control--with-overlay-toggle.is-invalid ~ .li-input__password-toggle--overlay,
+.li-input__floating-shell > .li-input__control--with-overlay-toggle.is-valid ~ .li-input__password-toggle--overlay {
+  right: 2.75rem;
+}
+
 .li-input__floating-shell {
   position: relative;
 }

@@ -39,11 +39,13 @@ class TreeviewPageComponent {
 
   static const String selectApiSnippet = '''
 <li-treeview-select
-  [pageLoader]="loadRawTreeChunk"
-  [settings]="lazySerializableSettings"
-  [pageSize]="20"
-  placeholder="Selecione um nó"
-  [(ngModel)]="selectedValue">
+  [data]="staticDropdownNodes"
+  [multiple]="true"
+  [closeOnSelect]="false"
+  [showPanelActions]="true"
+  [expandTogglePlacement]="'search'"
+  [confirmButtonLabel]="'Aplicar seleção'"
+  [(ngModel)]="selectedValues">
 </li-treeview-select>''';
 
   final DemoI18nService i18n;
@@ -83,6 +85,8 @@ class TreeviewPageComponent {
   dynamic selectedRawFrameValue;
   dynamic selectedLazySerializableValue;
   List<dynamic> selectedMultiTreeValues = <dynamic>[];
+  List<dynamic> selectedPanelActionTreeValues = <dynamic>[];
+  dynamic selectedSearchToggleTreeValue;
   String get selectedStaticTreeValueText =>
       selectedStaticTreeValue?.toString() ?? t.common.none;
   String get selectedLazyTreeValueText =>
@@ -94,6 +98,12 @@ class TreeviewPageComponent {
   String get selectedMultiTreeValueText => selectedMultiTreeValues.isEmpty
       ? t.common.none
       : selectedMultiTreeValues.join(', ');
+  String get selectedPanelActionTreeValueText =>
+      selectedPanelActionTreeValues.isEmpty
+          ? t.common.none
+          : selectedPanelActionTreeValues.join(', ');
+  String get selectedSearchToggleTreeValueText =>
+      selectedSearchToggleTreeValue?.toString() ?? t.common.none;
   String get selectedStaticTreeLabel =>
       _resolveLabel(staticDropdownNodes, selectedStaticTreeValue) ??
       t.common.none;
@@ -107,8 +117,19 @@ class TreeviewPageComponent {
   String get selectedMultiTreeLabel => selectedMultiTreeValues.isEmpty
       ? t.common.none
       : selectedMultiTreeValues
-          .map((value) => _resolveLabel(staticDropdownNodes, value) ?? value)
+          .map((value) =>
+              (_resolveLabel(staticDropdownNodes, value) ?? value).toString())
           .join(', ');
+  String get selectedPanelActionTreeLabel => selectedPanelActionTreeValues
+          .isEmpty
+      ? t.common.none
+      : selectedPanelActionTreeValues
+          .map((value) =>
+              (_resolveLabel(staticDropdownNodes, value) ?? value).toString())
+          .join(', ');
+  String get selectedSearchToggleTreeLabel =>
+      _resolveLabel(staticDropdownNodes, selectedSearchToggleTreeValue) ??
+      t.common.none;
 
   String customNodeLabel(TreeViewNode node) {
     final valueText = node.value?.toString() ?? (isPt ? 'grupo' : 'group');
@@ -170,6 +191,34 @@ class TreeviewPageComponent {
       isPt ? 'Buscar no catálogo lazy' : 'Search in the lazy catalog';
   String get lazyPlaceholder =>
       isPt ? 'Carregar catálogo por páginas' : 'Load catalog by pages';
+  String get panelActionsTitle =>
+      isPt ? 'Barra de ações no rodapé' : 'Footer action bar';
+  String get panelActionsBody => isPt
+      ? 'Este cenário destaca o rodapé opcional com limpar, confirmar e o toggle real de expandir ou recolher todos os nós.'
+      : 'This scenario highlights the optional footer with clear, confirm, and a real expand-or-collapse-all toggle.';
+  String get panelActionsLabel =>
+      isPt ? 'Seleção com confirmação manual' : 'Selection with manual confirm';
+  String get panelActionsPlaceholder => isPt
+      ? 'Selecione nós e confirme no rodapé'
+      : 'Select nodes and confirm from the footer';
+  String get panelExpandAllLabel =>
+      isPt ? 'Abrir estrutura inteira' : 'Expand full structure';
+  String get panelCollapseAllLabel =>
+      isPt ? 'Fechar estrutura inteira' : 'Collapse full structure';
+  String get panelConfirmButtonLabel =>
+      isPt ? 'Aplicar seleção' : 'Apply selection';
+  String get searchToggleTitle =>
+      isPt ? 'Toggle ao lado da busca' : 'Toggle beside search';
+  String get searchToggleBody => isPt
+      ? 'Quando o rodapé não faz sentido, o mesmo toggle pode aparecer ao lado do campo de busca para expandir ou recolher a árvore sem ocupar outra área do painel.'
+      : 'When the footer is not needed, the same toggle can sit beside the search field to expand or collapse the tree without taking another panel area.';
+  String get searchToggleLabel =>
+      isPt ? 'Busca com toggle embutido' : 'Search with embedded toggle';
+  String get searchTogglePlaceholder => isPt
+      ? 'Escolha um nó pelo atalho da busca'
+      : 'Choose a node from the search shortcut';
+  String get searchToggleSearchPlaceholder =>
+      isPt ? 'Buscar e alternar expansão' : 'Search and toggle expansion';
   String get customRenderTitle => isPt
       ? 'Custom render + múltipla seleção'
       : 'Custom render + multiple selection';
@@ -221,6 +270,9 @@ class TreeviewPageComponent {
           'O componente é indicado para navegação técnica, permissões e catálogos.',
           'li-treeview-select oferece seleção única em dropdown com ngModel.',
           '[multiple] troca o modelo para List<dynamic> e mantém o dropdown aberto se [closeOnSelect]="false".',
+          '[showPanelActions] controla a barra de ações com confirmar, limpar e expandir ou recolher tudo.',
+          '[expandTogglePlacement] move o toggle entre o rodapé, a linha de busca ou o oculta.',
+          '[expandAllButtonLabel], [collapseAllButtonLabel] e [confirmButtonLabel] personalizam os textos das ações.',
           '[pageLoader] permite carregar páginas da raiz e dos filhos sob demanda.',
           'TreeViewLoadResult.raw(items: ...) permite que o pageLoader devolva payload bruto e delegue a conversão para o settings.',
           '[labelBuilder] e [canSelectNode] customizam rótulo e regra de seleção.',
@@ -235,6 +287,9 @@ class TreeviewPageComponent {
           'The component fits technical navigation, permissions, and catalogs.',
           'li-treeview-select offers single selection in a dropdown with ngModel.',
           '[multiple] switches the model to List<dynamic> and keeps the dropdown open when [closeOnSelect]="false".',
+          '[showPanelActions] controls the action bar with confirm, clear, and expand-or-collapse-all actions.',
+          '[expandTogglePlacement] moves the toggle between the footer, the search row, or hides it.',
+          '[expandAllButtonLabel], [collapseAllButtonLabel], and [confirmButtonLabel] customize action labels.',
           '[pageLoader] allows loading root and child pages on demand.',
           'TreeViewLoadResult.raw(items: ...) lets pageLoader return raw payloads and delegates conversion to settings.',
           '[labelBuilder] and [canSelectNode] customize labels and selection rules.',

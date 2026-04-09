@@ -595,6 +595,18 @@
 
                 <h6 class="mb-3 mt-4">{{ toggleSnippetTitle }}</h6>
                 <li-highlight [code]="toggleSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-3 mt-4">Validação declarativa</h6>
+                <p class="text-muted mb-3">
+                  Checkbox e radio group agora aceitam a mesma base de <code>liRules</code>, <code>liMessages</code> e <code>liValidationMode</code>.
+                  O <code>liType</code> continua sendo exclusivo do <code>li-input</code>.
+                </p>
+                <li-highlight [code]="validationSnippet" language="html"></li-highlight>
+                <ul class="mb-0 ps-3 mt-3">
+                  <li>Para aceite obrigatório em checkbox, mantenha <code>[required]="true"</code> e sobrescreva a mensagem com <code>requiredTrue</code>.</li>
+                  <li>Para radio group, passe também o valor atual em <code>[value]</code> para a regra declarativa avaliar o grupo.</li>
+                  <li>Use <code>submitted</code> quando o erro do bloco só deve aparecer após tentativa de envio.</li>
+                </ul>
               </div>
             </div>
           </div>

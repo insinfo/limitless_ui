@@ -39,6 +39,14 @@ import 'li_toast_component_test.template.dart' as ng;
           (hidden)="timedHidden = timedHidden + 1">
       </li-toast>
 
+      <li-toast
+          header="Warning header"
+          body="Warning body"
+          toastClass="bg-warning text-white border-0"
+          [autohide]="false"
+          [animation]="false">
+      </li-toast>
+
       <li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
     </div>
   ''',
@@ -139,6 +147,26 @@ void main() {
 
     expect(host.toastService.toasts, isEmpty);
     expect(html.document.querySelector('.li-toast-stack .toast'), isNull);
+  });
+
+  test('usa header escurecido e close branco em toast sólido', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final solidToast = fixture.rootElement.querySelectorAll('.toast')
+        .cast<html.Element>()
+        .firstWhere((element) => (element.text ?? '').contains('Warning body'));
+    final header = solidToast.querySelector('.toast-header');
+    final closeButton = solidToast.querySelector('.btn-close');
+
+    expect(solidToast.classes.contains('bg-warning'), isTrue);
+    expect(solidToast.classes.contains('text-white'), isTrue);
+    expect(header, isNotNull);
+    expect(header!.classes.contains('bg-black'), isTrue);
+    expect(header.classes.contains('bg-opacity-10'), isTrue);
+    expect(header.classes.contains('text-white'), isTrue);
+    expect(closeButton, isNotNull);
+    expect(closeButton!.classes.contains('btn-close-white'), isTrue);
   });
 }
 

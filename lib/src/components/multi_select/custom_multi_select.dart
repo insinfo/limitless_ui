@@ -10,7 +10,12 @@ import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
 import '../../directives/click_outside.dart';
+import '../../directives/li_form_directive.dart';
 import '../../exceptions/invalid_argument_exception.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
 import 'custom_multi_option.dart';
 
 class CustomMultiSelectItem {
@@ -49,11 +54,13 @@ class CustomMultiSelectItem {
 class LiMultiSelectComponent
     implements
         ControlValueAccessor<dynamic>,
+        AfterChanges,
         OnInit,
         OnDestroy,
         AfterContentInit {
   final html.Element nativeElement;
   final ChangeDetectorRef _changeDetectorRef;
+  final LiFormDirective? _formDirective;
   PopperAnchoredOverlay? _overlay;
 
   @Input('disabled')
@@ -84,10 +91,28 @@ class LiMultiSelectComponent
   String locale = 'pt_BR';
 
   @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
+
+  @Input()
   bool showClearButton = true;
 
   @Input()
   String clearButtonLabel = '';
+
+  @Input()
+  String triggerIconMode = 'default';
+
+  @Input()
+  String triggerIconClass = '';
 
   @Input()
   bool searchable = true;
@@ -95,7 +120,11 @@ class LiMultiSelectComponent
   @Input()
   bool Function(dynamic optionValue, dynamic modelValue)? compareWith;
 
-  LiMultiSelectComponent(this.nativeElement, this._changeDetectorRef) {
+  LiMultiSelectComponent(
+    this.nativeElement,
+    this._changeDetectorRef, [
+    @Optional() this._formDirective,
+  ]) {
     final seq = _nextSequence++;
     listboxId = 'li-multi-select-listbox-$seq';
     _idPrefix = 'li-multi-select-opt-$seq';
@@ -106,16 +135,36 @@ class LiMultiSelectComponent
   late final String _idPrefix;
   TouchFunction _onTouched = () {};
   bool _touched = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
+  StreamSubscription<bool>? _formSubmissionSubscription;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
 
   String optionId(int index) => '$_idPrefix-$index';
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveInvalid => invalid || dataInvalid;
+  bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
 
-  bool get effectiveValid => !effectiveInvalid && valid;
+  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
 
-  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+  bool get effectiveValid =>
+      !effectiveInvalid && (valid || (_shouldShowValidation && _effectiveRules.isNotEmpty && _autoValidationIssue == null));
+
+  String get effectiveErrorText {
+    final externalMessage = errorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
+
+    return _autoValidationIssue?.message ?? '';
+  }
+
+  bool get showErrorFeedback =>
+      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
@@ -131,9 +180,40 @@ class LiMultiSelectComponent
       ? clearButtonLabel.trim()
       : (_isEnglishLocale ? 'Clear selection' : 'Limpar seleção');
 
+  String get normalizedTriggerIconMode {
+    switch (triggerIconMode.trim().toLowerCase()) {
+      case 'overlay':
+        return 'overlay';
+      case 'addon':
+        return 'addon';
+      case 'hidden':
+        return 'hidden';
+      default:
+        return 'default';
+    }
+  }
+
+  bool get usesOverlayTriggerIcon => normalizedTriggerIconMode == 'overlay';
+
+  bool get usesAddonTriggerIcon => normalizedTriggerIconMode == 'addon';
+
+  bool get hidesNativeIndicator => normalizedTriggerIconMode != 'default';
+
+  bool get showsTriggerIcon =>
+      normalizedTriggerIconMode == 'overlay' ||
+      normalizedTriggerIconMode == 'addon';
+
+  String get resolvedTriggerIconClass {
+    final custom = triggerIconClass.trim();
+    return custom.isNotEmpty ? custom : 'ph ph-caret-down';
+  }
+
   String get resolvedButtonClass => _joinClasses(<String>[
         'form-select',
         'dropdown-button',
+        hidesNativeIndicator ? 'dropdown-button--no-native-indicator' : '',
+        usesOverlayTriggerIcon ? 'dropdown-button--with-overlay-icon' : '',
+        showClearButton && hasSelection ? 'dropdown-button--with-clear' : '',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
       ]);
@@ -171,6 +251,12 @@ class LiMultiSelectComponent
   }
 
   @override
+  void ngAfterChanges() {
+    _rebuildValidationConfig();
+    _markForCheck();
+  }
+
+  @override
   void writeValue(dynamic newVal) {
     for (final option in options) {
       option.selected = false;
@@ -186,6 +272,7 @@ class LiMultiSelectComponent
       }
     }
 
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -285,9 +372,30 @@ class LiMultiSelectComponent
 
   @override
   void ngOnInit() {
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription =
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _markForCheck();
+    });
+    _rebuildValidationConfig();
+    if (options.isNotEmpty == true) {
+      //currentValue = options[0];
+    }
+  }
+
+  void _ensureOverlay() {
+    final reference = dropdownButtonElement;
+    final floating = dropdownContainerEle;
+
+    if (_overlay != null || reference == null || floating == null) {
+      return;
+    }
+
     _overlay = PopperAnchoredOverlay.attach(
-      referenceElement: dropdownButtonElement!,
-      floatingElement: dropdownContainerEle!,
+      referenceElement: reference,
+      floatingElement: floating,
       portalOptions: const PopperPortalOptions(
         hostClassName: 'LiMultiSelectComponent',
         hostZIndex: '1000',
@@ -307,10 +415,6 @@ class LiMultiSelectComponent
         onLayout: _handleOverlayLayout,
       ),
     );
-
-    if (options.isNotEmpty == true) {
-      //currentValue = options[0];
-    }
   }
 
   void closeDropdown({
@@ -318,7 +422,10 @@ class LiMultiSelectComponent
     bool restoreFocus = false,
     html.Element? preserveFocusTarget,
   }) {
-    for (final element in dropdownContainerEle!.querySelectorAll('li')) {
+    final wasOpen = dropdownOpen;
+
+    for (final element in dropdownContainerEle?.querySelectorAll('li') ??
+        const <html.Element>[]) {
       if (element.classes.contains('dropdown-item-hover')) {
         element.classes.remove('dropdown-item-hover');
       }
@@ -333,9 +440,12 @@ class LiMultiSelectComponent
     inputSearch?.value = '';
 
     _overlay?.stopAutoUpdate();
-    _markTouched();
 
-    if (restoreFocus) {
+    if (wasOpen) {
+      _markTouched();
+    }
+
+    if (restoreFocus && wasOpen) {
       dropdownButtonElement?.focus();
     } else if (_canPreserveFocus(preserveFocusTarget)) {
       Future<void>.microtask(() {
@@ -357,11 +467,13 @@ class LiMultiSelectComponent
       return;
     }
 
+    _ensureOverlay();
+
     if (childrenSelectOptions.isNotEmpty) {
       _syncProjectedOptions(markForCheck: false);
     }
 
-    dropdownContainerEle!.setAttribute('aria-expanded', 'true');
+    dropdownContainerEle?.setAttribute('aria-expanded', 'true');
 
     dropdownOpen = true;
     _overlay?.startAutoUpdate();
@@ -408,11 +520,13 @@ class LiMultiSelectComponent
   void ngOnDestroy() {
     closeDropdown(markForCheck: false);
     _overlay?.dispose();
+    _formSubmissionSubscription?.cancel();
     _changeController.close();
     _modelChangeController.close();
   }
 
   void reset() {
+    _dirty = true;
     for (final element in options) {
       element.selected = false;
     }
@@ -422,6 +536,7 @@ class LiMultiSelectComponent
       _callback!(selectedValues);
     }
     _markTouched();
+    _runAutoValidation();
     _markForCheck();
     _scheduleOverlayUpdate();
   }
@@ -438,6 +553,7 @@ class LiMultiSelectComponent
   }
 
   void _toggleOptionSelection(CustomMultiSelectItem option) {
+    _dirty = true;
     option.selected = !option.selected;
 
     _changeController.add(selectedValues);
@@ -446,6 +562,7 @@ class LiMultiSelectComponent
       _callback!(selectedValues);
     }
     _markTouched();
+    _runAutoValidation();
     _markForCheck();
     _scheduleOverlayUpdate();
   }
@@ -500,6 +617,7 @@ class LiMultiSelectComponent
         (selectedValue) => _areValuesEqual(option.value, selectedValue),
       );
     }
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -531,6 +649,8 @@ class LiMultiSelectComponent
         (selectedValue) => _areValuesEqual(option.value, selectedValue),
       );
     }
+
+    _runAutoValidation();
 
     if (markForCheck) {
       _markForCheck();
@@ -613,6 +733,33 @@ class LiMultiSelectComponent
     _changeDetectorRef.markForCheck();
   }
 
+  void _rebuildValidationConfig() {
+    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
+      ...liRules,
+    ]);
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...liMessages,
+    });
+    _runAutoValidation();
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
+      return;
+    }
+
+    _autoValidationIssue = liValidateValue(
+      value: selectedValues,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        fieldName: listboxId,
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
+  }
+
   void _markTouched() {
     if (_touched) {
       _onTouched();
@@ -620,7 +767,15 @@ class LiMultiSelectComponent
     }
     _touched = true;
     _onTouched();
+    _runAutoValidation();
   }
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
+      );
 
   String _joinClasses(List<String> values) {
     return values

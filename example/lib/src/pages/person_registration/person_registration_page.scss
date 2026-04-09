@@ -1,0 +1,87 @@
+.person-demo-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.person-form-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.person-section {
+  padding: 1.25rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.875rem;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.85), #fff);
+}
+
+.person-section__header {
+  margin-bottom: 1rem;
+}
+
+.person-inline-note {
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(var(--info-rgb), 0.25);
+  border-radius: 0.75rem;
+  background: rgba(var(--info-rgb), 0.08);
+  color: rgba(var(--body-color-rgb), 0.9);
+  font-size: 0.95rem;
+}
+
+.person-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.person-aside-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.person-aside-card {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.875rem;
+  background: #fff;
+  box-shadow: 0 0.25rem 1rem rgba(15, 23, 42, 0.04);
+}
+
+.person-aside-card--warn {
+  background: rgba(255, 193, 7, 0.08);
+  border-color: rgba(255, 193, 7, 0.35);
+}
+
+.person-aside-card__title {
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.person-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.person-json-preview {
+  margin: 0;
+  max-height: 20rem;
+  overflow: auto;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 991.98px) {
+  .person-section {
+    padding: 1rem;
+  }
+}

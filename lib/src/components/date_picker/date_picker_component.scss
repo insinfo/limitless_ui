@@ -12,9 +12,86 @@
     width: 100%;
 }
 
+.date-picker-trigger-shell {
+    position: relative;
+}
+
+.date-picker-trigger-shell.disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
 .date-picker-wrapper .input-group.disabled {
     opacity: 0.65;
     cursor: not-allowed;
+}
+
+.date-picker-field--overlay {
+    padding-right: 0.875rem;
+}
+
+.date-picker-field--overlay.date-picker-field--overlay-trigger {
+    padding-right: 3rem;
+}
+
+.date-picker-field--overlay.date-picker-field--overlay-clear {
+    padding-right: 3rem;
+}
+
+.date-picker-field--overlay.date-picker-field--overlay-trigger.date-picker-field--overlay-clear {
+    padding-right: 5rem;
+}
+
+.date-picker-field--overlay.is-invalid,
+.date-picker-field--overlay.is-valid {
+    padding-right: 3rem;
+}
+
+.date-picker-field--overlay.date-picker-field--overlay-trigger.is-invalid,
+.date-picker-field--overlay.date-picker-field--overlay-trigger.is-valid,
+.date-picker-field--overlay.date-picker-field--overlay-clear.is-invalid,
+.date-picker-field--overlay.date-picker-field--overlay-clear.is-valid {
+    padding-right: 5rem;
+}
+
+.date-picker-field--overlay.date-picker-field--overlay-trigger.date-picker-field--overlay-clear.is-invalid,
+.date-picker-field--overlay.date-picker-field--overlay-trigger.date-picker-field--overlay-clear.is-valid {
+    padding-right: 7.1rem;
+}
+
+.date-picker-overlay-actions {
+    position: absolute;
+    top: 50%;
+    right: 0.625rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    z-index: 3;
+}
+
+.date-picker-trigger-shell > .date-picker-field--overlay.is-invalid ~ .date-picker-overlay-actions,
+.date-picker-trigger-shell > .date-picker-field--overlay.is-valid ~ .date-picker-overlay-actions {
+    right: 2.5rem;
+}
+
+.date-picker-overlay-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.date-picker-overlay-button:not(:disabled):hover,
+.date-picker-overlay-button:not(:disabled):focus {
+    color: var(--body-color);
+    background: color-mix(in srgb, var(--body-color) 8%, transparent);
 }
 
 .date-picker-trigger-button {

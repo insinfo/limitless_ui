@@ -650,6 +650,18 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _changeDetectorRef.markForCheck();
   }
 
+  void syncSelection(bool Function(dynamic instance) predicate) {
+    final selectableRows = _selectableRows.toList(growable: false);
+
+    for (final row in selectableRows) {
+      row.selected = predicate(row.instance);
+    }
+
+    isSelectAll =
+        selectableRows.isNotEmpty && selectableRows.every((row) => row.selected);
+    _changeDetectorRef.markForCheck();
+  }
+
   void unSelectItemInstance(dynamic item) {
     for (final row in rows) {
       if (row.instance == item) {

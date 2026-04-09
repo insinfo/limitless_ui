@@ -193,6 +193,8 @@ class AppComponent implements OnDestroy {
   String get wizardLabel => 'Wizard';
   String get checkboxRadioLabel =>
       i18n.isPortuguese ? 'Checkbox e radios' : 'Checkboxes and radios';
+  String get personRegistrationLabel =>
+      i18n.isPortuguese ? 'Cadastro de pessoa' : 'Person registration';
 
   List<DemoNavItem> _buildPrimaryItems() => <DemoNavItem>[
         DemoNavItem(
@@ -340,6 +342,11 @@ class AppComponent implements OnDestroy {
               iconClass: 'ph-upload-simple',
               url: DemoRoutePaths.fileUpload.toUrl(),
             ),
+            DemoNavItem(
+              label: personRegistrationLabel,
+              iconClass: 'ph-identification-card',
+              url: DemoRoutePaths.personRegistration.toUrl(),
+            ),
           ],
         ),
         DemoNavSection(
@@ -436,6 +443,13 @@ class AppComponent implements OnDestroy {
     '/currency': <String>['moeda', 'monetaria', 'money', 'monetary'],
     '/inputs': <String>['input', 'campo', 'text field', 'formulario'],
     '/file-upload': <String>['upload', 'arquivo', 'anexo'],
+    '/person-registration': <String>[
+      'cadastro',
+      'pessoa',
+      'formulario completo',
+      'validation',
+      'backend fake',
+    ],
     '/color-picker': <String>['cor', 'palette', 'picker'],
     '/date-picker': <String>['data', 'calendario', 'date'],
     '/time-picker': <String>['hora', 'relogio', 'time'],

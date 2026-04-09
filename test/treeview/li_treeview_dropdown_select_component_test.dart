@@ -62,6 +62,25 @@ import 'li_treeview_dropdown_select_component_test.template.dart' as ng;
           [pageSize]="2"
           [(ngModel)]="selectedLazyRawValue">
       </li-treeview-select>
+
+      <li-treeview-select
+          #overlayTree
+          [data]="staticNodes"
+          [searchable]="false"
+          [closeOnSelect]="false"
+          [(ngModel)]="selectedOverlayValue">
+      </li-treeview-select>
+
+      <li-treeview-select
+          #searchToggleTree
+          container="inline"
+          [data]="staticNodes"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [showPanelActions]="false"
+          expandTogglePlacement="search"
+          [(ngModel)]="selectedSearchToggleValues">
+      </li-treeview-select>
     </div>
   ''',
   directives: [
@@ -104,6 +123,8 @@ class TreeviewDropdownTestHostComponent {
   List<dynamic> selectedMultiValues = <dynamic>[];
   dynamic selectedFrameValue;
   dynamic selectedLazyRawValue;
+  dynamic selectedOverlayValue;
+  List<dynamic> selectedSearchToggleValues = <dynamic>[];
 
   @ViewChild('staticTree')
   LiTreeviewSelectComponent? staticTree;
@@ -119,6 +140,12 @@ class TreeviewDropdownTestHostComponent {
 
   @ViewChild('lazyRawTree')
   LiTreeviewSelectComponent? lazyRawTree;
+
+  @ViewChild('overlayTree')
+  LiTreeviewSelectComponent? overlayTree;
+
+  @ViewChild('searchToggleTree')
+  LiTreeviewSelectComponent? searchToggleTree;
 
   Future<TreeViewLoadResult> loadChunk(TreeViewLoadRequest request) async {
     requests.add(request);
@@ -699,6 +726,153 @@ void main() {
       host.rawRequests.any((request) => request.parent?.id == 'benefits'),
       isTrue,
     );
+  });
+
+  test('keeps overlay open when expanding children in body container', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((_) {
+      _triggerButtons(fixture.rootElement)[5].click();
+    });
+    await _settle(fixture);
+
+    final popup = html.document
+        .querySelector('.treeview-dropdown-select__panel.show') as html.Element;
+    final expandBenefits = _findExpanderForLabel(popup, 'Benefícios');
+    expect(expandBenefits, isNotNull);
+    final benefitsNode = host.overlayTree!.rootNodes
+        .firstWhere((node) => node.treeViewNodeLabel == 'Benefícios');
+    final initialCollapsed = benefitsNode.treeViewNodeIsCollapse;
+
+    await fixture.update((_) {
+      expandBenefits!.click();
+    });
+    await _settle(fixture);
+
+    expect(host.overlayTree!.isPopupOpen, isTrue);
+    expect(benefitsNode.treeViewNodeIsCollapse, isNot(initialCollapsed));
+  });
+
+  test('shows actions to toggle all, clear selection, and confirm', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final multiHost =
+        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(2);
+
+    await fixture.update((_) {
+      _triggerButtons(fixture.rootElement)[2].click();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      final triageLabel = _findLabelButton(multiHost, 'Triagem');
+      triageLabel!.click();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      final toggleAll = multiHost.querySelector(
+        '.treeview-dropdown-select__action-expand',
+      ) as html.ButtonElement;
+      expect((toggleAll.text ?? '').trim(), 'Recolher tudo');
+      toggleAll.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    final benefits = host.multiTree!.rootNodes
+        .firstWhere((node) => node.treeViewNodeLabel == 'Benefícios');
+    final basket = benefits.treeViewNodes
+        .firstWhere((node) => node.treeViewNodeLabel == 'Cesta básica');
+
+    expect(host.multiTree!.isPopupOpen, isTrue);
+    expect(benefits.treeViewNodeIsCollapse, isTrue);
+    expect(basket.treeViewNodeIsCollapse, isTrue);
+
+    await fixture.update((_) {
+      final toggleAll = multiHost.querySelector(
+        '.treeview-dropdown-select__action-expand',
+      ) as html.ButtonElement;
+      expect((toggleAll.text ?? '').trim(), 'Expandir tudo');
+      toggleAll.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    expect(benefits.treeViewNodeIsCollapse, isFalse);
+    expect(basket.treeViewNodeIsCollapse, isFalse);
+
+    await fixture.update((_) {
+      final clearButton = multiHost.querySelector(
+        '.treeview-dropdown-select__action-clear',
+      ) as html.ButtonElement;
+      clearButton.click();
+    });
+    await _settle(fixture);
+
+    expect(host.selectedMultiValues, isEmpty);
+    expect(host.multiTree!.isPopupOpen, isTrue);
+
+    await fixture.update((_) {
+      final confirmButton = multiHost.querySelector(
+        '.treeview-dropdown-select__action-confirm',
+      ) as html.ButtonElement;
+      confirmButton.click();
+    });
+    await _settle(fixture);
+
+    expect(host.multiTree!.isPopupOpen, isFalse);
+  });
+
+  test('supports showing the expand-collapse toggle beside search', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final searchToggleHost =
+        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(6);
+
+    await fixture.update((_) {
+      _triggerButtons(fixture.rootElement)[6].click();
+    });
+    await _settle(fixture);
+
+    final searchToggleButton = searchToggleHost.querySelector(
+      '.treeview-dropdown-select__search-action',
+    ) as html.ButtonElement;
+
+    expect(
+      searchToggleHost.querySelector('.treeview-dropdown-select__actions'),
+      isNull,
+    );
+    expect(searchToggleButton.classes.contains('btn-sm'), isTrue);
+    expect(searchToggleButton.title, 'Recolher tudo');
+
+    await fixture.update((_) {
+      searchToggleButton.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    final benefits = host.searchToggleTree!.rootNodes
+        .firstWhere((node) => node.treeViewNodeLabel == 'Benefícios');
+    final basket = benefits.treeViewNodes
+        .firstWhere((node) => node.treeViewNodeLabel == 'Cesta básica');
+
+    expect(benefits.treeViewNodeIsCollapse, isTrue);
+    expect(basket.treeViewNodeIsCollapse, isTrue);
+
+    final refreshedSearchToggleButton = searchToggleHost.querySelector(
+      '.treeview-dropdown-select__search-action',
+    ) as html.ButtonElement;
+    expect(refreshedSearchToggleButton.title, 'Expandir tudo');
+
+    await fixture.update((_) {
+      refreshedSearchToggleButton.click();
+    });
+    await _settle(fixture);
+
+    expect(benefits.treeViewNodeIsCollapse, isFalse);
+    expect(basket.treeViewNodeIsCollapse, isFalse);
   });
 }
 

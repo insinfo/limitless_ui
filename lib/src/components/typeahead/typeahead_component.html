@@ -1,6 +1,7 @@
 <div class="li-typeahead" [class.open]="popupOpen">
   <input
       #inputElement
+      [attr.data-li-form-focus-target]="'true'"
       type="text"
       class="form-control"
       [disabled]="isDisabled"

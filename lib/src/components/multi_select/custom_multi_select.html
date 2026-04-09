@@ -1,5 +1,38 @@
 <div class="dropdown-collection">
-    <button type="button" #dropdownButton [class]="resolvedButtonClass"
+    <div *ngIf="usesAddonTriggerIcon" class="input-group">
+        <button type="button" #dropdownButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedButtonClass"
+            role="combobox"
+            [attr.aria-expanded]="dropdownOpen.toString()"
+            [attr.aria-controls]="listboxId"
+            [attr.aria-describedby]="resolvedDescribedBy"
+            [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+            aria-haspopup="listbox"
+            (click)="toggleDropdown()" (clickOutside)="closeDropdown(restoreFocus: false, preserveFocusTarget: $event.target)" tabindex="0"
+            [attr.data-invalid]="effectiveInvalid ? 'true' : null"
+            [disabled]="isDisabled">
+
+            <span class="dropdown-value" *ngIf="selectedValues.isEmpty == true">{{ placeholder}}</span>
+
+            <span class="dropdown-values" *ngIf="selectedValues.isNotEmpty == true">
+                <span class="badge text-teal bg-teal bg-opacity-20 me-2" *ngFor="let selVal of selectedLabels">
+                    {{ selVal }} 
+                </span>
+            </span>
+
+            <span *ngIf="showClearButton && hasSelection && !isDisabled"
+                class="dropdown-clear"
+                role="button"
+                [attr.aria-label]="resolvedClearButtonLabel"
+                (click)="clearSelection($event)">
+                <i class="ph ph-x"></i>
+            </span>
+        </button>
+        <span class="input-group-text dropdown-trigger-addon" aria-hidden="true">
+            <i [class]="resolvedTriggerIconClass"></i>
+        </span>
+    </div>
+
+    <button *ngIf="!usesAddonTriggerIcon" type="button" #dropdownButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedButtonClass"
         role="combobox"
         [attr.aria-expanded]="dropdownOpen.toString()"
         [attr.aria-controls]="listboxId"
@@ -24,6 +57,10 @@
             [attr.aria-label]="resolvedClearButtonLabel"
             (click)="clearSelection($event)">
             <i class="ph ph-x"></i>
+        </span>
+
+        <span *ngIf="usesOverlayTriggerIcon" class="dropdown-trigger-icon" aria-hidden="true">
+            <i [class]="resolvedTriggerIconClass"></i>
         </span>
 
     </button>
@@ -51,6 +88,6 @@
             </li>
         </ul>
     </div>
-    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
     <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 </div>

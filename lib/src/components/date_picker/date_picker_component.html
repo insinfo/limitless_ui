@@ -1,15 +1,35 @@
 <div class="date-picker-wrapper">
-    <div #triggerElement class="input-group" [class.disabled]="isDisabled" (click)="toggleOpen()">
-        <input type="text" [class]="resolvedInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
+    <div *ngIf="usesOverlayTriggerIcon" #triggerElement class="date-picker-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()">
+        <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedOverlayInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null">
-        <button type="button" class="btn date-picker-trigger-button" tabindex="-1" [disabled]="isDisabled">
-            <i class="ph ph-calendar-blank"></i>
+        <div *ngIf="showsClearButton || showsTriggerIcon" class="date-picker-overlay-actions">
+            <button *ngIf="showsClearButton" type="button" class="btn date-picker-overlay-button" [disabled]="isDisabled"
+                [attr.aria-label]="clearAriaLabel" (click)="clearFromTrigger($event)">
+                <i class="ph ph-x"></i>
+            </button>
+            <button *ngIf="showsTriggerIcon" type="button" class="btn date-picker-overlay-button" tabindex="-1" [disabled]="isDisabled">
+                <i [class]="resolvedTriggerIconClass"></i>
+            </button>
+        </div>
+    </div>
+    <div *ngIf="!usesOverlayTriggerIcon" #triggerElement class="input-group" [class.disabled]="isDisabled" (click)="toggleOpen()">
+        <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
+            readonly [disabled]="isDisabled" [required]="required"
+            [attr.aria-describedby]="resolvedDescribedBy"
+            [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+            [attr.data-invalid]="effectiveInvalid ? 'true' : null">
+        <button *ngIf="showsClearButton" type="button" class="btn date-picker-trigger-button" [disabled]="isDisabled"
+            [attr.aria-label]="clearAriaLabel" (click)="clearFromTrigger($event)">
+            <i class="ph ph-x"></i>
+        </button>
+        <button *ngIf="showsTriggerIcon" type="button" class="btn date-picker-trigger-button" tabindex="-1" [disabled]="isDisabled">
+            <i [class]="resolvedTriggerIconClass"></i>
         </button>
     </div>
-    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
     <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 
     <div #panelElement class="daterangepicker date-picker-open single ltr show-calendar opensright"
@@ -70,7 +90,7 @@
             <span class="drp-selected">
                 {{ draftDisplayValue.isEmpty ? emptySelectionLabel : draftDisplayValue }}
             </span>
-            <button type="button" class="btn btn-light" (click)="clear()">
+            <button *ngIf="showClearButton" type="button" class="btn btn-light" (click)="clear()">
                 {{ clearLabel }}
             </button>
             <button type="button" class="btn btn-light" (click)="close()">

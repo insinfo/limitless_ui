@@ -1,5 +1,52 @@
 <div class="datatable-select-wrapper">
-    <button type="button" #triggerButton [class]="resolvedTriggerClass"
+    <div *ngIf="usesAddonTriggerIcon" class="input-group">
+        <button type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
+            [disabled]="isDisabled" (click)="openModal()" tabindex="0"
+            role="combobox" aria-haspopup="dialog"
+            [attr.aria-expanded]="modal?.isOpen == true ? 'true' : 'false'"
+            [attr.aria-describedby]="resolvedDescribedBy"
+            [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+            [attr.data-invalid]="effectiveInvalid ? 'true' : null">
+            <span class="datatable-select-value"
+                [class.datatable-select-placeholder]="selectedLabel.isEmpty">
+                <span *ngIf="triggerTemplate != null">
+                    <template [ngTemplateOutlet]="triggerTemplate?.templateRef"
+                        [ngTemplateOutletValue]="triggerContext">
+                    </template>
+                </span>
+                <span *ngIf="triggerTemplate == null">
+                    <span *ngIf="!multiple">
+                        {{selectedLabel.isEmpty ? resolvedPlaceholder : selectedLabel}}
+                    </span>
+                    <span *ngIf="multiple && selectedLabels.isEmpty"
+                        class="datatable-select-placeholder">
+                        {{ resolvedPlaceholder }}
+                    </span>
+                    <span *ngIf="multiple && selectedLabels.isNotEmpty" class="datatable-select-chips">
+                        <span *ngFor="let label of selectedLabels; let i = index"
+                            class="datatable-select-chip"
+                            [hidden]="i > 1">
+                            {{ label }}
+                        </span>
+                        <span *ngIf="selectedLabels.length > 2"
+                            class="datatable-select-chip datatable-select-chip--muted">
+                            +{{ selectedLabels.length - 2 }}
+                        </span>
+                    </span>
+                </span>
+            </span>
+            <span class="datatable-select-icons">
+                <i *ngIf="showsClearButton" class="ph ph-x datatable-select-clear"
+                    (click)="onClearClick($event)" [attr.title]="resolvedClearButtonLabel"
+                    [attr.aria-label]="resolvedClearButtonLabel"></i>
+            </span>
+        </button>
+        <span class="input-group-text datatable-select-trigger-addon" aria-hidden="true">
+            <i [class]="resolvedTriggerIconClass"></i>
+        </span>
+    </div>
+
+    <button *ngIf="!usesAddonTriggerIcon" type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
         [disabled]="isDisabled" (click)="openModal()" tabindex="0"
         role="combobox" aria-haspopup="dialog"
         [attr.aria-expanded]="modal?.isOpen == true ? 'true' : 'false'"
@@ -14,16 +61,33 @@
                 </template>
             </span>
             <span *ngIf="triggerTemplate == null">
-                {{selectedLabel.isEmpty ? resolvedPlaceholder : selectedLabel}}
+                <span *ngIf="!multiple">
+                    {{selectedLabel.isEmpty ? resolvedPlaceholder : selectedLabel}}
+                </span>
+                <span *ngIf="multiple && selectedLabels.isEmpty">
+                    {{ resolvedPlaceholder }}
+                </span>
+                <span *ngIf="multiple && selectedLabels.isNotEmpty" class="datatable-select-chips">
+                    <span *ngFor="let label of selectedLabels; let i = index"
+                        class="datatable-select-chip"
+                        [hidden]="i > 1">
+                        {{ label }}
+                    </span>
+                    <span *ngIf="selectedLabels.length > 2"
+                        class="datatable-select-chip datatable-select-chip--muted">
+                        +{{ selectedLabels.length - 2 }}
+                    </span>
+                </span>
             </span>
         </span>
         <span class="datatable-select-icons">
-            <i *ngIf="selectedValue != null" class="ph ph-x datatable-select-clear"
+            <i *ngIf="showsClearButton" class="ph ph-x datatable-select-clear"
                 (click)="onClearClick($event)" [attr.title]="resolvedClearButtonLabel"
                 [attr.aria-label]="resolvedClearButtonLabel"></i>
+            <i *ngIf="usesOverlayTriggerIcon" [class]="'datatable-select-trigger-icon ' + resolvedTriggerIconClass"></i>
         </span>
     </button>
-    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
     <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 </div>
 
@@ -35,7 +99,8 @@
     [lazyContent]="true"
     [enableModalBodyClass]="false"
     [closeOnBackdropClick]="true"
-    [enableRoundedCorners]="true">
+    [enableRoundedCorners]="true"
+    (close)="onModalClosed()">
 
     <template [ngTemplateOutlet]="modalContentTemplate == null ? null : modalContentTemplate?.templateRef"
         [ngTemplateOutletValue]="modalContext">
@@ -47,16 +112,31 @@
         [data]="data"
         [searchInFields]="searchInFields"
         [limitPerPageOptions]="limitPerPageOptions"
-        [showCheckboxToSelectRow]="showCheckboxToSelectRow"
+        [showCheckboxToSelectRow]="useCheckboxSelection"
+        [allowSingleSelectionOnly]="false"
         [showExportMenu]="showExportMenu"
         [searchPlaceholder]="resolvedSearchPlaceholder"
         [gridMode]="gridMode"
         [responsiveCollapse]="responsiveCollapse"
-        [disableRowClick]="false"
+        [disableRowClick]="multiple"
         (onRowClick)="onDatatableRowClick($event)"
+        (selectAll)="onDatatableSelectionChange($event)"
         (dataRequest)="onDatatableDataRequest($event)"
         (limitChange)="onDatatableLimitChange($event)"
         (searchRequest)="onDatatableSearchRequest($event)">
     </li-datatable>
+
+    <div *ngIf="modalContentTemplate == null && multiple" class="modal-footer border-top-0 px-3 py-2 gap-2">
+        <button type="button"
+            class="btn btn-light btn-sm"
+            (click)="clearModalSelection()">
+            {{ resolvedClearButtonLabel }}
+        </button>
+        <button type="button"
+            class="btn btn-primary btn-sm"
+            (click)="applyModalSelection()">
+            {{ resolvedConfirmButtonLabel }}
+        </button>
+    </div>
 
 </li-modal>

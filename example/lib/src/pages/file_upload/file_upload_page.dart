@@ -45,6 +45,17 @@ class FileUploadPageComponent {
       (filesChange)="onDirectiveFiles(\$event)">
 </div>''';
 
+  static const String validationSnippet = '''
+<li-file-upload
+    [(ngModel)]="attachments"
+    [liRules]="[LiRule.required()]"
+    [liMessages]="{
+      'required': 'Adicione ao menos um anexo.'
+    }"
+    liValidationMode="submitted"
+    accept="image/*,application/pdf">
+</li-file-upload>''';
+
   List<html.File> attachments = <html.File>[];
   List<html.File> coverFiles = <html.File>[];
   List<html.File> compactFiles = <html.File>[];

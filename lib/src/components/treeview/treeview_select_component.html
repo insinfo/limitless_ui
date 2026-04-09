@@ -1,5 +1,62 @@
 <div class="treeview-dropdown-select">
-    <button type="button"
+    <div *ngIf="usesAddonTriggerIcon" class="input-group">
+        <button type="button"
+            #triggerButton
+            [class]="resolvedTriggerClass"
+            [disabled]="isDisabled"
+            [attr.aria-expanded]="dropdownOpen.toString()"
+            [attr.aria-controls]="listboxId"
+            [attr.aria-describedby]="resolvedDescribedBy"
+            [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+            [attr.data-invalid]="effectiveInvalid ? 'true' : null"
+            role="combobox"
+            aria-haspopup="tree"
+            (click)="toggleDropdown()"
+            (focus)="handleFocus()">
+            <span class="treeview-dropdown-select__value"
+                [class.treeview-dropdown-select__placeholder]="selectedLabel.isEmpty">
+                <span *ngIf="triggerTemplate != null">
+                    <template [ngTemplateOutlet]="triggerTemplate?.templateRef"
+                        [ngTemplateOutletValue]="triggerContext">
+                    </template>
+                </span>
+
+                <span *ngIf="triggerTemplate == null">
+                    <span *ngIf="!multiple">
+                        {{ selectedLabel.isEmpty ? resolvedPlaceholder : selectedLabel }}
+                    </span>
+
+                    <span *ngIf="multiple && selectedNodes.isEmpty">
+                        {{ resolvedPlaceholder }}
+                    </span>
+
+                    <span *ngIf="multiple && selectedNodes.isNotEmpty" class="treeview-dropdown-select__chips">
+                        <span *ngFor="let node of selectedNodes; let i = index"
+                            class="treeview-dropdown-select__chip"
+                            [hidden]="i > 1">
+                            {{ resolvedNodeLabel(node) }}
+                        </span>
+                        <span *ngIf="selectedNodes.length > 2" class="treeview-dropdown-select__chip treeview-dropdown-select__chip--muted">
+                            +{{ selectedNodes.length - 2 }} {{ resolvedSummarySuffix }}
+                        </span>
+                    </span>
+                </span>
+            </span>
+
+            <span *ngIf="showClearButton && hasSelection && !isDisabled"
+                class="treeview-dropdown-select__clear"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="resolvedClearButtonLabel"
+                (click)="clearSelection($event)">
+                <i class="ph ph-x"></i>
+            </span>
+        </button>
+        <span class="input-group-text treeview-dropdown-select__trigger-addon" aria-hidden="true">
+            <i [class]="resolvedTriggerIconClass"></i>
+        </span>
+    </div>
+    <button *ngIf="!usesAddonTriggerIcon" type="button"
         #triggerButton
         [class]="resolvedTriggerClass"
         [disabled]="isDisabled"
@@ -50,25 +107,40 @@
             (click)="clearSelection($event)">
             <i class="ph ph-x"></i>
         </span>
+        <span *ngIf="usesOverlayTriggerIcon" class="treeview-dropdown-select__trigger-icon" aria-hidden="true">
+            <i [class]="resolvedTriggerIconClass"></i>
+        </span>
     </button>
-    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
+    <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
     <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 
     <div #dropdownPanel
         class="treeview-dropdown-select__panel dropdown-menu"
+        (click)="onPanelClick($event)"
         [class.show]="dropdownOpen">
         <div class="treeview-dropdown-select__search" *ngIf="searchable">
-            <div class="form-control-feedback form-control-feedback-start">
-                <input #searchInput
-                    type="text"
-                    class="form-control"
-                    [value]="searchTerm"
-                    [placeholder]="resolvedSearchPlaceholder"
-                    [attr.aria-label]="searchAriaLabel"
-                    (input)="handleSearchInput(searchInput.value)">
-                <div class="form-control-feedback-icon">
-                    <i class="ph-magnifying-glass"></i>
+            <div class="treeview-dropdown-select__search-row">
+                <div class="form-control-feedback form-control-feedback-start treeview-dropdown-select__search-field">
+                    <input #searchInput
+                        type="text"
+                        class="form-control"
+                        [value]="searchTerm"
+                        [placeholder]="resolvedSearchPlaceholder"
+                        [attr.aria-label]="searchAriaLabel"
+                        (input)="handleSearchInput(searchInput.value)">
+                    <div class="form-control-feedback-icon">
+                        <i class="ph-magnifying-glass"></i>
+                    </div>
                 </div>
+                <button *ngIf="showSearchExpandToggle"
+                    type="button"
+                    class="btn btn-light btn-sm btn-icon border-transparent treeview-dropdown-select__search-action"
+                    [attr.title]="resolvedExpandToggleLabel"
+                    [attr.aria-label]="resolvedExpandToggleLabel"
+                    [disabled]="togglingAll"
+                    (click)="toggleAllNodes()">
+                    <i [class]="resolvedExpandToggleIconClass"></i>
+                </button>
             </div>
         </div>
 
@@ -152,6 +224,28 @@
                     class="btn btn-link btn-sm treeview-dropdown-select__load-more"
                     (click)="loadMoreRootNodes()">
                     {{ resolvedLoadMoreLabel }}
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="showActionBar" class="treeview-dropdown-select__actions">
+            <button *ngIf="showFooterExpandToggle" type="button"
+                class="btn btn-sm btn-light treeview-dropdown-select__action-expand"
+                [disabled]="togglingAll"
+                (click)="toggleAllNodes()">
+                {{ resolvedExpandToggleLabel }}
+            </button>
+
+            <div class="treeview-dropdown-select__actions-end">
+                <button *ngIf="hasSelection" type="button"
+                    class="btn btn-sm btn-light treeview-dropdown-select__action-clear"
+                    (click)="clearSelection($event)">
+                    {{ resolvedClearButtonLabel }}
+                </button>
+                <button type="button"
+                    class="btn btn-sm btn-primary treeview-dropdown-select__action-confirm"
+                    (click)="confirmSelection()">
+                    {{ resolvedConfirmButtonLabel }}
                 </button>
             </div>
         </div>

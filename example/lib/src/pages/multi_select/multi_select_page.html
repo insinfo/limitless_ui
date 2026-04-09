@@ -100,6 +100,15 @@
                 <h6 class="mb-2 mt-4">modelChange</h6>
                 <p class="text-muted mb-3">Útil quando a tela persiste só os ids, mas ainda precisa acessar os modelos completos para renderizar dependências ou preencher outros campos.</p>
                 <li-highlight [code]="modelChangeSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">Validação declarativa</h6>
+                <p class="text-muted mb-3">Multi-select segue a mesma base declarativa do select: regras em <code>liRules</code>, mensagens em <code>liMessages</code> e controle de exibição em <code>liValidationMode</code>.</p>
+                <li-highlight [code]="validationSnippet" language="html"></li-highlight>
+                <ul class="mb-0 ps-3 mt-3">
+                  <li>Use <code>LiRule.required()</code> quando qualquer seleção já for suficiente.</li>
+                  <li>Use <code>LiRule.custom(...)</code> para cardinalidade mínima, máxima ou combinações específicas.</li>
+                  <li>Prefira <code>submitted</code> em formulários grandes para evitar feedback prematuro enquanto o usuário ainda monta a lista.</li>
+                </ul>
               </div>
 
               <div class="col-xl-6">

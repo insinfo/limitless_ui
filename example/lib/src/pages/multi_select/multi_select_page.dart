@@ -50,6 +50,21 @@ List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
   (modelChange)="onSelectedPeopleModelsChange(\$event)">
 </li-multi-select>''';
 
+  static const String validationSnippet = '''
+<li-multi-select
+  [dataSource]="channelOptions"
+  labelKey="label"
+  valueKey="id"
+  [liRules]="[
+    LiRule.custom((value) =>
+      value is Iterable && value.length >= 2
+        ? null
+        : 'Selecione ao menos 2 canais.')
+  ]"
+  liValidationMode="submitted"
+  [(ngModel)]="selectedChannels">
+</li-multi-select>''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
 

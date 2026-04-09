@@ -40,6 +40,12 @@ responda sempre em portugues
   - or restructure the flow so the data is ready before the deferred child is created.
 - Never claim a bug is fixed just because `markForCheck()` was added to a default-strategy page. Confirm the rendered DOM actually updates without extra user interaction.
 
+## AngularDart browser test rules
+
+- Para testes browser deste repositório, sempre execute `dart run build_runner test -- -p chrome -j 1` a partir da raiz do pacote, ou a variante focada com caminho de arquivo quando precisar limitar o escopo.
+- Não trate o resumo do runner genérico como validação suficiente para testes AngularDart browser. O resultado correto deve vir do fluxo com `build_runner test` e Chrome.
+- Ao relatar o resultado, informe o total real retornado por esse comando browser, mesmo quando houver testes ignorados/skipped no output.
+
 ## AngularDart emulated encapsulation and host selectors
 
 - In emulated view encapsulation (the default), AngularDart rewrites each simple selector to include a `[_ngcontent-xxx]` attribute. A class applied to the **host element** via `@HostBinding('class.foo')` lives on the `_nghost-xxx` attribute, **not** `_ngcontent-xxx`.

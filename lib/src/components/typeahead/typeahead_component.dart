@@ -348,7 +348,11 @@ class LiTypeaheadComponent
     _scheduleSearch();
   }
 
-  void handleKeydown(html.KeyboardEvent event) {
+  void handleKeydown(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
     if (event.key == 'ArrowDown') {
       event.preventDefault();
       if (!popupOpen) {

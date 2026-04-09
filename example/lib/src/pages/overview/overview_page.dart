@@ -206,6 +206,15 @@ class OverviewPageComponent {
         accentClass: 'overview-card-success',
       ),
       OverviewFeatureCard(
+        title: i18n.isPortuguese ? 'Cadastro de pessoa' : 'Person registration',
+        body: i18n.isPortuguese
+            ? 'Exemplo integrado com inputs, radios, toggles, date/time pickers, upload e validações de frontend/backend.'
+            : 'Integrated example with inputs, radios, toggles, date/time pickers, upload, and frontend/backend validation.',
+        iconClass: 'ph-identification-card',
+        url: DemoRoutePaths.personRegistration.toUrl(),
+        accentClass: 'overview-card-primary',
+      ),
+      OverviewFeatureCard(
         title: 'Floating action button',
         body: t.pages.overview.featureFabBody,
         iconClass: 'ph-plus-circle',

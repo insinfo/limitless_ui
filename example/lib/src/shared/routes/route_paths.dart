@@ -33,6 +33,7 @@ class DemoRoutePaths {
   static final toast = RoutePath(path: 'toast');
   static final notification = RoutePath(path: 'notification');
   static final fileUpload = RoutePath(path: 'file-upload');
+  static final personRegistration = RoutePath(path: 'person-registration');
   static final treeview = RoutePath(path: 'treeview');
   static final helpers = RoutePath(path: 'helpers');
   static final sweetAlert = RoutePath(path: 'sweet-alert');

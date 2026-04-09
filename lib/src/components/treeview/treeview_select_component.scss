@@ -17,6 +17,29 @@
     padding-right: 2.75rem;
 }
 
+.treeview-dropdown-select__trigger--with-overlay-icon {
+    padding-right: 3rem;
+}
+
+.treeview-dropdown-select__trigger--with-clear {
+    padding-right: 4.75rem;
+}
+
+.treeview-dropdown-select__trigger--with-overlay-icon.is-invalid,
+.treeview-dropdown-select__trigger--with-overlay-icon.is-valid {
+    padding-right: 5rem;
+}
+
+.treeview-dropdown-select__trigger--with-clear.is-invalid,
+.treeview-dropdown-select__trigger--with-clear.is-valid {
+    padding-right: 6.75rem;
+}
+
+.treeview-dropdown-select__trigger--with-overlay-icon.treeview-dropdown-select__trigger--with-clear.is-invalid,
+.treeview-dropdown-select__trigger--with-overlay-icon.treeview-dropdown-select__trigger--with-clear.is-valid {
+    padding-right: 8.5rem;
+}
+
 .treeview-dropdown-select__trigger:disabled {
     color: var(--text-muted);
 }
@@ -68,6 +91,29 @@
     margin-right: 0.35rem;
 }
 
+.treeview-dropdown-select__trigger.is-invalid .treeview-dropdown-select__clear,
+.treeview-dropdown-select__trigger.is-valid .treeview-dropdown-select__clear,
+.treeview-dropdown-select__trigger.is-invalid .treeview-dropdown-select__trigger-icon,
+.treeview-dropdown-select__trigger.is-valid .treeview-dropdown-select__trigger-icon {
+    margin-right: 2rem;
+}
+
+.treeview-dropdown-select__trigger-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    color: var(--text-muted);
+    margin-right: 0.35rem;
+}
+
+.treeview-dropdown-select__trigger-addon {
+    min-width: 2.625rem;
+    justify-content: center;
+}
+
 .treeview-dropdown-select__placeholder {
     color: var(--text-muted);
 }
@@ -87,6 +133,20 @@
     padding: 0.875rem 0.875rem 0;
 }
 
+.treeview-dropdown-select__search-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.treeview-dropdown-select__search-field {
+    flex: 1 1 auto;
+}
+
+.treeview-dropdown-select__search-action {
+    flex: 0 0 auto;
+}
+
 .treeview-dropdown-select__scroll {
     max-height: 24rem;
     overflow: auto;
@@ -97,6 +157,22 @@
 .treeview-dropdown-select__footer {
     padding: 0.5rem 0.25rem;
     color: var(--text-muted);
+}
+
+.treeview-dropdown-select__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    border-top: 1px solid var(--dropdown-border-color, var(--border-color-translucent));
+    background: color-mix(in srgb, var(--dropdown-bg, var(--white)) 96%, var(--body-color) 4%);
+}
+
+.treeview-dropdown-select__actions-end {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
 }
 
 .treeview-dropdown-select__tree,

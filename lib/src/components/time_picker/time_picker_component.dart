@@ -8,6 +8,11 @@ import 'package:ngforms/ngforms.dart'
 import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
+import '../../directives/li_form_directive.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
 
 enum TimePickerDialMode { hour, minute }
 
@@ -42,10 +47,14 @@ class TimePickerDialLabel {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiTimePickerComponent
-    implements ControlValueAccessor<Duration?>, OnDestroy {
-  LiTimePickerComponent(this._changeDetectorRef);
+    implements ControlValueAccessor<Duration?>, AfterChanges, OnDestroy {
+  LiTimePickerComponent(
+    this._changeDetectorRef, [
+    @Optional() this._formDirective,
+  ]);
 
   final ChangeDetectorRef _changeDetectorRef;
+  final LiFormDirective? _formDirective;
   final StreamController<Duration?> _valueChangeController =
       StreamController<Duration?>.broadcast();
 
@@ -56,6 +65,7 @@ class LiTimePickerComponent
   StreamSubscription<html.MouseEvent>? _documentMouseUpSubscription;
   StreamSubscription<html.TouchEvent>? _documentTouchMoveSubscription;
   StreamSubscription<html.TouchEvent>? _documentTouchEndSubscription;
+  StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
   Duration? value;
@@ -91,10 +101,32 @@ class LiTimePickerComponent
   String helperText = '';
 
   @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
+
+  @Input()
   String feedbackClass = '';
 
   @Input()
   String describedBy = '';
+
+  /// Supported values: `default`, `overlay`, `addon`, `hidden`.
+  @Input()
+  String triggerIconMode = 'default';
+
+  @Input()
+  String triggerIconClass = '';
+
+  @Input()
+  bool showClearButton = true;
 
   @Output()
   Stream<Duration?> get valueChange => _valueChangeController.stream;
@@ -130,18 +162,39 @@ class LiTimePickerComponent
   ChangeFunction<Duration?> _onChange = (Duration? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
   bool _touched = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveInvalid =>
-      invalid || dataInvalid || (required && _touched && value == null);
+    bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
+
+    bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
 
   bool get effectiveValid =>
-      !effectiveInvalid && (valid || (required && _touched && value != null));
+      !effectiveInvalid &&
+      (valid ||
+        (_shouldShowValidation &&
+          _effectiveRules.isNotEmpty &&
+          _autoValidationIssue == null));
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
-  bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
+    String get effectiveErrorText {
+    final externalMessage = errorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
+
+    return _autoValidationIssue?.message ?? '';
+    }
+
+    bool get showErrorFeedback =>
+      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
@@ -198,9 +251,75 @@ class LiTimePickerComponent
 
   String get okLabel => _isEnglishLocale ? 'OK' : 'OK';
 
+  String get clearLabel => _isEnglishLocale ? 'Clear' : 'Limpar';
+
+  String get clearAriaLabel =>
+      _isEnglishLocale ? 'Clear selected time' : 'Limpar horário selecionado';
+
   String get amLabel => 'AM';
 
   String get pmLabel => 'PM';
+
+  bool get hasValue => value != null;
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
+      );
+
+  @override
+  void ngAfterChanges() {
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription ??=
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _markForCheck();
+    });
+
+    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
+      if (required) const LiRequiredRule(),
+      ...liRules,
+    ]);
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...liMessages,
+    });
+    _runAutoValidation();
+    _markForCheck();
+  }
+
+  String get normalizedTriggerIconMode {
+    switch (triggerIconMode.trim().toLowerCase()) {
+      case 'overlay':
+        return 'overlay';
+      case 'hidden':
+        return 'hidden';
+      case 'addon':
+        return 'addon';
+      default:
+        return 'default';
+    }
+  }
+
+  bool get usesOverlayTriggerIcon => normalizedTriggerIconMode == 'overlay';
+
+  bool get showsTriggerIcon => normalizedTriggerIconMode != 'hidden';
+
+  bool get showsClearButton => showClearButton && hasValue;
+
+  String get resolvedTriggerIconClass {
+    final custom = triggerIconClass.trim();
+    return custom.isNotEmpty ? custom : 'ph ph-clock';
+  }
+
+  String get resolvedOverlayInputClass => _joinClasses(<String>[
+        resolvedInputClass,
+        'time-picker-field--overlay',
+        showsClearButton ? 'time-picker-field--overlay-clear' : '',
+        showsTriggerIcon ? 'time-picker-field--overlay-trigger' : '',
+      ]);
 
   double get handDegrees => isHourMode
       ? ((use24Hour ? draftHour24 % 12 : displayHour12 % 12) * 30).toDouble()
@@ -361,7 +480,11 @@ class LiTimePickerComponent
     _commitMinuteInput();
   }
 
-  void onChipKeyDown(html.KeyboardEvent event, bool isHourField) {
+  void onChipKeyDown(html.Event event, bool isHourField) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
     if (event.key == 'Enter') {
       event.preventDefault();
       if (isHourField) {
@@ -438,10 +561,28 @@ class LiTimePickerComponent
     value = _normalizeDuration(
       Duration(hours: draftHour24, minutes: draftMinute),
     );
+    _dirty = true;
     _valueChangeController.add(value);
     _onChange(value);
     _markTouched();
+    _runAutoValidation();
     close();
+  }
+
+  void clear() {
+    value = null;
+    _dirty = true;
+    _valueChangeController.add(null);
+    _onChange(null);
+    _markTouched();
+    _runAutoValidation();
+    close();
+  }
+
+  void clearFromTrigger(html.MouseEvent event) {
+    event.preventDefault();
+    event.stopPropagation();
+    clear();
   }
 
   void close() {
@@ -465,6 +606,7 @@ class LiTimePickerComponent
     this.value = _normalizeDuration(value);
     _syncDraftFromValue();
     _syncInputTexts();
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -878,10 +1020,31 @@ class LiTimePickerComponent
   void _markTouched() {
     if (_touched) {
       _onTouched();
+      if (_shouldShowValidation || _autoValidationIssue != null) {
+        _runAutoValidation();
+      }
       return;
     }
     _touched = true;
     _onTouched();
+    _runAutoValidation();
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
+      return;
+    }
+
+    _autoValidationIssue = liValidateValue(
+      value: value,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        fieldName: 'timePicker',
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
   }
 
   String _joinClasses(List<String> values) {
@@ -896,6 +1059,7 @@ class LiTimePickerComponent
     _unbindDocumentListeners();
     _stopClockDrag();
     _overlay?.dispose();
+    _formSubmissionSubscription?.cancel();
     _valueChangeController.close();
   }
 }

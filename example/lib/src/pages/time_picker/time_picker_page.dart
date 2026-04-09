@@ -17,6 +17,16 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 class TimePickerPageComponent {
   TimePickerPageComponent(this.i18n);
 
+  static const String validationSnippet = '''
+<li-time-picker
+  [(ngModel)]="selectedTime"
+  [liRules]="[LiRule.required()]"
+  [liMessages]="{
+    'required': 'Selecione um horario.'
+  }"
+  liValidationMode="submitted">
+</li-time-picker>''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
 

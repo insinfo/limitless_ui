@@ -12,9 +12,86 @@
     width: 100%;
 }
 
+.date-range-trigger-shell {
+    position: relative;
+}
+
+.date-range-trigger-shell.disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
 .date-range-wrapper .input-group.disabled {
     opacity: 0.65;
     cursor: not-allowed;
+}
+
+.date-range-field--overlay {
+    padding-right: 0.875rem;
+}
+
+.date-range-field--overlay.date-range-field--overlay-trigger {
+    padding-right: 3rem;
+}
+
+.date-range-field--overlay.date-range-field--overlay-clear {
+    padding-right: 3rem;
+}
+
+.date-range-field--overlay.date-range-field--overlay-trigger.date-range-field--overlay-clear {
+    padding-right: 5rem;
+}
+
+.date-range-field--overlay.is-invalid,
+.date-range-field--overlay.is-valid {
+    padding-right: 3rem;
+}
+
+.date-range-field--overlay.date-range-field--overlay-trigger.is-invalid,
+.date-range-field--overlay.date-range-field--overlay-trigger.is-valid,
+.date-range-field--overlay.date-range-field--overlay-clear.is-invalid,
+.date-range-field--overlay.date-range-field--overlay-clear.is-valid {
+    padding-right: 5rem;
+}
+
+.date-range-field--overlay.date-range-field--overlay-trigger.date-range-field--overlay-clear.is-invalid,
+.date-range-field--overlay.date-range-field--overlay-trigger.date-range-field--overlay-clear.is-valid {
+    padding-right: 7.1rem;
+}
+
+.date-range-overlay-actions {
+    position: absolute;
+    top: 50%;
+    right: 0.625rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    z-index: 3;
+}
+
+.date-range-trigger-shell > .date-range-field--overlay.is-invalid ~ .date-range-overlay-actions,
+.date-range-trigger-shell > .date-range-field--overlay.is-valid ~ .date-range-overlay-actions {
+    right: 2.5rem;
+}
+
+.date-range-overlay-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.date-range-overlay-button:not(:disabled):hover,
+.date-range-overlay-button:not(:disabled):focus {
+    color: var(--body-color);
+    background: color-mix(in srgb, var(--body-color) 8%, transparent);
 }
 
 .date-range-trigger-button {

@@ -24,6 +24,37 @@ $background-color: white;
     cursor: not-allowed;
 }
 
+.dropdown-button {
+    position: relative;
+}
+
+.dropdown-button--no-native-indicator {
+    background-image: none;
+}
+
+.dropdown-button--with-overlay-icon {
+    padding-right: 2.75rem;
+}
+
+.dropdown-button--with-clear {
+    padding-right: 4.75rem;
+}
+
+.dropdown-button--with-overlay-icon.is-invalid,
+.dropdown-button--with-overlay-icon.is-valid {
+    padding-right: 4.9rem;
+}
+
+.dropdown-button--with-clear.is-invalid,
+.dropdown-button--with-clear.is-valid {
+    padding-right: 6.75rem;
+}
+
+.dropdown-button--with-overlay-icon.dropdown-button--with-clear.is-invalid,
+.dropdown-button--with-overlay-icon.dropdown-button--with-clear.is-valid {
+    padding-right: 6.75rem;
+}
+
 .dropdown-value {
     display: block;
     font-weight: 400;
@@ -31,6 +62,51 @@ $background-color: white;
     text-overflow: ellipsis;
     overflow: hidden;
     text-align: start;
+}
+
+.dropdown-trigger-icon,
+.dropdown-clear {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.dropdown-trigger-icon {
+    right: 0.875rem;
+    color: color-mix(in srgb, var(--body-color) 72%, transparent);
+    pointer-events: none;
+}
+
+.dropdown-button.is-invalid .dropdown-trigger-icon,
+.dropdown-button.is-valid .dropdown-trigger-icon {
+    right: 2.65rem;
+}
+
+.dropdown-clear {
+    right: 2.1rem;
+    border-radius: 999px;
+    color: color-mix(in srgb, var(--body-color) 70%, transparent);
+    cursor: pointer;
+
+    &:hover {
+        background-color: color-mix(in srgb, var(--body-color) 10%, transparent);
+        color: var(--body-color);
+    }
+}
+
+.dropdown-button.is-invalid .dropdown-clear,
+.dropdown-button.is-valid .dropdown-clear {
+    right: 3.95rem;
+}
+
+.dropdown-trigger-addon {
+    min-width: 2.625rem;
+    justify-content: center;
 }
 
 .dropdown-item-hover {

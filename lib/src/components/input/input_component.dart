@@ -4,6 +4,17 @@ import 'dart:html' as html;
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 
+import '../../directives/li_form_directive.dart';
+import '../../validation/li_built_in_input_types.dart';
+import '../../validation/li_input_type.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
+
+typedef LiInputValidator = String? Function(String value);
+typedef LiInputMaskFormatter = String Function(String value);
+
 const liInputDirectives = <Object>[
   LiInputComponent,
 ];
@@ -19,14 +30,19 @@ const liInputDirectives = <Object>[
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiInputComponent
-    implements ControlValueAccessor<String?>, AfterViewInit, OnDestroy {
-  LiInputComponent(this._hostElement, this._changeDetectorRef)
+    implements ControlValueAccessor<String?>, AfterChanges, AfterViewInit, OnDestroy {
+  LiInputComponent(
+    this._hostElement,
+    this._changeDetectorRef, [
+    @Optional() this._formDirective,
+  ])
       : _generatedId = 'li-input-${_nextId++}';
 
   static int _nextId = 0;
 
   final html.HtmlElement _hostElement;
   final ChangeDetectorRef _changeDetectorRef;
+  final LiFormDirective? _formDirective;
   final String _generatedId;
   final StreamController<html.Event> _blurController =
       StreamController<html.Event>.broadcast();
@@ -38,6 +54,7 @@ class LiInputComponent
       StreamController<html.KeyboardEvent>.broadcast();
   final StreamController<html.KeyboardEvent> _enterController =
       StreamController<html.KeyboardEvent>.broadcast();
+    StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
   String id = '';
@@ -61,7 +78,7 @@ class LiInputComponent
   String placeholder = '';
 
   @Input()
-  String type = 'text';
+  String type = '';
 
   @Input()
   String size = '';
@@ -74,6 +91,9 @@ class LiInputComponent
 
   @Input()
   String inputMode = '';
+
+  @Input()
+  String locale = 'pt_BR';
 
   @Input()
   String enterKeyHint = '';
@@ -119,6 +139,39 @@ class LiInputComponent
 
   @Input()
   String maskSlot = 'x';
+
+  @Input()
+  LiInputMaskFormatter? maskFormatter;
+
+  @Input()
+  LiInputValidator? validator;
+
+  @Input()
+  bool invalid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String liType = '';
+
+  @Input()
+  LiInputType? liInputType;
+
+  @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
 
   @Input()
   int maxLength = 0;
@@ -203,8 +256,12 @@ class LiInputComponent
 
   String _value = '';
   bool _touched = false;
-  bool _requiredInvalid = false;
-  bool _requiredValid = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
+  LiInputType? _resolvedLiInputType;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
   html.MutationObserver? _hostClassObserver;
 
   ChangeFunction<String?> _onChange = (String? _, {String? rawValue}) {};
@@ -224,10 +281,10 @@ class LiInputComponent
       ariaLabel.trim().isEmpty ? null : ariaLabel.trim();
 
   String? get resolvedAutocomplete =>
-      autocomplete.trim().isEmpty ? null : autocomplete.trim();
+      _resolvedString(autocomplete, fallback: resolvedLiInputType?.autocomplete);
 
   String? get resolvedInputMode =>
-      inputMode.trim().isEmpty ? null : inputMode.trim();
+      _resolvedString(inputMode, fallback: resolvedLiInputType?.inputMode);
 
   String? get resolvedEnterKeyHint =>
       enterKeyHint.trim().isEmpty ? null : enterKeyHint.trim();
@@ -265,7 +322,38 @@ class LiInputComponent
 
   int? get resolvedMaxLength => maxLength > 0 ? maxLength : null;
 
-  bool get hasMask => mask.trim().isNotEmpty && !multiline;
+  LiInputType? get resolvedLiInputType => _resolvedLiInputType;
+
+  int? get effectiveMinLength =>
+      minLength > 0 ? minLength : resolvedLiInputType?.minLength;
+
+  int? get effectiveMaxLength =>
+      maxLength > 0 ? maxLength : resolvedLiInputType?.maxLength;
+
+  bool get effectiveRequired =>
+      required || _effectiveRules.any((rule) => rule.code == 'required');
+
+  String get effectiveHtmlType {
+    final explicitType = type.trim();
+    if (explicitType.isNotEmpty) {
+      return explicitType;
+    }
+
+    return resolvedLiInputType?.htmlType?.trim().isNotEmpty == true
+        ? resolvedLiInputType!.htmlType!.trim()
+        : 'text';
+  }
+
+  String get effectiveMask {
+    final explicitMask = mask.trim();
+    if (explicitMask.isNotEmpty) {
+      return explicitMask;
+    }
+
+    return resolvedLiInputType?.mask?.trim() ?? '';
+  }
+
+  bool get hasMask => effectiveMask.isNotEmpty && !multiline;
 
   bool get hasLabel => label.trim().isNotEmpty;
 
@@ -286,18 +374,43 @@ class LiInputComponent
   bool get showHelperText => helperText.trim().isNotEmpty;
 
   bool get showInvalidFeedback =>
-      invalidFeedbackText.trim().isNotEmpty && isInvalid;
+      resolvedInvalidFeedbackText.trim().isNotEmpty && effectiveInvalid;
 
   bool get showValidFeedback => validFeedbackText.trim().isNotEmpty && isValid;
 
-  bool get isInvalid =>
-      _requiredInvalid ||
-      _hostElement.classes.contains('is-invalid') ||
-      _hostElement.attributes['data-invalid'] == 'true';
+  bool get hasCustomMaskFormatter =>
+      maskFormatter != null && resolvedType != 'number';
+
+  String get resolvedInvalidFeedbackText =>
+      effectiveErrorText;
+
+    bool get effectiveInvalid =>
+      invalid || dataInvalid || _hasHostInvalidState || effectiveAutoInvalid;
+
+    bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
+
+    bool get _effectiveAutoValid =>
+      _shouldShowValidation && _effectiveRules.isNotEmpty && _autoValidationIssue == null;
+
+    bool get isInvalid => effectiveInvalid;
 
   bool get isValid =>
-      !isInvalid &&
-      (_requiredValid || _hostElement.classes.contains('is-valid'));
+      !isInvalid && (_effectiveAutoValid || _hostElement.classes.contains('is-valid'));
+
+    String get effectiveErrorText {
+    final externalMessage = errorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
+
+    final legacyMessage = invalidFeedbackText.trim();
+    if (legacyMessage.isNotEmpty && effectiveInvalid) {
+      return legacyMessage;
+    }
+
+    return _autoValidationIssue?.message ?? '';
+    }
 
   int get resolvedRows => rows < 2 ? 2 : rows;
 
@@ -329,7 +442,7 @@ class LiInputComponent
   }
 
   String get resolvedBaseType {
-    switch (type.trim().toLowerCase()) {
+    switch (effectiveHtmlType.trim().toLowerCase()) {
       case 'email':
       case 'number':
       case 'password':
@@ -338,7 +451,7 @@ class LiInputComponent
       case 'url':
       case 'date':
       case 'time':
-        return type.trim().toLowerCase();
+        return effectiveHtmlType.trim().toLowerCase();
       case 'text':
       default:
         return 'text';
@@ -347,12 +460,16 @@ class LiInputComponent
 
   bool _passwordVisible = false;
   String get resolvedPlaceholder {
+    final effectivePlaceholder = _resolvedString(
+      placeholder,
+      fallback: resolvedLiInputType?.placeholder,
+    );
     if (usesFloatingLabel) {
-      final normalized = placeholder.trim();
+      final normalized = effectivePlaceholder?.trim() ?? '';
       return normalized.isEmpty ? ' ' : normalized;
     }
 
-    return placeholder;
+    return effectivePlaceholder ?? '';
   }
 
   String get resolvedContainerClass => _joinClasses(<String>[
@@ -409,14 +526,22 @@ class LiInputComponent
   }
 
   @override
+  void ngAfterChanges() {
+    _rebuildValidationConfig(normalizeCurrentValue: true);
+    _syncInputValue();
+    _markForCheck();
+  }
+
+  @override
   void writeValue(dynamic value) {
-    _value = switch (value) {
+    final normalized = switch (value) {
       String v => v,
       null => '',
       _ => value.toString(),
     };
+    _value = _normalizeIncomingValue(normalized);
     _syncInputValue();
-    _syncRequiredValidationState();
+    _runAutoValidation();
     _markForCheck();
   }
 
@@ -428,6 +553,15 @@ class LiInputComponent
 
   @override
   void ngAfterViewInit() {
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription =
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _syncValidationClasses();
+      _markForCheck();
+    });
+
     _hostClassObserver = html.MutationObserver((_, __) {
       _syncValidationClasses();
       _markForCheck();
@@ -440,21 +574,26 @@ class LiInputComponent
 
     _syncInputValue();
     _syncValidationClasses();
-    _syncRequiredValidationState();
+    _rebuildValidationConfig(normalizeCurrentValue: false);
   }
 
   void handleInput(String value) {
+    _dirty = true;
     _value = _normalizeIncomingValue(value);
     _syncInputValue();
     _onChange(_value, rawValue: value);
-    _syncRequiredValidationState();
+    if (validateOnInput || _shouldShowValidation || _autoValidationIssue != null) {
+      _runAutoValidation();
+    } else {
+      _syncValidationClasses();
+    }
     _markForCheck();
   }
 
   void handleBlur(html.Event event) {
     _touched = true;
     _onTouched();
-    _syncRequiredValidationState();
+    _runAutoValidation();
     _blurController.add(event);
     _markForCheck();
   }
@@ -467,7 +606,11 @@ class LiInputComponent
     _clickController.add(event);
   }
 
-  void handleKeydown(html.KeyboardEvent event) {
+  void handleKeydown(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
     _keydownController.add(event);
     if (event.key == 'Enter' || event.code == 'Enter' || event.code == 'NumpadEnter') {
       _enterController.add(event);
@@ -524,10 +667,8 @@ class LiInputComponent
       return;
     }
 
-    final shouldShowInvalid =
-        _requiredInvalid || _hostElement.classes.contains('is-invalid');
-    final shouldShowValid = !shouldShowInvalid &&
-        (_requiredValid || _hostElement.classes.contains('is-valid'));
+    final shouldShowInvalid = effectiveInvalid;
+    final shouldShowValid = isValid;
 
     if (shouldShowInvalid) {
       element.classes.add('is-invalid');
@@ -541,40 +682,81 @@ class LiInputComponent
       element.classes.remove('is-valid');
     }
 
-    if (_requiredInvalid ||
-        _hostElement.attributes.containsKey('data-invalid')) {
+    if (effectiveInvalid) {
       element.attributes['data-invalid'] = 'true';
     } else {
       element.attributes.remove('data-invalid');
     }
   }
 
-  void _syncRequiredValidationState() {
-    if (!required || !_touched) {
-      _requiredInvalid = false;
-      _requiredValid = false;
+  void _rebuildValidationConfig({required bool normalizeCurrentValue}) {
+    _resolvedLiInputType = liInputType ?? LiBuiltInInputTypes.resolve(liType);
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...?_resolvedLiInputType?.messages,
+      ...liMessages,
+    });
+    _effectiveRules = List<LiRule>.unmodifiable(_buildEffectiveRules());
+
+    if (normalizeCurrentValue) {
+      _value = _normalizeIncomingValue(_value);
+    }
+
+    _runAutoValidation();
+  }
+
+  List<LiRule> _buildEffectiveRules() {
+    final rules = <LiRule>[
+      ...?_resolvedLiInputType?.rules,
+      if (required) const LiRequiredRule(),
+      if (minLength > 0) LiRule.minLength(minLength),
+      if (maxLength > 0) LiRule.maxLength(maxLength),
+      if (pattern.trim().isNotEmpty) LiRule.pattern(pattern.trim()),
+      ...liRules,
+    ];
+
+    final legacyValidator = validator;
+    if (legacyValidator != null) {
+      rules.add(LiRule.custom(
+        (value) => legacyValidator.call(value?.toString() ?? ''),
+        code: 'legacyValidator',
+      ));
+    }
+
+    return rules;
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
       _syncValidationClasses();
       return;
     }
 
-    if (_value.trim().isEmpty) {
-      _requiredInvalid = true;
-      _requiredValid = false;
-    } else {
-      _requiredInvalid = false;
-      _requiredValid = true;
-    }
-
+    final normalizedValue = resolvedLiInputType?.normalize(_value) ?? _value;
+    _autoValidationIssue = liValidateValue(
+      value: normalizedValue,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        fieldName: resolvedName,
+        inputType: resolvedLiInputType,
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
     _syncValidationClasses();
   }
 
   String _normalizeIncomingValue(String value) {
+    if (hasCustomMaskFormatter) {
+      return maskFormatter!(value);
+    }
+
     if (!hasMask || resolvedType == 'number') {
       return value;
     }
 
     return _applyMask(
-        value, mask.trim(), maskSlot.trim().isEmpty ? 'x' : maskSlot.trim()[0]);
+        value, effectiveMask, maskSlot.trim().isEmpty ? 'x' : maskSlot.trim()[0]);
   }
 
   String _applyMask(String rawValue, String pattern, String slotCharacter) {
@@ -626,9 +808,31 @@ class LiInputComponent
     _changeDetectorRef.markForCheck();
   }
 
+  bool get _hasHostInvalidState =>
+      _hostElement.classes.contains('is-invalid') ||
+      _hostElement.attributes['data-invalid'] == 'true';
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
+      );
+
+  String? _resolvedString(String value, {String? fallback}) {
+    final normalized = value.trim();
+    if (normalized.isNotEmpty) {
+      return normalized;
+    }
+
+    final resolvedFallback = fallback?.trim() ?? '';
+    return resolvedFallback.isEmpty ? null : resolvedFallback;
+  }
+
   @override
   void ngOnDestroy() {
     _hostClassObserver?.disconnect();
+    _formSubmissionSubscription?.cancel();
     _blurController.close();
     _focusController.close();
     _clickController.close();
