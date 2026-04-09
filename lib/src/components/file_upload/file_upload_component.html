@@ -1,77 +1,366 @@
-<div class="li-file-upload">
-  <div
-      liFileDrop
-      [attr.data-li-form-focus-target]="'true'"
-      [class]="resolvedDropzoneClass"
-      [attr.tabindex]="disabled ? '-1' : '0'"
-      [attr.role]="'button'"
-      [attr.aria-describedby]="resolvedDescribedBy"
-      [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
-      [attr.data-invalid]="effectiveInvalid ? 'true' : null"
-      (fileOver)="onFileOver($event)"
-      (filesChange)="onFilesSelected($event)"
-      (keydown)="onDropzoneKeyDown($event)">
-    <input
-        #fileInput
-        liFileSelect
-        type="file"
-        class="d-none"
+<div [class]="resolvedRootClass">
+  <div class="li-file-upload__preview file-preview">
+    <button
+        *ngIf="hasFiles"
+        type="button"
+        class="btn-close fileinput-remove"
         [disabled]="disabled"
-        [multiple]="multiple"
-        [attr.accept]="resolvedAccept.isEmpty ? null : resolvedAccept"
-        (filesChange)="onFilesSelected($event)">
+        [attr.aria-label]="clearLabel"
+        (click)="clear()">
+    </button>
 
-    <div class="li-file-upload__content">
-      <div class="li-file-upload__icon">
-        <i class="ph-upload-simple"></i>
+    <div
+        liFileDrop
+        [attr.data-li-form-focus-target]="'true'"
+        [class]="resolvedDropzoneClass"
+        [attr.tabindex]="disabled ? '-1' : '0'"
+        [attr.role]="'button'"
+        [attr.aria-describedby]="resolvedDescribedBy"
+        [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+        [attr.data-invalid]="effectiveInvalid ? 'true' : null"
+        (fileOver)="onFileOver($event)"
+        (filesChange)="onFilesSelected($event)"
+        (click)="onDropzoneClick($event)"
+        (keydown)="onDropzoneKeyDown($event)">
+      <div *ngIf="!hasFiles || !showPreview" class="file-drop-zone-title li-file-upload__placeholder">
+        <span class="d-block">{{ resolvedTitle }}</span>
+        <small class="d-block mt-2 li-file-upload__subtitle">{{ resolvedSubtitle }}</small>
       </div>
-      <div class="li-file-upload__title">{{ resolvedTitle }}</div>
-      <p class="li-file-upload__subtitle">{{ resolvedSubtitle }}</p>
+
+      <div *ngIf="showPreview && hasFiles && !isCardPreviewMode" [class]="resolvedPreviewClass">
+        <ul *ngIf="!isCardPreviewMode" [class]="resolvedListClass + ' li-file-upload__compact-list'">
+          <li
+              *ngFor="let item of previewItems; let i = index; trackBy: trackByPreview"
+              class="list-group-item li-file-upload__item">
+            <span [class]="kindClass(item)">{{ item.kindLabel }}</span>
+            <div class="li-file-upload__meta">
+              <div class="fw-semibold text-break">{{ item.file.name }}</div>
+              <div class="text-muted fs-sm">{{ item.sizeLabel }}</div>
+              <div *ngIf="item.hasError" class="invalid-feedback d-block">{{ item.errorText }}</div>
+            </div>
+            <button
+                type="button"
+                class="btn btn-sm btn-light btn-icon rounded-pill"
+                [disabled]="disabled"
+                (click)="removeAt(i)"
+                [attr.aria-label]="(isEnglishLocale ? 'Remove ' : 'Remover ') + item.file.name">
+              <i class="ph-x"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div
+          *ngIf="showPreview && hasFiles && isCardPreviewMode"
+          class="file-preview-thumbnails clearfix li-file-upload__preview-thumbnails"
+          [class.li-file-upload__preview--limitless]="isLimitlessPreviewMode">
+        <article
+            *ngFor="let item of previewItems; let i = index; trackBy: trackByPreview"
+            class="file-preview-frame krajee-default kv-preview-thumb"
+            [class.li-file-upload__card--limitless]="isLimitlessPreviewMode">
+          <div class="kv-file-content">
+            <img
+                *ngIf="item.isImage && item.previewSafeUrl != null"
+                class="file-preview-image kv-preview-data file-zoom-detail li-file-upload__thumb-image"
+                [src]="item.previewSafeUrl!"
+                [alt]="item.file.name"
+                [attr.title]="item.file.name"
+                style="width: auto; height: auto; max-width: 100%; max-height: 100%; image-orientation: from-image; transform: rotate(0deg);">
+            <iframe
+                *ngIf="item.isPdf && item.previewResourceUrl != null"
+                class="kv-preview-data li-file-upload__thumb-frame"
+                [src]="item.previewResourceUrl!"
+                title="PDF preview">
+            </iframe>
+            <div *ngIf="!item.canPreview" class="file-preview-other li-file-upload__thumb-fallback">
+              <span [class]="kindClass(item)">{{ item.kindLabel }}</span>
+            </div>
+
+            <div *ngIf="isLimitlessPreviewMode" class="li-file-upload__card-overlay d-none">
+              <button
+                  *ngIf="canOpenPreview(item)"
+                  type="button"
+                  class="li-file-upload__overlay-preview"
+                  [disabled]="disabled"
+                  [attr.aria-label]="zoomPreviewAriaLabel + ': ' + item.file.name"
+                  (click)="openPreview(item)">
+                <i class="ph-magnifying-glass-plus"></i>
+              </button>
+              <button
+                  type="button"
+                  class="li-file-upload__overlay-remove"
+                  [disabled]="disabled"
+                  [attr.aria-label]="removePreviewAriaLabel + ': ' + item.file.name"
+                  (click)="removeAt(i)">
+                <i class="ph-x"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="file-thumbnail-footer">
+            <div class="file-footer-caption" [attr.title]="item.file.name">{{ item.file.name }}</div>
+            <div class="li-file-upload__footer-bar d-flex align-items-center justify-content-between px-2 py-1">
+              <div class="file-size-info"><samp>{{ item.sizeLabel }}</samp></div>
+
+              <div class="file-footer-buttons">
+                <span class="file-upload-indicator" aria-hidden="true">
+                  <i class="ph-file-arrow-up text-success"></i>
+                </span>
+                <button
+                    *ngIf="canOpenPreview(item) && !isLimitlessPreviewMode"
+                    type="button"
+                    class="li-file-upload__action--preview"
+                    [disabled]="disabled"
+                    [attr.aria-label]="zoomPreviewAriaLabel + ': ' + item.file.name"
+                    [attr.title]="previewLabel"
+                    (click)="openPreview(item)">
+                  <i class="ph-magnifying-glass-plus"></i>
+                </button>
+                <button
+                    *ngIf="canOpenPreview(item) && isLimitlessPreviewMode"
+                    type="button"
+                    class="li-file-upload__footer-preview"
+                    [disabled]="disabled"
+                    [attr.aria-label]="zoomPreviewAriaLabel + ': ' + item.file.name"
+                    [attr.title]="previewLabel"
+                    (click)="openPreview(item)">
+                  <i class="ph-magnifying-glass-plus"></i>
+                </button>
+                <button
+                    type="button"
+                    class="li-file-upload__remove-button"
+                    [disabled]="disabled"
+                    [attr.aria-label]="removePreviewAriaLabel + ': ' + item.file.name"
+                    [attr.title]="clearLabel"
+                    (click)="removeAt(i)">
+                  <i class="ph-x"></i>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="item.hasError" class="invalid-feedback d-block px-2 pb-2">{{ item.errorText }}</div>
+          </div>
+        </article>
+      </div>
+
+      <div
+          *ngIf="showPreview && hasFiles"
+          class="file-preview-status text-center"
+          [class.text-success]="!hasFileErrors"
+          [class.text-danger]="hasFileErrors">
+        {{ previewStatusText }}
+      </div>
+
+      <div *ngIf="hasFileErrors" class="kv-fileinput-error file-error-message">
+        <ul>
+          <li *ngFor="let item of previewItems">
+            <span *ngIf="item.hasError">{{ item.file.name }}: {{ item.errorText }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="kv-upload-progress kv-hidden" style="display: none;">
+    <div class="progress">
+      <div
+          class="progress-bar bg-success progress-bar-success progress-bar-striped active progress-bar-animated"
+          role="progressbar"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          style="width: 0%;">
+        0%
+      </div>
+    </div>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <div class="file-caption">
+    <div class="input-group">
+      <input
+          readonly
+          class="file-caption-name form-control kv-fileinput-caption"
+          [placeholder]="captionPlaceholder"
+          [value]="captionValue"
+          [attr.title]="captionValue">
+
+      <span class="file-caption-icon">
+        <i class="bi-file-earmark-arrow-up"></i>
+      </span>
+
+      <button
+          *ngIf="hasFiles"
+          type="button"
+          class="btn btn-light fileinput-remove fileinput-remove-button"
+          [disabled]="disabled"
+          [attr.title]="clearLabel"
+          (click)="clear()">
+        <i class="ph-x fs-base me-2"></i>
+        <span class="hidden-xs">{{ clearLabel }}</span>
+      </button>
+
       <button
           type="button"
-          class="btn btn-primary"
-          [disabled]="disabled"
-          [attr.aria-label]="browseAriaLabel"
-          (click)="openPicker()">
-        {{ resolvedBrowseLabel }}
+          class="btn btn-default btn-outline-secondary kv-hidden fileinput-cancel fileinput-cancel-button"
+          [attr.title]="cancelLabel"
+          style="display: none;">
+        <i class="bi-slash-circle"></i>
+        <span class="hidden-xs">{{ cancelLabel }}</span>
       </button>
+
+      <label
+          class="btn btn-primary btn-file"
+          [class.disabled]="disabled"
+          [attr.aria-label]="browseAriaLabel">
+        <i class="ph-file-plus me-2"></i>
+        <span class="hidden-xs">{{ resolvedBrowseLabel }}</span>
+        <input
+            #fileInput
+            liFileSelect
+            type="file"
+            class="file-input"
+            [disabled]="disabled"
+            [multiple]="multiple"
+            [attr.accept]="resolvedAccept.isEmpty ? null : resolvedAccept"
+            (filesChange)="onFilesSelected($event)">
+      </label>
     </div>
   </div>
 
   <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
   <div *ngIf="hasHelperText" class="form-text mt-2">{{ helperText }}</div>
 
-  <div *ngIf="showPreview && hasFiles" class="mt-3">
-    <div class="d-flex align-items-center justify-content-between mb-2">
-      <h6 class="mb-0">{{ selectedFilesTitle }}</h6>
-      <button
-          type="button"
-          class="btn btn-sm btn-light"
-          [disabled]="disabled"
-          (click)="clear()">
-        {{ clearLabel }}
-      </button>
-    </div>
-
-    <ul [class]="resolvedListClass">
-      <li
-          *ngFor="let item of previewItems; let i = index; trackBy: trackByPreview"
-          class="list-group-item li-file-upload__item">
-        <span [class]="kindClass(item)">{{ item.kindLabel }}</span>
-        <div class="li-file-upload__meta">
-          <div class="fw-semibold text-break">{{ item.file.name }}</div>
-          <div class="text-muted fs-sm">{{ item.sizeLabel }}</div>
-          <div *ngIf="item.hasError" class="invalid-feedback d-block">{{ item.errorText }}</div>
+  <li-modal
+      #previewModal
+      [size]="previewModalSize"
+      [verticalCenter]="true"
+      [dialogScrollable]="true"
+      [enableHeader]="false"
+      [enableModalBodyClass]="false"
+      [enableRoundedCorners]="!isPreviewBorderless && !isPreviewFullscreen"
+      [enableShadow]="!isPreviewBorderless && !isPreviewFullscreen"
+      [lockBodyScroll]="true"
+      [lazyContent]="true"
+      (close)="closePreview()">
+    <div
+        *ngIf="activePreviewItem != null"
+        class="file-zoom-dialog li-file-upload__zoom-shell li-file-upload__modal-viewer"
+        [class.rotatable]="canRotateActivePreview"
+      [class.file-zoom-fullscreen]="isPreviewFullscreen || isPreviewBorderless"
+        [class.li-file-upload__zoom-shell--borderless]="isPreviewBorderless"
+        [class.li-file-upload__zoom-shell--fullscreen]="isPreviewFullscreen">
+      <div class="modal-header kv-zoom-header">
+        <h6 class="modal-title kv-zoom-title">
+          <span class="kv-zoom-caption" [attr.title]="activePreviewTitle">{{ activePreviewTitle }}</span>
+          <span class="kv-zoom-size">
+            <samp>({{ activePreviewItem!.sizeLabel }})</samp>
+          </span>
+        </h6>
+        <div class="kv-zoom-actions">
+          <button
+              *ngIf="canRotateActivePreview"
+              type="button"
+              class="btn btn-light btn-icon btn-sm btn-kv-rotate"
+              [attr.title]="rotatePreviewLabel"
+              (click)="rotatePreviewClockwise()">
+            <i class="ph-arrow-clockwise"></i>
+          </button>
+          <button
+              *ngIf="enablePreviewZoom && canZoomActivePreview"
+              type="button"
+              class="btn btn-light btn-icon btn-sm li-file-upload__zoom-in"
+              [attr.title]="zoomInLabel"
+              (click)="zoomInPreview()">
+            <i class="ph-magnifying-glass-plus"></i>
+          </button>
+          <button
+              *ngIf="enablePreviewZoom && canZoomActivePreview"
+              type="button"
+              class="btn btn-light btn-icon btn-sm li-file-upload__zoom-out"
+              [attr.title]="zoomOutLabel"
+              (click)="zoomOutPreview()">
+            <i class="ph-magnifying-glass-minus"></i>
+          </button>
+          <button
+              *ngIf="enablePreviewZoom && canZoomActivePreview"
+              type="button"
+              class="btn btn-light btn-icon btn-sm li-file-upload__zoom-reset"
+              [attr.title]="resetZoomLabel"
+              (click)="resetPreviewZoom()">
+            <i class="ph-arrows-clockwise"></i>
+          </button>
+          <button
+              type="button"
+              class="btn btn-light btn-icon btn-sm btn-kv-fullscreen"
+              [class.active]="isPreviewFullscreen"
+              [attr.title]="fullscreenPreviewLabel"
+              [attr.aria-pressed]="isPreviewFullscreen ? 'true' : 'false'"
+              [attr.data-toggle]="'button'"
+              [attr.autocomplete]="'off'"
+              (click)="togglePreviewFullscreen()">
+            <i [class]="isPreviewFullscreen ? 'ph-corners-in' : 'ph-corners-out'"></i>
+          </button>
+          <button
+              type="button"
+              class="btn btn-light btn-icon btn-sm btn-kv-borderless"
+              [class.active]="isPreviewBorderless"
+              [attr.title]="borderlessPreviewLabel"
+              [attr.aria-pressed]="isPreviewBorderless ? 'true' : 'false'"
+              [attr.data-toggle]="'button'"
+              [attr.autocomplete]="'off'"
+              (click)="togglePreviewBorderless()">
+            <i class="ph-frame-corners"></i>
+          </button>
+          <button
+              type="button"
+              class="btn btn-light btn-icon btn-sm btn-kv-close"
+              [attr.title]="closePreviewLabel"
+              (click)="closePreview()">
+            <i class="ph-x"></i>
+          </button>
         </div>
-        <button
-            type="button"
-            class="btn btn-sm btn-light btn-icon rounded-pill"
-            [disabled]="disabled"
-            (click)="removeAt(i)"
-            [attr.aria-label]="(isEnglishLocale ? 'Remove ' : 'Remover ') + item.file.name">
-          <i class="ph-x"></i>
+      </div>
+
+      <div class="floating-buttons"></div>
+
+        <div
+          #previewZoomBody
+          class="kv-zoom-body file-zoom-content krajee-default li-file-upload__zoom-body"
+          [style.overflow-x]="previewShouldAllowScroll ? 'auto' : 'hidden'"
+          [style.overflow-y]="previewShouldAllowScroll ? 'auto' : 'hidden'">
+          <div
+              class="li-file-upload__modal-scale"
+              [class.li-file-upload__modal-scale--pdf]="activePreviewItem!.isPdf">
+          <img
+              *ngIf="activePreviewItem!.isImage && activePreviewItem!.previewSafeUrl != null"
+              #previewImage
+              class="file-preview-image kv-preview-data file-zoom-detail li-file-upload__modal-image"
+              [src]="activePreviewItem!.previewSafeUrl!"
+              [alt]="activePreviewItem!.file.name"
+              [attr.title]="activePreviewItem!.file.name"
+              [class.li-file-upload__modal-image--measured]="previewImageWidthStyle != null"
+              [style.width]="previewImageWidthStyle"
+              [style.height]="previewImageHeightStyle"
+              [style.transform]="previewImageTransform"
+              (load)="onPreviewImageLoad($event)"
+              style="image-orientation: from-image;">
+          <iframe
+              *ngIf="activePreviewItem!.isPdf && activePreviewItem!.previewResourceUrl != null"
+              class="file-zoom-detail li-file-upload__modal-frame"
+              [src]="activePreviewItem!.previewResourceUrl!"
+              title="Document preview">
+          </iframe>
+        </div>
+
+        <button type="button" class="btn btn-default btn-outline-secondary btn-navigate btn-kv-prev" title="View previous file" style="display: none;">
+          <i class="ph-arrow-left"></i>
         </button>
-      </li>
-    </ul>
-  </div>
+        <button type="button" class="btn btn-default btn-outline-secondary btn-navigate btn-kv-next" title="View next file" style="display: none;">
+          <i class="ph-arrow-right"></i>
+        </button>
+        <div class="kv-zoom-description" style="display: none;"></div>
+      </div>
+    </div>
+  </li-modal>
 </div>

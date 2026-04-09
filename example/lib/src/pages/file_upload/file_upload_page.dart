@@ -30,6 +30,8 @@ class FileUploadPageComponent {
     [(ngModel)]="attachments"
     [maxFiles]="5"
     accept="image/*,application/pdf"
+    previewMode="limitless"
+    [enablePreviewModal]="true"
     browseLabel="Selecionar anexos">
 </li-file-upload>''';
 
@@ -60,6 +62,8 @@ class FileUploadPageComponent {
   List<html.File> coverFiles = <html.File>[];
   List<html.File> compactFiles = <html.File>[];
   List<html.File> mediaFiles = <html.File>[];
+  List<html.File> previewFiles = <html.File>[];
+  List<html.File> limitlessFiles = <html.File>[];
   List<html.File> directiveFiles = <html.File>[];
   bool directiveDragOver = false;
 
@@ -67,14 +71,16 @@ class FileUploadPageComponent {
   String get pageSubtitle => _isPt ? 'File upload' : 'File upload';
   String get breadcrumb => _isPt ? 'Uploader' : 'Uploader';
   String get overviewIntro => _isPt
-      ? 'O uploader cobre drag and drop, seleção tradicional, preview opcional, filtros por tipo, modo desabilitado e diretivas de baixo nível.'
-      : 'The uploader covers drag and drop, traditional selection, optional preview, type filters, disabled mode, and low-level directives.';
+      ? 'O uploader cobre drag and drop, lista compacta, miniaturas, um modo visual inspirado no fileinput do Limitless com overlay e barra inferior, preview em modal, filtros por tipo, modo desabilitado e diretivas de baixo nível.'
+      : 'The uploader covers drag and drop, compact lists, thumbnails, a Limitless-inspired fileinput mode with overlay and footer bar, modal preview, type filters, disabled mode, and low-level directives.';
   String get apiIntro => _isPt
       ? 'A API pode ser usada em alto nível com `li-file-upload` ou em baixo nível com `liFileDrop` e `liFileSelect`.'
       : 'The API can be used at a high level with `li-file-upload` or at a low level with `liFileDrop` and `liFileSelect`.';
   String get mainInputsTitle => _isPt ? 'Pontos principais' : 'Main points';
-  String get uploadSnippetTitle => _isPt ? 'Componente principal' : 'Main component';
-  String get directivesSnippetTitle => _isPt ? 'Diretivas utilitárias' : 'Utility directives';
+  String get uploadSnippetTitle =>
+      _isPt ? 'Componente principal' : 'Main component';
+  String get directivesSnippetTitle =>
+      _isPt ? 'Diretivas utilitárias' : 'Utility directives';
 
   String get attachmentsSummary => attachments.isEmpty
       ? 'Nenhum arquivo selecionado.'
@@ -90,6 +96,14 @@ class FileUploadPageComponent {
   String get mediaSummary => mediaFiles.isEmpty
       ? 'Nenhum item de mídia selecionado.'
       : _joinFileNames(mediaFiles);
+
+  String get previewSummary => previewFiles.isEmpty
+      ? 'Nenhuma miniatura carregada.'
+      : _joinFileNames(previewFiles);
+
+  String get limitlessSummary => limitlessFiles.isEmpty
+      ? 'Nenhuma fila visual carregada.'
+      : _joinFileNames(limitlessFiles);
 
   String get directiveSummary => directiveFiles.isEmpty
       ? 'Nenhum evento recebido ainda.'

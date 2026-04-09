@@ -547,6 +547,32 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
 
 ## Quick examples
 
+### File upload
+
+`li-file-upload` covers drag-and-drop, type/size filters, `ngModel` integration, declarative field validation, and three preview strategies.
+
+Preview-related inputs:
+
+- `previewMode`: accepts `compact`, `thumbnails`, and `limitless`.
+- `showPreview`: hides the selected-files list/grid entirely when `false`.
+- `enablePreviewModal`: enables enlarged previews for images and PDFs.
+- `enablePreviewZoom`: shows zoom controls inside the preview modal for image previews.
+- `maxFiles`, `maxSize`, `accept`, `allowedTypes`: constrain the queue before submit.
+
+`compact` renders a lightweight list, `thumbnails` renders cards with inline previews and footer actions, and `limitless` mirrors the native Limitless/Krajee fileinput layout with overlay actions and a metadata footer.
+
+```html
+<li-file-upload
+  [(ngModel)]="attachments"
+  accept="image/*,application/pdf"
+  [maxFiles]="4"
+  previewMode="limitless"
+  [enablePreviewModal]="true"
+  [enablePreviewZoom]="true"
+  browseLabel="Browse attachments">
+</li-file-upload>
+```
+
 ### Alert
 
 ```dart

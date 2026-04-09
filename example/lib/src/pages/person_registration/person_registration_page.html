@@ -436,6 +436,8 @@
                       <li-file-upload
                           [ngModel]="draft.attachments"
                           accept="application/pdf,image/*"
+                          previewMode="limitless"
+                          [enablePreviewModal]="true"
                           [required]="true"
                           [maxFiles]="3"
                           [maxSize]="3145728"

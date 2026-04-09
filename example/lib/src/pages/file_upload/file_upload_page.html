@@ -24,11 +24,12 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">General attachments</h5>
+                    <h5 class="mb-0">Compact file list</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="attachments"
+                        previewMode="compact"
                         helperText="Use `maxFiles`, `accept`, `showPreview` e `[(ngModel)]` no componente principal."
                         browseLabel="Selecionar anexos">
                     </li-file-upload>
@@ -44,12 +45,64 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
+                    <h5 class="mb-0">Limitless overlay queue</h5>
+                  </div>
+                  <div class="card-body demo-upload-card-body">
+                    <li-file-upload
+                        [(ngModel)]="limitlessFiles"
+                        accept="image/*,application/pdf"
+                        previewMode="limitless"
+                        [enablePreviewModal]="true"
+                        [maxFiles]="4"
+                        title="Fila visual com acoes sobrepostas"
+                        subtitle="Cada miniatura ganha overlay para zoom/remocao e barra inferior com metadados."
+                        browseLabel="Montar fila visual">
+                    </li-file-upload>
+
+                    <div class="upload-summary-box mt-3">
+                      <div class="fw-semibold mb-1">Resumo</div>
+                      <div>{{ limitlessSummary }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h5 class="mb-0">Thumbnail preview and modal</h5>
+                  </div>
+                  <div class="card-body demo-upload-card-body">
+                    <li-file-upload
+                        [(ngModel)]="previewFiles"
+                        accept="image/*,application/pdf"
+                        previewMode="thumbnails"
+                        [enablePreviewModal]="true"
+                        [maxFiles]="4"
+                        title="Solte imagens ou PDFs para visualizar"
+                        subtitle="Miniaturas aparecem dentro do card e podem ser ampliadas em modal."
+                        browseLabel="Selecionar arquivos visuais">
+                    </li-file-upload>
+
+                    <div class="upload-summary-box mt-3">
+                      <div class="fw-semibold mb-1">Resumo</div>
+                      <div>{{ previewSummary }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card h-100">
+                  <div class="card-header">
                     <h5 class="mb-0">Single cover image</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="coverFiles"
                         accept="image/*"
+                        previewMode="thumbnails"
+                        [enablePreviewModal]="true"
                         [multiple]="false"
                         [maxFiles]="1"
                         title="Solte uma imagem de capa"
@@ -183,6 +236,7 @@
                 <ul class="mb-0 ps-3">
                   <li><code>li-file-upload</code> cobre browse, drop, preview, limite e filtros de tipo.</li>
                   <li><code>[(ngModel)]</code> recebe a lista de arquivos selecionados.</li>
+                  <li><code>previewMode</code> aceita <code>compact</code>, <code>thumbnails</code> e <code>limitless</code>.</li>
                   <li><code>liFileDrop</code> e <code>liFileSelect</code> permitem montar um host customizado.</li>
                 </ul>
               </div>

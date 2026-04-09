@@ -15,6 +15,7 @@ import 'package:ngdart/angular.dart';
     coreDirectives,
   ],
   encapsulation: ViewEncapsulation.none,
+  changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiModalComponent implements OnInit, OnDestroy {
   LiModalComponent(this.rootElement, this._changeDetectorRef);
@@ -29,6 +30,9 @@ class LiModalComponent implements OnInit, OnDestroy {
   /// Adds the `modal-body` class to the body container.
   @Input()
   bool enableModalBodyClass = true;
+
+  @Input()
+  bool lockBodyScroll = true;
 
   @Input()
   bool enableBackdrop = true;
@@ -157,7 +161,7 @@ class LiModalComponent implements OnInit, OnDestroy {
 
     modalRootElement?.style.display = 'block';
     modalRootElement?.attributes['data-status'] = 'open';
-    if (enableModalBodyClass) {
+    if (lockBodyScroll) {
       document.body?.classes.add('modal-open');
     }
   }
@@ -179,7 +183,7 @@ class LiModalComponent implements OnInit, OnDestroy {
     backdropDiv.remove();
     modalRootElement?.style.display = 'none';
     modalRootElement?.attributes['data-status'] = 'close';
-    if (enableModalBodyClass) {
+    if (lockBodyScroll) {
       document.body?.classes.remove('modal-open');
     }
     showError = false;
