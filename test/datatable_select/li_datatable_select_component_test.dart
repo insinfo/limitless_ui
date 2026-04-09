@@ -160,7 +160,7 @@ void main() {
     expect(triggers.first.text, contains('Maria Silva'));
   });
 
-  test('opens the typed modal with the configured datatable structure',
+  test('opens the typed modal with the configured datatable structure and rows',
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
@@ -176,10 +176,14 @@ void main() {
 
     final modalText =
         html.document.querySelector('.modal.show .modal-content')?.text ?? '';
+    final modalRows = html.document.querySelectorAll('.modal.show tbody tr');
 
     expect(modalText, contains('Nome'));
     expect(modalText, contains('E-mail'));
     expect(modalText, contains('Mostrando de 0 a 2 de 2'));
+    expect(modalRows, isNotEmpty);
+    expect(modalText, contains('Ana Souza'));
+    expect(modalText, contains('Maria Silva'));
   });
 
   test('allows arbitrary modal content to set label and value explicitly',

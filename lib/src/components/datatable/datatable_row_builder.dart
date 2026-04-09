@@ -40,9 +40,16 @@ class DatatableRowBuilder {
     final rows = <DatatableRow>[];
     String? previousGroupingValue;
     final itemsAsMap = data.itemsAsMap;
+    final resolvedItemMaps = List<Map<String, dynamic>>.generate(
+      data.length,
+      (index) => index < itemsAsMap.length
+          ? itemsAsMap[index]
+          : _coerceItemMap(data[index]),
+      growable: false,
+    );
 
-    for (var i = 0; i < itemsAsMap.length; i++) {
-      final itemMap = itemsAsMap[i];
+    for (var i = 0; i < resolvedItemMaps.length; i++) {
+      final itemMap = resolvedItemMaps[i];
       final itemInstance = data[i];
       final row = DatatableRow(
         index: i,
@@ -71,7 +78,8 @@ class DatatableRowBuilder {
 
       if (settings.enableGrouping) {
         final groupingColumns = row.columns
-            .where((column) => column.enableGrouping && column.groupByKey != null)
+            .where(
+                (column) => column.enableGrouping && column.groupByKey != null)
             .toList(growable: false);
         final groupBys = groupingColumns
             .map((column) => column.groupByKey!)
@@ -84,7 +92,8 @@ class DatatableRowBuilder {
               .join('.');
 
           if (i > 0) {
-            previousGroupingValue = itemsAsMap[i - 1].entries
+            previousGroupingValue = resolvedItemMaps[i - 1]
+                .entries
                 .where((entry) => groupBys.contains(entry.key))
                 .map((entry) => entry.value)
                 .join('.');
@@ -92,7 +101,8 @@ class DatatableRowBuilder {
 
           if (currentGroupingValue != previousGroupingValue) {
             final divTitle = DivElement()
-              ..text = groupingColumns.map((column) => column.value).join(' / ');
+              ..text =
+                  groupingColumns.map((column) => column.value).join(' / ');
             rows.add(
               DatatableRow(
                 type: DatatableRowType.groupTitle,
@@ -125,6 +135,34 @@ class DatatableRowBuilder {
         responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
       ),
     );
+  }
+
+  Map<String, dynamic> _coerceItemMap(dynamic itemInstance) {
+    if (itemInstance is Map<String, dynamic>) {
+      return itemInstance;
+    }
+
+    if (itemInstance is Map) {
+      try {
+        return Map<String, dynamic>.from(itemInstance);
+      } catch (_) {
+        return <String, dynamic>{};
+      }
+    }
+
+    try {
+      final dynamic rawMap = (itemInstance as dynamic).toMap();
+      if (rawMap is Map<String, dynamic>) {
+        return rawMap;
+      }
+      if (rawMap is Map) {
+        return Map<String, dynamic>.from(rawMap);
+      }
+    } catch (_) {
+      // ignora itens que nao expõem um mapa utilizável
+    }
+
+    return <String, dynamic>{};
   }
 
   List<DatatableRenderedRow> rebuildRenderedRows({
@@ -241,8 +279,10 @@ class DatatableRowBuilder {
   }) {
     dynamic value;
     if (colDefinition.key.contains('||')) {
-      final keys = colDefinition.key.split('||').map((key) => key.trim()).toList();
-      value = keys.map((key) => itemMap[key]).join(colDefinition.multiValSeparator);
+      final keys =
+          colDefinition.key.split('||').map((key) => key.trim()).toList();
+      value =
+          keys.map((key) => itemMap[key]).join(colDefinition.multiValSeparator);
     } else if (colDefinition.key.contains('.')) {
       final keys = colDefinition.key.split('.');
       value = getValRecursive(itemMap, keys);
@@ -267,9 +307,8 @@ class DatatableRowBuilder {
     switch (format) {
       case DatatableFormat.boolHighlightedBadge:
         if (normalized is bool) {
-          normalized = normalized
-              ? '<span class="badge bg-primary">Sim</span>'
-              : 'Não';
+          normalized =
+              normalized ? '<span class="badge bg-primary">Sim</span>' : 'Não';
         }
         break;
       case DatatableFormat.bool:
@@ -290,7 +329,8 @@ class DatatableRowBuilder {
           final parsed = normalized is DateTime
               ? normalized
               : DateTime.tryParse(normalized.toString());
-          normalized = parsed != null ? _dateTimeFormatter.format(parsed) : null;
+          normalized =
+              parsed != null ? _dateTimeFormatter.format(parsed) : null;
         }
         break;
       case DatatableFormat.dateTimeShort:
@@ -298,9 +338,8 @@ class DatatableRowBuilder {
           final parsed = normalized is DateTime
               ? normalized
               : DateTime.tryParse(normalized.toString());
-          normalized = parsed != null
-              ? _dateTimeShortFormatter.format(parsed)
-              : null;
+          normalized =
+              parsed != null ? _dateTimeShortFormatter.format(parsed) : null;
         }
         break;
       case DatatableFormat.text:
@@ -332,9 +371,12 @@ class DatatableRowBuilder {
       }
     }
 
-    if (gridMode && row.type == DatatableRowType.normal && settings.customCardBuilder != null) {
+    if (gridMode &&
+        row.type == DatatableRowType.normal &&
+        settings.customCardBuilder != null) {
       try {
-        row.customCardElement = settings.customCardBuilder!(itemMap, itemInstance, row);
+        row.customCardElement =
+            settings.customCardBuilder!(itemMap, itemInstance, row);
       } catch (_) {
         row.customCardElement = null;
       }
@@ -371,7 +413,8 @@ class DatatableRowBuilder {
     String? resolvedCellStyle;
     if (colDefinition.cellStyleResolver != null) {
       try {
-        resolvedCellStyle = colDefinition.cellStyleResolver!(itemMap, itemInstance);
+        resolvedCellStyle =
+            colDefinition.cellStyleResolver!(itemMap, itemInstance);
       } catch (_) {
         resolvedCellStyle = null;
       }
