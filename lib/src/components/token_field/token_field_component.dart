@@ -39,6 +39,12 @@ class LiTokenFieldComponent
   final ChangeDetectorRef _changeDetectorRef;
   final StreamController<List<String>> _changeController =
       StreamController<List<String>>.broadcast();
+  final StreamController<void> _copyActionController =
+      StreamController<void>.broadcast();
+  final StreamController<void> _pasteActionController =
+      StreamController<void>.broadcast();
+  final StreamController<void> _clearActionController =
+      StreamController<void>.broadcast();
 
   ChangeFunction<List<String>>? _onChange;
   TouchFunction _onTouched = () {};
@@ -75,6 +81,18 @@ class LiTokenFieldComponent
   bool showActionMenu = true;
 
   @Input()
+  bool showCopyAction = true;
+
+  @Input()
+  bool showPasteAction = true;
+
+  @Input()
+  bool showClearAction = true;
+
+  @Input()
+  bool showRemoveButton = true;
+
+  @Input()
   String copyButtonLabel = '';
 
   @Input()
@@ -82,6 +100,12 @@ class LiTokenFieldComponent
 
   @Input()
   String clearButtonLabel = '';
+
+  @Input()
+  String actionMenuTriggerClass = 'btn btn-light btn-sm btn-icon rounded-pill';
+
+  @Input()
+  String actionMenuTriggerIconClass = 'ph ph-caret-down ph-sm';
 
   @Input()
   String copySeparator = ',';
@@ -103,11 +127,22 @@ class LiTokenFieldComponent
   @Output('modelChange')
   Stream<List<String>> get onModelChange => _changeController.stream;
 
+  @Output('copyAction')
+  Stream<void> get onCopyAction => _copyActionController.stream;
+
+  @Output('pasteAction')
+  Stream<void> get onPasteAction => _pasteActionController.stream;
+
+  @Output('clearAction')
+  Stream<void> get onClearAction => _clearActionController.stream;
+
   List<String> get tokens =>
       items.map((LiTokenFieldItemView item) => item.value).toList();
 
   bool get hasSelectedItems =>
       items.any((LiTokenFieldItemView item) => item.selected);
+
+  bool get hasActionMenuOptions => actionMenuOptions.isNotEmpty;
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
@@ -149,7 +184,7 @@ class LiTokenFieldComponent
         'tokenfield',
         'tokenfield-mode-tokens',
         'li-token-field',
-        showActionMenu ? 'li-token-field--with-menu' : '',
+        showActionMenu && hasActionMenuOptions ? 'li-token-field--with-menu' : '',
         isFocused ? 'focused' : '',
         isDisabled ? 'li-token-field--disabled' : '',
       ]);
@@ -366,11 +401,13 @@ class LiTokenFieldComponent
     if (clipboard != null) {
       try {
         await clipboard.writeText(textToCopy);
+        _copyActionController.add(null);
         return;
       } catch (_) {}
     }
 
     _fallbackCopyToClipboard(textToCopy);
+    _copyActionController.add(null);
   }
 
   Future<void> pasteTokens() async {
@@ -394,6 +431,7 @@ class LiTokenFieldComponent
 
     processInput(text);
     inputToken?.focus();
+    _pasteActionController.add(null);
   }
 
   void clear() {
@@ -403,6 +441,7 @@ class LiTokenFieldComponent
 
     items.clear();
     _emitChange();
+    _clearActionController.add(null);
   }
 
   void removeSelected() {
@@ -459,6 +498,9 @@ class LiTokenFieldComponent
   @override
   void ngOnDestroy() {
     _changeController.close();
+    _copyActionController.close();
+    _pasteActionController.close();
+    _clearActionController.close();
   }
 
   List<String> _extractTokens(String text) {
@@ -516,21 +558,24 @@ class LiTokenFieldComponent
 
   void _rebuildActionMenuOptions() {
     actionMenuOptions = <LiDropdownMenuOption>[
-      LiDropdownMenuOption(
-        value: 'copy',
-        label: resolvedCopyButtonLabel,
-        iconClass: 'ph ph-copy',
-      ),
-      LiDropdownMenuOption(
-        value: 'paste',
-        label: resolvedPasteButtonLabel,
-        iconClass: 'ph ph-clipboard-text',
-      ),
-      LiDropdownMenuOption(
-        value: 'clear',
-        label: resolvedClearButtonLabel,
-        iconClass: 'ph ph-broom',
-      ),
+      if (showCopyAction)
+        LiDropdownMenuOption(
+          value: 'copy',
+          label: resolvedCopyButtonLabel,
+          iconClass: 'ph ph-copy',
+        ),
+      if (showPasteAction)
+        LiDropdownMenuOption(
+          value: 'paste',
+          label: resolvedPasteButtonLabel,
+          iconClass: 'ph ph-clipboard-text',
+        ),
+      if (showClearAction)
+        LiDropdownMenuOption(
+          value: 'clear',
+          label: resolvedClearButtonLabel,
+          iconClass: 'ph ph-broom',
+        ),
     ];
   }
 

@@ -36,11 +36,35 @@ class TokenFieldTestHostComponent {
   List<String> tokens = <String>['35910/2011'];
 }
 
+@Component(
+  selector: 'li-token-field-config-test-host',
+  template: '''
+    <li-token-field
+        #field
+        [showCopyAction]="false"
+        [showRemoveButton]="false"
+        (clearAction)="clearActionCount = clearActionCount + 1"
+        [(ngModel)]="tokens">
+    </li-token-field>
+  ''',
+  directives: [coreDirectives, formDirectives, LiTokenFieldComponent],
+)
+class TokenFieldConfigTestHostComponent {
+  @ViewChild('field')
+  LiTokenFieldComponent? field;
+
+  List<String> tokens = <String>['35910/2011'];
+  int clearActionCount = 0;
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
 
   final testBed = NgTestBed<TokenFieldTestHostComponent>(
     ng.TokenFieldTestHostComponentNgFactory,
+  );
+  final configTestBed = NgTestBed<TokenFieldConfigTestHostComponent>(
+    ng.TokenFieldConfigTestHostComponentNgFactory,
   );
 
   test('adds a token on enter and updates ngModel', () async {
@@ -79,10 +103,51 @@ void main() {
 
     expect(host.tokens, isEmpty);
   });
+
+  test('allows granular action visibility and emits clearAction', () async {
+    final fixture = await configTestBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(fixture.rootElement.querySelector('.item-remove'), isNull);
+
+    await fixture.update((_) {
+      host.field!.clear();
+    });
+    await _settle(fixture);
+
+    expect(host.tokens, isEmpty);
+    expect(host.clearActionCount, 1);
+
+    final trigger = fixture.rootElement
+        .querySelector('.li-token-field__menu button') as html.ButtonElement;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final menuItems = html.document
+        .querySelectorAll(
+            '.LiDropdownMenuComponent .li-dropdown-menu__menu.show .dropdown-item')
+        .map((element) => (element.text ?? '').trim())
+        .toList(growable: false);
+
+    expect(menuItems.any((label) => label.contains('Copy')), isFalse);
+    expect(menuItems.any((label) => label.contains('Copiar')), isFalse);
+    expect(
+      menuItems.any((label) => label.contains('Paste') || label.contains('Colar')),
+      isTrue,
+    );
+    expect(
+      menuItems.any((label) => label.contains('Clear') || label.contains('Limpar')),
+      isTrue,
+    );
+  });
 }
 
 Future<void> _settle(
-  NgTestFixture<TokenFieldTestHostComponent> fixture,
+  NgTestFixture<dynamic> fixture,
 ) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});

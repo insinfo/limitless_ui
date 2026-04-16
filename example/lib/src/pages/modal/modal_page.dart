@@ -93,7 +93,7 @@ class ModalPageComponent {
   @ViewChild('lazyPreviewModal')
   LiModalComponent? lazyPreviewModal;
 
-  final List<int> scrollLines = List<int>.generate(8, (index) => index + 1);
+    final List<int> scrollLines = List<int>.generate(18, (index) => index + 1);
   List<String> get rolloutSteps => _isPt
       ? const <String>[
           'Validar escopo com operação e produto.',

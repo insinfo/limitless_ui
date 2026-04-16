@@ -131,6 +131,9 @@ class LiTagManagerComponent implements OnDestroy {
   bool showReloadButton = false;
 
   @Input()
+  bool Function(dynamic optionValue, dynamic modelValue)? compareWith;
+
+  @Input()
   set selectedValues(List<dynamic>? value) {
     _boundSelectedValues = List<dynamic>.from(value ?? const <dynamic>[]);
     _applySelection(_boundSelectedValues, emit: false);
@@ -440,9 +443,19 @@ class LiTagManagerComponent implements OnDestroy {
 
   void _applySelection(List<dynamic> selectedValues, {required bool emit}) {
     for (final option in options) {
-      option.selected = selectedValues.contains(option.value);
+      option.selected = selectedValues.any(
+        (dynamic selectedValue) => _areValuesEqual(option.value, selectedValue),
+      );
     }
     _rebuildSelectionState(emit: emit);
+  }
+
+  bool _areValuesEqual(dynamic optionValue, dynamic modelValue) {
+    final comparator = compareWith;
+    if (comparator != null) {
+      return comparator(optionValue, modelValue);
+    }
+    return optionValue == modelValue;
   }
 
   void _rebuildSelectionState({required bool emit}) {

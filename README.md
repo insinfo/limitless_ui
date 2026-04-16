@@ -620,6 +620,8 @@ Preview-related inputs:
 
 `li-tag-filter`, `li-tag-editor`, and `li-tag-manager` cover the common label-selection and maintenance flow without forcing each screen to rebuild badge rendering, color handling, or CRUD event payloads.
 
+For selection-oriented flows, `li-tag-manager` also accepts `compareWith` when the selected values are objects or when item identity is recreated after reloads.
+
 ```html
 <li-tag-filter
   [dataSource]="tagCatalog"
@@ -646,12 +648,21 @@ Preview-related inputs:
 
 `li-token-field` is aimed at repeated short values such as process codes, e-mails, or routing identifiers, while preserving `[(ngModel)]` and a compact action menu.
 
+Useful customization knobs:
+
+- `showActionMenu` to remove the overflow menu entirely.
+- `showCopyAction`, `showPasteAction`, and `showClearAction` to expose only the actions the screen actually needs.
+- `showRemoveButton` to keep tokens read-only at the chip level while still allowing programmatic updates.
+- `actionMenuTriggerClass` and `actionMenuTriggerIconClass` to retheme the overflow trigger without forking the component.
+- `copyAction`, `pasteAction`, and `clearAction` outputs when the host wants to react to those actions explicitly.
+
 ```html
 <li-token-field
   [(ngModel)]="processCodes"
   [filterInput]="true"
   patternAllowed="[0-9/]"
   patternToken="\\d+/\\d+"
+  [showCopyAction]="false"
   placeholder="Digite um código/ano e pressione enter.">
 </li-token-field>
 ```

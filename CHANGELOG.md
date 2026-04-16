@@ -1,7 +1,7 @@
 ## 1.0.0-dev.7
 
-- Added generic tag tooling with `li-tag-filter`, `li-tag-editor`, and `li-tag-manager`, including configurable `labelKey`/`valueKey`/`colorKey` mapping, reusable selection/create/edit/delete events, and browser coverage for the new tag workflows.
-- Added `li-token-field`, a generic tokenized text input with `ngModel`, regex-based token extraction, optional keystroke filtering, clipboard actions, and browser coverage for core parsing flows.
+- Added generic tag tooling with `li-tag-filter`, `li-tag-editor`, and `li-tag-manager`, including configurable `labelKey`/`valueKey`/`colorKey` mapping, reusable selection/create/edit/delete events, `compareWith` support for selection stability, and browser coverage for the new tag workflows.
+- Added `li-token-field`, a generic tokenized text input with `ngModel`, regex-based token extraction, optional keystroke filtering, clipboard actions, granular action visibility toggles, explicit copy/paste/clear outputs, and browser coverage for core parsing flows.
 - Added the `work-queue` demo route to showcase `li-tag-filter`, `li-tag-manager`, and `li-token-field` together inside a more realistic operational workflow.
 - Expanded dropdown menu overlays so both `li-dropdown-menu` and the lower-level `dropdownmenu` directive can render inline or in a `body`-anchored Popper overlay, with better outside-click/Escape handling and browser coverage for the new placement flow.
 - Expanded `li-modal` with `compactHeader` and `smallHeader`, improved fullscreen body scrolling, and richer example coverage for iconified, mini, backdropless, form, and fullscreen dialog variants.
