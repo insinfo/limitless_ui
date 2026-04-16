@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.work-queue-page__status {
+  border-radius: 0.75rem;
+}
+
+.work-queue-page__status .alert-icon {
+  border-radius: 0.6rem;
+}
+
+.work-queue-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.work-queue-page__actions > .btn {
+  flex: 0 0 auto;
+}

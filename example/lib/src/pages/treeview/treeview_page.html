@@ -199,12 +199,12 @@
                       </span>
                       <span *ngIf="ctx.hasSelection" class="treeview-trigger-chips">
                         <span *ngFor="let label of ctx.labels; let i = index"
-                          class="treeview-trigger-chip"
+                          class="badge rounded-pill d-inline-flex align-items-center treeview-trigger-chip"
                           [hidden]="i > 1">
                           {{ label }}
                         </span>
                         <span *ngIf="ctx.labels.length > 2"
-                          class="treeview-trigger-chip treeview-trigger-chip--muted">
+                          class="badge rounded-pill d-inline-flex align-items-center treeview-trigger-chip treeview-trigger-chip--muted">
                           +{{ ctx.labels.length - 2 }}
                         </span>
                       </span>

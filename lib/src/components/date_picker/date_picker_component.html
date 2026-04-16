@@ -90,10 +90,10 @@
             <span class="drp-selected">
                 {{ draftDisplayValue.isEmpty ? emptySelectionLabel : draftDisplayValue }}
             </span>
-            <button *ngIf="showClearButton" type="button" class="btn btn-light" (click)="clear()">
+            <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" (click)="clear()">
                 {{ clearLabel }}
             </button>
-            <button type="button" class="btn btn-light" (click)="close()">
+            <button type="button" class="btn btn-light btn-sm" (click)="close()">
                 {{ cancelLabel }}
             </button>
         </div>

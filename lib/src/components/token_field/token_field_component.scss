@@ -1,0 +1,45 @@
+:host {
+  display: block;
+}
+
+.li-token-field {
+  position: relative;
+}
+
+.li-token-field--with-menu {
+  padding-right: 2.75rem;
+}
+
+.li-token-field__input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 7rem;
+}
+
+.li-token-field__menu {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+}
+
+.li-token-field--disabled {
+  opacity: 0.7;
+}
+
+.tokenfield-set-item.selected {
+  color: var(--tf-tag-hover-color);
+  background-color: var(--tf-tag-hover-bg);
+}
+
+.tokenfield-set-item .item-remove {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tokenfield-set-item .item-remove:disabled {
+  cursor: not-allowed;
+}

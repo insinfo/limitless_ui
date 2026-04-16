@@ -30,13 +30,13 @@
                         {{ resolvedPlaceholder }}
                     </span>
 
-                    <span *ngIf="multiple && selectedNodes.isNotEmpty" class="treeview-dropdown-select__chips">
+                    <span *ngIf="multiple && selectedNodes.isNotEmpty" class="treeview-dropdown-select__chips d-flex align-items-center flex-nowrap gap-1">
                         <span *ngFor="let node of selectedNodes; let i = index"
-                            class="treeview-dropdown-select__chip"
+                            class="badge rounded-pill d-inline-flex align-items-center treeview-dropdown-select__chip"
                             [hidden]="i > 1">
                             {{ resolvedNodeLabel(node) }}
                         </span>
-                        <span *ngIf="selectedNodes.length > 2" class="treeview-dropdown-select__chip treeview-dropdown-select__chip--muted">
+                        <span *ngIf="selectedNodes.length > 2" class="badge rounded-pill d-inline-flex align-items-center treeview-dropdown-select__chip treeview-dropdown-select__chip--muted">
                             +{{ selectedNodes.length - 2 }} {{ resolvedSummarySuffix }}
                         </span>
                     </span>
@@ -86,13 +86,13 @@
                     {{ resolvedPlaceholder }}
                 </span>
 
-                <span *ngIf="multiple && selectedNodes.isNotEmpty" class="treeview-dropdown-select__chips">
+                <span *ngIf="multiple && selectedNodes.isNotEmpty" class="treeview-dropdown-select__chips d-flex align-items-center flex-nowrap gap-1">
                     <span *ngFor="let node of selectedNodes; let i = index"
-                        class="treeview-dropdown-select__chip"
+                        class="badge rounded-pill d-inline-flex align-items-center treeview-dropdown-select__chip"
                         [hidden]="i > 1">
                         {{ resolvedNodeLabel(node) }}
                     </span>
-                    <span *ngIf="selectedNodes.length > 2" class="treeview-dropdown-select__chip treeview-dropdown-select__chip--muted">
+                    <span *ngIf="selectedNodes.length > 2" class="badge rounded-pill d-inline-flex align-items-center treeview-dropdown-select__chip treeview-dropdown-select__chip--muted">
                         +{{ selectedNodes.length - 2 }} {{ resolvedSummarySuffix }}
                     </span>
                 </span>

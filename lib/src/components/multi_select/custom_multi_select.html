@@ -14,7 +14,7 @@
             <span class="dropdown-value" *ngIf="selectedValues.isEmpty == true">{{ placeholder}}</span>
 
             <span class="dropdown-values" *ngIf="selectedValues.isNotEmpty == true">
-                <span class="badge text-teal bg-teal bg-opacity-20 me-2" *ngFor="let selVal of selectedLabels">
+                <span class="badge dropdown-tag me-2" *ngFor="let selVal of selectedLabels">
                     {{ selVal }} 
                 </span>
             </span>
@@ -46,7 +46,7 @@
         <span class="dropdown-value" *ngIf="selectedValues.isEmpty == true">{{ placeholder}}</span>
 
         <span class="dropdown-values" *ngIf="selectedValues.isNotEmpty == true">
-            <span class="badge text-teal bg-teal bg-opacity-20 me-2" *ngFor="let selVal of selectedLabels">
+            <span class="badge dropdown-tag me-2" *ngFor="let selVal of selectedLabels">
                 {{ selVal }} 
             </span>
         </span>
@@ -79,6 +79,7 @@
         <ul [attr.id]="listboxId" role="listbox" aria-multiselectable="true">
             <!-- multiple -->
             <li class="dropdown-item" *ngFor="let o of options; let idx = index"
+                [class.active]="o.selected"
                 [attr.id]="optionId(idx)"
                 [attr.aria-selected]="o.selected.toString()"
                 tabindex="-1" (click)="onLiClickHandle($event,o)"

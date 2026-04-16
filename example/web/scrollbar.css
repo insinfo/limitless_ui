@@ -1,24 +1,48 @@
 :root {
   --app-scrollbar-size: 0.5rem;
-  --app-scrollbar-track: var(--gray-300);
-  --app-scrollbar-thumb: rgba(31, 41, 55, 0.28);
-  --app-scrollbar-thumb-hover: rgba(31, 41, 55, 0.48);
-  --app-scrollbar-sidebar-thumb: rgba(255, 255, 255, 0.28);
-  --app-scrollbar-sidebar-thumb-hover: rgba(255, 255, 255, 0.42);
+  --app-scrollbar-size-compact: 0.375rem;
+  --app-scrollbar-light-track: var(--gray-300);
+  --app-scrollbar-light-thumb: rgba(31, 41, 55, 0.28);
+  --app-scrollbar-light-thumb-hover: rgba(31, 41, 55, 0.48);
+  --app-scrollbar-dark-track: transparent;
+  --app-scrollbar-dark-thumb: rgba(255, 255, 255, 0.28);
+  --app-scrollbar-dark-thumb-hover: rgba(255, 255, 255, 0.42);
 }
 
 html,
 body,
 .custom-scrollbars,
-.content-wrapper {
+.scrollbar-theme-light,
+.content-inner,
+.table-responsive,
+.table-scrollable,
+.datatable-scroll-wrap,
+.dropdown-menu-scrollable,
+.modal-body,
+.offcanvas-body,
+.form-control-content,
+.tokenfield-suggest-list,
+.multiselect-container,
+.autoComplete_wrapper > ul,
+.select2-results > .select2-results__options,
+.dual-listbox .dual-listbox__available,
+.dual-listbox .dual-listbox__selected,
+.gridjs-wrapper,
+.document-editor-container,
+.ql-editor,
+.trumbowyg-editor,
+.trumbowyg-textarea {
   scrollbar-width: thin;
-  scrollbar-color: var(--app-scrollbar-thumb) var(--app-scrollbar-track);
+  scrollbar-color: var(--app-scrollbar-light-thumb) var(--app-scrollbar-light-track);
 }
 
+.scrollbar-theme-dark,
 .sidebar-content,
-.nav-sidebar {
+.nav-sidebar,
+.dropdown-menu-dark,
+.dropdown-menu-dark .dropdown-menu-scrollable {
   scrollbar-width: thin;
-  scrollbar-color: var(--app-scrollbar-sidebar-thumb) transparent;
+  scrollbar-color: var(--app-scrollbar-dark-thumb) var(--app-scrollbar-dark-track);
 }
 
 .nav-tabs-responsive,
@@ -35,7 +59,26 @@ body,
   html::-webkit-scrollbar,
   body::-webkit-scrollbar,
   .custom-scrollbars::-webkit-scrollbar,
-  .content-wrapper::-webkit-scrollbar {
+  .scrollbar-theme-light::-webkit-scrollbar,
+  .content-inner::-webkit-scrollbar,
+  .table-responsive::-webkit-scrollbar,
+  .table-scrollable::-webkit-scrollbar,
+  .datatable-scroll-wrap::-webkit-scrollbar,
+  .dropdown-menu-scrollable::-webkit-scrollbar,
+  .modal-body::-webkit-scrollbar,
+  .offcanvas-body::-webkit-scrollbar,
+  .form-control-content::-webkit-scrollbar,
+  .tokenfield-suggest-list::-webkit-scrollbar,
+  .multiselect-container::-webkit-scrollbar,
+  .autoComplete_wrapper > ul::-webkit-scrollbar,
+  .select2-results > .select2-results__options::-webkit-scrollbar,
+  .dual-listbox .dual-listbox__available::-webkit-scrollbar,
+  .dual-listbox .dual-listbox__selected::-webkit-scrollbar,
+  .gridjs-wrapper::-webkit-scrollbar,
+  .document-editor-container::-webkit-scrollbar,
+  .ql-editor::-webkit-scrollbar,
+  .trumbowyg-editor::-webkit-scrollbar,
+  .trumbowyg-textarea::-webkit-scrollbar {
     width: var(--app-scrollbar-size);
     height: var(--app-scrollbar-size);
   }
@@ -43,44 +86,113 @@ body,
   html::-webkit-scrollbar-track,
   body::-webkit-scrollbar-track,
   .custom-scrollbars::-webkit-scrollbar-track,
-  .content-wrapper::-webkit-scrollbar-track {
-    background: var(--app-scrollbar-track);
+  .scrollbar-theme-light::-webkit-scrollbar-track,
+  .content-inner::-webkit-scrollbar-track,
+  .table-responsive::-webkit-scrollbar-track,
+  .table-scrollable::-webkit-scrollbar-track,
+  .datatable-scroll-wrap::-webkit-scrollbar-track,
+  .dropdown-menu-scrollable::-webkit-scrollbar-track,
+  .modal-body::-webkit-scrollbar-track,
+  .offcanvas-body::-webkit-scrollbar-track,
+  .form-control-content::-webkit-scrollbar-track,
+  .tokenfield-suggest-list::-webkit-scrollbar-track,
+  .multiselect-container::-webkit-scrollbar-track,
+  .autoComplete_wrapper > ul::-webkit-scrollbar-track,
+  .select2-results > .select2-results__options::-webkit-scrollbar-track,
+  .dual-listbox .dual-listbox__available::-webkit-scrollbar-track,
+  .dual-listbox .dual-listbox__selected::-webkit-scrollbar-track,
+  .gridjs-wrapper::-webkit-scrollbar-track,
+  .document-editor-container::-webkit-scrollbar-track,
+  .ql-editor::-webkit-scrollbar-track,
+  .trumbowyg-editor::-webkit-scrollbar-track,
+  .trumbowyg-textarea::-webkit-scrollbar-track {
+    background: var(--app-scrollbar-light-track);
   }
 
   html::-webkit-scrollbar-thumb,
   body::-webkit-scrollbar-thumb,
   .custom-scrollbars::-webkit-scrollbar-thumb,
-  .content-wrapper::-webkit-scrollbar-thumb {
-    background-color: var(--app-scrollbar-thumb);
+  .scrollbar-theme-light::-webkit-scrollbar-thumb,
+  .content-inner::-webkit-scrollbar-thumb,
+  .table-responsive::-webkit-scrollbar-thumb,
+  .table-scrollable::-webkit-scrollbar-thumb,
+  .datatable-scroll-wrap::-webkit-scrollbar-thumb,
+  .dropdown-menu-scrollable::-webkit-scrollbar-thumb,
+  .modal-body::-webkit-scrollbar-thumb,
+  .offcanvas-body::-webkit-scrollbar-thumb,
+  .form-control-content::-webkit-scrollbar-thumb,
+  .tokenfield-suggest-list::-webkit-scrollbar-thumb,
+  .multiselect-container::-webkit-scrollbar-thumb,
+  .autoComplete_wrapper > ul::-webkit-scrollbar-thumb,
+  .select2-results > .select2-results__options::-webkit-scrollbar-thumb,
+  .dual-listbox .dual-listbox__available::-webkit-scrollbar-thumb,
+  .dual-listbox .dual-listbox__selected::-webkit-scrollbar-thumb,
+  .gridjs-wrapper::-webkit-scrollbar-thumb,
+  .document-editor-container::-webkit-scrollbar-thumb,
+  .ql-editor::-webkit-scrollbar-thumb,
+  .trumbowyg-editor::-webkit-scrollbar-thumb,
+  .trumbowyg-textarea::-webkit-scrollbar-thumb {
+    background-color: var(--app-scrollbar-light-thumb);
     border-radius: 999px;
   }
 
   html::-webkit-scrollbar-thumb:hover,
   body::-webkit-scrollbar-thumb:hover,
   .custom-scrollbars::-webkit-scrollbar-thumb:hover,
-  .content-wrapper::-webkit-scrollbar-thumb:hover {
-    background-color: var(--app-scrollbar-thumb-hover);
+  .scrollbar-theme-light::-webkit-scrollbar-thumb:hover,
+  .content-inner::-webkit-scrollbar-thumb:hover,
+  .table-responsive::-webkit-scrollbar-thumb:hover,
+  .table-scrollable::-webkit-scrollbar-thumb:hover,
+  .datatable-scroll-wrap::-webkit-scrollbar-thumb:hover,
+  .dropdown-menu-scrollable::-webkit-scrollbar-thumb:hover,
+  .modal-body::-webkit-scrollbar-thumb:hover,
+  .offcanvas-body::-webkit-scrollbar-thumb:hover,
+  .form-control-content::-webkit-scrollbar-thumb:hover,
+  .tokenfield-suggest-list::-webkit-scrollbar-thumb:hover,
+  .multiselect-container::-webkit-scrollbar-thumb:hover,
+  .autoComplete_wrapper > ul::-webkit-scrollbar-thumb:hover,
+  .select2-results > .select2-results__options::-webkit-scrollbar-thumb:hover,
+  .dual-listbox .dual-listbox__available::-webkit-scrollbar-thumb:hover,
+  .dual-listbox .dual-listbox__selected::-webkit-scrollbar-thumb:hover,
+  .gridjs-wrapper::-webkit-scrollbar-thumb:hover,
+  .document-editor-container::-webkit-scrollbar-thumb:hover,
+  .ql-editor::-webkit-scrollbar-thumb:hover,
+  .trumbowyg-editor::-webkit-scrollbar-thumb:hover,
+  .trumbowyg-textarea::-webkit-scrollbar-thumb:hover {
+    background-color: var(--app-scrollbar-light-thumb-hover);
   }
 
+  .scrollbar-theme-dark::-webkit-scrollbar,
   .sidebar-content::-webkit-scrollbar,
-  .nav-sidebar::-webkit-scrollbar {
-    width: 0.375rem;
-    height: 0.375rem;
+  .nav-sidebar::-webkit-scrollbar,
+  .dropdown-menu-dark::-webkit-scrollbar,
+  .dropdown-menu-dark .dropdown-menu-scrollable::-webkit-scrollbar {
+    width: var(--app-scrollbar-size-compact);
+    height: var(--app-scrollbar-size-compact);
   }
 
+  .scrollbar-theme-dark::-webkit-scrollbar-track,
   .sidebar-content::-webkit-scrollbar-track,
-  .nav-sidebar::-webkit-scrollbar-track {
-    background: transparent;
+  .nav-sidebar::-webkit-scrollbar-track,
+  .dropdown-menu-dark::-webkit-scrollbar-track,
+  .dropdown-menu-dark .dropdown-menu-scrollable::-webkit-scrollbar-track {
+    background: var(--app-scrollbar-dark-track);
   }
 
+  .scrollbar-theme-dark::-webkit-scrollbar-thumb,
   .sidebar-content::-webkit-scrollbar-thumb,
-  .nav-sidebar::-webkit-scrollbar-thumb {
-    background-color: var(--app-scrollbar-sidebar-thumb);
+  .nav-sidebar::-webkit-scrollbar-thumb,
+  .dropdown-menu-dark::-webkit-scrollbar-thumb,
+  .dropdown-menu-dark .dropdown-menu-scrollable::-webkit-scrollbar-thumb {
+    background-color: var(--app-scrollbar-dark-thumb);
     border-radius: 999px;
   }
 
+  .scrollbar-theme-dark::-webkit-scrollbar-thumb:hover,
   .sidebar-content::-webkit-scrollbar-thumb:hover,
-  .nav-sidebar::-webkit-scrollbar-thumb:hover {
-    background-color: var(--app-scrollbar-sidebar-thumb-hover);
+  .nav-sidebar::-webkit-scrollbar-thumb:hover,
+  .dropdown-menu-dark::-webkit-scrollbar-thumb:hover,
+  .dropdown-menu-dark .dropdown-menu-scrollable::-webkit-scrollbar-thumb:hover {
+    background-color: var(--app-scrollbar-dark-thumb-hover);
   }
 }

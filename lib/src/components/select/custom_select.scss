@@ -1,4 +1,3 @@
-$accent-color: #0c83ff;
 $text-color: #1f2937;
 $width: 300px;
 $font-size: 0.85em;
@@ -10,12 +9,18 @@ $background-color: white;
 
 :host {
     display: block;
+    --li-control-icon-size: 1.25rem;
+    --li-control-icon-gap: 0.375rem;
+    --li-form-select-valid-icon-size: calc(calc(var(--form-select-line-height, var(--body-line-height, 1.5715)) * 0.5em) + var(--form-select-padding-y, 0.5rem));
+    --li-form-select-valid-icon-center-right: 2.625rem;
+    --li-form-select-rightmost-icon-right-when-valid: calc(var(--li-form-select-valid-icon-center-right) + (var(--li-form-select-valid-icon-size) / 2) + var(--li-control-icon-gap));
+    --li-form-select-second-icon-right-when-valid: calc(var(--li-form-select-rightmost-icon-right-when-valid) + var(--li-control-icon-size) + var(--li-control-icon-gap));
 }
 
 .dropdown-button:focus-visible {
-    border-color: #0c83ff;
+    border-color: var(--component-active-bg);
     outline: 0;
-    box-shadow: 0 0 0 0.125rem rgba(12, 131, 255, 0.25);
+    box-shadow: var(--focus-ring-box-shadow);
 }
 
 .dropdown-button:disabled {
@@ -72,8 +77,8 @@ $background-color: white;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: var(--li-control-icon-size);
+    height: var(--li-control-icon-size);
 }
 
 .dropdown-trigger-icon {
@@ -82,16 +87,24 @@ $background-color: white;
     pointer-events: none;
 }
 
-.dropdown-button.is-invalid .dropdown-trigger-icon,
-.dropdown-button.is-valid .dropdown-trigger-icon {
-    right: 2.65rem;
+.dropdown-button--with-overlay-icon.is-invalid .dropdown-trigger-icon,
+.dropdown-button--with-overlay-icon.is-valid .dropdown-trigger-icon {
+    right: var(--li-form-select-rightmost-icon-right-when-valid);
 }
 
 .dropdown-clear {
     right: 2.1rem;
+    width: 1.25rem;
+    height: 1.25rem;
     border-radius: 999px;
     color: color-mix(in srgb, var(--body-color) 70%, transparent);
     cursor: pointer;
+
+    > .ph {
+        line-height: 1;
+        width: 1em;
+        height: 1em;
+    }
 
     &:hover {
         background-color: color-mix(in srgb, var(--body-color) 10%, transparent);
@@ -99,9 +112,14 @@ $background-color: white;
     }
 }
 
-.dropdown-button.is-invalid .dropdown-clear,
-.dropdown-button.is-valid .dropdown-clear {
-    right: 3.95rem;
+.dropdown-button--with-clear.is-invalid .dropdown-clear,
+.dropdown-button--with-clear.is-valid .dropdown-clear {
+    right: var(--li-form-select-rightmost-icon-right-when-valid);
+}
+
+.dropdown-button--with-overlay-icon.dropdown-button--with-clear.is-invalid .dropdown-clear,
+.dropdown-button--with-overlay-icon.dropdown-button--with-clear.is-valid .dropdown-clear {
+    right: var(--li-form-select-second-icon-right-when-valid);
 }
 
 .dropdown-trigger-addon {
@@ -110,8 +128,8 @@ $background-color: white;
 }
 
 .dropdown-item-hover {
-    background-color: $accent-color !important;
-    color: white;
+    background-color: var(--component-active-bg) !important;
+    color: var(--component-active-color);
 }
 
 .dropdown-container {
@@ -136,9 +154,21 @@ $background-color: white;
         overflow-wrap: break-word;
         word-wrap: break-word;
         hyphens: auto;
+
         &:hover {
-            background: $accent-color;
-            color: white;
+            background: var(--component-active-bg);
+            color: var(--component-active-color);
+        }
+
+        &.active,
+        &.active:focus {
+            background: var(--dropdown-link-active-bg);
+            color: var(--dropdown-link-active-color);
+        }
+
+        &.active:hover {
+            background: var(--component-active-bg);
+            color: var(--component-active-color);
         }
     }
 

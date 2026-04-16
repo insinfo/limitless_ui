@@ -1,6 +1,9 @@
 <div class="br-currency-input">
     <span *ngIf="resolvedPrefix.isNotEmpty" class="br-currency-input__prefix">{{resolvedPrefix}}</span>
     <input #inputElement [attr.data-li-form-focus-target]="'true'" type="text" [attr.placeholder]="resolvedPlaceholder" [disabled]="disabled" [required]="required"
-        [class]="resolvedInputClass" inputmode="decimal" autocomplete="off" [value]="displayValue"
+    [attr.aria-describedby]="resolvedDescribedBy" [attr.aria-invalid]="effectiveInvalid ? 'true' : null" [attr.data-invalid]="effectiveInvalid ? 'true' : null"
+    [class]="resolvedInputClass" inputmode="decimal" autocomplete="off" [value]="displayValue"
         (focus)="handleInputFocus()" (input)="handleInput(inputElement.value ?? '')" (blur)="handleInputBlur()">
 </div>
+<div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
+<div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>

@@ -1,0 +1,139 @@
+[data-color-theme='orange'],
+html[data-color-theme='orange'] [data-color-theme] {
+  color-scheme: light;
+  --gray-100: #fff9f5;
+  --gray-200: #f7ece4;
+  --gray-300: #edd8c9;
+  --gray-400: #ddbca4;
+  --gray-500: #c69c80;
+  --gray-600: #8d7465;
+  --gray-700: #6b5950;
+  --gray-800: #4d413b;
+  --gray-900: #342c28;
+  --body-bg: #ecd6c8;
+  --body-bg-rgb: 236, 214, 200;
+  --body-color: #3f3027;
+  --body-color-rgb: 63, 48, 39;
+  --border-color: #e1c7b2;
+  --border-color-translucent: rgba(225, 199, 178, 0.3);
+  --primary: #ef7f3a;
+  --primary-rgb: 239, 127, 58;
+  --secondary: #b9693c;
+  --secondary-rgb: 185, 105, 60;
+  --component-active-bg: #f08a3a;
+  --component-active-bg-rgb: 240, 138, 58;
+  --link-color: #cc5f1f;
+  --link-rgb-color: 204, 95, 31;
+  --link-hover-color: #ab4710;
+  --highlight-bg: rgba(239, 127, 58, 0.14);
+  --code-color: #d06427;
+  --focus-ring-box-shadow: 0 0 0 0.125rem rgba(239, 127, 58, 0.28);
+  --input-bg: var(--white);
+  --input-focus-bg: var(--white);
+  --input-disabled-bg: var(--gray-100);
+  --card-bg: #fff5ee;
+  --card-cap-bg: #fff0e5;
+  --app-scrollbar-light-track: #ead7ca;
+  --app-scrollbar-light-thumb: rgba(239, 127, 58, 0.34);
+  --app-scrollbar-light-thumb-hover: rgba(239, 127, 58, 0.52);
+}
+
+html[data-color-theme='orange'],
+html[data-color-theme='orange'] body {
+  background-color: var(--body-bg);
+}
+
+html[data-color-theme='orange'] .page-content,
+html[data-color-theme='orange'] .content-inner {
+  background: transparent;
+}
+
+html[data-color-theme='orange'] .nav-tabs:not(.nav-tabs-solid) {
+  --nav-link-active-color: var(--body-color);
+  --nav-tabs-link-active-color: var(--body-color);
+  --nav-tabs-link-active-bg: var(--card-bg);
+  --nav-tabs-link-active-border-color: var(--border-color) var(--border-color) var(--card-bg);
+  --nav-tabs-underline-color: var(--primary);
+}
+
+.page-header-light[data-color-theme='orange'],
+html[data-color-theme='orange'] .page-header-light:not([data-color-theme]) {
+  color-scheme: light;
+  --page-header-bg: #fff3ea;
+  border-color: #e1c7b2;
+  box-shadow: 0 1px 3px rgba(96, 52, 28, 0.1);
+}
+
+.card[data-color-theme='orange'],
+html[data-color-theme='orange'] .card:not([data-color-theme]) {
+  color-scheme: light;
+  --card-bg: #fff5ee;
+  border-color: #e1c7b2;
+  box-shadow: 0 1px 3px rgba(96, 52, 28, 0.1);
+}
+
+html[data-color-theme='orange'] .btn-primary {
+  --btn-color: #fff;
+  --btn-bg: #ef7f3a;
+  --btn-border-color: #ef7f3a;
+  --btn-hover-color: #fff;
+  --btn-hover-bg: #dd6f2c;
+  --btn-hover-border-color: #dd6f2c;
+  --btn-focus-shadow-rgb: 239, 127, 58;
+  --btn-active-color: #fff;
+  --btn-active-bg: #c96022;
+  --btn-active-border-color: #c96022;
+  --btn-disabled-color: #fff;
+  --btn-disabled-bg: #ef7f3a;
+  --btn-disabled-border-color: #ef7f3a;
+}
+
+html[data-color-theme='orange'] .btn-light {
+  --btn-bg: #fce9dc;
+  --btn-border-color: #e7c2a8;
+  --btn-hover-bg: #f7ddca;
+  --btn-hover-border-color: #dda983;
+  --btn-active-bg: #f1ceb3;
+  --btn-active-border-color: #d6976d;
+  --btn-color: #7a4425;
+}
+
+html[data-color-theme='orange'] .form-control,
+html[data-color-theme='orange'] .form-select,
+html[data-color-theme='orange'] .input-group-text {
+  border-color: #e1c7b2;
+}
+
+html[data-color-theme='orange'] .form-control:focus,
+html[data-color-theme='orange'] .form-select:focus {
+  border-color: rgba(239, 127, 58, 0.52);
+  box-shadow: 0 0 0 0.125rem rgba(239, 127, 58, 0.18);
+}
+
+html[data-color-theme='orange'] .dropdown-menu {
+  border-color: rgba(225, 199, 178, 0.95);
+  background-color: #fff9f5;
+  box-shadow: 0 8px 18px rgba(96, 52, 28, 0.12);
+}
+
+html[data-color-theme='orange'] .dropdown-item.active,
+html[data-color-theme='orange'] .dropdown-item:active,
+html[data-color-theme='orange'] .dropdown-item:focus,
+html[data-color-theme='orange'] .dropdown-item:hover {
+  color: #9a4d19;
+  background: rgba(239, 127, 58, 0.12);
+}
+
+html[data-color-theme='orange'] .table {
+  --table-hover-bg: rgba(239, 127, 58, 0.06);
+  --table-active-bg: rgba(239, 127, 58, 0.1);
+}
+
+html[data-color-theme='orange'] .badge.bg-primary,
+html[data-color-theme='orange'] .bg-primary {
+  background-color: rgba(var(--primary-rgb), 1) !important;
+}
+
+html[data-color-theme='orange'] .text-primary {
+  color: rgba(var(--primary-rgb), 1) !important;
+}

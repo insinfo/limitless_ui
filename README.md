@@ -25,7 +25,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.2`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.7`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -46,7 +46,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.2
+  limitless_ui: ^1.0.0-dev.7
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -55,7 +55,7 @@ If the application will use `li-datatable`, `li-datatable-select`, `li-select`, 
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.2
+  limitless_ui: ^1.0.0-dev.7
   essential_core: ^1.0.0
 ```
 
@@ -89,6 +89,8 @@ import 'package:essential_core/essential_core.dart';
 ## Theme and icons
 
 The package follows the Limitless visual language, but some visual affordances are provided by the theme CSS rather than component Dart code.
+
+The demo application now also ships extra color themes (`blu`, `pink`, `orange`, and `sali`) on top of the default light/dark switch, plus broader scrollbar theming for the sidebar, content panes, dropdowns, modals, and dense form surfaces. These themes are example-app concerns rather than package APIs, but they are useful references when adapting Limitless-derived tokens for a host application.
 
 The demo application loads Limitless CSS plus the Phosphor icon font in [example/web/index.html](example/web/index.html). One practical detail is the dropdown caret: if your theme renders `.dropdown-toggle::after` with a glyph that does not exist in the loaded icon font, the caret will appear broken.
 
@@ -134,8 +136,9 @@ Practical rule:
 
 ## Included modules
 
-- Inputs: checkbox, radio, toggle, rating, file upload, currency input, date picker, time picker, date range picker, color picker, select, multi-select, typeahead.
+- Inputs: checkbox, radio, toggle, rating, file upload, currency input, token field, date picker, time picker, date range picker, color picker, select, multi-select, typeahead.
 - Data display: datatable, datatable select, tree view, highlight.
+- Tagging workflows: tag filter, tag editor, tag manager.
 - Structure: accordion, collapse, buttons, carousel, modal, tabs, nav, wizard, breadcrumbs, pagination, offcanvas, floating action button.
 - Overlay and menus: dropdown, dropdown menu, tooltip, popover, sweet alert, notification toast.
 - Navigation helpers: scrollspy service and directives.
@@ -432,12 +435,38 @@ Practical notes:
 - when a composite field should focus a nested trigger instead of the outer host, mark that element with `data-li-form-focus-target="true"`;
 - if no explicit order is provided, `liForm` now falls back to the page order.
 
+### Currency input with declarative validation
+
+`li-currency-input` now follows the same declarative validation contract used by the rest of the form components, so the demo pages and real forms can stay on the same `liRules` plus `liValidationMode` path.
+
+```dart
+final List<LiRule> compensationRules = <LiRule>[
+  LiRule.custom(
+    (value) => value is int && value > 0
+        ? null
+        : 'Informe um valor monetário maior que zero.',
+    code: 'currencyAmount',
+  ),
+];
+```
+
+```html
+<li-currency-input
+  currencyCode="BRL"
+  [locale]="validationLocale"
+  [liRules]="compensationRules"
+  liValidationMode="submittedOrTouchedOrDirty"
+  helperText="Participa do mesmo fluxo declarativo do liForm."
+  [(ngModel)]="person.expectedCompensationMinorUnits">
+</li-currency-input>
+```
+
 ## Generic vs `essential_core`-backed components
 
 Use these groups as the practical adoption boundary:
 
-- Generic components: alerts, buttons, accordion, collapse, modal, tabs, nav, tooltip, popover, toast, scrollspy, checkbox, radio, toggle, rating, file upload, date picker, date range picker, currency helpers and the base `li-input`.
-- `essential_core`-backed components: `li-datatable`, `li-datatable-select`, `li-select`, `li-multi-select`, `li-typeahead`, `li-treeview-select`, `LiTreeViewComponent` and related data/selection helpers.
+- Generic components: alerts, buttons, accordion, collapse, modal, tabs, nav, tooltip, popover, toast, scrollspy, checkbox, radio, toggle, rating, file upload, date picker, date range picker, currency helpers, `li-token-field`, `li-tag-editor`, and the base `li-input`.
+- `essential_core`-backed components: `li-datatable`, `li-datatable-select`, `li-select`, `li-multi-select`, `li-typeahead`, `li-treeview-select`, `li-tag-filter`, `li-tag-manager`, `LiTreeViewComponent` and related data/selection helpers.
 
 The second group reuses `Filters`, `DataFrame`, tree data structures, and related contracts from `essential_core`.
 
@@ -503,6 +532,10 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiFabTriggerDirective`, `LiFabActionDirective`.
 - Typeahead:
   `LiTypeaheadComponent`, `LiTypeaheadItem`, `LiTypeaheadSelectItemEvent`, `LiTypeaheadConfig`, `LiTypeaheadHighlightComponent`.
+- Tagging and tokenization:
+  `LiTagFilterComponent`, `LiTagEditorComponent`, `LiTagManagerComponent`,
+  `LiTagSelectionChange`, `LiTagSaveRequest`, `LiTagDeleteRequest`,
+  `LiTokenFieldComponent`.
 - Selection controls and upload:
   `LiCheckboxComponent`, `LiRadioComponent`, `LiToggleComponent`,
   `LiRatingComponent`, `LiRatingConfig`, `LiFileUploadComponent`,
@@ -511,6 +544,16 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiTreeViewComponent`, `LiTreeviewSelectComponent`,
   `LiTreeViewPageLoader`, `TreeViewLoadRequest`, `TreeViewLoadResult`,
   `LiTreeviewSelectNodeDirective`, `LiTreeviewSelectTriggerDirective`.
+
+## Recent additions in `1.0.0-dev.7`
+
+- Added `li-tag-filter`, `li-tag-editor`, and `li-tag-manager` with configurable `labelKey`, `valueKey`, and `colorKey` mapping, reusable selection/create/edit/delete events, and browser coverage for the new tag workflows.
+- Added `li-token-field`, a tokenized text input with `ngModel`, regex-based token extraction, optional keystroke filtering, clipboard actions, and browser coverage for the core parsing flows.
+- Added the `work-queue` demo route to show tag tooling and token-field usage inside a more realistic operational flow.
+- Expanded dropdown menu overlays so `li-dropdown-menu` and the lower-level `dropdownmenu` directive can render either inline or in a `body`-anchored Popper overlay, which is safer for clipped containers and overflow-hidden layouts.
+- Expanded `li-modal` with `compactHeader` and `smallHeader`, improved fullscreen body scrolling, and richer demo coverage for compact, iconified, mini, backdropless, form, and fullscreen dialog variants.
+- Expanded the demo shell with extra color themes (`blu`, `pink`, `orange`, `sali`) and broader themed scrollbar coverage across the example surfaces.
+- Aligned `li-currency-input` examples with the same declarative validation contract used by `person-registration`, and tightened the extra single/multiple datatable/treeview fields so they also participate in submit validation.
 
 ## Recent additions in `1.0.0-dev.2`
 
@@ -571,6 +614,46 @@ Preview-related inputs:
   [enablePreviewZoom]="true"
   browseLabel="Browse attachments">
 </li-file-upload>
+```
+
+### Tag tooling
+
+`li-tag-filter`, `li-tag-editor`, and `li-tag-manager` cover the common label-selection and maintenance flow without forcing each screen to rebuild badge rendering, color handling, or CRUD event payloads.
+
+```html
+<li-tag-filter
+  [dataSource]="tagCatalog"
+  labelKey="name"
+  valueKey="id"
+  colorKey="color"
+  [(ngModel)]="selectedTagIds">
+</li-tag-filter>
+
+<li-tag-manager
+  [dataSource]="tagCatalog"
+  [selectedValues]="selectedTagIds"
+  labelKey="name"
+  valueKey="id"
+  colorKey="color"
+  (applySelection)="applyTags($event)"
+  (createRequest)="createTag($event)"
+  (updateRequest)="updateTag($event)"
+  (deleteRequest)="deleteTag($event)">
+</li-tag-manager>
+```
+
+### Token field
+
+`li-token-field` is aimed at repeated short values such as process codes, e-mails, or routing identifiers, while preserving `[(ngModel)]` and a compact action menu.
+
+```html
+<li-token-field
+  [(ngModel)]="processCodes"
+  [filterInput]="true"
+  patternAllowed="[0-9/]"
+  patternToken="\\d+/\\d+"
+  placeholder="Digite um código/ano e pressione enter.">
+</li-token-field>
 ```
 
 ### Alert
@@ -1242,6 +1325,20 @@ The demo covers four useful scenarios: default usage, restricted date ranges, En
 
 This pattern is useful for expensive content such as datatables, large forms, or projected content that should not exist in the DOM until the dialog opens.
 
+Additional sizing and chrome inputs include `compactHeader` and `smallHeader` when the default Limitless header density is too tall for short dialogs or fullscreen administrative forms.
+
+```html
+<li-modal
+  title-text="Quick review"
+  size="modal-sm"
+  [smallHeader]="true"
+  [lazyContent]="true">
+  <div class="p-3">Compact modal content</div>
+</li-modal>
+```
+
+Use `compactHeader` when you want a subtler reduction without changing the overall rhythm as aggressively as `smallHeader`. The fullscreen demo route also now shows `size="modal-full"` combined with `smallHeader` for long-form administrative flows.
+
 ### Toast
 
 `li-toast` covers the inline declarative case. It renders the toast markup, exposes `show()`, `hide()`, and `isOpen`, and supports `header`, `body`, `helperText`, `badgeText`, `iconClass`, `autohide`, `delay`, `dismissible`, `pauseOnHover`, and `rounded`.
@@ -1324,7 +1421,7 @@ Each item is a `LiDropdownMenuOption` with:
 - `divider`
 
 The component also supports `triggerLabel`, `triggerIconClass`, `triggerClass`,
-`menuClass`, `placement`, `rounded`, `showCaret`, and `closeOnSelect`.
+`menuClass`, `placement`, `rounded`, `showCaret`, `closeOnSelect`, and `container`.
 
 ```dart
 final options = <LiDropdownMenuOption>[
@@ -1346,10 +1443,13 @@ final options = <LiDropdownMenuOption>[
   [options]="options"
   value="edit"
   triggerLabel="Actions"
+  container="body"
   placement="dropend"
   (valueChange)="onAction($event)">
 </li-dropdown-menu>
 ```
+
+Use `container="body"` when the trigger lives inside clipped panels, tables, cards, or any `overflow: hidden`/`auto` ancestor and you want the menu to escape that stacking context. Use `container="inline"` when normal DOM flow is preferred. The same inline-versus-body overlay choice is also available on the lower-level `dropdownmenu` directive through `dropdownmenuContainer`.
 
 The menu closes on outside click, `Escape`, or selection depending on `closeOnSelect`. Main reference: [lib/src/components/dropdown_menu/dropdown_menu_component.dart](lib/src/components/dropdown_menu/dropdown_menu_component.dart).
 
@@ -1447,7 +1547,7 @@ dart pub publish --dry-run
 
 ## Demo application
 
-The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, datatable, datatable select, dropdown, fab, file upload, inputs, modal, nav, offcanvas, page header, pagination, person registration, popover, rating, scrollspy, select, multi-select, tabs, toast, treeview, typeahead, tooltip, wizard, and selection-control examples.
+The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, currency input, datatable, datatable select, dropdown, fab, file upload, inputs, modal, nav, offcanvas, page header, pagination, person registration, popover, rating, scrollspy, select, multi-select, tabs, toast, treeview, typeahead, tooltip, wizard, work queue, and selection-control examples.
 
 Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, overlay components that depend on browser geometry, and the new `person-registration` route that demonstrates an end-to-end form with declarative frontend rules plus fake backend validation.
 

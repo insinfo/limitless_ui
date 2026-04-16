@@ -56,7 +56,7 @@ import 'package:limitless_ui_example/src/pages/rating/rating_page.template.dart'
 import 'package:limitless_ui_example/src/pages/typeahead/typeahead_page.template.dart'
     as typeahead_page;
 import 'package:limitless_ui_example/src/pages/wizard/wizard_page.template.dart'
-  as wizard_page;
+    as wizard_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
     as tabs_page;
 import 'package:limitless_ui_example/src/pages/toast/toast_page.template.dart'
@@ -65,6 +65,8 @@ import 'package:limitless_ui_example/src/pages/tooltip/tooltip_page.template.dar
     as tooltip_page;
 import 'package:limitless_ui_example/src/pages/treeview/treeview_page.template.dart'
     as treeview_page;
+import 'package:limitless_ui_example/src/pages/work_queue/work_queue_page.template.dart'
+    as work_queue_page;
 
 class DemoRoutes {
   static final overview = RouteDefinition(
@@ -198,6 +200,11 @@ class DemoRoutes {
     component: datatable_select_page.DatatableSelectPageComponentNgFactory,
   );
 
+  static final workQueue = RouteDefinition(
+    routePath: DemoRoutePaths.workQueue,
+    component: work_queue_page.WorkQueuePageComponentNgFactory,
+  );
+
   static final notification = RouteDefinition(
     routePath: DemoRoutePaths.notification,
     component: notification_page.NotificationPageComponentNgFactory,
@@ -250,6 +257,7 @@ class DemoRoutes {
     popover,
     datatable,
     datatableSelect,
+    workQueue,
     toast,
     notification,
     fileUpload,

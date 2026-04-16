@@ -200,6 +200,42 @@ void main() {
     expect(host.picker!.isOpen, isTrue);
     expect(host.picker!.leftViewMode, DateRangePickerViewMode.day);
   });
+
+  test('supports forward and backward navigation from both headers', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      final headers = html.document.querySelectorAll('.date-range-panel-header');
+      final leftNext = headers[0].querySelector('.calendar-nav.next');
+      expect(leftNext, isNotNull);
+      leftNext!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.picker!.leftMonth, DateTime(2026, 5, 1));
+    expect(host.picker!.rightMonth, DateTime(2026, 6, 1));
+
+    await fixture.update((_) {
+      final headers = html.document.querySelectorAll('.date-range-panel-header');
+      final rightPrev = headers[1].querySelector('.calendar-nav.prev');
+      expect(rightPrev, isNotNull);
+      rightPrev!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.picker!.leftMonth, DateTime(2026, 4, 1));
+    expect(host.picker!.rightMonth, DateTime(2026, 5, 1));
+  });
 }
 
 Future<void> _settle(

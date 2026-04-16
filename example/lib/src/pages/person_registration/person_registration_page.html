@@ -231,7 +231,7 @@
                       <div class="col-12">
                         <div class="person-inline-note">
                           <strong>{{ isPt ? 'Campos extras desta demo:' : 'Extra demo fields:' }}</strong>
-                          {{ isPt ? ' abaixo estão o li-currency-input, o li-datatable-select e o li-treeview-select no mesmo formulário.' : ' the form below also showcases li-currency-input, li-datatable-select, and li-treeview-select together.' }}
+                          {{ isPt ? ' abaixo estão o li-currency-input, o li-datatable-select em single e multiple, e o li-treeview-select em single e multiple no mesmo formulário, todos participando do mesmo submit declarativo.' : ' the form below also showcases li-currency-input plus single and multiple versions of li-datatable-select and li-treeview-select in the same form, all participating in the same declarative submit flow.' }}
                         </div>
                       </div>
 
@@ -241,18 +241,13 @@
                             currencyCode="BRL"
                             [locale]="validationLocale"
                             [required]="true"
+                            [liRules]="expectedCompensationRules"
+                            liValidationMode="submittedOrTouchedOrDirty"
                             inputClass="form-control"
-                            [class.is-invalid]="hasFieldError('expectedCompensation')"
-                            [attr.data-invalid]="hasFieldError('expectedCompensation') ? 'true' : null"
+                            [helperText]="isPt ? 'Entrada monetária integrada ao mesmo fluxo de validação do formulário.' : 'Currency input integrated into the same form validation flow.'"
                             [ngModel]="draft.expectedCompensationMinorUnits"
                             (ngModelChange)="onExpectedCompensationChange($event)">
                         </li-currency-input>
-                        <div *ngIf="hasFieldError('expectedCompensation')" class="invalid-feedback d-block">
-                          {{ fieldError('expectedCompensation') }}
-                        </div>
-                        <div class="form-text mt-1">
-                          {{ isPt ? 'Entrada monetária integrada ao mesmo fluxo de validação do formulário.' : 'Currency input integrated into the same form validation flow.' }}
-                        </div>
                       </div>
 
                       <div class="col-md-8" [attr.data-person-field]="'reviewerIds'" liFormField="reviewerIds" [liFormFieldOrder]="115">
@@ -268,8 +263,6 @@
                             [placeholder]="isPt ? 'Escolha um ou mais responsáveis' : 'Choose one or more reviewers'"
                             [searchPlaceholder]="isPt ? 'Buscar responsável' : 'Search reviewer'"
                             [multiple]="true"
-                            [triggerIconMode]="'addon'"
-                            [triggerIconClass]="'ph ph-users-three'"
                             [liRules]="reviewerRules"
                             liValidationMode="submittedOrTouchedOrDirty"
                             [locale]="validationLocale"
@@ -277,6 +270,28 @@
                             [ngModel]="draft.reviewerIds"
                             (ngModelChange)="onReviewerIdsChange($event)"
                             (dataRequest)="onReviewerDataRequest($event)">
+                        </li-datatable-select>
+                      </div>
+
+                      <div class="col-md-6" [attr.data-person-field]="'primaryReviewerId'" liFormField="primaryReviewerId" [liFormFieldOrder]="116">
+                        <label class="form-label fw-semibold">{{ primaryReviewerLabel }}</label>
+                        <li-datatable-select
+                            [settings]="reviewerSettings"
+                            [dataTableFilter]="primaryReviewerFilter"
+                            [data]="primaryReviewerData"
+                            [searchInFields]="reviewerSearchFields"
+                            [labelKey]="'name'"
+                            [valueKey]="'id'"
+                            [title]="primaryReviewerLabel"
+                            [placeholder]="isPt ? 'Selecione o responsável principal' : 'Select the primary reviewer'"
+                            [searchPlaceholder]="isPt ? 'Buscar responsável principal' : 'Search primary reviewer'"
+                            [liRules]="primaryReviewerRules"
+                            liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [helperText]="isPt ? 'Obrigatório no submit e precisa estar entre os responsáveis da frente.' : 'Required on submit and must also belong to the squad reviewers.'"
+                            [ngModel]="draft.primaryReviewerId"
+                            (ngModelChange)="onPrimaryReviewerIdChange($event)"
+                            (dataRequest)="onPrimaryReviewerDataRequest($event)">
                         </li-datatable-select>
                       </div>
 
@@ -292,6 +307,23 @@
                             [helperText]="isPt ? 'Exemplo adicional com treeview-select para fluxos hierárquicos.' : 'Additional example with treeview-select for hierarchical flows.'"
                             [ngModel]="draft.workflowNode"
                             (ngModelChange)="onWorkflowNodeChange($event)">
+                        </li-treeview-select>
+                      </div>
+
+                      <div class="col-12" [attr.data-person-field]="'workflowNodeIds'" liFormField="workflowNodeIds" [liFormFieldOrder]="118">
+                        <label class="form-label fw-semibold">{{ workflowStagesLabel }}</label>
+                        <li-treeview-select
+                            [data]="workflowMultipleNodes"
+                            [multiple]="true"
+                            [closeOnSelect]="false"
+                          [liRules]="workflowStagesRules"
+                          liValidationMode="submittedOrTouchedOrDirty"
+                            [locale]="validationLocale"
+                            [placeholder]="isPt ? 'Selecione etapas paralelas do workflow' : 'Select parallel workflow stages'"
+                            [searchPlaceholder]="isPt ? 'Buscar etapa paralela' : 'Search parallel stage'"
+                          [helperText]="isPt ? 'Obrigatório no submit e não pode repetir a etapa principal.' : 'Required on submit and cannot repeat the main workflow stage.'"
+                            [ngModel]="draft.workflowNodeIds"
+                            (ngModelChange)="onWorkflowNodeIdsChange($event)">
                         </li-treeview-select>
                       </div>
                     </div>
@@ -473,7 +505,9 @@
                       <div><strong>{{ departmentLabel }}:</strong> {{ selectedDepartmentLabel }}</div>
                       <div><strong>{{ skillsLabel }}:</strong> {{ selectedSkillsLabel }}</div>
                       <div><strong>{{ reviewerLabel }}:</strong> {{ selectedReviewerLabel }}</div>
+                      <div><strong>{{ primaryReviewerLabel }}:</strong> {{ selectedPrimaryReviewerLabel }}</div>
                       <div><strong>{{ workflowLabel }}:</strong> {{ selectedWorkflowLabel }}</div>
+                      <div><strong>{{ workflowStagesLabel }}:</strong> {{ selectedWorkflowNodesLabel }}</div>
                       <div><strong>{{ expectedCompensationLabel }}:</strong> {{ expectedCompensationLabelText }}</div>
                       <div><strong>{{ uploadsLabel }}:</strong> {{ attachmentSummary }}</div>
                       <div><strong>{{ contactTimeLabel }}:</strong> {{ formatDuration(draft.preferredContactTime) }}</div>
@@ -514,9 +548,9 @@
                   <ul class="mb-0 ps-3">
                     <li><code>li-input</code> com máscara, feedback inline e password toggle.</li>
                     <li><code>li-select</code> e <code>li-multi-select</code> com retorno do modelo selecionado.</li>
-                    <li><code>li-datatable-select</code> adicionado como campo extra para responsáveis, sem substituir o select original.</li>
-                    <li><code>li-treeview-select</code> adicionado como campo extra para etapa de workflow hierárquica.</li>
-                    <li><code>li-currency-input</code> integrado ao mesmo formulário com foco, required e erro inline.</li>
+                    <li><code>li-datatable-select</code> adicionado como campo extra em single e multiple para responsáveis, também participando do submit declarativo.</li>
+                    <li><code>li-treeview-select</code> adicionado como campo extra em single e multiple para workflow hierárquico, com regra cruzada contra a etapa principal.</li>
+                    <li><code>li-currency-input</code> integrado ao mesmo formulário com <code>liRules</code>, <code>liValidationMode</code> e erro inline nativo.</li>
                     <li><code>li-radio-group</code>, <code>li-checkbox-group</code> e <code>li-toggle</code> no mesmo formulário.</li>
                     <li><code>li-date-picker</code>, <code>li-time-picker</code> e <code>li-date-range-picker</code> em regras combinadas.</li>
                     <li><code>li-file-upload</code> com regras declarativas no frontend e validação complementar no backend fake.</li>

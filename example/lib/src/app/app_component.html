@@ -96,7 +96,7 @@
        [class.sidebar-main-unfold]="isSidebarUnfolded"
        (mouseenter)="onSidebarMouseEnter()"
        (mouseleave)="onSidebarMouseLeave()">
-    <div class="sidebar-content">
+    <div class="sidebar-content scrollbar-theme-dark">
       <div class="sidebar-section">
         <div class="sidebar-section-body d-flex justify-content-center">
           <h5 class="sidebar-resize-hide flex-grow-1 my-auto">{{ t.app.navigation }}</h5>
@@ -152,7 +152,7 @@
       </div>
 
       <div class="sidebar-section">
-        <ul class="nav nav-sidebar" [attr.data-nav-type]="'accordion'">
+        <ul class="nav nav-sidebar scrollbar-theme-dark" [attr.data-nav-type]="'accordion'">
           <!-- <li *ngIf="showMainHeader" class="nav-item-header pt-0">
             <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">{{ mainLabel }}</div>
             <i class="ph-dots-three sidebar-resize-show"></i>
@@ -201,7 +201,7 @@
   </div>
 
   <div class="content-wrapper">
-    <div class="content-inner">
+    <div class="content-inner scrollbar-theme-light">
       <router-outlet [routes]="DemoRoutes.all"></router-outlet>
     </div>
   </div>

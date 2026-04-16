@@ -4,6 +4,11 @@ import 'dart:html';
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 
+import '../../directives/li_form_directive.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
 import 'currency_input_formatter.dart';
 
 @Component(
@@ -22,8 +27,20 @@ class LiCurrencyInputComponent
         OnDestroy,
         AfterChanges {
   final HtmlElement _hostElement;
+  final LiFormDirective? _formDirective;
 
-  LiCurrencyInputComponent(this._hostElement);
+  LiCurrencyInputComponent(
+    this._hostElement, [
+    @Optional() this._formDirective,
+  ]) {
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription =
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _syncValidationClasses();
+    });
+  }
 
   String? _customPlaceholder;
   String? _customPrefix;
@@ -56,6 +73,39 @@ class LiCurrencyInputComponent
   @Input()
   String inputClass = 'form-control';
 
+  @Input()
+  bool invalid = false;
+
+  @Input()
+  bool valid = false;
+
+  @Input()
+  bool dataInvalid = false;
+
+  @Input()
+  String errorText = '';
+
+  @Input()
+  String helperText = '';
+
+  @Input()
+  String feedbackClass = '';
+
+  @Input()
+  String describedBy = '';
+
+  @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
+
   @ViewChild('inputElement')
   InputElement? inputElement;
 
@@ -63,10 +113,59 @@ class LiCurrencyInputComponent
 
   int? _minorUnits;
   bool _isFocused = false;
+  bool _touched = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
   StreamSubscription<Event>? _hostFocusSubscription;
+  StreamSubscription<bool>? _formSubmissionSubscription;
   MutationObserver? _hostClassObserver;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
 
-  String get resolvedInputClass => '$inputClass br-currency-input__field';
+  bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
+
+  bool get effectiveInvalid =>
+      invalid || dataInvalid || effectiveAutoInvalid || _hasHostInvalidState;
+
+  bool get effectiveValid =>
+      !effectiveInvalid &&
+      (valid ||
+          _hasHostValidState ||
+          (_shouldShowValidation &&
+              _effectiveRules.isNotEmpty &&
+              _autoValidationIssue == null));
+
+  String get effectiveErrorText {
+    final externalMessage = errorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
+
+    return _autoValidationIssue?.message ?? '';
+  }
+
+  bool get showErrorFeedback =>
+      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
+
+  bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  String? get resolvedDescribedBy =>
+      describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String get resolvedInputClass => _joinClasses(<String>[
+        inputClass,
+        'br-currency-input__field',
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedFeedbackClass => _joinClasses(<String>[
+        'invalid-feedback',
+        'd-block',
+        feedbackClass,
+      ]);
 
   String get resolvedPlaceholder =>
       _customPlaceholder ?? formatter.formatForEditing(0);
@@ -82,6 +181,13 @@ class LiCurrencyInputComponent
         locale: locale,
         currencyCode: currencyCode,
         decimalDigits: decimalDigits,
+      );
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
       );
 
   ChangeFunction<int?> onChange = (int? _, {String? rawValue}) {};
@@ -109,11 +215,13 @@ class LiCurrencyInputComponent
         ? formatter.formatForEditing(_minorUnits)
         : formatter.formatForDisplay(_minorUnits);
     _syncInputValue();
-    _syncRequiredValidationState();
+    _runAutoValidation();
+    _syncValidationClasses();
   }
 
   @override
   void ngAfterChanges() {
+    _rebuildValidationConfig();
     writeValue(_minorUnits);
   }
 
@@ -144,15 +252,20 @@ class LiCurrencyInputComponent
 
     inputElement?.disabled = disabled;
     _syncInputValue();
+    _rebuildValidationConfig();
     _syncValidationClasses();
   }
 
   void handleInput(String rawValue) {
     final sanitized = formatter.sanitizeForEditing(rawValue);
     final minorUnits = formatter.minorUnitsFromText(sanitized);
+    final valueChanged = _minorUnits != minorUnits;
 
     _minorUnits = minorUnits;
     displayValue = sanitized;
+    if (valueChanged) {
+      _dirty = true;
+    }
 
     if (inputElement?.value != sanitized) {
       _syncInputValue();
@@ -163,7 +276,8 @@ class LiCurrencyInputComponent
       minorUnits,
       rawValue: sanitized,
     );
-    _syncRequiredValidationState();
+    _runAutoValidation();
+    _syncValidationClasses();
   }
 
   void handleInputFocus() {
@@ -180,8 +294,7 @@ class LiCurrencyInputComponent
     _isFocused = false;
     displayValue = formatter.formatForDisplay(_minorUnits);
     _syncInputValue();
-    _syncRequiredValidationState();
-    onTouched();
+    _markTouched();
   }
 
   void _syncInputValue() {
@@ -208,48 +321,84 @@ class LiCurrencyInputComponent
       return;
     }
 
-    for (final cssClass in const ['is-invalid', 'is-valid']) {
-      if (_hostElement.classes.contains(cssClass)) {
-        input.classes.add(cssClass);
-      } else {
-        input.classes.remove(cssClass);
-      }
+    if (effectiveInvalid) {
+      input.classes.add('is-invalid');
+    } else {
+      input.classes.remove('is-invalid');
     }
 
-    if (_hostElement.attributes.containsKey('data-invalid')) {
-      input.attributes['data-invalid'] =
-          _hostElement.attributes['data-invalid']!;
+    if (effectiveValid) {
+      input.classes.add('is-valid');
+    } else {
+      input.classes.remove('is-valid');
+    }
+
+    if (effectiveInvalid) {
+      input.attributes['data-invalid'] = 'true';
     } else {
       input.attributes.remove('data-invalid');
     }
   }
 
-  void _syncRequiredValidationState() {
-    if (!required) {
-      _hostElement.classes.remove('is-invalid');
-      _hostElement.classes.remove('is-valid');
-      _hostElement.attributes.remove('data-invalid');
+  void _markTouched() {
+    if (_touched) {
+      onTouched();
+      _runAutoValidation();
       _syncValidationClasses();
       return;
     }
 
-    final isValid = _minorUnits != null;
-    if (isValid) {
-      _hostElement.classes.remove('is-invalid');
-      _hostElement.classes.remove('is-valid');
-      _hostElement.attributes.remove('data-invalid');
-    } else {
-      _hostElement.classes.remove('is-valid');
-      _hostElement.classes.add('is-invalid');
-      _hostElement.attributes['data-invalid'] = 'true';
-    }
-
+    _touched = true;
+    onTouched();
+    _runAutoValidation();
     _syncValidationClasses();
   }
+
+  void _rebuildValidationConfig() {
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...liMessages,
+    });
+    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
+      if (required) const LiRequiredRule(),
+      ...liRules,
+    ]);
+
+    _runAutoValidation();
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
+      return;
+    }
+
+    _autoValidationIssue = liValidateValue(
+      value: _minorUnits,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
+  }
+
+  bool get _hasHostInvalidState =>
+      _hostElement.classes.contains('is-invalid') ||
+      _hostElement.attributes['data-invalid'] == 'true';
+
+  bool get _hasHostValidState => _hostElement.classes.contains('is-valid');
 
   @override
   void ngOnDestroy() {
     _hostFocusSubscription?.cancel();
+    _formSubmissionSubscription?.cancel();
     _hostClassObserver?.disconnect();
   }
 }

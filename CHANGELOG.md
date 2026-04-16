@@ -1,3 +1,14 @@
+## 1.0.0-dev.7
+
+- Added generic tag tooling with `li-tag-filter`, `li-tag-editor`, and `li-tag-manager`, including configurable `labelKey`/`valueKey`/`colorKey` mapping, reusable selection/create/edit/delete events, and browser coverage for the new tag workflows.
+- Added `li-token-field`, a generic tokenized text input with `ngModel`, regex-based token extraction, optional keystroke filtering, clipboard actions, and browser coverage for core parsing flows.
+- Added the `work-queue` demo route to showcase `li-tag-filter`, `li-tag-manager`, and `li-token-field` together inside a more realistic operational workflow.
+- Expanded dropdown menu overlays so both `li-dropdown-menu` and the lower-level `dropdownmenu` directive can render inline or in a `body`-anchored Popper overlay, with better outside-click/Escape handling and browser coverage for the new placement flow.
+- Expanded `li-modal` with `compactHeader` and `smallHeader`, improved fullscreen body scrolling, and richer example coverage for iconified, mini, backdropless, form, and fullscreen dialog variants.
+- Expanded the demo shell with extra color themes (`blu`, `pink`, `orange`, `sali`) and broader themed scrollbar coverage across sidebar, content, dropdown, modal, and form surfaces.
+- Aligned the standalone `li-currency-input` demos and docs with the same declarative validation contract used by `liForm`, including `liRules`, `liValidationMode`, and native helper/error feedback.
+- Tightened the extra `person-registration` fields so `primaryReviewerId` and `workflowNodeIds` now participate in submit validation with business-aware rules, plus browser coverage for the additional required states.
+
 ## 1.0.0-dev.6
 
 - Changed the default `liValidationMode` across declarative form components to `submittedOrTouchedOrDirty`, so fields surface errors after submit, after blur, or while typing once they become dirty.

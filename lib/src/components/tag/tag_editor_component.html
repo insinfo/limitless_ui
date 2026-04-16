@@ -1,0 +1,41 @@
+<div class="li-tag-editor">
+    <div class="mb-3">
+        <label class="form-label">{{ nameLabel }}</label>
+        <input type="text" class="form-control" [value]="draftName" [placeholder]="resolvedNamePlaceholder"
+            [disabled]="isDisabled" (input)="onNameInput($event.target.value)">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">{{ colorLabel }}</label>
+
+        <div class="li-tag-editor__palette">
+            <button type="button" *ngFor="let preset of presetColorViews" class="li-tag-editor__swatch"
+                [cssStyle]="preset.swatchStyle" [class.li-tag-editor__swatch--selected]="isSelectedPreset(preset.color)"
+                [disabled]="isDisabled" (click)="selectPresetColor(preset.color)">
+                <i *ngIf="isSelectedPreset(preset.color)" class="ph ph-check"></i>
+            </button>
+        </div>
+
+        <div class="li-tag-editor__color-input-row">
+            <span class="li-tag-editor__swatch li-tag-editor__swatch--preview" [cssStyle]="previewSwatchStyle"></span>
+            <input type="text" class="form-control" [value]="draftColorInput" [placeholder]="resolvedColorPlaceholder"
+                [disabled]="isDisabled" (input)="onColorInput($event.target.value)">
+        </div>
+
+        <div class="li-tag-editor__preview">
+            <span class="badge rounded-pill li-tag-editor__preview-badge" [cssStyle]="previewBadgeStyle">
+                {{ resolvedPreviewText }}
+            </span>
+        </div>
+    </div>
+
+    <div class="li-tag-editor__actions">
+        <button *ngIf="showCancelButton" type="button" class="btn btn-light" [disabled]="isDisabled"
+            (click)="cancel()">
+            {{ resolvedCancelButtonText }}
+        </button>
+        <button type="button" class="btn btn-primary" [disabled]="!canSave" (click)="save()">
+            {{ resolvedSaveButtonText }}
+        </button>
+    </div>
+</div>

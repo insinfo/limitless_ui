@@ -98,7 +98,7 @@ class OverviewPageComponent {
     _stats = List<DemoStat>.unmodifiable(<DemoStat>[
       DemoStat(
         label: t.pages.overview.statComponentsLabel,
-        value: '23',
+        value: '24',
         help: t.pages.overview.statComponentsHelp,
       ),
       DemoStat(
@@ -113,7 +113,8 @@ class OverviewPageComponent {
       ),
     ]);
 
-    _featureCards = List<OverviewFeatureCard>.unmodifiable(<OverviewFeatureCard>[
+    _featureCards =
+        List<OverviewFeatureCard>.unmodifiable(<OverviewFeatureCard>[
       OverviewFeatureCard(
         title: t.pages.overview.featureAngularDartDocsTitle,
         body: t.pages.overview.featureAngularDartDocsBody,
@@ -155,6 +156,15 @@ class OverviewPageComponent {
         iconClass: 'ph-table',
         url: DemoRoutePaths.datatable.toUrl(),
         accentClass: 'overview-card-info',
+      ),
+      OverviewFeatureCard(
+        title: i18n.isPortuguese ? 'Fila operacional' : 'Work queue',
+        body: i18n.isPortuguese
+            ? 'Demonstra os novos componentes de etiquetas, gerenciamento e token field em um fluxo integrado.'
+            : 'Showcases the new label, management, and token field components in an integrated workflow.',
+        iconClass: 'ph-kanban',
+        url: DemoRoutePaths.workQueue.toUrl(),
+        accentClass: 'overview-card-warning',
       ),
       OverviewFeatureCard(
         title: t.pages.overview.featureSelectTitle,

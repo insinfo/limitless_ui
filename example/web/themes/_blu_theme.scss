@@ -1,0 +1,139 @@
+[data-color-theme='blu'],
+html[data-color-theme='blu'] [data-color-theme] {
+  color-scheme: light;
+  --gray-100: #f8fafc;
+  --gray-200: #edf2f7;
+  --gray-300: #dde5ef;
+  --gray-400: #c6d2e0;
+  --gray-500: #9cacbf;
+  --gray-600: #6b7a8e;
+  --gray-700: #4e5b6d;
+  --gray-800: #374151;
+  --gray-900: #1f2937;
+  --body-bg: #d4dbe6;
+  --body-bg-rgb: 212, 219, 230;
+  --body-color: #253241;
+  --body-color-rgb: 37, 50, 65;
+  --border-color: #c6d1df;
+  --border-color-translucent: rgba(93, 113, 142, 0.22);
+  --primary: #0c83ff;
+  --primary-rgb: 12, 131, 255;
+  --secondary: #8e70c1;
+  --secondary-rgb: 142, 112, 193;
+  --component-active-bg: #0c83ff;
+  --component-active-bg-rgb: 12, 131, 255;
+  --link-color: #0c83ff;
+  --link-rgb-color: 12, 131, 255;
+  --link-hover-color: #0962bf;
+  --highlight-bg: rgba(12, 131, 255, 0.14);
+  --code-color: #2b67bf;
+  --focus-ring-box-shadow: 0 0 0 0.125rem rgba(12, 131, 255, 0.22);
+  --input-bg: var(--white);
+  --input-focus-bg: var(--white);
+  --input-disabled-bg: var(--gray-100);
+  --card-bg: #f1f4f9;
+  --card-cap-bg: #f1f4f9;
+  --app-scrollbar-light-track: #dae3ee;
+  --app-scrollbar-light-thumb: rgba(12, 131, 255, 0.28);
+  --app-scrollbar-light-thumb-hover: rgba(12, 131, 255, 0.46);
+}
+
+html[data-color-theme='blu'],
+html[data-color-theme='blu'] body {
+  background-color: var(--body-bg);
+}
+
+html[data-color-theme='blu'] .page-content,
+html[data-color-theme='blu'] .content-inner {
+  background: transparent;
+}
+
+html[data-color-theme='blu'] .nav-tabs:not(.nav-tabs-solid) {
+  --nav-link-active-color: var(--body-color);
+  --nav-tabs-link-active-color: var(--body-color);
+  --nav-tabs-link-active-bg: var(--card-bg);
+  --nav-tabs-link-active-border-color: var(--border-color) var(--border-color) var(--card-bg);
+  --nav-tabs-underline-color: var(--primary);
+}
+
+.page-header-light[data-color-theme='blu'],
+html[data-color-theme='blu'] .page-header-light:not([data-color-theme]) {
+  color-scheme: light;
+  --page-header-bg: #f1f4f9;
+  border-color: #c6d1df;
+  box-shadow: 0 1px 3px rgba(50, 67, 91, 0.1);
+}
+
+.card[data-color-theme='blu'],
+html[data-color-theme='blu'] .card:not([data-color-theme]) {
+  color-scheme: light;
+  --card-bg: #f1f4f9;
+  border-color: #c6d1df;
+  box-shadow: 0 1px 3px rgba(50, 67, 91, 0.1);
+}
+
+html[data-color-theme='blu'] .btn-primary {
+  --btn-color: #fff;
+  --btn-bg: #0c83ff;
+  --btn-border-color: #0c83ff;
+  --btn-hover-color: #fff;
+  --btn-hover-bg: #0b72dc;
+  --btn-hover-border-color: #0b72dc;
+  --btn-focus-shadow-rgb: 12, 131, 255;
+  --btn-active-color: #fff;
+  --btn-active-bg: #0a64c2;
+  --btn-active-border-color: #0a64c2;
+  --btn-disabled-color: #fff;
+  --btn-disabled-bg: #0c83ff;
+  --btn-disabled-border-color: #0c83ff;
+}
+
+html[data-color-theme='blu'] .btn-light {
+  --btn-bg: #eef4fb;
+  --btn-border-color: #cad6e4;
+  --btn-hover-bg: #e2ebf5;
+  --btn-hover-border-color: #b7c7da;
+  --btn-active-bg: #d7e3f0;
+  --btn-active-border-color: #a8bdd4;
+  --btn-color: #30506d;
+}
+
+html[data-color-theme='blu'] .form-control,
+html[data-color-theme='blu'] .form-select,
+html[data-color-theme='blu'] .input-group-text {
+  border-color: #c6d1df;
+}
+
+html[data-color-theme='blu'] .form-control:focus,
+html[data-color-theme='blu'] .form-select:focus {
+  border-color: rgba(12, 131, 255, 0.48);
+  box-shadow: 0 0 0 0.125rem rgba(12, 131, 255, 0.16);
+}
+
+html[data-color-theme='blu'] .dropdown-menu {
+  border-color: rgba(93, 113, 142, 0.22);
+  background-color: #f8fbff;
+  box-shadow: 0 8px 18px rgba(50, 67, 91, 0.12);
+}
+
+html[data-color-theme='blu'] .dropdown-item.active,
+html[data-color-theme='blu'] .dropdown-item:active,
+html[data-color-theme='blu'] .dropdown-item:focus,
+html[data-color-theme='blu'] .dropdown-item:hover {
+  color: #0a57aa;
+  background: rgba(12, 131, 255, 0.12);
+}
+
+html[data-color-theme='blu'] .table {
+  --table-hover-bg: rgba(12, 131, 255, 0.05);
+  --table-active-bg: rgba(12, 131, 255, 0.09);
+}
+
+html[data-color-theme='blu'] .badge.bg-primary,
+html[data-color-theme='blu'] .bg-primary {
+  background-color: rgba(var(--primary-rgb), 1) !important;
+}
+
+html[data-color-theme='blu'] .text-primary {
+  color: rgba(var(--primary-rgb), 1) !important;
+}

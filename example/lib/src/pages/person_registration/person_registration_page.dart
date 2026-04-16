@@ -23,7 +23,9 @@ class PersonRegistrationFormState {
   String departmentId = '';
   List<dynamic> skillIds = <dynamic>[];
   List<dynamic> reviewerIds = <dynamic>[];
+  String primaryReviewerId = '';
   String workflowNode = '';
+  List<dynamic> workflowNodeIds = <dynamic>[];
   int? expectedCompensationMinorUnits;
   String contactChannel = '';
   bool remoteEnabled = true;
@@ -51,7 +53,10 @@ class PersonRegistrationFormState {
       departmentId: departmentId,
       skillIds: skillIds.map((item) => '$item').toList(growable: false),
       reviewerIds: reviewerIds.map((item) => '$item').toList(growable: false),
+        primaryReviewerId: primaryReviewerId,
       workflowNode: workflowNode,
+        workflowNodeIds:
+          workflowNodeIds.map((item) => '$item').toList(growable: false),
       expectedCompensationMinorUnits: expectedCompensationMinorUnits,
       contactChannel: contactChannel,
       remoteEnabled: remoteEnabled,
@@ -101,6 +106,7 @@ class PersonRegistrationPageComponent implements OnInit {
   PersonRegistrationPageComponent(this.i18n, this._service)
       : _reviewerRecords = _buildReviewerRecords(i18n.isPortuguese),
         workflowNodes = _buildWorkflowNodes(i18n.isPortuguese),
+        workflowMultipleNodes = _buildWorkflowNodes(i18n.isPortuguese),
         _reviewerDemoService = DatatableDemoService(
           _buildReviewerRecords(i18n.isPortuguese),
         );
@@ -210,12 +216,35 @@ class PersonRegistrationPageComponent implements OnInit {
       code: 'notes',
     ),
   ];
+  static final List<LiRule> _expectedCompensationRulesPt = <LiRule>[
+    LiRule.custom(
+      (value) {
+        if (value is int && value > 0) {
+          return null;
+        }
+        return 'Informe a pretensão salarial.';
+      },
+      code: 'expectedCompensation',
+    ),
+  ];
+  static final List<LiRule> _expectedCompensationRulesEn = <LiRule>[
+    LiRule.custom(
+      (value) {
+        if (value is int && value > 0) {
+          return null;
+        }
+        return 'Provide the expected compensation.';
+      },
+      code: 'expectedCompensation',
+    ),
+  ];
 
   final DemoI18nService i18n;
   final PersonRegistrationDemoService _service;
   final List<Map<String, dynamic>> _reviewerRecords;
   final DatatableDemoService _reviewerDemoService;
   final List<TreeViewNode> workflowNodes;
+  final List<TreeViewNode> workflowMultipleNodes;
   final LiToastService toastService = LiToastService();
   final JsonEncoder _jsonEncoder = const JsonEncoder.withIndent('  ');
   Messages get t => i18n.t;
@@ -289,10 +318,14 @@ if (!result.success) {
     <String, dynamic>{'id': 'sensitive-data', 'label': 'Dados sensíveis'},
   ];
 
-  final Filters reviewerFilter = Filters(limit: 5, offset: 0);
+    final Filters reviewerFilter = Filters(limit: 5, offset: 0);
+    final Filters primaryReviewerFilter = Filters(limit: 5, offset: 0);
   DataFrame<Map<String, dynamic>> reviewerData =
       DataFrame<Map<String, dynamic>>(
           items: <Map<String, dynamic>>[], totalRecords: 0);
+    DataFrame<Map<String, dynamic>> primaryReviewerData =
+      DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
   late final DatatableSettings reviewerSettings = DatatableSettings(
     colsDefinitions: <DatatableCol>[
       DatatableCol(
@@ -353,6 +386,7 @@ if (!result.success) {
   @override
   Future<void> ngOnInit() async {
     await _loadReviewerData(reviewerFilter);
+    await _loadPrimaryReviewerData(primaryReviewerFilter);
   }
 
   bool get isPt => i18n.isPortuguese;
@@ -364,6 +398,9 @@ if (!result.success) {
   List<LiRule> get requiredSelectionRules => _requiredSelectionRules;
 
   List<LiRule> get skillsRules => isPt ? _skillsRulesPt : _skillsRulesEn;
+
+  List<LiRule> get expectedCompensationRules =>
+      isPt ? _expectedCompensationRulesPt : _expectedCompensationRulesEn;
 
   List<LiRule> get passwordRules => isPt ? _passwordRulesPt : _passwordRulesEn;
 
@@ -383,8 +420,60 @@ if (!result.success) {
     ),
   ];
 
+  late final List<LiRule> primaryReviewerRules = <LiRule>[
+    LiRule.custom(
+      (value) {
+        final selected = value == null ? '' : '$value'.trim();
+        if (selected.isEmpty) {
+          return isPt
+              ? 'Selecione o responsável principal.'
+              : 'Select the primary reviewer.';
+        }
+
+        final reviewers = draft.reviewerIds.map((item) => '$item').toSet();
+        if (reviewers.isNotEmpty && !reviewers.contains(selected)) {
+          return isPt
+              ? 'O responsável principal deve estar entre os responsáveis da frente.'
+              : 'The primary reviewer must also be part of the squad reviewers.';
+        }
+
+        return null;
+      },
+      code: 'primaryReviewer',
+    ),
+  ];
+
   late final List<LiRule> workflowRules = <LiRule>[
     LiRule.required(),
+  ];
+
+  late final List<LiRule> workflowStagesRules = <LiRule>[
+    LiRule.custom(
+      (value) {
+        final selections = value is Iterable
+            ? value
+                .map((item) => '$item'.trim())
+                .where((item) => item.isNotEmpty)
+                .toList(growable: false)
+            : const <String>[];
+
+        if (selections.isEmpty) {
+          return isPt
+              ? 'Selecione ao menos uma etapa paralela.'
+              : 'Select at least one parallel workflow stage.';
+        }
+
+        final mainStage = draft.workflowNode.trim();
+        if (mainStage.isNotEmpty && selections.contains(mainStage)) {
+          return isPt
+              ? 'As etapas paralelas não podem repetir a etapa principal.'
+              : 'Parallel workflow stages cannot repeat the main workflow stage.';
+        }
+
+        return null;
+      },
+      code: 'workflowStages',
+    ),
   ];
 
   late final List<LiRule> attachmentRules = <LiRule>[
@@ -456,7 +545,11 @@ if (!result.success) {
   String get skillsLabel => isPt ? 'Skills iniciais' : 'Initial skills';
   String get reviewerLabel =>
       isPt ? 'Responsáveis da frente' : 'Squad reviewers';
+  String get primaryReviewerLabel =>
+      isPt ? 'Responsável principal' : 'Primary reviewer';
   String get workflowLabel => isPt ? 'Etapa do workflow' : 'Workflow stage';
+  String get workflowStagesLabel =>
+      isPt ? 'Etapas paralelas' : 'Parallel workflow stages';
   String get expectedCompensationLabel =>
       isPt ? 'Pretensão salarial' : 'Expected compensation';
   String get availabilityLabel =>
@@ -540,11 +633,16 @@ if (!result.success) {
       return isPt ? 'Nenhum responsável.' : 'No reviewers selected.';
     }
 
-    final labels = _reviewerRecords
-        .where((item) => draft.reviewerIds.contains(item['id']))
-        .map((item) => '${item['name']}')
-        .toList(growable: false);
-    return labels.isEmpty ? draft.reviewerIds.join(', ') : labels.join(', ');
+    return _reviewerLabelsFromIds(draft.reviewerIds).join(', ');
+  }
+
+  String get selectedPrimaryReviewerLabel {
+    final selected = draft.primaryReviewerId.trim();
+    if (selected.isEmpty) {
+      return isPt ? 'Nenhum responsável principal.' : 'No primary reviewer.';
+    }
+
+    return _reviewerLabelsFromIds(<dynamic>[selected]).join(', ');
   }
 
   String get selectedWorkflowLabel {
@@ -554,6 +652,17 @@ if (!result.success) {
 
     return _findWorkflowLabel(workflowNodes, draft.workflowNode) ??
         draft.workflowNode;
+  }
+
+  String get selectedWorkflowNodesLabel {
+    if (draft.workflowNodeIds.isEmpty) {
+      return isPt ? 'Nenhuma etapa extra.' : 'No extra stages.';
+    }
+
+    return _workflowLabelsFromValues(
+      workflowMultipleNodes,
+      draft.workflowNodeIds,
+    ).join(', ');
   }
 
   String get expectedCompensationLabelText {
@@ -605,7 +714,9 @@ if (!result.success) {
       'department_id': draft.departmentId,
       'skill_ids': draft.skillIds,
       'reviewer_ids': draft.reviewerIds,
+      'primary_reviewer_id': draft.primaryReviewerId,
       'workflow_node': draft.workflowNode,
+      'workflow_node_ids': draft.workflowNodeIds,
       'expected_compensation_minor_units': draft.expectedCompensationMinorUnits,
       'contact_channel': draft.contactChannel,
       'remote_enabled': draft.remoteEnabled,
@@ -659,7 +770,9 @@ if (!result.success) {
       ..departmentId = 'operations'
       ..skillIds = <dynamic>['support', 'analytics']
       ..reviewerIds = <dynamic>['2', '11']
+      ..primaryReviewerId = '2'
       ..workflowNode = 'analise'
+      ..workflowNodeIds = <dynamic>['triagem', 'ajustes']
       ..expectedCompensationMinorUnits = 780000
       ..contactChannel = 'email'
       ..remoteEnabled = true
@@ -698,7 +811,9 @@ if (!result.success) {
       ..departmentId = 'finance'
       ..skillIds = <dynamic>['contracts', 'sensitive-data']
       ..reviewerIds = <dynamic>['5']
+      ..primaryReviewerId = '5'
       ..workflowNode = 'auxilio-aluguel'
+      ..workflowNodeIds = <dynamic>['triagem', 'ajustes']
       ..expectedCompensationMinorUnits = 1250000
       ..contactChannel = 'sms'
       ..phone = '(21) 99999-0000'
@@ -743,7 +858,9 @@ if (!result.success) {
       ..departmentId = ''
       ..skillIds = <dynamic>[]
       ..reviewerIds = <dynamic>[]
+      ..primaryReviewerId = ''
       ..workflowNode = ''
+      ..workflowNodeIds = <dynamic>[]
       ..expectedCompensationMinorUnits = null
       ..contactChannel = ''
       ..remoteEnabled = true
@@ -778,12 +895,25 @@ if (!result.success) {
     await _loadReviewerData(reviewerFilter);
   }
 
+  Future<void> onPrimaryReviewerDataRequest(Filters filters) async {
+    primaryReviewerFilter.fillFromFilters(filters);
+    await _loadPrimaryReviewerData(primaryReviewerFilter);
+  }
+
   void onReviewerIdsChange(dynamic value) {
     onFieldChange('reviewerIds', value);
   }
 
+  void onPrimaryReviewerIdChange(dynamic value) {
+    onFieldChange('primaryReviewerId', value);
+  }
+
   void onWorkflowNodeChange(dynamic value) {
     onFieldChange('workflowNode', value);
+  }
+
+  void onWorkflowNodeIdsChange(dynamic value) {
+    onFieldChange('workflowNodeIds', value);
   }
 
   void onExpectedCompensationChange(int? value) {
@@ -946,8 +1076,15 @@ if (!result.success) {
         draft.reviewerIds =
             value is List ? List<dynamic>.from(value) : <dynamic>[];
         break;
+      case 'primaryReviewerId':
+        draft.primaryReviewerId = value == null ? '' : '$value';
+        break;
       case 'workflowNode':
-        draft.workflowNode = '$value';
+        draft.workflowNode = value == null ? '' : '$value';
+        break;
+      case 'workflowNodeIds':
+        draft.workflowNodeIds =
+            value is List ? List<dynamic>.from(value) : <dynamic>[];
         break;
       case 'expectedCompensationMinorUnits':
         draft.expectedCompensationMinorUnits = value is int ? value : null;
@@ -1022,13 +1159,6 @@ if (!result.success) {
       errors['phone'] = isPt
           ? 'Telefone SMS não pode terminar com 0000.'
           : 'SMS phone numbers cannot end with 0000.';
-    }
-
-    if (draft.expectedCompensationMinorUnits == null ||
-        draft.expectedCompensationMinorUnits! <= 0) {
-      errors['expectedCompensation'] = isPt
-          ? 'Informe a pretensão salarial.'
-          : 'Provide the expected compensation.';
     }
 
     if (draft.availabilityStart == null || draft.availabilityEnd == null) {
@@ -1128,6 +1258,28 @@ if (!result.success) {
 
   Future<void> _loadReviewerData(Filters filters) async {
     reviewerData = await _reviewerDemoService.query(filters);
+  }
+
+  Future<void> _loadPrimaryReviewerData(Filters filters) async {
+    primaryReviewerData = await _reviewerDemoService.query(filters);
+  }
+
+  List<String> _reviewerLabelsFromIds(Iterable<dynamic> ids) {
+    final normalizedIds = ids.map((item) => '$item').toSet();
+    final labels = _reviewerRecords
+        .where((item) => normalizedIds.contains('${item['id']}'))
+        .map((item) => '${item['name']}')
+        .toList(growable: false);
+    return labels.isEmpty ? normalizedIds.toList(growable: false) : labels;
+  }
+
+  List<String> _workflowLabelsFromValues(
+    List<TreeViewNode> nodes,
+    Iterable<dynamic> values,
+  ) {
+    return values
+        .map((value) => _findWorkflowLabel(nodes, value) ?? '$value')
+        .toList(growable: false);
   }
 
   String? _findWorkflowLabel(List<TreeViewNode> nodes, dynamic value) {

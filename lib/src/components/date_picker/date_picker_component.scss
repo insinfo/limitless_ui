@@ -3,8 +3,8 @@
 }
 
 .date-picker-field[readonly]:not(:disabled) {
-    background-color: var(--card-bg, var(--white));
-    color: var(--body-color);
+    background-color: var(--input-bg, var(--card-bg, var(--white)));
+    color: var(--input-color, var(--body-color));
 }
 
 .date-picker-wrapper {
@@ -88,6 +88,12 @@
     color: var(--text-muted);
 }
 
+.date-picker-overlay-button > .ph {
+    line-height: 1;
+    width: 1em;
+    height: 1em;
+}
+
 .date-picker-overlay-button:not(:disabled):hover,
 .date-picker-overlay-button:not(:disabled):focus {
     color: var(--body-color);
@@ -95,22 +101,22 @@
 }
 
 .date-picker-trigger-button {
-    background-color: var(--card-bg, var(--white));
-    color: var(--body-color);
-    border-color: var(--border-color);
+    background-color: var(--input-bg, var(--card-bg, var(--white)));
+    color: var(--input-color, var(--body-color));
+    border-color: var(--input-border-color, var(--border-color));
 }
 
 .date-picker-trigger-button:not(:disabled):hover,
 .date-picker-trigger-button:not(:disabled):focus {
-    background-color: var(--card-bg, var(--white));
-    color: var(--body-color);
-    border-color: var(--border-color);
+    background-color: var(--input-focus-bg, var(--input-bg, var(--card-bg, var(--white))));
+    color: var(--input-color, var(--body-color));
+    border-color: var(--input-border-color, var(--border-color));
 }
 
 .date-picker-trigger-button:disabled {
-    background-color: color-mix(in srgb, var(--body-bg) 88%, var(--body-color) 12%);
+    background-color: var(--input-disabled-bg, color-mix(in srgb, var(--body-bg) 88%, var(--body-color) 12%));
     color: var(--text-muted);
-    border-color: var(--border-color);
+    border-color: var(--input-disabled-border-color, var(--border-color));
 }
 
 .daterangepicker.date-picker-open {
@@ -238,10 +244,31 @@
     margin-left: 0;
 }
 
+.daterangepicker.date-picker-open .drp-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.daterangepicker.date-picker-open .drp-selected {
+    margin-right: auto;
+}
+
 @media (max-width: 767.98px) {
     .daterangepicker.date-picker-open {
         left: 0;
         right: 0;
         width: min(100vw - 2rem, 22rem);
+    }
+
+    .daterangepicker.date-picker-open .drp-buttons {
+        justify-content: flex-start;
+    }
+
+    .daterangepicker.date-picker-open .drp-selected {
+        flex: 1 1 100%;
+        margin-right: 0;
     }
 }

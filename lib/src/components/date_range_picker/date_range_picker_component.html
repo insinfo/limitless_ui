@@ -44,7 +44,9 @@
                     <button type="button" class="date-range-view-switch" (click)="toggleLeftViewMode()">
                         {{ leftHeaderLabel }}
                     </button>
-                    <span class="date-range-panel-spacer"></span>
+                    <button type="button" class="calendar-nav next available" (click)="nextMonth()">
+                        <span></span>
+                    </button>
                 </div>
 
                 <div class="calendar-table" *ngIf="isLeftDayView">
@@ -90,7 +92,9 @@
 
             <div class="drp-calendar right">
                 <div class="date-range-panel-header">
-                    <span class="date-range-panel-spacer"></span>
+                    <button type="button" class="calendar-nav prev available" (click)="prevMonth()">
+                        <span></span>
+                    </button>
                     <button type="button" class="date-range-view-switch" (click)="toggleRightViewMode()">
                         {{ rightHeaderLabel }}
                     </button>
@@ -145,13 +149,13 @@
             <span class="drp-selected">
                 {{ draftDisplayValue.isEmpty ? emptySelectionLabel : draftDisplayValue }}
             </span>
-            <button *ngIf="showClearButton" type="button" class="btn btn-light" (click)="clear()">
+            <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" (click)="clear()">
                 {{ clearLabel }}
             </button>
-            <button type="button" class="btn btn-light" (click)="close()">
+            <button type="button" class="btn btn-light btn-sm" (click)="close()">
                 {{ cancelLabel }}
             </button>
-            <button type="button" class="btn btn-primary" [disabled]="!canApply" (click)="apply()">
+            <button type="button" class="btn btn-primary btn-sm" [disabled]="!canApply" (click)="apply()">
                 {{ applyLabel }}
             </button>
         </div>

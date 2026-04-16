@@ -1,0 +1,119 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumbLabel"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-body pb-2">
+        <div *ngIf="lastActionText.isNotEmpty" class="alert alert-primary alert-icon-start mb-3 work-queue-page__status">
+          <span class="alert-icon bg-primary text-white">
+            <i class="ph ph-info"></i>
+          </span>
+          {{ lastActionText }}
+        </div>
+
+        <div>
+          <div class="row g-3">
+            <div class="col-md-2 col-xl-1">
+              <label class="form-label">{{ digitalLabel }}</label>
+              <select class="form-select" [(ngModel)]="digitalFilter" [enableNullValue]="true">
+                <option [ngValue]="null">{{ i18n.isEnglish ? 'Select' : 'Selecione' }}</option>
+                <option [ngValue]="false">{{ i18n.isEnglish ? 'No' : 'Nao' }}</option>
+                <option [ngValue]="true">{{ i18n.isEnglish ? 'Yes' : 'Sim' }}</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">{{ requesterLabel }}</label>
+              <input class="form-control" type="text" [value]="requesterQuery" [placeholder]="requesterPlaceholder"
+                (input)="onRequesterInput($event.target.value)">
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">{{ classificationLabel }}</label>
+              <li-select [dataSource]="classificationOptions" labelKey="label" valueKey="id"
+                [(ngModel)]="selectedClassificationId" (currentValueChange)="onClassificationChanged($event)">
+              </li-select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">{{ subjectLabel }}</label>
+              <li-select [dataSource]="subjectOptions" labelKey="label" valueKey="id"
+                [(ngModel)]="selectedSubjectId" (currentValueChange)="onSubjectChanged($event)">
+              </li-select>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-0">
+            <div class="col-md-4 col-xl-3">
+              <label class="form-label">{{ multiCodeLabel }}</label>
+              <li-token-field [(ngModel)]="selectedCodes" [filterInput]="true" [patternAllowed]="processTokenAllowed"
+                [patternToken]="processTokenPattern" [placeholder]="multiCodePlaceholder" [locale]="localeCode"
+                (currentValueChange)="onSelectedCodesChange($event)">
+              </li-token-field>
+            </div>
+
+            <div class="col-md-4 col-xl-3">
+              <label class="form-label">{{ dateRangeLabel }}</label>
+              <li-date-range-picker [(inicio)]="includedStart" [(fim)]="includedEnd"
+                [placeholder]="dateRangePlaceholder" [locale]="localeCode"></li-date-range-picker>
+            </div>
+
+            <div class="col-md-4 col-xl-2">
+              <label class="form-label">{{ listCodeLabel }}</label>
+              <input class="form-control" type="text" [value]="listCodeFilter" [placeholder]="listCodePlaceholder"
+                (input)="onListCodeInput($event.target.value)">
+            </div>
+
+            <div class="col-md-4 col-xl-2">
+              <label class="form-label">{{ tagFilterLabel }}</label>
+              <li-tag-filter [dataSource]="tagCatalog" labelKey="name" valueKey="id" colorKey="color"
+                [showReloadButton]="true" [locale]="localeCode" [showInlineRemove]="false"
+                [wrapSelectedBadges]="false" [(ngModel)]="selectedTagFilterIds"
+                (currentValueChange)="onSelectedTagFilterChange($event)" (reloadRequest)="onTagFilterReloadRequest()">
+              </li-tag-filter>
+            </div>
+
+            <div class="col-12 work-queue-page__actions">
+              <button type="button" class="btn btn-flat-primary border-transparent btn-icon" (click)="clearFilters()">
+                <i class="ph ph-broom me-2"></i>{{ clearButtonLabel }}
+              </button>
+              <button type="button" class="btn btn-primary btn-labeled btn-labeled-start" (click)="applyPrimaryAction()">
+                <span class="btn-labeled-icon bg-black bg-opacity-20">
+                  <i class="ph ph-paper-plane"></i>
+                </span>
+                {{ primaryActionLabel }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <li-datatable #queueTable [dataTableFilter]="tableFilters" [data]="workItems" [settings]="datatableSettings"
+        [searchInFields]="searchFields" [disableRowClick]="true" [limitPerPageOptions]="limitPerPageOptions"
+        (dataRequest)="onTableRequest($event)" (limitChange)="onTableRequest($event)"
+        (searchRequest)="onTableRequest($event)">
+      </li-datatable>
+    </div>
+  </div>
+
+  <li-modal #tagModal [title-text]="tagModalTitle" size="modal-sm" headerColor="primary"
+    [enableModalBodyClass]="false">
+    <div class="p-3">
+      <li-tag-manager [dataSource]="tagCatalog" [selectedValues]="activeRecordTagIds" labelKey="name"
+        valueKey="id" colorKey="color" [showReloadButton]="true" [locale]="localeCode"
+        (currentValueChange)="onTagManagerSelectionChange($event)" (applySelection)="applyTagsToActiveRecord($event)"
+        (createRequest)="createTag($event)" (updateRequest)="updateTag($event)" (deleteRequest)="deleteTag($event)"
+        (reloadRequest)="onTagFilterReloadRequest()">
+      </li-tag-manager>
+    </div>
+  </li-modal>
+</div>

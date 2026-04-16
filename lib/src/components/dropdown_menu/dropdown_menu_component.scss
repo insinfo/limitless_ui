@@ -2,6 +2,10 @@
   display: inline-block;
 }
 
+:host .li-dropdown-menu__menu {
+  max-width: min(22rem, calc(100vw - 16px));
+}
+
 :host .li-dropdown-trigger-reset {
   appearance: none;
   background: transparent;

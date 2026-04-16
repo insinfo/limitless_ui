@@ -1,0 +1,25 @@
+<div [class]="resolvedContainerClass" (click)="containerClickHandle()">
+    <div class="tokenfield-set">
+        <ul>
+            <li class="tokenfield-set-item" *ngFor="let item of items" [class.selected]="item.selected"
+                (click)="toggleItemSelection(item, $event)">
+                <span class="item-label">{{ item.value }}</span>
+                <button type="button" class="item-remove" [disabled]="isDisabled" (click)="removeToken(item, $event)">
+                    ×
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <input #inputToken class="tokenfield-input li-token-field__input" type="text" [placeholder]="resolvedPlaceholder"
+        [disabled]="isDisabled" (focus)="onInputFocus()" (blur)="onInputBlur()"
+        (keydown)="inputKeydownHandle($event)" (keyup)="inputKeyupHandle($event)"
+        (keypress)="inputKeypressHandle($event)" (paste)="onPasteHandle($event)">
+
+    <div *ngIf="showActionMenu" class="li-token-field__menu" (click)="$event.stopPropagation()">
+        <li-dropdown-menu [options]="actionMenuOptions" [showCaret]="false"
+            triggerClass="btn btn-light btn-sm btn-icon rounded-pill" triggerIconClass="ph ph-caret-down ph-sm"
+            menuClass="" (valueChange)="onActionSelected($event)">
+        </li-dropdown-menu>
+    </div>
+</div>

@@ -106,8 +106,8 @@ class AppComponent implements OnDestroy {
   Timer? _sidebarHoverInTimer;
   Timer? _sidebarHoverOutTimer;
 
-    @ViewChild('sidebarSearchInput')
-    InputElement? sidebarSearchInput;
+  @ViewChild('sidebarSearchInput')
+  InputElement? sidebarSearchInput;
 
   Messages get t => i18n.t;
 
@@ -116,53 +116,73 @@ class AppComponent implements OnDestroy {
   bool isSidebarResized = false;
   bool isSidebarUnfolded = false;
   String? expandedSectionId;
-    String sidebarFilter = '';
+  String sidebarFilter = '';
 
-    List<LiDropdownMenuOption> languageOptions = const <LiDropdownMenuOption>[];
-    List<LiDropdownMenuOption> themeOptions = const <LiDropdownMenuOption>[];
-    List<DemoNavItem> primaryItems = const <DemoNavItem>[];
-    List<DemoNavSection> navSections = const <DemoNavSection>[];
-    List<DemoNavbarSearchEntry> navbarSearchEntries =
+  List<LiDropdownMenuOption> languageOptions = const <LiDropdownMenuOption>[];
+  List<LiDropdownMenuOption> themeOptions = const <LiDropdownMenuOption>[];
+  List<DemoNavItem> primaryItems = const <DemoNavItem>[];
+  List<DemoNavSection> navSections = const <DemoNavSection>[];
+  List<DemoNavbarSearchEntry> navbarSearchEntries =
       const <DemoNavbarSearchEntry>[];
-    List<DemoNavItem> filteredPrimaryItems = const <DemoNavItem>[];
-    List<DemoNavSection> filteredNavSections = const <DemoNavSection>[];
-    Set<String> _searchExpandedSectionIds = <String>{};
-    Object? navbarSearchSelection;
+  List<DemoNavItem> filteredPrimaryItems = const <DemoNavItem>[];
+  List<DemoNavSection> filteredNavSections = const <DemoNavSection>[];
+  Set<String> _searchExpandedSectionIds = <String>{};
+  Object? navbarSearchSelection;
 
   bool get _isDesktopViewport => (window.innerWidth ?? 0) >= 992;
 
-    bool get hasSidebarFilter => sidebarFilter.trim().isNotEmpty;
+  bool get hasSidebarFilter => sidebarFilter.trim().isNotEmpty;
 
-    bool get hasVisibleNavigation =>
+  bool get hasVisibleNavigation =>
       filteredPrimaryItems.isNotEmpty || filteredNavSections.isNotEmpty;
 
-    bool get showMainHeader => hasVisibleNavigation;
+  bool get showMainHeader => hasVisibleNavigation;
 
-    String get sidebarSearchPlaceholder =>
+  String get sidebarSearchPlaceholder =>
       i18n.isPortuguese ? 'Buscar no menu...' : 'Search menu...';
 
-    String get clearSidebarFilterLabel =>
+  String get clearSidebarFilterLabel =>
       i18n.isPortuguese ? 'Limpar busca do menu' : 'Clear menu search';
 
-    String get sidebarSearchEmptyState =>
+  String get sidebarSearchEmptyState =>
       i18n.isPortuguese ? 'Nenhum item encontrado.' : 'No menu items found.';
 
-    String get navbarSearchPlaceholder => i18n.isPortuguese
+  String get navbarSearchPlaceholder => i18n.isPortuguese
       ? 'Buscar componentes, páginas ou palavras-chave'
       : 'Search components, pages, or keywords';
 
-    List<LiDropdownMenuOption> _buildLanguageOptions() => <LiDropdownMenuOption>[
+  List<LiDropdownMenuOption> _buildLanguageOptions() => <LiDropdownMenuOption>[
         LiDropdownMenuOption(
             value: 'pt', label: 'PT', description: t.app.portuguese),
         LiDropdownMenuOption(
             value: 'en', label: 'EN', description: t.app.english),
       ];
 
-    List<LiDropdownMenuOption> _buildThemeOptions() => <LiDropdownMenuOption>[
+  List<LiDropdownMenuOption> _buildThemeOptions() => <LiDropdownMenuOption>[
         LiDropdownMenuOption(
           value: 'light',
           label: t.app.light,
           iconClass: 'ph-sun',
+        ),
+        LiDropdownMenuOption(
+          value: 'blu',
+          label: i18n.isPortuguese ? 'Azul' : 'Blue',
+          iconClass: 'ph-drop',
+        ),
+        LiDropdownMenuOption(
+          value: 'pink',
+          label: i18n.isPortuguese ? 'Rosa' : 'Pink',
+          iconClass: 'ph-palette',
+        ),
+        LiDropdownMenuOption(
+          value: 'orange',
+          label: i18n.isPortuguese ? 'Laranja' : 'Orange',
+          iconClass: 'ph-fire',
+        ),
+        LiDropdownMenuOption(
+          value: 'sali',
+          label: 'Retro',
+          iconClass: 'ph-buildings',
         ),
         LiDropdownMenuOption(
           value: 'dark',
@@ -185,7 +205,10 @@ class AppComponent implements OnDestroy {
   String get pickersLabel => i18n.isPortuguese ? 'Pickers' : 'Pickers';
   String get dataLabel => i18n.isPortuguese ? 'Dados' : 'Data';
   String get utilitiesLabel => i18n.isPortuguese ? 'Utilitários' : 'Utilities';
-  String get colorPickerLabel => i18n.isPortuguese ? 'Color picker' : 'Color picker';
+  String get workQueueLabel =>
+      i18n.isPortuguese ? 'Fila operacional' : 'Work queue';
+  String get colorPickerLabel =>
+      i18n.isPortuguese ? 'Color picker' : 'Color picker';
   String get offcanvasLabel => 'Offcanvas';
   String get breadcrumbsLabel => 'Breadcrumbs';
   String get pageHeaderLabel => 'Page Header';
@@ -392,6 +415,11 @@ class AppComponent implements OnDestroy {
               url: DemoRoutePaths.datatableSelect.toUrl(),
             ),
             DemoNavItem(
+              label: workQueueLabel,
+              iconClass: 'ph-kanban',
+              url: DemoRoutePaths.workQueue.toUrl(),
+            ),
+            DemoNavItem(
               label: t.nav.treeview,
               iconClass: 'ph-tree-structure',
               url: DemoRoutePaths.treeview.toUrl(),
@@ -456,7 +484,19 @@ class AppComponent implements OnDestroy {
     '/date-range': <String>['periodo', 'intervalo', 'range'],
     '/datatable': <String>['tabela', 'grid', 'table'],
     '/datatable-select': <String>['tabela seletiva', 'grid select'],
-    '/page-header': <String>['header', 'cabecalho', 'page title', 'breadcrumb header'],
+    '/work-queue': <String>[
+      'fila',
+      'encaminhamento',
+      'workflow',
+      'tags',
+      'etiquetas'
+    ],
+    '/page-header': <String>[
+      'header',
+      'cabecalho',
+      'page title',
+      'breadcrumb header'
+    ],
     '/treeview': <String>['arvore', 'tree', 'hierarquia'],
     '/sweet-alert': <String>['sweetalert', 'dialog', 'popup'],
     '/highlight': <String>['codigo', 'syntax', 'highlight'],
@@ -578,7 +618,8 @@ class AppComponent implements OnDestroy {
     }
 
     filteredPrimaryItems = List<DemoNavItem>.unmodifiable(
-      primaryItems.where((item) => _matchesSidebarQuery(item.label, normalizedQuery)),
+      primaryItems
+          .where((item) => _matchesSidebarQuery(item.label, normalizedQuery)),
     );
 
     final filteredSections = <DemoNavSection>[];
@@ -753,6 +794,26 @@ class AppComponent implements OnDestroy {
 
   void onThemeChange(String value) {
     closeMobileSearch();
+    if (value == 'blu') {
+      theme.useBlu();
+      return;
+    }
+
+    if (value == 'sali') {
+      theme.useSali();
+      return;
+    }
+
+    if (value == 'orange') {
+      theme.useOrange();
+      return;
+    }
+
+    if (value == 'pink') {
+      theme.usePink();
+      return;
+    }
+
     if (value == 'dark') {
       theme.useDark();
       return;
@@ -788,7 +849,9 @@ class AppComponent implements OnDestroy {
 
   String? _resolveExpandedSectionId() {
     final routeSegment = _currentRouteSegment();
-    if (routeSegment == null || routeSegment.isEmpty || routeSegment == 'overview') {
+    if (routeSegment == null ||
+        routeSegment.isEmpty ||
+        routeSegment == 'overview') {
       return null;
     }
 
@@ -806,7 +869,11 @@ class AppComponent implements OnDestroy {
   String? _currentRouteSegment() {
     final hash = window.location.hash;
     if (hash.isNotEmpty) {
-      return hash.replaceFirst('#', '').split('/').where((part) => part.isNotEmpty).lastOrNull;
+      return hash
+          .replaceFirst('#', '')
+          .split('/')
+          .where((part) => part.isNotEmpty)
+          .lastOrNull;
     }
 
     final pathSegments =

@@ -1,0 +1,110 @@
+:host {
+  display: block;
+}
+
+.li-tag-manager__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--body-color) 12%, transparent);
+}
+
+.li-tag-manager__header-main {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.li-tag-manager__back,
+.li-tag-manager__apply {
+  text-decoration: none;
+}
+
+.li-tag-manager__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.li-tag-manager__list {
+  max-height: 16rem;
+  overflow: auto;
+}
+
+.li-tag-manager__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.4rem 0.35rem;
+  border-radius: 0.5rem;
+}
+
+.li-tag-manager__item:hover {
+  background-color: color-mix(in srgb, var(--body-color) 6%, transparent);
+}
+
+.li-tag-manager__item--selected {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.li-tag-manager__item--disabled {
+  opacity: 0.6;
+}
+
+.li-tag-manager__item-main {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+  flex: 1 1 auto;
+  cursor: pointer;
+}
+
+.li-tag-manager__item--disabled .li-tag-manager__item-main {
+  cursor: not-allowed;
+}
+
+.li-tag-manager__check {
+  width: 1rem;
+  flex: 0 0 1rem;
+}
+
+.li-tag-manager__swatch {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 999px;
+  flex: 0 0 0.875rem;
+}
+
+.li-tag-manager__badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.li-tag-manager__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.li-tag-manager__action-button {
+  flex: 0 0 auto;
+}
+
+.li-tag-manager__empty {
+  padding: 0.75rem 0.25rem;
+}
+
+.li-tag-manager__footer {
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--body-color) 12%, transparent);
+}

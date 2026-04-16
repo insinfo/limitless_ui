@@ -30,6 +30,7 @@ class DemoRoutePaths {
   static final dropdown = RoutePath(path: 'dropdown');
   static final datatable = RoutePath(path: 'datatable');
   static final datatableSelect = RoutePath(path: 'datatable-select');
+  static final workQueue = RoutePath(path: 'work-queue');
   static final toast = RoutePath(path: 'toast');
   static final notification = RoutePath(path: 'notification');
   static final fileUpload = RoutePath(path: 'file-upload');

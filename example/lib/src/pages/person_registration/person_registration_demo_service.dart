@@ -20,7 +20,9 @@ class PersonRegistrationMockRequest {
     required this.departmentId,
     required this.skillIds,
     required this.reviewerIds,
+    required this.primaryReviewerId,
     required this.workflowNode,
+    required this.workflowNodeIds,
     required this.expectedCompensationMinorUnits,
     required this.contactChannel,
     required this.remoteEnabled,
@@ -47,7 +49,9 @@ class PersonRegistrationMockRequest {
   final String departmentId;
   final List<String> skillIds;
   final List<String> reviewerIds;
+  final String primaryReviewerId;
   final String workflowNode;
+  final List<String> workflowNodeIds;
   final int? expectedCompensationMinorUnits;
   final String contactChannel;
   final bool remoteEnabled;
@@ -249,7 +253,9 @@ class PersonRegistrationDemoService {
         'department_id': request.departmentId,
         'skill_ids': request.skillIds,
         'reviewer_ids': request.reviewerIds,
+        'primary_reviewer_id': request.primaryReviewerId,
         'workflow_node': request.workflowNode,
+        'workflow_node_ids': request.workflowNodeIds,
         'expected_compensation_minor_units':
             request.expectedCompensationMinorUnits,
         'remote_enabled': request.remoteEnabled,

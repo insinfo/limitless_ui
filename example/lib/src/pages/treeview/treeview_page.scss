@@ -23,20 +23,23 @@
 }
 
 .treeview-trigger-chip {
+  --badge-color: var(--component-active-bg);
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  padding: 0.2rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(var(--primary-rgb), 0.12);
+  padding: 0.125rem 0.5rem;
+  background: rgba(var(--component-active-bg-rgb), 0.14);
+  border: 1px solid rgba(var(--component-active-bg-rgb), 0.28);
   color: var(--body-color);
   font-size: 0.8125rem;
+  line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .treeview-trigger-chip--muted {
-  background: color-mix(in srgb, var(--white) 90%, var(--body-color) 10%);
+  background: var(--gray-100);
+  border-color: var(--gray-200);
   color: var(--text-muted);
 }

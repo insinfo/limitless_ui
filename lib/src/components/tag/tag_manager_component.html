@@ -1,0 +1,73 @@
+<div class="li-tag-manager">
+    <div class="li-tag-manager__header">
+        <div class="li-tag-manager__header-main">
+            <button *ngIf="isEditing" type="button" class="btn btn-link btn-sm li-tag-manager__back"
+                [disabled]="isDisabled" (click)="cancelEditing()">
+                <i class="ph ph-arrow-left"></i>
+            </button>
+            <span class="fw-semibold">{{ resolvedHeaderText }}</span>
+        </div>
+
+        <button *ngIf="!isEditing && showApplyButton && allowSelection" type="button"
+            class="btn btn-link btn-sm li-tag-manager__apply" [disabled]="isDisabled" (click)="applySelection()">
+            {{ resolvedApplyButtonText }}
+        </button>
+    </div>
+
+    <div *ngIf="!isEditing">
+        <div *ngIf="searchable || showReloadButton" class="li-tag-manager__toolbar">
+            <button *ngIf="showReloadButton" type="button" class="btn btn-light btn-sm btn-icon rounded-pill"
+                [disabled]="isDisabled" (click)="requestReload()">
+                <i class="ph ph-arrows-clockwise"></i>
+            </button>
+
+            <input *ngIf="searchable" type="text" class="form-control" [placeholder]="resolvedSearchPlaceholder"
+                [disabled]="isDisabled" (input)="onSearchInput($event.target.value)">
+        </div>
+
+        <div class="li-tag-manager__list">
+            <div *ngFor="let option of options" class="li-tag-manager__item" [hidden]="!option.visible"
+                [class.li-tag-manager__item--disabled]="option.disabled || isDisabled"
+                [class.li-tag-manager__item--selected]="option.selected">
+                <div class="li-tag-manager__item-main" (click)="toggleSelection(option)">
+                    <i *ngIf="allowSelection" class="ph ph-check li-tag-manager__check"
+                        [class.opacity-0]="!option.selected"></i>
+                    <span class="li-tag-manager__swatch" [cssStyle]="option.swatchStyle"></span>
+                    <span class="badge rounded-pill li-tag-manager__badge" [cssStyle]="option.badgeStyle">
+                        {{ option.label }}
+                    </span>
+                </div>
+
+                <div class="li-tag-manager__actions">
+                    <button *ngIf="allowEdit" type="button"
+                        class="btn btn-light btn-sm btn-icon rounded-pill li-tag-manager__action-button"
+                        [disabled]="isDisabled" (click)="startEdit(option, $event)">
+                        <i class="ph ph-pencil"></i>
+                    </button>
+                    <button *ngIf="allowDelete" type="button"
+                        class="btn btn-light btn-sm btn-icon rounded-pill li-tag-manager__action-button"
+                        [disabled]="isDisabled" (click)="requestDelete(option, $event)">
+                        <i class="ph ph-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="visibleOptionCount == 0" class="li-tag-manager__empty text-muted">
+                {{ resolvedEmptyText }}
+            </div>
+        </div>
+
+        <div *ngIf="allowCreate" class="li-tag-manager__footer">
+            <button type="button" class="btn btn-link p-0" [disabled]="isDisabled" (click)="startCreate()">
+                <i class="ph ph-plus-circle me-2"></i>{{ resolvedCreateButtonText }}
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="isEditing" class="li-tag-manager__editor">
+        <li-tag-editor [value]="editorValue" [labelKey]="labelKey" [colorKey]="colorKey"
+            [locale]="locale" [presetColors]="editorPresetColors" (save)="handleEditorSave($event)"
+            (cancel)="cancelEditing()">
+        </li-tag-editor>
+    </div>
+</div>

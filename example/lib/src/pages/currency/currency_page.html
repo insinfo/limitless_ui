@@ -52,9 +52,11 @@
                 <label class="form-label fw-semibold">{{ t.pages.currency.budget }} BRL</label>
                 <li-currency-input
                     [(ngModel)]="amountMinorUnits"
-                    [required]="true"
                     currencyCode="BRL"
                     locale="pt_BR"
+                    [liRules]="currencyRules"
+                    liValidationMode="submittedOrTouchedOrDirty"
+                    [helperText]="isPt ? 'Fluxo declarativo com valor obrigatório e maior que zero.' : 'Declarative flow with a required amount greater than zero.'"
                     inputClass="form-control form-control-lg">
                 </li-currency-input>
               </div>
@@ -65,6 +67,9 @@
                     [(ngModel)]="amountMinorUnitsUsd"
                     currencyCode="USD"
                     locale="en_US"
+                    [liRules]="currencyRules"
+                    liValidationMode="submittedOrTouchedOrDirty"
+                    [helperText]="isPt ? 'Mesmo contrato declarativo com locale en_US.' : 'Same declarative contract with en_US locale.'"
                     inputClass="form-control form-control-lg">
                 </li-currency-input>
               </div>
@@ -75,6 +80,9 @@
                     [(ngModel)]="amountMinorUnitsEur"
                     currencyCode="EUR"
                     locale="de_DE"
+                    [liRules]="currencyRules"
+                    liValidationMode="submittedOrTouchedOrDirty"
+                    [helperText]="isPt ? 'Mesmo contrato declarativo com locale de_DE.' : 'Same declarative contract with de_DE locale.'"
                     inputClass="form-control form-control-lg">
                 </li-currency-input>
               </div>

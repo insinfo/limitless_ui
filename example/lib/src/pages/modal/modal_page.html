@@ -50,10 +50,70 @@
 
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
+                  <h6 class="mb-2">{{ iconifiedCardTitle }}</h6>
+                  <p class="text-muted mb-3">{{ iconifiedCardBody }}</p>
+                  <button class="btn btn-indigo" type="button" (click)="openIconifiedModal()">
+                    {{ iconifiedOpenButton }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="border rounded p-3 h-100">
+                  <h6 class="mb-2">{{ miniCardTitle }}</h6>
+                  <p class="text-muted mb-3">{{ miniCardBody }}</p>
+                  <button class="btn btn-outline-dark" type="button" (click)="openMiniModal()">
+                    {{ miniOpenButton }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="border rounded p-3 h-100">
+                  <h6 class="mb-2">{{ backdroplessCardTitle }}</h6>
+                  <p class="text-muted mb-3">{{ backdroplessCardBody }}</p>
+                  <button class="btn btn-outline-secondary" type="button" (click)="openBackdroplessModal()">
+                    {{ backdroplessOpenButton }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="border rounded p-3 h-100">
+                  <h6 class="mb-2">{{ smallHeaderCardTitle }}</h6>
+                  <p class="text-muted mb-3">{{ smallHeaderCardBody }}</p>
+                  <button class="btn btn-dark" type="button" (click)="openSmallHeaderModal()">
+                    {{ smallHeaderOpenButton }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="border rounded p-3 h-100">
+                  <h6 class="mb-2">{{ formCardTitle }}</h6>
+                  <p class="text-muted mb-3">{{ formCardBody }}</p>
+                  <button class="btn btn-outline-primary" type="button" (click)="openFormModal()">
+                    {{ formOpenButton }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="border rounded p-3 h-100">
                   <h6 class="mb-2">{{ fullTitle }}</h6>
                   <p class="text-muted mb-3">{{ fullBody }}</p>
                   <button class="btn btn-outline-secondary" type="button" (click)="openFullModal()">
                     {{ fullOpenButton }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="border rounded p-3 h-100">
+                  <h6 class="mb-2">{{ fullScreenCardTitle }}</h6>
+                  <p class="text-muted mb-3">{{ fullScreenCardBody }}</p>
+                  <button class="btn btn-secondary" type="button" (click)="openFullScreenFormModal()">
+                    {{ fullScreenOpenButton }}
                   </button>
                 </div>
               </div>
@@ -97,8 +157,8 @@
                   <h6 class="mb-2">{{ mainInputsTitle }}</h6>
                   <ul class="mb-0 ps-3">
                     <li><code>title-text</code>, <code>headerColor</code> e <code>size</code> definem a estrutura principal.</li>
-                    <li><code>lazyContent</code>, <code>dialogScrollable</code> e <code>verticalCenter</code> cobrem comportamento.</li>
-                    <li><code>closeOnBackdropClick</code>, <code>enableCloseBtn</code> e <code>fullScreenOnMobile</code> refinam a UX.</li>
+                    <li><code>lazyContent</code>, <code>dialogScrollable</code>, <code>verticalCenter</code>, <code>compactHeader</code> e <code>smallHeader</code> cobrem comportamento.</li>
+                    <li><code>closeOnBackdropClick</code>, <code>enableCloseBtn</code>, <code>enableBackdrop</code>, <code>enableHeader</code> e <code>fullScreenOnMobile</code> refinam a UX.</li>
                   </ul>
                 </div>
               </div>
@@ -110,6 +170,12 @@
 
                   <h6 class="mb-3 mt-4">{{ advancedSnippetTitle }}</h6>
                   <li-highlight [code]="advancedSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">Full screen</h6>
+                  <li-highlight [code]="fullScreenSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">Small header</h6>
+                  <li-highlight [code]="smallHeaderSnippet" language="html"></li-highlight>
                 </div>
               </div>
             </div>
@@ -165,6 +231,128 @@
     <div class="d-flex justify-content-end gap-2">
       <button class="btn btn-light" type="button" (click)="warningModal?.close()">{{ cancelLabel }}</button>
       <button class="btn btn-warning" type="button" (click)="warningModal?.close()">{{ understoodLabel }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #iconifiedModal
+            [title-text]="iconifiedModalTitle"
+            headerColor="indigo"
+            [lazyContent]="true"
+            [enableShadow]="true"
+            (close)="onModalClosed('Modal com ícones')">
+    <div class="alert alert-info alert-icon-start alert-dismissible mb-3">
+      <span class="alert-icon bg-info text-white">
+        <i class="ph-info"></i>
+      </span>
+      {{ iconifiedModalLead }}
+    </div>
+    <h6 class="fw-semibold d-flex align-items-center gap-2 mb-3">
+      <i class="ph-list-checks text-primary"></i>
+      Checklist rápido
+    </h6>
+    <div class="demo-modal-stack">
+      <div class="d-flex align-items-start gap-3">
+        <i class="ph-shield-check text-success mt-1"></i>
+        <div>Validação documental concluída e pronta para seguir.</div>
+      </div>
+      <div class="d-flex align-items-start gap-3">
+        <i class="ph-warning-circle text-warning mt-1"></i>
+        <div>Existem observações pendentes antes da publicação final.</div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <button class="btn btn-flat-danger btn-icon" type="button" (click)="iconifiedModal?.close()">
+        <i class="ph-trash"></i>
+      </button>
+      <button class="btn btn-primary" type="button" (click)="iconifiedModal?.close()">
+        <i class="ph-check me-1"></i>
+        {{ confirmLabel }}
+      </button>
+    </div>
+  </li-modal>
+
+  <li-modal #miniModal
+            [title-text]="miniModalTitle"
+            size="modal-xs"
+            [smallHeader]="true"
+            [lazyContent]="true"
+            [verticalCenter]="true"
+            (close)="onModalClosed('Modal mini')">
+    <p class="mb-0">{{ miniModalBody }}</p>
+    <div class="d-flex justify-content-between mt-4">
+      <button class="btn btn-light" type="button" (click)="miniModal?.close()">{{ cancelLabel }}</button>
+      <button class="btn btn-primary" type="button" (click)="miniModal?.close()">{{ confirmLabel }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #backdroplessModal
+            [title-text]="backdroplessModalTitle"
+            [lazyContent]="true"
+            [enableBackdrop]="false"
+            [verticalCenter]="true"
+            (close)="onModalClosed('Modal sem backdrop')">
+    <p class="mb-0">{{ backdroplessModalBody }}</p>
+    <div class="text-end mt-4">
+      <button class="btn btn-secondary" type="button" (click)="backdroplessModal?.close()">{{ closeLabel }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #smallHeaderModal
+            [title-text]="smallHeaderModalTitle"
+            size="modal-sm"
+            headerColor="dark"
+            [smallHeader]="true"
+            [lazyContent]="true"
+            (close)="onModalClosed('Modal com smallHeader')">
+    <p class="mb-3">{{ smallHeaderModalBody }}</p>
+    <div class="demo-modal-surface">
+      <div class="small text-muted mb-2">Densidade visual</div>
+      <div class="progress mb-2" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width: 72%"></div>
+      </div>
+      <div class="small text-muted">Header menor, mesmo comportamento de cor, bordas e fechamento.</div>
+    </div>
+    <div class="text-end mt-3">
+      <button class="btn btn-dark" type="button" (click)="smallHeaderModal?.close()">{{ closeLabel }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #formModal
+            [title-text]="formModalTitle"
+            size="large"
+            [lazyContent]="true"
+            [enableShadow]="true"
+            (close)="onModalClosed('Modal com formulário')">
+    <p class="text-muted mb-4">{{ formModalLead }}</p>
+    <form class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Nome</label>
+        <input class="form-control" type="text" placeholder="Digite o nome">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">E-mail</label>
+        <input class="form-control" type="email" placeholder="nome@dominio.com">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Área</label>
+        <select class="form-select">
+          <option>Operações</option>
+          <option>Atendimento</option>
+          <option>Jurídico</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Prazo</label>
+        <input class="form-control" type="date">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Observações</label>
+        <textarea class="form-control" rows="4" placeholder="Adicione contexto para a validação"></textarea>
+      </div>
+    </form>
+    <div class="demo-modal-actions mt-4">
+      <button class="btn btn-light" type="button" (click)="formModal?.close()">{{ cancelLabel }}</button>
+      <button class="btn btn-primary" type="button" (click)="formModal?.close()">{{ fullScreenSaveLabel }}</button>
     </div>
   </li-modal>
 
@@ -231,6 +419,192 @@
     </div>
     <div class="text-end mt-3">
       <button class="btn btn-success" type="button" (click)="lazyPreviewModal?.close()">{{ closeLabel }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #fullScreenFormModal
+            [title-text]="fullScreenModalTitle"
+            headerColor="primary"
+            size="modal-full"
+            [smallHeader]="true"
+            [lazyContent]="true"
+            [enableShadow]="true"
+            [closeOnBackdropClick]="false"
+            (close)="onModalClosed('Modal full com formulário')">
+    <div class="demo-fullscreen-modal">
+      <div class="demo-fullscreen-modal__hero">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between gap-3">
+          <div>
+            <div class="text-uppercase small fw-semibold text-muted mb-1">Limitless-inspired demo</div>
+            <h5 class="mb-2">{{ fullScreenLead }}</h5>
+            <p class="text-muted mb-0">Este exemplo replica um cadastro administrativo com muitas entradas para evidenciar a rolagem do body no modo full.</p>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-primary">modal-full</span>
+            <span class="badge bg-dark">smallHeader</span>
+            <span class="badge bg-light text-body border">lazyContent</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-fullscreen-modal__section">
+        <div class="demo-fullscreen-modal__section-title">Dados CGM</div>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Motivo da alteração</label>
+            <div class="d-flex flex-column gap-2">
+              <label class="form-check mb-0">
+                <input class="form-check-input" type="radio" name="demo_alteracao" checked>
+                <span class="form-check-label">Correção de dados, sem criação de histórico.</span>
+              </label>
+              <label class="form-check mb-0">
+                <input class="form-check-input" type="radio" name="demo_alteracao">
+                <span class="form-check-label">Atualização cadastral com histórico preservado.</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-xl-2">
+            <label class="form-label">Tipo CGM</label>
+            <select class="form-select">
+              <option>Interno</option>
+              <option>Externo</option>
+            </select>
+          </div>
+          <div class="col-md-3 col-xl-2">
+            <label class="form-label">Tipo pessoa</label>
+            <select class="form-select">
+              <option>Indefinido</option>
+              <option>Física</option>
+              <option>Jurídica</option>
+            </select>
+          </div>
+          <div class="col-md-6 col-xl-4">
+            <label class="form-label">Nome</label>
+            <input class="form-control" type="text" value="PREFEITURA MUNICIPAL DE RIO DAS OSTRAS">
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <label class="form-label">CNPJ</label>
+            <input class="form-control" type="text" value="12.345.678/0001-90">
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <label class="form-label">Inscrição estadual</label>
+            <input class="form-control" type="text" value="ISENTO">
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-fullscreen-modal__section">
+        <div class="demo-fullscreen-modal__section-title">Dados endereço</div>
+        <div class="row g-3">
+          <div class="col-md-3 col-xl-2">
+            <label class="form-label">Tipo logradouro</label>
+            <select class="form-select">
+              <option>Praça</option>
+              <option>Rua</option>
+              <option>Avenida</option>
+            </select>
+          </div>
+          <div class="col-md-5 col-xl-4">
+            <label class="form-label">Logradouro</label>
+            <input class="form-control" type="text" value="PREFEITO CLÁUDIO RIBEIRO">
+          </div>
+          <div class="col-md-2 col-xl-1">
+            <label class="form-label">Número</label>
+            <input class="form-control" type="text" value="0">
+          </div>
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">Complemento</label>
+            <input class="form-control" type="text" value="Centro administrativo">
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <label class="form-label">País</label>
+            <select class="form-select">
+              <option>Brasil</option>
+            </select>
+          </div>
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">UF</label>
+            <select class="form-select">
+              <option>Rio de Janeiro</option>
+            </select>
+          </div>
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">Município</label>
+            <select class="form-select">
+              <option>Rio das Ostras</option>
+            </select>
+          </div>
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">Bairro</label>
+            <input class="form-control" type="text" value="Extensão do Bosque">
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <label class="form-label">CEP</label>
+            <input class="form-control" type="text" value="28890000">
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-fullscreen-modal__section">
+        <div class="demo-fullscreen-modal__section-title">Dados contato</div>
+        <div class="row g-3">
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">Telefone residencial</label>
+            <input class="form-control" type="text" value="2227641749">
+          </div>
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">Telefone comercial</label>
+            <input class="form-control" type="text" value="2230304000">
+          </div>
+          <div class="col-md-2 col-xl-1">
+            <label class="form-label">Ramal</label>
+            <input class="form-control" type="text" value="215">
+          </div>
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">Telefone celular</label>
+            <input class="form-control" type="text" value="2299999-1234">
+          </div>
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">E-mail</label>
+            <input class="form-control" type="email" value="cadastro@riodasostras.rj.gov.br">
+          </div>
+          <div class="col-md-4 col-xl-3">
+            <label class="form-label">E-mail adicional</label>
+            <input class="form-control" type="email" value="atendimento@riodasostras.rj.gov.br">
+          </div>
+          <div class="col-md-8 col-xl-6">
+            <label class="form-label">Observações</label>
+            <textarea class="form-control" rows="4">Formulário demonstrativo para validar modal full, rolagem interna e um cabeçalho mais compacto.</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-fullscreen-modal__section">
+        <div class="demo-fullscreen-modal__section-title">Atributos</div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Classificação</label>
+            <input class="form-control" type="text" value="Pessoa jurídica interna">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Setor responsável</label>
+            <input class="form-control" type="text" value="Secretaria de Administração">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Status do cadastro</label>
+            <input class="form-control" type="text" value="Ativo">
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-fullscreen-modal__footer">
+        <div class="text-muted small">Header reduzido ativo para economizar espaço útil em formulários longos.</div>
+        <div class="d-flex flex-wrap justify-content-end gap-2">
+          <button class="btn btn-light" type="button" (click)="fullScreenFormModal?.close()">{{ fullScreenCancelLabel }}</button>
+          <button class="btn btn-primary" type="button" (click)="fullScreenFormModal?.close()">{{ fullScreenSaveLabel }}</button>
+        </div>
+      </div>
     </div>
   </li-modal>
 </div>

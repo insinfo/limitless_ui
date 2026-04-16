@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'dart:html';
+import 'dart:html' as html;
 
 import 'package:ngdart/angular.dart';
+import 'package:popper/popper.dart';
 
 /// Public directives used by the dropdown menu component.
 const liDropdownMenuDirectives = <Object>[
@@ -34,16 +35,14 @@ class LiDropdownMenuOption {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiDropdownMenuComponent implements OnDestroy {
-  LiDropdownMenuComponent(this._rootElement, this._changeDetectorRef) {
-    _documentClickSubscription = document.onClick.listen(_handleDocumentClick);
-    _documentKeySubscription = document.onKeyDown.listen(_handleDocumentKeyDown);
-  }
+  LiDropdownMenuComponent(this._changeDetectorRef);
 
-  final Element _rootElement;
   final ChangeDetectorRef _changeDetectorRef;
 
-  StreamSubscription<Event>? _documentClickSubscription;
-  StreamSubscription<KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<html.Event>? _documentClickSubscription;
+  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  PopperAnchoredOverlay? _overlay;
+  bool _overlayRelayoutPending = false;
 
   @Input()
   List<LiDropdownMenuOption> options = const <LiDropdownMenuOption>[];
@@ -66,6 +65,11 @@ class LiDropdownMenuComponent implements OnDestroy {
   @Input()
   String menuClass = 'dropdown-menu-end';
 
+  /// Rendering container: `inline` keeps the menu in normal DOM flow,
+  /// `body` renders it in a portal anchored with Popper.
+  @Input()
+  String container = 'body';
+
   /// Dropdown direction: dropdown, dropup, dropstart, or dropend.
   @Input()
   String placement = 'dropdown';
@@ -78,6 +82,12 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   @Input()
   bool closeOnSelect = true;
+
+  @ViewChild('triggerButton')
+  html.ButtonElement? triggerButtonElement;
+
+  @ViewChild('menuElement')
+  html.Element? menuElement;
 
   @Output()
   Stream<String> get valueChange => _valueChange.stream;
@@ -103,11 +113,14 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   String get resolvedTriggerClasses {
     return _joinClasses(<String>[
+      'li-dropdown-menu__trigger',
       triggerClass,
       usesNavbarTrigger ? 'li-dropdown-trigger-reset' : '',
       showCaret ? 'dropdown-toggle' : '',
       rounded ? 'rounded-pill' : '',
-      triggerIconClass.trim().isNotEmpty ? 'd-inline-flex align-items-center' : '',
+      triggerIconClass.trim().isNotEmpty
+          ? 'd-inline-flex align-items-center'
+          : '',
     ]);
   }
 
@@ -121,12 +134,50 @@ class LiDropdownMenuComponent implements OnDestroy {
   String get resolvedMenuClasses {
     return _joinClasses(<String>[
       'dropdown-menu',
+      'li-dropdown-menu__menu',
       menuClass,
       isOpen ? 'show' : '',
     ]);
   }
 
   bool get usesNavbarTrigger => triggerClass.contains('navbar-nav-link');
+
+  bool get usesBodyOverlay => container.trim().toLowerCase() == 'body';
+
+  bool get _alignEnd =>
+      RegExp(r'(^|\s)dropdown-menu-end(\s|$)').hasMatch(menuClass);
+
+  String get _normalizedPlacement => placement.trim().toLowerCase();
+
+  String get _resolvedOverlayPlacement {
+    switch (_normalizedPlacement) {
+      case 'dropup':
+        return _alignEnd ? 'top-end' : 'top-start';
+      case 'dropstart':
+        return 'left-start';
+      case 'dropend':
+        return 'right-start';
+      default:
+        return _alignEnd ? 'bottom-end' : 'bottom-start';
+    }
+  }
+
+  List<String> get _resolvedFallbackPlacements {
+    switch (_normalizedPlacement) {
+      case 'dropup':
+        return _alignEnd
+            ? const <String>['bottom-end', 'top-start', 'bottom-start']
+            : const <String>['bottom-start', 'top-end', 'bottom-end'];
+      case 'dropstart':
+        return const <String>['right-start', 'bottom-start', 'top-start'];
+      case 'dropend':
+        return const <String>['left-start', 'bottom-end', 'top-end'];
+      default:
+        return _alignEnd
+            ? const <String>['top-end', 'bottom-start', 'top-start']
+            : const <String>['top-start', 'bottom-end', 'top-end'];
+    }
+  }
 
   bool isSelected(LiDropdownMenuOption option) => option.value == value;
 
@@ -144,14 +195,55 @@ class LiDropdownMenuComponent implements OnDestroy {
     return _joinClasses(<String>[option.iconClass.trim(), 'me-2 mt-1']);
   }
 
-  void toggleDropdown(MouseEvent event) {
+  void toggleDropdown(html.MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();
-    isOpen = !isOpen;
+
+    if (isOpen) {
+      closeDropdown(restoreFocus: true);
+      return;
+    }
+
+    openDropdown();
+  }
+
+  void openDropdown() {
+    if (isOpen) {
+      return;
+    }
+
+    if (usesBodyOverlay) {
+      _ensureOverlay();
+    }
+    _bindDocumentListeners();
+    isOpen = true;
+    if (usesBodyOverlay) {
+      _overlay?.startAutoUpdate();
+      _scheduleOverlayUpdate();
+    }
     _changeDetectorRef.markForCheck();
   }
 
-  void selectOption(LiDropdownMenuOption option, MouseEvent event) {
+  void closeDropdown({bool restoreFocus = false}) {
+    if (!isOpen) {
+      return;
+    }
+
+    isOpen = false;
+    _overlayRelayoutPending = false;
+    if (usesBodyOverlay) {
+      _overlay?.stopAutoUpdate();
+    }
+    _unbindDocumentListeners();
+
+    if (restoreFocus) {
+      triggerButtonElement?.focus();
+    }
+
+    _changeDetectorRef.markForCheck();
+  }
+
+  void selectOption(LiDropdownMenuOption option, html.MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -162,32 +254,91 @@ class LiDropdownMenuComponent implements OnDestroy {
     _valueChange.add(option.value);
 
     if (closeOnSelect) {
-      isOpen = false;
-      _changeDetectorRef.markForCheck();
+      closeDropdown();
     }
   }
 
-  void _handleDocumentClick(Event event) {
-    final target = event.target;
-    if (!isOpen || target is! Node) {
+  void _ensureOverlay() {
+    if (!usesBodyOverlay) {
       return;
     }
 
-    if (_rootElement.contains(target)) {
+    final reference = triggerButtonElement;
+    final floating = menuElement;
+    if (_overlay != null || reference == null || floating == null) {
       return;
     }
 
-    isOpen = false;
-    _changeDetectorRef.markForCheck();
+    _overlay = PopperAnchoredOverlay.attach(
+      referenceElement: reference,
+      floatingElement: floating,
+      portalOptions: const PopperPortalOptions(
+        hostClassName: 'LiDropdownMenuComponent',
+        hostZIndex: '10000',
+        floatingZIndex: '1056',
+      ),
+      popperOptions: PopperOptions(
+        placement: _resolvedOverlayPlacement,
+        fallbackPlacements: _resolvedFallbackPlacements,
+        strategy: PopperStrategy.fixed,
+        padding: const PopperInsets.all(8),
+        offset: const PopperOffset(mainAxis: 4),
+      ),
+    );
   }
 
-  void _handleDocumentKeyDown(KeyboardEvent event) {
-    if (!isOpen || event.key != 'Escape') {
+  void _bindDocumentListeners() {
+    _documentClickSubscription ??= html.document.onClick.listen((event) {
+      if (!isOpen) {
+        return;
+      }
+
+      final target = event.target;
+      if (target is! html.Node) {
+        closeDropdown();
+        return;
+      }
+
+      final clickedTrigger = triggerButtonElement?.contains(target) ?? false;
+      final clickedMenu = menuElement?.contains(target) ?? false;
+      if (!clickedTrigger && !clickedMenu) {
+        closeDropdown();
+      }
+    });
+
+    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+      if (!isOpen) {
+        return;
+      }
+
+      if (event.key == 'Escape') {
+        event.preventDefault();
+        closeDropdown(restoreFocus: true);
+      }
+    });
+  }
+
+  void _unbindDocumentListeners() {
+    _documentClickSubscription?.cancel();
+    _documentClickSubscription = null;
+    _documentKeySubscription?.cancel();
+    _documentKeySubscription = null;
+  }
+
+  void _scheduleOverlayUpdate() {
+    if (!usesBodyOverlay || _overlayRelayoutPending || !isOpen) {
       return;
     }
 
-    isOpen = false;
-    _changeDetectorRef.markForCheck();
+    _overlayRelayoutPending = true;
+    html.window.requestAnimationFrame((_) {
+      _overlayRelayoutPending = false;
+      if (!isOpen) {
+        return;
+      }
+
+      _overlay?.update();
+    });
   }
 
   String _joinClasses(List<String> classNames) {
@@ -199,8 +350,9 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   @override
   void ngOnDestroy() {
-    _documentClickSubscription?.cancel();
-    _documentKeySubscription?.cancel();
+    _unbindDocumentListeners();
+    _overlay?.stopAutoUpdate();
+    _overlay?.dispose();
     _valueChange.close();
   }
 }

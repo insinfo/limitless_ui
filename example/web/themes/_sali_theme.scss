@@ -1,0 +1,182 @@
+[data-color-theme='sali'],
+html[data-color-theme='sali'] [data-color-theme] {
+  color-scheme: light;
+  --gray-100: #eff2eb;
+  --gray-200: #e0e5de;
+  --gray-300: #cad1c7;
+  --gray-400: #afb8ad;
+  --gray-500: #879183;
+  --gray-600: #656d63;
+  --gray-700: #49504b;
+  --gray-800: #343a36;
+  --gray-900: #232825;
+  --body-bg: #cfd5ce;
+  --body-bg-rgb: 207, 213, 206;
+  --body-color: #2c302d;
+  --body-color-rgb: 44, 48, 45;
+  --border-color: #9ea79d;
+  --border-color-translucent: rgba(82, 86, 79, 0.18);
+  --primary: #f08a1e;
+  --primary-rgb: 240, 138, 30;
+  --secondary: #52564f;
+  --secondary-rgb: 82, 86, 79;
+  --component-active-bg: #f08a1e;
+  --component-active-bg-rgb: 240, 138, 30;
+  --link-color: #a95d12;
+  --link-rgb-color: 169, 93, 18;
+  --link-hover-color: #8c4908;
+  --highlight-bg: rgba(240, 138, 30, 0.14);
+  --code-color: #c66a10;
+  --focus-ring-box-shadow: 0 0 0 0.125rem rgba(240, 138, 30, 0.28);
+  --input-bg: var(--white);
+  --input-focus-bg: var(--white);
+  --input-disabled-bg: var(--gray-100);
+  --card-bg: #eaeee8;
+  --card-cap-bg: #e0e5de;
+  --app-scrollbar-light-track: #c1c8c0;
+  --app-scrollbar-light-thumb: rgba(82, 86, 79, 0.34);
+  --app-scrollbar-light-thumb-hover: rgba(82, 86, 79, 0.52);
+}
+
+html[data-color-theme='sali'],
+html[data-color-theme='sali'] body {
+  background-color: var(--body-bg);
+}
+
+html[data-color-theme='sali'] .page-content,
+html[data-color-theme='sali'] .content-inner {
+  background: transparent;
+}
+
+html[data-color-theme='sali'] .nav-tabs:not(.nav-tabs-solid) {
+  --nav-link-active-color: var(--body-color);
+  --nav-tabs-link-active-color: var(--body-color);
+  --nav-tabs-link-active-bg: var(--card-bg);
+  --nav-tabs-link-active-border-color: var(--border-color) var(--border-color) var(--card-bg);
+  --nav-tabs-underline-color: var(--primary);
+}
+
+html[data-color-theme='sali'] .demo-navbar {
+  background-color: #31363a;
+  border-bottom-color: rgba(240, 138, 30, 0.75) !important;
+  box-shadow: inset 0 -3px 0 rgba(240, 138, 30, 0.95);
+}
+
+html[data-color-theme='sali'] .demo-navbar-badge {
+  background: rgba(240, 138, 30, 0.14);
+  border: 1px solid rgba(240, 138, 30, 0.22);
+}
+
+html[data-color-theme='sali'] .sidebar-dark {
+  --sidebar-bg: #2f3538;
+  --sidebar-color: #fff8ef;
+  --sidebar-border-color: rgba(255, 255, 255, 0.06);
+}
+
+html[data-color-theme='sali'] .sidebar-dark .nav-sidebar {
+  --nav-sidebar-divider-color: rgba(255, 255, 255, 0.08);
+  --nav-link-color: rgba(255, 255, 255, 0.88);
+  --nav-link-hover-color: #fff;
+  --nav-link-hover-bg: rgba(255, 255, 255, 0.12);
+  --nav-link-hover-active-bg: rgba(255, 255, 255, 0.16);
+  --nav-link-active-color: #fff;
+  --nav-link-active-bg: rgba(240, 138, 30, 0.28);
+  --nav-link-disabled-color: rgba(255, 255, 255, 0.45);
+}
+
+html[data-color-theme='sali'] .demo-sidebar-search-input .input-group-text,
+html[data-color-theme='sali'] .demo-sidebar-search-input .form-control {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html[data-color-theme='sali'] .demo-sidebar-backdrop {
+  background: rgba(21, 24, 26, 0.48);
+}
+
+html[data-color-theme='sali'] .demo-navbar-typeahead[data-color-theme='dark'] .li-typeahead > .form-control:focus {
+  border-color: #f08a1e;
+  box-shadow: 0 0 0 0.125rem rgba(240, 138, 30, 0.25);
+}
+
+.page-header-light[data-color-theme='sali'],
+html[data-color-theme='sali'] .page-header-light:not([data-color-theme]) {
+  color-scheme: light;
+  --page-header-bg: #e7ebe4;
+  border-color: #9ea79d;
+  box-shadow: 0 1px 2px rgba(58, 61, 57, 0.1);
+}
+
+.card[data-color-theme='sali'],
+html[data-color-theme='sali'] .card:not([data-color-theme]) {
+  color-scheme: light;
+  --card-bg: #eaeee8;
+  border-color: #9ea79d;
+  box-shadow: 0 1px 2px rgba(58, 61, 57, 0.1);
+}
+
+html[data-color-theme='sali'] .btn-primary {
+  --btn-color: #fff;
+  --btn-bg: #f08a1e;
+  --btn-border-color: #f08a1e;
+  --btn-hover-color: #fff;
+  --btn-hover-bg: #db7710;
+  --btn-hover-border-color: #db7710;
+  --btn-focus-shadow-rgb: 240, 138, 30;
+  --btn-active-color: #fff;
+  --btn-active-bg: #c76509;
+  --btn-active-border-color: #c76509;
+  --btn-disabled-color: #fff;
+  --btn-disabled-bg: #f08a1e;
+  --btn-disabled-border-color: #f08a1e;
+}
+
+html[data-color-theme='sali'] .btn-light {
+  --btn-bg: #e5e9e2;
+  --btn-border-color: #b9c0b5;
+  --btn-hover-bg: #dce1d8;
+  --btn-hover-border-color: #aab2a5;
+  --btn-active-bg: #d1d8ce;
+  --btn-active-border-color: #9ea79a;
+  --btn-color: #4f5651;
+}
+
+html[data-color-theme='sali'] .form-control,
+html[data-color-theme='sali'] .form-select,
+html[data-color-theme='sali'] .input-group-text {
+  border-color: #aeb5ab;
+}
+
+html[data-color-theme='sali'] .form-control:focus,
+html[data-color-theme='sali'] .form-select:focus {
+  border-color: rgba(240, 138, 30, 0.52);
+  box-shadow: 0 0 0 0.125rem rgba(240, 138, 30, 0.18);
+}
+
+html[data-color-theme='sali'] .dropdown-menu {
+  border-color: rgba(82, 86, 79, 0.2);
+  background-color: #f7f8f4;
+  box-shadow: 0 8px 18px rgba(58, 61, 57, 0.12);
+}
+
+html[data-color-theme='sali'] .dropdown-item.active,
+html[data-color-theme='sali'] .dropdown-item:active,
+html[data-color-theme='sali'] .dropdown-item:focus,
+html[data-color-theme='sali'] .dropdown-item:hover {
+  color: #7c4309;
+  background: rgba(240, 138, 30, 0.12);
+}
+
+html[data-color-theme='sali'] .table {
+  --table-hover-bg: rgba(240, 138, 30, 0.05);
+  --table-active-bg: rgba(240, 138, 30, 0.09);
+}
+
+html[data-color-theme='sali'] .badge.bg-primary,
+html[data-color-theme='sali'] .bg-primary {
+  background-color: rgba(var(--primary-rgb), 1) !important;
+}
+
+html[data-color-theme='sali'] .text-primary {
+  color: rgba(var(--primary-rgb), 1) !important;
+}

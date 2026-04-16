@@ -47,6 +47,12 @@ class LiModalComponent implements OnInit, OnDestroy {
   bool enableCloseBtn = true;
 
   @Input()
+  bool compactHeader = false;
+
+  @Input()
+  bool smallHeader = false;
+
+  @Input()
   bool showError = false;
 
   @Input()

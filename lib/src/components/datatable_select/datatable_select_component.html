@@ -22,23 +22,26 @@
                         class="datatable-select-placeholder">
                         {{ resolvedPlaceholder }}
                     </span>
-                    <span *ngIf="multiple && selectedLabels.isNotEmpty" class="datatable-select-chips">
+                    <span *ngIf="multiple && selectedLabels.isNotEmpty" class="datatable-select-chips d-flex align-items-center flex-nowrap gap-1">
                         <span *ngFor="let label of selectedLabels; let i = index"
-                            class="datatable-select-chip"
+                            class="badge rounded-pill d-inline-flex align-items-center datatable-select-chip"
                             [hidden]="i > 1">
                             {{ label }}
                         </span>
                         <span *ngIf="selectedLabels.length > 2"
-                            class="datatable-select-chip datatable-select-chip--muted">
+                            class="badge rounded-pill d-inline-flex align-items-center datatable-select-chip datatable-select-chip--muted">
                             +{{ selectedLabels.length - 2 }}
                         </span>
                     </span>
                 </span>
             </span>
-            <span class="datatable-select-icons">
-                <i *ngIf="showsClearButton" class="ph ph-x datatable-select-clear"
-                    (click)="onClearClick($event)" [attr.title]="resolvedClearButtonLabel"
-                    [attr.aria-label]="resolvedClearButtonLabel"></i>
+            <span *ngIf="showsClearButton"
+                class="datatable-select-clear"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="resolvedClearButtonLabel"
+                (click)="onClearClick($event)">
+                <i class="ph ph-x"></i>
             </span>
         </button>
         <span class="input-group-text datatable-select-trigger-addon" aria-hidden="true">
@@ -67,24 +70,29 @@
                 <span *ngIf="multiple && selectedLabels.isEmpty">
                     {{ resolvedPlaceholder }}
                 </span>
-                <span *ngIf="multiple && selectedLabels.isNotEmpty" class="datatable-select-chips">
+                <span *ngIf="multiple && selectedLabels.isNotEmpty" class="datatable-select-chips d-flex align-items-center flex-nowrap gap-1">
                     <span *ngFor="let label of selectedLabels; let i = index"
-                        class="datatable-select-chip"
+                        class="badge rounded-pill d-inline-flex align-items-center datatable-select-chip"
                         [hidden]="i > 1">
                         {{ label }}
                     </span>
                     <span *ngIf="selectedLabels.length > 2"
-                        class="datatable-select-chip datatable-select-chip--muted">
+                        class="badge rounded-pill d-inline-flex align-items-center datatable-select-chip datatable-select-chip--muted">
                         +{{ selectedLabels.length - 2 }}
                     </span>
                 </span>
             </span>
         </span>
-        <span class="datatable-select-icons">
-            <i *ngIf="showsClearButton" class="ph ph-x datatable-select-clear"
-                (click)="onClearClick($event)" [attr.title]="resolvedClearButtonLabel"
-                [attr.aria-label]="resolvedClearButtonLabel"></i>
-            <i *ngIf="usesOverlayTriggerIcon" [class]="'datatable-select-trigger-icon ' + resolvedTriggerIconClass"></i>
+        <span *ngIf="showsClearButton"
+            class="datatable-select-clear"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="resolvedClearButtonLabel"
+            (click)="onClearClick($event)">
+            <i class="ph ph-x"></i>
+        </span>
+        <span *ngIf="usesOverlayTriggerIcon" class="datatable-select-trigger-icon" aria-hidden="true">
+            <i [class]="resolvedTriggerIconClass"></i>
         </span>
     </button>
     <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>

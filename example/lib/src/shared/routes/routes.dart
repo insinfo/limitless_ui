@@ -39,7 +39,7 @@ import 'package:limitless_ui_example/src/pages/file_upload/file_upload_page.temp
 import 'package:limitless_ui_example/src/pages/helpers/helpers_page.template.dart'
     as helpers_page;
 import 'package:limitless_ui_example/src/pages/inputs/inputs_page.template.dart'
-  as inputs_page;
+    as inputs_page;
 import 'package:limitless_ui_example/src/pages/modal/modal_page.template.dart'
     as modal_page;
 import 'package:limitless_ui_example/src/pages/multi_select/multi_select_page.template.dart'
@@ -63,15 +63,15 @@ import 'package:limitless_ui_example/src/pages/select/select_page.template.dart'
 import 'package:limitless_ui_example/src/pages/rating/rating_page.template.dart'
     as rating_page;
 import 'package:limitless_ui_example/src/pages/highlight/highlight_page.template.dart'
-  as highlight_page;
+    as highlight_page;
 import 'package:limitless_ui_example/src/pages/fab/fab_page.template.dart'
     as fab_page;
 import 'package:limitless_ui_example/src/pages/sweet_alert/sweet_alert_page.template.dart'
-  as sweet_alert_page;
+    as sweet_alert_page;
 import 'package:limitless_ui_example/src/pages/typeahead/typeahead_page.template.dart'
     as typeahead_page;
 import 'package:limitless_ui_example/src/pages/wizard/wizard_page.template.dart'
-  as wizard_page;
+    as wizard_page;
 import 'package:limitless_ui_example/src/pages/dropdown/dropdown_page.template.dart'
     as dropdown_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
@@ -82,6 +82,8 @@ import 'package:limitless_ui_example/src/pages/tooltip/tooltip_page.template.dar
     as tooltip_page;
 import 'package:limitless_ui_example/src/pages/treeview/treeview_page.template.dart'
     as treeview_page;
+import 'package:limitless_ui_example/src/pages/work_queue/work_queue_page.template.dart'
+    as work_queue_page;
 import 'route_paths.dart';
 
 class DemoRoutes {
@@ -231,6 +233,11 @@ class DemoRoutes {
     component: datatable_select_page.DatatableSelectPageComponentNgFactory,
   );
 
+  static final workQueue = RouteDefinition(
+    routePath: DemoRoutePaths.workQueue,
+    component: work_queue_page.WorkQueuePageComponentNgFactory,
+  );
+
   static final notification = RouteDefinition(
     routePath: DemoRoutePaths.notification,
     component: notification_page.NotificationPageComponentNgFactory,
@@ -243,7 +250,8 @@ class DemoRoutes {
 
   static final personRegistration = RouteDefinition(
     routePath: DemoRoutePaths.personRegistration,
-    component: person_registration_page.PersonRegistrationPageComponentNgFactory,
+    component:
+        person_registration_page.PersonRegistrationPageComponentNgFactory,
   );
 
   static final toast = RouteDefinition(
@@ -316,6 +324,7 @@ class DemoRoutes {
     dropdown,
     datatable,
     datatableSelect,
+    workQueue,
     toast,
     notification,
     fileUpload,
