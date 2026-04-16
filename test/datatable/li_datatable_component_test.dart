@@ -609,6 +609,29 @@ void main() {
     expect(host.table!.dataTableFilter.searchInFields.first.field, 'idade');
     expect(host.table!.dataTableFilter.searchInFields.first.operator, '=');
     expect(host.table!.dataTableFilter.searchInFields.first.label, 'Idade');
+    expect(host.table!.searchInFields.first.selected, isFalse);
+    expect(host.table!.searchInFields[1].selected, isTrue);
+  });
+
+  test('reaplica campo de busca selecionado quando dataTableFilter muda', () async {
+    final fixture = await testBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.table!.handleSearchFieldSelectChange(null, '1');
+    });
+
+    await fixture.update((component) {
+      component.filter = Filters(limit: 5, offset: 0);
+    });
+    await _settleTable(fixture);
+
+    expect(host.table!.dataTableFilter, same(host.filter));
+    expect(host.filter.searchInFields, hasLength(1));
+    expect(host.filter.searchInFields.first.field, 'idade');
+    expect(host.filter.searchInFields.first.operator, '=');
+    expect(host.filter.searchInFields.first.label, 'Idade');
   });
 
   test('ordenação multi-coluna acumula criterios distintos', () async {

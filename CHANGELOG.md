@@ -1,3 +1,7 @@
+## 1.0.0-dev.8
+
+- Fixed `li-datatable` search-field propagation when host components replace `dataTableFilter`, preserving the selected `searchInFields` entry across modal/filter reinitialization flows and adding regression coverage for the selected-field state.
+
 ## 1.0.0-dev.7
 
 - Added generic tag tooling with `li-tag-filter`, `li-tag-editor`, and `li-tag-manager`, including configurable `labelKey`/`valueKey`/`colorKey` mapping, reusable selection/create/edit/delete events, `compareWith` support for selection stability, and browser coverage for the new tag workflows.

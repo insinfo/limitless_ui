@@ -74,8 +74,15 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   int? _lastRowsSignature;
   bool _visible = true;
 
+  Filters _dataTableFilter = Filters();
+
   @Input()
-  Filters dataTableFilter = Filters();
+  set dataTableFilter(Filters filter) {
+    _dataTableFilter = filter;
+    _applySelectedSearchFieldToFilter();
+  }
+
+  Filters get dataTableFilter => _dataTableFilter;
 
   @Input()
   bool nullIsEmpty = true;
@@ -169,17 +176,38 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   @Input('searchInFields')
   set searchInFields(List<DatatableSearchField> fields) {
-    if (fields.isEmpty) {
-      _searchInFields = <DatatableSearchField>[];
+    _searchInFields = fields;
+    _applySelectedSearchFieldToFilter();
+  }
+
+  List<DatatableSearchField> get searchInFields => _searchInFields;
+
+  void _ensureSelectedSearchField() {
+    if (_searchInFields.isEmpty) {
+      return;
+    }
+
+    if (!_searchInFields.any((field) => field.selected)) {
+      _searchInFields.first.select();
+    }
+  }
+
+  DatatableSearchField? get _selectedSearchField {
+    if (_searchInFields.isEmpty) {
+      return null;
+    }
+
+    _ensureSelectedSearchField();
+    return _searchInFields.firstWhere((field) => field.selected);
+  }
+
+  void _applySelectedSearchFieldToFilter() {
+    final selectedSearchField = _selectedSearchField;
+    if (selectedSearchField == null) {
       dataTableFilter.searchInFields = <FilterSearchField>[];
       return;
     }
 
-    if (!fields.any((field) => field.selected)) {
-      fields.first.select();
-    }
-
-    final selectedSearchField = fields.firstWhere((field) => field.selected);
     dataTableFilter.searchInFields = <FilterSearchField>[
       FilterSearchField(
         active: true,
@@ -188,11 +216,19 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         label: selectedSearchField.label,
       ),
     ];
-
-    _searchInFields = fields;
   }
 
-  List<DatatableSearchField> get searchInFields => _searchInFields;
+  void _selectSearchFieldByIndex(int index) {
+    if (index < 0 || index >= _searchInFields.length) {
+      return;
+    }
+
+    for (var i = 0; i < _searchInFields.length; i++) {
+      _searchInFields[i].selected = i == index;
+    }
+
+    _applySelectedSearchFieldToFilter();
+  }
 
   DatatableSettings _settings = DatatableSettings(colsDefinitions: <DatatableCol>[]);
 
@@ -578,15 +614,13 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    final selectedSearchField = _searchInFields[int.parse(index)];
-    dataTableFilter.searchInFields = <FilterSearchField>[
-      FilterSearchField(
-        active: true,
-        field: selectedSearchField.field,
-        operator: selectedSearchField.operator,
-        label: selectedSearchField.label,
-      ),
-    ];
+    final parsedIndex = int.tryParse(index);
+    if (parsedIndex == null) {
+      return;
+    }
+
+    _selectSearchFieldByIndex(parsedIndex);
+    _changeDetectorRef.markForCheck();
   }
 
   final _onRowClickStreamController = StreamController<dynamic>();
