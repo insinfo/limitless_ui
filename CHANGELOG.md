@@ -1,3 +1,8 @@
+## 1.0.0-dev.9
+
+- Fixed `li-datatable` sorting compatibility with `essential_core` `1.2.0` by updating single-column sorting to write `orderBy`/`orderDir` directly, clearing legacy `orderFields` when multi-column sorting is disabled, and adding regression coverage for the split sorting API, including repeated-click `asc`/`desc` toggling in multi-column mode.
+
+
 ## 1.0.0-dev.8
 
 - Fixed `li-datatable` search-field propagation when host components replace `dataTableFilter`, preserving the selected `searchInFields` entry across modal/filter reinitialization flows and adding regression coverage for the selected-field state.

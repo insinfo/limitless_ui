@@ -782,9 +782,11 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           ),
         );
       }
-      dataTableFilter.setOrderFields(orderFields);
+      dataTableFilter.orderFields = orderFields;
     } else {
-      dataTableFilter.setSingleOrder(sortingBy, direction: nextDirection);
+      dataTableFilter.orderBy = sortingBy;
+      dataTableFilter.orderDir = nextDirection;
+      dataTableFilter.orderFields = <FilterOrderField>[];
     }
 
     _syncSortingIndicators();
@@ -793,7 +795,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   List<FilterOrderField> _resolvedOrderFields() {
-    if (dataTableFilter.orderFields.isNotEmpty) {
+    if (enableMultiColumnSorting && dataTableFilter.orderFields.isNotEmpty) {
       return List<FilterOrderField>.from(dataTableFilter.orderFields);
     }
 

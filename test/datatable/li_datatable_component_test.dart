@@ -186,6 +186,34 @@ void main() {
     expect(host.lastDataRequest!.orderDir, 'asc');
   });
 
+  test('ordenacao simples ignora orderFields preexistente e limpa criterios avancados', () async {
+    final fixture = await testBed.create();
+
+    await fixture.update((component) {
+      component.filter = Filters(
+        limit: 10,
+        offset: 0,
+        orderFields: const <FilterOrderField>[
+          FilterOrderField(field: 'nome', direction: 'asc'),
+          FilterOrderField(field: 'idade', direction: 'desc'),
+        ],
+      );
+    });
+
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.table!.onOrder(component.settings.colsDefinitions.first);
+    });
+
+    expect(host.lastDataRequest, isNotNull);
+    expect(host.lastDataRequest!.orderBy, 'nome');
+    expect(host.lastDataRequest!.orderDir, 'asc');
+    expect(host.lastDataRequest!.orderFields, isEmpty);
+    expect(host.table!.dataTableFilter.orderFields, isEmpty);
+  });
+
   test('mantem apenas uma linha selecionada em modo single selection', () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
@@ -651,6 +679,23 @@ void main() {
     expect(host.table!.dataTableFilter.orderFields[0].direction, 'asc');
     expect(host.table!.dataTableFilter.orderFields[1].field, 'idade');
     expect(host.table!.dataTableFilter.orderFields[1].direction, 'asc');
+  });
+
+  test('ordenação multi-coluna alterna a direção ao ordenar a mesma coluna novamente', () async {
+    final fixture = await testBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.table!.enableMultiColumnSorting = true;
+      component.table!.onOrder(component.settings.colsDefinitions.first);
+      component.table!.onOrder(component.settings.colsDefinitions.first);
+    });
+
+    expect(host.lastDataRequest, isNotNull);
+    expect(host.table!.dataTableFilter.orderFields, hasLength(1));
+    expect(host.table!.dataTableFilter.orderFields.first.field, 'nome');
+    expect(host.table!.dataTableFilter.orderFields.first.direction, 'desc');
   });
 
   test('changeItemsPerPageHandler atualiza limit e emite limitChange', () async {
