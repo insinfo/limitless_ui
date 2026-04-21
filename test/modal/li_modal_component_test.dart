@@ -7,6 +7,7 @@ library;
 
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:js_util' as js_util;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngdart/angular.dart';
@@ -41,8 +42,57 @@ import 'li_modal_component_test.template.dart' as ng;
         <div id="small-body">Small body</div>
       </li-modal>
 
+      <li-modal title-text="XXL" size="xx-large" headerColor="purple">
+        <div id="xxl-body">XXL body</div>
+      </li-modal>
+
+      <li-modal title-text="XXXL" size="xxx-large" headerColor="teal">
+        <div id="xxxl-body">XXXL body</div>
+      </li-modal>
+
+      <li-modal title-text="Fluid" size="modal-fluid">
+        <div id="fluid-body">Fluid body</div>
+      </li-modal>
+
       <li-modal #startOpenModal title-text="Start open" [start-open]="true">
         <div id="start-open-body">Start open body</div>
+      </li-modal>
+
+      <button id="open-projected" type="button" (click)="projectedModal?.open()">Open projected</button>
+      <button id="open-no-escape" type="button" (click)="noEscapeModal?.open()">Open no escape</button>
+      <button id="open-stack-a" type="button" (click)="stackModalA?.open()">Open stack A</button>
+      <button id="open-stack-b" type="button" (click)="stackModalB?.open()">Open stack B</button>
+
+      <li-modal #projectedModal
+                [customWidth]="'520px'"
+                [customHeight]="'420px'"
+                [ariaLabel]="'Projected custom modal'">
+        <div modal-header>
+          <h5 class="modal-title mb-0" id="projected-title">Projected title</h5>
+        </div>
+
+        <div id="projected-body">Projected body</div>
+
+        <div modal-footer>
+          <button id="projected-footer-action" type="button" class="btn btn-primary" (click)="projectedModal?.close()">Apply</button>
+        </div>
+      </li-modal>
+
+      <li-modal #stackModalA title-text="Stack A">
+        <div id="stack-a-body">Stack A body</div>
+      </li-modal>
+
+      <li-modal #noEscapeModal
+                title-text="No ESC"
+                size="modal-full"
+                [closeOnEscape]="false"
+                [closeOnBackdropClick]="false"
+                [enableCloseBtn]="false">
+        <div id="no-escape-body">No escape body</div>
+      </li-modal>
+
+      <li-modal #stackModalB title-text="Stack B">
+        <div id="stack-b-body">Stack B body</div>
       </li-modal>
     </div>
   ''',
@@ -52,6 +102,21 @@ class TestHostComponent {
   @ViewChild('lazyModal')
   LiModalComponent? lazyModal;
 
+  @ViewChild('startOpenModal')
+  LiModalComponent? startOpenModal;
+
+  @ViewChild('projectedModal')
+  LiModalComponent? projectedModal;
+
+  @ViewChild('noEscapeModal')
+  LiModalComponent? noEscapeModal;
+
+  @ViewChild('stackModalA')
+  LiModalComponent? stackModalA;
+
+  @ViewChild('stackModalB')
+  LiModalComponent? stackModalB;
+
   int lazyCloseCount = 0;
 }
 
@@ -60,9 +125,17 @@ class TestHostComponent {
   template: '''
     <div>
       <button id="open-full" type="button" (click)="fullModal?.open()">Open full</button>
+      <button id="open-full-chrome" type="button" (click)="fullChromeModal?.open()">Open full chrome</button>
 
       <li-modal #fullModal title-text="Full" size="modal-full">
         <div id="full-body-content" style="height: 2000px;">Tall body</div>
+      </li-modal>
+
+      <li-modal #fullChromeModal
+                title-text="Full chrome"
+                size="modal-full"
+                [fullScreenChrome]="true">
+        <div id="full-chrome-body-content" style="height: 1200px;">Tall shell body</div>
       </li-modal>
     </div>
   ''',
@@ -71,6 +144,9 @@ class TestHostComponent {
 class FullModalTestHostComponent {
   @ViewChild('fullModal')
   LiModalComponent? fullModal;
+
+  @ViewChild('fullChromeModal')
+  LiModalComponent? fullChromeModal;
 }
 
 void main() {
@@ -84,6 +160,11 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
+
+    await fixture.update((host) {
+      host.startOpenModal?.close();
+    });
+    await _settle(fixture);
 
     expect(html.document.body!.querySelector('#lazy-body'), isNull);
     expect(html.document.body!.querySelector('#eager-body'), isNotNull);
@@ -151,6 +232,163 @@ void main() {
     expect(smallHeader!.classes.contains('modal-header-small'), isTrue);
   });
 
+  test('wide sizes map to the new intermediate dialog classes', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final xxlDialog = _modalDialogByTitle('XXL');
+    final xxxlDialog = _modalDialogByTitle('XXXL');
+    final fluidDialog = _modalDialogByTitle('Fluid');
+
+    expect(xxlDialog, isNotNull);
+    expect(xxxlDialog, isNotNull);
+    expect(fluidDialog, isNotNull);
+
+    expect(xxlDialog!.classes.contains('modal-xxl'), isTrue);
+    expect(xxxlDialog!.classes.contains('modal-xxxl'), isTrue);
+    expect(fluidDialog!.classes.contains('modal-fluid'), isTrue);
+
+    final xxlHeader = _modalHeaderByTitle('XXL');
+    final xxxlHeader = _modalHeaderByTitle('XXXL');
+    expect(xxlHeader, isNotNull);
+    expect(xxxlHeader, isNotNull);
+    expect(xxlHeader!.classes.contains('bg-purple'), isTrue);
+    expect(xxxlHeader!.classes.contains('bg-teal'), isTrue);
+  });
+
+  test('supports projected header/footer and custom dimensions', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    await fixture.update((host) {
+      host.startOpenModal?.close();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-projected');
+    });
+    await _settle(fixture);
+
+    final projectedTitle =
+        html.document.body!.querySelector('#projected-title');
+    final projectedBody = html.document.body!.querySelector('#projected-body');
+    final projectedFooterAction =
+        html.document.body!.querySelector('#projected-footer-action');
+
+    expect(projectedTitle, isNotNull);
+    expect(projectedBody, isNotNull);
+    expect(projectedFooterAction, isNotNull);
+
+    final projectedDialog = _closestAncestorWithClass(
+      projectedBody as html.Element,
+      'modal-dialog',
+    );
+    expect(projectedDialog, isNotNull);
+    expect(projectedDialog!.style.maxWidth, '520px');
+    expect(projectedDialog.style.width, '100%');
+    expect(projectedDialog.style.height, '420px');
+
+    final projectedRoot = _closestAncestorWithClass(
+      projectedDialog,
+      'modal',
+    );
+    expect(projectedRoot, isNotNull);
+    expect(projectedRoot!.getAttribute('role'), 'dialog');
+    expect(projectedRoot.getAttribute('aria-modal'), 'true');
+    expect(projectedRoot.getAttribute('aria-label'), 'Projected custom modal');
+  });
+
+  test('escape closes only the topmost modal in the stack', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    await fixture.update((host) {
+      host.startOpenModal?.close();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-stack-a');
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-stack-b');
+    });
+    await _settle(fixture);
+
+    expect(fixture.assertOnlyInstance.stackModalA!.isOpen, isTrue);
+    expect(fixture.assertOnlyInstance.stackModalB!.isOpen, isTrue);
+
+    _dispatchEscapeKeydown();
+    await _settle(fixture);
+
+    expect(fixture.assertOnlyInstance.stackModalA!.isOpen, isTrue);
+    expect(fixture.assertOnlyInstance.stackModalB!.isOpen, isFalse);
+  });
+
+  test('closeOnEscape false keeps the modal open after Escape', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    await fixture.update((host) {
+      host.startOpenModal?.close();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-no-escape');
+    });
+    await _settle(fixture);
+
+    expect(fixture.assertOnlyInstance.noEscapeModal!.isOpen, isTrue);
+
+    _dispatchEscapeKeydown();
+    await _settle(fixture);
+
+    expect(fixture.assertOnlyInstance.noEscapeModal!.isOpen, isTrue);
+  });
+
+  test('stacked modals receive increasing z-index values', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    await fixture.update((host) {
+      host.startOpenModal?.close();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-stack-a');
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-stack-b');
+    });
+    await _settle(fixture);
+
+    final stackADialog = _modalDialogByTitle('Stack A');
+    final stackBDialog = _modalDialogByTitle('Stack B');
+    expect(stackADialog, isNotNull);
+    expect(stackBDialog, isNotNull);
+
+    final stackARoot = _closestAncestorWithClass(stackADialog!, 'modal');
+    final stackBRoot = _closestAncestorWithClass(stackBDialog!, 'modal');
+    expect(stackARoot, isNotNull);
+    expect(stackBRoot, isNotNull);
+
+    expect(int.parse(stackARoot!.style.zIndex),
+        lessThan(int.parse(stackBRoot!.style.zIndex)));
+
+    final backdrops =
+        html.document.body!.querySelectorAll('.li-modal-backdrop');
+    expect(backdrops.length, 2);
+    expect(int.parse(backdrops[0].style.zIndex),
+      lessThan(int.parse(backdrops[1].style.zIndex)));
+  });
+
   test('modal-full keeps the modal body vertically scrollable', () async {
     final fixture = await fullModalTestBed.create();
     await _settle(fixture);
@@ -177,12 +415,81 @@ void main() {
     });
     await _settle(fixture);
   });
+
+  test('modal-full keeps rounded chrome by default', () async {
+    final fixture = await fullModalTestBed.create();
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-full');
+    });
+    await _settle(fixture);
+
+    final fullDialog = _modalDialogByTitle('Full');
+    expect(fullDialog, isNotNull);
+
+    final fullContent = fullDialog!.querySelector('.modal-content');
+    final fullHeader = fullDialog.querySelector('.modal-header');
+    expect(fullContent, isNotNull);
+    expect(fullHeader, isNotNull);
+
+    expect(fullContent!.getComputedStyle().borderTopLeftRadius, isNot('0px'));
+    expect(fullHeader!.getComputedStyle().borderTopLeftRadius, isNot('0px'));
+
+    await fixture.update((host) {
+      host.fullModal?.close();
+    });
+    await _settle(fixture);
+  });
+
+  test('fullScreenChrome removes rounded corners from fullscreen chrome', () async {
+    final fixture = await fullModalTestBed.create();
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-full-chrome');
+    });
+    await _settle(fixture);
+
+    final fullDialog = _modalDialogByTitle('Full chrome');
+    expect(fullDialog, isNotNull);
+
+    final fullContent = fullDialog!.querySelector('.modal-content');
+    final fullHeader = fullDialog.querySelector('.modal-header');
+    expect(fullContent, isNotNull);
+    expect(fullHeader, isNotNull);
+
+    expect(fullContent!.getComputedStyle().borderTopLeftRadius, '0px');
+    expect(fullHeader!.getComputedStyle().borderTopLeftRadius, '0px');
+
+    await fixture.update((host) {
+      host.fullChromeModal?.close();
+    });
+    await _settle(fixture);
+  });
 }
 
 void _clickById(String id) {
   final element = html.document.body!.querySelector('#$id');
   expect(element, isNotNull);
   element!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+}
+
+void _dispatchEscapeKeydown() {
+  final keyboardEventConstructor =
+      js_util.getProperty(html.window, 'KeyboardEvent');
+  final event = js_util.callConstructor(
+    keyboardEventConstructor,
+    <Object?>[
+      'keydown',
+      js_util.jsify(<String, Object?>{
+        'key': 'Escape',
+        'bubbles': true,
+        'cancelable': true,
+      }),
+    ],
+  );
+  js_util.callMethod(html.document, 'dispatchEvent', <Object?>[event]);
 }
 
 Future<void> _settle<T>(NgTestFixture<T> fixture) async {
@@ -207,6 +514,16 @@ html.Element? _modalHeaderByTitle(String title) {
     final titleElement = header.querySelector('.modal-title');
     if (titleElement?.text?.trim() == title) {
       return header;
+    }
+  }
+  return null;
+}
+
+html.Element? _modalDialogByTitle(String title) {
+  for (final dialog in html.document.body!.querySelectorAll('.modal-dialog')) {
+    final titleElement = dialog.querySelector('.modal-title');
+    if (titleElement?.text?.trim() == title) {
+      return dialog;
     }
   }
   return null;

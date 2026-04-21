@@ -2353,15 +2353,16 @@ class DateRangePagesMessages {
       """Use o componente quando o fluxo depender de um intervalo com datas inicial e final claramente controladas pelo componente pai.""";
 
   /// ```dart
-  /// "[inicio] e (inicioChange) controlam a data inicial."
+  /// "[inicio] ou [start], com (inicioChange) ou (startChange), controlam a data inicial."
   /// ```
   String get apiOne =>
-      """[inicio] e (inicioChange) controlam a data inicial.""";
+      """[inicio] ou [start], com (inicioChange) ou (startChange), controlam a data inicial.""";
 
   /// ```dart
-  /// "[fim] e (fimChange) controlam a data final."
+  /// "[fim] ou [end], com (fimChange) ou (endChange), controlam a data final."
   /// ```
-  String get apiTwo => """[fim] e (fimChange) controlam a data final.""";
+  String get apiTwo =>
+      """[fim] ou [end], com (fimChange) ou (endChange), controlam a data final.""";
 
   /// ```dart
   /// "[minDate] e [maxDate] restringem a janela selecionável."
@@ -4195,10 +4196,10 @@ class DatatableSelectPagesMessages {
   String get optionEight => """[title]: título do modal.""";
 
   /// ```dart
-  /// "[modalSize]: tamanho do modal (large, xtra-large)."
+  /// "[modalSize]: tamanho do modal (large, xtra-large, xx-large, xxx-large, fluid, modal-full)."
   /// ```
   String get optionNine =>
-      """[modalSize]: tamanho do modal (large, xtra-large).""";
+      """[modalSize]: tamanho do modal (large, xtra-large, xx-large, xxx-large, fluid, modal-full).""";
 
   /// ```dart
   /// "[disabled]: desabilita o componente."
@@ -6040,9 +6041,9 @@ Map<String, String> get messagesMap => {
       """pages.dateRange.apiIntro""":
           """Use o componente quando o fluxo depender de um intervalo com datas inicial e final claramente controladas pelo componente pai.""",
       """pages.dateRange.apiOne""":
-          """[inicio] e (inicioChange) controlam a data inicial.""",
+          """[inicio] ou [start], com (inicioChange) ou (startChange), controlam a data inicial.""",
       """pages.dateRange.apiTwo""":
-          """[fim] e (fimChange) controlam a data final.""",
+          """[fim] ou [end], com (fimChange) ou (endChange), controlam a data final.""",
       """pages.dateRange.apiThree""":
           """[minDate] e [maxDate] restringem a janela selecionável.""",
       """pages.dateRange.apiFour""":
@@ -6533,7 +6534,7 @@ selectedDate = DateTime(2026, 3, 20);
           """[placeholder]: texto quando nenhum item está selecionado.""",
       """pages.datatableSelect.optionEight""": """[title]: título do modal.""",
       """pages.datatableSelect.optionNine""":
-          """[modalSize]: tamanho do modal (large, xtra-large).""",
+          """[modalSize]: tamanho do modal (large, xtra-large, xx-large, xxx-large, fluid, modal-full).""",
       """pages.datatableSelect.optionTen""":
           """[disabled]: desabilita o componente.""",
       """pages.datatableSelect.optionEleven""":

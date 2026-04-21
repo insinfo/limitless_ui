@@ -35,6 +35,9 @@ class LiDropdownMenuOption {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiDropdownMenuComponent implements OnDestroy {
+  static final List<LiDropdownMenuComponent> _openDropdownMenus =
+      <LiDropdownMenuComponent>[];
+
   LiDropdownMenuComponent(this._changeDetectorRef);
 
   final ChangeDetectorRef _changeDetectorRef;
@@ -82,6 +85,14 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   @Input()
   bool closeOnSelect = true;
+
+  /// When `true`, opening this dropdown closes other open `li-dropdown-menu`
+  /// instances first.
+  ///
+  /// Set it to `false` for special compositions such as submenu-like layouts
+  /// or coordinated toolbars where multiple menus may stay open at once.
+  @Input()
+  bool closeOtherMenusOnOpen = true;
 
   @ViewChild('triggerButton')
   html.ButtonElement? triggerButtonElement;
@@ -212,11 +223,16 @@ class LiDropdownMenuComponent implements OnDestroy {
       return;
     }
 
+    if (closeOtherMenusOnOpen) {
+      _closeOtherOpenMenus();
+    }
+
     if (usesBodyOverlay) {
       _ensureOverlay();
     }
     _bindDocumentListeners();
     isOpen = true;
+    _registerAsOpenMenu();
     if (usesBodyOverlay) {
       _overlay?.startAutoUpdate();
       _scheduleOverlayUpdate();
@@ -231,6 +247,7 @@ class LiDropdownMenuComponent implements OnDestroy {
 
     isOpen = false;
     _overlayRelayoutPending = false;
+    _unregisterAsOpenMenu();
     if (usesBodyOverlay) {
       _overlay?.stopAutoUpdate();
     }
@@ -341,6 +358,23 @@ class LiDropdownMenuComponent implements OnDestroy {
     });
   }
 
+  void _closeOtherOpenMenus() {
+    for (final dropdown in List<LiDropdownMenuComponent>.from(_openDropdownMenus)) {
+      if (!identical(dropdown, this)) {
+        dropdown.closeDropdown();
+      }
+    }
+  }
+
+  void _registerAsOpenMenu() {
+    _openDropdownMenus.remove(this);
+    _openDropdownMenus.add(this);
+  }
+
+  void _unregisterAsOpenMenu() {
+    _openDropdownMenus.remove(this);
+  }
+
   String _joinClasses(List<String> classNames) {
     return classNames
         .map((value) => value.trim())
@@ -350,6 +384,7 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   @override
   void ngOnDestroy() {
+    _unregisterAsOpenMenu();
     _unbindDocumentListeners();
     _overlay?.stopAutoUpdate();
     _overlay?.dispose();

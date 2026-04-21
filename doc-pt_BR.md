@@ -10,7 +10,7 @@ Este guia mostra como desenhar e construir uma aplicação full stack séria em 
 - `build_test: ^2.2.2`
 - `build_web_compilers: ^4.0.11`
 - `limitless_ui`
-- `essential_core: ^1.1.0`
+- `essential_core: ^1.2.0`
 - `shelf` no backend
 - opcionalmente `shelf_router`, `shelf_cors_headers`, `eloquent` e `get_it`
 
@@ -295,7 +295,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  essential_core: ^1.1.0
+  essential_core: ^1.2.0
 
 dev_dependencies:
   test: ^1.25.9
@@ -391,8 +391,8 @@ dependencies:
   ngdart: 8.0.0-dev.4
   ngforms: 5.0.0-dev.3
   ngrouter: 4.0.0-dev.3
-  limitless_ui: ^1.0.0-dev.4
-  essential_core: ^1.1.0
+  limitless_ui: ^1.0.0-dev.10
+  essential_core: ^1.2.0
   my_app_core:
     path: ../core
 
@@ -596,9 +596,12 @@ Padrões comuns:
 
 - `li-datatable` para páginas de listagem;
 - `li-select`, `li-multi-select` e `li-typeahead` para formulários;
+- `li-color-picker` para configurações de cor, branding e aparência;
 - `li-modal` ou `li-offcanvas` para fluxos de edição;
 - `li-toast` e `LiToastService` para feedback;
 - `li-pagination` e `Filters` para dados paginados.
+
+Ao documentar ou apresentar essa camada de UI, prefira o nome real do componente, `li-color-picker`. Ele pode ser inspirado por interações clássicas de color picker, mas a API pública e o comportamento pertencem ao `limitless_ui`.
 
 Exemplo de componente de página:
 
@@ -763,7 +766,7 @@ dependencies:
   shelf_cors_headers: ^0.1.5
   eloquent: ^3.4.3
   get_it: ^8.0.3
-  essential_core: ^1.1.0
+  essential_core: ^1.2.0
   my_app_core:
     path: ../core
 
@@ -971,11 +974,20 @@ platforms:
 timeout: 2x
 ```
 
-Comando útil de teste frontend:
+Comandos úteis de teste frontend:
 
 ```bash
 dart run build_runner test -- -p chrome -j 1
 ```
+
+Se você estiver trabalhando em uma biblioteca de componentes como o `limitless_ui`, mantenha separados os testes Dart puros em VM e os testes AngularDart de browser. Uma divisão prática é:
+
+```bash
+dart test test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart test/treeview/treeview_settings_test.dart
+dart run build_runner test -- -p chrome -j 1
+```
+
+No Windows, defina `CHROME_EXECUTABLE` com o caminho local do Chrome quando a descoberta automática do navegador falhar.
 
 ### Backend
 

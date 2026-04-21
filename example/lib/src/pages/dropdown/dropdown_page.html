@@ -142,6 +142,49 @@
 
               <div class="col-12">
                 <div class="card card-body">
+                  <h6 class="mb-2">{{ compactMenuTitle }}</h6>
+                  <p class="text-muted mb-3">{{ compactMenuBody }}</p>
+
+                  <div class="d-flex flex-wrap gap-2 align-items-start mb-3">
+                    <li-dropdown-menu
+                        [options]="primaryCompactMenuOptions"
+                        ariaLabel="compact-filters"
+                        triggerLabel="{{ filtersMenuLabel }}"
+                        triggerIconClass="ph-funnel"
+                        triggerClass="btn btn-outline-primary btn-sm"
+                        menuClass="wmin-sm-200"
+                        container="inline"
+                        [closeOtherMenusOnOpen]="false"
+                        (valueChange)="onCompactMenuAction($event)">
+                    </li-dropdown-menu>
+
+                    <li-dropdown-menu
+                        [options]="secondaryCompactMenuOptions"
+                        ariaLabel="compact-columns"
+                        triggerLabel="{{ columnsMenuLabel }}"
+                        triggerIconClass="ph-sliders-horizontal"
+                        triggerClass="btn btn-outline-secondary btn-sm"
+                        menuClass="wmin-sm-200"
+                        container="inline"
+                        [closeOtherMenusOnOpen]="false"
+                        (valueChange)="onCompactMenuAction($event)">
+                    </li-dropdown-menu>
+                  </div>
+
+                  <div class="alert alert-info alert-icon-start mb-3">
+                    <span class="alert-icon bg-info text-white"><i class="ph-info"></i></span>
+                    {{ compactMenuUseCase }}
+                  </div>
+
+                  <div>
+                    <div class="fw-semibold mb-2">{{ compactMenuStateTitle }}</div>
+                    <div class="bg-light border rounded-3 p-3">{{ compactMenuState.isEmpty ? compactMenuWaitingState : compactMenuState }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="card card-body">
                   <h6 class="mb-2">{{ currentStateTitle }}</h6>
                   <div class="bg-light border rounded-3 p-3">{{ dropdownState }}</div>
                 </div>
@@ -163,6 +206,10 @@
 
             <div class="mb-3">
               <li-highlight [code]="bodyApiSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mb-3">
+              <li-highlight [code]="compactMenuApiSnippet" language="html"></li-highlight>
             </div>
 
             <li-highlight [code]="manualApiSnippet" language="html"></li-highlight>

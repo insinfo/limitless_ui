@@ -1,6 +1,6 @@
 name: limitless_ui
 description: Reusable AngularDart UI components and directives for web applications.
-version: 1.0.0-dev.9
+version: 1.0.0-dev.10
 homepage: https://github.com/insinfo/limitless_ui
 repository: https://github.com/insinfo/limitless_ui
 issue_tracker: https://github.com/insinfo/limitless_ui/issues
@@ -9,18 +9,18 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  essential_core: ^1.2.0 
-  popper: ^1.1.0 
+  essential_core: ^1.2.0
+  popper: ^1.1.0
   ngdart: ^8.0.0-dev.4
   ngforms: ^5.0.0-dev.3
   ngrouter: ^4.0.0-dev.3
   intl: ^0.18.1
-  # é obrigatorio para o consumidor funcionar corretamente 
+  # é obrigatorio para o consumidor funcionar corretamente
   sass_builder: ^2.2.1
-  
+
 dev_dependencies:
   lints: ^5.0.0
-  test: ^1.25.9
+  test: ^1.26.3
   ngtest: ^5.0.0-dev.3
   build_runner: ^2.4.12
   build_test: ^2.2.2

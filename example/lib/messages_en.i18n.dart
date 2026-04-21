@@ -2357,15 +2357,16 @@ class DateRangePagesMessagesEn extends DateRangePagesMessages {
       """Use the component when the flow depends on a range with start and end dates clearly controlled by the parent component.""";
 
   /// ```dart
-  /// "[inicio] and (inicioChange) control the start date."
+  /// "[inicio] or [start], with (inicioChange) or (startChange), control the start date."
   /// ```
   String get apiOne =>
-      """[inicio] and (inicioChange) control the start date.""";
+      """[inicio] or [start], with (inicioChange) or (startChange), control the start date.""";
 
   /// ```dart
-  /// "[fim] and (fimChange) control the end date."
+  /// "[fim] or [end], with (fimChange) or (endChange), control the end date."
   /// ```
-  String get apiTwo => """[fim] and (fimChange) control the end date.""";
+  String get apiTwo =>
+      """[fim] or [end], with (fimChange) or (endChange), control the end date.""";
 
   /// ```dart
   /// "[minDate] and [maxDate] restrict the selectable window."
@@ -4201,9 +4202,10 @@ class DatatableSelectPagesMessagesEn extends DatatableSelectPagesMessages {
   String get optionEight => """[title]: modal title.""";
 
   /// ```dart
-  /// "[modalSize]: modal size (large, xtra-large)."
+  /// "[modalSize]: modal size (large, xtra-large, xx-large, xxx-large, fluid, modal-full)."
   /// ```
-  String get optionNine => """[modalSize]: modal size (large, xtra-large).""";
+  String get optionNine =>
+      """[modalSize]: modal size (large, xtra-large, xx-large, xxx-large, fluid, modal-full).""";
 
   /// ```dart
   /// "[disabled]: disables the component."
@@ -6040,9 +6042,9 @@ Map<String, String> get messagesEnMap => {
       """pages.dateRange.apiIntro""":
           """Use the component when the flow depends on a range with start and end dates clearly controlled by the parent component.""",
       """pages.dateRange.apiOne""":
-          """[inicio] and (inicioChange) control the start date.""",
+          """[inicio] or [start], with (inicioChange) or (startChange), control the start date.""",
       """pages.dateRange.apiTwo""":
-          """[fim] and (fimChange) control the end date.""",
+          """[fim] or [end], with (fimChange) or (endChange), control the end date.""",
       """pages.dateRange.apiThree""":
           """[minDate] and [maxDate] restrict the selectable window.""",
       """pages.dateRange.apiFour""":
@@ -6526,7 +6528,7 @@ selectedDate = DateTime(2026, 3, 20);
           """[placeholder]: text shown when no item is selected.""",
       """pages.datatableSelect.optionEight""": """[title]: modal title.""",
       """pages.datatableSelect.optionNine""":
-          """[modalSize]: modal size (large, xtra-large).""",
+          """[modalSize]: modal size (large, xtra-large, xx-large, xxx-large, fluid, modal-full).""",
       """pages.datatableSelect.optionTen""":
           """[disabled]: disables the component.""",
       """pages.datatableSelect.optionEleven""":

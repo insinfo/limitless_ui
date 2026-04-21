@@ -1,5 +1,7 @@
 .modal {
     z-index: 1200;
+    --li-modal-radius: var(--modal-border-radius, var(--border-radius-lg, 0.5rem));
+    --li-modal-inner-radius: var(--modal-inner-border-radius, calc(var(--li-modal-radius) - var(--modal-border-width, var(--border-width, 1px))));
 }
 
 .position-relative {
@@ -8,8 +10,38 @@
 
 .modal-content {
 
-    box-shadow: 0px 6px 29px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--modal-box-shadow, var(--box-shadow-lg, 0 6px 12px rgba(0, 0, 0, 0.15)));
     border: none;
+}
+
+.modal .modal-dialog.custom-modal-dialog-round .modal-content {
+    border-radius: var(--li-modal-radius);
+}
+
+.modal .custom-modal-header-round {
+    border-top-left-radius: var(--li-modal-inner-radius);
+    border-top-right-radius: var(--li-modal-inner-radius);
+}
+
+.modal .modal-dialog.custom-modal-dialog-round .modal-footer {
+    border-bottom-right-radius: var(--li-modal-inner-radius);
+    border-bottom-left-radius: var(--li-modal-inner-radius);
+}
+
+.modal-content.modal-content-custom-height {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.modal-content.modal-content-custom-height .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.modal-footer:empty {
+    display: none;
 }
 
 .modal-header {
@@ -59,6 +91,20 @@
     margin: -0.125rem -0.125rem -0.125rem auto;
 }
 
+@media (min-width: 576px) {
+    .modal .modal-dialog.modal-xxl {
+        --modal-width: 1320px;
+    }
+
+    .modal .modal-dialog.modal-xxxl {
+        --modal-width: min(1480px, calc(100vw - 4rem));
+    }
+
+    .modal .modal-dialog.modal-fluid {
+        --modal-width: calc(100vw - 2rem);
+    }
+}
+
 .modal .modal-dialog.modal-full {
     margin: 0;
     width: 100vw;
@@ -70,6 +116,27 @@
 .modal .modal-dialog.modal-full .modal-content {
     min-height: 100dvh;
     height: 100dvh;
+    border-radius: var(--li-modal-radius);
+}
+
+.modal .modal-dialog.modal-full:not(.modal-full-chrome) .modal-header {
+    border-top-left-radius: var(--li-modal-inner-radius);
+    border-top-right-radius: var(--li-modal-inner-radius);
+}
+
+.modal .modal-dialog.modal-full:not(.modal-full-chrome) .modal-footer {
+    border-bottom-right-radius: var(--li-modal-inner-radius);
+    border-bottom-left-radius: var(--li-modal-inner-radius);
+}
+
+.modal .modal-dialog.modal-full.modal-full-chrome .modal-content {
+    min-height: 100dvh;
+    height: 100dvh;
+    border-radius: 0;
+}
+
+.modal .modal-dialog.modal-full.modal-full-chrome .modal-header,
+.modal .modal-dialog.modal-full.modal-full-chrome .modal-footer {
     border-radius: 0;
 }
 

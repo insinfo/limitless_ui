@@ -10,7 +10,7 @@ This guide shows how to design and build a serious full-stack Dart application u
 - `build_test: ^2.2.2`
 - `build_web_compilers: ^4.0.11`
 - `limitless_ui`
-- `essential_core: ^1.1.0`
+- `essential_core: ^1.2.0`
 - `shelf` on the backend
 - optionally `shelf_router`, `shelf_cors_headers`, `eloquent`, and `get_it`
 
@@ -195,7 +195,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  essential_core: ^1.1.0
+  essential_core: ^1.2.0
 
 dev_dependencies:
   test: ^1.25.9
@@ -291,8 +291,8 @@ dependencies:
   ngdart: 8.0.0-dev.4
   ngforms: 5.0.0-dev.3
   ngrouter: 4.0.0-dev.3
-  limitless_ui: ^1.0.0-dev.4
-  essential_core: ^1.1.0
+  limitless_ui: ^1.0.0-dev.10
+  essential_core: ^1.2.0
   my_app_core:
     path: ../core
 
@@ -496,9 +496,12 @@ Common patterns:
 
 - `li-datatable` for index pages;
 - `li-select`, `li-multi-select`, and `li-typeahead` for forms;
+- `li-color-picker` for color, branding, and appearance settings;
 - `li-modal` or `li-offcanvas` for edit flows;
 - `li-toast` and `LiToastService` for feedback;
 - `li-pagination` and `Filters` for paginated data.
+
+When documenting or presenting this UI layer, prefer the actual component name `li-color-picker`. It may be inspired by classic color-picker interactions, but the public API and behavior belong to `limitless_ui`.
 
 Example page component:
 
@@ -663,7 +666,7 @@ dependencies:
   shelf_cors_headers: ^0.1.5
   eloquent: ^3.4.3
   get_it: ^8.0.3
-  essential_core: ^1.1.0
+  essential_core: ^1.2.0
   my_app_core:
     path: ../core
 
@@ -871,11 +874,20 @@ platforms:
 timeout: 2x
 ```
 
-Useful frontend test command:
+Useful frontend test commands:
 
 ```bash
 dart run build_runner test -- -p chrome -j 1
 ```
+
+If you are working on a component library like `limitless_ui`, keep pure Dart VM tests separate from AngularDart browser tests. A practical split is:
+
+```bash
+dart test test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart test/treeview/treeview_settings_test.dart
+dart run build_runner test -- -p chrome -j 1
+```
+
+On Windows, set `CHROME_EXECUTABLE` to the local Chrome path if browser-test discovery fails.
 
 ### Backend
 

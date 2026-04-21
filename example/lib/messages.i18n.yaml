@@ -428,8 +428,8 @@ pages:
     constrainedHelp: O segundo exemplo prende a seleção com minDate e maxDate.
     between: até
     apiIntro: Use o componente quando o fluxo depender de um intervalo com datas inicial e final claramente controladas pelo componente pai.
-    apiOne: "[inicio] e (inicioChange) controlam a data inicial."
-    apiTwo: "[fim] e (fimChange) controlam a data final."
+    apiOne: "[inicio] ou [start], com (inicioChange) ou (startChange), controlam a data inicial."
+    apiTwo: "[fim] ou [end], com (fimChange) ou (endChange), controlam a data final."
     apiThree: "[minDate] e [maxDate] restringem a janela selecionável."
     apiFour: "[placeholder] e locale ajustam a comunicação do campo."
   timePicker:
@@ -782,7 +782,7 @@ pages:
     optionSix: "[valueKey]: chave para o valor; null = instância inteira."
     optionSeven: "[placeholder]: texto quando nenhum item está selecionado."
     optionEight: "[title]: título do modal."
-    optionNine: "[modalSize]: tamanho do modal (large, xtra-large)."
+    optionNine: "[modalSize]: tamanho do modal (large, xtra-large, xx-large, xxx-large, fluid, modal-full)."
     optionTen: "[disabled]: desabilita o componente."
     optionEleven: "[fullScreenOnMobile]: modal fullscreen no mobile."
     outputOne: "(dataRequest): emitido quando o datatable solicita dados."

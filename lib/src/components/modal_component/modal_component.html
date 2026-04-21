@@ -1,18 +1,27 @@
-<div #modalRootElement class="modal fade show">
+<div #modalRootElement class="modal fade show"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="resolvedAriaLabelledBy"
+    [attr.aria-label]="resolvedAriaLabel">
     <!--(mouseup)="mouseEvent($event)" (click)="mouseEvent($event)"
     
     -->
-    <div (mousedown)="stopPropagation($event)" class="modal-dialog" 
+    <div (mousedown)="stopPropagation($event)" class="modal-dialog"
+    [style.max-width]="resolvedCustomWidth"
+    [style.width]="hasCustomWidth ? '100%' : null"
+    [style.height]="resolvedCustomHeight"
     [class.modal-xs]="size == 'modal-xs'" 
     [class.modal-sm]="size == 'modal-sm'"
-        [class.modal-lg]="size == 'large'" [class.modal-xl]="size == 'xtra-large'" [class.modal-full]="size == 'modal-full'" 
-        [class.modal-default]="size == 'default'" [class.custom-modal-dialog-round]="enableRoundedCorners == true"
+        [class.modal-lg]="size == 'large'" [class.modal-xl]="size == 'xtra-large'" [class.modal-xxl]="size == 'xx-large' || size == 'modal-xxl'" [class.modal-xxxl]="size == 'xxx-large' || size == 'modal-xxxl'" [class.modal-fluid]="size == 'fluid' || size == 'modal-fluid'" [class.modal-full]="size == 'modal-full'" 
+        [class.modal-full-chrome]="usesFullScreenChrome"
+        [class.modal-default]="size == 'default'" [class.custom-modal-dialog-round]="enableRoundedCorners == true && !usesFullScreenChrome"
         [class.modal-mobile-full]="fullScreenOnMobile"
         [class.custom-modal-dialog-shadow]="enableShadow"
         [class.modal-dialog-centered]="verticalCenter" 
         [class.modal-dialog-scrollable]="dialogScrollable">
 
-        <div #modalContent class="modal-content">
+        <div #modalContent class="modal-content" [class.modal-content-custom-height]="hasCustomHeight">
                 <div #modalHeader *ngIf="enableHeader" class="modal-header  border-0"
 
                  [class.bg-primary]="headerColor == null || headerColor == 'primary' || headerColor == 'default' || headerColor == ''"
@@ -21,6 +30,8 @@
                       [class.bg-info]="headerColor == 'info'"
                      [class.bg-danger]="headerColor == 'danger'" 
                      [class.bg-dark]="headerColor == 'dark'"
+                     [class.bg-purple]="headerColor == 'bg-purple' || headerColor == 'purple'"
+                     [class.bg-teal]="headerColor == 'bg-teal' || headerColor == 'teal'"
                      [class.text-white]="headerColor == null || headerColor != 'warning'"
                      [class.text-dark]="headerColor == 'warning'"
                      [class.bg-indigo]="headerColor == 'bg-indigo' || headerColor == 'indigo'"
@@ -28,8 +39,9 @@
                      [class.modal-header-small]="smallHeader"
                 
 
-                     [class.custom-modal-header-round]="enableRoundedCorners == true">
-                <h5 class="modal-title">{{titleText}}</h5>
+                     [class.custom-modal-header-round]="enableRoundedCorners == true && !usesFullScreenChrome">
+             <ng-content select="[modal-header]"></ng-content>
+             <h5 #modalTitleElement *ngIf="hasTitleText" class="modal-title" [id]="modalTitleId">{{titleText}}</h5>
                 <button *ngIf="enableCloseBtn" (click)="close()" type="button" class="btn-close btn-close-white">
                 </button>
             </div>
@@ -45,6 +57,7 @@
                     <ng-content></ng-content>
                 </ng-container>
             </div>
+            <div class="modal-footer"><ng-content select="[modal-footer]"></ng-content></div>
         </div>
 
     </div>

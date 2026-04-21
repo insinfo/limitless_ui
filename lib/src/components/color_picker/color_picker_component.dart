@@ -243,9 +243,13 @@ class LiColorPickerComponent
   String? _pendingDragTarget;
   bool _touched = false;
   bool _isDragging = false;
+  bool _ignoreNextDocumentClick = false;
+  Timer? _ignoreNextDocumentClickTimer;
   bool _showPaletteOnlyView = false;
   bool _hasDeferredPaletteSync = false;
   String? _activeDragTarget;
+  String? _bodyUserSelectStyle;
+  String? _bodyWebkitUserSelectStyle;
   String _basePaletteSignature = '';
   String _selectionPaletteSignature = '';
   List<String> _palette = const <String>[];
@@ -737,6 +741,7 @@ class LiColorPickerComponent
       return;
     }
     _isDragging = true;
+    _disableDocumentTextSelection();
     _emitEvent(_pickerDragStartController, source: 'dragstart');
     _markForCheck();
   }
@@ -746,6 +751,7 @@ class LiColorPickerComponent
       return;
     }
     _isDragging = false;
+    _restoreDocumentTextSelection();
     if (_hasDeferredPaletteSync) {
       _hasDeferredPaletteSync = false;
       _rememberColor(value);
@@ -931,6 +937,10 @@ class LiColorPickerComponent
         return;
       }
 
+      if (_ignoreNextDocumentClick) {
+        return;
+      }
+
       final target = event.target;
       if (target is! html.Node) {
         close(commit: clickoutFiresChange, source: 'document');
@@ -961,6 +971,10 @@ class LiColorPickerComponent
     _documentClickSubscription = null;
     _documentKeySubscription?.cancel();
     _documentKeySubscription = null;
+    _restoreDocumentTextSelection();
+    _ignoreNextDocumentClickTimer?.cancel();
+    _ignoreNextDocumentClickTimer = null;
+    _ignoreNextDocumentClick = false;
     _stopDragging();
   }
 
@@ -1039,10 +1053,56 @@ class LiColorPickerComponent
   }
 
   void _stopDragging() {
+    final hadActiveDrag = _activeDragTarget != null || _isDragging;
     _flushPendingDragUpdate();
     _cancelDragListeners();
     _activeDragTarget = null;
     onInteractiveStop();
+    if (hadActiveDrag) {
+      _ignoreNextDocumentClick = true;
+      _ignoreNextDocumentClickTimer?.cancel();
+      _ignoreNextDocumentClickTimer = Timer(Duration.zero, () {
+        _ignoreNextDocumentClick = false;
+        _ignoreNextDocumentClickTimer = null;
+      });
+    }
+  }
+
+  void _disableDocumentTextSelection() {
+    final body = html.document.body;
+    if (body == null) {
+      return;
+    }
+
+    _bodyUserSelectStyle ??= body.style.userSelect;
+    _bodyWebkitUserSelectStyle ??=
+        body.style.getPropertyValue('-webkit-user-select');
+    body.style.userSelect = 'none';
+    body.style.setProperty('-webkit-user-select', 'none');
+  }
+
+  void _restoreDocumentTextSelection() {
+    final body = html.document.body;
+    if (body == null) {
+      return;
+    }
+
+    if (_bodyUserSelectStyle != null) {
+      body.style.userSelect = _bodyUserSelectStyle!;
+      _bodyUserSelectStyle = null;
+    } else {
+      body.style.userSelect = '';
+    }
+
+    if (_bodyWebkitUserSelectStyle != null) {
+      body.style.setProperty(
+        '-webkit-user-select',
+        _bodyWebkitUserSelectStyle!,
+      );
+      _bodyWebkitUserSelectStyle = null;
+    } else {
+      body.style.removeProperty('-webkit-user-select');
+    }
   }
 
   void _scheduleDragUpdate(math.Point<double> point, String target) {
@@ -1257,8 +1317,7 @@ class LiColorPickerComponent
         ? 'background-color: transparent;'
         : 'background-color: ${_colorToCss(_committedColor ?? fallbackColor)};';
     colorAreaStyle = 'background-color: ${_colorToCss(hueColor)};';
-    draggerStyle =
-        'left: ${(draftHsv.saturation * 100).toStringAsFixed(2)}%; top: ${((1 - draftHsv.value) * 100).toStringAsFixed(2)}%;';
+    draggerStyle = _buildDraggerStyle(draftHsv);
     hueSliderStyle = 'top: ${(draftHsv.hue * 100).toStringAsFixed(2)}%;';
     alphaGradientStyle =
         'background: linear-gradient(to right, rgba(${opaqueColor.red}, ${opaqueColor.green}, ${opaqueColor.blue}, 0), rgba(${opaqueColor.red}, ${opaqueColor.green}, ${opaqueColor.blue}, 1));';
@@ -1297,6 +1356,22 @@ class LiColorPickerComponent
         );
       }
     }
+  }
+
+  String _buildDraggerStyle(_LiHsvValue hsv) {
+    final left = _buildDraggerLeftStyle(hsv);
+    final top = _buildDraggerTopStyle(hsv);
+    return 'left: $left; top: $top;';
+  }
+
+  String _buildDraggerLeftStyle(_LiHsvValue hsv) {
+    final saturationPercent = (hsv.saturation * 100).toStringAsFixed(2);
+    return 'clamp(calc(-1 * var(--li-color-picker-dragger-edge-offset)), calc($saturationPercent% - var(--li-color-picker-dragger-edge-offset)), calc(100% - var(--li-color-picker-dragger-edge-offset)))';
+  }
+
+  String _buildDraggerTopStyle(_LiHsvValue hsv) {
+    final valuePercent = ((1 - hsv.value) * 100).toStringAsFixed(2);
+    return 'clamp(calc(-1 * var(--li-color-picker-dragger-edge-offset)), calc($valuePercent% - var(--li-color-picker-dragger-edge-offset)), calc(100% - var(--li-color-picker-dragger-edge-offset)))';
   }
 
   void _syncPaletteActiveStates() {
@@ -1343,10 +1418,8 @@ class LiColorPickerComponent
     final opaqueColor = _colorFromHsv(draftHsv.copyWith(alpha: 1));
 
     colorAreaElement?.style.backgroundColor = _colorToCss(hueColor);
-    _draggerElement?.style.left =
-        '${(draftHsv.saturation * 100).toStringAsFixed(2)}%';
-    _draggerElement?.style.top =
-        '${((1 - draftHsv.value) * 100).toStringAsFixed(2)}%';
+    _draggerElement?.style.left = _buildDraggerLeftStyle(draftHsv);
+    _draggerElement?.style.top = _buildDraggerTopStyle(draftHsv);
     _hueSliderElement?.style.top =
         '${(draftHsv.hue * 100).toStringAsFixed(2)}%';
     _alphaInnerElement?.style.background =

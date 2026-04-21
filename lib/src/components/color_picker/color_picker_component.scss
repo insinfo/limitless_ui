@@ -74,15 +74,16 @@
 }
 
 .sp-dragger {
-  transform: translate(-50%, -50%);
+  --li-color-picker-dragger-edge-offset: 0.375rem;
+  transform: translate(0.125rem, 0.125rem);
 }
 
 .sp-slider {
-  transform: translateY(-50%);
+  transform: translateY(0.0625rem);
 }
 
 .sp-alpha-handle {
-  transform: translateX(-50%);
+  transform: translate(-25%, -50%);
 }
 
 .sp-input-container .sp-input {

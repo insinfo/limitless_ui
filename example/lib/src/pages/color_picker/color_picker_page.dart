@@ -56,6 +56,7 @@ class ColorPickerPageComponent {
   String? clickoutColor = '#20BF7E';
   String? initialColor = '#E63E3E';
   String? alphaColor = '#E63E3ECC';
+  String? inputInitialColor = '#E63E3E';
   String? inputColor = '#E63E3E';
   String? clearSelectionColor = '#E63E3E';
   String? fullColor = '#E63E3ECC';
@@ -150,9 +151,9 @@ class ColorPickerPageComponent {
     'dragstop': '-',
   };
 
-  String get title => isPt ? 'Pickers - ' : 'Pickers - ';
-  String get subtitle => isPt ? 'Color' : 'Color';
-  String get breadcrumb => isPt ? 'Color picker' : 'Color picker';
+  String get title => isPt ? 'Seletores - ' : 'Pickers - ';
+  String get subtitle => isPt ? 'Cor' : 'Color';
+  String get breadcrumb => isPt ? 'Seletor de cores' : 'Color picker';
   String get overviewIntro => isPt
       ? 'A página reúne os principais modos do color picker: uso básico, botões customizados, paletas, formatos, eventos e flat mode.'
       : 'This page brings together the main color picker modes: basic usage, custom buttons, palettes, formats, events, and flat mode.';

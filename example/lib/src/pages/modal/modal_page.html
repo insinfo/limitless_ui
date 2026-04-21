@@ -15,129 +15,206 @@
       <li-tabsx type="tabs">
         <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <p class="text-muted mb-3">{{ overviewIntro }}</p>
+            <section class="modal-demo-hero mb-4">
+              <div class="modal-demo-hero__copy">
+                <span class="modal-demo-eyebrow">{{ showcaseEyebrow }}</span>
+                <h5 class="mb-2">{{ launchMatrixTitle }}</h5>
+                <p class="text-muted mb-0">{{ overviewIntro }}</p>
+              </div>
 
-            <div class="row g-3">
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ basicTitle }}</h6>
-                  <p class="text-muted mb-3">{{ basicBody }}</p>
-                  <button class="btn btn-primary" type="button" (click)="openModal()">
-                    {{ t.pages.modal.openModal }}
-                  </button>
+              <div class="modal-demo-kpis">
+                <div class="modal-demo-kpi">
+                  <div class="modal-demo-kpi__value">{{ modalSizeShowcaseItems.length }}</div>
+                  <div class="modal-demo-kpi__label">{{ supportedSizesKpi }}</div>
+                </div>
+                <div class="modal-demo-kpi">
+                  <div class="modal-demo-kpi__value">10</div>
+                  <div class="modal-demo-kpi__label">{{ supportedCombosKpi }}</div>
+                </div>
+                <div class="modal-demo-kpi">
+                  <div class="modal-demo-kpi__value">open()</div>
+                  <div class="modal-demo-kpi__label">{{ lifecycleKpi }}</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="mb-4">
+              <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-lg-between gap-2 mb-3">
+                <div>
+                  <h5 class="mb-1">{{ launchMatrixTitle }}</h5>
+                  <p class="text-muted mb-0">{{ launchMatrixLead }}</p>
                 </div>
               </div>
 
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Scrollable</h6>
-                  <p class="text-muted mb-3">{{ scrollableCardBody }}</p>
-                  <button class="btn btn-outline-primary" type="button" (click)="openScrollableModal()">
-                    {{ t.pages.modal.scrollableModal }}
-                  </button>
+              <div class="table-responsive modal-demo-table-wrap">
+                <table class="table table-hover align-middle modal-demo-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>{{ isPortuguese ? 'Cenário' : 'Scenario' }}</th>
+                      <th>{{ isPortuguese ? 'Ação' : 'Action' }}</th>
+                      <th>{{ isPortuguese ? 'API principal' : 'Primary API' }}</th>
+                      <th>{{ isPortuguese ? 'Leitura de uso' : 'Usage note' }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ basicTitle }}</div>
+                        <div class="text-muted fs-sm">{{ basicBody }}</div>
+                      </td>
+                      <td><button class="btn btn-primary btn-sm" type="button" (click)="openModal()">{{ t.pages.modal.openModal }}</button></td>
+                      <td><code>verticalCenter</code>, <code>enableShadow</code></td>
+                      <td>{{ isPortuguese ? 'Ponto de partida para diálogos simples com identidade visual.' : 'Starting point for simple dialogs with visual identity.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ iconifiedCardTitle }}</div>
+                        <div class="text-muted fs-sm">{{ iconifiedCardBody }}</div>
+                      </td>
+                      <td><button class="btn btn-indigo btn-sm" type="button" (click)="openIconifiedModal()">{{ iconifiedOpenButton }}</button></td>
+                      <td><code>headerColor</code>, projeção livre de conteúdo</td>
+                      <td>{{ isPortuguese ? 'Bom para mensagens com status, checklist e CTA forte.' : 'Good for status messages, checklists, and a strong CTA.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ backdroplessCardTitle }}</div>
+                        <div class="text-muted fs-sm">{{ backdroplessCardBody }}</div>
+                      </td>
+                      <td><button class="btn btn-outline-secondary btn-sm" type="button" (click)="openBackdroplessModal()">{{ backdroplessOpenButton }}</button></td>
+                      <td><code>enableBackdrop</code></td>
+                      <td>{{ isPortuguese ? 'Útil em áreas controladas onde o contexto ao fundo ainda importa.' : 'Useful in controlled areas where the background context still matters.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ scrollableCardTitle }}</div>
+                        <div class="text-muted fs-sm">{{ scrollableCardBody }}</div>
+                      </td>
+                      <td><button class="btn btn-outline-primary btn-sm" type="button" (click)="openScrollableModal()">{{ t.pages.modal.scrollableModal }}</button></td>
+                      <td><code>dialogScrollable</code>, <code>size="large"</code></td>
+                      <td>{{ isPortuguese ? 'Mantém o cabeçalho fixo quando o corpo cresce.' : 'Keeps the header fixed when the body grows.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ smallHeaderCardTitle }}</div>
+                        <div class="text-muted fs-sm">{{ smallHeaderCardBody }}</div>
+                      </td>
+                      <td><button class="btn btn-dark btn-sm" type="button" (click)="openSmallHeaderModal()">{{ smallHeaderOpenButton }}</button></td>
+                      <td><code>smallHeader</code></td>
+                      <td>{{ isPortuguese ? 'Aproxima o modal de layouts mais densos sem perder legibilidade.' : 'Brings the modal closer to denser layouts without losing readability.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ formCardTitle }}</div>
+                        <div class="text-muted fs-sm">{{ formCardBody }}</div>
+                      </td>
+                      <td><button class="btn btn-outline-primary btn-sm" type="button" (click)="openFormModal()">{{ formOpenButton }}</button></td>
+                      <td><code>size="large"</code>, projeção de formulário</td>
+                      <td>{{ isPortuguese ? 'Serve de base para formulários curtos e médios.' : 'Works as a base for short and medium-length forms.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ fullTitle }}</div>
+                        <div class="text-muted fs-sm">{{ fullBody }}</div>
+                      </td>
+                      <td><button class="btn btn-outline-secondary btn-sm" type="button" (click)="openFullModal()">{{ fullOpenButton }}</button></td>
+                      <td><code>size="fluid"</code>, <code>fullScreenOnMobile</code></td>
+                      <td>{{ isPortuguese ? 'Chega perto do fullscreen no desktop e ainda respeita a altura da janela.' : 'Gets close to fullscreen on desktop while still respecting viewport height.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ fullScreenCardTitle }}</div>
+                        <div class="text-muted fs-sm">{{ fullScreenCardBody }}</div>
+                      </td>
+                      <td><button class="btn btn-secondary btn-sm" type="button" (click)="openFullScreenFormModal()">{{ fullScreenOpenButton }}</button></td>
+                      <td><code>size="modal-full"</code>, <code>smallHeader</code></td>
+                      <td>{{ isPortuguese ? 'Quando o modal vira shell de trabalho e precisa de rolagem longa no body.' : 'When the modal becomes a work shell and needs a long scrolling body.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ lockedTitle }}</div>
+                        <div class="text-muted fs-sm">{{ lockedBody }}</div>
+                      </td>
+                      <td><button class="btn btn-outline-danger btn-sm" type="button" (click)="openLockedModal()">{{ lockedOpenButton }}</button></td>
+                      <td><code>closeOnBackdropClick</code>, <code>closeOnEscape</code>, <code>enableCloseBtn</code></td>
+                      <td>{{ isPortuguese ? 'Modelo para confirmações obrigatórias e estados críticos.' : 'Template for mandatory confirmations and critical states.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="fw-semibold">{{ lazyTitle }}</div>
+                        <div class="text-muted fs-sm">{{ lazyBody }}</div>
+                      </td>
+                      <td><button class="btn btn-outline-success btn-sm" type="button" (click)="openLazyPreviewModal()">{{ lazyOpenButton }}</button></td>
+                      <td><code>lazyContent</code></td>
+                      <td>{{ isPortuguese ? 'Ideal para grids, gráficos e componentes com montagem custosa.' : 'Ideal for grids, charts, and components with expensive mounting.' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="mb-4">
+              <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-lg-between gap-2 mb-3">
+                <div>
+                  <h5 class="mb-1">{{ sizeShowcaseTitle }}</h5>
+                  <p class="text-muted mb-0">{{ sizeShowcaseIntro }}</p>
                 </div>
               </div>
 
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ warningCardTitle }}</h6>
-                  <p class="text-muted mb-3">{{ warningCardBody }}</p>
-                  <button class="btn btn-warning" type="button" (click)="openWarningModal()">
-                    {{ warningOpenButton }}
-                  </button>
+              <div class="row g-3">
+                <div *ngFor="let item of modalSizeShowcaseItems; trackBy: trackByModalSize" class="col-md-6 col-xl-4">
+                  <div class="modal-demo-size-card h-100">
+                    <div class="modal-demo-size-card__top">
+                      <div>
+                        <h6 class="mb-1">{{ sizeTitle(item) }}</h6>
+                        <div class="text-muted fs-sm">{{ sizeDescription(item) }}</div>
+                      </div>
+                      <span class="badge bg-light text-body border modal-demo-width-badge">{{ sizeWidthLabel(item) }}</span>
+                    </div>
+
+                    <div class="modal-demo-size-card__meta">
+                      <span class="badge bg-dark">{{ sizeValueChip(item) }}</span>
+                      <span class="badge bg-light text-body border">{{ item.headerColor }}</span>
+                    </div>
+
+                    <p class="modal-demo-size-card__usecase mb-0"><strong>{{ sizeUseCaseLabel }}:</strong> {{ sizeUseCase(item) }}</p>
+
+                    <button class="btn btn-outline-primary btn-sm mt-3 align-self-start" type="button" (click)="openSizeShowcaseModal(item)">
+                      {{ openSizeDemoLabel }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-lg-between gap-2 mb-3">
+                <div>
+                  <h5 class="mb-1">{{ implementationPatternsTitle }}</h5>
+                  <p class="text-muted mb-0">{{ implementationPatternsIntro }}</p>
                 </div>
               </div>
 
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ iconifiedCardTitle }}</h6>
-                  <p class="text-muted mb-3">{{ iconifiedCardBody }}</p>
-                  <button class="btn btn-indigo" type="button" (click)="openIconifiedModal()">
-                    {{ iconifiedOpenButton }}
-                  </button>
+              <div class="row g-3">
+                <div class="col-lg-4">
+                  <div class="card card-body h-100 border">
+                    <h6 class="mb-2">{{ implementationCardOneTitle }}</h6>
+                    <p class="text-muted mb-0">{{ implementationCardOneBody }}</p>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="card card-body h-100 border">
+                    <h6 class="mb-2">{{ implementationCardTwoTitle }}</h6>
+                    <p class="text-muted mb-0">{{ implementationCardTwoBody }}</p>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="card card-body h-100 border">
+                    <h6 class="mb-2">{{ implementationCardThreeTitle }}</h6>
+                    <p class="text-muted mb-0">{{ implementationCardThreeBody }}</p>
+                  </div>
                 </div>
               </div>
-
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ miniCardTitle }}</h6>
-                  <p class="text-muted mb-3">{{ miniCardBody }}</p>
-                  <button class="btn btn-outline-dark" type="button" (click)="openMiniModal()">
-                    {{ miniOpenButton }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ backdroplessCardTitle }}</h6>
-                  <p class="text-muted mb-3">{{ backdroplessCardBody }}</p>
-                  <button class="btn btn-outline-secondary" type="button" (click)="openBackdroplessModal()">
-                    {{ backdroplessOpenButton }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ smallHeaderCardTitle }}</h6>
-                  <p class="text-muted mb-3">{{ smallHeaderCardBody }}</p>
-                  <button class="btn btn-dark" type="button" (click)="openSmallHeaderModal()">
-                    {{ smallHeaderOpenButton }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ formCardTitle }}</h6>
-                  <p class="text-muted mb-3">{{ formCardBody }}</p>
-                  <button class="btn btn-outline-primary" type="button" (click)="openFormModal()">
-                    {{ formOpenButton }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ fullTitle }}</h6>
-                  <p class="text-muted mb-3">{{ fullBody }}</p>
-                  <button class="btn btn-outline-secondary" type="button" (click)="openFullModal()">
-                    {{ fullOpenButton }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ fullScreenCardTitle }}</h6>
-                  <p class="text-muted mb-3">{{ fullScreenCardBody }}</p>
-                  <button class="btn btn-secondary" type="button" (click)="openFullScreenFormModal()">
-                    {{ fullScreenOpenButton }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">{{ lockedTitle }}</h6>
-                  <p class="text-muted mb-3">{{ lockedBody }}</p>
-                  <button class="btn btn-outline-danger" type="button" (click)="openLockedModal()">
-                    {{ lockedOpenButton }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-md-6 col-xl-4">
-                <div class="border rounded p-3 h-100">
-                  <h6 class="mb-2">Lazy content</h6>
-                  <p class="text-muted mb-3">{{ lazyBody }}</p>
-                  <button class="btn btn-outline-indigo" type="button" (click)="openLazyPreviewModal()">
-                    {{ lazyOpenButton }}
-                  </button>
-                </div>
-              </div>
-            </div>
+            </section>
 
             <div class="alert alert-info alert-icon-start mt-4 mb-0">
               <span class="alert-icon bg-info text-white">
@@ -147,34 +224,99 @@
             </div>
           </div>
         </li-tabx>
+
         <li-tabx [header]="t.common.tabApi">
           <div class="card-body">
             <p class="text-muted mb-4">{{ apiIntro }}</p>
 
-            <div class="row g-4">
+            <div class="row g-4 mb-4">
               <div class="col-xl-4">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">{{ mainInputsTitle }}</h6>
                   <ul class="mb-0 ps-3">
                     <li><code>title-text</code>, <code>headerColor</code> e <code>size</code> definem a estrutura principal.</li>
-                    <li><code>lazyContent</code>, <code>dialogScrollable</code>, <code>verticalCenter</code>, <code>compactHeader</code> e <code>smallHeader</code> cobrem comportamento.</li>
-                    <li><code>closeOnBackdropClick</code>, <code>enableCloseBtn</code>, <code>enableBackdrop</code>, <code>enableHeader</code> e <code>fullScreenOnMobile</code> refinam a UX.</li>
+                    <li><code>size</code> aceita <code>default</code>, <code>modal-xs</code>, <code>modal-sm</code>, <code>large</code>, <code>xtra-large</code>, <code>xx-large</code>, <code>xxx-large</code>, <code>fluid</code> e <code>modal-full</code>.</li>
+                    <li><code>lazyContent</code>, <code>dialogScrollable</code>, <code>verticalCenter</code>, <code>compactHeader</code> e <code>smallHeader</code> controlam comportamento interno.</li>
+                    <li><code>closeOnBackdropClick</code>, <code>closeOnEscape</code>, <code>enableCloseBtn</code>, <code>enableBackdrop</code>, <code>enableHeader</code> e <code>fullScreenOnMobile</code> refinam UX e encerramento.</li>
                   </ul>
                 </div>
               </div>
 
-              <div class="col-xl-8">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ behaviorApiTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>open()</code> e <code>close()</code> controlam o ciclo de vida de forma imperativa.</li>
+                    <li><code>start-open</code> inicializa o modal já aberto quando o fluxo pede atenção imediata.</li>
+                    <li><code>enableShadow</code> ajuda a destacar o bloco em páginas densas.</li>
+                    <li><code>modal-full</code> continua separado dos demais porque vira um shell de tela cheia, com body rolável.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ outputsApiTitle }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>(close)</code> dispara sempre que o modal termina o fechamento.</li>
+                    <li>O host decide como reagir: limpar estado, recarregar dados ou registrar auditoria.</li>
+                    <li>Conteúdo pesado deve preferir <code>lazyContent</code> para não nascer fechado no DOM.</li>
+                    <li>Fluxos estilo Bootbox podem ser compostos no host usando <code>@ViewChild</code> e handlers próprios.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-xl-5">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ supportMatrixTitle }}</h6>
+                  <p class="text-muted mb-3">{{ supportMatrixLead }}</p>
+
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0 modal-demo-api-table">
+                      <thead>
+                        <tr>
+                          <th>{{ sizeValueLabel }}</th>
+                          <th>{{ sizeWidthLabelTitle }}</th>
+                          <th>{{ sizeUseCaseLabel }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of modalSizeShowcaseItems; trackBy: trackByModalSize">
+                          <td><code>{{ sizeValueChip(item) }}</code></td>
+                          <td>{{ sizeWidthLabel(item) }}</td>
+                          <td>{{ sizeUseCase(item) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-7">
                 <div class="card card-body">
-                  <h6 class="mb-3">{{ basicSnippetTitle }}</h6>
+                  <h6 class="mb-3">{{ examplesTitle }}</h6>
+
+                  <h6 class="mb-2">{{ basicSnippetTitle }}</h6>
                   <li-highlight [code]="basicSnippet" language="html"></li-highlight>
 
-                  <h6 class="mb-3 mt-4">{{ advancedSnippetTitle }}</h6>
+                  <h6 class="mb-2 mt-4">{{ advancedSnippetTitle }}</h6>
                   <li-highlight [code]="advancedSnippet" language="html"></li-highlight>
 
-                  <h6 class="mb-3 mt-4">Full screen</h6>
+                  <h6 class="mb-2 mt-4">{{ sizeSnippetTitle }}</h6>
+                  <li-highlight [code]="sizesSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-2 mt-4">{{ imperativeSnippetTitle }}</h6>
+                  <li-highlight [code]="imperativeSnippet" language="dart"></li-highlight>
+
+                  <h6 class="mb-2 mt-4">Fluid</h6>
+                  <li-highlight [code]="fluidSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-2 mt-4">Full screen</h6>
                   <li-highlight [code]="fullScreenSnippet" language="html"></li-highlight>
 
-                  <h6 class="mb-3 mt-4">Small header</h6>
+                  <h6 class="mb-2 mt-4">Small header</h6>
                   <li-highlight [code]="smallHeaderSnippet" language="html"></li-highlight>
                 </div>
               </div>
@@ -184,6 +326,76 @@
       </li-tabsx>
     </div>
   </div>
+
+  <li-modal #sizeShowcaseModal
+            [title-text]="activeSizeShowcaseTitle"
+            [headerColor]="activeSizeShowcase.headerColor"
+            [size]="activeSizeShowcase.sizeValue"
+        [fullScreenChrome]="activeSizeUsesFullScreenChrome"
+            [enableShadow]="true"
+            [lazyContent]="true"
+            [fullScreenOnMobile]="!activeSizeIsFull"
+            (close)="onSizeShowcaseClosed()">
+      <div class="modal-demo-live" [class.modal-demo-live--compact]="activeSizeIsCompact">
+      <div class="modal-demo-live__header">
+        <div>
+          <div class="small text-uppercase fw-semibold text-muted mb-1">{{ livePreviewEyebrow }}</div>
+          <h6 class="mb-1">{{ activeSizeShowcaseTitle }}</h6>
+          <p class="text-muted mb-0">{{ activeSizeShowcaseDescription }}</p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge bg-dark">{{ sizeValueChip(activeSizeShowcase) }}</span>
+          <span class="badge bg-light text-body border modal-demo-width-badge">{{ activeSizeWidth }}</span>
+          <span class="badge bg-secondary">{{ activeSizeShowcase.headerColor }}</span>
+        </div>
+      </div>
+
+      <div class="modal-demo-live__grid">
+        <div class="modal-demo-live__panel">
+          <h6 class="mb-2">{{ livePreviewColumnsTitle }}</h6>
+          <p class="text-muted mb-3">{{ livePreviewColumnsBody }}</p>
+          <div class="list-group">
+            <div class="list-group-item d-flex align-items-start gap-3">
+              <span class="badge bg-primary rounded-pill mt-1">1</span>
+              <div>{{ activeSizeShowcaseUseCase }}</div>
+            </div>
+            <div class="list-group-item d-flex align-items-start gap-3">
+              <span class="badge bg-primary rounded-pill mt-1">2</span>
+              <div>{{ isPortuguese ? 'Valide espaçamento de cards, botões e áreas de decisão com o size escolhido.' : 'Validate card spacing, buttons, and decision areas with the chosen size.' }}</div>
+            </div>
+            <div class="list-group-item d-flex align-items-start gap-3">
+              <span class="badge bg-primary rounded-pill mt-1">3</span>
+              <div>{{ isPortuguese ? 'No mobile, combine com fullScreenOnMobile quando a leitura ficar apertada.' : 'On mobile, combine it with fullScreenOnMobile when reading becomes too tight.' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-demo-live__panel">
+          <h6 class="mb-2">{{ livePreviewDecisionTitle }}</h6>
+          <p class="text-muted mb-3">{{ livePreviewDecisionBody }}</p>
+          <div class="modal-demo-live__stats">
+            <div class="modal-demo-live__stat">
+              <div class="modal-demo-live__stat-value">{{ activeSizeWidth }}</div>
+              <div class="modal-demo-live__stat-label">{{ isPortuguese ? 'régua de largura' : 'width scale' }}</div>
+            </div>
+            <div class="modal-demo-live__stat">
+              <div class="modal-demo-live__stat-value">{{ activeSizeShowcase.headerColor }}</div>
+              <div class="modal-demo-live__stat-label">{{ isPortuguese ? 'headerColor' : 'headerColor' }}</div>
+            </div>
+          </div>
+          <div class="alert alert-light border mt-3 mb-0">
+            <strong>{{ sizeUseCaseLabel }}:</strong> {{ activeSizeShowcaseUseCase }}
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="activeSizeIsFull" class="alert alert-warning alert-icon-start mb-0">
+        <span class="alert-icon bg-warning text-white"><i class="ph-warning"></i></span>
+        {{ isPortuguese ? 'modal-full não é apenas um width maior. Aqui o componente vira um shell de tela cheia e mantém o body rolável para formulários extensos.' : 'modal-full is not just a wider width. Here the component becomes a full-screen shell and keeps the body scrollable for long forms.' }}
+      </div>
+    </div>
+  </li-modal>
 
   <li-modal #demoModal
             [title-text]="t.pages.modal.modalTitle"
@@ -208,12 +420,8 @@
             [fullScreenOnMobile]="true"
             [closeOnBackdropClick]="false"
             (close)="onModalClosed('Modal scrollable')">
-    <p class="mb-3">
-      {{ t.pages.modal.scrollableBody }}
-    </p>
-    <p *ngFor="let index of scrollLines">
-      {{ t.pages.modal.scrollableLine(index) }}
-    </p>
+    <p class="mb-3">{{ t.pages.modal.scrollableBody }}</p>
+    <p *ngFor="let index of scrollLines">{{ t.pages.modal.scrollableLine(index) }}</p>
     <div class="text-end">
       <button class="btn btn-primary" type="button" (click)="scrollableModal?.close()">{{ t.pages.modal.understood }}</button>
     </div>
@@ -225,9 +433,7 @@
             size="modal-sm"
             [lazyContent]="true"
             (close)="onModalClosed('Modal de alerta')">
-    <p class="mb-3">
-      {{ warningModalBody }}
-    </p>
+    <p class="mb-3">{{ warningModalBody }}</p>
     <div class="d-flex justify-content-end gap-2">
       <button class="btn btn-light" type="button" (click)="warningModal?.close()">{{ cancelLabel }}</button>
       <button class="btn btn-warning" type="button" (click)="warningModal?.close()">{{ understoodLabel }}</button>
@@ -359,7 +565,7 @@
   <li-modal #fullModal
             [title-text]="fullModalTitle"
             headerColor="dark"
-            size="xtra-large"
+            size="fluid"
             [lazyContent]="true"
             [enableShadow]="true"
             [fullScreenOnMobile]="true"
@@ -393,12 +599,11 @@
             headerColor="danger"
             [lazyContent]="true"
             [closeOnBackdropClick]="false"
+            [closeOnEscape]="false"
             [enableCloseBtn]="false"
             [verticalCenter]="true"
             (close)="onModalClosed('Modal bloqueado')">
-    <p class="mb-3">
-      {{ lockedModalBody }}
-    </p>
+    <p class="mb-3">{{ lockedModalBody }}</p>
     <div class="d-flex justify-content-end gap-2">
       <button class="btn btn-light" type="button" (click)="lockedModal?.close()">{{ backLabel }}</button>
       <button class="btn btn-danger" type="button" (click)="lockedModal?.close()">{{ confirmLabel }}</button>
@@ -426,6 +631,7 @@
             [title-text]="fullScreenModalTitle"
             headerColor="primary"
             size="modal-full"
+            [fullScreenChrome]="true"
             [smallHeader]="true"
             [lazyContent]="true"
             [enableShadow]="true"
@@ -466,18 +672,11 @@
 
           <div class="col-md-3 col-xl-2">
             <label class="form-label">Tipo CGM</label>
-            <select class="form-select">
-              <option>Interno</option>
-              <option>Externo</option>
-            </select>
+            <select class="form-select"><option>Interno</option><option>Externo</option></select>
           </div>
           <div class="col-md-3 col-xl-2">
             <label class="form-label">Tipo pessoa</label>
-            <select class="form-select">
-              <option>Indefinido</option>
-              <option>Física</option>
-              <option>Jurídica</option>
-            </select>
+            <select class="form-select"><option>Indefinido</option><option>Física</option><option>Jurídica</option></select>
           </div>
           <div class="col-md-6 col-xl-4">
             <label class="form-label">Nome</label>
@@ -499,11 +698,7 @@
         <div class="row g-3">
           <div class="col-md-3 col-xl-2">
             <label class="form-label">Tipo logradouro</label>
-            <select class="form-select">
-              <option>Praça</option>
-              <option>Rua</option>
-              <option>Avenida</option>
-            </select>
+            <select class="form-select"><option>Praça</option><option>Rua</option><option>Avenida</option></select>
           </div>
           <div class="col-md-5 col-xl-4">
             <label class="form-label">Logradouro</label>
@@ -519,21 +714,15 @@
           </div>
           <div class="col-md-4 col-xl-2">
             <label class="form-label">País</label>
-            <select class="form-select">
-              <option>Brasil</option>
-            </select>
+            <select class="form-select"><option>Brasil</option></select>
           </div>
           <div class="col-md-4 col-xl-3">
             <label class="form-label">UF</label>
-            <select class="form-select">
-              <option>Rio de Janeiro</option>
-            </select>
+            <select class="form-select"><option>Rio de Janeiro</option></select>
           </div>
           <div class="col-md-4 col-xl-3">
             <label class="form-label">Município</label>
-            <select class="form-select">
-              <option>Rio das Ostras</option>
-            </select>
+            <select class="form-select"><option>Rio das Ostras</option></select>
           </div>
           <div class="col-md-4 col-xl-3">
             <label class="form-label">Bairro</label>
@@ -583,18 +772,9 @@
       <div class="demo-fullscreen-modal__section">
         <div class="demo-fullscreen-modal__section-title">Atributos</div>
         <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label">Classificação</label>
-            <input class="form-control" type="text" value="Pessoa jurídica interna">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Setor responsável</label>
-            <input class="form-control" type="text" value="Secretaria de Administração">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Status do cadastro</label>
-            <input class="form-control" type="text" value="Ativo">
-          </div>
+          <div class="col-md-4"><label class="form-label">Classificação</label><input class="form-control" type="text" value="Pessoa jurídica interna"></div>
+          <div class="col-md-4"><label class="form-label">Setor responsável</label><input class="form-control" type="text" value="Secretaria de Administração"></div>
+          <div class="col-md-4"><label class="form-label">Status do cadastro</label><input class="form-control" type="text" value="Ativo"></div>
         </div>
       </div>
 

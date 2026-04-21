@@ -146,11 +146,35 @@ class LiDateRangePickerComponent
   final _inicioChangeController = StreamController<DateTime?>.broadcast();
   final _fimChangeController = StreamController<DateTime?>.broadcast();
 
+  DateTime? _inicio;
+  DateTime? _fim;
+
+  DateTime? get inicio => _inicio;
   @Input()
-  DateTime? inicio;
+  set inicio(DateTime? value) {
+    _inicio = _normalize(value);
+  }
+
+  /// Alias em inglês para compatibilidade com APIs `start/end`.
+  DateTime? get start => _inicio;
+  @Input('start')
+  set start(DateTime? value) {
+    _inicio = _normalize(value);
+  }
+
+  DateTime? get fim => _fim;
 
   @Input()
-  DateTime? fim;
+  set fim(DateTime? value) {
+    _fim = _normalize(value);
+  }
+
+  /// Alias em inglês para compatibilidade com APIs `start/end`.
+  DateTime? get end => _fim;
+  @Input('end')
+  set end(DateTime? value) {
+    _fim = _normalize(value);
+  }
 
   @Input()
   DateTime? minDate;
@@ -204,8 +228,14 @@ class LiDateRangePickerComponent
   @Output()
   Stream<DateTime?> get inicioChange => _inicioChangeController.stream;
 
+  @Output('startChange')
+  Stream<DateTime?> get startChange => _inicioChangeController.stream;
+
   @Output()
   Stream<DateTime?> get fimChange => _fimChangeController.stream;
+
+  @Output('endChange')
+  Stream<DateTime?> get endChange => _fimChangeController.stream;
 
   @ViewChild('triggerElement')
   html.Element? triggerElement;
@@ -310,9 +340,8 @@ class LiDateRangePickerComponent
 
   String get clearLabel => _isEnglishLocale ? 'Clear' : 'Limpar';
 
-  String get clearAriaLabel => _isEnglishLocale
-      ? 'Clear selected period'
-      : 'Limpar período selecionado';
+  String get clearAriaLabel =>
+      _isEnglishLocale ? 'Clear selected period' : 'Limpar período selecionado';
 
   String get cancelLabel => _isEnglishLocale ? 'Cancel' : 'Cancelar';
 

@@ -19,6 +19,7 @@ import 'li_dropdown_menu_component_test.template.dart' as ng;
   template: '''
     <div style="display: flex; gap: 16px; align-items: flex-start;">
       <li-dropdown-menu
+          #inlineMenu
           container="inline"
           [options]="options"
           [value]="selectedValue"
@@ -31,6 +32,7 @@ import 'li_dropdown_menu_component_test.template.dart' as ng;
 
       <div style="height: 40px; overflow: hidden; position: relative;">
         <li-dropdown-menu
+          #bodyMenu
           [options]="options"
           [value]="selectedValue"
           ariaLabel="body-actions"
@@ -40,11 +42,33 @@ import 'li_dropdown_menu_component_test.template.dart' as ng;
           (valueChange)="selectedValue = \$event">
         </li-dropdown-menu>
       </div>
+
+      <li-dropdown-menu
+          #persistentMenu
+          container="inline"
+          [options]="options"
+          [value]="selectedValue"
+          ariaLabel="persistent-actions"
+          triggerLabel="Persistente"
+          triggerIconClass="ph ph-dots-three"
+          menuClass=""
+          [closeOtherMenusOnOpen]="false"
+          (valueChange)="selectedValue = \$event">
+      </li-dropdown-menu>
     </div>
   ''',
   directives: [coreDirectives, LiDropdownMenuComponent],
 )
 class DropdownMenuTestHostComponent {
+  @ViewChild('inlineMenu')
+  LiDropdownMenuComponent? inlineMenu;
+
+  @ViewChild('bodyMenu')
+  LiDropdownMenuComponent? bodyMenu;
+
+  @ViewChild('persistentMenu')
+  LiDropdownMenuComponent? persistentMenu;
+
   String selectedValue = 'copy';
 
   final List<LiDropdownMenuOption> options = const <LiDropdownMenuOption>[
@@ -110,6 +134,66 @@ void main() {
     );
     expect((menuRect.left - triggerRect.left).abs(), lessThanOrEqualTo(12));
     expect((menuRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(12));
+  });
+
+  test('opening a dropdown closes other open menus by default', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final inlineTrigger = fixture.rootElement
+        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+    final bodyTrigger = fixture.rootElement
+        .querySelector('[aria-label="body-actions"]') as html.ButtonElement;
+
+    await fixture.update((_) {
+      inlineTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.inlineMenu!.isOpen, isTrue);
+
+    await fixture.update((_) {
+      bodyTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.inlineMenu!.isOpen, isFalse);
+    expect(host.bodyMenu!.isOpen, isTrue);
+    expect(
+      fixture.rootElement.querySelector('.li-dropdown-menu__menu.show'),
+      isNull,
+    );
+  });
+
+  test('closeOtherMenusOnOpen false keeps previously opened menus visible',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final inlineTrigger = fixture.rootElement
+        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+    final persistentTrigger = fixture.rootElement
+            .querySelector('[aria-label="persistent-actions"]')
+        as html.ButtonElement;
+
+    await fixture.update((_) {
+      inlineTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      persistentTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.inlineMenu!.isOpen, isTrue);
+    expect(host.persistentMenu!.isOpen, isTrue);
+    expect(
+      fixture.rootElement.querySelectorAll('.li-dropdown-menu__menu.show').length,
+      2,
+    );
   });
 
   test('selects an option from the overlay and closes the menu', () async {

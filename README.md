@@ -1,6 +1,7 @@
 # limitless_ui
 
 [![CI](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml/badge.svg)](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/insinfo/limitless_ui/branch/main/graph/badge.svg)](https://codecov.io/gh/insinfo/limitless_ui)
 
 Reusable AngularDart UI components, directives, and browser helpers for applications built on the Limitless visual language and Bootstrap-based CSS: https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css.
 
@@ -25,7 +26,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.7`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.10`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -46,7 +47,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.7
+  limitless_ui: ^1.0.0-dev.10
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -55,8 +56,8 @@ If the application will use `li-datatable`, `li-datatable-select`, `li-select`, 
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.7
-  essential_core: ^1.0.0
+  limitless_ui: ^1.0.0-dev.10
+  essential_core: ^1.2.0
 ```
 
 For local development:
@@ -1317,12 +1318,34 @@ The demo covers four useful scenarios: default usage, restricted date ranges, En
 - [example/lib/src/pages/date_picker/date_picker_page.dart](example/lib/src/pages/date_picker/date_picker_page.dart)
 - [example/lib/src/pages/date_picker/date_picker_page.html](example/lib/src/pages/date_picker/date_picker_page.html)
 
+### Date Range Picker
+
+`li-date-range-picker` is the paired-range companion to `li-date-picker`. It supports the original Portuguese API with `inicio`/`fim` and now also accepts the English aliases `start`/`end`, with matching `startChange` and `endChange` outputs.
+
+```html
+<li-date-range-picker
+  [start]="rangeStart"
+  [end]="rangeEnd"
+  [minDate]="minDate"
+  [maxDate]="maxDate"
+  (startChange)="onRangeStartChange($event)"
+  (endChange)="onRangeEndChange($event)">
+</li-date-range-picker>
+```
+
+Use `inicio`/`fim` when you need backward compatibility with existing code, or `start`/`end` when the host API is already standardized in English. Both forms map to the same internal state and can be used interchangeably at the component boundary.
+
+References:
+
+- [example/lib/src/pages/date_range/date_range_page.dart](example/lib/src/pages/date_range/date_range_page.dart)
+- [example/lib/src/pages/date_range/date_range_page.html](example/lib/src/pages/date_range/date_range_page.html)
+
 ### Modal with lazy content
 
 ```html
 <li-modal
   title-text="Heavy report"
-  size="xtra-large"
+  size="fluid"
   [lazyContent]="true"
   [dialogScrollable]="true">
   <li-datatable
@@ -1336,7 +1359,13 @@ The demo covers four useful scenarios: default usage, restricted date ranges, En
 
 This pattern is useful for expensive content such as datatables, large forms, or projected content that should not exist in the DOM until the dialog opens.
 
+For width control, `size` now supports the intermediate steps `xx-large`, `xxx-large`, and `fluid` between `xtra-large` and `modal-full`. Use `fluid` when you want a near-full-width dialog without switching to the fullscreen shell.
+
 Additional sizing and chrome inputs include `compactHeader` and `smallHeader` when the default Limitless header density is too tall for short dialogs or fullscreen administrative forms.
+
+If you want `size="modal-full"` to behave like a true full-screen shell with square chrome, opt in with `fullScreenChrome="true"`. Without that input, `modal-full` keeps the viewport-sized body but preserves the regular modal chrome.
+
+For locked flows, combine `closeOnEscape="false"`, `closeOnBackdropClick="false"`, and `enableCloseBtn="false"` so the user can leave only through your explicit action buttons.
 
 ```html
 <li-modal
@@ -1349,6 +1378,8 @@ Additional sizing and chrome inputs include `compactHeader` and `smallHeader` wh
 ```
 
 Use `compactHeader` when you want a subtler reduction without changing the overall rhythm as aggressively as `smallHeader`. The fullscreen demo route also now shows `size="modal-full"` combined with `smallHeader` for long-form administrative flows.
+
+Use `fullScreenChrome` only in flows that really need the app-shell feel; for many screens, keeping the regular rounded chrome on `modal-full` is visually safer.
 
 ### Toast
 
@@ -1432,7 +1463,8 @@ Each item is a `LiDropdownMenuOption` with:
 - `divider`
 
 The component also supports `triggerLabel`, `triggerIconClass`, `triggerClass`,
-`menuClass`, `placement`, `rounded`, `showCaret`, `closeOnSelect`, and `container`.
+`menuClass`, `placement`, `rounded`, `showCaret`, `closeOnSelect`,
+`closeOtherMenusOnOpen`, and `container`.
 
 ```dart
 final options = <LiDropdownMenuOption>[
@@ -1463,6 +1495,8 @@ final options = <LiDropdownMenuOption>[
 Use `container="body"` when the trigger lives inside clipped panels, tables, cards, or any `overflow: hidden`/`auto` ancestor and you want the menu to escape that stacking context. Use `container="inline"` when normal DOM flow is preferred. The same inline-versus-body overlay choice is also available on the lower-level `dropdownmenu` directive through `dropdownmenuContainer`.
 
 The menu closes on outside click, `Escape`, or selection depending on `closeOnSelect`. Main reference: [lib/src/components/dropdown_menu/dropdown_menu_component.dart](lib/src/components/dropdown_menu/dropdown_menu_component.dart).
+
+By default, opening one `li-dropdown-menu` closes other open instances first, which is usually the right behavior for headers and action toolbars. Set `closeOtherMenusOnOpen="false"` only for special cases such as submenu-like compositions or coordinated multi-panel controls.
 
 ### Scrollspy
 
@@ -1514,7 +1548,7 @@ dart analyze
 Run VM-safe tests:
 
 ```bash
-dart test test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart
+dart test test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart test/treeview/treeview_settings_test.dart
 ```
 
 Run browser and AngularDart tests in Chrome:
@@ -1522,6 +1556,16 @@ Run browser and AngularDart tests in Chrome:
 ```bash
 dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/typeahead/li_typeahead_component_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart test/wizard/li_wizard_component_test.dart
 ```
+
+Generate local coverage for the VM-only suite:
+
+```bash
+dart test --coverage=coverage/vm_raw test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart test/treeview/treeview_settings_test.dart
+dart pub global activate coverage
+dart pub global run coverage:format_coverage --lcov --in=coverage/vm_raw --out=coverage/vm.lcov.info --report-on=lib --packages=.dart_tool/package_config.json
+```
+
+Codecov is enabled in CI through `CODECOV_TOKEN` and publishes only the VM LCOV report. The browser and AngularDart suite still runs in CI as a functional safety net, but it does not contribute coverage to Codecov in this repository.
 
 When validating dependency upgrades for `ngdart`, `ngforms`, or `ngrouter`, add focused runs for the form value accessors and input bindings before broader test suites. Those accessors depend on internal `ngforms` APIs and behavior due to framework limitations, and they are usually the first compatibility boundary to break.
 

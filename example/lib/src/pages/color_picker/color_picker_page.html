@@ -22,41 +22,41 @@
 
         <div class="card border-0 shadow-none">
           <div class="card-header">
-            <h5 class="mb-0">Basic examples</h5>
+            <h5 class="mb-0">{{ isPt ? 'Exemplos básicos' : 'Basic examples' }}</h5>
           </div>
 
           <div class="card-body">
             <div class="row">
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Basic color picker</div>
-                  <p class="mb-3">Spectrum is a simple yet powerful color picker that can be used as a cross-browser alternative to native color input. It supports dropdown and flat modes with variety of options and events.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Color picker básico' : 'Basic color picker' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker é um seletor de cores simples e poderoso, que pode ser usado como alternativa cross-browser ao input nativo de cor. Ele suporta modos dropdown e flat com várias opções e eventos.' : 'li-color-picker is a simple and powerful color picker that can be used as a cross-browser alternative to the native color input. It supports dropdown and flat modes with a variety of options and events.' }}</p>
                   <li-color-picker [(ngModel)]="basicColor"></li-color-picker>
                 </div>
 
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Custom button text</div>
-                  <p class="mb-3">Apart from default button labels, you can set custom button's text or translate it using <code>cancelText</code> and <code>chooseText</code> properties. Default button labels are <code>Cancel</code> and <code>Choose</code>.</p>
-                  <li-color-picker [(ngModel)]="customButtonsColor" chooseButtonText="Yes baby" cancelButtonText="No way"></li-color-picker>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Texto customizado dos botões' : 'Custom button text' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Além dos rótulos padrão, você pode definir textos personalizados para os botões ou traduzi-los usando as propriedades ' : 'Apart from default button labels, you can set custom button\'s text or translate it using ' }}<code>cancelText</code> {{ isPt ? 'e' : 'and' }} <code>chooseText</code>{{ isPt ? '. Os rótulos padrão são ' : ' properties. Default button labels are ' }}<code>{{ isPt ? 'Cancelar' : 'Cancel' }}</code> {{ isPt ? 'e' : 'and' }} <code>{{ isPt ? 'Escolher' : 'Choose' }}</code>.</p>
+                  <li-color-picker [(ngModel)]="customButtonsColor" [chooseButtonText]="isPt ? 'Confirmar' : 'Yes baby'" [cancelButtonText]="isPt ? 'Agora não' : 'No way'"></li-color-picker>
                 </div>
 
                 <div class="mb-4 mb-lg-0">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Initially empty</div>
-                  <p class="mb-3">Spectrum picker can be initialized with an empty color value, meaning the input field value remains empty. This is very useful if the picker field needs to be validated or when field is optional.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Inicialmente vazio' : 'Initially empty' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker pode ser inicializado com um valor de cor vazio, mantendo o campo de entrada sem conteúdo. Isso é útil quando o campo precisa ser validado ou é opcional.' : 'li-color-picker can be initialized with an empty color value, meaning the input field remains empty. This is very useful when the picker field needs validation or is optional.' }}</p>
                   <li-color-picker [(ngModel)]="emptyColor" [allowEmpty]="true" [showInput]="true"></li-color-picker>
                 </div>
               </div>
 
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Hide picker buttons</div>
-                  <p class="mb-3">You can show or hide the buttons using the <code>showButtons</code> property. If there are no buttons, the behavior will be to fire the <code>change</code> event when the picker is closed.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Ocultar botões do picker' : 'Hide picker buttons' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Você pode mostrar ou ocultar os botões usando a propriedade ' : 'You can show or hide the buttons using the ' }}<code>showButtons</code>{{ isPt ? '. Se não houver botões, o comportamento será disparar o evento ' : ' property. If there are no buttons, the behavior will be to fire the ' }}<code>change</code>{{ isPt ? ' quando o picker for fechado.' : ' event when the picker is closed.' }}</p>
                   <li-color-picker [(ngModel)]="hideButtonsColor" [showButtons]="false"></li-color-picker>
                 </div>
 
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Disable color picker</div>
-                  <p class="mb-3">Spectrum can be automatically disabled if you pass in the <code>disabled</code> flag. Additionally, if the input that you initialize spectrum on is disabled, this will be the default value.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Desabilitar color picker' : 'Disable color picker' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker pode ser desabilitado automaticamente ao passar a flag ' : 'li-color-picker can be automatically disabled if you pass the ' }}<code>disabled</code>{{ isPt ? '. Além disso, se o campo associado já estiver desabilitado, esse também será o estado padrão do componente.' : ' flag. Additionally, if the associated input is already disabled, that will also become the component\'s default state.' }}</p>
                   <div class="d-inline-flex flex-wrap align-items-center">
                     <div class="me-3 color-picker-inline-control">
                       <li-color-picker [(ngModel)]="disabledColor" [disabled]="!pickerEnabled"></li-color-picker>
@@ -69,8 +69,8 @@
                 </div>
 
                 <div>
-                  <div class="fw-bold border-bottom pb-2 mb-2">Clickout fires change</div>
-                  <p class="mb-3">When clicking outside of the colorpicker, you can force it to fire a <code>change</code> event rather than having it revert the change. This is <code>true</code> by default.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Click externo dispara change' : 'Clickout fires change' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Ao clicar fora do color picker, você pode forçar o disparo do evento ' : 'When clicking outside of the colorpicker, you can force it to fire a ' }}<code>change</code>{{ isPt ? ' em vez de reverter a alteração. O padrão é ' : ' event rather than having it revert the change. This is ' }}<code>true</code>{{ isPt ? '.' : ' by default.' }}</p>
                   <li-color-picker [(ngModel)]="clickoutColor" [clickoutFiresChange]="false" [showInput]="true"></li-color-picker>
                 </div>
               </div>
@@ -80,47 +80,47 @@
 
         <div class="card border-0 border-top shadow-none">
           <div class="card-header">
-            <h5 class="mb-0">Picker additions</h5>
+            <h5 class="mb-0">{{ isPt ? 'Recursos adicionais do picker' : 'Picker additions' }}</h5>
           </div>
 
           <div class="card-body">
             <div class="row">
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Show initial color</div>
-                  <p class="mb-3">Spectrum can show the color that was initially set when opening. This provides an easy way to click back to what was set when opened.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Mostrar cor inicial' : 'Show initial color' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker pode mostrar a cor definida inicialmente ao abrir. Isso facilita voltar rapidamente ao valor configurado no momento da abertura.' : 'li-color-picker can show the color that was initially set when opening. This provides an easy way to return to the value that was set when opened.' }}</p>
                   <li-color-picker [(ngModel)]="initialColor" [showInitial]="true"></li-color-picker>
                 </div>
 
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Show alpha channel</div>
-                  <p class="mb-3">You can allow alpha transparency selection by setting <code>showAlpha</code> option to <code>true</code>. Opacity is shown as a slider that supports values from 0 to 100.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Mostrar canal alpha' : 'Show alpha channel' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Você pode permitir a seleção de transparência alpha definindo a opção ' : 'You can allow alpha transparency selection by setting ' }}<code>showAlpha</code>{{ isPt ? ' como ' : ' option to ' }}<code>true</code>{{ isPt ? '. A opacidade é exibida em um slider com valores de 0 a 100.' : '. Opacity is shown as a slider that supports values from 0 to 100.' }}</p>
                   <li-color-picker [(ngModel)]="alphaColor" [showAlpha]="true"></li-color-picker>
                 </div>
 
                 <div class="mb-4 mb-lg-0">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Show input and initial</div>
-                  <p class="mb-3">If you specify both the <code>showInput</code> and <code>showInitial</code> options, the layout keeps things in order and preserves the initial sample.</p>
-                  <li-color-picker [(ngModel)]="fullColor" [showInitial]="true" [showInput]="true"></li-color-picker>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Mostrar input e inicial' : 'Show input and initial' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Se você combinar as opções ' : 'If you specify both the ' }}<code>showInput</code> {{ isPt ? 'e' : 'and' }} <code>showInitial</code>{{ isPt ? ', o layout mantém a organização e preserva a amostra inicial.' : ' options, the layout keeps things in order and preserves the initial sample.' }}</p>
+                  <li-color-picker [(ngModel)]="inputInitialColor" [showInitial]="true" [showInput]="true"></li-color-picker>
                 </div>
               </div>
 
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Show input field</div>
-                  <p class="mb-3">You can add an input to allow free form typing. The color parsing is permissive in the allowed strings, including HEX, RGB and known names.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Mostrar campo de entrada' : 'Show input field' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Você pode adicionar um campo de entrada para permitir digitação livre. O parser de cor é permissivo com strings válidas, incluindo HEX, RGB e nomes conhecidos.' : 'You can add an input to allow free form typing. The color parsing is permissive in the allowed strings, including HEX, RGB and known names.' }}</p>
                   <li-color-picker [(ngModel)]="inputColor" [showInput]="true"></li-color-picker>
                 </div>
 
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Clear selection</div>
-                  <p class="mb-3">Setting <code>allowEmpty</code> option to <code>true</code> adds an ability to reset current selection.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Limpar seleção' : 'Clear selection' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Definir a opção ' : 'Setting ' }}<code>allowEmpty</code>{{ isPt ? ' como ' : ' option to ' }}<code>true</code>{{ isPt ? ' adiciona a possibilidade de limpar a seleção atual.' : ' adds an ability to reset current selection.' }}</p>
                   <li-color-picker [(ngModel)]="clearSelectionColor" [allowEmpty]="true" [showInput]="true"></li-color-picker>
                 </div>
 
                 <div>
-                  <div class="fw-bold border-bottom pb-2 mb-2">Full featured</div>
-                  <p class="mb-3">This example demonstrates a full featured color picker with combination of <code>showInitial</code>, <code>showInput</code>, <code>showAlpha</code>, <code>allowEmpty</code> and palette options.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Completo' : 'Full featured' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Este exemplo demonstra um color picker completo, combinando ' : 'This example demonstrates a full featured color picker with combination of ' }}<code>showInitial</code>, <code>showInput</code>, <code>showAlpha</code>, <code>allowEmpty</code>{{ isPt ? ' e opções de paleta.' : ' and palette options.' }}</p>
                   <li-color-picker [(ngModel)]="fullColor" [showInitial]="true" [showInput]="true" [showAlpha]="true"
                     [allowEmpty]="true" [showPalette]="true" [showSelectionPalette]="true" [palette]="limitlessPalette"></li-color-picker>
                 </div>
@@ -131,27 +131,27 @@
 
         <div class="card border-0 border-top shadow-none">
           <div class="card-header">
-            <h5 class="mb-0">Color palettes</h5>
+            <h5 class="mb-0">{{ isPt ? 'Paletas de cores' : 'Color palettes' }}</h5>
           </div>
 
           <div class="card-body">
             <div class="row">
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Show color palette</div>
-                  <p class="mb-3">Spectrum can show a palette to make it convenient for users to choose from frequently or recently used colors.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Mostrar paleta de cores' : 'Show color palette' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker pode mostrar uma paleta para facilitar a escolha entre cores usadas com frequência ou recentemente.' : 'li-color-picker can show a palette to make it easier to choose from frequently or recently used colors.' }}</p>
                   <li-color-picker [(ngModel)]="paletteColor" [showPalette]="true" [palette]="limitlessPalette"></li-color-picker>
                 </div>
 
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Toggle palette only</div>
-                  <p class="mb-3">Spectrum can show a button to toggle the colorpicker next to the palette. Set <code>togglePaletteOnly</code> to <code>true</code> to enable the toggle.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Alternar somente paleta' : 'Toggle palette only' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker pode mostrar um botão para alternar a área do seletor ao lado da paleta. Defina ' : 'li-color-picker can show a button to toggle the picker area next to the palette. Set ' }}<code>togglePaletteOnly</code>{{ isPt ? ' como ' : ' to ' }}<code>true</code>{{ isPt ? ' para habilitar essa alternância.' : ' to enable the toggle.' }}</p>
                   <li-color-picker [(ngModel)]="paletteColor" [showPalette]="true" [togglePaletteOnly]="true" [palette]="limitlessPalette"></li-color-picker>
                 </div>
 
                 <div class="mb-4 mb-lg-0">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Selection palette</div>
-                  <p class="mb-3">Spectrum can keep track of what has been selected with the <code>showSelectionPalette</code> option.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Paleta de seleção' : 'Selection palette' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker pode acompanhar o que foi selecionado usando a opção ' : 'li-color-picker can keep track of what has been selected with the ' }}<code>showSelectionPalette</code>{{ isPt ? '.' : ' option.' }}</p>
                   <li-color-picker [(ngModel)]="selectionPaletteColor" [showPalette]="true" [showButtons]="false"
                     [showSelectionPalette]="true" [palette]="limitlessPalette"></li-color-picker>
                 </div>
@@ -159,15 +159,15 @@
 
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Show palette only</div>
-                  <p class="mb-3">If you'd like, spectrum can show the palettes you specify, and nothing else. To hide color picker and show only color palette, simply set <code>showPaletteOnly</code> and <code>showPalette</code> to <code>true</code>.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Mostrar somente a paleta' : 'Show palette only' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Se quiser, o li-color-picker pode mostrar apenas as paletas que você definir. Para ocultar a área do seletor e exibir somente a paleta, basta definir ' : 'If you\'d like, li-color-picker can show only the palettes you specify and nothing else. To hide the picker area and show only the palette, simply set ' }}<code>showPaletteOnly</code> {{ isPt ? 'e' : 'and' }} <code>showPalette</code> {{ isPt ? 'como' : 'to' }} <code>true</code>.</p>
                   <li-color-picker [(ngModel)]="paletteOnlyColor" [showPalette]="true" [showPaletteOnly]="true"
                     [showButtons]="false" [palette]="limitlessPalette"></li-color-picker>
                 </div>
 
                 <div>
-                  <div class="fw-bold border-bottom pb-2 mb-2">Hide after select</div>
-                  <p class="mb-3">You can have the colorpicker automatically hidden after a palette color is selected. Set <code>hideAfterPaletteSelect</code> to <code>true</code>.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Ocultar após selecionar' : 'Hide after select' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Você pode ocultar automaticamente o color picker após selecionar uma cor da paleta. Defina ' : 'You can have the colorpicker automatically hidden after a palette color is selected. Set ' }}<code>hideAfterPaletteSelect</code>{{ isPt ? ' como ' : ' to ' }}<code>true</code>.</p>
                   <li-color-picker [(ngModel)]="paletteHideColor" [showPalette]="true" [showButtons]="false"
                     [hideAfterPaletteSelect]="true" [palette]="limitlessPalette"></li-color-picker>
                 </div>
@@ -178,39 +178,39 @@
 
         <div class="card border-0 border-top shadow-none">
           <div class="card-header">
-            <h5 class="mb-0">Color formats</h5>
+            <h5 class="mb-0">{{ isPt ? 'Formatos de cor' : 'Color formats' }}</h5>
           </div>
 
           <div class="card-body">
             <div class="row">
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">HEX color format</div>
-                  <p class="mb-3">You can set the format that is displayed in the text box and titles in the palette swatches using <code>preferredFormat</code>.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Formato de cor HEX' : 'HEX color format' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Você pode definir o formato exibido no campo de texto e nos títulos das amostras da paleta usando ' : 'You can set the format that is displayed in the text box and titles in the palette swatches using ' }}<code>preferredFormat</code>.</p>
                   <li-color-picker [(ngModel)]="hexColor" preferredFormat="hex" [showInput]="true"></li-color-picker>
                 </div>
 
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">RGB color format</div>
-                  <p class="mb-3">RGB color system constructs all the colors from the combination of the Red, Green and Blue colors.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Formato de cor RGB' : 'RGB color format' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O sistema RGB constrói todas as cores a partir da combinação de vermelho, verde e azul.' : 'RGB color system constructs all the colors from the combination of the Red, Green and Blue colors.' }}</p>
                   <li-color-picker [(ngModel)]="rgbColor" preferredFormat="rgb" [showInput]="true" [showAlpha]="true"></li-color-picker>
                 </div>
 
                 <div class="mb-4 mb-lg-0">
-                  <div class="fw-bold border-bottom pb-2 mb-2">HTML color names</div>
-                  <p class="mb-3">Spectrum color picker also accepts HTML color names as valid color values.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Nomes de cores HTML' : 'HTML color names' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker também aceita nomes de cores HTML como valores válidos.' : 'li-color-picker also accepts HTML color names as valid color values.' }}</p>
                   <li-color-picker [(ngModel)]="nameColor" preferredFormat="name" [showInput]="true"></li-color-picker>
                 </div>
               </div>
 
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Current values</div>
-                  <p class="mb-3">The examples on the left keep their values formatted according to the configured output.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Valores atuais' : 'Current values' }}</div>
+                  <p class="mb-3">{{ isPt ? 'Os exemplos à esquerda mantêm seus valores formatados de acordo com a saída configurada.' : 'The examples on the left keep their values formatted according to the configured output.' }}</p>
                   <div class="card card-body bg-light border-0 color-picker-summary-card">
                     <div><strong>HEX:</strong> {{ formatValue(hexColor) }}</div>
                     <div class="mt-2"><strong>RGB:</strong> {{ formatValue(rgbColor) }}</div>
-                    <div class="mt-2"><strong>Name:</strong> {{ formatValue(nameColor) }}</div>
+                    <div class="mt-2"><strong>{{ isPt ? 'Nome' : 'Name' }}:</strong> {{ formatValue(nameColor) }}</div>
                   </div>
                 </div>
               </div>
@@ -220,15 +220,15 @@
 
         <div class="card border-0 border-top shadow-none">
           <div class="card-header">
-            <h5 class="mb-0">Picker events</h5>
+            <h5 class="mb-0">{{ isPt ? 'Eventos do picker' : 'Picker events' }}</h5>
           </div>
 
           <div class="card-body">
             <div class="row">
               <div class="col-lg-6">
                 <div class="mb-4 mb-lg-0">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Event binding</div>
-                  <p class="mb-3">The picker can emit <code>change</code>, <code>hide</code>, <code>dragstart</code>, <code>move</code>, <code>show</code> and <code>dragstop</code> events.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Binding de eventos' : 'Event binding' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O picker pode emitir os eventos ' : 'The picker can emit ' }}<code>change</code>, <code>hide</code>, <code>dragstart</code>, <code>move</code>, <code>show</code> {{ isPt ? 'e' : 'and' }} <code>dragstop</code>.</p>
                   <li-color-picker [(ngModel)]="eventColor" [showAlpha]="true" [showPalette]="true"
                     [showInput]="true" [showButtons]="false" [showSelectionPalette]="true"
                     [palette]="limitlessPalette" (pickerChange)="onPickerEvent('change', $event)"
@@ -239,7 +239,7 @@
               </div>
 
               <div class="col-lg-6">
-                <div class="fw-bold border-bottom pb-2 mb-2">Latest events</div>
+                <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Últimos eventos' : 'Latest events' }}</div>
                 <div class="list-group list-group-flush border rounded">
                   <div class="list-group-item"><strong>change:</strong> {{ eventResults['change'] }}</div>
                   <div class="list-group-item"><strong>hide:</strong> {{ eventResults['hide'] }}</div>
@@ -255,36 +255,36 @@
 
         <div class="card border-0 border-top shadow-none">
           <div class="card-header">
-            <h5 class="mb-0">Flat picker</h5>
+            <h5 class="mb-0">{{ isPt ? 'Picker flat' : 'Flat picker' }}</h5>
           </div>
 
           <div class="card-body">
             <div class="row">
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Flat picker</div>
-                  <p class="mb-3">Flat mode means that the color picker will always show up at full size, and be positioned as an inline-block element. To display color picker in flat mode, set <code>flat</code> option to <code>true</code>.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Picker flat' : 'Flat picker' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O modo flat faz com que o color picker apareça sempre em tamanho completo e seja posicionado como um elemento inline-block. Para exibir o picker nesse modo, defina a opção ' : 'Flat mode means that the color picker will always show up at full size, and be positioned as an inline-block element. To display color picker in flat mode, set ' }}<code>flat</code>{{ isPt ? ' como ' : ' option to ' }}<code>true</code>.</p>
                   <li-color-picker [(ngModel)]="flatColor" [flat]="true"></li-color-picker>
                 </div>
 
                 <div class="mb-4 mb-lg-0">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Show input field</div>
-                  <p class="mb-3">In flat picker you can add an input to allow free form typing. The color parsing is permissive in the allowed strings.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Mostrar campo de entrada' : 'Show input field' }}</div>
+                  <p class="mb-3">{{ isPt ? 'No picker flat, você pode adicionar um campo de entrada para permitir digitação livre. O parser de cor é permissivo com strings válidas.' : 'In flat picker you can add an input to allow free form typing. The color parsing is permissive in the allowed strings.' }}</p>
                   <li-color-picker [(ngModel)]="flatInputColor" [flat]="true" [showInput]="true" [showAlpha]="true"></li-color-picker>
                 </div>
               </div>
 
               <div class="col-lg-6">
                 <div class="mb-4">
-                  <div class="fw-bold border-bottom pb-2 mb-2">Flat color palette</div>
-                  <p class="mb-3">Spectrum can show a palette in a flat mode to make it convenient for users to choose from frequently or recently used colors.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Paleta de cores flat' : 'Flat color palette' }}</div>
+                  <p class="mb-3">{{ isPt ? 'O li-color-picker pode mostrar uma paleta no modo flat para facilitar a escolha entre cores usadas com frequência ou recentemente.' : 'li-color-picker can show a palette in flat mode to make it easier to choose from frequently or recently used colors.' }}</p>
                   <li-color-picker [(ngModel)]="flatPaletteColor" [flat]="true" [showPalette]="true"
                     [showButtons]="false" [palette]="limitlessPalette"></li-color-picker>
                 </div>
 
                 <div>
-                  <div class="fw-bold border-bottom pb-2 mb-2">Show initial color</div>
-                  <p class="mb-3">Spectrum in a flat mode can show the color that was initially set. This provides an easy way to click back to what was set when opened.</p>
+                  <div class="fw-bold border-bottom pb-2 mb-2">{{ isPt ? 'Mostrar cor inicial' : 'Show initial color' }}</div>
+                  <p class="mb-3">{{ isPt ? 'No modo flat, o li-color-picker pode mostrar a cor definida inicialmente. Isso facilita voltar ao valor que estava configurado ao abrir.' : 'In flat mode, li-color-picker can show the color that was initially set. This provides an easy way to return to what was set when opened.' }}</p>
                   <li-color-picker [(ngModel)]="flatInitialColor" [flat]="true" [showInitial]="true" [showInput]="true"></li-color-picker>
                 </div>
               </div>
@@ -302,10 +302,10 @@
               <div class="card card-body h-100">
                 <h6 class="mb-2">{{ mainInputsTitle }}</h6>
                 <ul class="mb-0 ps-3">
-                  <li><code>[(ngModel)]</code> controla o valor selecionado.</li>
-                  <li><code>showInput</code>, <code>showAlpha</code>, <code>allowEmpty</code> e <code>showButtons</code> ajustam a UI.</li>
-                  <li><code>showPalette</code>, <code>showSelectionPalette</code> e <code>palette</code> cobrem atalhos visuais.</li>
-                  <li><code>preferredFormat</code>, <code>flat</code> e eventos como <code>pickerChange</code> completam os casos avançados.</li>
+                  <li><code>[(ngModel)]</code>{{ isPt ? ' controla o valor selecionado.' : ' controls the selected value.' }}</li>
+                  <li><code>showInput</code>, <code>showAlpha</code>, <code>allowEmpty</code> {{ isPt ? 'e' : 'and' }} <code>showButtons</code>{{ isPt ? ' ajustam a UI.' : ' adjust the UI.' }}</li>
+                  <li><code>showPalette</code>, <code>showSelectionPalette</code> {{ isPt ? 'e' : 'and' }} <code>palette</code>{{ isPt ? ' cobrem atalhos visuais.' : ' cover visual shortcuts.' }}</li>
+                  <li><code>preferredFormat</code>, <code>flat</code> {{ isPt ? 'e eventos como' : 'and events such as' }} <code>pickerChange</code>{{ isPt ? ' completam os casos avançados.' : ' complete advanced use cases.' }}</li>
                 </ul>
               </div>
             </div>

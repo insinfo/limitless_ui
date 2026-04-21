@@ -48,13 +48,14 @@
               </div>
             </div>
 
-            <li-date-range-picker [inicio]="rangeStart" [fim]="rangeEnd"
-              [placeholder]="t.pages.dateRange.sprintPlaceholder" (inicioChange)="onRangeStartChange($event)"
-              (fimChange)="onRangeEndChange($event)">
+            <li-date-range-picker [start]="rangeStart" [end]="rangeEnd"
+              [placeholder]="t.pages.dateRange.sprintPlaceholder" (startChange)="onRangeStartChange($event)"
+              (endChange)="onRangeEndChange($event)">
             </li-date-range-picker>
 
             <div class="demo-summary-box mt-3">
               <div><strong>{{ t.common.currentPeriod }}:</strong> {{ selectedRangeLabel }}</div>
+              <div class="text-muted">{{ isPortuguese ? 'Este exemplo usa os aliases start/end. O próximo mantém inicio/fim para compatibilidade.' : 'This example uses the start/end aliases. The next one keeps inicio/fim for compatibility.' }}</div>
             </div>
 
             <hr class="my-4">

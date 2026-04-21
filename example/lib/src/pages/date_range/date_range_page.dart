@@ -1,4 +1,5 @@
 import 'package:limitless_ui_example/limitless_ui_example.dart';
+
 @Component(
   selector: 'date-range-page',
   templateUrl: 'date_range_page.html',
@@ -17,16 +18,17 @@ class DateRangePageComponent {
 
   static const String apiSnippet = '''
 <li-date-range-picker
-  [inicio]="rangeStart"
-  [fim]="rangeEnd"
+  [start]="rangeStart"
+  [end]="rangeEnd"
   [minDate]="minDate"
   [maxDate]="maxDate"
-  (inicioChange)="onRangeStartChange(\$event)"
-  (fimChange)="onRangeEndChange(\$event)">
+  (startChange)="onRangeStartChange(\$event)"
+  (endChange)="onRangeEndChange(\$event)">
 </li-date-range-picker>''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+  bool get isPortuguese => i18n.isPortuguese;
 
   DateTime? rangeStart = DateTime(2026, 3, 1);
   DateTime? rangeEnd = DateTime(2026, 3, 21);

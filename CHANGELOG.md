@@ -1,7 +1,15 @@
+## 1.0.0-dev.10
+
+- Expanded `li-modal` with intermediate sizes (`xx-large`, `xxx-large`, and `fluid`), optional `fullScreenChrome` for true fullscreen shell chrome, optional `closeOnEscape`, projected header/footer slots, custom dimensions/ARIA hooks, stronger stacked-modal handling, and broader browser/demo coverage for the richer dialog flows.
+- Added `start`/`end` aliases to `li-date-range-picker` while preserving `inicio`/`fim`, including mirrored `startChange`/`endChange` outputs, updated example usage, and regression coverage for the alias flow.
+- Changed `li-dropdown-menu` to close other open instances by default when a new one opens, added the `closeOtherMenusOnOpen` opt-out for submenu-like or coordinated multi-menu layouts, and documented that pattern in both the README and the dropdown example page.
+- Expanded the modal and dropdown example pages with more complete API/demo coverage, dark-theme-safe presentation based on Limitless theme tokens, and explicit visual documentation for special layout behaviors.
+- Refined `li-color-picker` drag/clickout behavior so dragging no longer closes the picker, a single outside click closes it after drag completion, and document text selection is suppressed during interactive dragging.
+- Updated the color picker example page to keep independent state between demos, fully respect the Portuguese locale in overview content, and describe the component as `li-color-picker` instead of `Spectrum`, with added browser regression coverage for the post-drag outside-click flow.
+
 ## 1.0.0-dev.9
 
 - Fixed `li-datatable` sorting compatibility with `essential_core` `1.2.0` by updating single-column sorting to write `orderBy`/`orderDir` directly, clearing legacy `orderFields` when multi-column sorting is disabled, and adding regression coverage for the split sorting API, including repeated-click `asc`/`desc` toggling in multi-column mode.
-
 
 ## 1.0.0-dev.8
 

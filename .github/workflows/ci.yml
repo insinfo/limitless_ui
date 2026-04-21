@@ -10,6 +10,8 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     steps:
       - name: Checkout
@@ -34,33 +36,58 @@ jobs:
         working-directory: example
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: Run VM-safe tests
-        run: dart test test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart
+      - name: Prepare VM coverage directory
+        run: mkdir -p coverage
 
-      - name: Run browser and AngularDart tests
+      - name: Run VM-only coverage suite
+        run: dart test --coverage=coverage/vm_raw test/currency_input_formatter_test.dart test/lite_xlsx_test.dart test/tine_pdf_test.dart test/treeview/treeview_settings_test.dart
+
+      - name: Generate VM LCOV report
+        run: |
+          dart pub global activate coverage
+          dart pub global run coverage:format_coverage \
+            --lcov \
+            --in=coverage/vm_raw \
+            --out=coverage/vm.lcov.info \
+            --report-on=lib \
+            --packages=.dart_tool/package_config.json
+
+      - name: Upload VM coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-coverage-lcov
+          path: coverage/vm.lcov.info
+
+      - name: Upload VM coverage to Codecov
+        if: env.CODECOV_TOKEN != ''
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/vm.lcov.info
+          flags: vm
+          name: limitless-ui-vm
+          disable_search: true
+          fail_ci_if_error: false
+          token: ${{ env.CODECOV_TOKEN }}
+
+      - name: Skip VM Codecov upload (missing token)
+        if: env.CODECOV_TOKEN == ''
+        run: echo "CODECOV_TOKEN is not configured; skipping Codecov upload."
+
+      - name: Run browser and AngularDart tests without coverage
         env:
           CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: |
           printf '#!/usr/bin/env bash\nexec "%s" --no-sandbox "$@"\n' "$CHROME_BIN" > /tmp/chrome-no-sandbox
           chmod +x /tmp/chrome-no-sandbox
-          CHROME_EXECUTABLE=/tmp/chrome-no-sandbox dart run build_runner test -- -p chrome -j 1 \
-            test/alerts/alert_component_test.dart \
-            test/alerts/li_alert_component_test.dart \
-            test/progress_component_test.dart \
-            test/datatable/li_datatable_component_test.dart \
-            test/accordion/li_accordion_directive_test.dart \
-            test/breadcrumbs/li_breadcrumb_component_test.dart \
-            test/dropdown/li_dropdown_directive_test.dart \
-            test/modal/li_modal_component_test.dart \
-            test/nav/li_nav_directive_test.dart \
-            test/offcanvas/li_offcanvas_component_test.dart \
-            test/pagination/li_pagination_component_test.dart \
-            test/popover/li_popover_component_test.dart \
-            test/scrollspy/li_scrollspy_directive_test.dart \
-            test/treeview/li_treeview_dropdown_select_component_test.dart \
-            test/typeahead/li_typeahead_component_test.dart \
-            test/toast/li_toast_component_test.dart \
-            test/tooltip/li_tooltip_directive_test.dart
+          VM_SAFE_TESTS=(
+            test/currency_input_formatter_test.dart
+            test/lite_xlsx_test.dart
+            test/tine_pdf_test.dart
+            test/treeview/treeview_settings_test.dart
+          )
+          printf '%s\n' "${VM_SAFE_TESTS[@]}" > /tmp/vm_safe_tests.txt
+          mapfile -t BROWSER_TESTS < <(find test -name '*_test.dart' | sort | grep -vxF -f /tmp/vm_safe_tests.txt)
+          CHROME_EXECUTABLE=/tmp/chrome-no-sandbox dart run build_runner test -- -p chrome -j 1 "${BROWSER_TESTS[@]}"
 
       - name: Validate pub package
         run: dart pub publish --dry-run

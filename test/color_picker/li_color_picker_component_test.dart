@@ -22,6 +22,7 @@ import 'li_color_picker_component_test.template.dart' as ng;
         [value]="value"
         (valueChange)="value = \$event">
     </li-color-picker>
+    <button id="outside-target" type="button">Outside</button>
   ''',
   directives: [coreDirectives, LiColorPickerComponent],
 )
@@ -60,6 +61,74 @@ void main() {
 
     expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
+  });
+
+  test('closes with one outside click after dragging', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final trigger = fixture.rootElement.querySelector(
+      '.color-picker-trigger .sp-replacer',
+    ) as html.Element;
+    final outside = fixture.rootElement.querySelector(
+      '#outside-target',
+    ) as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final panel = html.document.querySelector(
+      '.sp-container:not(.sp-hidden)',
+    ) as html.Element;
+    final colorArea = panel.querySelector('.sp-color') as html.Element;
+    final rect = colorArea.getBoundingClientRect();
+
+    final startX = (rect.left + (rect.width * 0.3)).round();
+    final startY = (rect.top + (rect.height * 0.3)).round();
+    final endX = (rect.left + (rect.width * 0.7)).round();
+    final endY = (rect.top + (rect.height * 0.2)).round();
+
+    await fixture.update((_) {
+      colorArea.dispatchEvent(
+        html.MouseEvent(
+          'mousedown',
+          clientX: startX,
+          clientY: startY,
+          button: 0,
+          canBubble: true,
+        ),
+      );
+      html.document.dispatchEvent(
+        html.MouseEvent(
+          'mousemove',
+          clientX: endX,
+          clientY: endY,
+          button: 0,
+          canBubble: true,
+        ),
+      );
+      html.document.dispatchEvent(
+        html.MouseEvent(
+          'mouseup',
+          clientX: endX,
+          clientY: endY,
+          button: 0,
+          canBubble: true,
+        ),
+      );
+    });
+    await _settle(fixture);
+
+    expect(panel.classes.contains('sp-hidden'), isFalse);
+
+    await fixture.update((_) {
+      outside.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(panel.classes.contains('sp-hidden'), isTrue);
   });
 }
 

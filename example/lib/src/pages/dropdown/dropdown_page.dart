@@ -13,6 +13,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiDropdownAnchorDirective,
     LiDropdownToggleDirective,
     LiDropdownMenuDirective,
+    LiDropdownMenuComponent,
     LiDropdownItemDirective,
     LiDropdownButtonItemDirective,
   ],
@@ -49,10 +50,90 @@ class DropdownPageComponent {
   </div>
 </div>''';
 
+  static const String compactMenuApiSnippet = '''
+<li-dropdown-menu
+  [options]="primaryOptions"
+  triggerLabel="Filters"
+  triggerIconClass="ph-funnel"
+  container="inline"
+  [closeOtherMenusOnOpen]="false"
+  (valueChange)="onCompactMenuAction(\$event)">
+</li-dropdown-menu>
+
+<li-dropdown-menu
+  [options]="secondaryOptions"
+  triggerLabel="Columns"
+  triggerIconClass="ph-sliders-horizontal"
+  container="inline"
+  [closeOtherMenusOnOpen]="false"
+  (valueChange)="onCompactMenuAction(\$event)">
+</li-dropdown-menu>''';
+
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;
 
   String dropdownState = '';
+  String compactMenuState = '';
+
+  List<LiDropdownMenuOption> get primaryCompactMenuOptions => _isPt
+      ? const <LiDropdownMenuOption>[
+          LiDropdownMenuOption(
+            value: 'pending',
+            label: 'Pendentes',
+            description: 'Atalha o recorte principal',
+            iconClass: 'ph-clock-countdown',
+          ),
+          LiDropdownMenuOption(
+            value: 'review',
+            label: 'Em revisão',
+            description: 'Fluxos aguardando decisão',
+            iconClass: 'ph-eye',
+          ),
+        ]
+      : const <LiDropdownMenuOption>[
+          LiDropdownMenuOption(
+            value: 'pending',
+            label: 'Pending',
+            description: 'Shortcuts the main filter slice',
+            iconClass: 'ph-clock-countdown',
+          ),
+          LiDropdownMenuOption(
+            value: 'review',
+            label: 'In review',
+            description: 'Flows waiting for a decision',
+            iconClass: 'ph-eye',
+          ),
+        ];
+
+  List<LiDropdownMenuOption> get secondaryCompactMenuOptions => _isPt
+      ? const <LiDropdownMenuOption>[
+          LiDropdownMenuOption(
+            value: 'owner',
+            label: 'Responsável',
+            description: 'Mostra a coluna de ownership',
+            iconClass: 'ph-user-circle',
+          ),
+          LiDropdownMenuOption(
+            value: 'deadline',
+            label: 'Prazo',
+            description: 'Mantém o SLA visível',
+            iconClass: 'ph-calendar-blank',
+          ),
+        ]
+      : const <LiDropdownMenuOption>[
+          LiDropdownMenuOption(
+            value: 'owner',
+            label: 'Owner',
+            description: 'Keeps the ownership column visible',
+            iconClass: 'ph-user-circle',
+          ),
+          LiDropdownMenuOption(
+            value: 'deadline',
+            label: 'Deadline',
+            description: 'Keeps the SLA visible',
+            iconClass: 'ph-calendar-blank',
+          ),
+        ];
 
   String get pageTitle => _isPt ? 'Componentes' : 'Components';
   String get pageSubtitle => 'Dropdown';
@@ -129,6 +210,21 @@ class DropdownPageComponent {
   String get navbarBody => _isPt
       ? 'Dentro de navbar, o display padrão vira estático para preservar o comportamento responsivo.'
       : 'Inside a navbar, the default display becomes static to preserve responsive behavior.';
+  String get compactMenuTitle =>
+      _isPt ? 'li-dropdown-menu coexistindo' : 'Coexisting li-dropdown-menu';
+  String get compactMenuBody => _isPt
+      ? 'Por padrão, abrir um li-dropdown-menu fecha os demais. Aqui a flag closeOtherMenusOnOpen=false fica explícita para casos especiais, como filtros e colunas que precisam permanecer abertos ao mesmo tempo.'
+      : 'By default, opening one li-dropdown-menu closes the others. Here closeOtherMenusOnOpen=false is explicit for special cases, such as filters and columns that must remain open at the same time.';
+  String get compactMenuUseCase => _isPt
+      ? 'Use isso com parcimônia: faz sentido para barras densas, submenus compostos e controles coordenados. Para headers comuns, mantenha o padrão.'
+      : 'Use it sparingly: it makes sense for dense toolbars, composed submenus, and coordinated controls. For regular headers, keep the default behavior.';
+  String get filtersMenuLabel => _isPt ? 'Filtros' : 'Filters';
+  String get columnsMenuLabel => _isPt ? 'Colunas' : 'Columns';
+  String get compactMenuStateTitle =>
+      _isPt ? 'Última ação dos menus compactos' : 'Last compact menu action';
+  String get compactMenuWaitingState => _isPt
+      ? 'Menus compactos: aguardando interação'
+      : 'Compact menus: waiting for interaction';
   String get navbarDropdownLabel => _isPt ? 'Dropdown da navbar' : 'Navbar dropdown';
   String get profileLabel => _isPt ? 'Perfil' : 'Profile';
   String get billingLabel => _isPt ? 'Cobrança' : 'Billing';
@@ -143,6 +239,7 @@ class DropdownPageComponent {
           'liDropdownToggle alterna o menu por clique e por teclado.',
           'liDropdownMenu recebe classes de menu e delega a navegação por teclado.',
           'liDropdownItem marca itens focáveis e retira itens desabilitados da rotação.',
+          'li-dropdown-menu usa listas de opções prontas e fecha outras instâncias por padrão, com opt-out via closeOtherMenusOnOpen.',
         ]
       : const <String>[
           'liDropdown controls open state, autoClose, placement, and container.',
@@ -150,6 +247,7 @@ class DropdownPageComponent {
           'liDropdownToggle toggles the menu by click and keyboard.',
           'liDropdownMenu receives menu classes and delegates keyboard navigation.',
           'liDropdownItem marks focusable items and removes disabled items from rotation.',
+          'li-dropdown-menu uses ready-made option lists and closes other instances by default, with an opt-out through closeOtherMenusOnOpen.',
         ];
   String get waitingState => _isPt ? 'Dropdown: aguardando interação' : 'Dropdown: waiting for interaction';
   String get openedState => _isPt ? 'Dropdown: menu aberto' : 'Dropdown: menu open';
@@ -157,5 +255,11 @@ class DropdownPageComponent {
 
   void onOpenChange(bool open) {
     dropdownState = open ? openedState : closedState;
+  }
+
+  void onCompactMenuAction(String value) {
+    compactMenuState = _isPt
+        ? 'Menus compactos: ação "$value" disparada.'
+        : 'Compact menus: "$value" action fired.';
   }
 }

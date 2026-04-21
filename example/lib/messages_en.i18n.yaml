@@ -428,8 +428,8 @@ pages:
     constrainedHelp: The second example constrains the selection with minDate and maxDate.
     between: to
     apiIntro: Use the component when the flow depends on a range with start and end dates clearly controlled by the parent component.
-    apiOne: "[inicio] and (inicioChange) control the start date."
-    apiTwo: "[fim] and (fimChange) control the end date."
+    apiOne: "[inicio] or [start], with (inicioChange) or (startChange), control the start date."
+    apiTwo: "[fim] or [end], with (fimChange) or (endChange), control the end date."
     apiThree: "[minDate] and [maxDate] restrict the selectable window."
     apiFour: "[placeholder] and locale adjust the field communication."
   timePicker:
@@ -782,7 +782,7 @@ pages:
     optionSix: "[valueKey]: key for the value; null means the whole instance."
     optionSeven: "[placeholder]: text shown when no item is selected."
     optionEight: "[title]: modal title."
-    optionNine: "[modalSize]: modal size (large, xtra-large)."
+    optionNine: "[modalSize]: modal size (large, xtra-large, xx-large, xxx-large, fluid, modal-full)."
     optionTen: "[disabled]: disables the component."
     optionEleven: "[fullScreenOnMobile]: fullscreen modal on mobile."
     outputOne: "(dataRequest): emitted when the datatable requests data."
