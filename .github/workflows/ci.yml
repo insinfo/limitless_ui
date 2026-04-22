@@ -12,11 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Dart 3.6.2
         uses: dart-lang/setup-dart@v1
@@ -54,14 +53,14 @@ jobs:
             --packages=.dart_tool/package_config.json
 
       - name: Upload VM coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vm-coverage-lcov
           path: coverage/vm.lcov.info
 
       - name: Upload VM coverage to Codecov
         if: env.CODECOV_TOKEN != ''
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: ./coverage/vm.lcov.info
           flags: vm
