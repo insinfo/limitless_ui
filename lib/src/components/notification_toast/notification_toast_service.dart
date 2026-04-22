@@ -1,10 +1,10 @@
-//C:\MyDartProjects\new_sali\frontend\lib\src\shared\components\notification_toast\notification_toast_service.dart
+
 import 'dart:async';
 import 'dart:html' as html;
 
-typedef ToastSoundPlayer = Future<void> Function();
+typedef LiToastSoundPlayer = Future<void> Function();
 
-enum NotificationToastColor {
+enum LiNotificationToastColor {
   primary,
   secondary,
   success,
@@ -17,66 +17,66 @@ enum NotificationToastColor {
   none,
 }
 
-extension NotificationToastColorExtension on NotificationToastColor {
+extension LiNotificationToastColorExtension on LiNotificationToastColor {
   String asString() {
     switch (this) {
-      case NotificationToastColor.primary:
+      case LiNotificationToastColor.primary:
         return 'primary';
-      case NotificationToastColor.secondary:
+      case LiNotificationToastColor.secondary:
         return 'secondary';
-      case NotificationToastColor.success:
+      case LiNotificationToastColor.success:
         return 'success';
-      case NotificationToastColor.info:
+      case LiNotificationToastColor.info:
         return 'info';
-      case NotificationToastColor.warning:
+      case LiNotificationToastColor.warning:
         return 'warning';
-      case NotificationToastColor.danger:
+      case LiNotificationToastColor.danger:
         return 'danger';
-      case NotificationToastColor.pink:
+      case LiNotificationToastColor.pink:
         return 'pink';
-      case NotificationToastColor.teal:
+      case LiNotificationToastColor.teal:
         return 'teal';
-      case NotificationToastColor.indigo:
+      case LiNotificationToastColor.indigo:
         return 'indigo';
-      case NotificationToastColor.none:
+      case LiNotificationToastColor.none:
         return 'none';
     }
   }
 }
 
-NotificationToastColor _stringAsNotificationCompColor(String val) {
+LiNotificationToastColor _stringAsNotificationCompColor(String val) {
   switch (val) {
     case 'primary':
-      return NotificationToastColor.primary;
+      return LiNotificationToastColor.primary;
     case 'secondary':
-      return NotificationToastColor.secondary;
+      return LiNotificationToastColor.secondary;
     case 'success':
-      return NotificationToastColor.success;
+      return LiNotificationToastColor.success;
     case 'info':
-      return NotificationToastColor.info;
+      return LiNotificationToastColor.info;
     case 'warning':
-      return NotificationToastColor.warning;
+      return LiNotificationToastColor.warning;
     case 'danger':
-      return NotificationToastColor.danger;
+      return LiNotificationToastColor.danger;
     case 'pink':
-      return NotificationToastColor.pink;
+      return LiNotificationToastColor.pink;
     case 'teal':
-      return NotificationToastColor.teal;
+      return LiNotificationToastColor.teal;
     case 'indigo':
-      return NotificationToastColor.indigo;
+      return LiNotificationToastColor.indigo;
     case 'none':
-      return NotificationToastColor.none;
+      return LiNotificationToastColor.none;
     default:
       // return 'unknown';
       throw Exception('NotificationCompColor unknown');
   }
 }
 
-class ToastSoundController {
-  ToastSoundController({
+class LiToastSoundController {
+  LiToastSoundController({
     String? audioSrc,
     html.AudioElement? audioElement,
-    ToastSoundPlayer? customPlayer,
+    LiToastSoundPlayer? customPlayer,
   })  : _customPlayer = customPlayer,
         audio = customPlayer == null && (audioSrc != null || audioElement != null)
             ? (audioElement ?? html.AudioElement())
@@ -90,7 +90,7 @@ class ToastSoundController {
   }
 
   final html.AudioElement? audio;
-  final ToastSoundPlayer? _customPlayer;
+  final LiToastSoundPlayer? _customPlayer;
   bool userInteracted = false;
 
   bool get isConfigured {
@@ -124,33 +124,37 @@ class ToastSoundController {
 
 /// A service that manages toasts that should be displayed.
 //@Injectable()
-class NotificationToastService {
+class LiNotificationToastService {
   /// A list of toasts that should be displayed.
-  List<Toast> toasts = [];
+  List<LiNotificationToast> toasts = <LiNotificationToast>[];
 
-  final StreamController<Toast> _onNotifyStreamController;
-  Stream<Toast> get onNotify => _onNotifyStreamController.stream;
-  final ToastSoundController? soundController;
+  final StreamController<LiNotificationToast> _onNotifyStreamController;
+  Stream<LiNotificationToast> get onNotify => _onNotifyStreamController.stream;
+  final StreamController<void> _changesStreamController;
+  Stream<void> get changes => _changesStreamController.stream;
+  final LiToastSoundController? soundController;
 
   /// Constructor.
-  NotificationToastService({this.soundController})
-      : _onNotifyStreamController = StreamController<Toast>.broadcast();
+  LiNotificationToastService({this.soundController})
+      : _onNotifyStreamController = StreamController<LiNotificationToast>.broadcast(),
+        _changesStreamController = StreamController<void>.broadcast();
 
-  NotificationToastService.withSound({
+  LiNotificationToastService.withSound({
     required String audioSrc,
-  })  : soundController = ToastSoundController(audioSrc: audioSrc),
-        _onNotifyStreamController = StreamController<Toast>.broadcast();
+  })  : soundController = LiToastSoundController(audioSrc: audioSrc),
+        _onNotifyStreamController = StreamController<LiNotificationToast>.broadcast(),
+        _changesStreamController = StreamController<void>.broadcast();
 
   void notify(
     String message, {
-    NotificationToastColor type = NotificationToastColor.success,
+    LiNotificationToastColor type = LiNotificationToastColor.success,
     String? title = 'Informação',
     String? icon,
     int durationSeconds = 3,
     bool enableSound = false,
     String? link,
   }) {
-    final toast = Toast(
+    final toast = LiNotificationToast(
       type: type,
       title: title,
       message: message,
@@ -166,23 +170,13 @@ class NotificationToastService {
       }
     }
 
-    toasts.insert(0, toast);
-    _onNotifyStreamController.add(toast);
-
-    final milliseconds = ((1000 * toast.durationSeconds) + 300).round();
-    // How to get size of each toast?
-    Timer(Duration(milliseconds: milliseconds), () {
-      toast.toBeDeleted = true;
-      Timer(Duration(milliseconds: 300), () {
-        toasts.remove(toast);
-      });
-    });
+    _enqueueToast(toast, emitNotify: true);
   }
 
   /// Display a toast.
-  void add(NotificationToastColor type, String title, String message,
+  void add(LiNotificationToastColor type, String title, String message,
       {String? icon, int durationSeconds = 3, String? link}) {
-    final toast = Toast(
+    final toast = LiNotificationToast(
       type: type,
       title: title,
       message: message,
@@ -190,22 +184,52 @@ class NotificationToastService {
       durationSeconds: durationSeconds,
       link: link,
     );
-    toasts.insert(0, toast);
-    final milliseconds = (1000 * toast.durationSeconds + 300).round();
-    // How to get size of each toast?
+    _enqueueToast(toast);
+  }
+
+  void remove(LiNotificationToast toast) {
+    final nextToasts = List<LiNotificationToast>.from(toasts)..remove(toast);
+    if (nextToasts.length != toasts.length) {
+      toasts = nextToasts;
+      _emitChanges();
+    }
+  }
+
+  void _enqueueToast(LiNotificationToast toast, {bool emitNotify = false}) {
+    toasts = <LiNotificationToast>[toast, ...toasts];
+    if (emitNotify) {
+      _onNotifyStreamController.add(toast);
+    }
+    _emitChanges();
+
+    final milliseconds = ((1000 * toast.durationSeconds) + 300).round();
     Timer(Duration(milliseconds: milliseconds), () {
       toast.toBeDeleted = true;
-      Timer(Duration(milliseconds: 300), () {
-        toasts.remove(toast);
+      toasts = List<LiNotificationToast>.from(toasts);
+      _emitChanges();
+
+      Timer(const Duration(milliseconds: 300), () {
+        remove(toast);
       });
     });
+  }
+
+  void _emitChanges() {
+    if (!_changesStreamController.isClosed) {
+      _changesStreamController.add(null);
+    }
+  }
+
+  void dispose() {
+    _onNotifyStreamController.close();
+    _changesStreamController.close();
   }
 }
 
 /// Data model for a toast, a.k.a. pop-up notification.
-class Toast {
+class LiNotificationToast {
   /// The type (color) of this toast.
-  NotificationToastColor type;
+  LiNotificationToastColor type;
 
   /// The title to display (optional).
   String? title;
@@ -238,8 +262,8 @@ class Toast {
       : 'toast-fade-in 0.3s ease-in';
 
   /// Constructor
-  Toast(
-      {this.type = NotificationToastColor.info,
+  LiNotificationToast(
+      {this.type = LiNotificationToastColor.info,
       this.title,
       required this.message,
       this.icon,
@@ -247,13 +271,13 @@ class Toast {
       this.durationSeconds = 3}) {
     created = DateTime.now();
     if (icon == null) {
-      if (type == NotificationToastColor.success) {
+      if (type == LiNotificationToastColor.success) {
         icon = 'check';
-      } else if (type == NotificationToastColor.info) {
+      } else if (type == LiNotificationToastColor.info) {
         icon = 'info';
-      } else if (type == NotificationToastColor.warning) {
+      } else if (type == LiNotificationToastColor.warning) {
         icon = 'exclamation';
-      } else if (type == NotificationToastColor.danger) {
+      } else if (type == LiNotificationToastColor.danger) {
         icon = 'times';
       } else {
         icon = 'bullhorn';
@@ -261,8 +285,8 @@ class Toast {
     }
   }
 
-  factory Toast.fromMap(Map<String, dynamic> map) {
-    final t = Toast(
+  factory LiNotificationToast.fromMap(Map<String, dynamic> map) {
+    final t = LiNotificationToast(
       message: map['message'],
       icon: map['icon'],
       title: map['title'],
@@ -293,25 +317,25 @@ class Toast {
   }
 
   String get bgColor {
-    if (type == NotificationToastColor.primary) {
+    if (type == LiNotificationToastColor.primary) {
       return 'bg-primary';
-    } else if (type == NotificationToastColor.secondary) {
+    } else if (type == LiNotificationToastColor.secondary) {
       return 'bg-secondary';
-    } else if (type == NotificationToastColor.success) {
+    } else if (type == LiNotificationToastColor.success) {
       return 'bg-success';
-    } else if (type == NotificationToastColor.info) {
+    } else if (type == LiNotificationToastColor.info) {
       return 'bg-info';
-    } else if (type == NotificationToastColor.warning) {
+    } else if (type == LiNotificationToastColor.warning) {
       return 'bg-warning';
-    } else if (type == NotificationToastColor.danger) {
+    } else if (type == LiNotificationToastColor.danger) {
       return 'bg-danger';
-    } else if (type == NotificationToastColor.primary) {
+    } else if (type == LiNotificationToastColor.primary) {
       return 'bg-primary';
-    } else if (type == NotificationToastColor.pink) {
+    } else if (type == LiNotificationToastColor.pink) {
       return 'bg-pink';
-    } else if (type == NotificationToastColor.teal) {
+    } else if (type == LiNotificationToastColor.teal) {
       return 'bg-teal';
-    } else if (type == NotificationToastColor.indigo) {
+    } else if (type == LiNotificationToastColor.indigo) {
       return 'bg-indigo';
     } else {
       return 'bg-white';

@@ -1,0 +1,40 @@
+<div class="timeline-icon">
+  <ng-content select="[liTimelineIcon]"></ng-content>
+
+  <img
+      *ngIf="!hasProjectedIcon && hasIconImage"
+      [src]="iconImageUrl"
+      [attr.alt]="resolvedIconImageAlt">
+
+  <div *ngIf="!hasProjectedIcon && !hasIconImage && (hasIconClass || hasIconText)"
+       [class]="resolvedIconInnerClass">
+    <i *ngIf="hasIconClass" [class]="iconClass"></i>
+    <span *ngIf="!hasIconClass && hasIconText" class="li-timeline-item__icon-text">{{ iconText }}</span>
+  </div>
+</div>
+
+<div *ngIf="hasTime" class="timeline-time">
+  <ng-content select="[liTimelineTime]"></ng-content>
+  <span *ngIf="!hasProjectedTime">{{ timeLabel }}</span>
+</div>
+
+<ng-content select="[liTimelineContent]"></ng-content>
+
+<div *ngIf="shouldRenderDefaultCard" [class]="resolvedCardClass">
+  <div *ngIf="title.trim().isNotEmpty || subtitle.trim().isNotEmpty" class="card-header d-sm-flex">
+    <div class="flex-fill">
+      <h6 *ngIf="title.trim().isNotEmpty" class="mb-0">{{ title }}</h6>
+      <div *ngIf="subtitle.trim().isNotEmpty" class="text-muted mt-1">{{ subtitle }}</div>
+    </div>
+  </div>
+
+  <div *ngIf="description.trim().isNotEmpty" [class]="resolvedCardBodyClass">
+    <p class="mb-0">{{ description }}</p>
+  </div>
+</div>
+
+<div *ngIf="shouldRenderDefaultPlain" [class]="resolvedPlainClass">
+  <h6 *ngIf="title.trim().isNotEmpty" class="li-timeline-item__title mb-1">{{ title }}</h6>
+  <div *ngIf="subtitle.trim().isNotEmpty" class="li-timeline-item__subtitle text-muted mb-2">{{ subtitle }}</div>
+  <p *ngIf="description.trim().isNotEmpty" class="mb-0">{{ description }}</p>
+</div>

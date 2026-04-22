@@ -119,24 +119,24 @@
     border-radius: var(--li-modal-radius);
 }
 
-.modal .modal-dialog.modal-full:not(.modal-full-chrome) .modal-header {
+.modal .modal-dialog.modal-full:not(.modal-full-shell) .modal-header {
     border-top-left-radius: var(--li-modal-inner-radius);
     border-top-right-radius: var(--li-modal-inner-radius);
 }
 
-.modal .modal-dialog.modal-full:not(.modal-full-chrome) .modal-footer {
+.modal .modal-dialog.modal-full:not(.modal-full-shell) .modal-footer {
     border-bottom-right-radius: var(--li-modal-inner-radius);
     border-bottom-left-radius: var(--li-modal-inner-radius);
 }
 
-.modal .modal-dialog.modal-full.modal-full-chrome .modal-content {
+.modal .modal-dialog.modal-full.modal-full-shell .modal-content {
     min-height: 100dvh;
     height: 100dvh;
     border-radius: 0;
 }
 
-.modal .modal-dialog.modal-full.modal-full-chrome .modal-header,
-.modal .modal-dialog.modal-full.modal-full-chrome .modal-footer {
+.modal .modal-dialog.modal-full.modal-full-shell .modal-header,
+.modal .modal-dialog.modal-full.modal-full-shell .modal-footer {
     border-radius: 0;
 }
 

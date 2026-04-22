@@ -15,29 +15,6 @@
       <li-tabsx type="tabs">
         <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
-            <section class="modal-demo-hero mb-4">
-              <div class="modal-demo-hero__copy">
-                <span class="modal-demo-eyebrow">{{ showcaseEyebrow }}</span>
-                <h5 class="mb-2">{{ launchMatrixTitle }}</h5>
-                <p class="text-muted mb-0">{{ overviewIntro }}</p>
-              </div>
-
-              <div class="modal-demo-kpis">
-                <div class="modal-demo-kpi">
-                  <div class="modal-demo-kpi__value">{{ modalSizeShowcaseItems.length }}</div>
-                  <div class="modal-demo-kpi__label">{{ supportedSizesKpi }}</div>
-                </div>
-                <div class="modal-demo-kpi">
-                  <div class="modal-demo-kpi__value">10</div>
-                  <div class="modal-demo-kpi__label">{{ supportedCombosKpi }}</div>
-                </div>
-                <div class="modal-demo-kpi">
-                  <div class="modal-demo-kpi__value">open()</div>
-                  <div class="modal-demo-kpi__label">{{ lifecycleKpi }}</div>
-                </div>
-              </div>
-            </section>
-
             <section class="mb-4">
               <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-lg-between gap-2 mb-3">
                 <div>
@@ -153,6 +130,16 @@
             </section>
 
             <section class="mb-4">
+              <div class="alert alert-primary alert-icon-start mb-0">
+                <span class="alert-icon bg-primary text-white">
+                  <i class="ph-monitor"></i>
+                </span>
+                <strong>{{ fullScreenShellExplainTitle }}</strong>
+                {{ fullScreenShellExplainBody }}
+              </div>
+            </section>
+
+            <section class="mb-4">
               <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-lg-between gap-2 mb-3">
                 <div>
                   <h5 class="mb-1">{{ sizeShowcaseTitle }}</h5>
@@ -236,6 +223,7 @@
                   <ul class="mb-0 ps-3">
                     <li><code>title-text</code>, <code>headerColor</code> e <code>size</code> definem a estrutura principal.</li>
                     <li><code>size</code> aceita <code>default</code>, <code>modal-xs</code>, <code>modal-sm</code>, <code>large</code>, <code>xtra-large</code>, <code>xx-large</code>, <code>xxx-large</code>, <code>fluid</code> e <code>modal-full</code>.</li>
+                    <li><code>fullScreenShell</code> só atua com <code>size="modal-full"</code> e troca o visual de cartão arredondado por um shell fullscreen sem cantos.</li>
                     <li><code>lazyContent</code>, <code>dialogScrollable</code>, <code>verticalCenter</code>, <code>compactHeader</code> e <code>smallHeader</code> controlam comportamento interno.</li>
                     <li><code>closeOnBackdropClick</code>, <code>closeOnEscape</code>, <code>enableCloseBtn</code>, <code>enableBackdrop</code>, <code>enableHeader</code> e <code>fullScreenOnMobile</code> refinam UX e encerramento.</li>
                   </ul>
@@ -249,7 +237,7 @@
                     <li><code>open()</code> e <code>close()</code> controlam o ciclo de vida de forma imperativa.</li>
                     <li><code>start-open</code> inicializa o modal já aberto quando o fluxo pede atenção imediata.</li>
                     <li><code>enableShadow</code> ajuda a destacar o bloco em páginas densas.</li>
-                    <li><code>modal-full</code> continua separado dos demais porque vira um shell de tela cheia, com body rolável.</li>
+                    <li><code>modal-full</code> já ocupa <code>100vw x 100dvh</code>; <code>fullScreenShell</code> não aumenta o tamanho, só remove o visual de modal-cartão e deixa o componente com cara de tela inteira.</li>
                   </ul>
                 </div>
               </div>
@@ -313,7 +301,7 @@
                   <h6 class="mb-2 mt-4">Fluid</h6>
                   <li-highlight [code]="fluidSnippet" language="html"></li-highlight>
 
-                  <h6 class="mb-2 mt-4">Full screen</h6>
+                  <h6 class="mb-2 mt-4">{{ fullScreenSnippetTitle }}</h6>
                   <li-highlight [code]="fullScreenSnippet" language="html"></li-highlight>
 
                   <h6 class="mb-2 mt-4">Small header</h6>
@@ -331,7 +319,7 @@
             [title-text]="activeSizeShowcaseTitle"
             [headerColor]="activeSizeShowcase.headerColor"
             [size]="activeSizeShowcase.sizeValue"
-        [fullScreenChrome]="activeSizeUsesFullScreenChrome"
+        [fullScreenShell]="activeSizeUsesFullScreenShell"
             [enableShadow]="true"
             [lazyContent]="true"
             [fullScreenOnMobile]="!activeSizeIsFull"
@@ -392,7 +380,7 @@
 
       <div *ngIf="activeSizeIsFull" class="alert alert-warning alert-icon-start mb-0">
         <span class="alert-icon bg-warning text-white"><i class="ph-warning"></i></span>
-        {{ isPortuguese ? 'modal-full não é apenas um width maior. Aqui o componente vira um shell de tela cheia e mantém o body rolável para formulários extensos.' : 'modal-full is not just a wider width. Here the component becomes a full-screen shell and keeps the body scrollable for long forms.' }}
+        {{ isPortuguese ? 'modal-full já ocupa 100vw x 100dvh. Use fullScreenShell quando quiser remover o visual de modal-cartão e transformar header, body e footer em um shell fullscreen reto.' : 'modal-full already occupies 100vw x 100dvh. Use fullScreenShell when you want to remove the floating card look and turn the header, body, and footer into a straight fullscreen shell.' }}
       </div>
     </div>
   </li-modal>
@@ -631,7 +619,7 @@
             [title-text]="fullScreenModalTitle"
             headerColor="primary"
             size="modal-full"
-            [fullScreenChrome]="true"
+            [fullScreenShell]="true"
             [smallHeader]="true"
             [lazyContent]="true"
             [enableShadow]="true"

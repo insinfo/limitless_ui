@@ -214,7 +214,7 @@ void closeReviewModal() {
     #fullScreenFormModal
     title-text="Alterar CGM"
     size="modal-full"
-        [fullScreenChrome]="true"
+        [fullScreenShell]="true"
     headerColor="primary"
     [smallHeader]="true"
     [lazyContent]="true">
@@ -291,21 +291,22 @@ void closeReviewModal() {
 
   String modalEventLog = '';
 
-  String get showcaseEyebrow =>
-      _isPt ? 'Showcase inspirado no Limitless' : 'Limitless-inspired showcase';
-  String get overviewIntro => _isPt
-      ? 'A página agora funciona como um laboratório de modais: cobre tamanhos, combinações de comportamento, exemplos de formulário, tema de header e controle imperativo do componente.'
-      : 'This page now works as a modal laboratory: it covers sizes, behavior combinations, form examples, header theming, and imperative control of the component.';
   String get launchMatrixTitle =>
-      _isPt ? 'Laboratórios de modais' : 'Modal labs';
+      _isPt ? 'Cenários prontos' : 'Ready-made scenarios';
   String get launchMatrixLead => _isPt
-      ? 'Cada linha abaixo abre um cenário pronto para inspeção visual e ajuda a relacionar o caso de uso com a API correspondente.'
-      : 'Each row below opens a ready-made scenario and helps connect the use case to the corresponding API.';
+      ? 'Cada linha abaixo abre um caso de uso real e mostra quais inputs valem a pena observar.'
+      : 'Each row below opens a real use case and shows which inputs are worth inspecting.';
+  String get fullScreenShellExplainTitle => _isPt
+      ? 'modal-full x fullScreenShell:'
+      : 'modal-full vs fullScreenShell:';
+  String get fullScreenShellExplainBody => _isPt
+      ? ' modal-full já leva o diálogo para 100vw x 100dvh. fullScreenShell não aumenta esse tamanho; ele só remove o aspecto de modal arredondado e faz o componente parecer uma tela inteira do sistema.'
+      : ' modal-full already takes the dialog to 100vw x 100dvh. fullScreenShell does not make it bigger; it only removes the rounded modal look and makes the component feel like a full system screen.';
   String get sizeShowcaseTitle =>
       _isPt ? 'Escala completa de tamanhos' : 'Complete size scale';
   String get sizeShowcaseIntro => _isPt
-      ? 'A galeria abaixo abre o mesmo modal com todos os valores aceitos em size, do padrão ao fullscreen.'
-      : 'The gallery below opens the same modal with every accepted size value, from default to fullscreen.';
+      ? 'A galeria abaixo abre o mesmo modal com todos os valores aceitos em size, do padrão ao modal-full.'
+      : 'The gallery below opens the same modal with every accepted size value, from default to modal-full.';
   String get implementationPatternsTitle =>
       _isPt ? 'Padrões de implementação' : 'Implementation patterns';
   String get implementationPatternsIntro => _isPt
@@ -326,6 +327,9 @@ void closeReviewModal() {
       : 'The values below reflect the current modal scale, including the new steps between XL and fullscreen.';
   String get examplesTitle =>
       _isPt ? 'Snippets operacionais' : 'Operational snippets';
+  String get fullScreenSnippetTitle => _isPt
+      ? 'Shell fullscreen (modal-full + fullScreenShell)'
+      : 'Fullscreen shell (modal-full + fullScreenShell)';
   String get sizeSnippetTitle => _isPt ? 'Todos os tamanhos' : 'All sizes';
   String get imperativeSnippetTitle => _isPt
       ? 'Métodos e controle imperativo'
@@ -333,12 +337,6 @@ void closeReviewModal() {
   String get basicSnippetTitle => _isPt ? 'Modal básico' : 'Basic modal';
   String get advancedSnippetTitle =>
       _isPt ? 'Combinações avançadas' : 'Advanced combinations';
-  String get supportedSizesKpi =>
-      _isPt ? 'tamanhos suportados' : 'supported sizes';
-  String get supportedCombosKpi =>
-      _isPt ? 'laboratórios prontos' : 'ready-made labs';
-  String get lifecycleKpi =>
-      _isPt ? 'métodos + evento close' : 'methods + close event';
   String get sizeUseCaseLabel => _isPt ? 'Quando usar' : 'When to use';
   String get sizeValueLabel => _isPt ? 'Valor' : 'Value';
   String get sizeWidthLabelTitle => _isPt ? 'Largura' : 'Width';
@@ -426,10 +424,10 @@ void closeReviewModal() {
   String get fullOpenButton =>
       _isPt ? 'Abrir modal fluido' : 'Open fluid modal';
   String get fullScreenCardTitle =>
-      _isPt ? 'Full screen com formulário' : 'Fullscreen with form';
+      _isPt ? 'Shell fullscreen com formulário' : 'Fullscreen shell with form';
   String get fullScreenCardBody => _isPt
-      ? 'Demonstra o size modal-full com cabeçalho reduzido e conteúdo longo parecido com um fluxo administrativo real.'
-      : 'Demonstrates modal-full with a reduced header and long content similar to a real administrative flow.';
+      ? 'Demonstra modal-full com fullScreenShell: o tamanho já é fullscreen, e o acabamento reto faz o modal parecer uma tela de trabalho completa.'
+      : 'Demonstrates modal-full with fullScreenShell: the size is already fullscreen, and the straight shell styling makes the modal feel like a complete work screen.';
   String get fullScreenOpenButton =>
       _isPt ? 'Abrir modal full' : 'Open fullscreen modal';
   String get lockedTitle => _isPt ? 'Backdrop travado' : 'Locked backdrop';
@@ -489,8 +487,8 @@ void closeReviewModal() {
       _isPt ? 'Fechar checklist' : 'Close checklist';
   String get fullScreenModalTitle => _isPt ? 'Alterar CGM' : 'Update record';
   String get fullScreenLead => _isPt
-      ? 'Exemplo de modal full para formulários extensos, com várias seções e ações no rodapé.'
-      : 'Fullscreen modal example for long forms with multiple sections and footer actions.';
+      ? 'Exemplo de modal-full com fullScreenShell para formulários extensos, várias seções e comportamento de shell de tela inteira.'
+      : 'Example of modal-full with fullScreenShell for long forms, multiple sections, and full-screen shell behavior.';
   String get fullScreenSaveLabel =>
       _isPt ? 'Salvar alterações' : 'Save changes';
   String get fullScreenCancelLabel => _isPt ? 'Cancelar edição' : 'Cancel edit';
@@ -531,7 +529,7 @@ void closeReviewModal() {
   bool get activeSizeIsCompact =>
       activeSizeShowcase.sizeValue == 'modal-xs' ||
       activeSizeShowcase.sizeValue == 'modal-sm';
-  bool get activeSizeUsesFullScreenChrome => activeSizeIsFull;
+    bool get activeSizeUsesFullScreenShell => activeSizeIsFull;
 
   String sizeTitle(ModalSizeShowcaseItem item) =>
       _isPt ? item.titlePt : item.titleEn;

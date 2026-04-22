@@ -225,7 +225,7 @@ SweetAlertPopover.showPopover(
   String get summaryText => popoverState.isEmpty ? idleState : popoverState;
 
   void showQuickPopover(html.Element target) {
-    SimplePopover.showWarning(
+    LiSimplePopover.showWarning(
       target,
       _isPt
           ? 'Use este padrão para chamar atenção sem abrir um modal.\nClique fora para fechar antes do timeout.'

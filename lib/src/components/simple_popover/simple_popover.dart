@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html' as html;
 
 /// Lightweight DOM-based popover helper for quick warning messages.
-class SimplePopover {
+class LiSimplePopover {
   static const _popoverId = 'simple-popover-root';
 
   /// Shows a warning popover anchored to [target].

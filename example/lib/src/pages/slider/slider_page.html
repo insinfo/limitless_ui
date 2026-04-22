@@ -1,0 +1,280 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
+          <div class="card-body">
+            <h5 class="mb-2">{{introTitle}}</h5>
+            <p class="text-muted mb-0">{{introBody}}</p>
+          </div>
+
+          <div class="card border-0 shadow-none">
+            <div class="card-body">
+              <div class="row g-4">
+                <div class="col-xl-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex flex-column gap-3">
+                      <div>
+                        <h6 class="mb-1">{{singleTitle}}</h6>
+                        <p class="text-muted mb-0">{{singleBody}}</p>
+                      </div>
+
+                      <li-slider
+                          [(ngModel)]="singleValue"
+                          [min]="0"
+                          [max]="100"
+                          [step]="5">
+                      </li-slider>
+
+                      <div class="slider-page__value-pill">
+                        <span>{{currentValueLabel}}</span>
+                        <strong>{{singleValue}}</strong>
+                      </div>
+
+                      <li-highlight [code]="singleSnippet"></li-highlight>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex flex-column gap-3">
+                      <div>
+                        <h6 class="mb-1">{{rangeTitle}}</h6>
+                        <p class="text-muted mb-0">{{rangeBody}}</p>
+                      </div>
+
+                      <li-slider
+                          connect="range"
+                          [range]="true"
+                          [(rangeValues)]="budgetRange"
+                          [min]="0"
+                          [max]="100"
+                          [margin]="10"
+                          [showTooltip]="true"
+                          [showPips]="true"
+                          variant="success"
+                          handleStyle="solid">
+                      </li-slider>
+
+                      <div class="slider-page__value-pill">
+                        <span>{{currentRangeLabel}}</span>
+                        <strong>{{budgetRange[0]}} - {{budgetRange[1]}}</strong>
+                      </div>
+
+                      <li-highlight [code]="rangeSnippet"></li-highlight>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-7">
+                  <div class="card h-100">
+                    <div class="card-body d-flex flex-column gap-4">
+                      <div>
+                        <h6 class="mb-1">{{variantsTitle}}</h6>
+                        <p class="text-muted mb-0">{{variantsBody}}</p>
+                      </div>
+
+                      <div class="slider-page__stack">
+                        <div>
+                          <div class="slider-page__label">Primary / default</div>
+                          <li-slider [value]="45" [min]="0" [max]="100"></li-slider>
+                        </div>
+
+                        <div>
+                          <div class="slider-page__label">Warning / large</div>
+                          <li-slider variant="warning" size="lg" [value]="65" [min]="0" [max]="100"></li-slider>
+                        </div>
+
+                        <div>
+                          <div class="slider-page__label">Danger / white handle</div>
+                          <li-slider variant="danger" handleStyle="white" [value]="30" [min]="0" [max]="100"></li-slider>
+                        </div>
+
+                        <div>
+                          <div class="slider-page__label">Info / small solid range</div>
+                          <li-slider
+                              connect="range"
+                              [range]="true"
+                              [(rangeValues)]="compactRange"
+                              variant="info"
+                              size="sm"
+                              handleStyle="solid"
+                              [min]="0"
+                              [max]="10"
+                              [step]="1">
+                          </li-slider>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-5">
+                  <div class="card h-100">
+                    <div class="card-body d-flex flex-column gap-3">
+                      <div>
+                        <h6 class="mb-1">{{verticalTitle}}</h6>
+                        <p class="text-muted mb-0">{{verticalBody}}</p>
+                      </div>
+
+                      <div class="slider-page__vertical-demo">
+                        <li-slider
+                            orientation="vertical"
+                            connect="lower"
+                            variant="secondary"
+                            [verticalHeight]="220"
+                            [(ngModel)]="verticalValue"
+                            [min]="0"
+                            [max]="100"
+                            [step]="10"
+                            [showTooltip]="true">
+                        </li-slider>
+
+                        <div class="slider-page__value-pill slider-page__value-pill--column">
+                          <span>{{currentValueLabel}}</span>
+                          <strong>{{verticalValue}}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex flex-column gap-3">
+                      <div>
+                        <h6 class="mb-1">{{connectTitle}}</h6>
+                        <p class="text-muted mb-0">{{connectBody}}</p>
+                      </div>
+
+                      <div class="slider-page__stack">
+                        <div>
+                          <div class="slider-page__label">connect="upper"</div>
+                          <li-slider
+                              connect="upper"
+                              [(ngModel)]="connectUpperValue"
+                              [min]="0"
+                              [max]="100"
+                              [step]="5"
+                              variant="warning">
+                          </li-slider>
+                        </div>
+
+                        <div>
+                          <div class="slider-page__label">connect="none"</div>
+                          <li-slider
+                              connect="none"
+                              [(ngModel)]="noConnectValue"
+                              [min]="0"
+                              [max]="100"
+                              [step]="5"
+                              variant="danger"
+                              handleStyle="white">
+                          </li-slider>
+                        </div>
+                      </div>
+
+                      <div class="slider-page__value-pill">
+                        <span>upper / none</span>
+                        <strong>{{connectUpperValue}} / {{noConnectValue}}</strong>
+                      </div>
+
+                      <li-highlight [code]="connectSnippet"></li-highlight>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex flex-column gap-3">
+                      <div>
+                        <h6 class="mb-1">{{customPipsTitle}}</h6>
+                        <p class="text-muted mb-0">{{customPipsBody}}</p>
+                      </div>
+
+                      <li-slider
+                          [(ngModel)]="releaseValue"
+                          [min]="0"
+                          [max]="100"
+                          [customPips]="releasePips"
+                          [showTooltip]="true"
+                          connect="none"
+                          variant="info">
+                      </li-slider>
+
+                      <div class="slider-page__value-pill">
+                        <span>{{currentValueLabel}}</span>
+                        <strong>{{releaseValue}}</strong>
+                      </div>
+
+                      <li-highlight [code]="customPipsSnippet"></li-highlight>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{apiIntro}}</p>
+
+            <div class="row g-4">
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{mainInputsTitle}}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>[(ngModel)]</code> ou <code>[value]</code> para slider simples.</li>
+                    <li><code>[(rangeValues)]</code> para intervalo de dois handles.</li>
+                    <li><code>connect</code> aceita <code>auto</code>, <code>lower</code>, <code>upper</code>, <code>range</code> e <code>none</code>.</li>
+                    <li><code>[showPips]</code> + <code>[pipCount]</code> gera pips uniformes.</li>
+                    <li><code>[customPips]</code> define pips e labels explícitos por valor.</li>
+                    <li><code>variant</code>, <code>size</code> e <code>handleStyle</code> reaproveitam as classes do Limitless.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{notesTitle}}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li><code>auto</code> escolhe <code>lower</code> em slider simples e <code>range</code> em intervalo.</li>
+                    <li>Em slider simples, <code>connect="range"</code> faz fallback para <code>lower</code>.</li>
+                    <li>Os <code>customPips</code> são ordenados por valor antes da renderização.</li>
+                    <li>O eixo vertical usa a largura nativa do tema em vez de ocupar 100% da coluna.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="card card-body">
+                  <h6 class="mb-3">connect</h6>
+                  <li-highlight [code]="connectSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">customPips</h6>
+                  <li-highlight [code]="customPipsSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">range</h6>
+                  <li-highlight [code]="rangeSnippet" language="html"></li-highlight>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

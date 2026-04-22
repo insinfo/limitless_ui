@@ -14,8 +14,8 @@
     [class.modal-xs]="size == 'modal-xs'" 
     [class.modal-sm]="size == 'modal-sm'"
         [class.modal-lg]="size == 'large'" [class.modal-xl]="size == 'xtra-large'" [class.modal-xxl]="size == 'xx-large' || size == 'modal-xxl'" [class.modal-xxxl]="size == 'xxx-large' || size == 'modal-xxxl'" [class.modal-fluid]="size == 'fluid' || size == 'modal-fluid'" [class.modal-full]="size == 'modal-full'" 
-        [class.modal-full-chrome]="usesFullScreenChrome"
-        [class.modal-default]="size == 'default'" [class.custom-modal-dialog-round]="enableRoundedCorners == true && !usesFullScreenChrome"
+        [class.modal-full-shell]="usesFullScreenShell"
+        [class.modal-default]="size == 'default'" [class.custom-modal-dialog-round]="enableRoundedCorners == true && !usesFullScreenShell"
         [class.modal-mobile-full]="fullScreenOnMobile"
         [class.custom-modal-dialog-shadow]="enableShadow"
         [class.modal-dialog-centered]="verticalCenter" 
@@ -39,7 +39,7 @@
                      [class.modal-header-small]="smallHeader"
                 
 
-                     [class.custom-modal-header-round]="enableRoundedCorners == true && !usesFullScreenChrome">
+                     [class.custom-modal-header-round]="enableRoundedCorners == true && !usesFullScreenShell">
              <ng-content select="[modal-header]"></ng-content>
              <h5 #modalTitleElement *ngIf="hasTitleText" class="modal-title" [id]="modalTitleId">{{titleText}}</h5>
                 <button *ngIf="enableCloseBtn" (click)="close()" type="button" class="btn-close btn-close-white">

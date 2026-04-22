@@ -43,6 +43,8 @@ class DemoPageBreadcrumbComponent {
     'selection-controls',
     'select',
     'rating',
+    'slider',
+    'timeline',
     'typeahead',
     'wizard',
     'multi-select',

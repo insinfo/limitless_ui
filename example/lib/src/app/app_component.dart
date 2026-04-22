@@ -336,6 +336,16 @@ class AppComponent implements OnDestroy {
               url: DemoRoutePaths.rating.toUrl(),
             ),
             DemoNavItem(
+              label: 'Slider',
+              iconClass: 'ph-sliders-horizontal',
+              url: DemoRoutePaths.slider.toUrl(),
+            ),
+            DemoNavItem(
+              label: 'Timeline',
+              iconClass: 'ph-timeline',
+              url: DemoRoutePaths.timeline.toUrl(),
+            ),
+            DemoNavItem(
               label: 'Typeahead',
               iconClass: 'ph-magnifying-glass',
               url: DemoRoutePaths.typeahead.toUrl(),
@@ -500,6 +510,7 @@ class AppComponent implements OnDestroy {
     '/treeview': <String>['arvore', 'tree', 'hierarquia'],
     '/sweet-alert': <String>['sweetalert', 'dialog', 'popup'],
     '/highlight': <String>['codigo', 'syntax', 'highlight'],
+    '/timeline': <String>['linha do tempo', 'events', 'history', 'feed'],
     '/typeahead': <String>['autocomplete', 'busca', 'suggestions'],
     '/wizard': <String>['steps', 'stepper', 'form wizard', 'etapas'],
   };

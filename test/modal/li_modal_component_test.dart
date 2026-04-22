@@ -125,17 +125,17 @@ class TestHostComponent {
   template: '''
     <div>
       <button id="open-full" type="button" (click)="fullModal?.open()">Open full</button>
-      <button id="open-full-chrome" type="button" (click)="fullChromeModal?.open()">Open full chrome</button>
+      <button id="open-full-shell" type="button" (click)="fullShellModal?.open()">Open full shell</button>
 
       <li-modal #fullModal title-text="Full" size="modal-full">
         <div id="full-body-content" style="height: 2000px;">Tall body</div>
       </li-modal>
 
-      <li-modal #fullChromeModal
-                title-text="Full chrome"
+      <li-modal #fullShellModal
+                title-text="Full shell"
                 size="modal-full"
-                [fullScreenChrome]="true">
-        <div id="full-chrome-body-content" style="height: 1200px;">Tall shell body</div>
+                [fullScreenShell]="true">
+        <div id="full-shell-body-content" style="height: 1200px;">Tall shell body</div>
       </li-modal>
     </div>
   ''',
@@ -145,8 +145,8 @@ class FullModalTestHostComponent {
   @ViewChild('fullModal')
   LiModalComponent? fullModal;
 
-  @ViewChild('fullChromeModal')
-  LiModalComponent? fullChromeModal;
+  @ViewChild('fullShellModal')
+  LiModalComponent? fullShellModal;
 }
 
 void main() {
@@ -442,16 +442,16 @@ void main() {
     await _settle(fixture);
   });
 
-  test('fullScreenChrome removes rounded corners from fullscreen chrome', () async {
+  test('fullScreenShell removes rounded corners from the fullscreen shell', () async {
     final fixture = await fullModalTestBed.create();
     await _settle(fixture);
 
     await fixture.update((_) {
-      _clickById('open-full-chrome');
+      _clickById('open-full-shell');
     });
     await _settle(fixture);
 
-    final fullDialog = _modalDialogByTitle('Full chrome');
+    final fullDialog = _modalDialogByTitle('Full shell');
     expect(fullDialog, isNotNull);
 
     final fullContent = fullDialog!.querySelector('.modal-content');
@@ -463,7 +463,7 @@ void main() {
     expect(fullHeader!.getComputedStyle().borderTopLeftRadius, '0px');
 
     await fixture.update((host) {
-      host.fullChromeModal?.close();
+      host.fullShellModal?.close();
     });
     await _settle(fixture);
   });

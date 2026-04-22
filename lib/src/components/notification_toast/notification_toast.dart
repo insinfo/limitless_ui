@@ -1,4 +1,5 @@
-//C:\MyDartProjects\new_sali\frontend\lib\src\shared\components\notification_toast\notification_toast.dart
+import 'dart:async';
+
 import 'package:ngdart/angular.dart';
 import 'package:ngrouter/ngrouter.dart';
 import 'notification_toast_service.dart';
@@ -12,27 +13,44 @@ import 'notification_toast_service.dart';
     coreDirectives,
   ],
   exports: [
-    NotificationToastColor,
+    LiNotificationToastColor,
   ],
+  changeDetection: ChangeDetectionStrategy.onPush,
 )
-class LiNotificationOutletComponent {
+class LiNotificationOutletComponent implements OnDestroy {
   final Router _router;
+  final ChangeDetectorRef _changeDetectorRef;
+  StreamSubscription<void>? _serviceChangesSubscription;
+  LiNotificationToastService? _service;
 
   @Input()
-  NotificationToastService? service;
+  set service(LiNotificationToastService? value) {
+    if (identical(value, _service)) {
+      return;
+    }
 
-  LiNotificationOutletComponent(this._router);
+    _serviceChangesSubscription?.cancel();
+    _service = value;
+    _serviceChangesSubscription =
+        value?.changes.listen((_) => _changeDetectorRef.markForCheck());
+    _changeDetectorRef.markForCheck();
+  }
+
+  LiNotificationToastService? get service => _service;
+
+  LiNotificationOutletComponent(this._router, this._changeDetectorRef);
 
   /// Produce a CSS style for the `top` property.
   String styleTop(int i) {
     return '${i * 20}px';
   }
 
-  void closeToast(Toast toast) {
-    service?.toasts.remove(toast);
+  void closeToast(LiNotificationToast toast, [dynamic event]) {
+    event?.stopPropagation();
+    service?.remove(toast);
   }
 
-  void onToastClick(Toast toast) {
+  void onToastClick(LiNotificationToast toast) {
     if (toast.link != null && toast.link!.isNotEmpty) {
       final link = toast.link!;
       if (link.contains('?')) {
@@ -46,5 +64,10 @@ class LiNotificationOutletComponent {
       }
       closeToast(toast);
     }
+  }
+
+  @override
+  void ngOnDestroy() {
+    _serviceChangesSubscription?.cancel();
   }
 }

@@ -10,126 +10,134 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
-    LiToastComponent,
-    LiToastStackComponent,
+    LiNotificationOutletComponent,
   ],
 )
 class NotificationPageComponent {
   NotificationPageComponent(this.i18n);
 
   static const String apiSnippet = '''
-<li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
+final notificationService = LiNotificationToastService();
 
-toastService.show(
-  header: 'Processamento concluído',
-  body: 'A operação foi concluída com sucesso.',
-  iconClass: 'ph-check-circle',
-  toastClass: 'bg-success text-white border-0',
-  headerClass: 'bg-black bg-opacity-10 text-white',
-  delay: 3500,
+<li-notification-outlet [service]="notificationService"></li-notification-outlet>
+
+notificationService.notify(
+  'Sincronização concluída com sucesso.',
+  title: 'Fila de eventos',
+  type: LiNotificationToastColor.success,
+  durationSeconds: 4,
+);
+
+notificationService.notify(
+  'Clique para abrir a demonstração de datatable.',
+  title: 'Atalho',
+  type: LiNotificationToastColor.info,
+  link: DemoRoutePaths.datatable.toUrl(),
 );''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
   bool get _isPt => i18n.isPortuguese;
 
-  final LiToastService toastService = LiToastService();
+  final LiNotificationToastService notificationService = LiNotificationToastService();
   String lastAction = '';
 
-    String get pageTitle => 'Toast';
-    String get pageSubtitle => _isPt ? 'mensagens de feedback' : 'feedback messages';
-    String get breadcrumb => _isPt
-      ? 'Notificações inline e em pilha'
-      : 'Inline and stacked notifications';
-    String get overviewIntro => _isPt
-      ? 'O novo li-toast cobre o uso declarativo inline e o fluxo global com LiToastService + li-toast-stack, mais próximo do padrão Bootstrap/ng-bootstrap.'
-      : 'The new li-toast covers declarative inline usage and the global flow with LiToastService + li-toast-stack, closer to the Bootstrap/ng-bootstrap pattern.';
-    String get basicToastTitle => _isPt ? 'Toast declarativo básico' : 'Basic declarative toast';
-    String get basicToastBody => _isPt ? 'Header, body e botão de fechar controlados pelo componente.' : 'Header, body, and dismiss button controlled by the component.';
-    String get reopenLabel => _isPt ? 'Reabrir' : 'Reopen';
-    String get roundedTitle => _isPt ? 'Toast arredondado' : 'Rounded toast';
-    String get roundedBody => _isPt ? 'A variação pill funciona melhor em mensagens curtas, compactas e sem muito chrome visual.' : 'The pill variant works better for short, compact messages without much visual chrome.';
-    String get manualHeader => _isPt ? 'Olá' : 'Hello';
-    String get manualBody => _isPt ? 'Sou um toast declarativo que pode ser exibido novamente via ViewChild.' : 'I am a declarative toast that can be shown again via ViewChild.';
-    String get inlineHelper => _isPt ? 'inline' : 'inline';
-    String get roundedToastBody => _isPt ? 'Salvo com sucesso' : 'Saved successfully';
-    String get customHeaderTitle => _isPt ? 'Header customizado' : 'Custom header background';
-    String get customMarkupTitle => _isPt ? 'Markup customizado com painel de ações' : 'Custom markup with action panel';
-    String get customToastHeader => _isPt ? 'Cabeçalho do toast' : 'Toast header';
-    String get customToastBody => _isPt ? 'Um toast contextual com cabeçalho colorido e botão de fechar.' : 'A contextual toast with colored header and close button.';
-    String get projectedBody => _isPt ? 'Olá, mundo! Este toast usa markup projetado para uma segunda linha de ações.' : 'Hello, world! This toast uses projected markup for a second action row.';
-    String get oneHourAgo => _isPt ? '1 hora atrás' : '1 hour ago';
-    String get clearStackLabel => _isPt ? 'Limpar pilha' : 'Clear stack';
-    String get apiIntro => _isPt
-      ? 'Use `li-toast` para o modo declarativo e `LiToastService` + `li-toast-stack` quando a notificação precisar ser disparada fora do template atual.'
-      : 'Use `li-toast` for declarative mode and `LiToastService` + `li-toast-stack` when the notification must be triggered outside the current template.';
-    String get howToUseTitle => _isPt ? 'Como utilizar' : 'How to use';
-    String get mainInputsTitle => _isPt ? 'Entradas principais' : 'Main inputs';
-    String get waitingState => _isPt ? 'Toast: aguardando interação' : 'Toast: waiting for interaction';
-
-  @ViewChild('manualToast')
-  LiToastComponent? manualToast;
-
-  @ViewChild('roundedToast')
-  LiToastComponent? roundedToast;
-
-  void reopenManualToast() {
-    manualToast?.show();
-    lastAction = _isPt ? 'Toast inline aberto por API.' : 'Inline toast opened through the API.';
-  }
-
-  void reopenRoundedToast() {
-    roundedToast?.show();
-    lastAction = _isPt ? 'Toast com estilo pill reaberto.' : 'Pill-style toast reopened.';
-  }
+  String get pageTitle => t.nav.notification;
+  String get pageSubtitle => t.pages.notification.subtitle;
+  String get breadcrumb => t.pages.notification.breadcrumb;
+  String get overviewIntro => _isPt
+      ? 'Esta página usa o li-notification-outlet real do pacote. O outlet fica fixo no canto superior direito do viewport, empilha os itens com deslocamento vertical e fecha cada toast automaticamente após o tempo configurado.'
+      : 'This page uses the real li-notification-outlet from the package. The outlet stays fixed in the top-right corner of the viewport, stacks items with a vertical offset, and automatically closes each toast after the configured time.';
+  String get outletCardTitle => _isPt ? 'Fluxo real do outlet' : 'Real outlet flow';
+  String get outletCardBody => _isPt
+      ? 'Use os botões abaixo para validar empilhamento, botão de fechar e clique com navegação por rota.'
+      : 'Use the buttons below to validate stacking, close button behavior, and click navigation through the router.';
+  String get stackBurstLabel => _isPt ? 'Empilhar 3 toasts' : 'Stack 3 toasts';
+  String get stackBurstState => _isPt
+      ? 'Lote de três notificações enviado para validar empilhamento e ordem visual.'
+      : 'A batch of three notifications was sent to validate stacking and visual order.';
+  String get visibilityHint => _isPt
+      ? 'O preview não aparece dentro do card porque o componente é fixado no viewport. Dispare os exemplos e observe o canto superior direito da tela.'
+      : 'The preview does not render inside the card because the component is pinned to the viewport. Trigger the examples and watch the top-right corner of the screen.';
+    String get detailOne => _isPt
+      ? 'Success e warning usam cores e temporização diferentes.'
+      : 'Success and warning use different colors and timings.';
+    String get detailTwo => _isPt
+      ? 'O botão de fechar remove apenas o toast clicado.'
+      : 'The close button removes only the toast that was clicked.';
+    String get detailThree => _isPt
+      ? 'Toasts com link navegam por rota e se removem ao clique.'
+      : 'Toasts with links navigate through the router and remove themselves on click.';
+    String get detailFour => _isPt
+      ? 'O botão de lote empilha três itens para validar deslocamento vertical.'
+      : 'The batch button stacks three items to validate the vertical offset.';
+    String get shellTitle => _isPt ? 'Shell da página' : 'Page shell';
+    String get shellBody => _isPt
+      ? 'O componente real está montado fora do card e fixa os toasts no viewport.'
+      : 'The real component is mounted outside the card and pins the toasts to the viewport.';
+    String get shellNote => _isPt
+      ? 'O outlet é um helper global. Monte uma única instância e mantenha a mesma referência do serviço durante toda a vida da página.'
+      : 'The outlet is a global helper. Mount a single instance and keep the same service reference for the whole page lifecycle.';
+  String get apiIntro => _isPt
+      ? 'Use LiNotificationToastService para disparar mensagens globais e li-notification-outlet uma única vez no shell da página. O próprio toast resolve fila, animação de saída, fechamento individual e navegação opcional por link.'
+      : 'Use LiNotificationToastService to trigger global messages and render li-notification-outlet once in the page shell. The toast itself handles the queue, exit animation, individual close action, and optional link navigation.';
+  String get howToUseTitle => _isPt ? 'Como utilizar' : 'How to use';
+  String get mainInputsTitle => _isPt ? 'Parâmetros úteis' : 'Useful parameters';
+  String get waitingState => _isPt
+      ? 'Notification outlet: aguardando interação.'
+      : 'Notification outlet: waiting for interaction.';
 
   void showSuccess() {
-    toastService.show(
-        header: _isPt ? 'Processamento concluído' : 'Processing completed',
-        body: _isPt
-          ? 'A operação foi concluída com sucesso e o toast vai desaparecer sozinho.'
-          : 'The operation completed successfully and the toast will disappear on its own.',
-      iconClass: 'ph-check-circle',
-      toastClass: 'bg-success text-white border-0',
-      headerClass: 'bg-black bg-opacity-10 text-white',
-      delay: 3500,
-      pauseOnHover: true,
+    notificationService.notify(
+      t.pages.notification.successMessage,
+      title: t.pages.notification.successTitle,
+      type: LiNotificationToastColor.success,
+      durationSeconds: 4,
     );
-    lastAction = _isPt ? 'Toast global de sucesso enviado para a pilha.' : 'Global success toast sent to the stack.';
+    lastAction = t.pages.notification.successState;
   }
 
   void showWarning() {
-    toastService.show(
-        header: _isPt ? 'Atenção' : 'Attention',
-        body: _isPt
-          ? 'Existe uma pendência aguardando revisão humana antes da próxima etapa.'
-          : 'There is a pending item waiting for human review before the next step.',
-      iconClass: 'ph-warning-circle',
-      toastClass: 'border-warning',
-      headerClass: 'bg-warning text-white border-warning',
-      delay: 5000,
+    notificationService.notify(
+      t.pages.notification.warningMessage,
+      title: t.pages.notification.warningTitle,
+      type: LiNotificationToastColor.warning,
+      durationSeconds: 6,
     );
-    lastAction = _isPt ? 'Toast global de alerta enviado para a pilha.' : 'Global warning toast sent to the stack.';
+    lastAction = t.pages.notification.warningState;
   }
 
   void showWithLink() {
-    toastService.show(
-        header: _isPt ? 'Atualização disponível' : 'Update available',
-        body: _isPt
-          ? 'Este exemplo usa badge, helper text e autohide desativado para toasts persistentes.'
-          : 'This example uses badge, helper text, and autohide disabled for persistent toasts.',
-        helperText: _isPt ? 'agora' : 'now',
-        badgeText: _isPt ? 'Atualização' : 'Update',
-      iconClass: 'ph-bell-ringing',
-      toastClass: 'border-primary',
-      headerClass: 'bg-primary text-white border-primary',
-      autohide: false,
+    notificationService.notify(
+      t.pages.notification.linkMessage,
+      title: t.pages.notification.linkTitle,
+      type: LiNotificationToastColor.info,
+      durationSeconds: 8,
+      link: DemoRoutePaths.datatable.toUrl(),
     );
-    lastAction = _isPt ? 'Toast persistente enviado para a pilha.' : 'Persistent toast sent to the stack.';
+    lastAction = t.pages.notification.linkState;
   }
 
-  void clearStack() {
-    toastService.clear();
-    lastAction = _isPt ? 'Pilha de toast limpa.' : 'Toast stack cleared.';
+  void showBurst() {
+    notificationService.notify(
+      _isPt ? 'Primeiro evento confirmado.' : 'First event confirmed.',
+      title: _isPt ? 'Fila' : 'Queue',
+      type: LiNotificationToastColor.success,
+      durationSeconds: 7,
+    );
+    notificationService.notify(
+      _isPt ? 'Existe um item aguardando revisão manual.' : 'There is an item waiting for manual review.',
+      title: _isPt ? 'Atenção' : 'Attention',
+      type: LiNotificationToastColor.warning,
+      durationSeconds: 8,
+    );
+    notificationService.notify(
+      _isPt ? 'Clique neste item para abrir o datatable.' : 'Click this item to open the datatable.',
+      title: _isPt ? 'Atalho' : 'Shortcut',
+      type: LiNotificationToastColor.info,
+      durationSeconds: 9,
+      link: DemoRoutePaths.datatable.toUrl(),
+    );
+    lastAction = stackBurstState;
   }
 }

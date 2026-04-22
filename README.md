@@ -1363,7 +1363,7 @@ For width control, `size` now supports the intermediate steps `xx-large`, `xxx-l
 
 Additional sizing and chrome inputs include `compactHeader` and `smallHeader` when the default Limitless header density is too tall for short dialogs or fullscreen administrative forms.
 
-If you want `size="modal-full"` to behave like a true full-screen shell with square chrome, opt in with `fullScreenChrome="true"`. Without that input, `modal-full` keeps the viewport-sized body but preserves the regular modal chrome.
+If you want `size="modal-full"` to behave like a true full-screen shell with straight edges, opt in with `fullScreenShell="true"`. Without that input, `modal-full` keeps the viewport-sized body but preserves the regular rounded modal look.
 
 For locked flows, combine `closeOnEscape="false"`, `closeOnBackdropClick="false"`, and `enableCloseBtn="false"` so the user can leave only through your explicit action buttons.
 
@@ -1379,7 +1379,7 @@ For locked flows, combine `closeOnEscape="false"`, `closeOnBackdropClick="false"
 
 Use `compactHeader` when you want a subtler reduction without changing the overall rhythm as aggressively as `smallHeader`. The fullscreen demo route also now shows `size="modal-full"` combined with `smallHeader` for long-form administrative flows.
 
-Use `fullScreenChrome` only in flows that really need the app-shell feel; for many screens, keeping the regular rounded chrome on `modal-full` is visually safer.
+Use `fullScreenShell` only in flows that really need the app-shell feel; for many screens, keeping the regular rounded modal look on `modal-full` is visually safer.
 
 ### Toast
 

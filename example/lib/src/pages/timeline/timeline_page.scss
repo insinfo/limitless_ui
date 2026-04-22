@@ -1,0 +1,22 @@
+.timeline-page__icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  box-shadow: none;
+}
+
+.timeline-page__icon-chip i {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+timeline-page li-timeline {
+  display: block;
+}
+
+timeline-page li-timeline + li-highlight {
+  display: block;
+}

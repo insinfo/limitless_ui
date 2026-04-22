@@ -43,21 +43,21 @@ class HelpersPageComponent implements OnDestroy {
   }
 
   void showDialogAlert() {
-    SimpleDialogComponent.showAlert(
+    LiSimpleDialogComponent.showAlert(
       t.pages.helpers.dialogAlertBody,
       title: t.pages.helpers.dialogAlertTitle,
-      dialogColor: DialogColor.INFO,
+      dialogColor: LiDialogColor.INFO,
     );
     helperState = t.pages.helpers.dialogAlertState;
   }
 
   Future<void> showDialogConfirm() async {
-    final confirmed = await SimpleDialogComponent.showConfirm(
+    final confirmed = await LiSimpleDialogComponent.showConfirm(
       t.pages.helpers.dialogConfirmBody,
       title: t.pages.helpers.dialogConfirmTitle,
       confirmButtonText: t.pages.helpers.dialogConfirmOk,
       cancelButtonText: t.pages.helpers.dialogConfirmCancel,
-      dialogColor: DialogColor.WARNING,
+      dialogColor: LiDialogColor.WARNING,
     );
 
     helperState = confirmed
@@ -66,7 +66,7 @@ class HelpersPageComponent implements OnDestroy {
   }
 
   void showSimplePopover(html.Element target) {
-    SimplePopover.showWarning(
+    LiSimplePopover.showWarning(
       target,
       t.pages.helpers.simplePopoverBody,
     );
@@ -83,12 +83,12 @@ class HelpersPageComponent implements OnDestroy {
   }
 
   void showSimpleSuccessToast() {
-    SimpleToast.showSuccess(t.pages.helpers.simpleSuccessBody);
+    LiSimpleToast.showSuccess(t.pages.helpers.simpleSuccessBody);
     helperState = t.pages.helpers.simpleSuccessState;
   }
 
   void showSimpleWarningToast() {
-    SimpleToast.showWarning(t.pages.helpers.simpleWarningBody);
+    LiSimpleToast.showWarning(t.pages.helpers.simpleWarningBody);
     helperState = t.pages.helpers.simpleWarningState;
   }
 

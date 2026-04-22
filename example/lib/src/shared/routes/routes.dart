@@ -62,6 +62,10 @@ import 'package:limitless_ui_example/src/pages/select/select_page.template.dart'
     as select_page;
 import 'package:limitless_ui_example/src/pages/rating/rating_page.template.dart'
     as rating_page;
+import 'package:limitless_ui_example/src/pages/slider/slider_page.template.dart'
+  as slider_page;
+import 'package:limitless_ui_example/src/pages/timeline/timeline_page.template.dart'
+    as timeline_page;
 import 'package:limitless_ui_example/src/pages/highlight/highlight_page.template.dart'
     as highlight_page;
 import 'package:limitless_ui_example/src/pages/fab/fab_page.template.dart'
@@ -151,6 +155,16 @@ class DemoRoutes {
   static final rating = RouteDefinition(
     routePath: DemoRoutePaths.rating,
     component: rating_page.RatingPageComponentNgFactory,
+  );
+
+  static final slider = RouteDefinition(
+    routePath: DemoRoutePaths.slider,
+    component: slider_page.SliderPageComponentNgFactory,
+  );
+
+  static final timeline = RouteDefinition(
+    routePath: DemoRoutePaths.timeline,
+    component: timeline_page.TimelinePageComponentNgFactory,
   );
 
   static final typeahead = RouteDefinition(
@@ -308,6 +322,8 @@ class DemoRoutes {
     selectionControls,
     select,
     rating,
+    slider,
+    timeline,
     typeahead,
     wizard,
     multiSelect,

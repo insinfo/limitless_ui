@@ -129,10 +129,10 @@ class LiModalComponent implements OnInit, OnDestroy {
   @Input()
   bool fullScreenOnMobile = false;
 
-  /// When `true`, `size="modal-full"` also removes rounded chrome so the
-  /// modal behaves like an app shell instead of a floating card.
+  /// When `true`, `size="modal-full"` also removes rounded modal chrome so
+  /// the dialog behaves like a fullscreen shell instead of a floating card.
   @Input()
-  bool fullScreenChrome = false;
+  bool fullScreenShell = false;
 
   /// When `true`, the projected body content is only rendered while the modal
   /// is open.
@@ -195,7 +195,7 @@ class LiModalComponent implements OnInit, OnDestroy {
 
   bool get hasCustomHeight => resolvedCustomHeight != null;
 
-  bool get usesFullScreenChrome => size == 'modal-full' && fullScreenChrome;
+  bool get usesFullScreenShell => size == 'modal-full' && fullScreenShell;
 
   String get modalTitleId => _modalTitleId;
 

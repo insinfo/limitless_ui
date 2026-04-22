@@ -1,0 +1,52 @@
+<div [class]="resolvedHostClass">
+  <div
+      #surface
+      [class]="resolvedSurfaceClass"
+      [attr.style]="resolvedSurfaceStyle"
+      [attr.aria-label]="ariaLabel"
+      [attr.aria-disabled]="disabled ? 'true' : null"
+      [attr.disabled]="disabled ? '' : null"
+      role="group"
+      (mousedown)="onTrackMouseDown($event)"
+      (touchstart)="onTrackTouchStart($event)">
+    <div class="noUi-base">
+      <div class="noUi-connects">
+        <div *ngIf="showConnect" class="noUi-connect" [attr.style]="connectStyle"></div>
+      </div>
+
+      <div
+          *ngFor="let handle of handles; trackBy: trackByHandle"
+          class="noUi-origin"
+          [attr.style]="handle.originStyle">
+        <div
+            [class]="handle.cssClass"
+            [attr.data-handle]="handle.id.toString()"
+            role="slider"
+            [attr.aria-label]="handle.ariaLabel"
+            [attr.aria-valuemin]="min.toString()"
+            [attr.aria-valuemax]="max.toString()"
+            [attr.aria-valuenow]="handle.tooltip"
+            [attr.tabindex]="disabled ? '-1' : '0'"
+            (mousedown)="onHandleMouseDown(handle.id, $event)"
+            (touchstart)="onHandleTouchStart(handle.id, $event)"
+            (keydown)="onHandleKeyDown(handle.id, $event)"
+            (focus)="onHandleFocus(handle.id)"
+            (blur)="onHandleBlur()">
+          <div class="noUi-touch-area"></div>
+          <div *ngIf="showTooltip" class="noUi-tooltip">{{handle.tooltip}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="shouldRenderPips" [class]="resolvedPipsClass">
+      <div
+          *ngFor="let pip of pips; trackBy: trackByPip"
+          [class]="pip.markerClass"
+          [attr.style]="pip.markerStyle"></div>
+      <div
+          *ngFor="let pip of pips; trackBy: trackByPip"
+          [class]="pip.valueClass"
+          [attr.style]="pip.valueStyle">{{pip.label}}</div>
+    </div>
+  </div>
+</div>

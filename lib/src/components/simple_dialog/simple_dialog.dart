@@ -3,28 +3,28 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-enum DialogColor { DANGER, PRIMARY, SUCCESS, WARNING, INFO, PINK }
+enum LiDialogColor { DANGER, PRIMARY, SUCCESS, WARNING, INFO, PINK }
 
-class SimpleDialogComponent {
-  static String getColor(DialogColor dialogColor) {
+class LiSimpleDialogComponent {
+  static String getColor(LiDialogColor dialogColor) {
     var headerColor = '';
     switch (dialogColor) {
-      case DialogColor.PRIMARY:
+      case LiDialogColor.PRIMARY:
         headerColor = 'primary';
         break;
-      case DialogColor.SUCCESS:
+      case LiDialogColor.SUCCESS:
         headerColor = 'success';
         break;
-      case DialogColor.DANGER:
+      case LiDialogColor.DANGER:
         headerColor = 'danger';
         break;
-      case DialogColor.WARNING:
+      case LiDialogColor.WARNING:
         headerColor = 'warning';
         break;
-      case DialogColor.INFO:
+      case LiDialogColor.INFO:
         headerColor = 'info';
         break;
-      case DialogColor.PINK:
+      case LiDialogColor.PINK:
         headerColor = 'pink';
         break;
     }
@@ -69,7 +69,7 @@ class SimpleDialogComponent {
     String? subMessage,
     String title = 'Alerta',
     String detailLabel = 'Detalhe',
-    DialogColor dialogColor = DialogColor.PRIMARY,
+    LiDialogColor dialogColor = LiDialogColor.PRIMARY,
     Function? okAction,
   }) {
     final template = '''
@@ -155,7 +155,7 @@ class SimpleDialogComponent {
       Function? cancelAction,
       String confirmButtonText = 'Sim',
       Function? confirmAction,
-      DialogColor dialogColor = DialogColor.DANGER}) {
+      LiDialogColor dialogColor = LiDialogColor.DANGER}) {
         // var uuid = Uuid();
         // final idModal = uuid.v1();
     final comp = Completer<bool>();

@@ -1,5 +1,5 @@
 <div class="demo-page">
-  <li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
+  <li-notification-outlet [service]="notificationService"></li-notification-outlet>
 
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
@@ -14,79 +14,57 @@
 
   <div class="content">
     <div class="card">
-
       <li-tabsx type="tabs">
         <li-tabx [header]="t.common.tabOverview" [active]="true">
           <div class="card-body">
             <p class="text-muted mb-4">{{ overviewIntro }}</p>
 
+            <div class="card card-body border-start border-4 border-start-primary bg-primary bg-opacity-10 mb-4">
+              <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                <div>
+                  <h6 class="mb-1">{{ outletCardTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ outletCardBody }}</p>
+                </div>
+                <div class="notification-demo-hint rounded border bg-white px-3 py-2 text-muted fs-sm">{{ visibilityHint }}</div>
+              </div>
+            </div>
+
             <div class="demo-action-grid mb-4">
               <button class="btn btn-success" type="button" (click)="showSuccess()">{{ t.pages.notification.successTitle }}</button>
               <button class="btn btn-warning" type="button" (click)="showWarning()">{{ t.pages.notification.warningTitle }}</button>
               <button class="btn btn-outline-primary" type="button" (click)="showWithLink()">{{ t.pages.notification.withLink }}</button>
-              <button class="btn btn-light" type="button" (click)="clearStack()">{{ clearStackLabel }}</button>
+              <button class="btn btn-light" type="button" (click)="showBurst()">{{ stackBurstLabel }}</button>
             </div>
 
             <div class="row g-4">
               <div class="col-xl-6">
                 <div class="card card-body h-100">
-                  <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
-                    <div>
-                      <h6 class="mb-1">{{ basicToastTitle }}</h6>
-                      <p class="mb-0 text-muted">{{ basicToastBody }}</p>
+                  <h6 class="mb-2">{{ t.pages.notification.cardTitle }}</h6>
+                  <p class="text-muted mb-3">{{ visibilityHint }}</p>
+
+                  <ul class="mb-0 ps-3 notification-demo-list">
+                    <li>{{ detailOne }}</li>
+                    <li>{{ detailTwo }}</li>
+                    <li>{{ detailThree }}</li>
+                    <li>{{ detailFour }}</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.common.sectionNotes }}</h6>
+                  <p class="text-muted mb-3">{{ shellNote }}</p>
+
+                  <div class="notification-demo-shell rounded border bg-light p-3">
+                    <div class="d-flex align-items-center justify-content-between gap-3">
+                      <div>
+                        <div class="fw-semibold">{{ shellTitle }}</div>
+                        <div class="text-muted fs-sm">{{ shellBody }}</div>
+                      </div>
+                      <span class="badge bg-white text-body border">li-notification-outlet</span>
                     </div>
-                    <button class="btn btn-sm btn-outline-primary" type="button"
-                      (click)="reopenManualToast()">{{ reopenLabel }}</button>
                   </div>
-
-                  <li-toast #manualToast [header]="manualHeader"
-                    [body]="manualBody" [helperText]="inlineHelper"
-                    [autohide]="false">
-                  </li-toast>
-                </div>
-              </div>
-
-              <div class="col-xl-6">
-                <div class="card card-body h-100">
-                  <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
-                    <div>
-                      <h6 class="mb-1">{{ roundedTitle }}</h6>
-                      <p class="mb-0 text-muted">{{ roundedBody }}</p>
-                    </div>
-                    <button class="btn btn-sm btn-outline-primary" type="button"
-                      (click)="reopenRoundedToast()">{{ reopenLabel }}</button>
-                  </div>
-
-                  <li-toast #roundedToast [body]="roundedToastBody" toastClass="toast-demo-pill"
-                    bodyClass="toast-demo-pill__body" [rounded]="true" [autohide]="false">
-                  </li-toast>
-                </div>
-              </div>
-            </div>
-
-            <div class="row g-4 mt-1">
-              <div class="col-xl-6">
-                <div class="card card-body h-100">
-                  <h6 class="mb-3">{{ customHeaderTitle }}</h6>
-                  <li-toast [header]="customToastHeader" [body]="customToastBody"
-                    iconClass="ph-check-circle" toastClass="border-success"
-                    headerClass="bg-success text-white border-success" [autohide]="false">
-                  </li-toast>
-                </div>
-              </div>
-
-              <div class="col-xl-6">
-                <div class="card card-body h-100">
-                  <h6 class="mb-3">{{ customMarkupTitle }}</h6>
-                  <li-toast [header]="customToastHeader" [helperText]="oneHourAgo" [autohide]="false">
-                    <div class="toast-body">
-                      {{ projectedBody }}
-                    </div>
-                    <div class="toast-body border-top text-end">
-                      <button type="button" class="btn btn-light">{{ t.common.close }}</button>
-                      <button type="button" class="btn btn-primary ms-2">{{ t.common.open }}</button>
-                    </div>
-                  </li-toast>
                 </div>
               </div>
             </div>
@@ -104,11 +82,9 @@
                 <div class="card card-body h-100">
                   <h6 class="mb-2">{{ howToUseTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li><code>li-toast</code> renderiza o markup do toast e expõe <code>show()</code>,
-                      <code>hide()</code> e <code>isOpen</code>.</li>
-                    <li><code>li-toast-stack</code> posiciona notificações globais no canto da tela.</li>
-                    <li><code>LiToastService</code> mantém a coleção para casos disparados de qualquer ponto da
-                      aplicação.</li>
+                    <li><code>li-notification-outlet</code> fica fixo no topo direito do viewport e consome a lista exposta pelo serviço.</li>
+                    <li><code>LiNotificationToastService.notify()</code> adiciona o item na fila, agenda fade-out e remove o toast ao final do ciclo.</li>
+                    <li>Quando <code>link</code> é informado, o clique navega com o <code>Router</code> e fecha apenas o item acionado.</li>
                   </ul>
                 </div>
               </div>
@@ -116,12 +92,10 @@
                 <div class="card card-body h-100">
                   <h6 class="mb-2">{{ mainInputsTitle }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li><code>header</code>, <code>body</code>, <code>helperText</code> e <code>badgeText</code>.</li>
-                    <li><code>toastClass</code>, <code>headerClass</code> e <code>bodyClass</code> para contextualização
-                      visual.</li>
-                    <li><code>autohide</code>, <code>delay</code>, <code>animation</code>, <code>dismissible</code> e
-                      <code>pauseOnHover</code>.</li>
-                    <li><code>rounded</code> para o estilo pill do Limitless.</li>
+                    <li><code>message</code>, <code>title</code>, <code>type</code> e <code>durationSeconds</code> controlam o conteúdo e o ciclo de vida.</li>
+                    <li><code>link</code> ativa navegação opcional ao clicar no corpo do toast.</li>
+                    <li><code>enableSound</code> usa <code>LiToastSoundController</code> quando a aplicação quiser tocar áudio após interação do usuário.</li>
+                    <li><code>LiNotificationToastColor</code> define as variações contextuais como success, info, warning e danger.</li>
                   </ul>
                 </div>
               </div>
