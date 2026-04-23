@@ -245,7 +245,8 @@ void main() {
     final fixture = await validationTestBed.create();
     await _settleValidation(fixture);
     final host = fixture.assertOnlyInstance;
-    final field = fixture.rootElement.querySelector('#validation-select-field')!;
+    final field =
+        fixture.rootElement.querySelector('#validation-select-field')!;
     final trigger =
         field.querySelector('.dropdown-button') as html.ButtonElement;
     final clearButton = field.querySelector('.dropdown-clear') as html.Element;

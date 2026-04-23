@@ -359,7 +359,8 @@ class LiDropdownMenuComponent implements OnDestroy {
   }
 
   void _closeOtherOpenMenus() {
-    for (final dropdown in List<LiDropdownMenuComponent>.from(_openDropdownMenus)) {
+    for (final dropdown
+        in List<LiDropdownMenuComponent>.from(_openDropdownMenus)) {
       if (!identical(dropdown, this)) {
         dropdown.closeDropdown();
       }

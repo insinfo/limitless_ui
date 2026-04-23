@@ -30,13 +30,16 @@ const liInputDirectives = <Object>[
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiInputComponent
-    implements ControlValueAccessor<String?>, AfterChanges, AfterViewInit, OnDestroy {
+    implements
+        ControlValueAccessor<String?>,
+        AfterChanges,
+        AfterViewInit,
+        OnDestroy {
   LiInputComponent(
     this._hostElement,
     this._changeDetectorRef, [
     @Optional() this._formDirective,
-  ])
-      : _generatedId = 'li-input-${_nextId++}';
+  ]) : _generatedId = 'li-input-${_nextId++}';
 
   static int _nextId = 0;
 
@@ -54,7 +57,7 @@ class LiInputComponent
       StreamController<html.KeyboardEvent>.broadcast();
   final StreamController<html.KeyboardEvent> _enterController =
       StreamController<html.KeyboardEvent>.broadcast();
-    StreamSubscription<bool>? _formSubmissionSubscription;
+  StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
   String id = '';
@@ -280,8 +283,8 @@ class LiInputComponent
   String? get resolvedAriaLabel =>
       ariaLabel.trim().isEmpty ? null : ariaLabel.trim();
 
-  String? get resolvedAutocomplete =>
-      _resolvedString(autocomplete, fallback: resolvedLiInputType?.autocomplete);
+  String? get resolvedAutocomplete => _resolvedString(autocomplete,
+      fallback: resolvedLiInputType?.autocomplete);
 
   String? get resolvedInputMode =>
       _resolvedString(inputMode, fallback: resolvedLiInputType?.inputMode);
@@ -381,24 +384,26 @@ class LiInputComponent
   bool get hasCustomMaskFormatter =>
       maskFormatter != null && resolvedType != 'number';
 
-  String get resolvedInvalidFeedbackText =>
-      effectiveErrorText;
+  String get resolvedInvalidFeedbackText => effectiveErrorText;
 
-    bool get effectiveInvalid =>
+  bool get effectiveInvalid =>
       invalid || dataInvalid || _hasHostInvalidState || effectiveAutoInvalid;
 
-    bool get effectiveAutoInvalid =>
+  bool get effectiveAutoInvalid =>
       _shouldShowValidation && _autoValidationIssue != null;
 
-    bool get _effectiveAutoValid =>
-      _shouldShowValidation && _effectiveRules.isNotEmpty && _autoValidationIssue == null;
+  bool get _effectiveAutoValid =>
+      _shouldShowValidation &&
+      _effectiveRules.isNotEmpty &&
+      _autoValidationIssue == null;
 
-    bool get isInvalid => effectiveInvalid;
+  bool get isInvalid => effectiveInvalid;
 
   bool get isValid =>
-      !isInvalid && (_effectiveAutoValid || _hostElement.classes.contains('is-valid'));
+      !isInvalid &&
+      (_effectiveAutoValid || _hostElement.classes.contains('is-valid'));
 
-    String get effectiveErrorText {
+  String get effectiveErrorText {
     final externalMessage = errorText.trim();
     if (externalMessage.isNotEmpty) {
       return externalMessage;
@@ -410,7 +415,7 @@ class LiInputComponent
     }
 
     return _autoValidationIssue?.message ?? '';
-    }
+  }
 
   int get resolvedRows => rows < 2 ? 2 : rows;
 
@@ -582,7 +587,9 @@ class LiInputComponent
     _value = _normalizeIncomingValue(value);
     _syncInputValue();
     _onChange(_value, rawValue: value);
-    if (validateOnInput || _shouldShowValidation || _autoValidationIssue != null) {
+    if (validateOnInput ||
+        _shouldShowValidation ||
+        _autoValidationIssue != null) {
       _runAutoValidation();
     } else {
       _syncValidationClasses();
@@ -612,7 +619,9 @@ class LiInputComponent
     }
 
     _keydownController.add(event);
-    if (event.key == 'Enter' || event.code == 'Enter' || event.code == 'NumpadEnter') {
+    if (event.key == 'Enter' ||
+        event.code == 'Enter' ||
+        event.code == 'NumpadEnter') {
       _enterController.add(event);
     }
   }
@@ -755,8 +764,8 @@ class LiInputComponent
       return value;
     }
 
-    return _applyMask(
-        value, effectiveMask, maskSlot.trim().isEmpty ? 'x' : maskSlot.trim()[0]);
+    return _applyMask(value, effectiveMask,
+        maskSlot.trim().isEmpty ? 'x' : maskSlot.trim()[0]);
   }
 
   String _applyMask(String rawValue, String pattern, String slotCharacter) {

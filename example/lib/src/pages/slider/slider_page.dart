@@ -89,35 +89,41 @@ class SliderPageComponent {
   String get introBody => _isPt
       ? 'O li-slider usa a árvore de classes `noUi-*` e `noui-*` do tema, mas toda a interação é implementada em AngularDart. A API cobre valor simples, intervalo, orientação vertical, variantes de cor, tamanhos, tooltips, connect configurável e pips customizados.'
       : 'li-slider uses the theme `noUi-*` and `noui-*` class tree, while all behavior is implemented in AngularDart. The API covers single value, range mode, vertical orientation, color variants, sizes, tooltips, configurable connect behavior, and custom pips.';
-  String get singleTitle => _isPt ? 'Valor simples com ngModel' : 'Single value with ngModel';
+  String get singleTitle =>
+      _isPt ? 'Valor simples com ngModel' : 'Single value with ngModel';
   String get singleBody => _isPt
       ? 'Clique na trilha, arraste o handle ou use teclado. O componente também funciona como `ControlValueAccessor`.'
       : 'Click the track, drag the handle, or use the keyboard. The component also works as a `ControlValueAccessor`.';
-  String get rangeTitle => _isPt ? 'Intervalo com pips e tooltip' : 'Range mode with pips and tooltip';
+  String get rangeTitle => _isPt
+      ? 'Intervalo com pips e tooltip'
+      : 'Range mode with pips and tooltip';
   String get rangeBody => _isPt
       ? 'Quando `range` está ativo, o binding principal passa a ser `[(rangeValues)]` com uma lista de 2 números. Com `connect="range"`, a barra preenchida fica entre os handles.'
       : 'When `range` is enabled, the primary binding becomes `[(rangeValues)]` with a 2-item numeric list. With `connect="range"`, the filled bar stays between the handles.';
-  String get variantsTitle => _isPt ? 'Variantes e tamanhos' : 'Variants and sizes';
+  String get variantsTitle =>
+      _isPt ? 'Variantes e tamanhos' : 'Variants and sizes';
   String get variantsBody => _isPt
       ? 'As cores e estilos reaproveitam diretamente as classes do Limitless: `noui-slider-success`, `noui-slider-warning`, `noui-slider-danger`, `noui-slider-lg`, `noui-slider-sm`, `noui-slider-solid` e `noui-slider-white`.'
       : 'Colors and styles reuse the Limitless classes directly: `noui-slider-success`, `noui-slider-warning`, `noui-slider-danger`, `noui-slider-lg`, `noui-slider-sm`, `noui-slider-solid`, and `noui-slider-white`.';
-  String get verticalTitle => _isPt ? 'Orientação vertical' : 'Vertical orientation';
+  String get verticalTitle =>
+      _isPt ? 'Orientação vertical' : 'Vertical orientation';
   String get verticalBody => _isPt
       ? 'Use `orientation="vertical"` e ajuste `verticalHeight` para demos ou painéis compactos.'
       : 'Use `orientation="vertical"` and adjust `verticalHeight` for demos or compact panels.';
-    String get connectTitle => _isPt ? 'Connect configurável' : 'Configurable connect';
-    String get connectBody => _isPt
+  String get connectTitle =>
+      _isPt ? 'Connect configurável' : 'Configurable connect';
+  String get connectBody => _isPt
       ? 'A entrada `connect` aceita `auto`, `lower`, `upper`, `range` e `none`. No modo simples, `auto` se comporta como `lower`. Em intervalo, `auto` vira `range`.'
       : 'The `connect` input accepts `auto`, `lower`, `upper`, `range`, and `none`. In single-value mode, `auto` behaves like `lower`. In range mode, `auto` becomes `range`.';
-    String get customPipsTitle => _isPt ? 'Pips customizados' : 'Custom pips';
-    String get customPipsBody => _isPt
+  String get customPipsTitle => _isPt ? 'Pips customizados' : 'Custom pips';
+  String get customPipsBody => _isPt
       ? 'Use `customPips` para definir posições e labels explícitos sem depender de `pipCount`. Isso ajuda em escalas semânticas, marcos de produto e thresholds de negócio.'
       : 'Use `customPips` to define explicit positions and labels without relying on `pipCount`. This helps with semantic scales, product milestones, and business thresholds.';
-    String get apiIntro => _isPt
+  String get apiIntro => _isPt
       ? 'A API foi mantida curta, mas agora cobre os cenários mais próximos do noUi original: conectores configuráveis e pips declarativos por valor.'
       : 'The API stays compact, but now covers scenarios closer to the original noUi semantics: configurable connectors and declarative value-based pips.';
-    String get mainInputsTitle => _isPt ? 'Entradas principais' : 'Main inputs';
-    String get notesTitle => _isPt ? 'Observações' : 'Notes';
+  String get mainInputsTitle => _isPt ? 'Entradas principais' : 'Main inputs';
+  String get notesTitle => _isPt ? 'Observações' : 'Notes';
   String get currentValueLabel => _isPt ? 'Valor atual' : 'Current value';
   String get currentRangeLabel => _isPt ? 'Faixa atual' : 'Current range';
 }

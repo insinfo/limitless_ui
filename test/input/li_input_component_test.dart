@@ -255,7 +255,8 @@ void main() {
     await _settle(fixture);
 
     expect(input.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('Protocol must contain 6 digits'));
+    expect(
+        fixture.rootElement.text, contains('Protocol must contain 6 digits'));
 
     await fixture.update((_) {
       input.value = '123456';
@@ -294,12 +295,15 @@ void main() {
     expect(input.classes.contains('is-invalid'), isFalse);
   });
 
-  test('uses submittedOrTouchedOrDirty as the default declarative validation mode', () async {
+  test(
+      'uses submittedOrTouchedOrDirty as the default declarative validation mode',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input = fixture.rootElement
-        .querySelector('input#default-validation-cpf-input') as html.InputElement;
+    final input =
+        fixture.rootElement.querySelector('input#default-validation-cpf-input')
+            as html.InputElement;
 
     await fixture.update((_) {
       input.value = '123';
@@ -384,14 +388,15 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input =
-        fixture.rootElement.querySelector('input#name-input') as html.InputElement;
+    final input = fixture.rootElement.querySelector('input#name-input')
+        as html.InputElement;
 
     await fixture.update((_) {
       input.dispatchEvent(html.Event('focus', canBubble: true));
       input.dispatchEvent(html.MouseEvent('click', canBubble: true));
       input.dispatchEvent(createKeyEvent('keydown', key: 'A'));
-      input.dispatchEvent(createKeyEvent('keydown', key: 'Enter', code: 'Enter'));
+      input.dispatchEvent(
+          createKeyEvent('keydown', key: 'Enter', code: 'Enter'));
       input.dispatchEvent(html.Event('blur', canBubble: true));
     });
     await _settle(fixture);

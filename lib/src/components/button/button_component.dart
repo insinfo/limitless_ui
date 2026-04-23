@@ -216,16 +216,19 @@ class LiButtonComponent {
   }
 
   String get resolvedStartIconClasses {
-    return _joinClasses(<String>[normalizedIconClass, resolvedIconSizeClass, 'me-2']);
+    return _joinClasses(
+        <String>[normalizedIconClass, resolvedIconSizeClass, 'me-2']);
   }
 
   String get resolvedEndIconClasses {
-    return _joinClasses(<String>[normalizedIconClass, resolvedIconSizeClass, 'ms-2']);
+    return _joinClasses(
+        <String>[normalizedIconClass, resolvedIconSizeClass, 'ms-2']);
   }
 
   String get resolvedLabeledInnerIconClasses {
     if (loading) {
-      return _joinClasses(<String>['ph-spinner', 'spinner', resolvedIconSizeClass]);
+      return _joinClasses(
+          <String>['ph-spinner', 'spinner', resolvedIconSizeClass]);
     }
 
     return _joinClasses(<String>[normalizedIconClass, resolvedIconSizeClass]);
@@ -236,11 +239,13 @@ class LiButtonComponent {
   }
 
   String get resolvedLoadingInlineIconClasses {
-    return _joinClasses(<String>['ph-spinner', 'spinner', resolvedIconSizeClass, 'me-2']);
+    return _joinClasses(
+        <String>['ph-spinner', 'spinner', resolvedIconSizeClass, 'me-2']);
   }
 
   String get resolvedLoadingIconOnlyClasses {
-    return _joinClasses(<String>['ph-spinner', 'spinner', resolvedIconSizeClass]);
+    return _joinClasses(
+        <String>['ph-spinner', 'spinner', resolvedIconSizeClass]);
   }
 
   String _joinClasses(List<String> classNames) {

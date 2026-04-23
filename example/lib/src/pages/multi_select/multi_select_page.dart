@@ -109,17 +109,31 @@ List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
   }
 
   List<Map<String, dynamic>> _buildChannelOptions() => <Map<String, dynamic>>[
-        <String, dynamic>{'id': 'email', 'label': t.pages.multiSelect.optionEmail},
-        <String, dynamic>{'id': 'push', 'label': t.pages.multiSelect.optionPush},
+        <String, dynamic>{
+          'id': 'email',
+          'label': t.pages.multiSelect.optionEmail
+        },
+        <String, dynamic>{
+          'id': 'push',
+          'label': t.pages.multiSelect.optionPush
+        },
         <String, dynamic>{'id': 'sms', 'label': t.pages.multiSelect.optionSms},
-        <String, dynamic>{'id': 'webhook', 'label': t.pages.multiSelect.optionWebhook},
+        <String, dynamic>{
+          'id': 'webhook',
+          'label': t.pages.multiSelect.optionWebhook
+        },
       ];
 
-  List<Map<String, dynamic>> _buildProjectedOptions() =>
-      <Map<String, dynamic>>[
-        <String, dynamic>{'id': 'portal', 'label': t.pages.multiSelect.optionPortal},
+  List<Map<String, dynamic>> _buildProjectedOptions() => <Map<String, dynamic>>[
+        <String, dynamic>{
+          'id': 'portal',
+          'label': t.pages.multiSelect.optionPortal
+        },
         <String, dynamic>{'id': 'api', 'label': t.pages.multiSelect.optionApi},
-        <String, dynamic>{'id': 'batch', 'label': t.pages.multiSelect.optionBatch},
+        <String, dynamic>{
+          'id': 'batch',
+          'label': t.pages.multiSelect.optionBatch
+        },
       ];
 
   String _labelFor(String id, List<Map<String, dynamic>> source) {

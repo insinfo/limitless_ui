@@ -35,6 +35,7 @@ class CustomNumberValueAccessor extends Object
 
   @HostListener('change', ['\$event.target.value'])
   @HostListener('input', ['\$event.target.value'])
+
   /// Parses the raw input string and notifies AngularDart forms.
   void handleChange(String value) {
     onChange(value == '' ? null : double.parse(value), rawValue: value);
@@ -45,6 +46,7 @@ class CustomNumberValueAccessor extends Object
   int? precision;
 
   @override
+
   /// Writes the current model value into the native input element.
   void writeValue(value) {
     if (value is double) {
@@ -61,6 +63,7 @@ class CustomNumberValueAccessor extends Object
   }
 
   @override
+
   /// Enables or disables the backing input element.
   void onDisabledChanged(bool isDisabled) {
     _element.disabled = isDisabled;

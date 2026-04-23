@@ -1,5 +1,3 @@
-
-
 // Character constants.
 const int _zero = 0x30;
 const int _upperCaseA = 0x41;

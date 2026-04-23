@@ -103,7 +103,9 @@ class LiButtonToggleGroupComponent {
       'btn',
       _buttonVariantClass(variant, style),
       rounded ? 'rounded-pill' : '',
-      option.iconClass.trim().isNotEmpty ? 'd-inline-flex align-items-center' : '',
+      option.iconClass.trim().isNotEmpty
+          ? 'd-inline-flex align-items-center'
+          : '',
       buttonClass,
     ]);
   }
@@ -113,9 +115,8 @@ class LiButtonToggleGroupComponent {
   }
 
   String _buttonVariantClass(String variant, String style) {
-    final normalizedVariant = variant.trim().isEmpty
-        ? 'primary'
-        : variant.trim().toLowerCase();
+    final normalizedVariant =
+        variant.trim().isEmpty ? 'primary' : variant.trim().toLowerCase();
     final normalizedStyle = style.trim().toLowerCase();
 
     switch (normalizedStyle) {

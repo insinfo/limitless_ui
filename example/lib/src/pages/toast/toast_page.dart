@@ -43,16 +43,16 @@ toastService.show(
   LiToastComponent? roundedToast;
 
   String get pageTitle => 'Toast';
-  String get pageSubtitle => _isPt ? 'mensagens de feedback' : 'feedback messages';
+  String get pageSubtitle =>
+      _isPt ? 'mensagens de feedback' : 'feedback messages';
   String get breadcrumb => _isPt
       ? 'Notifications inline e em stack'
       : 'Inline and stacked notifications';
   String get overviewIntro => _isPt
       ? 'li-toast cobre o uso declarativo inline e o fluxo global com LiToastService + li-toast-stack, próximo do padrão Bootstrap/ng-bootstrap.'
       : 'li-toast covers inline declarative usage and the global flow with LiToastService + li-toast-stack, close to the Bootstrap/ng-bootstrap pattern.';
-  String get basicToastTitle => _isPt
-      ? 'Toast declarativo básico'
-      : 'Basic declarative toast';
+  String get basicToastTitle =>
+      _isPt ? 'Toast declarativo básico' : 'Basic declarative toast';
   String get basicToastBody => _isPt
       ? 'Header, body e dismiss button controlados pelo componente.'
       : 'Header, body, and dismiss button controlled by the component.';
@@ -74,8 +74,9 @@ toastService.show(
   String get customHeaderBody => _isPt
       ? 'Um toast contextual com cabeçalho colorido e botão de fechar.'
       : 'A contextual toast with colored header and close button.';
-  String get projectedTitle =>
-      _isPt ? 'Markup customizado com painel de ações' : 'Custom markup with action panel';
+  String get projectedTitle => _isPt
+      ? 'Markup customizado com painel de ações'
+      : 'Custom markup with action panel';
   String get projectedHeader => _isPt ? 'Cabeçalho do toast' : 'Toast header';
   String get projectedHelper => _isPt ? '1 hora atrás' : '1 hour ago';
   String get projectedBody => _isPt
@@ -93,9 +94,8 @@ toastService.show(
   String get clearStackLabel => _isPt ? 'Limpar stack' : 'Clear stack';
   String get howToUseTitle => t.common.sectionHowToUse;
   String get mainInputsTitle => _isPt ? 'Entradas principais' : 'Main inputs';
-  String get idleState => _isPt
-      ? 'Toast: aguardando interação'
-      : 'Toast: waiting for interaction';
+  String get idleState =>
+      _isPt ? 'Toast: aguardando interação' : 'Toast: waiting for interaction';
 
   void reopenManualToast() {
     manualToast?.show();

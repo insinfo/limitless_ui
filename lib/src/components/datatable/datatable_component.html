@@ -75,7 +75,7 @@
                     </div>
                     <label *ngFor="let col of settings.colsDefinitions" class="dropdown-item">
                         <input (click)="changeVisibilityOfCol(col)" type="checkbox"
-                            class="form-check-input cursor-pointer m-0 me-3" [checked]="col.visibility" />
+                            class="form-check-input cursor-pointer m-0 me-3" [checked]="isColumnEffectivelyVisible(col)" />
                         {{col.title}}
                     </label>
                 </div>
@@ -102,12 +102,15 @@
                             [checked]="isSelectAll" (click)="onSelectAll($event)" type="checkbox" autocomplete="off"
                             tabindex="-1" />
                     </th>
-                    <th *ngFor="let colDef of settings.colsDefinitions; trackBy: trackByColumnKey"
+                    <th *ngFor="let colDef of settings.colsDefinitions; let idxCol = index; trackBy: trackByColumnKey"
                         [class]="colDef.headerClass ?? ''" [class.sorting]="colDef.enableSorting"
                         [class.hide]="!colDef.visibility || isRuntimeResponsiveHidden(colDef)"
+                        [class.datatable-fixed-col]="isFixedColumn(colDef)"
+                        [class.datatable-fixed-col--left]="isLeftFixedColumn(colDef)"
+                        [class.datatable-fixed-col--right]="isRightFixedColumn(colDef)"
                         [class.datatable-mobile-hidden]="isRuntimeResponsiveHidden(colDef)"
                         [class.dtr-hidden]="isRuntimeResponsiveHidden(colDef)" [attr.data-key]="colDef.key"
-                        [attr.data-sort-key]="colDef.sortingBy ?? ''" [cssStyle]="colDef.headerStyleCss"
+                        [attr.data-sort-key]="colDef.sortingBy ?? ''" [cssStyle]="resolvedHeaderStyleCss(colDef, idxCol)"
                         (click)="onOrder(colDef)" tabindex="0">
                         {{colDef.title}}
                     </th>
@@ -131,12 +134,15 @@
 
                         <td *ngFor="let column of view.row.columns; let idxC = index; trackBy: trackByColumnKey"
                             [class]="column.cellClass ?? ''" [class.hide]="!column.visibility || isRuntimeResponsiveHidden(column)"
+                            [class.datatable-fixed-col]="isFixedColumn(column)"
+                            [class.datatable-fixed-col--left]="isLeftFixedColumn(column)"
+                            [class.datatable-fixed-col--right]="isRightFixedColumn(column)"
                             [class.datatable-mobile-hidden]="isRuntimeResponsiveHidden(column)"
                             [class.dtr-hidden]="isRuntimeResponsiveHidden(column)"
                             [class.dtr-control]="isResponsiveControlColumn(view, column)"
                             [class.datatable-group-title-cell]="view.row.type == DatatableRowType.groupTitle"
                             [attr.aria-expanded]="isResponsiveControlColumn(view, column) ? view.row.isExpanded.toString() : null"
-                            [attr.colspan]="column.colspan.toString()" [cssStyle]="column.styleCss"
+                            [attr.colspan]="column.colspan.toString()" [cssStyle]="resolvedCellStyleCss(column, idxC)"
                             [attr.data-label]="'datatable_col_' + idxC.toString()" [safeHtml]="column.value"
                             [safeHtmlNode]="column.htmlElement"
                             (click)="isResponsiveControlColumn(view, column) ? onResponsiveControlClick($event, view) : null">

@@ -86,7 +86,8 @@ class LiAccordionItemComponent implements AfterContentInit, OnDestroy {
 
   bool get isExpanded => _expanded;
 
-  bool get hasDescription => description != null && description!.trim().isNotEmpty;
+  bool get hasDescription =>
+      description != null && description!.trim().isNotEmpty;
 
   bool get hasIcon => iconClass != null && iconClass!.trim().isNotEmpty;
 
@@ -115,9 +116,11 @@ class LiAccordionItemComponent implements AfterContentInit, OnDestroy {
 
   bool get resolvedBodyPadding => bodyPadding ?? parent?.bodyPadding ?? true;
 
-  String get resolvedButtonClass => (buttonClass ?? parent?.buttonClass ?? '').trim();
+  String get resolvedButtonClass =>
+      (buttonClass ?? parent?.buttonClass ?? '').trim();
 
-  bool get resolvedButtonSemibold => buttonSemibold ?? parent?.buttonSemibold ?? true;
+  bool get resolvedButtonSemibold =>
+      buttonSemibold ?? parent?.buttonSemibold ?? true;
 
   bool get hasLazyBodyTemplate => bodyTemplate != null;
 

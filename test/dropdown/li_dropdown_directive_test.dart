@@ -227,8 +227,7 @@ void main() {
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -286,8 +285,7 @@ void main() {
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 

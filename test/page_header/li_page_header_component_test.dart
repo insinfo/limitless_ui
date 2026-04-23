@@ -34,8 +34,8 @@ import 'li_page_header_component_test.template.dart' as ng;
   directives: [coreDirectives, liPageHeaderDirectives],
 )
 class PageHeaderTestHostComponent {
-  final List<LiPageHeaderBreadcrumbItem> items = const <
-      LiPageHeaderBreadcrumbItem>[
+  final List<LiPageHeaderBreadcrumbItem> items =
+      const <LiPageHeaderBreadcrumbItem>[
     LiPageHeaderBreadcrumbItem(label: 'Protocolo', href: '#protocolo'),
     LiPageHeaderBreadcrumbItem(label: 'Incluir Processo', active: true),
   ];
@@ -67,13 +67,15 @@ void main() {
     );
   });
 
-  test('renders projected bottom content instead of auto breadcrumb row', () async {
+  test('renders projected bottom content instead of auto breadcrumb row',
+      () async {
     final fixture = await testBed.create();
     final root = fixture.rootElement;
     final secondHeader = root.querySelectorAll('.page-header').last;
 
     expect(secondHeader.querySelector('#custom-bottom'), isNotNull);
-    expect(secondHeader.querySelector('#custom-bottom')!.text, contains('Abas customizadas'));
+    expect(secondHeader.querySelector('#custom-bottom')!.text,
+        contains('Abas customizadas'));
     expect(secondHeader.querySelectorAll('.li-breadcrumb').length, 0);
   });
 }

@@ -231,7 +231,9 @@ void main() {
     expect(host.lastDataRequest!.orderDir, 'asc');
   });
 
-  test('ordenacao simples ignora orderFields preexistente e limpa criterios avancados', () async {
+  test(
+      'ordenacao simples ignora orderFields preexistente e limpa criterios avancados',
+      () async {
     final fixture = await testBed.create();
 
     await fixture.update((component) {
@@ -259,7 +261,8 @@ void main() {
     expect(host.table!.dataTableFilter.orderFields, isEmpty);
   });
 
-  test('mantem apenas uma linha selecionada em modo single selection', () async {
+  test('mantem apenas uma linha selecionada em modo single selection',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -294,7 +297,8 @@ void main() {
 
     await fixture.update((component) {
       component.table!.dataTableFilter.searchString = 'Ana';
-      component.table!.handleSearchInputKeypress(_FakeKeyPressEvent(KeyCode.ENTER));
+      component.table!
+          .handleSearchInputKeypress(_FakeKeyPressEvent(KeyCode.ENTER));
     });
 
     expect(host.lastSearchRequest, isNotNull);
@@ -318,7 +322,8 @@ void main() {
     );
   });
 
-  test('renderiza footer customizado e permite paginacao via contexto', () async {
+  test('renderiza footer customizado e permite paginacao via contexto',
+      () async {
     final fixture = await customHeaderTestBed.create();
     await _settleTable(fixture);
     await _settleTable(fixture);
@@ -346,7 +351,9 @@ void main() {
     expect(host.lastDataRequest!.limit, 10);
   });
 
-  test('permite selecionar varias linhas quando single selection esta desabilitado', () async {
+  test(
+      'permite selecionar varias linhas quando single selection esta desabilitado',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -363,7 +370,8 @@ void main() {
     expect(host.lastSelectedRows, hasLength(2));
   });
 
-  test('seleção individual atualiza a lista agregada de selecionados', () async {
+  test('seleção individual atualiza a lista agregada de selecionados',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -374,7 +382,8 @@ void main() {
 
     expect(host.lastSelectedRows, isNotNull);
     expect(host.lastSelectedRows, hasLength(1));
-    expect((host.lastSelectedRows!.single as Map<String, dynamic>)['nome'], 'Ana');
+    expect(
+        (host.lastSelectedRows!.single as Map<String, dynamic>)['nome'], 'Ana');
 
     await fixture.update((component) {
       component.table!.onSelect(MouseEvent('click'), component.table!.rows[0]);
@@ -384,7 +393,8 @@ void main() {
     expect(host.lastSelectedRows, isEmpty);
   });
 
-  test('toggle de visibilidade propaga para definicoes e linhas renderizadas', () async {
+  test('toggle de visibilidade propaga para definicoes e linhas renderizadas',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -418,7 +428,8 @@ void main() {
       'tbody tr td.dtr-control',
     ) as TableCellElement?;
 
-    expect(host.table!.hasResponsiveHiddenColumns(host.table!.rows.first), isTrue);
+    expect(
+        host.table!.hasResponsiveHiddenColumns(host.table!.rows.first), isTrue);
     expect(host.table!.rows.first.isExpanded, isFalse);
     expect(toggleCell, isNotNull);
 
@@ -432,7 +443,8 @@ void main() {
     expect(fixture.rootElement.querySelector('tbody tr.child'), isNotNull);
   });
 
-  test('não expande linha quando não há colunas configuradas para mobile', () async {
+  test('não expande linha quando não há colunas configuradas para mobile',
+      () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
       component.settings = DatatableSettings(
         colsDefinitions: <DatatableCol>[
@@ -461,9 +473,11 @@ void main() {
     });
     await _settleTable(fixture);
 
-    final toggleCell = fixture.rootElement.querySelector('tbody tr td.dtr-control');
+    final toggleCell =
+        fixture.rootElement.querySelector('tbody tr td.dtr-control');
 
-    expect(host.table!.hasResponsiveHiddenColumns(host.table!.rows.first), isFalse);
+    expect(host.table!.hasResponsiveHiddenColumns(host.table!.rows.first),
+        isFalse);
     expect(toggleCell, isNull);
 
     await fixture.update((component) {
@@ -516,9 +530,12 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final renderedRow = host.table!.renderedRows.first;
-    final nomeHeader = fixture.rootElement.querySelector('thead th[data-key="nome"]');
-    final idadeHeader = fixture.rootElement.querySelector('thead th[data-key="idade"]');
-    final acoesHeader = fixture.rootElement.querySelector('thead th[data-key="acoes"]');
+    final nomeHeader =
+        fixture.rootElement.querySelector('thead th[data-key="nome"]');
+    final idadeHeader =
+        fixture.rootElement.querySelector('thead th[data-key="idade"]');
+    final acoesHeader =
+        fixture.rootElement.querySelector('thead th[data-key="acoes"]');
 
     expect(renderedRow.hasResponsiveHiddenColumns, isTrue);
     expect(
@@ -534,7 +551,70 @@ void main() {
     expect(acoesHeader!.classes.contains('hide'), isFalse);
   });
 
-  test('usa a primeira coluna obrigatória visível como controle do detalhe auto-hide',
+  test('trata coluna auto-ocultada como desmarcada e permite forcar exibicao',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 280px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'nome',
+            title: 'Nome',
+            width: '160px',
+            minWidth: '160px',
+            responsiveAutoHidePriority: 1,
+          ),
+          DatatableCol(
+            key: 'idade',
+            title: 'Idade',
+            width: '110px',
+            minWidth: '110px',
+            responsiveAutoHidePriority: 2,
+          ),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Ações',
+            width: '110px',
+            minWidth: '110px',
+            responsiveAutoHideRequired: true,
+            customRenderString: (itemMap, itemInstance) => 'Ver',
+          ),
+        ],
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final nomeCol = host.settings.colsDefinitions.first;
+    var nomeHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="nome"]',
+    );
+
+    expect(host.table!.isColumnEffectivelyVisible(nomeCol), isFalse);
+    expect(host.table!.isRuntimeResponsiveHidden(nomeCol), isTrue);
+    expect(nomeHeader, isNotNull);
+    expect(nomeHeader!.classes.contains('hide'), isTrue);
+
+    await fixture.update((component) {
+      component.table!.changeVisibilityOfCol(nomeCol);
+    });
+    await _settleTable(fixture);
+
+    nomeHeader = fixture.rootElement.querySelector('thead th[data-key="nome"]');
+
+    expect(nomeCol.visibility, isTrue);
+    expect(host.table!.isColumnEffectivelyVisible(nomeCol), isTrue);
+    expect(host.table!.isRuntimeResponsiveHidden(nomeCol), isFalse);
+    expect(nomeHeader, isNotNull);
+    expect(nomeHeader!.classes.contains('hide'), isFalse);
+  });
+
+  test(
+      'usa a primeira coluna obrigatória visível como controle do detalhe auto-hide',
       () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
       component.responsiveAutoHideColumns = true;
@@ -589,7 +669,8 @@ void main() {
     expect(fixture.text, contains('Ana'));
   });
 
-  test('onSelectAll marca e desmarca todas as linhas pelo checkbox do header', () async {
+  test('onSelectAll marca e desmarca todas as linhas pelo checkbox do header',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -725,8 +806,12 @@ void main() {
     ) as CheckboxInputElement?;
 
     expect(selectAllCheckbox, isNotNull);
-    expect(host.table!.rows.where((row) => row.type == DatatableRowType.groupTitle), hasLength(2));
-    expect(host.table!.rows.where((row) => row.type == DatatableRowType.normal), hasLength(2));
+    expect(
+        host.table!.rows
+            .where((row) => row.type == DatatableRowType.groupTitle),
+        hasLength(2));
+    expect(host.table!.rows.where((row) => row.type == DatatableRowType.normal),
+        hasLength(2));
 
     await fixture.update((_) {
       selectAllCheckbox!.click();
@@ -840,7 +925,8 @@ void main() {
     expect(host.table!.searchInFields[1].selected, isTrue);
   });
 
-  test('reaplica campo de busca selecionado quando dataTableFilter muda', () async {
+  test('reaplica campo de busca selecionado quando dataTableFilter muda',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -880,7 +966,9 @@ void main() {
     expect(host.table!.dataTableFilter.orderFields[1].direction, 'asc');
   });
 
-  test('ordenação multi-coluna alterna a direção ao ordenar a mesma coluna novamente', () async {
+  test(
+      'ordenação multi-coluna alterna a direção ao ordenar a mesma coluna novamente',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -897,7 +985,8 @@ void main() {
     expect(host.table!.dataTableFilter.orderFields.first.direction, 'desc');
   });
 
-  test('changeItemsPerPageHandler atualiza limit e emite limitChange', () async {
+  test('changeItemsPerPageHandler atualiza limit e emite limitChange',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -915,7 +1004,8 @@ void main() {
     expect(host.lastLimitChange!.limit, 20);
   });
 
-  test('changeItemsPerPageHandler pode emitir dataRequest quando a opção estiver habilitada',
+  test(
+      'changeItemsPerPageHandler pode emitir dataRequest quando a opção estiver habilitada',
       () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
       component.requestDataOnItemsPerPageChange = true;
@@ -940,7 +1030,8 @@ void main() {
     expect(host.lastLimitChange, isNull);
   });
 
-  test('prevPage, primeira e ultima pagina atualizam offset corretamente', () async {
+  test('prevPage, primeira e ultima pagina atualizam offset corretamente',
+      () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
@@ -999,8 +1090,10 @@ void main() {
     await _settleTable(fixture);
 
     final gridContainer = fixture.rootElement.querySelector('.grid-container');
-    final gridItems = fixture.rootElement.querySelectorAll('.grid-layout .grid-item');
-    final tableContainer = fixture.rootElement.querySelector('.datatable-scroll');
+    final gridItems =
+        fixture.rootElement.querySelectorAll('.grid-layout .grid-item');
+    final tableContainer =
+        fixture.rootElement.querySelector('.datatable-scroll');
 
     expect(host.table!.gridMode, isTrue);
     expect(gridContainer, isNotNull);
@@ -1026,7 +1119,9 @@ void main() {
     expect(gridContainer!.className, contains('grid-container'));
   });
 
-  test('adiciona classe customizada ao grid-container sem remover a classe padrao', () async {
+  test(
+      'adiciona classe customizada ao grid-container sem remover a classe padrao',
+      () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
       component.settings = DatatableSettings(
         colsDefinitions: <DatatableCol>[
@@ -1117,8 +1212,10 @@ void main() {
     });
     await _settleTable(fixture);
 
-    final customCards = fixture.rootElement.querySelectorAll('.custom-grid-card');
-    final customCardWrappers = fixture.rootElement.querySelectorAll('.datatable-custom-card');
+    final customCards =
+        fixture.rootElement.querySelectorAll('.custom-grid-card');
+    final customCardWrappers =
+        fixture.rootElement.querySelectorAll('.datatable-custom-card');
 
     expect(customCards, hasLength(2));
     expect(customCardWrappers, hasLength(2));
@@ -1224,6 +1321,84 @@ void main() {
     expect(solicitanteHeader!.classes.contains('hide'), isFalse);
     expect(assuntoHeader!.classes.contains('hide'), isFalse);
   });
+
+  test('mantem a coluna de acoes fixada a direita durante scroll horizontal',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.tableContainerStyle = 'width: 480px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'processo',
+            title: 'Processo',
+            width: '180px',
+            minWidth: '180px',
+          ),
+          DatatableCol(
+            key: 'solicitante',
+            title: 'Solicitante',
+            width: '220px',
+            minWidth: '220px',
+          ),
+          DatatableCol(
+            key: 'assunto',
+            title: 'Assunto',
+            width: '240px',
+            minWidth: '240px',
+          ),
+          DatatableCol(
+            key: 'status',
+            title: 'Status',
+            width: '140px',
+            minWidth: '140px',
+          ),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Ações',
+            width: '128px',
+            minWidth: '128px',
+            fixedPosition: DatatableFixedColumnPosition.right,
+            customRenderString: (itemMap, itemInstance) => 'Abrir',
+          ),
+        ],
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'processo': '61109/2016',
+            'solicitante': 'Nucleo de Governanca',
+            'assunto': 'Revisao documental extensa',
+            'status': 'Em analise',
+            'acoes': 'Abrir',
+          },
+        ],
+        totalRecords: 1,
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final headerCell = fixture.rootElement.querySelector(
+      'thead th[data-key="acoes"]',
+    ) as TableCellElement?;
+    final dataCell = fixture.rootElement.querySelector(
+      'tbody tr td[data-label="datatable_col_4"]',
+    ) as TableCellElement?;
+
+    expect(headerCell, isNotNull);
+    expect(dataCell, isNotNull);
+    expect(headerCell!.classes.contains('datatable-fixed-col'), isTrue);
+    expect(headerCell.classes.contains('datatable-fixed-col--right'), isTrue);
+    expect(dataCell!.classes.contains('datatable-fixed-col'), isTrue);
+    expect(dataCell.classes.contains('datatable-fixed-col--right'), isTrue);
+    expect(headerCell.style.right, '0px');
+    expect(dataCell.style.right, '0px');
+    expect(headerCell.getComputedStyle().position, 'sticky');
+    expect(dataCell.getComputedStyle().position, 'sticky');
+  });
 }
 
 Future<void> _settleTable(NgTestFixture<TestHostComponent> fixture) async {
@@ -1231,7 +1406,8 @@ Future<void> _settleTable(NgTestFixture<TestHostComponent> fixture) async {
   await fixture.update((_) {});
 }
 
-Future<void> _settleAfterResize(NgTestFixture<TestHostComponent> fixture) async {
+Future<void> _settleAfterResize(
+    NgTestFixture<TestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 180));
   await fixture.update((_) {});
 }

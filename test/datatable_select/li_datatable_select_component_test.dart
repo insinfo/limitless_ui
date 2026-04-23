@@ -299,7 +299,8 @@ void main() {
     await _settle(fixture, milliseconds: 140);
 
     expect(
-      html.document.querySelector('.modal.show .custom-datatable-select-header'),
+      html.document
+          .querySelector('.modal.show .custom-datatable-select-header'),
       isNotNull,
     );
     expect(
@@ -307,7 +308,8 @@ void main() {
       isNull,
     );
     expect(
-      html.document.querySelector('.modal.show .custom-datatable-select-footer'),
+      html.document
+          .querySelector('.modal.show .custom-datatable-select-footer'),
       isNotNull,
     );
     expect(
@@ -315,11 +317,13 @@ void main() {
       isNull,
     );
     expect(
-      html.document.querySelector('.modal.show .modal-header.modal-header-compact'),
+      html.document
+          .querySelector('.modal.show .modal-header.modal-header-compact'),
       isNotNull,
     );
     expect(
-      html.document.querySelector('.modal.show .modal-header.modal-header-small'),
+      html.document
+          .querySelector('.modal.show .modal-header.modal-header-small'),
       isNotNull,
     );
   });

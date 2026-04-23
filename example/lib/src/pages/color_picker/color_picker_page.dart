@@ -163,7 +163,8 @@ class ColorPickerPageComponent {
   String get mainInputsTitle => isPt ? 'Entradas principais' : 'Main inputs';
   String get snippetsTitle => isPt ? 'Snippets rápidos' : 'Quick snippets';
   String get basicSnippetTitle => isPt ? 'Uso básico' : 'Basic usage';
-  String get paletteSnippetTitle => isPt ? 'Paleta e seleção' : 'Palette and selection';
+  String get paletteSnippetTitle =>
+      isPt ? 'Paleta e seleção' : 'Palette and selection';
   String get eventsSnippetTitle => isPt ? 'Eventos' : 'Events';
 
   String get enableLabel => isPt ? 'Habilitar' : 'Enable';
@@ -174,9 +175,8 @@ class ColorPickerPageComponent {
       value == null || value.isEmpty ? emptyLabel : value;
 
   void onPickerEvent(String key, LiColorPickerEvent event) {
-    final value = event.value == null || event.value!.isEmpty
-        ? emptyLabel
-        : event.value!;
+    final value =
+        event.value == null || event.value!.isEmpty ? emptyLabel : event.value!;
     eventResults[key] = '${event.source}: $value';
   }
 }

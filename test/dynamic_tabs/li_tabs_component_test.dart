@@ -43,7 +43,8 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    html.Element? tabContent = fixture.rootElement.querySelector('.tab-content');
+    html.Element? tabContent =
+        fixture.rootElement.querySelector('.tab-content');
     expect(tabContent, isNotNull);
     expect(tabContent!.classes.contains('p-1'), isTrue);
 

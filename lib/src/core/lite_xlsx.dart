@@ -4,7 +4,7 @@ import 'dart:convert';
 /// Biblioteca minimalista e otimizada para gerar XLSX. Compatível com dart2js.
 class LiteXlsx {
   static final DateTime _excelEpoch = DateTime(1899, 12, 30);
-  
+
   static String _toCol(int num) {
     String res = '';
     while (num >= 0) {
@@ -18,7 +18,8 @@ class LiteXlsx {
     return val.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
   }
 
-  static String _toXml(String name,[Map<String, dynamic>? attrs, String? content]) {
+  static String _toXml(String name,
+      [Map<String, dynamic>? attrs, String? content]) {
     final sb = StringBuffer('<$name');
     if (attrs != null) {
       attrs.forEach((k, v) {
@@ -39,22 +40,40 @@ class LiteXlsx {
     final zip = MinimalZip();
 
     // Relações básicas
-    final types =[
-      {'Extension': 'rels', 'ContentType': 'application/vnd.openxmlformats-package.relationships+xml'},
+    final types = [
+      {
+        'Extension': 'rels',
+        'ContentType':
+            'application/vnd.openxmlformats-package.relationships+xml'
+      },
       {'Extension': 'xml', 'ContentType': 'application/xml'},
-      {'PartName': '/xl/styles.xml', 'ContentType': 'application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml'},
-      {'PartName': '/xl/workbook.xml', 'ContentType': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml'}
+      {
+        'PartName': '/xl/styles.xml',
+        'ContentType':
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml'
+      },
+      {
+        'PartName': '/xl/workbook.xml',
+        'ContentType':
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml'
+      }
     ];
-    
-    final rels =[
-      {'Id': 'rId0', 'Type': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles', 'Target': 'styles.xml'}
+
+    final rels = [
+      {
+        'Id': 'rId0',
+        'Type':
+            'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles',
+        'Target': 'styles.xml'
+      }
     ];
 
     final sheets = workbook['sheets'] as List<dynamic>;
     final sheetsXml = StringBuffer();
 
-    // Estilos fixos mínimos 
-    const stylesXml = '''<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    // Estilos fixos mínimos
+    const stylesXml =
+        '''<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
       <numFmts count="2">
         <numFmt numFmtId="164" formatCode="yyyy-mm-dd"/>
         <numFmt numFmtId="165" formatCode="yyyy-mm-dd hh:mm:ss"/>
@@ -74,13 +93,24 @@ class LiteXlsx {
       final int sheetId = i + 1;
       final sheet = sheets[i] as Map<String, dynamic>;
       final String sheetName = sheet['name'] ?? 'Sheet$sheetId';
-      final List<List<dynamic>> data = (sheet['data'] as List<dynamic>).cast<List<dynamic>>();
-      
+      final List<List<dynamic>> data =
+          (sheet['data'] as List<dynamic>).cast<List<dynamic>>();
+
       final partName = '/xl/worksheets/sheet$sheetId.xml';
-      types.add({'PartName': partName, 'ContentType': 'application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml'});
-      rels.add({'Id': 'rId$sheetId', 'Type': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet', 'Target': 'worksheets/sheet$sheetId.xml'});
-      
-      sheetsXml.write(_toXml('sheet', {'name': sheetName, 'sheetId': sheetId, 'r:id': 'rId$sheetId'}));
+      types.add({
+        'PartName': partName,
+        'ContentType':
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml'
+      });
+      rels.add({
+        'Id': 'rId$sheetId',
+        'Type':
+            'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet',
+        'Target': 'worksheets/sheet$sheetId.xml'
+      });
+
+      sheetsXml.write(_toXml('sheet',
+          {'name': sheetName, 'sheetId': sheetId, 'r:id': 'rId$sheetId'}));
 
       final sheetDataXml = StringBuffer();
       int rowIndex = 1;
@@ -92,17 +122,20 @@ class LiteXlsx {
           if (val == null) continue;
 
           final ref = '${_toCol(col)}$rowIndex';
-          
+
           if (val is String) {
-            rowXml.write('<c r="$ref" t="inlineStr"><is><t>${_escape(val)}</t></is></c>');
+            rowXml.write(
+                '<c r="$ref" t="inlineStr"><is><t>${_escape(val)}</t></is></c>');
           } else if (val is num) {
             rowXml.write('<c r="$ref"><v>$val</v></c>');
           } else if (val is bool) {
             rowXml.write('<c r="$ref" t="b"><v>${val ? 1 : 0}</v></c>');
           } else if (val is DateTime) {
-            final double excelDate = val.difference(_excelEpoch).inMilliseconds / 86400000.0;
+            final double excelDate =
+                val.difference(_excelEpoch).inMilliseconds / 86400000.0;
             // s="1" aponta para o formato de data yyyy-mm-dd
-            rowXml.write('<c r="$ref" s="1"><v>${excelDate.toStringAsFixed(6)}</v></c>');
+            rowXml.write(
+                '<c r="$ref" s="1"><v>${excelDate.toStringAsFixed(6)}</v></c>');
           }
         }
         if (rowXml.isNotEmpty) {
@@ -113,11 +146,13 @@ class LiteXlsx {
 
       final content = StringBuffer()
         ..write(xmlHead)
-        ..write('<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">')
+        ..write(
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">')
         ..write('<sheetData>$sheetDataXml</sheetData>')
         ..write('</worksheet>');
 
-      zip.addFile('xl/worksheets/sheet$sheetId.xml', utf8.encode(content.toString()));
+      zip.addFile(
+          'xl/worksheets/sheet$sheetId.xml', utf8.encode(content.toString()));
     }
 
     // [Content_Types].xml
@@ -129,29 +164,41 @@ class LiteXlsx {
         typesXml.write(_toXml('Override', t));
       }
     }
-    zip.addFile('[Content_Types].xml', utf8.encode('$xmlHead<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">$typesXml</Types>'));
+    zip.addFile(
+        '[Content_Types].xml',
+        utf8.encode(
+            '$xmlHead<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">$typesXml</Types>'));
 
     // _rels/.rels
-    zip.addFile('_rels/.rels', utf8.encode('$xmlHead<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'));
+    zip.addFile(
+        '_rels/.rels',
+        utf8.encode(
+            '$xmlHead<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'));
 
     // xl/_rels/workbook.xml.rels
     final relsXml = StringBuffer();
     for (var r in rels) {
       relsXml.write(_toXml('Relationship', r));
     }
-    zip.addFile('xl/_rels/workbook.xml.rels', utf8.encode('$xmlHead<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">$relsXml</Relationships>'));
+    zip.addFile(
+        'xl/_rels/workbook.xml.rels',
+        utf8.encode(
+            '$xmlHead<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">$relsXml</Relationships>'));
 
     // xl/styles.xml
     zip.addFile('xl/styles.xml', utf8.encode(xmlHead + stylesXml));
 
     // xl/workbook.xml
-    zip.addFile('xl/workbook.xml', utf8.encode('$xmlHead<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>$sheetsXml</sheets></workbook>'));
+    zip.addFile(
+        'xl/workbook.xml',
+        utf8.encode(
+            '$xmlHead<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>$sheetsXml</sheets></workbook>'));
 
     return zip.finish();
   }
 }
 
-/// Implementação ultra compacta de um criador de ZIP 
+/// Implementação ultra compacta de um criador de ZIP
 /// Utiliza 'Store' (sem compressão) para máxima performance web sem usar libs extras.
 class MinimalZip {
   final BytesBuilder _out = BytesBuilder();
@@ -181,12 +228,17 @@ class MinimalZip {
   }
 
   int _dosDate(DateTime date) {
-    return ((date.year - 1980) << 25) | (date.month << 21) | (date.day << 16) | 
-           (date.hour << 11) | (date.minute << 5) | (date.second >> 1);
+    return ((date.year - 1980) << 25) |
+        (date.month << 21) |
+        (date.day << 16) |
+        (date.hour << 11) |
+        (date.minute << 5) |
+        (date.second >> 1);
   }
 
   Uint8List _le16(int n) => Uint8List.fromList([n & 0xFF, (n >> 8) & 0xFF]);
-  Uint8List _le32(int n) => Uint8List.fromList([n & 0xFF, (n >> 8) & 0xFF, (n >> 16) & 0xFF, (n >> 24) & 0xFF]);
+  Uint8List _le32(int n) => Uint8List.fromList(
+      [n & 0xFF, (n >> 8) & 0xFF, (n >> 16) & 0xFF, (n >> 24) & 0xFF]);
 
   void addFile(String name, List<int> content) {
     final nameBytes = utf8.encode(name);

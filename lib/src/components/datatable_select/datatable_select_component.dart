@@ -480,9 +480,8 @@ class LiDatatableSelectComponent
       ? clearButtonLabel
       : (_isEnglishLocale ? 'Clear selection' : 'Limpar selecao');
 
-  String get resolvedConfirmButtonLabel => confirmButtonLabel.trim().isNotEmpty
-      ? confirmButtonLabel
-      : 'OK';
+  String get resolvedConfirmButtonLabel =>
+      confirmButtonLabel.trim().isNotEmpty ? confirmButtonLabel : 'OK';
 
   String get normalizedTriggerIconMode {
     switch (triggerIconMode.trim().toLowerCase()) {
@@ -515,8 +514,10 @@ class LiDatatableSelectComponent
   String get resolvedTriggerClass => _joinClasses(<String>[
         'form-select',
         'datatable-select-trigger',
-      usesAddonTriggerIcon ? 'datatable-select-trigger--with-addon-icon' : '',
-        usesOverlayTriggerIcon ? 'datatable-select-trigger--with-overlay-icon' : '',
+        usesAddonTriggerIcon ? 'datatable-select-trigger--with-addon-icon' : '',
+        usesOverlayTriggerIcon
+            ? 'datatable-select-trigger--with-overlay-icon'
+            : '',
         showsClearButton ? 'datatable-select-trigger--with-clear' : '',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
@@ -632,7 +633,9 @@ class LiDatatableSelectComponent
 
       nextValues.add(pendingValue);
       nextLabels.add(
-        index < _pendingSelectedLabels.length ? _pendingSelectedLabels[index] : pendingValue.toString(),
+        index < _pendingSelectedLabels.length
+            ? _pendingSelectedLabels[index]
+            : pendingValue.toString(),
       );
     }
 
@@ -756,7 +759,8 @@ class LiDatatableSelectComponent
 
     _selectedValue = _extractValue(instance);
     _selectedLabel = _extractLabel(instance);
-    _selectedLabels = _selectedLabel.isEmpty ? <String>[] : <String>[_selectedLabel];
+    _selectedLabels =
+        _selectedLabel.isEmpty ? <String>[] : <String>[_selectedLabel];
 
     _dirty = true;
     _valueChangeCtrl.add(_selectedValue);

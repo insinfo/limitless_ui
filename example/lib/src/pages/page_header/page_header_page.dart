@@ -65,7 +65,8 @@ class PageHeaderPageComponent {
   String get descriptionBody => isPt
       ? 'Use quando a página precisar manter consistência entre título, navegação contextual e ações globais.'
       : 'Use it when the page needs consistent title, contextual navigation, and global actions.';
-  String get featuresTitle => isPt ? 'O que a API cobre' : 'What the API covers';
+  String get featuresTitle =>
+      isPt ? 'O que a API cobre' : 'What the API covers';
   String get featureOne => isPt
       ? 'Breadcrumb automático por lista de itens ou por projeção de `li-pg-crumb-item`.'
       : 'Automatic breadcrumb from a list of items or projected `li-pg-crumb-item`.';

@@ -1,4 +1,3 @@
-
 import 'dart:html';
 
 import 'package:limitless_ui_example/messages.i18n.dart';
@@ -33,9 +32,9 @@ class DemoI18nService {
     final navigator = window.navigator as dynamic;
     final List<dynamic>? languages = navigator.languages as List<dynamic>?;
     final locale = (languages != null && languages.isNotEmpty
-            ? languages.first?.toString()
-            : window.navigator.language)
-        ?.toLowerCase() ??
+                ? languages.first?.toString()
+                : window.navigator.language)
+            ?.toLowerCase() ??
         'en';
     final language = locale.split(RegExp('[-_]')).first;
 

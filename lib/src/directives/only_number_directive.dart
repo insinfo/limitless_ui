@@ -39,9 +39,8 @@ class OnlyNumberDirective {
   /// Prevents non-digit key presses from reaching the input.
   void onlyNumberKey(KeyboardEvent evt) {
     final whichCode = evt.which;
-    final asciiCode = (whichCode == null || whichCode == 0)
-        ? evt.keyCode
-        : whichCode;
+    final asciiCode =
+        (whichCode == null || whichCode == 0) ? evt.keyCode : whichCode;
     if (asciiCode > 31 && (asciiCode < 48 || asciiCode > 57)) {
       evt.preventDefault();
     }

@@ -53,9 +53,9 @@ class PersonRegistrationFormState {
       departmentId: departmentId,
       skillIds: skillIds.map((item) => '$item').toList(growable: false),
       reviewerIds: reviewerIds.map((item) => '$item').toList(growable: false),
-        primaryReviewerId: primaryReviewerId,
+      primaryReviewerId: primaryReviewerId,
       workflowNode: workflowNode,
-        workflowNodeIds:
+      workflowNodeIds:
           workflowNodeIds.map((item) => '$item').toList(growable: false),
       expectedCompensationMinorUnits: expectedCompensationMinorUnits,
       contactChannel: contactChannel,
@@ -318,14 +318,14 @@ if (!result.success) {
     <String, dynamic>{'id': 'sensitive-data', 'label': 'Dados sensíveis'},
   ];
 
-    final Filters reviewerFilter = Filters(limit: 5, offset: 0);
-    final Filters primaryReviewerFilter = Filters(limit: 5, offset: 0);
+  final Filters reviewerFilter = Filters(limit: 5, offset: 0);
+  final Filters primaryReviewerFilter = Filters(limit: 5, offset: 0);
   DataFrame<Map<String, dynamic>> reviewerData =
       DataFrame<Map<String, dynamic>>(
           items: <Map<String, dynamic>>[], totalRecords: 0);
-    DataFrame<Map<String, dynamic>> primaryReviewerData =
+  DataFrame<Map<String, dynamic>> primaryReviewerData =
       DataFrame<Map<String, dynamic>>(
-        items: <Map<String, dynamic>>[], totalRecords: 0);
+          items: <Map<String, dynamic>>[], totalRecords: 0);
   late final DatatableSettings reviewerSettings = DatatableSettings(
     colsDefinitions: <DatatableCol>[
       DatatableCol(

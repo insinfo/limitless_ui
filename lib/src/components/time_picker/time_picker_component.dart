@@ -170,30 +170,30 @@ class LiTimePickerComponent
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-    bool get effectiveAutoInvalid =>
+  bool get effectiveAutoInvalid =>
       _shouldShowValidation && _autoValidationIssue != null;
 
-    bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
 
   bool get effectiveValid =>
       !effectiveInvalid &&
       (valid ||
-        (_shouldShowValidation &&
-          _effectiveRules.isNotEmpty &&
-          _autoValidationIssue == null));
+          (_shouldShowValidation &&
+              _effectiveRules.isNotEmpty &&
+              _autoValidationIssue == null));
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
-    String get effectiveErrorText {
+  String get effectiveErrorText {
     final externalMessage = errorText.trim();
     if (externalMessage.isNotEmpty) {
       return externalMessage;
     }
 
     return _autoValidationIssue?.message ?? '';
-    }
+  }
 
-    bool get showErrorFeedback =>
+  bool get showErrorFeedback =>
       effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   String? get resolvedDescribedBy =>

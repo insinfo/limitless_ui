@@ -137,7 +137,8 @@ void main() {
     expect(host.toastService.toasts, hasLength(1));
     expect(html.document.querySelector('.li-toast-stack .toast'), isNotNull);
 
-    final closeButton = html.document.querySelector('.li-toast-stack .btn-close');
+    final closeButton =
+        html.document.querySelector('.li-toast-stack .btn-close');
     expect(closeButton, isNotNull);
 
     await fixture.update((_) {
@@ -153,7 +154,8 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final solidToast = fixture.rootElement.querySelectorAll('.toast')
+    final solidToast = fixture.rootElement
+        .querySelectorAll('.toast')
         .cast<html.Element>()
         .firstWhere((element) => (element.text ?? '').contains('Warning body'));
     final header = solidToast.querySelector('.toast-header');

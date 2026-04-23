@@ -1,4 +1,5 @@
 import 'package:limitless_ui_example/limitless_ui_example.dart';
+
 @Component(
   selector: 'feedback-page',
   templateUrl: 'feedback_page.html',
@@ -81,8 +82,10 @@ class FeedbackPageComponent {
   String get borderlessBody => _isPt
       ? 'Borderless, roundedPill e alertClass permitem compor estilos mais específicos sem criar variantes novas.'
       : 'Borderless, roundedPill, and alertClass let you compose more specific styles without creating new variants.';
-  String get alertApiTitle => _isPt ? 'Como utilizar alerts' : 'How to use alerts';
-  String get progressApiTitle => _isPt ? 'Como utilizar progress' : 'How to use progress';
+  String get alertApiTitle =>
+      _isPt ? 'Como utilizar alerts' : 'How to use alerts';
+  String get progressApiTitle =>
+      _isPt ? 'Como utilizar progress' : 'How to use progress';
   List<String> get alertApiItems => _isPt
       ? const <String>[
           'variant define a cor sem criar classes manuais.',

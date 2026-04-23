@@ -31,11 +31,11 @@ class LiTokenFieldItemView {
   ],
 )
 class LiTokenFieldComponent
-  implements
-    ControlValueAccessor<List<String>>,
-    AfterChanges,
-    AfterViewInit,
-    OnDestroy {
+    implements
+        ControlValueAccessor<List<String>>,
+        AfterChanges,
+        AfterViewInit,
+        OnDestroy {
   LiTokenFieldComponent(this._changeDetectorRef, this._rootElement) {
     _rebuildActionMenuOptions();
   }
@@ -192,7 +192,9 @@ class LiTokenFieldComponent
         'tokenfield',
         'tokenfield-mode-tokens',
         'li-token-field',
-        showActionMenu && hasActionMenuOptions ? 'li-token-field--with-menu' : '',
+        showActionMenu && hasActionMenuOptions
+            ? 'li-token-field--with-menu'
+            : '',
         isFocused ? 'focused' : '',
         isDisabled ? 'li-token-field--disabled' : '',
       ]);
@@ -616,16 +618,16 @@ class LiTokenFieldComponent
         _parsePixels(computedStyle.borderRightWidth);
     final inputStyle = input.getComputedStyle();
     final inputHorizontalInset = _parsePixels(inputStyle.paddingLeft) +
-      _parsePixels(inputStyle.paddingRight) +
-      _parsePixels(inputStyle.borderLeftWidth) +
-      _parsePixels(inputStyle.borderRightWidth);
+        _parsePixels(inputStyle.paddingRight) +
+        _parsePixels(inputStyle.borderLeftWidth) +
+        _parsePixels(inputStyle.borderRightWidth);
 
     input.style.width = '20px';
 
     final inputRect = input.getBoundingClientRect();
-    final remainingWidth = containerRect.right - inputRect.left - rightInset - 1;
-    final fallbackWidth =
-        containerRect.width - leftInset - rightInset - 1;
+    final remainingWidth =
+        containerRect.right - inputRect.left - rightInset - 1;
+    final fallbackWidth = containerRect.width - leftInset - rightInset - 1;
     final resolvedWidth = remainingWidth > 20 ? remainingWidth : fallbackWidth;
     if (resolvedWidth <= 0) {
       return;

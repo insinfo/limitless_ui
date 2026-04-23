@@ -559,6 +559,7 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
 
 - Expanded `li-datatable` with `responsiveAutoHideColumns` plus per-column `responsiveAutoHidePriority` and `responsiveAutoHideRequired` flags so narrower layouts can progressively move secondary columns into the responsive details row before horizontal scrolling appears.
 - Added public `li-datatable-header` and `li-datatable-footer` template directives together with `LiDatatableHeaderContext` and `LiDatatableFooterContext`, so hosts can replace the built-in toolbar and footer without forking sorting, search, pagination, or export behavior.
+- Added sticky/frozen datatable columns through `DatatableCol.fixedPosition`, including `DatatableFixedColumnPosition.left` and `DatatableFixedColumnPosition.right` for cases such as keeping the actions column visible during horizontal scroll.
 - Added `requestDataOnItemsPerPageChange` to `li-datatable` and `li-datatable-select` for server-driven flows where changing the page size should reload through `(dataRequest)` instead of only emitting `(limitChange)`.
 - Expanded `li-datatable-select` to forward custom datatable header/footer templates to the inner modal table and exposed `modalCompactHeader` plus `modalSmallHeader` to align the modal chrome with denser operational layouts.
 - Expanded the dropdown API with `liDropdownSubmenu`, `liDropdownSubmenuToggle`, and `liDropdownSubmenuMenu` for nested account/action menus that keep the parent dropdown open while the submenu is being explored.
@@ -719,6 +720,7 @@ Most useful features:
 - column-targeted search with `searchInFields`;
 - events such as `(dataRequest)`, `(searchRequest)`, and `(limitChange)` for server-driven flows;
 - columns with `enableSorting`, `sortingBy`, `hideOnMobile`, `responsiveAutoHidePriority`, `responsiveAutoHideRequired`, `textAlign`, `nowrap`, `width`, and custom classes;
+- sticky edge columns with `fixedPosition: DatatableFixedColumnPosition.left` or `DatatableFixedColumnPosition.right` when critical actions or identifiers must remain visible during horizontal scroll;
 - optional custom toolbar/footer templates via `headerTemplate`, `footerTemplate`, or projected `<template li-datatable-header let-ctx>` and `<template li-datatable-footer let-ctx>`;
 - `LiDatatableHeaderContext` and `LiDatatableFooterContext` so custom templates can still call search, pagination, export, page-size, and view-mode actions;
 - `responsiveAutoHideColumns` when lower-priority columns should collapse into the details row before horizontal scrolling appears;
@@ -749,6 +751,12 @@ final settings = DatatableSettings(
       enableSorting: true,
       sortingBy: 'status',
       hideOnMobile: true,
+    ),
+    DatatableCol(
+      key: 'actions',
+      title: 'Actions',
+      width: '128px',
+      fixedPosition: DatatableFixedColumnPosition.right,
     ),
   ],
 );

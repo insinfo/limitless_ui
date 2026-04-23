@@ -66,10 +66,12 @@ void main() {
 
   test('renders projected icon, time and content slots', () async {
     final fixture = await testBed.create();
-    final projectedItem = fixture.rootElement.querySelectorAll('li-timeline-item')[1];
+    final projectedItem =
+        fixture.rootElement.querySelectorAll('li-timeline-item')[1];
 
     expect(projectedItem.querySelector('.custom-icon')?.text?.trim(), 'B');
-    expect(projectedItem.querySelector('.timeline-time')?.text?.trim(), '10:15');
+    expect(
+        projectedItem.querySelector('.timeline-time')?.text?.trim(), '10:15');
     expect(projectedItem.querySelector('.custom-card')?.text?.trim(),
         'Conteudo customizado');
   });

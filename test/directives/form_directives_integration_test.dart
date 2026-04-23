@@ -53,12 +53,13 @@ void main() {
     ng.FormDirectivesIntegrationTestHostComponentNgFactory,
   );
 
-  test('aplica a mascara de texto via binding e reage a fixture.update', () async {
+  test('aplica a mascara de texto via binding e reage a fixture.update',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input = fixture.rootElement.querySelector('#masked-input')
-        as html.InputElement;
+    final input =
+        fixture.rootElement.querySelector('#masked-input') as html.InputElement;
 
     await fixture.update((_) {
       _typeSequentially(input, '1234');
@@ -91,8 +92,8 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input = fixture.rootElement.querySelector('#number-input')
-        as html.InputElement;
+    final input =
+        fixture.rootElement.querySelector('#number-input') as html.InputElement;
 
     expect(input.value, '12.35');
 
@@ -105,7 +106,8 @@ void main() {
     expect(host.amount, 9.5);
   });
 
-  test('integra o accessor datetime-local via limitlessFormDirectives', () async {
+  test('integra o accessor datetime-local via limitlessFormDirectives',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;

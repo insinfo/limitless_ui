@@ -83,7 +83,8 @@ class NavPageComponent {
     const NavShowcaseItem(
       id: 2,
       title: 'Usage',
-      body: 'The container controls selection, keyboard handling, and the content region.',
+      body:
+          'The container controls selection, keyboard handling, and the content region.',
     ),
     const NavShowcaseItem(
       id: 3,
@@ -133,8 +134,7 @@ class NavPageComponent {
   String get basicNavsBody => _isPt
       ? 'A seleção abaixo usa [(activeId)] e mantém o outlet fora da lista.'
       : 'The selection below uses [(activeId)] and keeps the outlet outside the list.';
-  String get selectSecondLabel =>
-      _isPt ? 'Selecionar aba 2' : 'Select tab 2';
+  String get selectSecondLabel => _isPt ? 'Selecionar aba 2' : 'Select tab 2';
   String get selectDisabledLabel =>
       _isPt ? 'Selecionar aba desabilitada' : 'Select disabled tab';
   String get verticalPillsTitle => _isPt ? 'Pills verticais' : 'Vertical pills';
@@ -176,9 +176,8 @@ class NavPageComponent {
       _isPt ? 'Nav: aguardando interação' : 'Nav: waiting for interaction';
 
   void onNavChanged(Object? id) {
-    eventLog = _isPt
-        ? 'Nav: activeId mudou para $id'
-        : 'Nav: activeId changed to $id';
+    eventLog =
+        _isPt ? 'Nav: activeId mudou para $id' : 'Nav: activeId changed to $id';
   }
 
   void onActiveIdChange(Object? id) {

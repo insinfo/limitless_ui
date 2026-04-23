@@ -151,7 +151,11 @@ class LiMultiSelectComponent
   bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
 
   bool get effectiveValid =>
-      !effectiveInvalid && (valid || (_shouldShowValidation && _effectiveRules.isNotEmpty && _autoValidationIssue == null));
+      !effectiveInvalid &&
+      (valid ||
+          (_shouldShowValidation &&
+              _effectiveRules.isNotEmpty &&
+              _autoValidationIssue == null));
 
   String get effectiveErrorText {
     final externalMessage = errorText.trim();

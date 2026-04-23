@@ -24,7 +24,8 @@ class ShowcasePageComponent {
 
   final Filters filters = Filters(limit: 5, offset: 0);
 
-  late final DataFrame<Map<String, dynamic>> _tableDataPt = DataFrame<Map<String, dynamic>>(
+  late final DataFrame<Map<String, dynamic>> _tableDataPt =
+      DataFrame<Map<String, dynamic>>(
     items: <Map<String, dynamic>>[
       <String, dynamic>{
         'feature': 'Painel executivo',
@@ -54,7 +55,8 @@ class ShowcasePageComponent {
     totalRecords: 4,
   );
 
-  late final DataFrame<Map<String, dynamic>> _tableDataEn = DataFrame<Map<String, dynamic>>(
+  late final DataFrame<Map<String, dynamic>> _tableDataEn =
+      DataFrame<Map<String, dynamic>>(
     items: <Map<String, dynamic>>[
       <String, dynamic>{
         'feature': 'Executive dashboard',
@@ -84,41 +86,70 @@ class ShowcasePageComponent {
     totalRecords: 4,
   );
 
-  DataFrame<Map<String, dynamic>> get tableData => _isPt ? _tableDataPt : _tableDataEn;
+  DataFrame<Map<String, dynamic>> get tableData =>
+      _isPt ? _tableDataPt : _tableDataEn;
 
   late final DatatableSettings _tableSettingsPt = DatatableSettings(
     colsDefinitions: <DatatableCol>[
-      DatatableCol(key: 'feature', title: 'Entrega', enableSorting: true, sortingBy: 'feature'),
-      DatatableCol(key: 'owner', title: 'Squad', enableSorting: true, sortingBy: 'owner'),
-      DatatableCol(key: 'status', title: 'Status', enableSorting: true, sortingBy: 'status'),
+      DatatableCol(
+          key: 'feature',
+          title: 'Entrega',
+          enableSorting: true,
+          sortingBy: 'feature'),
+      DatatableCol(
+          key: 'owner',
+          title: 'Squad',
+          enableSorting: true,
+          sortingBy: 'owner'),
+      DatatableCol(
+          key: 'status',
+          title: 'Status',
+          enableSorting: true,
+          sortingBy: 'status'),
       DatatableCol(key: 'health', title: 'Saude'),
     ],
   );
 
   late final DatatableSettings _tableSettingsEn = DatatableSettings(
     colsDefinitions: <DatatableCol>[
-      DatatableCol(key: 'feature', title: 'Delivery', enableSorting: true, sortingBy: 'feature'),
-      DatatableCol(key: 'owner', title: 'Squad', enableSorting: true, sortingBy: 'owner'),
-      DatatableCol(key: 'status', title: 'Status', enableSorting: true, sortingBy: 'status'),
+      DatatableCol(
+          key: 'feature',
+          title: 'Delivery',
+          enableSorting: true,
+          sortingBy: 'feature'),
+      DatatableCol(
+          key: 'owner',
+          title: 'Squad',
+          enableSorting: true,
+          sortingBy: 'owner'),
+      DatatableCol(
+          key: 'status',
+          title: 'Status',
+          enableSorting: true,
+          sortingBy: 'status'),
       DatatableCol(key: 'health', title: 'Health'),
     ],
   );
 
-  DatatableSettings get tableSettings => _isPt ? _tableSettingsPt : _tableSettingsEn;
+  DatatableSettings get tableSettings =>
+      _isPt ? _tableSettingsPt : _tableSettingsEn;
 
-  late final List<DatatableSearchField> _searchFieldsPt = <DatatableSearchField>[
+  late final List<DatatableSearchField> _searchFieldsPt =
+      <DatatableSearchField>[
     DatatableSearchField(label: 'Entrega', field: 'feature', operator: 'like'),
     DatatableSearchField(label: 'Squad', field: 'owner', operator: 'like'),
     DatatableSearchField(label: 'Status', field: 'status', operator: '='),
   ];
 
-  late final List<DatatableSearchField> _searchFieldsEn = <DatatableSearchField>[
+  late final List<DatatableSearchField> _searchFieldsEn =
+      <DatatableSearchField>[
     DatatableSearchField(label: 'Delivery', field: 'feature', operator: 'like'),
     DatatableSearchField(label: 'Squad', field: 'owner', operator: 'like'),
     DatatableSearchField(label: 'Status', field: 'status', operator: '='),
   ];
 
-  List<DatatableSearchField> get searchFields => _isPt ? _searchFieldsPt : _searchFieldsEn;
+  List<DatatableSearchField> get searchFields =>
+      _isPt ? _searchFieldsPt : _searchFieldsEn;
 
   String get pageTitle => _isPt ? 'Componentes' : 'Components';
   String get pageSubtitle => 'Showcase';
@@ -130,25 +161,28 @@ class ShowcasePageComponent {
       ? 'Esta página combina vários componentes na mesma composição para validar convivência visual e integração entre APIs.'
       : 'This page combines several components in the same composition to validate visual coexistence and API integration.';
   String get examplesTabLabel => _isPt ? 'Exemplos' : 'Examples';
-  String get carouselCardTitle => _isPt ? 'Carousel e tooltip' : 'Carousel and tooltip';
+  String get carouselCardTitle =>
+      _isPt ? 'Carousel e tooltip' : 'Carousel and tooltip';
   String get slideOneTag => _isPt ? 'Setup' : 'Setup';
-  String get slideOneTitle => _isPt ? 'Arquitetura consistente' : 'Consistent architecture';
+  String get slideOneTitle =>
+      _isPt ? 'Arquitetura consistente' : 'Consistent architecture';
   String get slideOneBody => _isPt
       ? 'Organize a documentação em cards, rotas e exemplos vivos.'
       : 'Organize documentation into cards, routes, and live examples.';
   String get slideTwoTag => _isPt ? 'Composicao' : 'Composition';
-  String get slideTwoTitle => _isPt ? 'Componentes empilhados' : 'Stacked components';
+  String get slideTwoTitle =>
+      _isPt ? 'Componentes empilhados' : 'Stacked components';
   String get slideTwoBody => _isPt
       ? 'Tabs, alertas, selects e datatables coexistem sem gambiarras visuais.'
       : 'Tabs, alerts, selects, and datatables coexist without visual hacks.';
   String get slideThreeTag => _isPt ? 'Entrega' : 'Delivery';
-  String get slideThreeTitle => _isPt ? 'Documentacao utilizavel' : 'Usable documentation';
+  String get slideThreeTitle =>
+      _isPt ? 'Documentacao utilizavel' : 'Usable documentation';
   String get slideThreeBody => _isPt
       ? 'Uma galeria executavel evita exemplos quebrados e acelera onboarding.'
       : 'An executable gallery avoids broken examples and speeds up onboarding.';
-  String get hoverTooltipText => _isPt
-      ? 'Mostra dicas ao passar o mouse.'
-      : 'Shows tips on hover.';
+  String get hoverTooltipText =>
+      _isPt ? 'Mostra dicas ao passar o mouse.' : 'Shows tips on hover.';
   String get hoverTooltipButton => _isPt ? 'Tooltip hover' : 'Hover tooltip';
   String get clickTooltipText => _isPt
       ? 'Também funciona com trigger de click.'

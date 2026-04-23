@@ -134,13 +134,15 @@ class DatatableSelectPageComponent implements OnInit {
     emailTitle: 'Email',
     departmentTitle: 'Department',
   );
-  late final DatatableSettings _typedBuilderSettingsPt = _buildTypedBuilderSettings(
+  late final DatatableSettings _typedBuilderSettingsPt =
+      _buildTypedBuilderSettings(
     idTitle: 'ID',
     nameTitle: 'Nome',
     emailTitle: 'E-mail',
     departmentTitle: 'Departamento',
   );
-  late final DatatableSettings _typedBuilderSettingsEn = _buildTypedBuilderSettings(
+  late final DatatableSettings _typedBuilderSettingsEn =
+      _buildTypedBuilderSettings(
     idTitle: 'ID',
     nameTitle: 'Name',
     emailTitle: 'Email',
@@ -182,7 +184,7 @@ class DatatableSelectPageComponent implements OnInit {
   DatatableSettings get basicSettings =>
       i18n.isPortuguese ? _basicSettingsPt : _basicSettingsEn;
 
-    DatatableSettings get typedBuilderSettings =>
+  DatatableSettings get typedBuilderSettings =>
       i18n.isPortuguese ? _typedBuilderSettingsPt : _typedBuilderSettingsEn;
 
   List<DatatableSearchField> get basicSearchFields =>
@@ -347,7 +349,7 @@ class DatatableSelectPageComponent implements OnInit {
       i18n.isPortuguese ? 'Limpar modal' : 'Clear modal';
 
   String get builderDemoIntro => i18n.isPortuguese
-      ? 'Quando o modal trabalha com linhas tipadas, os builders mantêm o modelo forte e o compareWith preserva o rótulo sincronizado mesmo com novas instâncias. Para a tabela interna renderizar colunas por chave, a linha tipada expõe toMap().' 
+      ? 'Quando o modal trabalha com linhas tipadas, os builders mantêm o modelo forte e o compareWith preserva o rótulo sincronizado mesmo com novas instâncias. Para a tabela interna renderizar colunas por chave, a linha tipada expõe toMap().'
       : 'When the modal works with typed rows, the builders keep the model strongly typed and compareWith preserves the synchronized label even with fresh instances. For the internal table to render key-based columns, the typed row exposes toMap().';
 
   String get builderDemoLabel => i18n.isPortuguese

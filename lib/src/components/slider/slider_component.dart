@@ -112,7 +112,8 @@ class LiSliderComponent
     if (nextValue == null) {
       return;
     }
-    _setSingleValue(nextValue.toDouble(), emitOutputs: false, notifyForm: false);
+    _setSingleValue(nextValue.toDouble(),
+        emitOutputs: false, notifyForm: false);
   }
 
   num get value => _toOutputNum(_singleValue);
@@ -131,7 +132,8 @@ class LiSliderComponent
   Stream<num> get valueChange => _valueChangeController.stream;
 
   @Output()
-  Stream<List<num>> get rangeValuesChange => _rangeValuesChangeController.stream;
+  Stream<List<num>> get rangeValuesChange =>
+      _rangeValuesChangeController.stream;
 
   List<LiSliderHandleViewModel> handles = <LiSliderHandleViewModel>[];
   List<LiSliderPipViewModel> pips = <LiSliderPipViewModel>[];
@@ -172,7 +174,7 @@ class LiSliderComponent
         'li-slider__surface',
         'noUi-target',
         isVertical ? 'noUi-vertical' : 'noUi-horizontal',
-      shouldRenderPips ? 'has-pips' : '',
+        shouldRenderPips ? 'has-pips' : '',
         _variantClass,
         _sizeClass,
         _handleStyleClass,
@@ -302,7 +304,8 @@ class LiSliderComponent
     }
 
     final stepSize = step.toDouble() <= 0 ? 1.0 : step.toDouble();
-    final currentValue = handleIndex == 0 ? _activeLowerOrSingleValue : _upperValue;
+    final currentValue =
+        handleIndex == 0 ? _activeLowerOrSingleValue : _upperValue;
 
     switch (event.key) {
       case 'ArrowLeft':
@@ -520,7 +523,8 @@ class LiSliderComponent
   }
 
   void _applyKeyboardDelta(int handleIndex, double delta) {
-    final baseValue = handleIndex == 0 ? _activeLowerOrSingleValue : _upperValue;
+    final baseValue =
+        handleIndex == 0 ? _activeLowerOrSingleValue : _upperValue;
     _setHandleValue(handleIndex, baseValue + delta);
   }
 
@@ -551,7 +555,8 @@ class LiSliderComponent
     final normalizedUpper = _normalizeRawValue(upperCandidate);
     final clampedLower = normalizedLower.clamp(
       min.toDouble(),
-      (max.toDouble() - margin.toDouble()).clamp(min.toDouble(), max.toDouble()),
+      (max.toDouble() - margin.toDouble())
+          .clamp(min.toDouble(), max.toDouble()),
     );
     final clampedUpper = normalizedUpper.clamp(
       (clampedLower + margin.toDouble()).clamp(min.toDouble(), max.toDouble()),
@@ -559,10 +564,16 @@ class LiSliderComponent
     );
 
     final normalizedClampedLower = _normalizeRawValue(clampedLower.toDouble())
-        .clamp(min.toDouble(), (clampedUpper - margin.toDouble()).clamp(min.toDouble(), max.toDouble()))
+        .clamp(
+            min.toDouble(),
+            (clampedUpper - margin.toDouble())
+                .clamp(min.toDouble(), max.toDouble()))
         .toDouble();
     final normalizedClampedUpper = _normalizeRawValue(clampedUpper.toDouble())
-        .clamp((normalizedClampedLower + margin.toDouble()).clamp(min.toDouble(), max.toDouble()), max.toDouble())
+        .clamp(
+            (normalizedClampedLower + margin.toDouble())
+                .clamp(min.toDouble(), max.toDouble()),
+            max.toDouble())
         .toDouble();
 
     return LiSliderRangeValues(
@@ -585,10 +596,11 @@ class LiSliderComponent
 
     final clamped = rawValue.toDouble().clamp(min.toDouble(), max.toDouble());
     final stepSize = step.toDouble();
-    final snapped = ((clamped - min.toDouble()) / stepSize).roundToDouble() *
-            stepSize +
-        min.toDouble();
-    return _roundToPrecision(snapped.clamp(min.toDouble(), max.toDouble()).toDouble());
+    final snapped =
+        ((clamped - min.toDouble()) / stepSize).roundToDouble() * stepSize +
+            min.toDouble();
+    return _roundToPrecision(
+        snapped.clamp(min.toDouble(), max.toDouble()).toDouble());
   }
 
   double _roundToPrecision(double value) {
@@ -650,10 +662,8 @@ class LiSliderComponent
     if (!range) {
       return 0;
     }
-    final lowerDistance =
-        (handles[0].positionPercent - positionPercent).abs();
-    final upperDistance =
-        (handles[1].positionPercent - positionPercent).abs();
+    final lowerDistance = (handles[0].positionPercent - positionPercent).abs();
+    final upperDistance = (handles[1].positionPercent - positionPercent).abs();
     return lowerDistance <= upperDistance ? 0 : 1;
   }
 
@@ -818,9 +828,7 @@ class LiSliderComponent
       return;
     }
 
-    pips = customPips.isNotEmpty
-        ? _buildCustomPips()
-        : _buildGeneratedPips();
+    pips = customPips.isNotEmpty ? _buildCustomPips() : _buildGeneratedPips();
   }
 
   void _setLowerConnect(double position) {
@@ -868,7 +876,8 @@ class LiSliderComponent
 
   List<LiSliderPipViewModel> _buildCustomPips() {
     final sortedPips = customPips.toList(growable: false)
-      ..sort((left, right) => left.value.toDouble().compareTo(right.value.toDouble()));
+      ..sort((left, right) =>
+          left.value.toDouble().compareTo(right.value.toDouble()));
 
     final generated = <LiSliderPipViewModel>[];
     for (var index = 0; index < sortedPips.length; index++) {

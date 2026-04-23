@@ -147,16 +147,16 @@ SweetAlertPopover.showPopover(
   String get manualText => _isPt
       ? 'Pode ser aberto e fechado por API com ViewChild.'
       : 'Can be opened and closed by API via ViewChild.';
-    String get directiveTitle =>
+  String get directiveTitle =>
       _isPt ? 'Diretiva [liPopover]' : '[liPopover] directive';
-    String get directiveBody => _isPt
+  String get directiveBody => _isPt
       ? 'A mesma engine do componente agora também pode ser aplicada direto no elemento hospedeiro.'
       : 'The same overlay engine can now also be attached directly to the host element.';
-    String get directiveButton =>
+  String get directiveButton =>
       _isPt ? 'Popover por diretiva' : 'Directive popover';
-    String get directivePopoverTitle =>
+  String get directivePopoverTitle =>
       _isPt ? 'Popover via diretiva' : 'Directive popover';
-    String get directivePopoverText => _isPt
+  String get directivePopoverText => _isPt
       ? 'Esta versão usa [liPopover] direto no botão, paralela ao tooltip.'
       : 'This version uses [liPopover] directly on the button, parallel to the tooltip API.';
   String get bodyContainerTitle =>
@@ -169,8 +169,9 @@ SweetAlertPopover.showPopover(
   String get bodyContainerPopoverText => _isPt
       ? 'Este popover foi anexado ao body para escapar do clipping local.'
       : 'This popover was appended to the body so it can escape local clipping.';
-  String get richTemplateTitle =>
-      _isPt ? 'HTML and bindings via TemplateRef' : 'HTML and bindings via TemplateRef';
+  String get richTemplateTitle => _isPt
+      ? 'HTML and bindings via TemplateRef'
+      : 'HTML and bindings via TemplateRef';
   String get richTemplateBody => _isPt
       ? 'O popover pode receber TemplateRef no título e no conteúdo, mantendo bindings vivos do componente hospedeiro.'
       : 'The popover can receive TemplateRef in both title and content while keeping host bindings alive.';
@@ -214,8 +215,8 @@ SweetAlertPopover.showPopover(
   String get apiIntro => _isPt
       ? 'Hoje o pacote expõe tanto helpers imperativos quanto um componente declarativo para casos mais próximos do fluxo AngularDart.'
       : 'Today the package exposes both imperative helpers and a declarative component for flows closer to AngularDart usage.';
-    String get overviewTabLabel => _isPt ? 'Visão geral' : 'Overview';
-    String get apiTabLabel => 'API';
+  String get overviewTabLabel => _isPt ? 'Visão geral' : 'Overview';
+  String get apiTabLabel => 'API';
   String get idleState => _isPt
       ? 'Popover: aguardando interação'
       : 'Popover: waiting for interaction';

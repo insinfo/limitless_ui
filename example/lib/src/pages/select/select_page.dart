@@ -95,7 +95,8 @@ late final List<Map<String, dynamic>> statusOptions;
   String get selectedStatusModelLabel =>
       (selectedStatusModel?['label'] as String?) ?? selectedStatusLabel;
 
-  String get projectedStatusLabel => _labelFor(projectedStatus, projectedOptions);
+  String get projectedStatusLabel =>
+      _labelFor(projectedStatus, projectedOptions);
 
   void onStatusModelChange(dynamic model) {
     selectedStatusModel = model is Map<String, dynamic> ? model : null;
@@ -104,7 +105,10 @@ late final List<Map<String, dynamic>> statusOptions;
   List<Map<String, dynamic>> _buildStatusOptions() => <Map<String, dynamic>>[
         <String, dynamic>{'id': 'draft', 'label': t.pages.select.optionDraft},
         <String, dynamic>{'id': 'review', 'label': t.pages.select.optionReview},
-        <String, dynamic>{'id': 'approved', 'label': t.pages.select.optionApproved},
+        <String, dynamic>{
+          'id': 'approved',
+          'label': t.pages.select.optionApproved
+        },
         <String, dynamic>{
           'id': 'archived',
           'label': t.pages.select.optionArchived,
@@ -112,11 +116,19 @@ late final List<Map<String, dynamic>> statusOptions;
         },
       ];
 
-  List<Map<String, dynamic>> _buildProjectedOptions() =>
-      <Map<String, dynamic>>[
-        <String, dynamic>{'id': 'priority', 'label': t.pages.select.optionPriority},
-        <String, dynamic>{'id': 'backlog', 'label': t.pages.select.optionBacklog},
-        <String, dynamic>{'id': 'archived', 'label': t.pages.select.optionArchived},
+  List<Map<String, dynamic>> _buildProjectedOptions() => <Map<String, dynamic>>[
+        <String, dynamic>{
+          'id': 'priority',
+          'label': t.pages.select.optionPriority
+        },
+        <String, dynamic>{
+          'id': 'backlog',
+          'label': t.pages.select.optionBacklog
+        },
+        <String, dynamic>{
+          'id': 'archived',
+          'label': t.pages.select.optionArchived
+        },
       ];
 
   String _labelFor(String id, List<Map<String, dynamic>> source) {

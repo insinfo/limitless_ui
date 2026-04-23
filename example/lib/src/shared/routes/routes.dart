@@ -63,7 +63,7 @@ import 'package:limitless_ui_example/src/pages/select/select_page.template.dart'
 import 'package:limitless_ui_example/src/pages/rating/rating_page.template.dart'
     as rating_page;
 import 'package:limitless_ui_example/src/pages/slider/slider_page.template.dart'
-  as slider_page;
+    as slider_page;
 import 'package:limitless_ui_example/src/pages/timeline/timeline_page.template.dart'
     as timeline_page;
 import 'package:limitless_ui_example/src/pages/highlight/highlight_page.template.dart'

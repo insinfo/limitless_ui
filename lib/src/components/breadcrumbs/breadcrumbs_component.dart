@@ -64,7 +64,8 @@ class LiBreadcrumbComponent {
   String helperText = '';
 
   @Input()
-  String helperTextClass = 'fs-sm text-uppercase text-muted align-self-center lh-1 me-2';
+  String helperTextClass =
+      'fs-sm text-uppercase text-muted align-self-center lh-1 me-2';
 
   @Input()
   String lineClass = '';

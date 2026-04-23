@@ -688,7 +688,8 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
         return;
       }
 
-      final clickedToggle = target.closest('.li-dropdown-submenu__toggle') != null;
+      final clickedToggle =
+          target.closest('.li-dropdown-submenu__toggle') != null;
       final clickedMenuItem = target.closest('.dropdown-item') != null;
       if (!clickedToggle && clickedMenuItem) {
         closeSubmenu();
@@ -702,7 +703,8 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   }
 
   void _closeSiblingSubmenus() {
-    for (final submenu in List<LiDropdownSubmenuDirective>.from(_openSubmenus)) {
+    for (final submenu
+        in List<LiDropdownSubmenuDirective>.from(_openSubmenus)) {
       if (identical(submenu, this) || !identical(submenu.dropdown, dropdown)) {
         continue;
       }
@@ -716,8 +718,10 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   }
 
   void _closeDescendantSubmenus() {
-    for (final submenu in List<LiDropdownSubmenuDirective>.from(_openSubmenus)) {
-      if (!identical(submenu, this) && hostElement.contains(submenu.hostElement)) {
+    for (final submenu
+        in List<LiDropdownSubmenuDirective>.from(_openSubmenus)) {
+      if (!identical(submenu, this) &&
+          hostElement.contains(submenu.hostElement)) {
         submenu.closeSubmenu();
       }
     }

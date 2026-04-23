@@ -34,7 +34,8 @@ void main() {
 
   test('aplica o href inicial vindo do binding', () async {
     final fixture = await testBed.create();
-    final link = fixture.rootElement.querySelector('#link') as html.AnchorElement;
+    final link =
+        fixture.rootElement.querySelector('#link') as html.AnchorElement;
 
     expect(link.getAttribute('href'), '/details/42');
   });
@@ -46,7 +47,8 @@ void main() {
       component.href = '/details/99';
     });
 
-    final link = fixture.rootElement.querySelector('#link') as html.AnchorElement;
+    final link =
+        fixture.rootElement.querySelector('#link') as html.AnchorElement;
     expect(link.getAttribute('href'), '/details/99');
   });
 
@@ -57,7 +59,8 @@ void main() {
       component.href = '#';
     });
 
-    final link = fixture.rootElement.querySelector('#link') as html.AnchorElement;
+    final link =
+        fixture.rootElement.querySelector('#link') as html.AnchorElement;
     expect(link.getAttribute('href'), '/details/42');
   });
 }

@@ -1,6 +1,3 @@
-
-
-
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 @Component(
@@ -84,9 +81,11 @@ class AlertPageComponent {
           'alertClass, textClass, and iconContainerClass refine the appearance without creating a new variant.',
         ];
 
-  String get apiSnippetBody => _isPt ? 'Revise a operação.' : 'Review the operation.';
+  String get apiSnippetBody =>
+      _isPt ? 'Revise a operação.' : 'Review the operation.';
 
-  String get apiSnippet => apiSnippetTemplate.replaceFirst('__BODY__', apiSnippetBody);
+  String get apiSnippet =>
+      apiSnippetTemplate.replaceFirst('__BODY__', apiSnippetBody);
 
   void restoreReleaseAlert() {
     releaseAlertVisible = true;
@@ -99,8 +98,7 @@ class AlertPageComponent {
   }
 
   void handleVisibilityChange(bool visible) {
-    alertEventLog = visible
-        ? i18n.t.pages.alerts.visible
-        : i18n.t.pages.alerts.hidden;
+    alertEventLog =
+        visible ? i18n.t.pages.alerts.visible : i18n.t.pages.alerts.hidden;
   }
 }

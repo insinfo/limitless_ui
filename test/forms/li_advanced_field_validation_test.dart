@@ -179,7 +179,8 @@ void main() {
     ng.AdvancedFieldValidationHostComponentNgFactory,
   );
 
-  test('liForm submission marks currency, datatable and treeview fields invalid',
+  test(
+      'liForm submission marks currency, datatable and treeview fields invalid',
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
@@ -188,21 +189,21 @@ void main() {
     final isValid = await host.formApi!.validateAndFocusFirstInvalid();
     await _settle(fixture);
 
-    final currencyInput =
-        fixture.rootElement.querySelector('#currency-field li-currency-input input')
-            as html.InputElement;
-    final datatableTrigger =
-        fixture.rootElement.querySelector('#reviewer-field .datatable-select-trigger')
-            as html.ButtonElement;
+    final currencyInput = fixture.rootElement
+            .querySelector('#currency-field li-currency-input input')
+        as html.InputElement;
+    final datatableTrigger = fixture.rootElement
+            .querySelector('#reviewer-field .datatable-select-trigger')
+        as html.ButtonElement;
     final primaryReviewerTrigger = fixture.rootElement
             .querySelector('#primary-reviewer-field .datatable-select-trigger')
         as html.ButtonElement;
-    final treeviewTrigger =
-        fixture.rootElement.querySelector('#workflow-field .treeview-dropdown-select__trigger')
-            as html.ButtonElement;
-    final workflowStagesTrigger = fixture.rootElement
-            .querySelector('#workflow-stages-field .treeview-dropdown-select__trigger')
-            as html.ButtonElement;
+    final treeviewTrigger = fixture.rootElement
+            .querySelector('#workflow-field .treeview-dropdown-select__trigger')
+        as html.ButtonElement;
+    final workflowStagesTrigger = fixture.rootElement.querySelector(
+            '#workflow-stages-field .treeview-dropdown-select__trigger')
+        as html.ButtonElement;
 
     expect(isValid, isFalse);
     expect(currencyInput.classes.contains('is-invalid'), isTrue);
@@ -245,21 +246,21 @@ void main() {
     });
     await _settle(fixture);
 
-    final currencyInput =
-        fixture.rootElement.querySelector('#currency-field li-currency-input input')
-            as html.InputElement;
-    final datatableTrigger =
-        fixture.rootElement.querySelector('#reviewer-field .datatable-select-trigger')
-            as html.ButtonElement;
+    final currencyInput = fixture.rootElement
+            .querySelector('#currency-field li-currency-input input')
+        as html.InputElement;
+    final datatableTrigger = fixture.rootElement
+            .querySelector('#reviewer-field .datatable-select-trigger')
+        as html.ButtonElement;
     final primaryReviewerTrigger = fixture.rootElement
             .querySelector('#primary-reviewer-field .datatable-select-trigger')
         as html.ButtonElement;
-    final treeviewTrigger =
-        fixture.rootElement.querySelector('#workflow-field .treeview-dropdown-select__trigger')
-            as html.ButtonElement;
-    final workflowStagesTrigger = fixture.rootElement
-            .querySelector('#workflow-stages-field .treeview-dropdown-select__trigger')
-            as html.ButtonElement;
+    final treeviewTrigger = fixture.rootElement
+            .querySelector('#workflow-field .treeview-dropdown-select__trigger')
+        as html.ButtonElement;
+    final workflowStagesTrigger = fixture.rootElement.querySelector(
+            '#workflow-stages-field .treeview-dropdown-select__trigger')
+        as html.ButtonElement;
 
     expect(currencyInput.classes.contains('is-invalid'), isFalse);
     expect(datatableTrigger.classes.contains('is-invalid'), isFalse);

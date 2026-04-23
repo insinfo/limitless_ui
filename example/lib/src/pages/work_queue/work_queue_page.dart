@@ -108,7 +108,7 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
 
   List<Map<String, dynamic>> tagCatalog;
   List<Map<String, dynamic>> subjectOptions = const <Map<String, dynamic>>[];
-  
+
   final List<int> limitPerPageOptions = <int>[10, 12, 20, 25, 50];
   final String processTokenPattern = r'\d+/\d+';
   final String processTokenAllowed = r'[0-9/]';

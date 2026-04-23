@@ -24,8 +24,7 @@ class LiCheckboxComponent
   LiCheckboxComponent(
     this._changeDetectorRef, [
     @Optional() this._formDirective,
-  ])
-      : _generatedId = 'li-checkbox-${_nextId++}';
+  ]) : _generatedId = 'li-checkbox-${_nextId++}';
 
   static int _nextId = 0;
 
@@ -154,7 +153,11 @@ class LiCheckboxComponent
   bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
 
   bool get effectiveValid =>
-      !effectiveInvalid && (valid || (_shouldShowValidation && _effectiveRules.isNotEmpty && _autoValidationIssue == null));
+      !effectiveInvalid &&
+      (valid ||
+          (_shouldShowValidation &&
+              _effectiveRules.isNotEmpty &&
+              _autoValidationIssue == null));
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
@@ -202,7 +205,9 @@ class LiCheckboxComponent
     _dirty = true;
     _value = (value ?? false) ? trueValue : falseValue;
     _onChange(_value, rawValue: _value?.toString() ?? '');
-    if (validateOnInput || _shouldShowValidation || _autoValidationIssue != null) {
+    if (validateOnInput ||
+        _shouldShowValidation ||
+        _autoValidationIssue != null) {
       _runAutoValidation();
     }
     _markForCheck();

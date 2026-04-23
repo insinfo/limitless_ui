@@ -612,17 +612,20 @@ class SweetAlert {
 
   static html.Element _createIcon(SweetAlertType type) {
     final icon = html.DivElement()
-      ..classes.addAll(<String>['swal2-icon', 'swal2-${_iconName(type)}', 'swal2-icon-show'])
+      ..classes.addAll(
+          <String>['swal2-icon', 'swal2-${_iconName(type)}', 'swal2-icon-show'])
       ..style.display = 'flex';
 
     switch (type) {
       case SweetAlertType.success:
-        icon.append(html.DivElement()..classes.add('swal2-success-circular-line-left'));
+        icon.append(
+            html.DivElement()..classes.add('swal2-success-circular-line-left'));
         icon.append(html.SpanElement()..classes.add('swal2-success-line-tip'));
         icon.append(html.SpanElement()..classes.add('swal2-success-line-long'));
         icon.append(html.DivElement()..classes.add('swal2-success-ring'));
         icon.append(html.DivElement()..classes.add('swal2-success-fix'));
-        icon.append(html.DivElement()..classes.add('swal2-success-circular-line-right'));
+        icon.append(html.DivElement()
+          ..classes.add('swal2-success-circular-line-right'));
         break;
       case SweetAlertType.error:
         final xMark = html.SpanElement()..classes.add('swal2-x-mark');
@@ -657,16 +660,14 @@ class SweetAlert {
   static html.Element _createInput(
     SweetAlertInputType inputType,
     String? inputPlaceholder,
-    String? inputValue,
-    {
+    String? inputValue, {
     Map<String, String>? inputOptions,
     String? inputLabel,
     bool inputChecked = false,
     num? inputMin,
     num? inputMax,
     num? inputStep,
-  }
-  ) {
+  }) {
     switch (inputType) {
       case SweetAlertInputType.select:
         final select = html.SelectElement()
@@ -682,7 +683,8 @@ class SweetAlert {
               ..selected = (inputValue ?? '').trim().isEmpty,
           );
         }
-        for (final entry in (inputOptions ?? const <String, String>{}).entries) {
+        for (final entry
+            in (inputOptions ?? const <String, String>{}).entries) {
           select.append(
             html.OptionElement()
               ..value = entry.key
@@ -700,7 +702,8 @@ class SweetAlert {
             ((inputOptions ?? const <String, String>{}).keys.isNotEmpty
                 ? (inputOptions ?? const <String, String>{}).keys.first
                 : '');
-        for (final entry in (inputOptions ?? const <String, String>{}).entries) {
+        for (final entry
+            in (inputOptions ?? const <String, String>{}).entries) {
           final label = html.LabelElement()..classes.add('swal2-radio-label');
           final input = html.RadioButtonInputElement()
             ..name = 'swal2-radio'
@@ -714,7 +717,8 @@ class SweetAlert {
         return container;
       case SweetAlertInputType.checkbox:
         final checkbox = html.CheckboxInputElement()
-          ..checked = inputChecked || (inputValue ?? '').toLowerCase() == 'true';
+          ..checked =
+              inputChecked || (inputValue ?? '').toLowerCase() == 'true';
         final label = html.LabelElement()
           ..classes.add('swal2-checkbox')
           ..style.display = 'flex'
@@ -722,7 +726,8 @@ class SweetAlert {
           ..style.gap = '0.5rem';
         label
           ..append(checkbox)
-          ..append(html.SpanElement()..text = inputLabel ?? inputPlaceholder ?? '');
+          ..append(
+              html.SpanElement()..text = inputLabel ?? inputPlaceholder ?? '');
         return label;
       case SweetAlertInputType.range:
         final range = html.InputElement()
@@ -1011,9 +1016,11 @@ class _SweetAlertInstance<T> {
       final start = DateTime.now();
       _timer = Timer(timer!, () => dismiss(SweetAlertDismissReason.timer));
       if (progressBar != null && totalMilliseconds > 0) {
-        _progressTimer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+        _progressTimer =
+            Timer.periodic(const Duration(milliseconds: 30), (timer) {
           final elapsed = DateTime.now().difference(start).inMilliseconds;
-          final remaining = (totalMilliseconds - elapsed).clamp(0, totalMilliseconds);
+          final remaining =
+              (totalMilliseconds - elapsed).clamp(0, totalMilliseconds);
           final progress = remaining / totalMilliseconds;
           progressBar!.style.width = '${progress * 100}%';
           if (_closed || remaining == 0) {

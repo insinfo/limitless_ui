@@ -84,12 +84,13 @@ class ReviewCardComponent {
   String get limitsBody => _isPt
       ? 'Não é um editor nem um highlighter universal. Para dezenas de linguagens ou edição interativa, o pacote precisa de outra solução.'
       : 'It is not an editor or a universal highlighter. For dozens of languages or interactive editing, the package needs another solution.';
-  String get pickerTitle => _isPt ? 'Snippets disponíveis' : 'Available snippets';
+  String get pickerTitle =>
+      _isPt ? 'Snippets disponíveis' : 'Available snippets';
   String get pickerBody => _isPt
       ? 'Troque entre os exemplos para verificar a saída visual do highlighter.'
       : 'Switch between examples to inspect the highlighter visual output.';
-    String get templateTitle => _isPt ? 'Template' : 'Template';
-    String get componentTitle => _isPt ? 'Componente' : 'Component';
+  String get templateTitle => _isPt ? 'Template' : 'Template';
+  String get componentTitle => _isPt ? 'Componente' : 'Component';
   String get apiIntro => _isPt
       ? 'A API é deliberadamente curta: `code` recebe a string e `language` controla o parser leve disponível.'
       : 'The API is intentionally short: `code` receives the string and `language` controls the available lightweight parser.';

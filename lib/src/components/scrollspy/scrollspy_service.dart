@@ -453,21 +453,19 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
   bool _isVisible(
       html.Rectangle<num> fragmentRect, html.Rectangle<num> rootRect) {
     final effectiveRootRect = _effectiveRootRect(rootRect);
-    final intersectionWidth =
-        (fragmentRect.right < effectiveRootRect.right
-                    ? fragmentRect.right
-                    : effectiveRootRect.right) -
-                (fragmentRect.left > effectiveRootRect.left
-                    ? fragmentRect.left
-                    : effectiveRootRect.left)
+    final intersectionWidth = (fragmentRect.right < effectiveRootRect.right
+            ? fragmentRect.right
+            : effectiveRootRect.right) -
+        (fragmentRect.left > effectiveRootRect.left
+                ? fragmentRect.left
+                : effectiveRootRect.left)
             .toDouble();
-    final intersectionHeight =
-        (fragmentRect.bottom < effectiveRootRect.bottom
-                    ? fragmentRect.bottom
-                    : effectiveRootRect.bottom) -
-                (fragmentRect.top > effectiveRootRect.top
-                    ? fragmentRect.top
-                    : effectiveRootRect.top)
+    final intersectionHeight = (fragmentRect.bottom < effectiveRootRect.bottom
+            ? fragmentRect.bottom
+            : effectiveRootRect.bottom) -
+        (fragmentRect.top > effectiveRootRect.top
+                ? fragmentRect.top
+                : effectiveRootRect.top)
             .toDouble();
 
     if (intersectionWidth <= 0 || intersectionHeight <= 0) {
@@ -480,8 +478,7 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
       return false;
     }
 
-    final ratio =
-        (intersectionWidth * intersectionHeight) / fragmentArea;
+    final ratio = (intersectionWidth * intersectionHeight) / fragmentArea;
     return ratio >= _thresholdFloor;
   }
 

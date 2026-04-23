@@ -592,7 +592,8 @@ class DatatableExporter {
     }
   }
 
-  static void _downloadBytes(List<int> bytes, String mimeType, String fileName) {
+  static void _downloadBytes(
+      List<int> bytes, String mimeType, String fileName) {
     final blob = Blob(<Object>[bytes], mimeType);
     final url = Url.createObjectUrlFromBlob(blob);
 

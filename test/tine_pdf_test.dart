@@ -9,7 +9,8 @@ void main() {
     test('creates a valid PDF with header', () {
       final bytes = _docWithEmptyPage().build();
 
-      expect(utf8.decode(bytes.sublist(0, 8), allowMalformed: true), '%PDF-1.4');
+      expect(
+          utf8.decode(bytes.sublist(0, 8), allowMalformed: true), '%PDF-1.4');
     });
 
     test('creates a valid PDF with trailer', () {
@@ -46,8 +47,7 @@ void main() {
     });
 
     test('accepts custom page size', () {
-      final doc = TinePDF()
-        ..page(width: 400, height: 600, build: (_) {});
+      final doc = TinePDF()..page(width: 400, height: 600, build: (_) {});
 
       expect(_content(doc.build()), contains('/MediaBox [0 0 400 600]'));
     });
@@ -115,7 +115,8 @@ void main() {
       expect(content, contains(r'(line\rnext\nend) Tj'));
     });
 
-    test('center and right alignment shift x position when width is provided', () {
+    test('center and right alignment shift x position when width is provided',
+        () {
       final doc = TinePDF()
         ..page(build: (ctx) {
           ctx.text('Hi', 50, 700, 12, align: TextAlign.center, width: 100);
@@ -221,8 +222,10 @@ void main() {
     test('draws underline only when a valid underline color is provided', () {
       final doc = TinePDF()
         ..page(build: (ctx) {
-          ctx.link('https://example.com', 50, 700, 100, 20, underline: '#0000ff');
-          ctx.link('https://example.com/path?a=1&b=(2)', 50, 650, 100, 20, underline: 'notacolor');
+          ctx.link('https://example.com', 50, 700, 100, 20,
+              underline: '#0000ff');
+          ctx.link('https://example.com/path?a=1&b=(2)', 50, 650, 100, 20,
+              underline: 'notacolor');
         });
 
       final content = _content(doc.build());
@@ -258,8 +261,21 @@ void main() {
 
     test('uses unique names for multiple images on one page', () {
       final sof = Uint8List.fromList([
-        0xFF, 0xD8, 0xFF, 0xC0, 0x00, 0x0B, 0x08,
-        0x00, 0x10, 0x00, 0x20, 0x03, 0x01, 0x22, 0x00,
+        0xFF,
+        0xD8,
+        0xFF,
+        0xC0,
+        0x00,
+        0x0B,
+        0x08,
+        0x00,
+        0x10,
+        0x00,
+        0x20,
+        0x03,
+        0x01,
+        0x22,
+        0x00,
       ]);
 
       final doc = TinePDF()
@@ -279,16 +295,55 @@ void main() {
 
     test('supports grayscale, cmyk and progressive JPEG markers', () {
       final gray = Uint8List.fromList([
-        0xFF, 0xD8, 0xFF, 0xC0, 0x00, 0x0B, 0x08,
-        0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11, 0x00,
+        0xFF,
+        0xD8,
+        0xFF,
+        0xC0,
+        0x00,
+        0x0B,
+        0x08,
+        0x00,
+        0x01,
+        0x00,
+        0x01,
+        0x01,
+        0x01,
+        0x11,
+        0x00,
       ]);
       final cmyk = Uint8List.fromList([
-        0xFF, 0xD8, 0xFF, 0xC0, 0x00, 0x0B, 0x08,
-        0x00, 0x01, 0x00, 0x01, 0x04, 0x01, 0x11, 0x00,
+        0xFF,
+        0xD8,
+        0xFF,
+        0xC0,
+        0x00,
+        0x0B,
+        0x08,
+        0x00,
+        0x01,
+        0x00,
+        0x01,
+        0x04,
+        0x01,
+        0x11,
+        0x00,
       ]);
       final progressive = Uint8List.fromList([
-        0xFF, 0xD8, 0xFF, 0xC2, 0x00, 0x0B, 0x08,
-        0x00, 0x10, 0x00, 0x20, 0x03, 0x01, 0x22, 0x00,
+        0xFF,
+        0xD8,
+        0xFF,
+        0xC2,
+        0x00,
+        0x0B,
+        0x08,
+        0x00,
+        0x10,
+        0x00,
+        0x20,
+        0x03,
+        0x01,
+        0x22,
+        0x00,
       ]);
 
       final grayDoc = TinePDF()
@@ -306,12 +361,14 @@ void main() {
 
       expect(_content(grayDoc.build()), contains('/ColorSpace /DeviceGray'));
       expect(_content(cmykDoc.build()), contains('/ColorSpace /DeviceCMYK'));
-      expect(_content(progressiveDoc.build()), contains('/ColorSpace /DeviceRGB'));
+      expect(
+          _content(progressiveDoc.build()), contains('/ColorSpace /DeviceRGB'));
     });
 
     test('throws for invalid JPEG inputs', () {
       final missingSoi = Uint8List.fromList([0x89, 0x50, 0x4E, 0x47]);
-      final noSof = Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x02, 0x00, 0x00]);
+      final noSof =
+          Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x02, 0x00, 0x00]);
       final truncated = Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xC0, 0x00]);
       final sosFirst = Uint8List.fromList([0xFF, 0xD8, 0xFF, 0xDA, 0x00, 0x02]);
 
@@ -319,23 +376,28 @@ void main() {
         ..page(build: (ctx) {
           expect(
             () => ctx.image(missingSoi, 0, 0, 100, 100),
-            throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('missing SOI marker'))),
+            throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+                contains('missing SOI marker'))),
           );
           expect(
             () => ctx.image(Uint8List(0), 0, 0, 100, 100),
-            throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('missing SOI marker'))),
+            throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+                contains('missing SOI marker'))),
           );
           expect(
             () => ctx.image(noSof, 0, 0, 100, 100),
-            throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('no valid SOF marker'))),
+            throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+                contains('no valid SOF marker'))),
           );
           expect(
             () => ctx.image(truncated, 0, 0, 100, 100),
-            throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('no valid SOF marker'))),
+            throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+                contains('no valid SOF marker'))),
           );
           expect(
             () => ctx.image(sosFirst, 0, 0, 100, 100),
-            throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('no valid SOF marker'))),
+            throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+                contains('no valid SOF marker'))),
           );
         });
 
@@ -359,8 +421,10 @@ void main() {
 
       expect(width12, greaterThan(0));
       expect(width24, closeTo(width12 * 2, 0.00001));
-      expect(TinePDF.measureText('Hello World', 12), greaterThan(TinePDF.measureText('Hi', 12)));
-      expect(TinePDF.measureText('a b', 12), greaterThan(TinePDF.measureText('ab', 12)));
+      expect(TinePDF.measureText('Hello World', 12),
+          greaterThan(TinePDF.measureText('Hi', 12)));
+      expect(TinePDF.measureText('a b', 12),
+          greaterThan(TinePDF.measureText('ab', 12)));
     });
 
     test('uses fallback width for non-ascii and known width for Hello', () {
@@ -424,7 +488,8 @@ Paragraph line.
     });
 
     test('creates multiple pages for long content', () {
-      final source = List.generate(120, (index) => 'Paragraph $index').join('\n\n');
+      final source =
+          List.generate(120, (index) => 'Paragraph $index').join('\n\n');
 
       final content = _content(markdown(source, height: 200, margin: 24));
       final pageCount = RegExp(r'/Type /Page\b').allMatches(content).length;
@@ -432,7 +497,8 @@ Paragraph line.
       expect(pageCount, greaterThan(1));
     });
 
-    test('handles empty and whitespace-only input without blank leading page', () {
+    test('handles empty and whitespace-only input without blank leading page',
+        () {
       final empty = _content(markdown(''));
       final whitespace = _content(markdown('   \n   \n   '));
       final tiny = _content(markdown('Hello world', height: 80, margin: 35));
@@ -448,7 +514,8 @@ Paragraph line.
       final longWordContent = _content(markdown('a' * 200));
       final blankLinesContent = _content(markdown('Hello\n\n\n\nWorld'));
 
-      expect(RegExp(r'\) Tj').allMatches(longWordContent).length, greaterThan(1));
+      expect(
+          RegExp(r'\) Tj').allMatches(longWordContent).length, greaterThan(1));
       expect(RegExp(r'\) Tj').allMatches(blankLinesContent).length, 2);
     });
   });
@@ -457,7 +524,8 @@ Paragraph line.
     test('build throws when called with no pages', () {
       expect(
         () => TinePDF().build(),
-        throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('PDF must have at least one page'))),
+        throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+            contains('PDF must have at least one page'))),
       );
     });
 
@@ -468,7 +536,8 @@ Paragraph line.
 
       expect(
         doc.build,
-        throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('build() can only be called once'))),
+        throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+            contains('build() can only be called once'))),
       );
     });
 
@@ -490,7 +559,8 @@ Paragraph line.
       expect(streamedBytes, orderedEquals(builtBytes));
     });
 
-    test('buildStream emits multiple chunks and supports multiple pages', () async {
+    test('buildStream emits multiple chunks and supports multiple pages',
+        () async {
       final doc = TinePDF()
         ..page(build: (ctx) {
           ctx.text('Page 1', 50, 700, 12);
@@ -507,7 +577,8 @@ Paragraph line.
         chunks.add(chunk);
       }
 
-      final content = _content(Uint8List.fromList(chunks.expand((chunk) => chunk).toList()));
+      final content = _content(
+          Uint8List.fromList(chunks.expand((chunk) => chunk).toList()));
 
       expect(chunks.length, greaterThan(1));
       expect(content, contains('(Page 1) Tj'));
@@ -519,21 +590,24 @@ Paragraph line.
     test('buildStream surfaces the same guards as build', () async {
       expect(
         () => TinePDF().buildStream(),
-        throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('PDF must have at least one page'))),
+        throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+            contains('PDF must have at least one page'))),
       );
 
       final built = _docWithEmptyPage();
       built.build();
       expect(
         built.buildStream,
-        throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('build() can only be called once'))),
+        throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+            contains('build() can only be called once'))),
       );
 
       final streamed = _docWithEmptyPage();
       await streamed.buildStream().drain<void>();
       expect(
         streamed.build,
-        throwsA(isA<Exception>().having((e) => e.toString(), 'message', contains('build() can only be called once'))),
+        throwsA(isA<Exception>().having((e) => e.toString(), 'message',
+            contains('build() can only be called once'))),
       );
     });
   });
@@ -556,7 +630,8 @@ Paragraph line.
       expect(entryLines, isNotEmpty);
       for (final line in entryLines) {
         final offset = int.parse(line.substring(0, 10));
-        final chunk = utf8.decode(built.sublist(offset, offset + 10), allowMalformed: true);
+        final chunk = utf8.decode(built.sublist(offset, offset + 10),
+            allowMalformed: true);
         expect(offset, greaterThanOrEqualTo(0));
         expect(chunk, matches(RegExp(r'^\d+ 0 obj')));
       }
@@ -574,6 +649,19 @@ Future<Uint8List> _collectStream(Stream<Uint8List> stream) async {
 }
 
 final Uint8List _minimalJpeg = Uint8List.fromList([
-  0xFF, 0xD8, 0xFF, 0xC0, 0x00, 0x0B, 0x08,
-  0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11, 0x00,
+  0xFF,
+  0xD8,
+  0xFF,
+  0xC0,
+  0x00,
+  0x0B,
+  0x08,
+  0x00,
+  0x01,
+  0x00,
+  0x01,
+  0x01,
+  0x01,
+  0x11,
+  0x00,
 ]);

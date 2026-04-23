@@ -199,7 +199,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   int? _lastRowsSignature;
   bool _visible = true;
   final Map<String, double> _responsiveColumnWidthCache = <String, double>{};
+  final Map<int, double> _fixedLeftOffsets = <int, double>{};
+  final Map<int, double> _fixedRightOffsets = <int, double>{};
   final Set<String> _autoHiddenColumnKeys = <String>{};
+  final Set<String> _forcedVisibleColumnKeys = <String>{};
   double _responsiveCheckboxWidthCache = 44;
 
   Filters _dataTableFilter = Filters();
@@ -391,6 +394,11 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   @Input('settings')
   set settings(DatatableSettings value) {
     _settings = value;
+    final validKeys = _settings.colsDefinitions
+        .map((column) => column.key)
+        .where((key) => key.trim().isNotEmpty)
+        .toSet();
+    _forcedVisibleColumnKeys.removeWhere((key) => !validKeys.contains(key));
     _rowBuilder.applyComputedColumnMetadataToSettings(_settings);
     _manualRowsRevision++;
     scheduleDraw(force: true);
@@ -574,6 +582,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       );
       drawPagination();
       _syncTemplateContexts();
+      _syncFixedColumnOffsets();
       _schedulePostRenderSync();
       _changeDetectorRef.markForCheck();
       return;
@@ -586,6 +595,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       _lastRowsSignature = signature;
       drawPagination();
       _syncTemplateContexts();
+      _syncFixedColumnOffsets();
       _schedulePostRenderSync();
       _changeDetectorRef.markForCheck();
       return;
@@ -606,6 +616,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _lastRowsSignature = signature;
     drawPagination();
     _syncTemplateContexts();
+    _syncFixedColumnOffsets();
     _schedulePostRenderSync();
 
     _changeDetectorRef.markForCheck();
@@ -633,6 +644,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     _syncTemplateContexts();
+    _syncFixedColumnOffsets();
     _schedulePostRenderSync();
     _changeDetectorRef.markForCheck();
   }
@@ -654,6 +666,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       }
       _syncSortingIndicators();
       _syncResponsiveColumnWidthCache();
+      _syncFixedColumnOffsets();
       _scheduleResponsiveAutoHideSync();
       _changeDetectorRef.markForCheck();
     });
@@ -1075,8 +1088,19 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void changeVisibilityOfCol(DatatableCol col) {
-    col.visibility = !col.visibility;
-    col.visibilityOnCard = col.visibility;
+    final shouldShowColumn = !isColumnEffectivelyVisible(col);
+    final columnKey = col.key.trim();
+
+    col.visibility = shouldShowColumn;
+    col.visibilityOnCard = shouldShowColumn;
+
+    if (columnKey.isNotEmpty) {
+      if (shouldShowColumn) {
+        _forcedVisibleColumnKeys.add(columnKey);
+      } else {
+        _forcedVisibleColumnKeys.remove(columnKey);
+      }
+    }
 
     for (final row in rows) {
       for (final column in row.columns) {
@@ -1087,6 +1111,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       }
     }
 
+    _syncResponsiveAutoHideNow();
+
     renderedRows = _rowBuilder.rebuildRenderedRows(
       rows: rows,
       responsiveCollapse: responsiveCollapse,
@@ -1094,18 +1120,29 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     _syncTemplateContexts();
+    _syncFixedColumnOffsets();
     _schedulePostRenderSync();
     _changeDetectorRef.markForCheck();
   }
 
   bool get allColumnsVisible =>
-      settings.colsDefinitions.every((col) => col.visibility);
+      settings.colsDefinitions.every(isColumnEffectivelyVisible);
 
   void toggleAllColumnsVisibility() {
     final newVisibility = !allColumnsVisible;
     for (final col in settings.colsDefinitions) {
       col.visibility = newVisibility;
       col.visibilityOnCard = newVisibility;
+      final columnKey = col.key.trim();
+      if (columnKey.isEmpty) {
+        continue;
+      }
+
+      if (newVisibility) {
+        _forcedVisibleColumnKeys.add(columnKey);
+      } else {
+        _forcedVisibleColumnKeys.remove(columnKey);
+      }
     }
 
     for (final row in rows) {
@@ -1115,6 +1152,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       }
     }
 
+    _syncResponsiveAutoHideNow();
+
     renderedRows = _rowBuilder.rebuildRenderedRows(
       rows: rows,
       responsiveCollapse: responsiveCollapse,
@@ -1122,6 +1161,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     _syncTemplateContexts();
+    _syncFixedColumnOffsets();
     _schedulePostRenderSync();
     _changeDetectorRef.markForCheck();
   }
@@ -1253,11 +1293,58 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   bool get hasResponsiveCollapsedColumns =>
       _isResponsiveCollapseViewportActive || _autoHiddenColumnKeys.isNotEmpty;
 
+  bool isFixedColumn(DatatableCol column) {
+    return column.fixedPosition != null && isColumnEffectivelyVisible(column);
+  }
+
+  bool isLeftFixedColumn(DatatableCol column) {
+    return column.fixedPosition == DatatableFixedColumnPosition.left &&
+        isFixedColumn(column);
+  }
+
+  bool isRightFixedColumn(DatatableCol column) {
+    return column.fixedPosition == DatatableFixedColumnPosition.right &&
+        isFixedColumn(column);
+  }
+
+  String resolvedHeaderStyleCss(DatatableCol column, int index) {
+    return _mergeCssDeclarations(
+          column.headerStyleCss,
+          _fixedColumnStyleCss(column, index),
+        ) ??
+        '';
+  }
+
+  String resolvedCellStyleCss(DatatableCol column, int index) {
+    return _mergeCssDeclarations(
+          column.styleCss,
+          _fixedColumnStyleCss(column, index),
+        ) ??
+        '';
+  }
+
+  bool isColumnEffectivelyVisible(DatatableCol column) {
+    return column.visibility && !isRuntimeResponsiveHidden(column);
+  }
+
   bool isRuntimeResponsiveHidden(DatatableCol column) {
+    if (_isColumnForcedVisible(column)) {
+      return false;
+    }
+
     final hiddenOnMobile =
         _isResponsiveCollapseViewportActive && column.hideOnMobile;
     final hiddenByPriority = _autoHiddenColumnKeys.contains(column.key);
     return hiddenOnMobile || hiddenByPriority;
+  }
+
+  bool _isColumnForcedVisible(DatatableCol column) {
+    final columnKey = column.key.trim();
+    if (columnKey.isEmpty) {
+      return false;
+    }
+
+    return _forcedVisibleColumnKeys.contains(columnKey);
   }
 
   bool isResponsiveControlColumn(
@@ -1343,6 +1430,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     _syncTemplateContexts();
+    _syncFixedColumnOffsets();
     _changeDetectorRef.markForCheck();
     return idx;
   }
@@ -1436,8 +1524,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     }
 
     final baseVisibleColumns = settings.colsDefinitions.where((column) {
-      return column.visibility &&
-          !(_isResponsiveCollapseViewportActive && column.hideOnMobile);
+      final hiddenOnMobile = _isResponsiveCollapseViewportActive &&
+          column.hideOnMobile &&
+          !_isColumnForcedVisible(column);
+      return column.visibility && !hiddenOnMobile;
     }).toList(growable: false);
 
     if (baseVisibleColumns.isEmpty) {
@@ -1456,6 +1546,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     final candidates = baseVisibleColumns
         .where((column) =>
             !column.responsiveAutoHideRequired &&
+            column.fixedPosition == null &&
+            !_isColumnForcedVisible(column) &&
             column.responsiveAutoHidePriority != null)
         .toList(growable: false);
 
@@ -1524,6 +1616,96 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     }
 
     return fallbackWidth;
+  }
+
+  void _syncFixedColumnOffsets() {
+    _fixedLeftOffsets.clear();
+    _fixedRightOffsets.clear();
+
+    if (gridMode || settings.colsDefinitions.isEmpty) {
+      return;
+    }
+
+    var leftOffset = 0.0;
+    for (var index = 0; index < settings.colsDefinitions.length; index++) {
+      final column = settings.colsDefinitions[index];
+      if (!isLeftFixedColumn(column)) {
+        continue;
+      }
+
+      _fixedLeftOffsets[index] = leftOffset;
+      leftOffset += _resolveFixedColumnWidth(column);
+    }
+
+    var rightOffset = 0.0;
+    for (var index = settings.colsDefinitions.length - 1; index >= 0; index--) {
+      final column = settings.colsDefinitions[index];
+      if (!isRightFixedColumn(column)) {
+        continue;
+      }
+
+      _fixedRightOffsets[index] = rightOffset;
+      rightOffset += _resolveFixedColumnWidth(column);
+    }
+  }
+
+  double _resolveFixedColumnWidth(DatatableCol column) {
+    final cachedWidth = _responsiveColumnWidthCache[column.key];
+    if (cachedWidth != null && cachedWidth > 0) {
+      return cachedWidth;
+    }
+
+    return _parseCssLength(column.width) ??
+        _parseCssLength(column.minWidth) ??
+        _parseCssLength(column.maxWidth) ??
+        (column.nowrap ? 140.0 : 120.0);
+  }
+
+  String? _fixedColumnStyleCss(DatatableCol column, int index) {
+    if (!isFixedColumn(column)) {
+      return null;
+    }
+
+    if (column.fixedPosition == DatatableFixedColumnPosition.left) {
+      final offset = _fixedLeftOffsets[index] ?? 0;
+      return 'left: ${_formatPixelValue(offset)}';
+    }
+
+    if (column.fixedPosition == DatatableFixedColumnPosition.right) {
+      final offset = _fixedRightOffsets[index] ?? 0;
+      return 'right: ${_formatPixelValue(offset)}';
+    }
+
+    return null;
+  }
+
+  String _formatPixelValue(double value) {
+    final roundedValue = value.roundToDouble();
+    if ((value - roundedValue).abs() < 0.01) {
+      return '${roundedValue.toInt()}px';
+    }
+
+    return '${value.toStringAsFixed(2)}px';
+  }
+
+  String? _mergeCssDeclarations(String? baseStyle, String? extraStyle) {
+    final parts = <String>[];
+    final normalizedBase = baseStyle?.trim();
+    final normalizedExtra = extraStyle?.trim();
+
+    if (normalizedBase != null && normalizedBase.isNotEmpty) {
+      parts.add(normalizedBase);
+    }
+
+    if (normalizedExtra != null && normalizedExtra.isNotEmpty) {
+      parts.add(normalizedExtra);
+    }
+
+    if (parts.isEmpty) {
+      return null;
+    }
+
+    return parts.join('; ');
   }
 
   double? _parseCssLength(String? rawValue) {

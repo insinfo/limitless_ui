@@ -124,7 +124,9 @@ class LiToastComponent implements OnInit, OnDestroy {
 
   String get resolvedBadgeClasses => _joinClasses(<String>[
         'badge',
-        usesLightText ? 'bg-black bg-opacity-20 text-white' : 'bg-primary text-white',
+        usesLightText
+            ? 'bg-black bg-opacity-20 text-white'
+            : 'bg-primary text-white',
         'me-2',
       ]);
 

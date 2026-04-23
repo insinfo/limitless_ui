@@ -28,8 +28,7 @@ class LiFormDirective {
       StreamController<bool>.broadcast(sync: true);
 
   bool _submitted = false;
-  final List<LiFormFieldDirective> _registeredFields =
-      <LiFormFieldDirective>[];
+  final List<LiFormFieldDirective> _registeredFields = <LiFormFieldDirective>[];
   int _nextRegistrationOrder = 0;
 
   /// CSS selector used to discover invalid controls inside the host tree.
@@ -39,8 +38,7 @@ class LiFormDirective {
   /// - native/bootstrap-like controls using `.is-invalid`
   /// - AngularDart native form controls using `.ng-invalid`
   @Input('liFormInvalidSelector')
-  String invalidSelector =
-      '[data-invalid="true"], .is-invalid, .ng-invalid';
+  String invalidSelector = '[data-invalid="true"], .is-invalid, .ng-invalid';
 
   /// CSS selector used to resolve the focus target from an invalid host.
   @Input('liFormFocusableSelector')
@@ -229,7 +227,8 @@ class LiFormDirective {
       });
 
     for (final field in orderedFields) {
-      if (!field.enabled || !field.isInvalid(defaultInvalidSelector: invalidSelector)) {
+      if (!field.enabled ||
+          !field.isInvalid(defaultInvalidSelector: invalidSelector)) {
         continue;
       }
 

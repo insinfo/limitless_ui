@@ -11,6 +11,8 @@ typedef DatatableCellStyleResolver = String? Function(
 
 enum DatatableColType { normal, groupTitle }
 
+enum DatatableFixedColumnPosition { left, right }
+
 /// Column definition and rendered value container used by the datatable.
 class DatatableCol {
   /// Source key used to read the value from an item map.
@@ -57,6 +59,9 @@ class DatatableCol {
   /// Lower values are hidden first. Columns without a priority are not part
   /// of the automatic hiding cycle.
   int? responsiveAutoHidePriority;
+
+  /// Keeps the column sticky on the chosen side during horizontal scrolling.
+  DatatableFixedColumnPosition? fixedPosition;
 
   bool showAsFooterOnCard = false;
   bool enableSorting = false;
@@ -114,6 +119,7 @@ class DatatableCol {
     this.hideOnMobile = false,
     this.responsiveAutoHideRequired = false,
     this.responsiveAutoHidePriority,
+    this.fixedPosition,
     this.showAsFooterOnCard = false,
     this.type = DatatableColType.normal,
   });

@@ -174,9 +174,9 @@ void main() {
 
     final inlineTrigger = fixture.rootElement
         .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
-    final persistentTrigger = fixture.rootElement
-            .querySelector('[aria-label="persistent-actions"]')
-        as html.ButtonElement;
+    final persistentTrigger =
+        fixture.rootElement.querySelector('[aria-label="persistent-actions"]')
+            as html.ButtonElement;
 
     await fixture.update((_) {
       inlineTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
@@ -184,14 +184,17 @@ void main() {
     await _settle(fixture);
 
     await fixture.update((_) {
-      persistentTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      persistentTrigger
+          .dispatchEvent(html.MouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     expect(host.inlineMenu!.isOpen, isTrue);
     expect(host.persistentMenu!.isOpen, isTrue);
     expect(
-      fixture.rootElement.querySelectorAll('.li-dropdown-menu__menu.show').length,
+      fixture.rootElement
+          .querySelectorAll('.li-dropdown-menu__menu.show')
+          .length,
       2,
     );
   });

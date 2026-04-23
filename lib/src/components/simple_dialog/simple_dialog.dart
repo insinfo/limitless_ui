@@ -156,8 +156,8 @@ class LiSimpleDialogComponent {
       String confirmButtonText = 'Sim',
       Function? confirmAction,
       LiDialogColor dialogColor = LiDialogColor.DANGER}) {
-        // var uuid = Uuid();
-        // final idModal = uuid.v1();
+    // var uuid = Uuid();
+    // final idModal = uuid.v1();
     final comp = Completer<bool>();
     final template = '''
       <div class="modal fade show" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;" aria-modal="true" role="dialog">

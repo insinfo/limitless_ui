@@ -101,8 +101,8 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final checkbox = fixture.rootElement.querySelector('input#required-checkbox')
-        as html.InputElement;
+    final checkbox = fixture.rootElement
+        .querySelector('input#required-checkbox') as html.InputElement;
 
     await fixture.update((_) {
       checkbox.dispatchEvent(html.Event('blur', canBubble: true));

@@ -23,7 +23,9 @@ class DemoThemeService {
       _mode = DemoThemeMode.orange;
     } else if (storedTheme == _retroValue || storedTheme == _legacyRetroValue) {
       _mode = DemoThemeMode.retro;
-    } else if (storedTheme == _oldValue || storedTheme == _legacyOldValue || storedTheme == _legacyOlderValue) {
+    } else if (storedTheme == _oldValue ||
+        storedTheme == _legacyOldValue ||
+        storedTheme == _legacyOlderValue) {
       _mode = DemoThemeMode.old;
     } else if (storedTheme == _autoValue) {
       _mode = DemoThemeMode.auto;
@@ -41,7 +43,8 @@ class DemoThemeService {
   static const _retroValue = 'retro';
   static const _oldValue = 'old';
   static const _autoValue = 'auto';
-  static final _legacyRetroValue = String.fromCharCodes(<int>[115, 97, 108, 105]);
+  static final _legacyRetroValue =
+      String.fromCharCodes(<int>[115, 97, 108, 105]);
   static const _legacyOldValue = 'onld';
   static const _legacyOlderValue = 'gestao';
 

@@ -1,4 +1,3 @@
-
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 class ModalSizeShowcaseItem {
@@ -529,7 +528,7 @@ void closeReviewModal() {
   bool get activeSizeIsCompact =>
       activeSizeShowcase.sizeValue == 'modal-xs' ||
       activeSizeShowcase.sizeValue == 'modal-sm';
-    bool get activeSizeUsesFullScreenShell => activeSizeIsFull;
+  bool get activeSizeUsesFullScreenShell => activeSizeIsFull;
 
   String sizeTitle(ModalSizeShowcaseItem item) =>
       _isPt ? item.titlePt : item.titleEn;

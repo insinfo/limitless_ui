@@ -190,17 +190,15 @@ class DatatableRowBuilder {
         );
       }
 
-      final hiddenColumns = row.columns
-          .where((column) {
-            if (!column.visibility) {
-              return false;
-            }
+      final hiddenColumns = row.columns.where((column) {
+        if (!column.visibility) {
+          return false;
+        }
 
-            final hiddenOnMobile = responsiveActive && column.hideOnMobile;
-            final hiddenByPriority = autoHiddenColumnKeys.contains(column.key);
-            return hiddenOnMobile || hiddenByPriority;
-          })
-          .toList(growable: false);
+        final hiddenOnMobile = responsiveActive && column.hideOnMobile;
+        final hiddenByPriority = autoHiddenColumnKeys.contains(column.key);
+        return hiddenOnMobile || hiddenByPriority;
+      }).toList(growable: false);
 
       String? controlColumnKey;
       if (hiddenColumns.isNotEmpty) {
@@ -287,6 +285,7 @@ class DatatableRowBuilder {
       hideOnMobile: colDefinition.hideOnMobile,
       responsiveAutoHideRequired: colDefinition.responsiveAutoHideRequired,
       responsiveAutoHidePriority: colDefinition.responsiveAutoHidePriority,
+      fixedPosition: colDefinition.fixedPosition,
       showAsFooterOnCard: colDefinition.showAsFooterOnCard,
       colspan: colDefinition.colspan,
       multiValSeparator: colDefinition.multiValSeparator,

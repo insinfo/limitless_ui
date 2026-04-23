@@ -200,16 +200,20 @@ class DropdownPageComponent {
   String get actionsButton => _isPt ? 'Ações' : 'Actions';
   String get viewDetailsLabel => _isPt ? 'Ver detalhes' : 'View details';
   String get duplicateLabel => _isPt ? 'Duplicar' : 'Duplicate';
-  String get disabledActionLabel => _isPt ? 'Ação desabilitada' : 'Disabled action';
+  String get disabledActionLabel =>
+      _isPt ? 'Ação desabilitada' : 'Disabled action';
   String get archiveLabel => _isPt ? 'Arquivar' : 'Archive';
-  String get manualTitle => _isPt ? 'Gatilhos manuais e customizados' : 'Manual and custom triggers';
+  String get manualTitle =>
+      _isPt ? 'Gatilhos manuais e customizados' : 'Manual and custom triggers';
   String get manualBody => _isPt
       ? 'A âncora visual pode ser separada do fluxo de toggle quando você quer controlar a abertura por API.'
       : 'The visual anchor can be separated from the toggle flow when you want to control opening through the API.';
   String get anchorOnlyLabel => _isPt ? 'Somente âncora' : 'Anchor only';
   String get toggleByApiLabel => _isPt ? 'Alternar por API' : 'Toggle by API';
-  String get closeFromItemLabel => _isPt ? 'Fechar pelo item' : 'Close from item';
-  String get persistentMenuLabel => _isPt ? 'Menu persistente' : 'Persistent menu';
+  String get closeFromItemLabel =>
+      _isPt ? 'Fechar pelo item' : 'Close from item';
+  String get persistentMenuLabel =>
+      _isPt ? 'Menu persistente' : 'Persistent menu';
   String get insideTitle => 'autoClose inside';
   String get insideBody => _isPt
       ? 'O menu abaixo ignora clique externo e só fecha quando o clique acontece dentro do próprio menu.'
@@ -222,16 +226,20 @@ class DropdownPageComponent {
       ? 'Quando existe clipping local, o menu pode ser anexado diretamente ao body.'
       : 'When there is local clipping, the menu can be attached directly to the body.';
   String get openOnBodyLabel => _isPt ? 'Abrir no body' : 'Open on body';
-  String get escapesClippingLabel => _isPt ? 'Escapa do clipping local' : 'Escapes local clipping';
-  String get usefulInCardsLabel => _isPt ? 'Útil em cards e grids' : 'Useful in cards and grids';
+  String get escapesClippingLabel =>
+      _isPt ? 'Escapa do clipping local' : 'Escapes local clipping';
+  String get usefulInCardsLabel =>
+      _isPt ? 'Útil em cards e grids' : 'Useful in cards and grids';
   String get dropupTitle => 'Dropup';
   String get dropupBody => _isPt
       ? 'A primeira placement começando por top troca a classe do host para dropup.'
       : 'The first placement starting with top switches the host class to dropup.';
   String get dropupMenuLabel => _isPt ? 'Menu dropup' : 'Dropup menu';
   String get topAlignedLabel => _isPt ? 'Alinhado ao topo' : 'Top aligned';
-  String get goodForFootersLabel => _isPt ? 'Bom para rodapés compactos' : 'Good for tight footers';
-  String get navbarTitle => _isPt ? 'Exibição estática em navbar' : 'Static display in navbar';
+  String get goodForFootersLabel =>
+      _isPt ? 'Bom para rodapés compactos' : 'Good for tight footers';
+  String get navbarTitle =>
+      _isPt ? 'Exibição estática em navbar' : 'Static display in navbar';
   String get navbarBody => _isPt
       ? 'Dentro de navbar, o display padrão vira estático para preservar o comportamento responsivo.'
       : 'Inside a navbar, the default display becomes static to preserve responsive behavior.';
@@ -250,35 +258,35 @@ class DropdownPageComponent {
   String get compactMenuWaitingState => _isPt
       ? 'Menus compactos: aguardando interação'
       : 'Compact menus: waiting for interaction';
-  String get navbarDropdownLabel => _isPt ? 'Dropdown da navbar' : 'Navbar dropdown';
+  String get navbarDropdownLabel =>
+      _isPt ? 'Dropdown da navbar' : 'Navbar dropdown';
   String get profileLabel => _isPt ? 'Perfil' : 'Profile';
   String get billingLabel => _isPt ? 'Cobrança' : 'Billing';
-    String get submenuTitle => _isPt
-      ? 'Menu de usuário com submenu'
-      : 'User menu with submenu';
-    String get submenuBody => _isPt
+  String get submenuTitle =>
+      _isPt ? 'Menu de usuário com submenu' : 'User menu with submenu';
+  String get submenuBody => _isPt
       ? 'Este exemplo reproduz um menu de conta com submenu lateral usando as diretivas de submenu sobre a API declarativa de liDropdown.'
       : 'This example reproduces an account menu with a side submenu using the submenu directives on top of the declarative liDropdown API.';
-    String get accountMenuLabel => _isPt ? 'Conta do usuário' : 'User account';
-    String get demoUserName => 'Isaque Neves Sant\'Ana';
-    String get userCgmLabel => _isPt ? 'Seu CGM: 140050' : 'Your CGM: 140050';
-    String get loggedAsLabel => _isPt ? 'Logado como: Portal Integrado' : 'Logged in as: Integrated Portal';
-    String get toggleStatusBarLabel => _isPt
-      ? 'Exibir Status bar'
-      : 'Show status bar';
-    String get themeMenuLabel => _isPt ? 'Tema' : 'Theme';
-    String get lightThemeLabel => _isPt ? 'Tema claro' : 'Light theme';
-    String get mediumThemeLabel => _isPt ? 'Tema médio' : 'Medium theme';
-    String get darkThemeLabel => _isPt ? 'Tema escuro' : 'Dark theme';
-    String get pinkThemeLabel => _isPt ? 'Tema rosa' : 'Pink theme';
-    String get sessionIsolationLabel => _isPt
+  String get accountMenuLabel => _isPt ? 'Conta do usuário' : 'User account';
+  String get demoUserName => 'Isaque Neves Sant\'Ana';
+  String get userCgmLabel => _isPt ? 'Seu CGM: 140050' : 'Your CGM: 140050';
+  String get loggedAsLabel => _isPt
+      ? 'Logado como: Portal Integrado'
+      : 'Logged in as: Integrated Portal';
+  String get toggleStatusBarLabel =>
+      _isPt ? 'Exibir Status bar' : 'Show status bar';
+  String get themeMenuLabel => _isPt ? 'Tema' : 'Theme';
+  String get lightThemeLabel => _isPt ? 'Tema claro' : 'Light theme';
+  String get mediumThemeLabel => _isPt ? 'Tema médio' : 'Medium theme';
+  String get darkThemeLabel => _isPt ? 'Tema escuro' : 'Dark theme';
+  String get pinkThemeLabel => _isPt ? 'Tema rosa' : 'Pink theme';
+  String get sessionIsolationLabel => _isPt
       ? 'Obs.: abas no mesmo perfil compartilham sessão. Para usuários diferentes simultâneos, use perfis separados ou janela anônima.'
       : 'Note: tabs in the same browser profile share the session. For simultaneous different users, use separate profiles or an incognito window.';
-    String get signOutLabel => _isPt ? 'Sair' : 'Sign out';
-    String get submenuStateTitle => _isPt
-      ? 'Estado do menu de usuário'
-      : 'User menu state';
-    String get submenuStateSummary {
+  String get signOutLabel => _isPt ? 'Sair' : 'Sign out';
+  String get submenuStateTitle =>
+      _isPt ? 'Estado do menu de usuário' : 'User menu state';
+  String get submenuStateSummary {
     final themeLabel = switch (selectedSubmenuTheme) {
       'medium' => mediumThemeLabel,
       'dark' => darkThemeLabel,
@@ -288,14 +296,15 @@ class DropdownPageComponent {
 
     if (_isPt) {
       return 'Tema ativo: $themeLabel. Status bar: '
-        '${showDemoStatusBar ? 'visível' : 'oculta'}. '
-        '${submenuState.isEmpty ? 'Aguardando interação.' : submenuState}';
+          '${showDemoStatusBar ? 'visível' : 'oculta'}. '
+          '${submenuState.isEmpty ? 'Aguardando interação.' : submenuState}';
     }
 
     return 'Active theme: $themeLabel. Status bar: '
-      '${showDemoStatusBar ? 'visible' : 'hidden'}. '
-      '${submenuState.isEmpty ? 'Waiting for interaction.' : submenuState}';
-    }
+        '${showDemoStatusBar ? 'visible' : 'hidden'}. '
+        '${submenuState.isEmpty ? 'Waiting for interaction.' : submenuState}';
+  }
+
   String get currentStateTitle => _isPt ? 'Estado atual' : 'Current state';
   String get apiIntro => _isPt
       ? 'A API pública separa claramente host, âncora, toggle, menu, item navegável e agora também submenu reutilizável.'
@@ -307,7 +316,7 @@ class DropdownPageComponent {
           'liDropdownToggle alterna o menu por clique e por teclado.',
           'liDropdownMenu recebe classes de menu e delega a navegação por teclado.',
           'liDropdownItem marca itens focáveis e retira itens desabilitados da rotação.',
-        'liDropdownSubmenu, liDropdownSubmenuToggle e liDropdownSubmenuMenu permitem submenus reaproveitáveis sem fechar o dropdown pai ao acionar o toggle do submenu.',
+          'liDropdownSubmenu, liDropdownSubmenuToggle e liDropdownSubmenuMenu permitem submenus reaproveitáveis sem fechar o dropdown pai ao acionar o toggle do submenu.',
           'li-dropdown-menu usa listas de opções prontas e fecha outras instâncias por padrão, com opt-out via closeOtherMenusOnOpen.',
         ]
       : const <String>[
@@ -316,12 +325,16 @@ class DropdownPageComponent {
           'liDropdownToggle toggles the menu by click and keyboard.',
           'liDropdownMenu receives menu classes and delegates keyboard navigation.',
           'liDropdownItem marks focusable items and removes disabled items from rotation.',
-        'liDropdownSubmenu, liDropdownSubmenuToggle, and liDropdownSubmenuMenu provide reusable submenus without collapsing the parent dropdown when the submenu toggle is activated.',
+          'liDropdownSubmenu, liDropdownSubmenuToggle, and liDropdownSubmenuMenu provide reusable submenus without collapsing the parent dropdown when the submenu toggle is activated.',
           'li-dropdown-menu uses ready-made option lists and closes other instances by default, with an opt-out through closeOtherMenusOnOpen.',
         ];
-  String get waitingState => _isPt ? 'Dropdown: aguardando interação' : 'Dropdown: waiting for interaction';
-  String get openedState => _isPt ? 'Dropdown: menu aberto' : 'Dropdown: menu open';
-  String get closedState => _isPt ? 'Dropdown: menu fechado' : 'Dropdown: menu closed';
+  String get waitingState => _isPt
+      ? 'Dropdown: aguardando interação'
+      : 'Dropdown: waiting for interaction';
+  String get openedState =>
+      _isPt ? 'Dropdown: menu aberto' : 'Dropdown: menu open';
+  String get closedState =>
+      _isPt ? 'Dropdown: menu fechado' : 'Dropdown: menu closed';
 
   void onOpenChange(bool open) {
     dropdownState = open ? openedState : closedState;
@@ -348,8 +361,7 @@ class DropdownPageComponent {
   }
 
   void onDemoSignOut() {
-    submenuState = _isPt
-        ? 'Ação de saída disparada.'
-        : 'Sign out action triggered.';
+    submenuState =
+        _isPt ? 'Ação de saída disparada.' : 'Sign out action triggered.';
   }
 }

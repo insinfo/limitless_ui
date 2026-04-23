@@ -27,6 +27,34 @@
     overflow-x: auto;
 }
 
+.datatable-scroll .dataTable th.datatable-fixed-col,
+.datatable-scroll .dataTable td.datatable-fixed-col {
+    position: sticky;
+    background: var(--bs-body-bg, #fff);
+    background-clip: padding-box;
+}
+
+.datatable-scroll .dataTable thead th.datatable-fixed-col {
+    z-index: 4;
+    background: var(--bs-tertiary-bg, var(--bs-body-bg, #fff));
+}
+
+.datatable-scroll .dataTable tbody td.datatable-fixed-col {
+    z-index: 2;
+}
+
+.datatable-scroll .dataTable .datatable-fixed-col--left {
+    box-shadow: 1px 0 0 var(--bs-border-color, #e5e7eb);
+}
+
+.datatable-scroll .dataTable .datatable-fixed-col--right {
+    box-shadow: -1px 0 0 var(--bs-border-color, #e5e7eb);
+}
+
+.table-hover > tbody > tr:hover > td.datatable-fixed-col {
+    background: var(--bs-table-hover-bg, #f8f9fa);
+}
+
 .datatable-header {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

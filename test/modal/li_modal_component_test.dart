@@ -386,7 +386,7 @@ void main() {
         html.document.body!.querySelectorAll('.li-modal-backdrop');
     expect(backdrops.length, 2);
     expect(int.parse(backdrops[0].style.zIndex),
-      lessThan(int.parse(backdrops[1].style.zIndex)));
+        lessThan(int.parse(backdrops[1].style.zIndex)));
   });
 
   test('modal-full keeps the modal body vertically scrollable', () async {
@@ -442,7 +442,8 @@ void main() {
     await _settle(fixture);
   });
 
-  test('fullScreenShell removes rounded corners from the fullscreen shell', () async {
+  test('fullScreenShell removes rounded corners from the fullscreen shell',
+      () async {
     final fixture = await fullModalTestBed.create();
     await _settle(fixture);
 

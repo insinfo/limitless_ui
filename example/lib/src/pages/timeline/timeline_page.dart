@@ -76,7 +76,8 @@ class TimelinePageComponent {
   String get centerBody => _isPt
       ? 'No modo central, cada item pode escolher `alignment="start"`, `alignment="end"` ou `alignment="full"`.'
       : 'In center mode, each item can choose `alignment="start"`, `alignment="end"`, or `alignment="full"`.';
-  String get compositionTitle => _isPt ? 'Composicao por projecao' : 'Projection-based composition';
+  String get compositionTitle =>
+      _isPt ? 'Composicao por projecao' : 'Projection-based composition';
   String get compositionBody => _isPt
       ? 'Quando os inputs padrao nao bastam, use `[liTimelineIcon]`, `[liTimelineTime]` e `[liTimelineContent]` para assumir o markup interno do item.'
       : 'When the default inputs are not enough, use `[liTimelineIcon]`, `[liTimelineTime]`, and `[liTimelineContent]` to control the item internals.';

@@ -33,7 +33,9 @@ class DatatablePageComponent implements OnInit {
             DatatableDemoService(_buildSeedRecords(en.MessagesEn())),
         _groupedDemoService = DatatableDemoService(_buildGroupedSeedRecords()),
         _multiSortDemoService =
-            DatatableDemoService(_buildMultiSortSeedRecords()) {
+            DatatableDemoService(_buildMultiSortSeedRecords()),
+        _stickyColumnsDemoService =
+            DatatableDemoService(_buildStickyColumnsSeedRecords()) {
     tableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
     readonlyTableData = DataFrame<Map<String, dynamic>>(
@@ -47,10 +49,12 @@ class DatatablePageComponent implements OnInit {
     modalTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
     processLookupTableData = DataFrame<Map<String, dynamic>>(
-      items: <Map<String, dynamic>>[], totalRecords: 0);
+        items: <Map<String, dynamic>>[], totalRecords: 0);
     groupedTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
     multiSortTableData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
+    stickyColumnsTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
 
     _tableSettingsPt = _buildTableSettings(Messages());
@@ -62,11 +66,15 @@ class DatatablePageComponent implements OnInit {
     _processLookupTableSettings = _buildProcessLookupTableSettings();
     _groupedTableSettings = _buildGroupedTableSettings();
     _multiSortTableSettings = _buildMultiSortTableSettings();
+    _stickyColumnsTableSettingsPt = _buildStickyColumnsTableSettings(true);
+    _stickyColumnsTableSettingsEn = _buildStickyColumnsTableSettings(false);
     _searchFieldsPt = _buildSearchFields(Messages());
     _searchFieldsEn = _buildSearchFields(en.MessagesEn());
     _processLookupSearchFields = _buildProcessLookupSearchFields();
     _groupedSearchFields = _buildGroupedSearchFields();
     _multiSortSearchFields = _buildMultiSortSearchFields();
+    _stickyColumnsSearchFieldsPt = _buildStickyColumnsSearchFields(true);
+    _stickyColumnsSearchFieldsEn = _buildStickyColumnsSearchFields(false);
     multiSortFilters.setOrderFields(_buildDefaultMultiSortOrderFields());
   }
 
@@ -76,6 +84,7 @@ class DatatablePageComponent implements OnInit {
   final DatatableDemoService _datatableDemoServiceEn;
   final DatatableDemoService _groupedDemoService;
   final DatatableDemoService _multiSortDemoService;
+  final DatatableDemoService _stickyColumnsDemoService;
   Messages get t => i18n.t;
 
   late final DatatableSettings _tableSettingsPt;
@@ -87,11 +96,15 @@ class DatatablePageComponent implements OnInit {
   late final DatatableSettings _processLookupTableSettings;
   late final DatatableSettings _groupedTableSettings;
   late final DatatableSettings _multiSortTableSettings;
+  late final DatatableSettings _stickyColumnsTableSettingsPt;
+  late final DatatableSettings _stickyColumnsTableSettingsEn;
   late final List<DatatableSearchField> _searchFieldsPt;
   late final List<DatatableSearchField> _searchFieldsEn;
   late final List<DatatableSearchField> _processLookupSearchFields;
   late final List<DatatableSearchField> _groupedSearchFields;
   late final List<DatatableSearchField> _multiSortSearchFields;
+  late final List<DatatableSearchField> _stickyColumnsSearchFieldsPt;
+  late final List<DatatableSearchField> _stickyColumnsSearchFieldsEn;
 
   DatatableSettings get tableSettings =>
       i18n.isPortuguese ? _tableSettingsPt : _tableSettingsEn;
@@ -109,6 +122,10 @@ class DatatablePageComponent implements OnInit {
   DatatableSettings get processLookupTableSettings =>
       _processLookupTableSettings;
 
+  DatatableSettings get stickyColumnsTableSettings => i18n.isPortuguese
+      ? _stickyColumnsTableSettingsPt
+      : _stickyColumnsTableSettingsEn;
+
   List<DatatableSearchField> get searchFields =>
       i18n.isPortuguese ? _searchFieldsPt : _searchFieldsEn;
 
@@ -119,6 +136,10 @@ class DatatablePageComponent implements OnInit {
 
   List<DatatableSearchField> get processLookupSearchFields =>
       _processLookupSearchFields;
+
+  List<DatatableSearchField> get stickyColumnsSearchFields => i18n.isPortuguese
+      ? _stickyColumnsSearchFieldsPt
+      : _stickyColumnsSearchFieldsEn;
 
   DatatableDemoService get _datatableDemoService =>
       i18n.isPortuguese ? _datatableDemoServicePt : _datatableDemoServiceEn;
@@ -405,6 +426,74 @@ class DatatablePageComponent implements OnInit {
     );
   }
 
+  DatatableSettings _buildStickyColumnsTableSettings(bool isPortuguese) {
+    return DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(
+          key: 'protocol',
+          title: isPortuguese ? 'Protocolo' : 'Protocol',
+          enableSorting: true,
+          sortingBy: 'protocol',
+          width: '132px',
+          minWidth: '132px',
+          nowrap: true,
+          fixedPosition: DatatableFixedColumnPosition.left,
+        ),
+        DatatableCol(
+          key: 'requester',
+          title: isPortuguese ? 'Requerente' : 'Requester',
+          enableSorting: true,
+          sortingBy: 'requester',
+          minWidth: '250px',
+        ),
+        DatatableCol(
+          key: 'subject',
+          title: isPortuguese ? 'Assunto' : 'Subject',
+          enableSorting: true,
+          sortingBy: 'subject',
+          minWidth: '300px',
+        ),
+        DatatableCol(
+          key: 'queue',
+          title: isPortuguese ? 'Fila' : 'Queue',
+          minWidth: '180px',
+        ),
+        DatatableCol(
+          key: 'owner',
+          title: isPortuguese ? 'Responsável' : 'Owner',
+          minWidth: '180px',
+        ),
+        DatatableCol(
+          key: 'updatedAt',
+          title: isPortuguese ? 'Atualizado em' : 'Updated at',
+          enableSorting: true,
+          sortingBy: 'updatedAtOrder',
+          width: '170px',
+          minWidth: '170px',
+          nowrap: true,
+        ),
+        DatatableCol(
+          key: 'status',
+          title: 'Status',
+          width: '150px',
+          minWidth: '150px',
+          textAlign: 'center',
+          nowrap: true,
+        ),
+        DatatableCol(
+          key: 'actions',
+          title: isPortuguese ? 'Ações' : 'Actions',
+          width: '132px',
+          minWidth: '132px',
+          textAlign: 'center',
+          nowrap: true,
+          fixedPosition: DatatableFixedColumnPosition.right,
+          customRenderHtml: _buildStickyColumnsActionsCell,
+        ),
+      ],
+    );
+  }
+
   List<DatatableSearchField> _buildSearchFields(dynamic t) {
     return <DatatableSearchField>[
       DatatableSearchField(
@@ -486,6 +575,34 @@ class DatatablePageComponent implements OnInit {
     ];
   }
 
+  List<DatatableSearchField> _buildStickyColumnsSearchFields(
+    bool isPortuguese,
+  ) {
+    return <DatatableSearchField>[
+      DatatableSearchField(
+        label: isPortuguese ? 'Protocolo' : 'Protocol',
+        field: 'protocol',
+        operator: 'like',
+        selected: true,
+      ),
+      DatatableSearchField(
+        label: isPortuguese ? 'Requerente' : 'Requester',
+        field: 'requester',
+        operator: 'like',
+      ),
+      DatatableSearchField(
+        label: isPortuguese ? 'Assunto' : 'Subject',
+        field: 'subject',
+        operator: 'like',
+      ),
+      DatatableSearchField(
+        label: isPortuguese ? 'Fila' : 'Queue',
+        field: 'queue',
+        operator: 'like',
+      ),
+    ];
+  }
+
   @override
   Future<void> ngOnInit() async {
     await _loadMainTable();
@@ -517,6 +634,9 @@ class DatatablePageComponent implements OnInit {
   @ViewChild('multiSortDemoTable')
   LiDataTableComponent? multiSortDemoTable;
 
+  @ViewChild('stickyColumnsDemoTable')
+  LiDataTableComponent? stickyColumnsDemoTable;
+
   @ViewChild('lazyDatatableModal')
   LiModalComponent? lazyDatatableModal;
 
@@ -529,8 +649,10 @@ class DatatablePageComponent implements OnInit {
   final Filters processLookupFilters = Filters(limit: 12, offset: 0);
   final Filters groupedFilters = Filters(limit: 8, offset: 0);
   final Filters multiSortFilters = Filters(limit: 8, offset: 0);
+  final Filters stickyColumnsFilters = Filters(limit: 5, offset: 0);
   final List<int> customGridLimitOptions = const <int>[4, 8, 12];
   final List<int> processLookupLimitOptions = const <int>[12, 24, 48];
+  final List<int> stickyColumnsLimitOptions = const <int>[5, 10, 15];
   String processLookupRequesterFilter = '';
   String processLookupDigitalFilter = '';
   bool showReadonlyDemo = false;
@@ -538,6 +660,7 @@ class DatatablePageComponent implements OnInit {
   bool showCustomTableDemo = false;
   bool showCustomGridDemo = false;
   bool showMultiSortDemo = false;
+  bool showStickyColumnsDemo = false;
   bool datatableGridMode = false;
   bool singleSelectionOnly = false;
   String datatableEventLog = '';
@@ -625,6 +748,35 @@ class DatatablePageComponent implements OnInit {
     [settings]="multiSortTableSettings"
     [enableMultiColumnSorting]="true"
     (dataRequest)="onMultiSortTableRequest(\$event)">
+</li-datatable>''';
+  final String stickyColumnsSnippet = '''final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(
+      key: 'protocol',
+      title: 'Protocolo',
+      width: '132px',
+      minWidth: '132px',
+      nowrap: true,
+      fixedPosition: DatatableFixedColumnPosition.left,
+    ),
+    DatatableCol(
+      key: 'actions',
+      title: 'Ações',
+      width: '132px',
+      minWidth: '132px',
+      textAlign: 'center',
+      fixedPosition: DatatableFixedColumnPosition.right,
+      customRenderHtml: buildActionsCell,
+    ),
+  ],
+);
+
+<li-datatable
+    [dataTableFilter]="stickyColumnsFilters"
+    [data]="stickyColumnsTableData"
+    [settings]="settings"
+    [showCheckboxToSelectRow]="false"
+    [disableRowClick]="true">
 </li-datatable>''';
   final String productModelSnippet = '''import 'serialize_base.dart';
 
@@ -782,6 +934,7 @@ class ProductController {
   late DataFrame<Map<String, dynamic>> processLookupTableData;
   late DataFrame<Map<String, dynamic>> groupedTableData;
   late DataFrame<Map<String, dynamic>> multiSortTableData;
+  late DataFrame<Map<String, dynamic>> stickyColumnsTableData;
   String groupedSelectionLog = 'Nenhum item selecionado.';
 
   List<DatatableSearchField> get readonlySearchFields => searchFields;
@@ -887,6 +1040,11 @@ class ProductController {
     await _loadMultiSortTable();
   }
 
+  Future<void> onStickyColumnsTableRequest(Filters nextFilters) async {
+    stickyColumnsFilters.fillFromFilters(nextFilters);
+    await _loadStickyColumnsTable();
+  }
+
   void onGroupedSelectionChange(List<dynamic> selectedRows) {
     groupedSelectionLog = selectedRows.isEmpty
         ? 'Nenhum item selecionado.'
@@ -950,6 +1108,18 @@ class ProductController {
     }
 
     showMultiSortDemo = false;
+    _flushView();
+  }
+
+  Future<void> onStickyColumnsDemoExpanded(bool expanded) async {
+    if (expanded) {
+      await _loadStickyColumnsTable();
+      showStickyColumnsDemo = true;
+      _flushView();
+      return;
+    }
+
+    showStickyColumnsDemo = false;
     _flushView();
   }
 
@@ -1039,7 +1209,7 @@ class ProductController {
             .toList(growable: false);
       }
 
-          final digitalFilter = processLookupDigitalFilter.trim().toLowerCase();
+      final digitalFilter = processLookupDigitalFilter.trim().toLowerCase();
       if (digitalFilter.isNotEmpty) {
         records = records
             .where((record) =>
@@ -1069,6 +1239,13 @@ class ProductController {
   Future<void> _loadMultiSortTable() async {
     multiSortTableData = await _multiSortDemoService.query(multiSortFilters);
     _syncAccordionTable(multiSortDemoTable, multiSortTableData);
+    _flushView();
+  }
+
+  Future<void> _loadStickyColumnsTable() async {
+    stickyColumnsTableData =
+        await _stickyColumnsDemoService.query(stickyColumnsFilters);
+    _syncAccordionTable(stickyColumnsDemoTable, stickyColumnsTableData);
     _flushView();
   }
 
@@ -1548,6 +1725,117 @@ class ProductController {
     ];
   }
 
+  static List<Map<String, dynamic>> _buildStickyColumnsSeedRecords() {
+    return <Map<String, dynamic>>[
+      _buildStickyColumnsRecord(
+        protocol: '2026/00451',
+        requester: 'Ana Paula Nogueira',
+        subject:
+            'Revisão de contrato com aditivo operacional e anexos complementares',
+        queue: 'Contratos e Convênios',
+        owner: 'Marcelo Dias',
+        updatedAt: '22/04/2026 14:35',
+        updatedAtOrder: 202604221435,
+        status: 'Em análise',
+      ),
+      _buildStickyColumnsRecord(
+        protocol: '2026/00438',
+        requester: 'Bruna Costa Lima',
+        subject: 'Solicitação de empenho para manutenção preventiva da frota',
+        queue: 'Execução Orçamentária',
+        owner: 'Fernanda Melo',
+        updatedAt: '22/04/2026 11:10',
+        updatedAtOrder: 202604221110,
+        status: 'Aguardando assinatura',
+      ),
+      _buildStickyColumnsRecord(
+        protocol: '2026/00412',
+        requester: 'Carlos Eduardo Martins',
+        subject: 'Abertura de processo para aquisição de licenças corporativas',
+        queue: 'Tecnologia da Informação',
+        owner: 'Juliana Rocha',
+        updatedAt: '21/04/2026 18:42',
+        updatedAtOrder: 202604211842,
+        status: 'Pendente',
+      ),
+      _buildStickyColumnsRecord(
+        protocol: '2026/00397',
+        requester: 'Daniela Prado Alves',
+        subject: 'Reequilíbrio financeiro de ata de registro de preços vigente',
+        queue: 'Compras Estratégicas',
+        owner: 'Rafael Borges',
+        updatedAt: '21/04/2026 16:08',
+        updatedAtOrder: 202604211608,
+        status: 'Em análise',
+      ),
+      _buildStickyColumnsRecord(
+        protocol: '2026/00381',
+        requester: 'Elisa Santos Moraes',
+        subject:
+            'Prestação de contas parcial com ajustes de documentos fiscais',
+        queue: 'Convênios',
+        owner: 'Patrícia Gomes',
+        updatedAt: '21/04/2026 09:27',
+        updatedAtOrder: 202604210927,
+        status: 'Concluído',
+      ),
+      _buildStickyColumnsRecord(
+        protocol: '2026/00370',
+        requester: 'Felipe Moura Souza',
+        subject:
+            'Inclusão de termo de referência complementar para contratação direta',
+        queue: 'Planejamento de Compras',
+        owner: 'Camila Ribeiro',
+        updatedAt: '20/04/2026 17:55',
+        updatedAtOrder: 202604201755,
+        status: 'Aguardando assinatura',
+      ),
+      _buildStickyColumnsRecord(
+        protocol: '2026/00354',
+        requester: 'Gabriela Farias Teixeira',
+        subject: 'Solicitação de reserva orçamentária para projeto educacional',
+        queue: 'Planejamento Financeiro',
+        owner: 'Luciano Tavares',
+        updatedAt: '20/04/2026 13:22',
+        updatedAtOrder: 202604201322,
+        status: 'Pendente',
+      ),
+      _buildStickyColumnsRecord(
+        protocol: '2026/00326',
+        requester: 'Henrique Pires Costa',
+        subject:
+            'Análise final de prestação de serviços com glosa e reapresentação',
+        queue: 'Fiscalização Contratual',
+        owner: 'Marina Lopes',
+        updatedAt: '19/04/2026 10:05',
+        updatedAtOrder: 202604191005,
+        status: 'Em análise',
+      ),
+    ];
+  }
+
+  static Map<String, dynamic> _buildStickyColumnsRecord({
+    required String protocol,
+    required String requester,
+    required String subject,
+    required String queue,
+    required String owner,
+    required String updatedAt,
+    required int updatedAtOrder,
+    required String status,
+  }) {
+    return <String, dynamic>{
+      'protocol': protocol,
+      'requester': requester,
+      'subject': subject,
+      'queue': queue,
+      'owner': owner,
+      'updatedAt': updatedAt,
+      'updatedAtOrder': updatedAtOrder,
+      'status': status,
+    };
+  }
+
   static Map<String, dynamic> _buildMultiSortRecord({
     required String candidate,
     required int people,
@@ -1725,11 +2013,13 @@ class ProductController {
     final root = DivElement()..classes.add('datatable-process-lookup-actions');
 
     final documentAction = SpanElement()
-      ..classes.addAll(<String>['datatable-process-lookup-action', 'ph', 'ph-file'])
+      ..classes
+          .addAll(<String>['datatable-process-lookup-action', 'ph', 'ph-file'])
       ..title = 'Abrir processo';
 
     final favoriteAction = SpanElement()
-      ..classes.addAll(<String>['datatable-process-lookup-action', 'ph', 'ph-star'])
+      ..classes
+          .addAll(<String>['datatable-process-lookup-action', 'ph', 'ph-star'])
       ..title = 'Favoritar';
 
     root
@@ -1739,35 +2029,92 @@ class ProductController {
     return root;
   }
 
-    String get processLookupDemoTitle => i18n.isPortuguese
+  Element _buildStickyColumnsActionsCell(
+    Map<String, dynamic> itemMap,
+    dynamic itemInstance,
+  ) {
+    final root = DivElement()..classes.add('datatable-sticky-demo-actions');
+
+    final openAction = ButtonElement()
+      ..type = 'button'
+      ..classes.addAll(<String>[
+        'btn',
+        'btn-flat-primary',
+        'border-transparent',
+        'btn-icon',
+        'btn-sm',
+      ])
+      ..title = i18n.isPortuguese ? 'Abrir processo' : 'Open process';
+    openAction.append(
+      SpanElement()..classes.addAll(<String>['ph', 'ph-folder-open']),
+    );
+
+    final timelineAction = ButtonElement()
+      ..type = 'button'
+      ..classes.addAll(<String>[
+        'btn',
+        'btn-flat-primary',
+        'border-transparent',
+        'btn-icon',
+        'btn-sm',
+      ])
+      ..title = i18n.isPortuguese ? 'Ver histórico' : 'Open timeline';
+    timelineAction.append(
+      SpanElement()
+        ..classes.addAll(<String>['ph', 'ph-clock-counter-clockwise']),
+    );
+
+    root.children.addAll(<Element>[openAction, timelineAction]);
+    return root;
+  }
+
+  String get processLookupDemoTitle => i18n.isPortuguese
       ? 'Layout de consulta de processos'
       : 'Process lookup layout';
 
-    String get processLookupDemoIntro => i18n.isPortuguese
+  String get processLookupDemoIntro => i18n.isPortuguese
       ? 'Demonstra como usar header customizado via TemplateRef para reproduzir a busca em duas linhas, filtros auxiliares e barra de ações da tela de consultar processo.'
       : 'Shows how to use a custom TemplateRef header to reproduce the two-row search area, helper filters, and action bar from a process lookup screen.';
 
-    String get processLookupRequesterLabel =>
+  String get processLookupRequesterLabel =>
       i18n.isPortuguese ? 'Requerente:' : 'Requester:';
 
-    String get processLookupRequesterPlaceholder => i18n.isPortuguese
-      ? 'Clique para buscar...'
-      : 'Click to search...';
+  String get processLookupRequesterPlaceholder =>
+      i18n.isPortuguese ? 'Clique para buscar...' : 'Click to search...';
 
-    String get processLookupDigitalLabel => 'Digital:';
+  String get processLookupDigitalLabel => 'Digital:';
 
-    String get processLookupClearLabel => i18n.isPortuguese ? 'Limpar' : 'Clear';
+  String get processLookupClearLabel => i18n.isPortuguese ? 'Limpar' : 'Clear';
 
-    String get processLookupSearchPlaceholder =>
+  String get processLookupSearchPlaceholder =>
       i18n.isPortuguese ? 'Digite para buscar' : 'Type to search';
 
-    String get processLookupSearchCaption => i18n.isPortuguese
-      ? 'Pesquisa rápida por campo'
-      : 'Quick field search';
+  String get processLookupSearchCaption =>
+      i18n.isPortuguese ? 'Pesquisa rápida por campo' : 'Quick field search';
 
-    String get processLookupHeaderEventLog => i18n.isPortuguese
+  String get processLookupHeaderEventLog => i18n.isPortuguese
       ? 'A demo usa header customizado e filtros externos sem substituir a paginação, ordenação e renderização do li-datatable.'
       : 'This demo uses a custom header and external filters without replacing li-datatable pagination, sorting, or rendering.';
+
+  String get stickyColumnsDemoTitle => i18n.isPortuguese
+      ? 'Colunas fixadas com rolagem horizontal'
+      : 'Frozen columns with horizontal scroll';
+
+  String get stickyColumnsDemoDescription => i18n.isPortuguese
+      ? 'Mantém protocolo à esquerda e ações à direita enquanto as colunas centrais deslizam.'
+      : 'Keeps the protocol on the left and actions on the right while middle columns scroll.';
+
+  String get stickyColumnsDemoIntro => i18n.isPortuguese
+      ? 'Use fixedPosition para prender colunas críticas nas extremidades quando a tabela precisa de scroll horizontal e o auto-hide responsivo está desligado.'
+      : 'Use fixedPosition to pin critical edge columns when the table needs horizontal scroll and responsive auto-hide is disabled.';
+
+  String get stickyColumnsSearchPlaceholder => i18n.isPortuguese
+      ? 'Busque por protocolo, requerente ou assunto'
+      : 'Search by protocol, requester, or subject';
+
+  String get stickyColumnsDemoNote => i18n.isPortuguese
+      ? 'Role horizontalmente dentro da grade: a primeira coluna continua ancorada à esquerda e a coluna de ações permanece visível à direita.'
+      : 'Scroll horizontally inside the grid: the first column stays pinned on the left and the actions column remains visible on the right.';
 
   String _statusColor(String status) {
     switch (status) {

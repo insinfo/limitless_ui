@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:html' as html;
 
@@ -78,9 +77,10 @@ class LiToastSoundController {
     html.AudioElement? audioElement,
     LiToastSoundPlayer? customPlayer,
   })  : _customPlayer = customPlayer,
-        audio = customPlayer == null && (audioSrc != null || audioElement != null)
-            ? (audioElement ?? html.AudioElement())
-            : null {
+        audio =
+            customPlayer == null && (audioSrc != null || audioElement != null)
+                ? (audioElement ?? html.AudioElement())
+                : null {
     if (audio != null && audioSrc != null) {
       audio!
         ..src = audioSrc
@@ -136,13 +136,15 @@ class LiNotificationToastService {
 
   /// Constructor.
   LiNotificationToastService({this.soundController})
-      : _onNotifyStreamController = StreamController<LiNotificationToast>.broadcast(),
+      : _onNotifyStreamController =
+            StreamController<LiNotificationToast>.broadcast(),
         _changesStreamController = StreamController<void>.broadcast();
 
   LiNotificationToastService.withSound({
     required String audioSrc,
   })  : soundController = LiToastSoundController(audioSrc: audioSrc),
-        _onNotifyStreamController = StreamController<LiNotificationToast>.broadcast(),
+        _onNotifyStreamController =
+            StreamController<LiNotificationToast>.broadcast(),
         _changesStreamController = StreamController<void>.broadcast();
 
   void notify(

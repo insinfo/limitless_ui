@@ -155,11 +155,13 @@ void main() {
     expect(menuItems.any((label) => label.contains('Copy')), isFalse);
     expect(menuItems.any((label) => label.contains('Copiar')), isFalse);
     expect(
-      menuItems.any((label) => label.contains('Paste') || label.contains('Colar')),
+      menuItems
+          .any((label) => label.contains('Paste') || label.contains('Colar')),
       isTrue,
     );
     expect(
-      menuItems.any((label) => label.contains('Clear') || label.contains('Limpar')),
+      menuItems
+          .any((label) => label.contains('Clear') || label.contains('Limpar')),
       isTrue,
     );
   });

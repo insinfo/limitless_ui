@@ -728,7 +728,8 @@ void main() {
     );
   });
 
-  test('keeps overlay open when expanding children in body container', () async {
+  test('keeps overlay open when expanding children in body container',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;

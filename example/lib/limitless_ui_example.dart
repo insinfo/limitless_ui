@@ -1,6 +1,4 @@
-
-
-export  'package:limitless_ui/limitless_ui.dart';
+export 'package:limitless_ui/limitless_ui.dart';
 
 export 'messages.i18n.dart';
 export 'src/i18n/demo_i18n_service.dart';

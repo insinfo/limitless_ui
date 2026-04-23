@@ -99,7 +99,8 @@ void main() {
     expect(disabledButton.getAttribute('aria-pressed'), 'false');
   });
 
-  test('emits valueChange through the host binding when selecting another option',
+  test(
+      'emits valueChange through the host binding when selecting another option',
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);

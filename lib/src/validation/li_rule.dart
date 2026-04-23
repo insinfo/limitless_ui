@@ -16,7 +16,8 @@ abstract class LiRule {
   const factory LiRule.cnpj([String? message]) = LiCnpjRule;
   const factory LiRule.cpfOrCnpj([String? message]) = LiCpfOrCnpjRule;
   const factory LiRule.onlyNumbers([String? message]) = LiOnlyNumbersRule;
-  const factory LiRule.pattern(String pattern, [String? message]) = LiPatternRule;
+  const factory LiRule.pattern(String pattern, [String? message]) =
+      LiPatternRule;
   factory LiRule.custom(
     String? Function(dynamic value) fn, {
     String? code,
@@ -59,7 +60,9 @@ class LiRequiredRule extends _LiBaseRule {
 
     return resolveMessage(
       context,
-      context.isEnglishLocale ? 'This field is required.' : 'Campo obrigatorio.',
+      context.isEnglishLocale
+          ? 'This field is required.'
+          : 'Campo obrigatorio.',
     );
   }
 }

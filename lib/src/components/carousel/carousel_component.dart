@@ -162,7 +162,8 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
   bool get hostDarkClass => dark;
 
   @HostBinding('attr.id')
-  String get hostId => id?.trim().isNotEmpty == true ? id!.trim() : _generatedId;
+  String get hostId =>
+      id?.trim().isNotEmpty == true ? id!.trim() : _generatedId;
 
   @HostBinding('attr.tabindex')
   String? get hostTabIndex => keyboardEnabled ? '0' : null;
@@ -305,7 +306,8 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
 
     final requestedInitialIndex = initialIndex.clamp(0, items.length - 1);
     final explicitActiveIndex = items.indexWhere((item) => item.active);
-    _activeIndex = explicitActiveIndex >= 0 ? explicitActiveIndex : requestedInitialIndex;
+    _activeIndex =
+        explicitActiveIndex >= 0 ? explicitActiveIndex : requestedInitialIndex;
 
     for (var index = 0; index < items.length; index++) {
       items[index].setState(active: index == _activeIndex);
@@ -377,7 +379,8 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
         isEnd: !isNext,
       );
 
-      _transitionTimer = Timer(_transitionDuration, () => _finalizeTransition(nextIndex));
+      _transitionTimer =
+          Timer(_transitionDuration, () => _finalizeTransition(nextIndex));
     });
   }
 

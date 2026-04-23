@@ -16,7 +16,8 @@ void main() {
 
       expect(bytes, isNotEmpty);
       expect(bytes.sublist(0, 4), orderedEquals([80, 75, 3, 4]));
-      expect(bytes.sublist(bytes.length - 22, bytes.length - 18), orderedEquals([80, 75, 5, 6]));
+      expect(bytes.sublist(bytes.length - 22, bytes.length - 18),
+          orderedEquals([80, 75, 5, 6]));
       expect(entries.keys, containsAll(['a.txt', 'dir/b.txt']));
       expect(utf8.decode(entries['a.txt']!), 'alpha');
       expect(entries['dir/b.txt'], orderedEquals([1, 2, 3]));
@@ -49,14 +50,16 @@ void main() {
       final entries = _parseStoredZip(bytes);
 
       expect(bytes, isNotEmpty);
-      expect(entries.keys, containsAll([
-        '[Content_Types].xml',
-        '_rels/.rels',
-        'xl/workbook.xml',
-        'xl/_rels/workbook.xml.rels',
-        'xl/styles.xml',
-        'xl/worksheets/sheet1.xml',
-      ]));
+      expect(
+          entries.keys,
+          containsAll([
+            '[Content_Types].xml',
+            '_rels/.rels',
+            'xl/workbook.xml',
+            'xl/_rels/workbook.xml.rels',
+            'xl/styles.xml',
+            'xl/worksheets/sheet1.xml',
+          ]));
     });
 
     test('writes workbook and worksheet metadata for multiple sheets', () {
@@ -115,11 +118,15 @@ void main() {
       expect(sheetXml, contains('Text &amp; &lt;tag>'));
       expect(sheetXml, contains('<c r="B1"><v>42</v></c>'));
       expect(sheetXml, contains('<c r="C1" t="b"><v>1</v></c>'));
-      expect(sheetXml, contains('<c r="D1" s="1"><v>${excelDate.toStringAsFixed(6)}</v></c>'));
+      expect(
+          sheetXml,
+          contains(
+              '<c r="D1" s="1"><v>${excelDate.toStringAsFixed(6)}</v></c>'));
       expect(sheetXml, isNot(contains('E1')));
       expect(sheetXml, contains('<c r="A2" t="b"><v>0</v></c>'));
       expect(sheetXml, contains('<c r="B2"><v>3.5</v></c>'));
-      expect(sheetXml, contains('<c r="C2" t="inlineStr"><is><t>next</t></is></c>'));
+      expect(sheetXml,
+          contains('<c r="C2" t="inlineStr"><is><t>next</t></is></c>'));
     });
 
     test('skips empty rows and converts column indexes beyond Z', () {
@@ -145,7 +152,10 @@ void main() {
       expect(sheetXml, contains('r="A1"'));
       expect(sheetXml, contains('r="AA1"'));
       expect(sheetXml, isNot(contains('<row r="2">')));
-      expect(sheetXml, contains('<row r="3"><c r="A3" t="inlineStr"><is><t>tail</t></is></c></row>'));
+      expect(
+          sheetXml,
+          contains(
+              '<row r="3"><c r="A3" t="inlineStr"><is><t>tail</t></is></c></row>'));
     });
 
     test('includes styles and root relationships', () {
@@ -184,7 +194,8 @@ Map<String, Uint8List> _parseStoredZip(Uint8List bytes) {
       final nameStart = offset + 30;
       final dataStart = nameStart + nameLength + extraLength;
       final dataEnd = dataStart + compressedSize;
-      final name = utf8.decode(bytes.sublist(nameStart, nameStart + nameLength));
+      final name =
+          utf8.decode(bytes.sublist(nameStart, nameStart + nameLength));
       files[name] = Uint8List.fromList(bytes.sublist(dataStart, dataEnd));
       offset = dataEnd;
       continue;
@@ -192,7 +203,8 @@ Map<String, Uint8List> _parseStoredZip(Uint8List bytes) {
     if (signature == 0x02014b50 || signature == 0x06054b50) {
       break;
     }
-    fail('Unexpected ZIP signature 0x${signature.toRadixString(16)} at offset $offset');
+    fail(
+        'Unexpected ZIP signature 0x${signature.toRadixString(16)} at offset $offset');
   }
 
   return files;

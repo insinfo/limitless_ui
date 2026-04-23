@@ -11,7 +11,8 @@ import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('notify emite onNotify, resolve ícone padrão e remove toast automaticamente',
+  test(
+      'notify emite onNotify, resolve ícone padrão e remove toast automaticamente',
       () async {
     final service = LiNotificationToastService();
     addTearDown(service.dispose);
@@ -109,7 +110,8 @@ void main() {
     expect(restored.icon, 'bell');
     expect(restored.durationSeconds, 12);
     expect(restored.toBeDeleted, isTrue);
-    expect(restored.created.toIso8601String(), original.created.toIso8601String());
+    expect(
+        restored.created.toIso8601String(), original.created.toIso8601String());
   });
 
   test('LiToastSoundController só toca após interação do usuário', () async {

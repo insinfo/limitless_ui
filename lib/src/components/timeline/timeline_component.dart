@@ -235,7 +235,8 @@ class LiTimelineItemComponent {
       subtitle.trim().isNotEmpty ||
       description.trim().isNotEmpty;
 
-  bool get shouldRenderDefaultCard => !hasProjectedContent && card && hasDefaultContent;
+  bool get shouldRenderDefaultCard =>
+      !hasProjectedContent && card && hasDefaultContent;
 
   bool get shouldRenderDefaultPlain =>
       !hasProjectedContent && !card && hasDefaultContent;

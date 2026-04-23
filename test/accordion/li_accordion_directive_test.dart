@@ -226,7 +226,8 @@ void main() {
     );
   });
 
-  test('lazy body can remain mounted when destroyOnCollapse is false', () async {
+  test('lazy body can remain mounted when destroyOnCollapse is false',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
 

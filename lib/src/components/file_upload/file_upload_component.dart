@@ -84,7 +84,7 @@ class LiFileUploadComponent
   final StreamController<List<html.File>> _filesChangeController =
       StreamController<List<html.File>>.broadcast();
   StreamSubscription<bool>? _formSubmissionSubscription;
-    StreamSubscription<html.Event>? _fullscreenChangeSubscription;
+  StreamSubscription<html.Event>? _fullscreenChangeSubscription;
 
   List<html.File> _files = <html.File>[];
 
@@ -323,17 +323,19 @@ class LiFileUploadComponent
       : (isPreviewFullscreen ? 'Sair da tela cheia' : 'Alternar tela cheia');
 
   String get borderlessPreviewLabel => isEnglishLocale
-      ? (isPreviewBorderless ? 'Disable borderless mode' : 'Toggle borderless mode')
+      ? (isPreviewBorderless
+          ? 'Disable borderless mode'
+          : 'Toggle borderless mode')
       : (isPreviewBorderless
-            ? 'Desativar modo sem borda'
-            : 'Alternar modo sem borda');
+          ? 'Desativar modo sem borda'
+          : 'Alternar modo sem borda');
 
-    String get previewModalSize =>
+  String get previewModalSize =>
       isPreviewFullscreen || isPreviewBorderless ? 'modal-full' : 'large';
 
   bool get canRotateActivePreview => activePreviewItem?.isImage ?? false;
 
-    bool get canZoomActivePreview => activePreviewItem?.isImage ?? false;
+  bool get canZoomActivePreview => activePreviewItem?.isImage ?? false;
 
   String get previewImageTransform =>
       'rotate(${previewRotationQuarterTurns * 90}deg)';
@@ -343,15 +345,13 @@ class LiFileUploadComponent
       previewRotationQuarterTurns.isOdd ||
       previewZoomLevel > 1;
 
-    String? get previewImageWidthStyle =>
-      _previewRenderedWidth == null
-        ? null
-        : '${_previewRenderedWidth!.toStringAsFixed(2)}px';
+  String? get previewImageWidthStyle => _previewRenderedWidth == null
+      ? null
+      : '${_previewRenderedWidth!.toStringAsFixed(2)}px';
 
-    String? get previewImageHeightStyle =>
-      _previewRenderedHeight == null
-        ? null
-        : '${_previewRenderedHeight!.toStringAsFixed(2)}px';
+  String? get previewImageHeightStyle => _previewRenderedHeight == null
+      ? null
+      : '${_previewRenderedHeight!.toStringAsFixed(2)}px';
 
   bool get isThumbnailPreviewMode => resolvedPreviewMode == 'thumbnails';
 
@@ -597,9 +597,8 @@ class LiFileUploadComponent
       _markForCheck();
       return;
     }
-    previewZoomLevel =
-        (previewZoomLevel * _previewZoomFactor)
-            .clamp(_minPreviewZoomLevel, _maxPreviewZoomLevel);
+    previewZoomLevel = (previewZoomLevel * _previewZoomFactor)
+        .clamp(_minPreviewZoomLevel, _maxPreviewZoomLevel);
     _refreshPreviewImageLayout();
   }
 
@@ -612,9 +611,8 @@ class LiFileUploadComponent
       _markForCheck();
       return;
     }
-    previewZoomLevel =
-        (previewZoomLevel / _previewZoomFactor)
-            .clamp(_minPreviewZoomLevel, _maxPreviewZoomLevel);
+    previewZoomLevel = (previewZoomLevel / _previewZoomFactor)
+        .clamp(_minPreviewZoomLevel, _maxPreviewZoomLevel);
     _refreshPreviewImageLayout();
   }
 
@@ -895,10 +893,12 @@ class LiFileUploadComponent
       return;
     }
 
-    final naturalWidth =
-        _previewImageNaturalWidth > 0 ? _previewImageNaturalWidth : image.naturalWidth;
-    final naturalHeight =
-        _previewImageNaturalHeight > 0 ? _previewImageNaturalHeight : image.naturalHeight;
+    final naturalWidth = _previewImageNaturalWidth > 0
+        ? _previewImageNaturalWidth
+        : image.naturalWidth;
+    final naturalHeight = _previewImageNaturalHeight > 0
+        ? _previewImageNaturalHeight
+        : image.naturalHeight;
     if (naturalWidth <= 0 || naturalHeight <= 0) {
       return;
     }
@@ -916,16 +916,17 @@ class LiFileUploadComponent
         ? naturalWidth.toDouble()
         : naturalHeight.toDouble();
     final availableWidth = math.max(1, viewportWidth - _previewModalPaddingPx);
-    final availableHeight = math.max(1, viewportHeight - _previewModalPaddingPx);
+    final availableHeight =
+        math.max(1, viewportHeight - _previewModalPaddingPx);
     final fittedScale = math.min(
       1,
       math.min(availableWidth / rotatedWidth, availableHeight / rotatedHeight),
     );
 
     _previewRenderedWidth =
-      naturalWidth.toDouble() * fittedScale * previewZoomLevel.toDouble();
+        naturalWidth.toDouble() * fittedScale * previewZoomLevel.toDouble();
     _previewRenderedHeight =
-      naturalHeight.toDouble() * fittedScale * previewZoomLevel.toDouble();
+        naturalHeight.toDouble() * fittedScale * previewZoomLevel.toDouble();
     _markForCheck();
   }
 

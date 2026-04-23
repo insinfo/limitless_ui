@@ -19,9 +19,9 @@ class CustomHrefDirective implements AfterChanges {
   }
 
   @HostListener('click', ['\$event'])
+
   /// Reserved click hook for future custom navigation behavior.
-  void onClick(MouseEvent event) {
-  }
+  void onClick(MouseEvent event) {}
 
   /// Synchronizes the host `href` attribute with [customHref].
   void init() {
@@ -33,6 +33,7 @@ class CustomHrefDirective implements AfterChanges {
   }
 
   @override
+
   /// Reapplies the current href whenever AngularDart updates the input.
   void ngAfterChanges() {
     init();

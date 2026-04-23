@@ -125,8 +125,7 @@ class SelectionControlsPageComponent {
   String get pageTitle => isPt ? 'Forms' : 'Forms';
   String get pageSubtitle =>
       isPt ? 'Checkboxes, radios e toggles' : 'Checkboxes, radios, and toggles';
-  String get breadcrumb =>
-      isPt ? 'Controles de seleção' : 'Selection controls';
+  String get breadcrumb => isPt ? 'Controles de seleção' : 'Selection controls';
   String get introTitle => isPt
       ? 'Controles de seleção no padrão Limitless'
       : 'Limitless-style selection controls';
@@ -160,22 +159,18 @@ class SelectionControlsPageComponent {
   String get inlineTitle => 'Inline';
   String get contextualTitle =>
       isPt ? 'Cores contextuais' : 'Contextual colors';
-  String get inverseBlockTitle =>
-      isPt ? 'Bloco inverso' : 'Inverse block';
+  String get inverseBlockTitle => isPt ? 'Bloco inverso' : 'Inverse block';
   String get neutralTitle => isPt ? 'Padrão neutro' : 'Neutral defaults';
-  String get mappedValuesTitle =>
-      isPt ? 'Valores mapeados' : 'Mapped values';
+  String get mappedValuesTitle => isPt ? 'Valores mapeados' : 'Mapped values';
   String get inlineReverseTitle =>
       isPt ? 'Inline e reverso' : 'Inline and reverse';
   String get colorSwitchesTitle =>
       isPt ? 'Switches coloridos' : 'Color switches';
-  String get formScenarioTitle =>
-      isPt ? 'Caso de formulário' : 'Form scenario';
-  String get optionalRadioTitle =>
-      isPt ? 'Filtro opcional' : 'Optional filter';
-    String get disabledStateTitle =>
+  String get formScenarioTitle => isPt ? 'Caso de formulário' : 'Form scenario';
+  String get optionalRadioTitle => isPt ? 'Filtro opcional' : 'Optional filter';
+  String get disabledStateTitle =>
       isPt ? 'Estado desabilitado' : 'Disabled state';
-    String get selectionReadonlyHint => isPt
+  String get selectionReadonlyHint => isPt
       ? 'Checkbox, radio e toggle não têm readonly nativo; para exibir o valor sem permitir edição, use disabled.'
       : 'Checkbox, radio, and toggle do not have a native readonly state; use disabled to keep the value visible without allowing edits.';
   String get radioFormCaseTitle =>
@@ -183,25 +178,20 @@ class SelectionControlsPageComponent {
   String get toggleFormCaseTitle =>
       isPt ? 'Escalação obrigatória' : 'Required escalation';
 
-  String get auditTrailLabel =>
-      isPt ? 'Trilha de auditoria' : 'Audit trail';
+  String get auditTrailLabel => isPt ? 'Trilha de auditoria' : 'Audit trail';
   String get auditTrailHelp => isPt
       ? 'Mantém histórico completo das alterações.'
       : 'Keeps a full history of changes.';
-  String get publicPortalLabel =>
-      isPt ? 'Portal público' : 'Public portal';
+  String get publicPortalLabel => isPt ? 'Portal público' : 'Public portal';
   String get publicPortalHelp => isPt
       ? 'Expõe o status para acompanhamento externo.'
       : 'Exposes status for external tracking.';
-  String get reviewQueueLabel =>
-      isPt ? 'Fila de revisão' : 'Review queue';
+  String get reviewQueueLabel => isPt ? 'Fila de revisão' : 'Review queue';
   String get reviewQueueHelp => isPt
       ? 'Mantém uma etapa manual de aprovação.'
       : 'Keeps a manual approval step in place.';
-  String get reverseAuditLabel =>
-      isPt ? 'Auditoria externa' : 'External audit';
-  String get reverseClientFeedLabel =>
-      isPt ? 'Feed do cliente' : 'Client feed';
+  String get reverseAuditLabel => isPt ? 'Auditoria externa' : 'External audit';
+  String get reverseClientFeedLabel => isPt ? 'Feed do cliente' : 'Client feed';
   String get reverseSlaLabel => isPt ? 'Alertas de SLA' : 'SLA alerts';
   String get smsLabel => 'SMS';
   String get emailLabel => isPt ? 'E-mail' : 'Email';
@@ -209,9 +199,8 @@ class SelectionControlsPageComponent {
   String get secondaryLabel => 'Secondary';
   String get dangerLabel => 'Danger';
   String get successLabel => 'Success';
-  String get inversePinLabel => isPt
-      ? 'Fixar este card no dashboard'
-      : 'Pin this card on the dashboard';
+  String get inversePinLabel =>
+      isPt ? 'Fixar este card no dashboard' : 'Pin this card on the dashboard';
   String get inverseReadonlyLabel =>
       isPt ? 'Modo somente leitura' : 'Read-only mode';
   String get complianceLegend =>
@@ -252,8 +241,7 @@ class SelectionControlsPageComponent {
       : 'Select an approval mode before continuing.';
   bool get radioFormInvalid => approvalMode.trim().isEmpty;
 
-  String get digestLabel =>
-      isPt ? 'Digest noturno' : 'Nightly digest';
+  String get digestLabel => isPt ? 'Digest noturno' : 'Nightly digest';
   String get digestHelp => isPt
       ? 'Envia um resumo automático no fim do expediente.'
       : 'Sends an automatic summary at the end of the workday.';
@@ -279,9 +267,8 @@ class SelectionControlsPageComponent {
       isPt ? 'Monitoramento ativo' : 'Active monitoring';
   String get inverseGuestsLabel =>
       isPt ? 'Convidados liberados' : 'Guests enabled';
-  String get toggleFormLegend => isPt
-      ? 'Notificações de escalonamento'
-      : 'Escalation notifications';
+  String get toggleFormLegend =>
+      isPt ? 'Notificações de escalonamento' : 'Escalation notifications';
   String get toggleFormHelp => isPt
       ? 'Caso comum de toggle usado como decisão obrigatória em formulário administrativo.'
       : 'Common toggle case used as a required decision in an administrative form.';
@@ -294,7 +281,8 @@ class SelectionControlsPageComponent {
   String get toggleFormDescription => isPt
       ? 'Replica o padrao da interface administrativa em campos binarios com feedback inline.'
       : 'Mirrors the administrative UI pattern for binary fields with inline feedback.';
-  bool get toggleFormInvalid => requiresValidationWindow && !escalationToggleEnabled;
+  bool get toggleFormInvalid =>
+      requiresValidationWindow && !escalationToggleEnabled;
 
   String get checkboxSummary {
     final enabled = <String>[];

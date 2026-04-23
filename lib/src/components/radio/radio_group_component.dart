@@ -156,7 +156,9 @@ class LiRadioGroupComponent implements AfterChanges, OnDestroy {
     _hasTrackedValue = true;
     _lastValue = value;
 
-    if (validateOnInput || _shouldShowValidation || _autoValidationIssue != null) {
+    if (validateOnInput ||
+        _shouldShowValidation ||
+        _autoValidationIssue != null) {
       _runAutoValidation();
     }
     _markForCheck();

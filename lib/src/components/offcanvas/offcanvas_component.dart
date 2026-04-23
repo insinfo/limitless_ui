@@ -126,7 +126,7 @@ class LiOffcanvasFooterDirective {}
   encapsulation: ViewEncapsulation.none,
 )
 class LiOffcanvasComponent
-  implements OnInit, AfterChanges, AfterViewChecked, OnDestroy {
+    implements OnInit, AfterChanges, AfterViewChecked, OnDestroy {
   LiOffcanvasComponent(this.rootElement, this._changeDetectorRef);
 
   static const Duration _transitionDuration = Duration(milliseconds: 300);

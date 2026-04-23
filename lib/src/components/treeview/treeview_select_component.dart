@@ -354,18 +354,18 @@ class LiTreeviewSelectComponent
       ? clearButtonLabel
       : (_isEnglishLocale ? 'Clear' : 'Limpar');
 
-  String get resolvedExpandAllButtonLabel => expandAllButtonLabel.trim().isNotEmpty
-      ? expandAllButtonLabel
-      : (_isEnglishLocale ? 'Expand all' : 'Expandir tudo');
+  String get resolvedExpandAllButtonLabel =>
+      expandAllButtonLabel.trim().isNotEmpty
+          ? expandAllButtonLabel
+          : (_isEnglishLocale ? 'Expand all' : 'Expandir tudo');
 
   String get resolvedCollapseAllButtonLabel =>
       collapseAllButtonLabel.trim().isNotEmpty
           ? collapseAllButtonLabel
           : (_isEnglishLocale ? 'Collapse all' : 'Recolher tudo');
 
-  String get resolvedConfirmButtonLabel => confirmButtonLabel.trim().isNotEmpty
-      ? confirmButtonLabel
-      : 'OK';
+  String get resolvedConfirmButtonLabel =>
+      confirmButtonLabel.trim().isNotEmpty ? confirmButtonLabel : 'OK';
 
   String get normalizedExpandTogglePlacement {
     switch (expandTogglePlacement.trim().toLowerCase()) {
@@ -704,7 +704,7 @@ class LiTreeviewSelectComponent
 
     selectedNode = node;
     _pendingModelValue = _selectedValueFor(node);
-  _dirty = true;
+    _dirty = true;
     _changeController.add(_pendingModelValue);
     _ngModelValueChangeCallback?.call(_pendingModelValue);
     _markTouched();
@@ -1312,7 +1312,8 @@ class LiTreeviewSelectComponent
       value: multiple ? _selectedValues() : _pendingModelValue,
       rules: _effectiveRules,
       context: LiRuleContext(
-        fieldName: resolvedPlaceholder.trim().isEmpty ? null : resolvedPlaceholder,
+        fieldName:
+            resolvedPlaceholder.trim().isEmpty ? null : resolvedPlaceholder,
         messages: _effectiveMessages,
         locale: locale,
       ),

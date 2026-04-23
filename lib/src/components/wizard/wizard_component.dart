@@ -213,8 +213,7 @@ class LiWizardComponent implements AfterContentInit, OnDestroy {
 
   int get activeIndex => _activeIndex;
 
-  List<LiWizardStepHeaderContext> get stepHeaderContexts =>
-      _stepHeaderContexts;
+  List<LiWizardStepHeaderContext> get stepHeaderContexts => _stepHeaderContexts;
 
   LiWizardActionsContext get actionsContext => _actionsContext;
 
@@ -430,7 +429,8 @@ class LiWizardComponent implements AfterContentInit, OnDestroy {
       final context = _stepHeaderContexts[index];
       final step = steps[index];
       context.isCurrent = index == _activeIndex;
-      context.isDone = index < _activeIndex || (_isFinished && index == _activeIndex);
+      context.isDone =
+          index < _activeIndex || (_isFinished && index == _activeIndex);
       context.hasError = step.error;
       context.isDisabled = step.disabled;
     }

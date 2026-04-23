@@ -241,31 +241,37 @@ void main() {
   final testBed = NgTestBed<DeclarativeValidationTestHostComponent>(
     ng.DeclarativeValidationTestHostComponentNgFactory,
   );
-  final defaultModeTestBed = NgTestBed<DefaultDeclarativeValidationTestHostComponent>(
+  final defaultModeTestBed =
+      NgTestBed<DefaultDeclarativeValidationTestHostComponent>(
     ng.DefaultDeclarativeValidationTestHostComponentNgFactory,
   );
 
-  test('aplica validacao declarativa em modo submitted e foca o primeiro campo invalido', () async {
+  test(
+      'aplica validacao declarativa em modo submitted e foca o primeiro campo invalido',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final validateButton =
-        fixture.rootElement.querySelector('#validate-form') as html.ButtonElement;
+    final validateButton = fixture.rootElement.querySelector('#validate-form')
+        as html.ButtonElement;
 
     await fixture.update((_) {
       validateButton.click();
     });
     await _settle(fixture);
 
-    final cpfInput =
-        fixture.rootElement.querySelector('input#cpf-input') as html.InputElement;
-    final selectButton = fixture.rootElement
-        .querySelector('#department-field .dropdown-button') as html.ButtonElement;
-    final multiSelectButton = fixture.rootElement
-        .querySelector('#channels-field .dropdown-button') as html.ButtonElement;
+    final cpfInput = fixture.rootElement.querySelector('input#cpf-input')
+        as html.InputElement;
+    final selectButton =
+        fixture.rootElement.querySelector('#department-field .dropdown-button')
+            as html.ButtonElement;
+    final multiSelectButton =
+        fixture.rootElement.querySelector('#channels-field .dropdown-button')
+            as html.ButtonElement;
     final checkboxInput = fixture.rootElement
-        .querySelector('#consent-field input[type="checkbox"]') as html.InputElement;
+            .querySelector('#consent-field input[type="checkbox"]')
+        as html.InputElement;
 
     expect(host.lastValidationResult, isFalse);
     expect(html.document.activeElement?.id, 'cpf-input');
@@ -280,27 +286,32 @@ void main() {
     expect(fixture.rootElement.text, contains('Confirme o aceite.'));
   });
 
-  test('limpa os erros quando os valores passam a atender as regras declarativas', () async {
+  test(
+      'limpa os erros quando os valores passam a atender as regras declarativas',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final validateButton =
-        fixture.rootElement.querySelector('#validate-form') as html.ButtonElement;
+    final validateButton = fixture.rootElement.querySelector('#validate-form')
+        as html.ButtonElement;
 
     await fixture.update((_) {
       validateButton.click();
     });
     await _settle(fixture);
 
-    final cpfInput =
-        fixture.rootElement.querySelector('input#cpf-input') as html.InputElement;
-    final selectButton = fixture.rootElement
-        .querySelector('#department-field .dropdown-button') as html.ButtonElement;
-    final multiSelectButton = fixture.rootElement
-        .querySelector('#channels-field .dropdown-button') as html.ButtonElement;
+    final cpfInput = fixture.rootElement.querySelector('input#cpf-input')
+        as html.InputElement;
+    final selectButton =
+        fixture.rootElement.querySelector('#department-field .dropdown-button')
+            as html.ButtonElement;
+    final multiSelectButton =
+        fixture.rootElement.querySelector('#channels-field .dropdown-button')
+            as html.ButtonElement;
     final checkboxInput = fixture.rootElement
-        .querySelector('#consent-field input[type="checkbox"]') as html.InputElement;
+            .querySelector('#consent-field input[type="checkbox"]')
+        as html.InputElement;
 
     await fixture.update((_) {
       cpfInput.value = '52998224725';
@@ -325,7 +336,8 @@ void main() {
     await _settle(fixture);
 
     await fixture.update((_) {
-      multiSelectButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      multiSelectButton
+          .dispatchEvent(html.MouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -364,12 +376,15 @@ void main() {
     expect(multiSelectButton.classes.contains('is-invalid'), isFalse);
     expect(checkboxInput.classes.contains('is-invalid'), isFalse);
     expect(fixture.rootElement.text, isNot(contains('Informe o CPF.')));
-    expect(fixture.rootElement.text, isNot(contains('Escolha um departamento.')));
-    expect(fixture.rootElement.text, isNot(contains('Selecione ao menos 2 canais.')));
+    expect(
+        fixture.rootElement.text, isNot(contains('Escolha um departamento.')));
+    expect(fixture.rootElement.text,
+        isNot(contains('Selecione ao menos 2 canais.')));
     expect(fixture.rootElement.text, isNot(contains('Confirme o aceite.')));
   });
 
-  test('uses submittedOrTouched by default across declarative form components', () async {
+  test('uses submittedOrTouched by default across declarative form components',
+      () async {
     final fixture = await defaultModeTestBed.create();
     await _settleDefault(fixture);
     final host = fixture.assertOnlyInstance;
@@ -385,11 +400,14 @@ void main() {
     final cpfInput = fixture.rootElement
         .querySelector('input#default-cpf-input') as html.InputElement;
     final selectButton = fixture.rootElement
-        .querySelector('#default-department-field .dropdown-button') as html.ButtonElement;
+            .querySelector('#default-department-field .dropdown-button')
+        as html.ButtonElement;
     final multiSelectButton = fixture.rootElement
-        .querySelector('#default-channels-field .dropdown-button') as html.ButtonElement;
+            .querySelector('#default-channels-field .dropdown-button')
+        as html.ButtonElement;
     final checkboxInput = fixture.rootElement
-        .querySelector('#default-consent-field input[type="checkbox"]') as html.InputElement;
+            .querySelector('#default-consent-field input[type="checkbox"]')
+        as html.InputElement;
 
     expect(host.lastValidationResult, isFalse);
     expect(html.document.activeElement?.id, 'default-cpf-input');

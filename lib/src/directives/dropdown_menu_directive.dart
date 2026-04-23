@@ -150,7 +150,10 @@ class DropdownMenuDirective implements AfterContentInit, OnDestroy {
   void _ensureOverlay() {
     final reference = _triggerElement;
     final floating = _menuElement;
-    if (!_usesBodyOverlay || _overlay != null || reference == null || floating == null) {
+    if (!_usesBodyOverlay ||
+        _overlay != null ||
+        reference == null ||
+        floating == null) {
       return;
     }
 
@@ -182,7 +185,9 @@ class DropdownMenuDirective implements AfterContentInit, OnDestroy {
   }
 
   void _scheduleOverlayUpdate() {
-    if (!_usesBodyOverlay || _overlayRelayoutPending || !rootElement.classes.contains('show')) {
+    if (!_usesBodyOverlay ||
+        _overlayRelayoutPending ||
+        !rootElement.classes.contains('show')) {
       return;
     }
 
