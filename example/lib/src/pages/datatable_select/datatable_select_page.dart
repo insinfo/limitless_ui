@@ -377,8 +377,8 @@ class DatatableSelectPageComponent implements OnInit {
       : 'Multiple selection + trigger icon';
 
   String get customTemplateIntro => i18n.isPortuguese
-      ? 'Exemplo mais proximo do SALI: o trigger pode mostrar resumo rico e o modal pode incluir contexto extra sem perder os callbacks de selecao.'
-      : 'A SALI-like example: the trigger can show a richer summary and the modal can include extra context without losing the selection callbacks.';
+      ? 'Exemplo mais proximo de uma tela de consulta: o trigger pode mostrar resumo rico e o modal pode incluir contexto extra sem perder os callbacks de selecao.'
+      : 'A process-lookup example: the trigger can show a richer summary and the modal can include extra context without losing the selection callbacks.';
 
   String get customTemplateLabel => i18n.isPortuguese
       ? 'Selecionar responsavel com template customizado'

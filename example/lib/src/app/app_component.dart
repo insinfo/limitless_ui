@@ -141,9 +141,6 @@ class AppComponent implements OnDestroy {
   String get sidebarSearchPlaceholder =>
       i18n.isPortuguese ? 'Buscar no menu...' : 'Search menu...';
 
-  String get clearSidebarFilterLabel =>
-      i18n.isPortuguese ? 'Limpar busca do menu' : 'Clear menu search';
-
   String get sidebarSearchEmptyState =>
       i18n.isPortuguese ? 'Nenhum item encontrado.' : 'No menu items found.';
 
@@ -180,8 +177,13 @@ class AppComponent implements OnDestroy {
           iconClass: 'ph-fire',
         ),
         LiDropdownMenuOption(
-          value: 'sali',
+          value: 'retro',
           label: 'Retro',
+          iconClass: 'ph-television',
+        ),
+        LiDropdownMenuOption(
+          value: 'old',
+          label: 'old',
           iconClass: 'ph-buildings',
         ),
         LiDropdownMenuOption(
@@ -206,7 +208,7 @@ class AppComponent implements OnDestroy {
   String get dataLabel => i18n.isPortuguese ? 'Dados' : 'Data';
   String get utilitiesLabel => i18n.isPortuguese ? 'Utilitários' : 'Utilities';
   String get workQueueLabel =>
-      i18n.isPortuguese ? 'Fila operacional' : 'Work queue';
+      i18n.isPortuguese ? 'Inbox responsiva' : 'Responsive inbox';
   String get colorPickerLabel =>
       i18n.isPortuguese ? 'Color picker' : 'Color picker';
   String get offcanvasLabel => 'Offcanvas';
@@ -629,8 +631,9 @@ class AppComponent implements OnDestroy {
     }
 
     filteredPrimaryItems = List<DemoNavItem>.unmodifiable(
-      primaryItems
-          .where((item) => _matchesSidebarQuery(item.label, normalizedQuery)),
+      primaryItems.where(
+        (item) => _matchesSidebarQuery(item.label, normalizedQuery),
+      ),
     );
 
     final filteredSections = <DemoNavSection>[];
@@ -810,8 +813,13 @@ class AppComponent implements OnDestroy {
       return;
     }
 
-    if (value == 'sali') {
-      theme.useSali();
+    if (value == 'retro') {
+      theme.useRetro();
+      return;
+    }
+
+    if (value == 'old' || value == 'onld') {
+      theme.useOld();
       return;
     }
 

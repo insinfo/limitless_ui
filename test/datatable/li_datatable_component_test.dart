@@ -18,18 +18,22 @@ import 'li_datatable_component_test.template.dart' as ng;
 @Component(
   selector: 'test-host',
   template: '''
-    <li-datatable
-      [dataTableFilter]="filter"
-      [data]="data"
-      [settings]="settings"
-      [responsiveCollapse]="responsiveCollapse"
-      [searchInFields]="searchInFields"
-      [allowSingleSelectionOnly]="allowSingleSelectionOnly"
-      (dataRequest)="onDataRequest(\$event)"
-      (limitChange)="onLimitChange(\$event)"
-      (searchRequest)="onSearchRequest(\$event)"
-      (selectAll)="onSelectedRows(\$event)">
-    </li-datatable>
+    <div [attr.style]="tableContainerStyle">
+      <li-datatable
+        [dataTableFilter]="filter"
+        [data]="data"
+        [settings]="settings"
+        [responsiveCollapse]="responsiveCollapse"
+        [responsiveAutoHideColumns]="responsiveAutoHideColumns"
+        [requestDataOnItemsPerPageChange]="requestDataOnItemsPerPageChange"
+        [searchInFields]="searchInFields"
+        [allowSingleSelectionOnly]="allowSingleSelectionOnly"
+        (dataRequest)="onDataRequest(\$event)"
+        (limitChange)="onLimitChange(\$event)"
+        (searchRequest)="onSearchRequest(\$event)"
+        (selectAll)="onSelectedRows(\$event)">
+      </li-datatable>
+    </div>
   ''',
   directives: [coreDirectives, LiDataTableComponent],
 )
@@ -78,6 +82,9 @@ class TestHostComponent {
 
   bool allowSingleSelectionOnly = false;
   bool responsiveCollapse = false;
+  bool responsiveAutoHideColumns = false;
+  bool requestDataOnItemsPerPageChange = false;
+  String tableContainerStyle = '';
   Filters? lastDataRequest;
   Filters? lastLimitChange;
   Filters? lastSearchRequest;
@@ -103,6 +110,41 @@ class TestHostComponent {
   }
 }
 
+@Component(
+  selector: 'test-custom-header-host',
+  template: '''
+    <li-datatable
+      [dataTableFilter]="filter"
+      [data]="data"
+      [settings]="settings"
+      [searchInFields]="searchInFields"
+      [showCheckboxToSelectRow]="false"
+      (dataRequest)="onDataRequest(\$event)"
+      (limitChange)="onLimitChange(\$event)"
+      (searchRequest)="onSearchRequest(\$event)">
+      <template li-datatable-header let-ctx>
+        <div class="custom-header-marker">
+          <span>{{ ctx.searchPlaceholder }}</span>
+          <button id="custom-header-search" type="button" (click)="ctx.search()">Buscar</button>
+        </div>
+      </template>
+      <template li-datatable-footer let-ctx>
+        <div class="custom-footer-marker">
+          <span>{{ ctx.currentPage }}/{{ ctx.numPages }}</span>
+          <button id="custom-footer-next" type="button" (click)="ctx.nextPage()">Proxima</button>
+        </div>
+      </template>
+    </li-datatable>
+  ''',
+  directives: [
+    coreDirectives,
+    LiDataTableComponent,
+    LiDatatableHeaderDirective,
+    LiDatatableFooterDirective,
+  ],
+)
+class CustomHeaderTestHostComponent extends TestHostComponent {}
+
 class _FakeKeyPressEvent {
   _FakeKeyPressEvent(this.keyCode);
 
@@ -119,6 +161,9 @@ void main() {
 
   final testBed = NgTestBed<TestHostComponent>(
     ng.TestHostComponentNgFactory,
+  );
+  final customHeaderTestBed = NgTestBed<CustomHeaderTestHostComponent>(
+    ng.CustomHeaderTestHostComponentNgFactory,
   );
 
   test('renderiza cabecalhos e linhas iniciais', () async {
@@ -259,6 +304,48 @@ void main() {
     expect(host.table!.getCurrentPage, 1);
   });
 
+  test('renderiza header customizado e remove toolbar padrao', () async {
+    final fixture = await customHeaderTestBed.create();
+    await _settleTable(fixture);
+
+    expect(
+      fixture.rootElement.querySelector('.custom-header-marker'),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector('.datatable-search-toolbar'),
+      isNull,
+    );
+  });
+
+  test('renderiza footer customizado e permite paginacao via contexto', () async {
+    final fixture = await customHeaderTestBed.create();
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(
+      fixture.rootElement.querySelector('.custom-footer-marker'),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector('.dataTables_info'),
+      isNull,
+    );
+
+    final nextButton = fixture.rootElement.querySelector('#custom-footer-next')
+        as ButtonElement?;
+    expect(nextButton, isNotNull);
+
+    await fixture.update((_) {
+      nextButton!.click();
+    });
+
+    expect(host.lastDataRequest, isNotNull);
+    expect(host.lastDataRequest!.offset, 10);
+    expect(host.lastDataRequest!.limit, 10);
+  });
+
   test('permite selecionar varias linhas quando single selection esta desabilitado', () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
@@ -388,6 +475,118 @@ void main() {
 
     expect(host.table!.rows.first.isExpanded, isFalse);
     expect(fixture.rootElement.querySelector('tbody tr.child'), isNull);
+  });
+
+  test('esconde colunas por prioridade antes de gerar rolagem horizontal',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 280px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'nome',
+            title: 'Nome',
+            width: '160px',
+            minWidth: '160px',
+            responsiveAutoHidePriority: 1,
+          ),
+          DatatableCol(
+            key: 'idade',
+            title: 'Idade',
+            width: '110px',
+            minWidth: '110px',
+            responsiveAutoHidePriority: 2,
+          ),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Ações',
+            width: '110px',
+            minWidth: '110px',
+            responsiveAutoHideRequired: true,
+            customRenderString: (itemMap, itemInstance) => 'Ver',
+          ),
+        ],
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final renderedRow = host.table!.renderedRows.first;
+    final nomeHeader = fixture.rootElement.querySelector('thead th[data-key="nome"]');
+    final idadeHeader = fixture.rootElement.querySelector('thead th[data-key="idade"]');
+    final acoesHeader = fixture.rootElement.querySelector('thead th[data-key="acoes"]');
+
+    expect(renderedRow.hasResponsiveHiddenColumns, isTrue);
+    expect(
+      renderedRow.responsiveHiddenColumns.map((column) => column.key),
+      contains('nome'),
+    );
+    expect(
+      renderedRow.responsiveHiddenColumns.map((column) => column.key),
+      isNot(contains('acoes')),
+    );
+    expect(nomeHeader!.classes.contains('hide'), isTrue);
+    expect(idadeHeader!.classes.contains('hide'), isFalse);
+    expect(acoesHeader!.classes.contains('hide'), isFalse);
+  });
+
+  test('usa a primeira coluna obrigatória visível como controle do detalhe auto-hide',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 260px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'nome',
+            title: 'Nome',
+            width: '180px',
+            minWidth: '180px',
+            responsiveAutoHidePriority: 1,
+          ),
+          DatatableCol(
+            key: 'idade',
+            title: 'Idade',
+            width: '120px',
+            minWidth: '120px',
+            responsiveAutoHidePriority: 2,
+          ),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Ações',
+            width: '110px',
+            minWidth: '110px',
+            responsiveAutoHideRequired: true,
+            customRenderString: (itemMap, itemInstance) => 'Ver',
+          ),
+        ],
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final toggleCell = fixture.rootElement.querySelector(
+      'tbody tr td.dtr-control',
+    ) as TableCellElement?;
+
+    expect(toggleCell, isNotNull);
+    expect(host.table!.renderedRows.first.responsiveControlColumnKey, 'acoes');
+
+    await fixture.update((_) {
+      toggleCell!.click();
+    });
+
+    expect(host.table!.rows.first.isExpanded, isTrue);
+    expect(fixture.rootElement.querySelector('tbody tr.child'), isNotNull);
+    expect(fixture.text, contains('Nome'));
+    expect(fixture.text, contains('Ana'));
   });
 
   test('onSelectAll marca e desmarca todas as linhas pelo checkbox do header', () async {
@@ -716,6 +915,31 @@ void main() {
     expect(host.lastLimitChange!.limit, 20);
   });
 
+  test('changeItemsPerPageHandler pode emitir dataRequest quando a opção estiver habilitada',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.requestDataOnItemsPerPageChange = true;
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+    final select = SelectElement()
+      ..append(OptionElement(data: '20', value: '20')..selected = true);
+
+    await fixture.update((component) {
+      component.table!.nextPage();
+      host.lastDataRequest = null;
+      host.lastLimitChange = null;
+      component.table!.changeItemsPerPageHandler(select);
+    });
+
+    expect(host.table!.getCurrentPage, 1);
+    expect(host.table!.dataTableFilter.limit, 20);
+    expect(host.lastDataRequest, isNotNull);
+    expect(host.lastDataRequest!.limit, 20);
+    expect(host.lastDataRequest!.offset, 0);
+    expect(host.lastLimitChange, isNull);
+  });
+
   test('prevPage, primeira e ultima pagina atualizam offset corretamente', () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
@@ -907,9 +1131,107 @@ void main() {
     expect(fixture.text, contains('Ana (30)'));
     expect(fixture.text, contains('Bruno (40)'));
   });
+
+  test('restaura colunas auto-ocultadas ao ampliar a largura e disparar resize',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 360px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'nome',
+            title: 'Nome',
+            width: '160px',
+            minWidth: '160px',
+            responsiveAutoHideRequired: true,
+          ),
+          DatatableCol(
+            key: 'solicitante',
+            title: 'Solicitante',
+            responsiveAutoHidePriority: 10,
+            customRenderString: (itemMap, itemInstance) =>
+                'Solicitante com descricao longa',
+          ),
+          DatatableCol(
+            key: 'assunto',
+            title: 'Assunto',
+            responsiveAutoHidePriority: 20,
+            customRenderString: (itemMap, itemInstance) =>
+                'Assunto administrativo detalhado',
+          ),
+          DatatableCol(
+            key: 'digital',
+            title: 'Digital',
+            width: '96px',
+            minWidth: '96px',
+            responsiveAutoHidePriority: 30,
+            customRenderString: (itemMap, itemInstance) => 'Sim',
+          ),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Ações',
+            width: '110px',
+            minWidth: '110px',
+            responsiveAutoHideRequired: true,
+            customRenderString: (itemMap, itemInstance) => 'Ver',
+          ),
+        ],
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'nome': '61109/2016',
+            'solicitante': 'Nucleo de Governanca',
+            'assunto': 'Revisao documental',
+            'digital': 'Sim',
+            'acoes': 'Ver',
+          },
+        ],
+        totalRecords: 1,
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isTrue);
+    expect(
+      host.table!.renderedRows.first.responsiveHiddenColumns
+          .map((column) => column.key),
+      contains('solicitante'),
+    );
+
+    await fixture.update((component) {
+      component.tableContainerStyle = 'width: 960px;';
+      window.dispatchEvent(Event('resize'));
+    });
+    await _settleAfterResize(fixture);
+    await _settleAfterResize(fixture);
+
+    final solicitanteHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="solicitante"]',
+    );
+    final assuntoHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="assunto"]',
+    );
+
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isFalse);
+    expect(solicitanteHeader, isNotNull);
+    expect(assuntoHeader, isNotNull);
+    expect(solicitanteHeader!.classes.contains('hide'), isFalse);
+    expect(assuntoHeader!.classes.contains('hide'), isFalse);
+  });
 }
 
 Future<void> _settleTable(NgTestFixture<TestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 20));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleAfterResize(NgTestFixture<TestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 180));
   await fixture.update((_) {});
 }

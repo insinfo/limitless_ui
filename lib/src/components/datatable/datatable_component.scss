@@ -35,6 +35,10 @@
     padding-bottom: 1rem;
 }
 
+.datatable-header--custom {
+    display: block;
+}
+
 .dataTables_filter {
     flex: 1 1 auto;
     min-width: 0;
@@ -46,7 +50,7 @@
     display: flex;
     align-items: center;
     gap: .5rem;
-    width: min(100%, 24rem);
+    width: min(100%, 32rem);
     max-width: 100%;
     margin: 0;
 }
@@ -104,6 +108,10 @@
     justify-content: space-between;
     gap: .75rem 1rem;
     padding-top: 1rem;
+}
+
+.datatable-footer--custom {
+    display: block;
 }
 
 .datatable-footer .dataTables_info,

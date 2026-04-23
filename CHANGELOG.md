@@ -1,5 +1,17 @@
+## 1.0.0-dev.11
+
+- Expanded `li-datatable` with optional responsive auto-hide columns driven by per-column priority and required-visibility flags, so narrow layouts can collapse low-priority columns into the child/details row before horizontal scrolling appears; the example app now exercises that behavior both in the process-lookup datatable demo and in a dedicated responsive inbox/work-queue screen.
+- Expanded `li-datatable` with public header/footer template contexts (`LiDatatableHeaderContext` and `LiDatatableFooterContext`), reusable `li-datatable-header`/`li-datatable-footer` directives, and `requestDataOnItemsPerPageChange` for flows where page-size changes should reload data through `(dataRequest)` instead of only `(limitChange)`.
+- Expanded `li-datatable-select` to forward `li-datatable-header`/`li-datatable-footer` templates into the inner table, added `requestDataOnItemsPerPageChange`, and exposed `modalCompactHeader`/`modalSmallHeader` pass-throughs for denser modal chrome.
+- Expanded the dropdown API with reusable `liDropdownSubmenu`, `liDropdownSubmenuToggle`, and `liDropdownSubmenuMenu` directives, added a user-menu demo with nested theme actions, and kept parent dropdown auto-close behavior compatible with submenu toggles.
+- Expanded the datatable example with a process-consultation layout that demonstrates custom `TemplateRef` headers, external helper filters, and action-bar controls around `li-datatable`, while relaxing the built-in search toolbar width to `min(100%, 32rem)`.
+- Refined `li-file-upload` preview modals so long file names truncate inside the zoom header instead of breaking the action buttons, and kept browser coverage aligned for the richer datatable header/footer customization flows.
+
+
 ## 1.0.0-dev.10
 
+- Expanded `li-datatable` and `li-datatable-select` with optional custom header `TemplateRef` support for the datatable toolbar, exposed `modalCompactHeader`/`modalSmallHeader` pass-throughs on `li-datatable-select`, and removed the hard 24rem search-toolbar cap so search inputs can grow like the reference process toolbar.
+- Expanded `li-datatable` with optional custom footer `TemplateRef` support, including a stable footer context for totals and pagination actions, and forwarded the same footer template capability through `li-datatable-select`.
 - Expanded `li-modal` with intermediate sizes (`xx-large`, `xxx-large`, and `fluid`), optional `fullScreenShell` for true fullscreen shell styling, optional `closeOnEscape`, projected header/footer slots, custom dimensions/ARIA hooks, stronger stacked-modal handling, and broader browser/demo coverage for the richer dialog flows.
 - Breaking change: renamed the `li-modal` fullscreen-shell input from `fullScreenChrome` to `fullScreenShell`; update any template bindings, docs snippets, or wrapper APIs that still reference the old name.
 - Added `start`/`end` aliases to `li-date-range-picker` while preserving `inicio`/`fim`, including mirrored `startChange`/`endChange` outputs, updated example usage, and regression coverage for the alias flow.
@@ -13,7 +25,6 @@ dark-theme-safe presentation based on Limitless theme tokens, and explicit visua
 - Refined the timeline bridge styles so projected icons stay centered, dark themes keep the expected marker appearance, and date/time blocks follow the Limitless timeline structure without relying on JavaScript widgets.
 - Breaking change: normalized several public helper and notification-toast APIs to the `Li` prefix. Rename `SimpleDialogComponent` to `LiSimpleDialogComponent`, `DialogColor` to `LiDialogColor`, `SimplePopover` to `LiSimplePopover`, `SimpleToast` to `LiSimpleToast`, `NotificationToastService` to `LiNotificationToastService`, `NotificationToastColor` to `LiNotificationToastColor`, `ToastSoundController` to `LiToastSoundController`, and `Toast` to `LiNotificationToast`.
 - Reworked the notification demo page to document and exercise `li-notification-outlet` with `LiNotificationToastService`, including dedicated browser coverage split between service-level tests and real `ngtest` outlet integration tests.
-
 
 
 ## 1.0.0-dev.9
@@ -31,7 +42,7 @@ dark-theme-safe presentation based on Limitless theme tokens, and explicit visua
 - Added the `work-queue` demo route to showcase `li-tag-filter`, `li-tag-manager`, and `li-token-field` together inside a more realistic operational workflow.
 - Expanded dropdown menu overlays so both `li-dropdown-menu` and the lower-level `dropdownmenu` directive can render inline or in a `body`-anchored Popper overlay, with better outside-click/Escape handling and browser coverage for the new placement flow.
 - Expanded `li-modal` with `compactHeader` and `smallHeader`, improved fullscreen body scrolling, and richer example coverage for iconified, mini, backdropless, form, and fullscreen dialog variants.
-- Expanded the demo shell with extra color themes (`blu`, `pink`, `orange`, `sali`) and broader themed scrollbar coverage across sidebar, content, dropdown, modal, and form surfaces.
+- Expanded the demo shell with extra color themes (`blu`, `pink`, `orange`, `retro`) and broader themed scrollbar coverage across sidebar, content, dropdown, modal, and form surfaces.
 - Aligned the standalone `li-currency-input` demos and docs with the same declarative validation contract used by `liForm`, including `liRules`, `liValidationMode`, and native helper/error feedback.
 - Tightened the extra `person-registration` fields so `primaryReviewerId` and `workflowNodeIds` now participate in submit validation with business-aware rules, plus browser coverage for the additional required states.
 
@@ -60,8 +71,8 @@ dark-theme-safe presentation based on Limitless theme tokens, and explicit visua
 
 - Expanded `li-datatable` with grouped and multi-column sorting demos, customizable grid container class/style hooks, responsive pagination sizing, safer grouped-row selection behavior, and new regression coverage for grouping and grid rendering.
 - Expanded the datatable example and documentation with richer AngularDart integration snippets, backend/frontend usage guidance, and updated localized README/docs instructions for `build_runner serve` and optional `webdev` usage.
-- Expanded `li-accordion` with `bodyPadding`, `buttonClass`, and `buttonSemibold` so host apps can match Limitless/SALI accordion body density and header typography without forking the component.
-- Added a SALI-inspired "Visualiza Processo" accordion demo to the example app, including underline tabs, flush accordion sections, neutral active tab text, and muted non-bold accordion headers.
+- Expanded `li-accordion` with `bodyPadding`, `buttonClass`, and `buttonSemibold` so host apps can match dense Limitless-style accordion body density and header typography without forking the component.
+- Added a "Visualiza Processo" accordion demo to the example app, including underline tabs, flush accordion sections, neutral active tab text, and muted non-bold accordion headers.
 - Fixed `li-tabsx` nested tab/header projection so inner tabs no longer leak into outer tab headers, ensured active panes also receive the `show` class, and added configurable tab content padding and active-text body coloring.
 - Added browser regression tests covering accordion body padding/button styling, datatable grouped selection/grid container behavior, and tab content padding.
 

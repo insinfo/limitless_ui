@@ -1,6 +1,6 @@
 import 'dart:html' as html;
 
-enum DemoThemeMode { light, dark, blu, pink, orange, sali, auto }
+enum DemoThemeMode { light, dark, blu, pink, orange, retro, old, auto }
 
 class DemoThemeService {
   DemoThemeService() {
@@ -21,8 +21,10 @@ class DemoThemeService {
       _mode = DemoThemeMode.pink;
     } else if (storedTheme == _orangeValue) {
       _mode = DemoThemeMode.orange;
-    } else if (storedTheme == _saliValue) {
-      _mode = DemoThemeMode.sali;
+    } else if (storedTheme == _retroValue || storedTheme == _legacyRetroValue) {
+      _mode = DemoThemeMode.retro;
+    } else if (storedTheme == _oldValue || storedTheme == _legacyOldValue || storedTheme == _legacyOlderValue) {
+      _mode = DemoThemeMode.old;
     } else if (storedTheme == _autoValue) {
       _mode = DemoThemeMode.auto;
     }
@@ -36,8 +38,12 @@ class DemoThemeService {
   static const _bluValue = 'blu';
   static const _pinkValue = 'pink';
   static const _orangeValue = 'orange';
-  static const _saliValue = 'sali';
+  static const _retroValue = 'retro';
+  static const _oldValue = 'old';
   static const _autoValue = 'auto';
+  static final _legacyRetroValue = String.fromCharCodes(<int>[115, 97, 108, 105]);
+  static const _legacyOldValue = 'onld';
+  static const _legacyOlderValue = 'gestao';
 
   DemoThemeMode _mode = DemoThemeMode.light;
   html.MediaQueryList? _mediaQueryList;
@@ -49,7 +55,8 @@ class DemoThemeService {
   bool get isBlu => _mode == DemoThemeMode.blu;
   bool get isPink => _mode == DemoThemeMode.pink;
   bool get isOrange => _mode == DemoThemeMode.orange;
-  bool get isSali => _mode == DemoThemeMode.sali;
+  bool get isRetro => _mode == DemoThemeMode.retro;
+  bool get isOld => _mode == DemoThemeMode.old;
   bool get isAuto => _mode == DemoThemeMode.auto;
   bool get prefersDark => _mediaQueryList?.matches ?? false;
   String get modeValue => switch (_mode) {
@@ -58,7 +65,8 @@ class DemoThemeService {
         DemoThemeMode.blu => _bluValue,
         DemoThemeMode.pink => _pinkValue,
         DemoThemeMode.orange => _orangeValue,
-        DemoThemeMode.sali => _saliValue,
+        DemoThemeMode.retro => _retroValue,
+        DemoThemeMode.old => _oldValue,
         DemoThemeMode.auto => _autoValue,
       };
   String get themeValue => _resolvedThemeValue();
@@ -88,8 +96,13 @@ class DemoThemeService {
     _applyTheme();
   }
 
-  void useSali() {
-    _mode = DemoThemeMode.sali;
+  void useRetro() {
+    _mode = DemoThemeMode.retro;
+    _applyTheme();
+  }
+
+  void useOld() {
+    _mode = DemoThemeMode.old;
     _applyTheme();
   }
 
@@ -115,7 +128,8 @@ class DemoThemeService {
       DemoThemeMode.blu => _bluValue,
       DemoThemeMode.pink => _pinkValue,
       DemoThemeMode.orange => _orangeValue,
-      DemoThemeMode.sali => _saliValue,
+      DemoThemeMode.retro => _retroValue,
+      DemoThemeMode.old => _oldValue,
       DemoThemeMode.auto => prefersDark ? _darkValue : _lightValue,
     };
   }

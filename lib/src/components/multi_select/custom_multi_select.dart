@@ -1,4 +1,3 @@
-//C:\MyDartProjects\new_sali\frontend\lib\src\shared\components\custom_multi_select\custom_multi_select.dart
 import 'dart:async';
 import 'dart:html' as html;
 import 'dart:math' as math;

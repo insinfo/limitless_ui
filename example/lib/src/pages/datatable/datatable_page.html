@@ -90,6 +90,104 @@
                 datatableEventLog }}</div>
             </div>
 
+            <div class="card-body pt-4">
+              <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                <div>
+                  <h6 class="mb-2">{{ processLookupDemoTitle }}</h6>
+                  <p class="text-muted mb-0">{{ processLookupDemoIntro }}</p>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <li-highlight [code]="processLookupHeaderSnippet" language="html"></li-highlight>
+              </div>
+
+              <li-datatable #processLookupDemoTable [dataTableFilter]="processLookupFilters" [data]="processLookupTableData"
+                [settings]="processLookupTableSettings" [searchInFields]="processLookupSearchFields"
+                [limitPerPageOptions]="processLookupLimitOptions" [responsiveAutoHideColumns]="true"
+                [showCheckboxToSelectRow]="false"
+                [showExportMenu]="false" [disableRowClick]="true" (dataRequest)="onProcessLookupTableRequest($event)"
+                (limitChange)="onProcessLookupTableRequest($event)" (searchRequest)="onProcessLookupTableRequest($event)">
+                <template li-datatable-header let-ctx>
+                  <div class="datatable-process-lookup-shell">
+                    <div class="datatable-process-lookup-grid datatable-process-lookup-grid--filters">
+                      <div class="datatable-process-lookup-field datatable-process-lookup-field--requester">
+                        <label class="form-label">{{ processLookupRequesterLabel }}</label>
+                        <input class="form-control" type="search" [ngModel]="processLookupRequesterFilter"
+                          (ngModelChange)="onProcessLookupRequesterFilterInput($event)"
+                          [placeholder]="processLookupRequesterPlaceholder" />
+                      </div>
+
+                      <div class="datatable-process-lookup-field datatable-process-lookup-field--digital">
+                        <label class="form-label">{{ processLookupDigitalLabel }}</label>
+                        <select #processLookupDigitalSelect class="form-select"
+                          [ngModel]="processLookupDigitalFilter"
+                          (ngModelChange)="onProcessLookupDigitalFilterChange($event)">
+                          <option value=""></option>
+                          <option value="Sim">Sim</option>
+                          <option value="Não">Não</option>
+                        </select>
+                      </div>
+
+                      <div class="datatable-process-lookup-field datatable-process-lookup-field--clear">
+                        <label class="form-label datatable-process-lookup-field__ghost-label">Ações</label>
+                        <button class="btn btn-flat-primary border-transparent" type="button"
+                          (click)="clearProcessLookupHeaderFilters()">
+                          <i class="ph ph-eraser me-1"></i>
+                          {{ processLookupClearLabel }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="datatable-process-lookup-grid datatable-process-lookup-grid--search">
+                      <div class="datatable-process-lookup-search-group">
+                        <input [(ngModel)]="ctx.dataTableFilter.searchString" class="form-control data-table-search-field"
+                          type="search" [placeholder]="processLookupSearchPlaceholder"
+                          (keypress)="ctx.search()" />
+
+                        <select #processLookupSearchFieldSelect class="form-select datatable-process-lookup-search-group__select"
+                          (change)="onProcessLookupHeaderSearchFieldChange(ctx, processLookupSearchFieldSelect.value)">
+                          <option *ngFor="let field of ctx.searchInFields; let i = index" value="{{i}}"
+                            [selected]="i == ctx.selectedSearchFieldIndex">
+                            {{field.label}}
+                          </option>
+                        </select>
+
+                        <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                          (click)="ctx.search()" [attr.aria-label]="processLookupSearchCaption">
+                          <i class="ph-magnifying-glass"></i>
+                        </button>
+                      </div>
+
+                      <div class="datatable-process-lookup-actions-bar">
+                        <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                          (click)="ctx.exportPdf()" aria-label="Exportar PDF">
+                          <i class="ph ph-file-pdf"></i>
+                        </button>
+                        <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                          (click)="ctx.toggleViewMode()" aria-label="Alternar modo de visualização">
+                          <i [class.ph-squares-four]="!ctx.gridMode" [class.ph-list-bullets]="ctx.gridMode"></i>
+                        </button>
+                        <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                          (click)="ctx.toggleAllColumnsVisibility()" aria-label="Alternar colunas">
+                          <i class="ph-eye"></i>
+                        </button>
+                        <select #processLookupPageSizeSelect class="form-select datatable-process-lookup-actions-bar__limit"
+                          (change)="onProcessLookupHeaderLimitChange(ctx, processLookupPageSizeSelect.value)">
+                          <option *ngFor="let option of ctx.limitPerPageOptions" value="{{option}}"
+                            [selected]="option == ctx.limitPerPage">
+                            {{option}}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </li-datatable>
+
+              <div class="bg-light rounded border p-3 mt-3">{{ processLookupHeaderEventLog }}</div>
+            </div>
+
             <div class="card-body pt-1">
               <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
                 <div>

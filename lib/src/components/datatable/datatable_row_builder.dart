@@ -36,6 +36,7 @@ class DatatableRowBuilder {
     required bool gridMode,
     required bool responsiveCollapse,
     required int responsiveCollapseMaxWidth,
+    Set<String> autoHiddenColumnKeys = const <String>{},
   }) {
     final rows = <DatatableRow>[];
     String? previousGroupingValue;
@@ -133,6 +134,7 @@ class DatatableRowBuilder {
         rows: rows,
         responsiveCollapse: responsiveCollapse,
         responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+        autoHiddenColumnKeys: autoHiddenColumnKeys,
       ),
     );
   }
@@ -169,14 +171,17 @@ class DatatableRowBuilder {
     required List<DatatableRow> rows,
     required bool responsiveCollapse,
     required int responsiveCollapseMaxWidth,
+    Set<String> autoHiddenColumnKeys = const <String>{},
   }) {
     final responsiveActive = _isResponsiveViewportActive(
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
     );
+    final hasAutoHiddenColumns = autoHiddenColumnKeys.isNotEmpty;
 
     return rows.map((row) {
-      if (!responsiveActive || row.type != DatatableRowType.normal) {
+      if ((!responsiveActive && !hasAutoHiddenColumns) ||
+          row.type != DatatableRowType.normal) {
         return DatatableRenderedRow(
           row: row,
           hasResponsiveHiddenColumns: false,
@@ -186,18 +191,35 @@ class DatatableRowBuilder {
       }
 
       final hiddenColumns = row.columns
-          .where((column) => column.visibility && column.hideOnMobile)
+          .where((column) {
+            if (!column.visibility) {
+              return false;
+            }
+
+            final hiddenOnMobile = responsiveActive && column.hideOnMobile;
+            final hiddenByPriority = autoHiddenColumnKeys.contains(column.key);
+            return hiddenOnMobile || hiddenByPriority;
+          })
           .toList(growable: false);
 
       String? controlColumnKey;
       if (hiddenColumns.isNotEmpty) {
+        DatatableCol? fallbackVisibleColumn;
         for (final candidate in row.columns) {
-          if (!candidate.visibility || candidate.hideOnMobile) {
+          final hiddenOnMobile = responsiveActive && candidate.hideOnMobile;
+          final hiddenByPriority = autoHiddenColumnKeys.contains(candidate.key);
+          if (!candidate.visibility || hiddenOnMobile || hiddenByPriority) {
             continue;
           }
-          controlColumnKey = candidate.key;
-          break;
+
+          fallbackVisibleColumn ??= candidate;
+          if (candidate.responsiveAutoHideRequired) {
+            controlColumnKey = candidate.key;
+            break;
+          }
         }
+
+        controlColumnKey ??= fallbackVisibleColumn?.key;
       }
 
       return DatatableRenderedRow(
@@ -263,6 +285,8 @@ class DatatableRowBuilder {
       visibilityOnCard: colDefinition.visibilityOnCard,
       showTitleOnCard: colDefinition.showTitleOnCard,
       hideOnMobile: colDefinition.hideOnMobile,
+      responsiveAutoHideRequired: colDefinition.responsiveAutoHideRequired,
+      responsiveAutoHidePriority: colDefinition.responsiveAutoHidePriority,
       showAsFooterOnCard: colDefinition.showAsFooterOnCard,
       colspan: colDefinition.colspan,
       multiValSeparator: colDefinition.multiValSeparator,

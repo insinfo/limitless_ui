@@ -206,7 +206,122 @@
   font-weight: 700;
 }
 
+.datatable-process-lookup-shell {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.92) 100%);
+}
+
+.datatable-process-lookup-grid {
+  display: grid;
+  gap: 1rem;
+  align-items: end;
+}
+
+.datatable-process-lookup-grid--filters {
+  grid-template-columns: minmax(0, 2.6fr) minmax(7rem, 0.9fr) auto;
+}
+
+.datatable-process-lookup-grid--search {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-top: 0.25rem;
+}
+
+.datatable-process-lookup-field {
+  min-width: 0;
+}
+
+.datatable-process-lookup-field .form-label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.datatable-process-lookup-field__ghost-label {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.datatable-process-lookup-search-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(10rem, 0.7fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.datatable-process-lookup-search-group__select {
+  max-width: 12.5rem;
+}
+
+.datatable-process-lookup-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.datatable-process-lookup-actions-bar__limit {
+  width: auto;
+  min-width: 4.75rem;
+}
+
+.datatable-process-lookup-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.datatable-process-lookup-badge--primary {
+  color: #fff;
+  background: #0d6efd;
+}
+
+.datatable-process-lookup-badge--muted {
+  color: #334155;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.datatable-process-lookup-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.datatable-process-lookup-action {
+  color: #0d6efd;
+  font-size: 1rem;
+}
+
 @media (max-width: 767.98px) {
+  .datatable-process-lookup-grid--filters,
+  .datatable-process-lookup-grid--search,
+  .datatable-process-lookup-search-group {
+    grid-template-columns: 1fr;
+  }
+
+  .datatable-process-lookup-actions-bar {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-left: 0;
+  }
+
+  .datatable-process-lookup-actions-bar__limit,
+  .datatable-process-lookup-search-group__select {
+    width: 100%;
+    max-width: none;
+  }
+
   .datatable-multisort-chip {
     width: 100%;
     justify-content: space-between;

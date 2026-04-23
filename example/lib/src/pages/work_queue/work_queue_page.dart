@@ -5,6 +5,20 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 import '../datatable/datatable_demo_service.dart';
 
+class InboxDemoTabOption {
+  const InboxDemoTabOption({
+    required this.id,
+    required this.label,
+    required this.helper,
+    required this.count,
+  });
+
+  final String id;
+  final String label;
+  final String helper;
+  final int count;
+}
+
 @Component(
   selector: 'work-queue-page',
   templateUrl: 'work_queue_page.html',
@@ -23,6 +37,10 @@ import '../datatable/datatable_demo_service.dart';
   ],
 )
 class WorkQueuePageComponent implements OnInit, DoCheck {
+  static const String _inboxTabReceived = 'received';
+  static const String _inboxTabAwaiting = 'awaiting';
+  static const String _inboxTabCanceling = 'canceling';
+
   WorkQueuePageComponent(this.i18n, this._ngZone)
       : _allRecords = _buildSeedRecords(),
         tagCatalog = _buildTagCatalog() {
@@ -41,6 +59,15 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       record['tags'] = _resolveTagsFromIds(record['tagIds'] as List<dynamic>);
     }
 
+    _inboxTabsPt = _buildInboxTabs(
+      isEnglish: false,
+      records: _allRecords,
+    );
+    _inboxTabsEn = _buildInboxTabs(
+      isEnglish: true,
+      records: _allRecords,
+    );
+
     _syncSubjectOptions();
   }
 
@@ -58,6 +85,8 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       _subjectOptionsByClassificationPt;
   late final Map<String, List<Map<String, dynamic>>>
       _subjectOptionsByClassificationEn;
+  late final List<InboxDemoTabOption> _inboxTabsPt;
+  late final List<InboxDemoTabOption> _inboxTabsEn;
 
   @ViewChild('queueTable')
   LiDataTableComponent? queueTable;
@@ -76,14 +105,17 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     items: const <Map<String, dynamic>>[],
     totalRecords: 0,
   );
+
   List<Map<String, dynamic>> tagCatalog;
   List<Map<String, dynamic>> subjectOptions = const <Map<String, dynamic>>[];
+  
   final List<int> limitPerPageOptions = <int>[10, 12, 20, 25, 50];
   final String processTokenPattern = r'\d+/\d+';
   final String processTokenAllowed = r'[0-9/]';
 
   bool? digitalFilter;
   String requesterQuery = '';
+  String responsibleQuery = '';
   String selectedClassificationId = '';
   String selectedSubjectId = '';
   String listCodeFilter = '';
@@ -91,6 +123,7 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
   List<dynamic> selectedTagFilterIds = <dynamic>[];
   DateTime? includedStart;
   DateTime? includedEnd;
+  String activeInboxTabId = _inboxTabReceived;
 
   int? activeRecordId;
   List<dynamic> activeRecordTagIds = <dynamic>[];
@@ -100,13 +133,30 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
 
   bool get _isEnglishLocale => i18n.isEnglish;
 
-  String get pageTitle => _isEnglishLocale ? 'Workflow' : 'Fluxo operacional';
+  String get pageTitle =>
+      _isEnglishLocale ? 'Protocol - Inbox' : 'Protocolo - Inbox';
 
-  String get pageSubtitle =>
-      _isEnglishLocale ? 'Route items' : 'Encaminhar itens';
+  String get pageSubtitle => _isEnglishLocale
+      ? 'Responsive demo for progressive datatable column hiding.'
+      : 'Demo responsiva para ocultacao progressiva de colunas no datatable.';
+
+  String get heroSectionLabel => _isEnglishLocale ? 'Workflow' : 'Fluxo';
 
   String get breadcrumbLabel =>
-      _isEnglishLocale ? 'Work queue' : 'Fila operacional';
+      _isEnglishLocale ? 'Responsive inbox' : 'Inbox responsiva';
+
+  String get betaLabel => 'Beta';
+
+  String get responsiveHintTitle => _isEnglishLocale
+      ? 'Responsive priority demo'
+      : 'Demo de prioridade responsiva';
+
+  String get responsiveHintBody => _isEnglishLocale
+      ? 'Resize the page to keep Code and Actions visible while lower-priority columns move into the detail row.'
+      : 'Redimensione a pagina para manter Codigo e Acoes visiveis enquanto colunas menos prioritarias migram para a linha de detalhes.';
+
+  String get tabListLabel =>
+      _isEnglishLocale ? 'Inbox sections' : 'Secoes da inbox';
 
   String get localeCode => _isEnglishLocale ? 'en_US' : 'pt_BR';
 
@@ -114,9 +164,16 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
 
   String get requesterLabel => _isEnglishLocale ? 'Requester' : 'Solicitante';
 
+  String get responsibleLabel =>
+      _isEnglishLocale ? 'Responsible' : 'Responsavel';
+
   String get requesterPlaceholder => _isEnglishLocale
       ? 'Type to filter requester'
       : 'Digite para filtrar o solicitante';
+
+  String get responsiblePlaceholder => _isEnglishLocale
+      ? 'Type to filter responsible'
+      : 'Digite para filtrar o responsavel';
 
   String get classificationLabel =>
       _isEnglishLocale ? 'Classification' : 'Classificacao';
@@ -137,18 +194,34 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
   String get dateRangePlaceholder =>
       _isEnglishLocale ? 'Select a period' : 'Selecione o periodo';
 
-  String get listCodeLabel =>
-      _isEnglishLocale ? 'Batch code' : 'Codigo da lista';
+  String get listCodeLabel => _isEnglishLocale ? 'Inbox list' : 'Lista';
 
   String get listCodePlaceholder =>
-      _isEnglishLocale ? 'Filter by batch code' : 'Filtrar por codigo da lista';
+      _isEnglishLocale ? 'Filter by inbox list' : 'Filtrar por lista';
 
   String get tagFilterLabel => _isEnglishLocale ? 'Labels' : 'Etiquetas';
 
   String get clearButtonLabel => _isEnglishLocale ? 'Clear' : 'Limpar';
 
-  String get primaryActionLabel =>
-      _isEnglishLocale ? 'Process selected' : 'Processar selecionados';
+  String get actionBarTitle =>
+      _isEnglishLocale ? 'Bulk actions' : 'Acoes em lote';
+
+  String get actionBarBody => _isEnglishLocale
+      ? 'Select rows and simulate routing flows from the toolbar or per-row actions.'
+      : 'Selecione linhas e simule fluxos de encaminhamento pela barra ou pelas acoes de cada item.';
+
+  String get forwardActionLabel => _isEnglishLocale ? 'Forward' : 'Encaminhar';
+
+  String get dispatchActionLabel => _isEnglishLocale ? 'Dispatch' : 'Despachar';
+
+  String get receiveActionLabel => _isEnglishLocale ? 'Receive' : 'Receber';
+
+  String get tableCalloutTitle =>
+      _isEnglishLocale ? 'Column behavior' : 'Comportamento das colunas';
+
+  String get tableCalloutBody => _isEnglishLocale
+      ? 'Code and Actions are required. Classification, last movement, subject, requester, responsible, tags, and digital hide progressively before horizontal scroll appears.'
+      : 'Codigo e Acoes sao obrigatorios. Classificacao, ultimo andamento, assunto, solicitante, responsavel, etiquetas e digital se escondem progressivamente antes de surgir rolagem horizontal.';
 
   String get tagModalTitle {
     final record = _findRecordById(activeRecordId);
@@ -162,6 +235,9 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
 
   List<Map<String, dynamic>> get classificationOptions =>
       _isEnglishLocale ? _classificationOptionsEn : _classificationOptionsPt;
+
+  List<InboxDemoTabOption> get inboxTabs =>
+      _isEnglishLocale ? _inboxTabsEn : _inboxTabsPt;
 
   DatatableSettings get datatableSettings =>
       _isEnglishLocale ? _datatableSettingsEn : _datatableSettingsPt;
@@ -192,6 +268,10 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     requesterQuery = value;
   }
 
+  void onResponsibleInput(String value) {
+    responsibleQuery = value;
+  }
+
   void onClassificationChanged(dynamic value) {
     selectedClassificationId = value?.toString() ?? '';
   }
@@ -217,9 +297,37 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     await _loadWorkItems();
   }
 
+  void selectInboxTab(String tabId) {
+    if (activeInboxTabId == tabId) {
+      return;
+    }
+
+    activeInboxTabId = tabId;
+    tableFilters.offset = 0;
+    queueTable?.unSelectAll();
+    _lastFilterSignature = _buildFilterSignature();
+    _loadWorkItems();
+  }
+
+  bool isInboxTabActive(String tabId) => activeInboxTabId == tabId;
+
+  bool isPrimaryQueueAction(String actionKey) {
+    switch (activeInboxTabId) {
+      case _inboxTabReceived:
+        return actionKey == 'forward';
+      case _inboxTabAwaiting:
+        return actionKey == 'receive';
+      case _inboxTabCanceling:
+        return actionKey == 'dispatch';
+      default:
+        return false;
+    }
+  }
+
   void clearFilters() {
     digitalFilter = null;
     requesterQuery = '';
+    responsibleQuery = '';
     selectedClassificationId = '';
     selectedSubjectId = '';
     listCodeFilter = '';
@@ -240,25 +348,26 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     _loadWorkItems();
   }
 
-  void applyPrimaryAction() {
+  void applyQueueAction(String actionKey) {
     final selectedRows = queueTable?.getAllSelected<Map<String, dynamic>>() ??
         const <Map<String, dynamic>>[];
+    final actionLabel = _resolveQueueActionLabel(actionKey);
     if (selectedRows.isEmpty) {
       lastActionText = _isEnglishLocale
-          ? 'Select at least one row to simulate the routing action.'
-          : 'Selecione ao menos uma linha para simular a acao principal.';
+          ? 'Select at least one process to simulate "$actionLabel".'
+          : 'Selecione ao menos um processo para simular "$actionLabel".';
       return;
     }
 
     lastActionText = _isEnglishLocale
-        ? 'Simulated action applied to ${selectedRows.length} items.'
-        : 'Acao simulada aplicada a ${selectedRows.length} itens.';
+        ? '$actionLabel simulated for ${selectedRows.length} items in ${_currentTabLabel.toLowerCase()}.'
+        : '$actionLabel simulado para ${selectedRows.length} itens em ${_currentTabLabel.toLowerCase()}.';
   }
 
   void openRecordPreview(Map<String, dynamic> record) {
     lastActionText = _isEnglishLocale
-        ? 'Preview opened for ${record['fullCode']}.'
-        : 'Visualizacao simulada para ${record['fullCode']}.';
+        ? 'Inbox panel opened for ${record['fullCode']}.'
+        : 'Painel da inbox aberto para ${record['fullCode']}.';
   }
 
   void openTagManager(Map<String, dynamic> record) {
@@ -407,11 +516,16 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     List<Map<String, dynamic>> records,
   ) {
     final requesterFilter = requesterQuery.trim().toLowerCase();
+    final responsibleFilter = responsibleQuery.trim().toLowerCase();
     final codeListFilter = listCodeFilter.trim().toLowerCase();
     final selectedCodeSet = selectedCodes.toSet();
     final selectedTagSet = selectedTagFilterIds.toSet();
 
     return records.where((Map<String, dynamic> record) {
+      if (record['queueBucket'] != activeInboxTabId) {
+        return false;
+      }
+
       if (digitalFilter != null && record['digital'] != digitalFilter) {
         return false;
       }
@@ -419,6 +533,13 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       if (requesterFilter.isNotEmpty) {
         final requester = (record['requester'] as String).toLowerCase();
         if (!requester.contains(requesterFilter)) {
+          return false;
+        }
+      }
+
+      if (responsibleFilter.isNotEmpty) {
+        final responsible = (record['responsibleName'] as String).toLowerCase();
+        if (!responsible.contains(responsibleFilter)) {
           return false;
         }
       }
@@ -495,8 +616,10 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
 
   String _buildFilterSignature() {
     return <String>[
+      activeInboxTabId,
       digitalFilter?.toString() ?? 'null',
       requesterQuery.trim(),
+      responsibleQuery.trim(),
       selectedClassificationId,
       selectedSubjectId,
       listCodeFilter.trim(),
@@ -515,7 +638,35 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
         .toList(growable: false);
   }
 
+  String get _currentTabLabel {
+    for (final tab in inboxTabs) {
+      if (tab.id == activeInboxTabId) {
+        return tab.label;
+      }
+    }
+    return inboxTabs.first.label;
+  }
+
+  String _resolveQueueActionLabel(String actionKey) {
+    switch (actionKey) {
+      case 'forward':
+        return forwardActionLabel;
+      case 'dispatch':
+        return dispatchActionLabel;
+      case 'receive':
+        return receiveActionLabel;
+      default:
+        return _isEnglishLocale ? 'Process' : 'Processar';
+    }
+  }
+
   DatatableSettings _buildDatatableSettings({required bool isEnglish}) {
+    final listLabel = isEnglish ? 'List' : 'Lista';
+    final previewLabel =
+        isEnglish ? 'Open inbox panel' : 'Abrir painel da inbox';
+    final labelsLabel = isEnglish ? 'Manage labels' : 'Gerenciar etiquetas';
+    final ownerEmptyLabel = isEnglish ? 'Unassigned' : 'Sem responsavel';
+
     return DatatableSettings(
       colsDefinitions: <DatatableCol>[
         DatatableCol(
@@ -523,12 +674,30 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           title: isEnglish ? 'Code' : 'Codigo',
           sortingBy: 'fullCode',
           enableSorting: true,
+          width: '178px',
+          responsiveAutoHideRequired: true,
+          customRenderHtml:
+              (Map<String, dynamic> itemMap, dynamic itemInstance) {
+            final wrapper = html.DivElement()
+              ..classes.addAll(<String>['d-flex', 'flex-column']);
+            final title = html.SpanElement()
+              ..classes.addAll(<String>['fw-semibold', 'text-body'])
+              ..text = itemMap['fullCode']?.toString() ?? '';
+            final subtitle = html.SpanElement()
+              ..classes.addAll(<String>['small', 'text-muted'])
+              ..text = '$listLabel ${itemMap['listCode'] ?? '-'}';
+            wrapper
+              ..append(title)
+              ..append(subtitle);
+            return wrapper;
+          },
         ),
         DatatableCol(
           key: 'requester',
           title: isEnglish ? 'Requester' : 'Solicitante',
           sortingBy: 'requester',
           enableSorting: true,
+          responsiveAutoHidePriority: 30,
         ),
         DatatableCol(
           key: 'classificationLabel',
@@ -536,12 +705,14 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           sortingBy: 'classificationLabel',
           enableSorting: true,
           hideOnMobile: true,
+          responsiveAutoHidePriority: 5,
         ),
         DatatableCol(
           key: 'subjectLabel',
           title: isEnglish ? 'Subject' : 'Assunto',
           sortingBy: 'subjectLabel',
           enableSorting: true,
+          responsiveAutoHidePriority: 20,
         ),
         DatatableCol(
           key: 'lastMovement',
@@ -549,6 +720,7 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           format: DatatableFormat.dateTimeShort,
           sortingBy: 'lastMovementSort',
           enableSorting: true,
+          responsiveAutoHidePriority: 10,
         ),
         DatatableCol(
           key: 'digital',
@@ -556,11 +728,59 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           format: DatatableFormat.boolHighlightedBadge,
           sortingBy: 'digital',
           enableSorting: true,
-          width: '110px',
+          width: '104px',
+          responsiveAutoHidePriority: 60,
+        ),
+        DatatableCol(
+          key: 'responsibleName',
+          title: isEnglish ? 'Responsible' : 'Responsavel',
+          sortingBy: 'responsibleName',
+          enableSorting: true,
+          responsiveAutoHidePriority: 40,
+          customRenderHtml:
+              (Map<String, dynamic> itemMap, dynamic itemInstance) {
+            final wrapper = html.DivElement()
+              ..classes
+                  .addAll(<String>['d-flex', 'align-items-center', 'gap-2']);
+            final avatar = html.SpanElement()
+              ..classes.addAll(<String>[
+                'd-inline-flex',
+                'align-items-center',
+                'justify-content-center',
+                'rounded-circle',
+                'fw-semibold',
+                'small',
+                'text-white',
+              ])
+              ..style.width = '2rem'
+              ..style.height = '2rem'
+              ..style.background = '#0f4c81'
+              ..style.flex = '0 0 2rem'
+              ..text = itemMap['responsibleInitials']?.toString() ?? '--';
+            final copy = html.DivElement()
+              ..classes.addAll(<String>['d-flex', 'flex-column']);
+            copy
+              ..append(
+                html.SpanElement()
+                  ..classes.addAll(<String>['fw-semibold', 'text-body'])
+                  ..text =
+                      itemMap['responsibleName']?.toString() ?? ownerEmptyLabel,
+              )
+              ..append(
+                html.SpanElement()
+                  ..classes.addAll(<String>['small', 'text-muted'])
+                  ..text = itemMap['queueLaneLabel']?.toString() ?? '',
+              );
+            wrapper
+              ..append(avatar)
+              ..append(copy);
+            return wrapper;
+          },
         ),
         DatatableCol(
           key: 'tags',
           title: isEnglish ? 'Labels' : 'Etiquetas',
+          responsiveAutoHidePriority: 50,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
             final wrapper = html.DivElement()
@@ -595,11 +815,13 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
         DatatableCol(
           key: 'actions',
           title: isEnglish ? 'Actions' : 'Acoes',
+          width: '116px',
+          responsiveAutoHideRequired: true,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
             final previewButton = html.ButtonElement()
               ..type = 'button'
-              ..title = isEnglish ? 'Preview' : 'Visualizar'
+              ..title = previewLabel
               ..classes.addAll(<String>[
                 'btn',
                 'btn-flat-primary',
@@ -617,7 +839,7 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
 
             final tagButton = html.ButtonElement()
               ..type = 'button'
-              ..title = isEnglish ? 'Labels' : 'Etiquetas'
+              ..title = labelsLabel
               ..classes.addAll(<String>[
                 'btn',
                 'btn-flat-primary',
@@ -663,6 +885,45 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
         field: 'subjectLabel',
         operator: 'like',
         label: isEnglish ? 'Subject' : 'Assunto',
+      ),
+      DatatableSearchField(
+        field: 'responsibleName',
+        operator: 'like',
+        label: isEnglish ? 'Responsible' : 'Responsavel',
+      ),
+    ];
+  }
+
+  static List<InboxDemoTabOption> _buildInboxTabs({
+    required bool isEnglish,
+    required List<Map<String, dynamic>> records,
+  }) {
+    int countFor(String tabId) {
+      return records
+          .where(
+              (Map<String, dynamic> record) => record['queueBucket'] == tabId)
+          .length;
+    }
+
+    return <InboxDemoTabOption>[
+      InboxDemoTabOption(
+        id: _inboxTabReceived,
+        label: isEnglish ? 'Received' : 'Recebidos',
+        helper: isEnglish ? 'Ready for routing' : 'Prontos para encaminhamento',
+        count: countFor(_inboxTabReceived),
+      ),
+      InboxDemoTabOption(
+        id: _inboxTabAwaiting,
+        label: isEnglish ? 'Awaiting receipt' : 'A receber',
+        helper: isEnglish ? 'Waiting for ownership' : 'Aguardando recebimento',
+        count: countFor(_inboxTabAwaiting),
+      ),
+      InboxDemoTabOption(
+        id: _inboxTabCanceling,
+        label: isEnglish ? 'Canceling' : 'A cancelar',
+        helper:
+            isEnglish ? 'Pending cancellation' : 'Pendentes de cancelamento',
+        count: countFor(_inboxTabCanceling),
       ),
     ];
   }
@@ -768,8 +1029,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     return <Map<String, dynamic>>[
       _record(
         id: 1,
+        queueBucket: _inboxTabReceived,
+        queueLaneLabel: 'Triagem inicial',
         fullCode: '35910/2011',
         requester: 'Helena Maria Nica Scatolini',
+        responsibleName: 'Gabriela S. Ramos',
+        responsibleInitials: 'GR',
         classificationId: 'request',
         classificationLabel: 'Solicitacao',
         subjectId: 'onboarding',
@@ -782,8 +1047,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       ),
       _record(
         id: 2,
+        queueBucket: _inboxTabReceived,
+        queueLaneLabel: 'Analise de documentos',
         fullCode: '40596/2012',
         requester: 'Tatiane Pacheco da Silva',
+        responsibleName: 'Rafael M. Pires',
+        responsibleInitials: 'RP',
         classificationId: 'request',
         classificationLabel: 'Solicitacao',
         subjectId: 'review',
@@ -796,8 +1065,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       ),
       _record(
         id: 3,
+        queueBucket: _inboxTabReceived,
+        queueLaneLabel: 'Fila contratual',
         fullCode: '33512/2012',
         requester: 'Vanderlea Moreira Jorge Duarte',
+        responsibleName: 'Ana C. Prado',
+        responsibleInitials: 'AP',
         classificationId: 'contract',
         classificationLabel: 'Contrato',
         subjectId: 'renewal',
@@ -810,8 +1083,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       ),
       _record(
         id: 4,
+        queueBucket: _inboxTabAwaiting,
+        queueLaneLabel: 'Recebimento setorial',
         fullCode: '11773/2016',
         requester: 'Zilnea Quintana Fernandes',
+        responsibleName: 'Equipe de contratos',
+        responsibleInitials: 'EC',
         classificationId: 'contract',
         classificationLabel: 'Contrato',
         subjectId: 'amendment',
@@ -824,8 +1101,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       ),
       _record(
         id: 5,
+        queueBucket: _inboxTabAwaiting,
+        queueLaneLabel: 'Atendimento interno',
         fullCode: '39326/2012',
         requester: 'Secretaria de Gestao de Pessoas',
+        responsibleName: 'Mariana F. Luz',
+        responsibleInitials: 'ML',
         classificationId: 'service',
         classificationLabel: 'Atendimento',
         subjectId: 'support',
@@ -838,8 +1119,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       ),
       _record(
         id: 6,
+        queueBucket: _inboxTabAwaiting,
+        queueLaneLabel: 'Triagem operacional',
         fullCode: '34557/2012',
         requester: 'Secretaria de Gestao de Pessoas',
+        responsibleName: 'Rogerio D. Alves',
+        responsibleInitials: 'RA',
         classificationId: 'service',
         classificationLabel: 'Atendimento',
         subjectId: 'triage',
@@ -850,6 +1135,60 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
         listCode: '2101',
         tagIds: <int>[4, 5],
       ),
+      _record(
+        id: 7,
+        queueBucket: _inboxTabCanceling,
+        queueLaneLabel: 'Cancelamento validado',
+        fullCode: '50281/2014',
+        requester: 'Diretoria de Operacoes',
+        responsibleName: 'Patricia N. Costa',
+        responsibleInitials: 'PC',
+        classificationId: 'service',
+        classificationLabel: 'Atendimento',
+        subjectId: 'support',
+        subjectLabel: 'Apoio operacional',
+        digital: true,
+        includedAt: DateTime(2017, 1, 26, 9, 10),
+        lastMovement: DateTime(2017, 1, 30, 14, 20),
+        listCode: '2330',
+        tagIds: <int>[1, 3],
+      ),
+      _record(
+        id: 8,
+        queueBucket: _inboxTabCanceling,
+        queueLaneLabel: 'Conferencia final',
+        fullCode: '18814/2015',
+        requester: 'Controladoria Geral',
+        responsibleName: 'Luciana V. Matos',
+        responsibleInitials: 'LM',
+        classificationId: 'contract',
+        classificationLabel: 'Contrato',
+        subjectId: 'amendment',
+        subjectLabel: 'Aditivo interno',
+        digital: false,
+        includedAt: DateTime(2017, 1, 27, 10, 45),
+        lastMovement: DateTime(2017, 1, 30, 16, 5),
+        listCode: '2330',
+        tagIds: <int>[2, 5],
+      ),
+      _record(
+        id: 9,
+        queueBucket: _inboxTabReceived,
+        queueLaneLabel: 'Mesa de apoio',
+        fullCode: '61109/2016',
+        requester: 'Nucleo de Governanca',
+        responsibleName: 'Bruno T. Araujo',
+        responsibleInitials: 'BA',
+        classificationId: 'request',
+        classificationLabel: 'Solicitacao',
+        subjectId: 'review',
+        subjectLabel: 'Revisao documental',
+        digital: true,
+        includedAt: DateTime(2017, 1, 28, 8, 5),
+        lastMovement: DateTime(2017, 1, 31, 8, 30),
+        listCode: '2504',
+        tagIds: <int>[1, 4],
+      ),
     ].map((Map<String, dynamic> item) {
       final record = Map<String, dynamic>.from(item);
       record['tags'] = <Map<String, dynamic>>[];
@@ -859,8 +1198,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
 
   static Map<String, dynamic> _record({
     required int id,
+    required String queueBucket,
+    required String queueLaneLabel,
     required String fullCode,
     required String requester,
+    required String responsibleName,
+    required String responsibleInitials,
     required String classificationId,
     required String classificationLabel,
     required String subjectId,
@@ -873,8 +1216,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
   }) {
     return <String, dynamic>{
       'id': id,
+      'queueBucket': queueBucket,
+      'queueLaneLabel': queueLaneLabel,
       'fullCode': fullCode,
       'requester': requester,
+      'responsibleName': responsibleName,
+      'responsibleInitials': responsibleInitials,
       'classificationId': classificationId,
       'classificationLabel': classificationLabel,
       'subjectId': subjectId,

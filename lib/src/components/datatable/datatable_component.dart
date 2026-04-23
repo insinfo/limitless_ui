@@ -20,6 +20,94 @@ import 'datatable_exporter.dart';
 import 'datatable_models.dart';
 import 'datatable_row_builder.dart';
 
+class LiDatatableHeaderContext {
+  LiDatatableHeaderContext({
+    required this.search,
+    required this.requestData,
+    required this.selectSearchField,
+    required this.changeItemsPerPage,
+    required this.toggleViewMode,
+    required this.toggleAllColumnsVisibility,
+    required this.exportPdf,
+    required this.exportXlsx,
+  });
+
+  DataFrame data = DataFrame(items: <dynamic>[], totalRecords: 0);
+  List<DatatableRow> rows = <DatatableRow>[];
+  List<DatatableRenderedRow> renderedRows = <DatatableRenderedRow>[];
+  Filters dataTableFilter = Filters();
+  DatatableSettings settings =
+      DatatableSettings(colsDefinitions: <DatatableCol>[]);
+  List<DatatableSearchField> searchInFields = <DatatableSearchField>[];
+  List<int> limitPerPageOptions = <int>[];
+  List<DatatableMenuAction> exportMenuActions = <DatatableMenuAction>[];
+  String searchLabel = '';
+  String searchPlaceholder = '';
+  bool gridMode = false;
+  bool showExportMenu = false;
+  bool disableHeaderPadding = false;
+  int totalRecords = 0;
+  int currentPage = 1;
+  int numPages = 1;
+  int? selectedSearchFieldIndex;
+  int? limitPerPage;
+  bool allColumnsVisible = true;
+
+  final void Function() search;
+  final void Function() requestData;
+  final void Function(int index) selectSearchField;
+  final void Function(int value) changeItemsPerPage;
+  final void Function() toggleViewMode;
+  final void Function() toggleAllColumnsVisibility;
+  final Future<void> Function() exportPdf;
+  final void Function() exportXlsx;
+}
+
+class LiDatatableFooterContext {
+  LiDatatableFooterContext({
+    required this.requestData,
+    required this.changePage,
+    required this.nextPage,
+    required this.prevPage,
+    required this.goToFirstPage,
+    required this.goToLastPage,
+  });
+
+  DataFrame data = DataFrame(items: <dynamic>[], totalRecords: 0);
+  List<DatatableRow> rows = <DatatableRow>[];
+  List<DatatableRenderedRow> renderedRows = <DatatableRenderedRow>[];
+  Filters dataTableFilter = Filters();
+  DatatableSettings settings =
+      DatatableSettings(colsDefinitions: <DatatableCol>[]);
+  int totalRecords = 0;
+  int currentPage = 1;
+  int numPages = 1;
+  int currentTotalItems = 0;
+  int pageSize = 0;
+  int resolvedPaginationButtonQuantity = 0;
+
+  final void Function() requestData;
+  final void Function(int page) changePage;
+  final void Function() nextPage;
+  final void Function() prevPage;
+  final void Function() goToFirstPage;
+  final void Function() goToLastPage;
+}
+
+@Directive(selector: 'template[li-datatable-header]')
+class LiDatatableHeaderDirective {
+  LiDatatableHeaderDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
+@Directive(selector: 'template[li-datatable-footer]')
+class LiDatatableFooterDirective {
+  LiDatatableFooterDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
 @Component(
   selector: 'li-datatable',
   styleUrls: ['datatable_component.css', 'grid.css'],
@@ -38,6 +126,25 @@ import 'datatable_row_builder.dart';
 class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   LiDataTableComponent(this.rootElement, this._changeDetectorRef) {
     _ensureGlobalResizeListener();
+    _headerTemplateContext = LiDatatableHeaderContext(
+      search: onSearch,
+      requestData: onRequestData,
+      selectSearchField: _selectSearchFieldFromTemplate,
+      changeItemsPerPage: _changeItemsPerPageFromTemplate,
+      toggleViewMode: changeViewMode,
+      toggleAllColumnsVisibility: toggleAllColumnsVisibility,
+      exportPdf: _exportPdfFromTemplate,
+      exportXlsx: exportXlsx,
+    );
+    _footerTemplateContext = LiDatatableFooterContext(
+      requestData: onRequestData,
+      changePage: changePage,
+      nextPage: nextPage,
+      prevPage: prevPage,
+      goToFirstPage: irParaPrimeiraPagina,
+      goToLastPage: irParaUltimaPagina,
+    );
+    _syncTemplateContexts();
   }
 
   static final StreamController<void> _globalResizeController =
@@ -55,6 +162,20 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   final Element rootElement;
   final ChangeDetectorRef _changeDetectorRef;
   final DatatableRowBuilder _rowBuilder = DatatableRowBuilder();
+  late final LiDatatableHeaderContext _headerTemplateContext;
+  late final LiDatatableFooterContext _footerTemplateContext;
+
+  @ContentChild(LiDatatableHeaderDirective)
+  LiDatatableHeaderDirective? projectedHeaderTemplateDirective;
+
+  @ContentChild(LiDatatableFooterDirective)
+  LiDatatableFooterDirective? projectedFooterTemplateDirective;
+
+  @Input()
+  TemplateRef? headerTemplate;
+
+  @Input()
+  TemplateRef? footerTemplate;
 
   @ViewChild('card')
   DivElement? card;
@@ -62,17 +183,24 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   @ViewChild('table')
   HtmlElement? table;
 
+  @ViewChild('scrollContainer')
+  HtmlElement? scrollContainer;
+
   final SimpleLoading _loading = SimpleLoading();
   StreamSubscription<void>? _resizeSubscription;
   Timer? _resizeDebounce;
   int? _drawAnimationFrameId;
   int? _postRenderAnimationFrameId;
+  int? _responsiveAutoHideAnimationFrameId;
   bool _isDestroyed = false;
   bool _drawScheduled = false;
   bool _viewInitialized = false;
   int _manualRowsRevision = 0;
   int? _lastRowsSignature;
   bool _visible = true;
+  final Map<String, double> _responsiveColumnWidthCache = <String, double>{};
+  final Set<String> _autoHiddenColumnKeys = <String>{};
+  double _responsiveCheckboxWidthCache = 44;
 
   Filters _dataTableFilter = Filters();
 
@@ -109,6 +237,9 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   @Input()
   int responsiveCollapseMaxWidth = 767;
+
+  @Input()
+  bool responsiveAutoHideColumns = false;
 
   @Input()
   bool deferInitialDrawUntilVisible = false;
@@ -182,6 +313,30 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   List<DatatableSearchField> get searchInFields => _searchInFields;
 
+  TemplateRef? get resolvedHeaderTemplate =>
+      headerTemplate ?? projectedHeaderTemplateDirective?.templateRef;
+
+  bool get hasCustomHeader => resolvedHeaderTemplate != null;
+
+  LiDatatableHeaderContext get headerTemplateContext => _headerTemplateContext;
+
+  TemplateRef? get resolvedFooterTemplate =>
+      footerTemplate ?? projectedFooterTemplateDirective?.templateRef;
+
+  bool get hasCustomFooter => resolvedFooterTemplate != null;
+
+  LiDatatableFooterContext get footerTemplateContext => _footerTemplateContext;
+
+  int? get selectedSearchFieldIndex {
+    if (_searchInFields.isEmpty) {
+      return null;
+    }
+
+    _ensureSelectedSearchField();
+    final index = _searchInFields.indexWhere((field) => field.selected);
+    return index < 0 ? null : index;
+  }
+
   void _ensureSelectedSearchField() {
     if (_searchInFields.isEmpty) {
       return;
@@ -230,7 +385,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _applySelectedSearchFieldToFilter();
   }
 
-  DatatableSettings _settings = DatatableSettings(colsDefinitions: <DatatableCol>[]);
+  DatatableSettings _settings =
+      DatatableSettings(colsDefinitions: <DatatableCol>[]);
 
   @Input('settings')
   set settings(DatatableSettings value) {
@@ -309,6 +465,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     });
 
     drawPagination();
+    _syncTemplateContexts();
     _schedulePostRenderSync();
     scheduleDraw();
     _changeDetectorRef.markForCheck();
@@ -318,6 +475,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   void ngAfterChanges() {
     _syncCurrentPageFromOffset();
     drawPagination();
+    _syncTemplateContexts();
     _schedulePostRenderSync();
     scheduleDraw();
     _changeDetectorRef.markForCheck();
@@ -335,6 +493,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     if (_postRenderAnimationFrameId != null) {
       window.cancelAnimationFrame(_postRenderAnimationFrameId!);
       _postRenderAnimationFrameId = null;
+    }
+    if (_responsiveAutoHideAnimationFrameId != null) {
+      window.cancelAnimationFrame(_responsiveAutoHideAnimationFrameId!);
+      _responsiveAutoHideAnimationFrameId = null;
     }
     _dataRequest.close();
     _limitChangeRequest.close();
@@ -395,6 +557,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       gridMode,
       responsiveCollapse,
       responsiveCollapseMaxWidth,
+      responsiveAutoHideColumns,
       _manualRowsRevision,
     );
   }
@@ -407,8 +570,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         rows: rows,
         responsiveCollapse: responsiveCollapse,
         responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+        autoHiddenColumnKeys: _autoHiddenColumnKeys,
       );
       drawPagination();
+      _syncTemplateContexts();
       _schedulePostRenderSync();
       _changeDetectorRef.markForCheck();
       return;
@@ -420,6 +585,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     if (settings.colsDefinitions.isEmpty) {
       _lastRowsSignature = signature;
       drawPagination();
+      _syncTemplateContexts();
       _schedulePostRenderSync();
       _changeDetectorRef.markForCheck();
       return;
@@ -432,29 +598,42 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       gridMode: gridMode,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     rows = buildResult.rows;
     renderedRows = buildResult.renderedRows;
 
     _lastRowsSignature = signature;
     drawPagination();
+    _syncTemplateContexts();
     _schedulePostRenderSync();
 
     _changeDetectorRef.markForCheck();
   }
 
   void _handleViewportChange() {
-    if (!_isResponsiveViewportActive) {
+    _syncResponsiveColumnWidthCache();
+
+    final autoHideChanged = _syncResponsiveAutoHideNow();
+
+    if (!_isResponsiveCollapseViewportActive && _autoHiddenColumnKeys.isEmpty) {
       for (final row in rows) {
         row.isExpanded = false;
       }
+    }
+
+    if (autoHideChanged) {
+      return;
     }
 
     renderedRows = _rowBuilder.rebuildRenderedRows(
       rows: rows,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
+    _syncTemplateContexts();
+    _schedulePostRenderSync();
     _changeDetectorRef.markForCheck();
   }
 
@@ -474,6 +653,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         return;
       }
       _syncSortingIndicators();
+      _syncResponsiveColumnWidthCache();
+      _scheduleResponsiveAutoHideSync();
       _changeDetectorRef.markForCheck();
     });
   }
@@ -497,19 +678,25 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   int paginationButtonQuantity = 5;
 
   @Input()
-  int compactPaginationButtonQuantity = 1;
+  int compactPaginationButtonQuantity = 2;
 
   @Input()
   int compactPaginationMaxWidth = 767;
 
-  bool get isCompactPaginationViewport =>
-      window.innerWidth != null && window.innerWidth! <= compactPaginationMaxWidth;
+  /// When enabled, changing the page size emits [dataRequest] and recalculates
+  /// the offset like a regular page navigation instead of only emitting
+  /// [limitChange].
+  @Input()
+  bool requestDataOnItemsPerPageChange = false;
 
-  int get resolvedPaginationButtonQuantity =>
-      isCompactPaginationViewport
-          ? compactPaginationButtonQuantity
-          : paginationButtonQuantity;
-  
+  bool get isCompactPaginationViewport =>
+      window.innerWidth != null &&
+      window.innerWidth! <= compactPaginationMaxWidth;
+
+  int get resolvedPaginationButtonQuantity => isCompactPaginationViewport
+      ? compactPaginationButtonQuantity
+      : paginationButtonQuantity;
+
   void _syncCurrentPageFromOffset() {
     final resolvedLimit = dataTableFilter.limit ?? 1;
     final resolvedOffset = dataTableFilter.offset ?? 0;
@@ -523,6 +710,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void drawPagination() {
+    _syncFooterTemplateContext();
     _changeDetectorRef.markForCheck();
   }
 
@@ -544,6 +732,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     if (page != _currentPage) {
       _currentPage = page;
     }
+    _syncTemplateContexts();
     onRequestData();
     _changeDetectorRef.markForCheck();
   }
@@ -571,6 +760,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     final currentPage = _currentPage == 1 ? 0 : _currentPage - 1;
     dataTableFilter.offset = currentPage * (dataTableFilter.limit ?? 0);
     _settings.setOrdemStartIndex(dataTableFilter.offset ?? 0);
+    _syncTemplateContexts();
     _dataRequest.add(dataTableFilter);
     _changeDetectorRef.markForCheck();
   }
@@ -582,9 +772,22 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   void changeItemsPerPageHandler(SelectElement select) {
     final li = int.tryParse(select.selectedOptions.first.value);
+    _changeItemsPerPage(li);
+  }
+
+  void _changeItemsPerPage(int? limit) {
+    if (limit == null) {
+      return;
+    }
+
     _currentPage = 1;
-    dataTableFilter.limit = li;
-    _limitChangeRequest.add(dataTableFilter);
+    dataTableFilter.limit = limit;
+    if (requestDataOnItemsPerPageChange) {
+      onRequestData();
+    } else {
+      _syncTemplateContexts();
+      _limitChangeRequest.add(dataTableFilter);
+    }
     _changeDetectorRef.markForCheck();
   }
 
@@ -595,6 +798,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   void onSearch() {
     _currentPage = 1;
+    _syncTemplateContexts();
     _searchRequest.add(dataTableFilter);
     _changeDetectorRef.markForCheck();
     onRequestData();
@@ -620,6 +824,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     }
 
     _selectSearchFieldByIndex(parsedIndex);
+    _syncTemplateContexts();
     _changeDetectorRef.markForCheck();
   }
 
@@ -691,8 +896,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       row.selected = predicate(row.instance);
     }
 
-    isSelectAll =
-        selectableRows.isNotEmpty && selectableRows.every((row) => row.selected);
+    isSelectAll = selectableRows.isNotEmpty &&
+        selectableRows.every((row) => row.selected);
     _changeDetectorRef.markForCheck();
   }
 
@@ -731,8 +936,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       if (item.selected) {
         _selectStreamController.add(item.instance);
         final selectableRows = _selectableRows.toList(growable: false);
-        isSelectAll =
-            selectableRows.isNotEmpty && selectableRows.every((row) => row.selected);
+        isSelectAll = selectableRows.isNotEmpty &&
+            selectableRows.every((row) => row.selected);
       } else {
         isSelectAll = false;
       }
@@ -768,7 +973,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
     if (enableMultiColumnSorting) {
       final orderFields = _resolvedOrderFields().toList(growable: true);
-      final existingIndex = orderFields.indexWhere((field) => field.field == sortingBy);
+      final existingIndex =
+          orderFields.indexWhere((field) => field.field == sortingBy);
       if (existingIndex >= 0) {
         orderFields[existingIndex] = FilterOrderField(
           field: sortingBy,
@@ -885,7 +1091,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       rows: rows,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
+    _syncTemplateContexts();
+    _schedulePostRenderSync();
     _changeDetectorRef.markForCheck();
   }
 
@@ -910,8 +1119,68 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       rows: rows,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
+    _syncTemplateContexts();
+    _schedulePostRenderSync();
     _changeDetectorRef.markForCheck();
+  }
+
+  void _syncTemplateContexts() {
+    _syncHeaderTemplateContext();
+    _syncFooterTemplateContext();
+  }
+
+  void _syncHeaderTemplateContext() {
+    _headerTemplateContext
+      ..data = _data
+      ..rows = rows
+      ..renderedRows = renderedRows
+      ..dataTableFilter = dataTableFilter
+      ..settings = settings
+      ..searchInFields = _searchInFields
+      ..limitPerPageOptions = limitPerPageOptions
+      ..exportMenuActions = exportMenuActions
+      ..searchLabel = searchLabel
+      ..searchPlaceholder = searchPlaceholder
+      ..gridMode = gridMode
+      ..showExportMenu = showExportMenu
+      ..disableHeaderPadding = disableHeaderPadding
+      ..totalRecords = totalRecords
+      ..currentPage = _currentPage
+      ..numPages = numPages
+      ..selectedSearchFieldIndex = selectedSearchFieldIndex
+      ..limitPerPage = dataTableFilter.limit
+      ..allColumnsVisible = allColumnsVisible;
+  }
+
+  void _syncFooterTemplateContext() {
+    _footerTemplateContext
+      ..data = _data
+      ..rows = rows
+      ..renderedRows = renderedRows
+      ..dataTableFilter = dataTableFilter
+      ..settings = settings
+      ..totalRecords = totalRecords
+      ..currentPage = _currentPage
+      ..numPages = numPages
+      ..currentTotalItems = getCurrentTotalItems
+      ..pageSize = dataTableFilter.limit ?? 0
+      ..resolvedPaginationButtonQuantity = resolvedPaginationButtonQuantity;
+  }
+
+  void _selectSearchFieldFromTemplate(int index) {
+    _selectSearchFieldByIndex(index);
+    _syncTemplateContexts();
+    _changeDetectorRef.markForCheck();
+  }
+
+  void _changeItemsPerPageFromTemplate(int value) {
+    _changeItemsPerPage(value);
+  }
+
+  Future<void> _exportPdfFromTemplate() {
+    return exportPdf();
   }
 
   Object? trackByRenderedRow(int index, dynamic item) {
@@ -958,6 +1227,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           rows: <DatatableRow>[row],
           responsiveCollapse: responsiveCollapse,
           responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+          autoHiddenColumnKeys: _autoHiddenColumnKeys,
         )
         .first
         .hasResponsiveHiddenColumns;
@@ -969,15 +1239,29 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           rows: <DatatableRow>[row],
           responsiveCollapse: responsiveCollapse,
           responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+          autoHiddenColumnKeys: _autoHiddenColumnKeys,
         )
         .first
         .responsiveHiddenColumns;
   }
 
-  bool get _isResponsiveViewportActive =>
-      window.innerWidth != null && window.innerWidth! <= responsiveCollapseMaxWidth && responsiveCollapse;
+  bool get _isResponsiveCollapseViewportActive =>
+      window.innerWidth != null &&
+      window.innerWidth! <= responsiveCollapseMaxWidth &&
+      responsiveCollapse;
 
-  bool isResponsiveControlColumn(DatatableRenderedRow view, DatatableCol column) {
+  bool get hasResponsiveCollapsedColumns =>
+      _isResponsiveCollapseViewportActive || _autoHiddenColumnKeys.isNotEmpty;
+
+  bool isRuntimeResponsiveHidden(DatatableCol column) {
+    final hiddenOnMobile =
+        _isResponsiveCollapseViewportActive && column.hideOnMobile;
+    final hiddenByPriority = _autoHiddenColumnKeys.contains(column.key);
+    return hiddenOnMobile || hiddenByPriority;
+  }
+
+  bool isResponsiveControlColumn(
+      DatatableRenderedRow view, DatatableCol column) {
     if (!view.hasResponsiveHiddenColumns) {
       return false;
     }
@@ -991,13 +1275,12 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     if (viewOrRow is DatatableRenderedRow) {
       view = viewOrRow;
     } else if (viewOrRow is DatatableRow) {
-      view = _rowBuilder
-          .rebuildRenderedRows(
-            rows: <DatatableRow>[viewOrRow],
-            responsiveCollapse: responsiveCollapse,
-            responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
-          )
-          .first;
+      view = _rowBuilder.rebuildRenderedRows(
+        rows: <DatatableRow>[viewOrRow],
+        responsiveCollapse: responsiveCollapse,
+        responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+        autoHiddenColumnKeys: _autoHiddenColumnKeys,
+      ).first;
     } else {
       return;
     }
@@ -1014,6 +1297,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   void changeViewMode() {
     _gridMode = !_gridMode;
     _manualRowsRevision++;
+    _syncHeaderTemplateContext();
     if (_canDrawNow) {
       draw();
     }
@@ -1056,8 +1340,230 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       rows: rows,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
+    _syncTemplateContexts();
     _changeDetectorRef.markForCheck();
     return idx;
+  }
+
+  void _syncResponsiveColumnWidthCache() {
+    final tableElement = table;
+    if (tableElement == null) {
+      return;
+    }
+
+    final headerCells = tableElement.querySelectorAll('thead th[data-key]');
+    for (final cell in headerCells.whereType<TableCellElement>()) {
+      if (cell.classes.contains('hide')) {
+        continue;
+      }
+
+      final key = cell.getAttribute('data-key')?.trim() ?? '';
+      if (key.isEmpty) {
+        continue;
+      }
+
+      final rectWidth = cell.getBoundingClientRect().width.toDouble();
+      final measuredWidth =
+          rectWidth > 0 ? rectWidth : cell.offsetWidth.toDouble();
+      if (measuredWidth > 0) {
+        _responsiveColumnWidthCache[key] = measuredWidth;
+      }
+    }
+
+    if (!showCheckboxToSelectRow) {
+      return;
+    }
+
+    final checkboxCell =
+        tableElement.querySelector('thead th.datatable-first-col');
+    if (checkboxCell is! TableCellElement) {
+      return;
+    }
+
+    final rectWidth = checkboxCell.getBoundingClientRect().width.toDouble();
+    final measuredWidth =
+        rectWidth > 0 ? rectWidth : checkboxCell.offsetWidth.toDouble();
+    if (measuredWidth > 0) {
+      _responsiveCheckboxWidthCache = measuredWidth;
+    }
+  }
+
+  void _scheduleResponsiveAutoHideSync() {
+    if (_isDestroyed) {
+      return;
+    }
+
+    if (_responsiveAutoHideAnimationFrameId != null) {
+      window.cancelAnimationFrame(_responsiveAutoHideAnimationFrameId!);
+      _responsiveAutoHideAnimationFrameId = null;
+    }
+
+    _responsiveAutoHideAnimationFrameId = window.requestAnimationFrame((_) {
+      _responsiveAutoHideAnimationFrameId = null;
+      if (_isDestroyed) {
+        return;
+      }
+
+      _syncResponsiveColumnWidthCache();
+      _syncResponsiveAutoHideNow();
+    });
+  }
+
+  bool _syncResponsiveAutoHideNow() {
+    final nextKeys = _computeResponsiveAutoHiddenColumnKeys();
+    if (_setEquals(nextKeys, _autoHiddenColumnKeys)) {
+      return false;
+    }
+
+    _autoHiddenColumnKeys
+      ..clear()
+      ..addAll(nextKeys);
+    _manualRowsRevision++;
+    scheduleDraw(force: true);
+    return true;
+  }
+
+  Set<String> _computeResponsiveAutoHiddenColumnKeys() {
+    if (!responsiveAutoHideColumns || gridMode) {
+      return const <String>{};
+    }
+
+    final availableWidth = _resolveResponsiveAvailableWidth();
+    if (availableWidth <= 0) {
+      return const <String>{};
+    }
+
+    final baseVisibleColumns = settings.colsDefinitions.where((column) {
+      return column.visibility &&
+          !(_isResponsiveCollapseViewportActive && column.hideOnMobile);
+    }).toList(growable: false);
+
+    if (baseVisibleColumns.isEmpty) {
+      return const <String>{};
+    }
+
+    final totalWidth = baseVisibleColumns.fold<double>(
+      showCheckboxToSelectRow ? _responsiveCheckboxWidthCache : 0,
+      (sum, column) => sum + _resolveResponsiveColumnWidth(column),
+    );
+
+    if (totalWidth <= availableWidth) {
+      return const <String>{};
+    }
+
+    final candidates = baseVisibleColumns
+        .where((column) =>
+            !column.responsiveAutoHideRequired &&
+            column.responsiveAutoHidePriority != null)
+        .toList(growable: false);
+
+    if (candidates.isEmpty) {
+      return const <String>{};
+    }
+
+    candidates.sort((left, right) {
+      final priorityCompare = left.responsiveAutoHidePriority!
+          .compareTo(right.responsiveAutoHidePriority!);
+      if (priorityCompare != 0) {
+        return priorityCompare;
+      }
+
+      final widthCompare = _resolveResponsiveColumnWidth(right)
+          .compareTo(_resolveResponsiveColumnWidth(left));
+      if (widthCompare != 0) {
+        return widthCompare;
+      }
+
+      return settings.colsDefinitions
+          .indexOf(left)
+          .compareTo(settings.colsDefinitions.indexOf(right));
+    });
+
+    final hiddenKeys = <String>{};
+    var remainingWidth = totalWidth;
+    for (final candidate in candidates) {
+      if (remainingWidth <= availableWidth) {
+        break;
+      }
+
+      hiddenKeys.add(candidate.key);
+      remainingWidth -= _resolveResponsiveColumnWidth(candidate);
+    }
+
+    return hiddenKeys;
+  }
+
+  double _resolveResponsiveAvailableWidth() {
+    final scrollElement = scrollContainer;
+    if (scrollElement != null && scrollElement.clientWidth > 0) {
+      return scrollElement.clientWidth.toDouble();
+    }
+
+    final rootRectWidth = rootElement.getBoundingClientRect().width.toDouble();
+    if (rootRectWidth > 0) {
+      return rootRectWidth;
+    }
+
+    return 0;
+  }
+
+  double _resolveResponsiveColumnWidth(DatatableCol column) {
+    final configuredWidth = _parseCssLength(column.width) ??
+        _parseCssLength(column.minWidth) ??
+        _parseCssLength(column.maxWidth);
+    if (configuredWidth != null && configuredWidth > 0) {
+      return configuredWidth;
+    }
+
+    final fallbackWidth = column.nowrap ? 140.0 : 120.0;
+    final cachedWidth = _responsiveColumnWidthCache[column.key];
+    if (cachedWidth != null && cachedWidth > 0) {
+      return cachedWidth < fallbackWidth ? cachedWidth : fallbackWidth;
+    }
+
+    return fallbackWidth;
+  }
+
+  double? _parseCssLength(String? rawValue) {
+    if (rawValue == null) {
+      return null;
+    }
+
+    final normalized = rawValue.trim().toLowerCase();
+    if (normalized.isEmpty) {
+      return null;
+    }
+
+    final numericValue =
+        double.tryParse(normalized.replaceAll(RegExp(r'[^0-9\.-]'), ''));
+    if (numericValue == null) {
+      return null;
+    }
+
+    if (normalized.endsWith('rem') || normalized.endsWith('em')) {
+      return numericValue * 16;
+    }
+
+    if (normalized.endsWith('px')) {
+      return numericValue;
+    }
+
+    return numericValue;
+  }
+
+  bool _setEquals(Set<String> left, Set<String> right) {
+    if (left.length != right.length) {
+      return false;
+    }
+
+    for (final value in left) {
+      if (!right.contains(value)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

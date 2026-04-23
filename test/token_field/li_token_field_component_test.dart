@@ -19,13 +19,15 @@ import 'li_token_field_component_test.template.dart' as ng;
 @Component(
   selector: 'li-token-field-test-host',
   template: '''
-    <li-token-field
-        #field
-        [filterInput]="true"
-        patternAllowed="[0-9/]"
-        patternToken="\\d+/\\d+"
-        [(ngModel)]="tokens">
-    </li-token-field>
+    <div style="width: 360px;">
+      <li-token-field
+          #field
+          [filterInput]="true"
+          patternAllowed="[0-9/]"
+          patternToken="\\d+/\\d+"
+          [(ngModel)]="tokens">
+      </li-token-field>
+    </div>
   ''',
   directives: [coreDirectives, formDirectives, LiTokenFieldComponent],
 )
@@ -102,6 +104,23 @@ void main() {
     await _settle(fixture);
 
     expect(host.tokens, isEmpty);
+  });
+
+  test('mantem o input na mesma linha do token enquanto houver espaço',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final token = fixture.rootElement.querySelector('.tokenfield-set-item')
+        as html.Element;
+    final input = fixture.rootElement.querySelector('.li-token-field__input')
+        as html.InputElement;
+    final tokenRect = token.getBoundingClientRect();
+    final inputRect = input.getBoundingClientRect();
+
+    expect(inputRect.top, lessThan(tokenRect.bottom - 2));
+    expect(inputRect.left, greaterThan(tokenRect.left));
+    expect(inputRect.width, greaterThan(120));
   });
 
   test('allows granular action visibility and emits clearAction', () async {

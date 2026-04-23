@@ -58,7 +58,7 @@ void main() {
         fixture.rootElement.querySelector('.btn-primary') as html.ButtonElement;
 
     await fixture.update((_) {
-      nameInput.value = 'Etiqueta SALI';
+      nameInput.value = 'Etiqueta Retro';
       nameInput.dispatchEvent(html.Event('input', canBubble: true));
       colorInput.value = 'f4511e';
       colorInput.dispatchEvent(html.Event('input', canBubble: true));
@@ -72,7 +72,7 @@ void main() {
 
     expect(host.savedValue, isNotNull);
     expect(host.savedValue!['id'], 12);
-    expect(host.savedValue!['nome'], 'Etiqueta SALI');
+    expect(host.savedValue!['nome'], 'Etiqueta Retro');
     expect(host.savedValue!['cor'], '#f4511e');
   });
 }

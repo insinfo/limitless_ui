@@ -14,6 +14,9 @@ const liDropdownDirectives = <Object>[
   LiDropdownMenuDirective,
   LiDropdownItemDirective,
   LiDropdownButtonItemDirective,
+  LiDropdownSubmenuDirective,
+  LiDropdownSubmenuToggleDirective,
+  LiDropdownSubmenuMenuDirective,
 ];
 
 String _normalizedDropdownKey(html.KeyboardEvent event) {
@@ -308,7 +311,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   }
 
   List<html.Element> get _enabledItemElements => _items
-      .where((item) => !item.disabled)
+      .where((item) => !item.disabled && item.isNavigable)
       .map((item) => item.nativeElement)
       .toList(growable: false);
 
@@ -361,12 +364,18 @@ class LiDropdownDirective implements OnInit, OnDestroy {
             _anchor != null && _anchor!.nativeElement.contains(target);
         final clickedMenu =
             _menu != null && _menu!.nativeElement.contains(target);
+        final clickedSubmenuToggle =
+            target.closest('.li-dropdown-submenu__toggle') != null;
 
         if (clickedAnchor) {
           return;
         }
 
         if (clickedMenu) {
+          if (clickedSubmenuToggle) {
+            return;
+          }
+
           if (_autoCloseMode == 'true' || _autoCloseMode == 'inside') {
             close();
           }
@@ -534,6 +543,320 @@ class LiDropdownMenuDirective implements OnInit, OnDestroy {
   }
 }
 
+@Directive(
+  selector: '[liDropdownSubmenu]',
+  exportAs: 'liDropdownSubmenu',
+)
+class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
+  LiDropdownSubmenuDirective(
+    this.hostElement, [
+    @Optional() this.dropdown,
+  ]);
+
+  static final List<LiDropdownSubmenuDirective> _openSubmenus =
+      <LiDropdownSubmenuDirective>[];
+
+  final html.Element hostElement;
+  final LiDropdownDirective? dropdown;
+
+  LiDropdownSubmenuToggleDirective? _toggle;
+  LiDropdownSubmenuMenuDirective? _menu;
+  StreamSubscription<bool>? _dropdownOpenChangeSubscription;
+  StreamSubscription<html.MouseEvent>? _documentClickSubscription;
+
+  bool _open = false;
+
+  @Input()
+  String placement = 'end';
+
+  @Input()
+  bool openOnHover = true;
+
+  bool get isOpen => _open;
+
+  @HostBinding('class.dropdown-submenu')
+  bool hostDropdownSubmenuClass = true;
+
+  @HostBinding('class.li-dropdown-submenu')
+  bool hostLiDropdownSubmenuClass = true;
+
+  @HostBinding('class.dropdown-submenu-start')
+  bool get hostDropdownSubmenuStartClass =>
+      placement.trim().toLowerCase() == 'start';
+
+  @HostBinding('class.show')
+  bool get hostShowClass => _open;
+
+  @override
+  void ngOnInit() {
+    _dropdownOpenChangeSubscription = dropdown?.openChange.listen((open) {
+      if (!open) {
+        closeSubmenu();
+      }
+    });
+  }
+
+  void registerToggle(LiDropdownSubmenuToggleDirective toggle) {
+    _toggle = toggle;
+  }
+
+  void unregisterToggle(LiDropdownSubmenuToggleDirective toggle) {
+    if (identical(_toggle, toggle)) {
+      _toggle = null;
+    }
+  }
+
+  void registerMenu(LiDropdownSubmenuMenuDirective menu) {
+    _menu = menu;
+  }
+
+  void unregisterMenu(LiDropdownSubmenuMenuDirective menu) {
+    if (identical(_menu, menu)) {
+      _menu = null;
+    }
+  }
+
+  void toggleSubmenu({bool focusFirstItem = false}) {
+    if (_open) {
+      closeSubmenu();
+      return;
+    }
+
+    openSubmenu(focusFirstItem: focusFirstItem);
+  }
+
+  void openSubmenu({bool focusFirstItem = false}) {
+    _closeSiblingSubmenus();
+    _open = true;
+    _registerAsOpenSubmenu();
+    _bindDocumentClick();
+
+    if (focusFirstItem) {
+      focusFirstItemInMenu();
+    }
+  }
+
+  void closeSubmenu({bool focusToggle = false}) {
+    if (!_open) {
+      return;
+    }
+
+    _open = false;
+    _unregisterAsOpenSubmenu();
+    _closeDescendantSubmenus();
+    _unbindDocumentClick();
+
+    if (focusToggle) {
+      _toggle?.nativeElement.focus();
+    }
+  }
+
+  void focusFirstItemInMenu() {
+    _enabledMenuItems.firstOrNull?.focus();
+  }
+
+  void focusLastItemInMenu() {
+    _enabledMenuItems.lastOrNull?.focus();
+  }
+
+  List<html.Element> get _enabledMenuItems {
+    final menuElement = _menu?.nativeElement;
+    if (menuElement == null) {
+      return const <html.Element>[];
+    }
+
+    return menuElement
+        .querySelectorAll('.dropdown-item:not(.disabled)')
+        .whereType<html.Element>()
+        .toList(growable: false);
+  }
+
+  void _bindDocumentClick() {
+    _documentClickSubscription ??= html.document.onClick.listen((event) {
+      if (!_open) {
+        return;
+      }
+
+      final target = event.target;
+      if (target is! html.Element) {
+        closeSubmenu();
+        return;
+      }
+
+      if (!hostElement.contains(target)) {
+        closeSubmenu();
+        return;
+      }
+
+      final clickedToggle = target.closest('.li-dropdown-submenu__toggle') != null;
+      final clickedMenuItem = target.closest('.dropdown-item') != null;
+      if (!clickedToggle && clickedMenuItem) {
+        closeSubmenu();
+      }
+    });
+  }
+
+  void _unbindDocumentClick() {
+    _documentClickSubscription?.cancel();
+    _documentClickSubscription = null;
+  }
+
+  void _closeSiblingSubmenus() {
+    for (final submenu in List<LiDropdownSubmenuDirective>.from(_openSubmenus)) {
+      if (identical(submenu, this) || !identical(submenu.dropdown, dropdown)) {
+        continue;
+      }
+
+      final sharesBranch = hostElement.contains(submenu.hostElement) ||
+          submenu.hostElement.contains(hostElement);
+      if (!sharesBranch) {
+        submenu.closeSubmenu();
+      }
+    }
+  }
+
+  void _closeDescendantSubmenus() {
+    for (final submenu in List<LiDropdownSubmenuDirective>.from(_openSubmenus)) {
+      if (!identical(submenu, this) && hostElement.contains(submenu.hostElement)) {
+        submenu.closeSubmenu();
+      }
+    }
+  }
+
+  void _registerAsOpenSubmenu() {
+    _openSubmenus.remove(this);
+    _openSubmenus.add(this);
+  }
+
+  void _unregisterAsOpenSubmenu() {
+    _openSubmenus.remove(this);
+  }
+
+  @HostListener('mouseenter')
+  void onMouseEnter() {
+    if (openOnHover) {
+      openSubmenu();
+    }
+  }
+
+  @HostListener('mouseleave')
+  void onMouseLeave() {
+    if (openOnHover) {
+      closeSubmenu();
+    }
+  }
+
+  @override
+  void ngOnDestroy() {
+    closeSubmenu();
+    _dropdownOpenChangeSubscription?.cancel();
+  }
+}
+
+@Directive(selector: '[liDropdownSubmenuToggle]')
+class LiDropdownSubmenuToggleDirective implements OnInit, OnDestroy {
+  LiDropdownSubmenuToggleDirective(this.submenu, this.nativeElement);
+
+  final LiDropdownSubmenuDirective submenu;
+  final html.Element nativeElement;
+
+  @HostBinding('class.li-dropdown-submenu__toggle')
+  bool hostSubmenuToggleClass = true;
+
+  @HostBinding('class.dropdown-toggle')
+  bool hostDropdownToggleClass = true;
+
+  @HostBinding('class.show')
+  bool get hostShowClass => submenu.isOpen;
+
+  @HostBinding('attr.aria-expanded')
+  String get hostAriaExpanded => submenu.isOpen.toString();
+
+  @override
+  void ngOnInit() {
+    submenu.registerToggle(this);
+  }
+
+  @HostListener('click', ['\$event'])
+  void onClick(html.MouseEvent event) {
+    event.preventDefault();
+    event.stopPropagation();
+    submenu.toggleSubmenu();
+  }
+
+  @HostListener('keydown', ['\$event'])
+  void onKeyDown(html.KeyboardEvent event) {
+    switch (_normalizedDropdownKey(event)) {
+      case ' ':
+      case 'Enter':
+      case 'ArrowRight':
+        submenu.openSubmenu(focusFirstItem: true);
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      case 'ArrowLeft':
+      case 'Escape':
+        submenu.closeSubmenu(focusToggle: true);
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      default:
+        return;
+    }
+  }
+
+  @override
+  void ngOnDestroy() {
+    submenu.unregisterToggle(this);
+  }
+}
+
+@Directive(selector: '[liDropdownSubmenuMenu]')
+class LiDropdownSubmenuMenuDirective implements OnInit, OnDestroy {
+  LiDropdownSubmenuMenuDirective(
+    this.submenu,
+    this.dropdown,
+    this.nativeElement,
+  );
+
+  final LiDropdownSubmenuDirective submenu;
+  final LiDropdownDirective dropdown;
+  final html.Element nativeElement;
+
+  @HostBinding('class.dropdown-menu')
+  bool hostDropdownMenuClass = true;
+
+  @HostBinding('class.li-dropdown-submenu__menu')
+  bool hostSubmenuMenuClass = true;
+
+  @HostBinding('class.show')
+  bool get hostShowClass => submenu.isOpen;
+
+  @override
+  void ngOnInit() {
+    submenu.registerMenu(this);
+  }
+
+  @HostListener('keydown', ['\$event'])
+  void onKeyDown(html.KeyboardEvent event) {
+    switch (_normalizedDropdownKey(event)) {
+      case 'Escape':
+      case 'ArrowLeft':
+        submenu.closeSubmenu(focusToggle: true);
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      default:
+        dropdown.onKeyDown(event);
+    }
+  }
+
+  @override
+  void ngOnDestroy() {
+    submenu.unregisterMenu(this);
+  }
+}
+
 @Directive(selector: '[liDropdownAnchor]')
 class LiDropdownAnchorDirective implements OnInit, OnDestroy {
   LiDropdownAnchorDirective(this.dropdown, this.nativeElement);
@@ -584,11 +907,13 @@ class LiDropdownToggleDirective extends LiDropdownAnchorDirective {
 class LiDropdownItemDirective implements OnInit, OnDestroy {
   LiDropdownItemDirective(
     this.nativeElement,
-    this.dropdown,
-  );
+    this.dropdown, [
+    @Optional() this.submenuMenu,
+  ]);
 
   final html.Element nativeElement;
   final LiDropdownDirective dropdown;
+  final LiDropdownSubmenuMenuDirective? submenuMenu;
 
   bool _disabled = false;
   String _tabindex = '0';
@@ -599,6 +924,8 @@ class LiDropdownItemDirective implements OnInit, OnDestroy {
   }
 
   bool get disabled => _disabled;
+
+  bool get isNavigable => submenuMenu == null || submenuMenu!.submenu.isOpen;
 
   @Input()
   set tabindex(Object? value) {

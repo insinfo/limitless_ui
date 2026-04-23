@@ -1,4 +1,3 @@
-//C:\MyDartProjects\new_sali\frontend\lib\src\shared\components\date_range_picker\date_range_picker_component.dart
 import 'dart:async';
 import 'dart:html' as html;
 

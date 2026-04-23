@@ -48,6 +48,16 @@ class DatatableCol {
   /// Whether the column should collapse into the mobile details row.
   bool hideOnMobile = false;
 
+  /// When [LiDataTableComponent.responsiveAutoHideColumns] is enabled,
+  /// columns marked as required are never auto-hidden.
+  bool responsiveAutoHideRequired = false;
+
+  /// Optional priority used by responsive auto-hide.
+  ///
+  /// Lower values are hidden first. Columns without a priority are not part
+  /// of the automatic hiding cycle.
+  int? responsiveAutoHidePriority;
+
   bool showAsFooterOnCard = false;
   bool enableSorting = false;
 
@@ -102,6 +112,8 @@ class DatatableCol {
     this.visibilityOnCard = true,
     this.showTitleOnCard = true,
     this.hideOnMobile = false,
+    this.responsiveAutoHideRequired = false,
+    this.responsiveAutoHidePriority,
     this.showAsFooterOnCard = false,
     this.type = DatatableColType.normal,
   });

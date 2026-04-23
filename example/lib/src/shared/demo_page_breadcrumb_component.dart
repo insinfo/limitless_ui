@@ -63,6 +63,7 @@ class DemoPageBreadcrumbComponent {
   static const Set<String> _dataPaths = <String>{
     'datatable',
     'datatable-select',
+    'work-queue',
     'treeview',
   };
 

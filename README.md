@@ -26,7 +26,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.10`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.11`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -47,7 +47,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.10
+  limitless_ui: ^1.0.0-dev.11
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -56,7 +56,7 @@ If the application will use `li-datatable`, `li-datatable-select`, `li-select`, 
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.10
+  limitless_ui: ^1.0.0-dev.11
   essential_core: ^1.2.0
 ```
 
@@ -91,7 +91,7 @@ import 'package:essential_core/essential_core.dart';
 
 The package follows the Limitless visual language, but some visual affordances are provided by the theme CSS rather than component Dart code.
 
-The demo application now also ships extra color themes (`blu`, `pink`, `orange`, and `sali`) on top of the default light/dark switch, plus broader scrollbar theming for the sidebar, content panes, dropdowns, modals, and dense form surfaces. These themes are example-app concerns rather than package APIs, but they are useful references when adapting Limitless-derived tokens for a host application.
+The demo application now also ships extra color themes (`blu`, `pink`, `orange`, and `retro`) on top of the default light/dark switch, plus broader scrollbar theming for the sidebar, content panes, dropdowns, modals, and dense form surfaces. These themes are example-app concerns rather than package APIs, but they are useful references when adapting Limitless-derived tokens for a host application.
 
 The demo application loads Limitless CSS plus the Phosphor icon font in [example/web/index.html](example/web/index.html). One practical detail is the dropdown caret: if your theme renders `.dropdown-toggle::after` with a glyph that does not exist in the loaded icon font, the caret will appear broken.
 
@@ -486,7 +486,9 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
 - Dropdown:
   `LiDropdownDirective`, `LiDropdownMenuDirective`, `LiDropdownAnchorDirective`,
   `LiDropdownToggleDirective`, `LiDropdownItemDirective`,
-  `LiDropdownButtonItemDirective`, `LiDropdownConfig`.
+  `LiDropdownButtonItemDirective`, `LiDropdownSubmenuDirective`,
+  `LiDropdownSubmenuToggleDirective`, `LiDropdownSubmenuMenuDirective`,
+  `LiDropdownConfig`.
 - Dropdown menu:
   `LiDropdownMenuComponent`, `LiDropdownMenuOption`.
 - Breadcrumbs:
@@ -533,6 +535,13 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiFabTriggerDirective`, `LiFabActionDirective`.
 - Typeahead:
   `LiTypeaheadComponent`, `LiTypeaheadItem`, `LiTypeaheadSelectItemEvent`, `LiTypeaheadConfig`, `LiTypeaheadHighlightComponent`.
+- Datatable:
+  `LiDataTableComponent`, `LiDatatableHeaderDirective`,
+  `LiDatatableFooterDirective`, `LiDatatableHeaderContext`,
+  `LiDatatableFooterContext`, `DatatableCol`, `DatatableSettings`,
+  `DatatableRow`, `DatatableStyle`.
+- Datatable select:
+  `LiDatatableSelectComponent`, `LiDatatableSelectModalContentDirective`.
 - Tagging and tokenization:
   `LiTagFilterComponent`, `LiTagEditorComponent`, `LiTagManagerComponent`,
   `LiTagSelectionChange`, `LiTagSaveRequest`, `LiTagDeleteRequest`,
@@ -546,6 +555,14 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiTreeViewPageLoader`, `TreeViewLoadRequest`, `TreeViewLoadResult`,
   `LiTreeviewSelectNodeDirective`, `LiTreeviewSelectTriggerDirective`.
 
+## Recent additions in `1.0.0-dev.11`
+
+- Expanded `li-datatable` with `responsiveAutoHideColumns` plus per-column `responsiveAutoHidePriority` and `responsiveAutoHideRequired` flags so narrower layouts can progressively move secondary columns into the responsive details row before horizontal scrolling appears.
+- Added public `li-datatable-header` and `li-datatable-footer` template directives together with `LiDatatableHeaderContext` and `LiDatatableFooterContext`, so hosts can replace the built-in toolbar and footer without forking sorting, search, pagination, or export behavior.
+- Added `requestDataOnItemsPerPageChange` to `li-datatable` and `li-datatable-select` for server-driven flows where changing the page size should reload through `(dataRequest)` instead of only emitting `(limitChange)`.
+- Expanded `li-datatable-select` to forward custom datatable header/footer templates to the inner modal table and exposed `modalCompactHeader` plus `modalSmallHeader` to align the modal chrome with denser operational layouts.
+- Expanded the dropdown API with `liDropdownSubmenu`, `liDropdownSubmenuToggle`, and `liDropdownSubmenuMenu` for nested account/action menus that keep the parent dropdown open while the submenu is being explored.
+
 ## Recent additions in `1.0.0-dev.7`
 
 - Added `li-tag-filter`, `li-tag-editor`, and `li-tag-manager` with configurable `labelKey`, `valueKey`, and `colorKey` mapping, reusable selection/create/edit/delete events, and browser coverage for the new tag workflows.
@@ -553,7 +570,7 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
 - Added the `work-queue` demo route to show tag tooling and token-field usage inside a more realistic operational flow.
 - Expanded dropdown menu overlays so `li-dropdown-menu` and the lower-level `dropdownmenu` directive can render either inline or in a `body`-anchored Popper overlay, which is safer for clipped containers and overflow-hidden layouts.
 - Expanded `li-modal` with `compactHeader` and `smallHeader`, improved fullscreen body scrolling, and richer demo coverage for compact, iconified, mini, backdropless, form, and fullscreen dialog variants.
-- Expanded the demo shell with extra color themes (`blu`, `pink`, `orange`, `sali`) and broader themed scrollbar coverage across the example surfaces.
+- Expanded the demo shell with extra color themes (`blu`, `pink`, `orange`, `retro`) and broader themed scrollbar coverage across the example surfaces.
 - Aligned `li-currency-input` examples with the same declarative validation contract used by `person-registration`, and tightened the extra single/multiple datatable/treeview fields so they also participate in submit validation.
 
 ## Recent additions in `1.0.0-dev.2`
@@ -689,7 +706,7 @@ class DemoAlertComponent {}
 
 ### Datatable
 
-`li-datatable` covers the library's most common administrative data flow: field search, pagination, sorting, row selection, export, responsive mobile collapse, and switching between table and grid views without duplicating the data source.
+`li-datatable` covers the library's most common administrative data flow: field search, pagination, sorting, row selection, export, responsive mobile collapse, progressive responsive auto-hide, custom header/footer templates, and switching between table and grid views without duplicating the data source.
 
 The component revolves around three objects:
 
@@ -701,7 +718,11 @@ Most useful features:
 
 - column-targeted search with `searchInFields`;
 - events such as `(dataRequest)`, `(searchRequest)`, and `(limitChange)` for server-driven flows;
-- columns with `enableSorting`, `sortingBy`, `hideOnMobile`, `textAlign`, `nowrap`, `width`, and custom classes;
+- columns with `enableSorting`, `sortingBy`, `hideOnMobile`, `responsiveAutoHidePriority`, `responsiveAutoHideRequired`, `textAlign`, `nowrap`, `width`, and custom classes;
+- optional custom toolbar/footer templates via `headerTemplate`, `footerTemplate`, or projected `<template li-datatable-header let-ctx>` and `<template li-datatable-footer let-ctx>`;
+- `LiDatatableHeaderContext` and `LiDatatableFooterContext` so custom templates can still call search, pagination, export, page-size, and view-mode actions;
+- `responsiveAutoHideColumns` when lower-priority columns should collapse into the details row before horizontal scrolling appears;
+- `requestDataOnItemsPerPageChange` when changing page size should emit through `(dataRequest)` instead of only `(limitChange)`;
 - per-cell styling with `cellStyleResolver` and per-row styling with `rowStyleResolver`;
 - grid mode with `gridMode`, `gridTemplateColumns`, `gridGap`, and `customCardBuilder`;
 - built-in XLSX and PDF export support.
@@ -753,10 +774,42 @@ final searchFields = <DatatableSearchField>[
   [dataTableFilter]="filters"
   [searchInFields]="searchFields"
   [responsiveCollapse]="true"
+  [responsiveAutoHideColumns]="true"
+  [requestDataOnItemsPerPageChange]="true"
   [searchPlaceholder]="'Type to search'"
   (dataRequest)="loadUsers($event)"
   (limitChange)="loadUsers($event)"
   (searchRequest)="loadUsers($event)">
+</li-datatable>
+```
+
+For screens that need a custom operational toolbar or footer shell without replacing the built-in datatable behavior, project templates and use the provided context object:
+
+```html
+<li-datatable
+  [data]="usersFrame"
+  [settings]="settings"
+  [dataTableFilter]="filters"
+  [searchInFields]="searchFields"
+  (dataRequest)="loadUsers($event)">
+  <template li-datatable-header let-ctx>
+    <div class="d-flex gap-2 align-items-center">
+      <input
+        class="form-control"
+        type="search"
+        [ngModel]="ctx.dataTableFilter.searchString"
+        (ngModelChange)="ctx.dataTableFilter.searchString = $event">
+      <button type="button" class="btn btn-primary" (click)="ctx.search()">
+        Search
+      </button>
+    </div>
+  </template>
+
+  <template li-datatable-footer let-ctx>
+    <div class="small text-muted">
+      Page {{ ctx.currentPage }} of {{ ctx.numPages }}
+    </div>
+  </template>
 </li-datatable>
 ```
 
@@ -866,6 +919,9 @@ Most relevant inputs and features:
 - `itemLabelBuilder` and `itemValueBuilder` when the list is typed and the host does not want to rely on `Map` keys;
 - `compareWith` when the selected value is an object or when rows may be recreated by new backend responses;
 - `searchInFields` for the search selector inside the modal;
+- projected `template li-datatable-header` and `template li-datatable-footer` when the inner modal table needs a custom toolbar or pagination shell;
+- `modalCompactHeader` and `modalSmallHeader` for denser modal chrome without replacing the modal itself;
+- `requestDataOnItemsPerPageChange` when page-size changes should reload through the inner datatable `(dataRequest)` flow;
 - `showClearButton`, `clearButtonLabel`, `triggerIconMode`, and `triggerIconClass` for trigger and multi-selection UX tuning;
 - projected `template liDatatableSelectModalContent` for replacing the internal modal body with arbitrary content;
 - modal context helpers `ctx.select(item)`, `ctx.selectItem(label, value)`, `ctx.clear()`, `ctx.apply()`, and `ctx.close()`;
@@ -880,6 +936,9 @@ In multiple mode, the component keeps the modal open while the user marks rows, 
   [dataTableFilter]="personFilter"
   [data]="personFrame"
   [searchInFields]="personSearchFields"
+  [modalCompactHeader]="true"
+  [modalSmallHeader]="true"
+  [requestDataOnItemsPerPageChange]="true"
   labelKey="name"
   valueKey="id"
   [multiple]="true"
@@ -888,6 +947,28 @@ In multiple mode, the component keeps the modal open while the user marks rows, 
   clearButtonLabel="Limpar modal"
   [(ngModel)]="selectedPeopleIds"
   (dataRequest)="loadPeople($event)">
+</li-datatable-select>
+```
+
+When the built-in modal toolbar is not enough, the same datatable template directives can be projected through `li-datatable-select` and will be forwarded to the inner table:
+
+```html
+<li-datatable-select
+  [settings]="personSettings"
+  [dataTableFilter]="personFilter"
+  [data]="personFrame"
+  [searchInFields]="personSearchFields"
+  [modalCompactHeader]="true"
+  [modalSmallHeader]="true"
+  (dataRequest)="loadPeople($event)">
+  <template li-datatable-header let-ctx>
+    <div class="d-flex align-items-center justify-content-between gap-2">
+      <span class="fw-semibold">{{ ctx.totalRecords }} records</span>
+      <button type="button" class="btn btn-light btn-sm" (click)="ctx.search()">
+        Refresh
+      </button>
+    </div>
+  </template>
 </li-datatable-select>
 ```
 
@@ -1497,6 +1578,32 @@ Use `container="body"` when the trigger lives inside clipped panels, tables, car
 The menu closes on outside click, `Escape`, or selection depending on `closeOnSelect`. Main reference: [lib/src/components/dropdown_menu/dropdown_menu_component.dart](lib/src/components/dropdown_menu/dropdown_menu_component.dart).
 
 By default, opening one `li-dropdown-menu` closes other open instances first, which is usually the right behavior for headers and action toolbars. Set `closeOtherMenusOnOpen="false"` only for special cases such as submenu-like compositions or coordinated multi-panel controls.
+
+### Dropdown Submenus
+
+When you need richer account menus or nested action trees, keep using the declarative dropdown API and add the submenu directives on top of it.
+
+```html
+<div liDropdown>
+  <button liDropdownToggle>Account</button>
+  <div class="dropdown-menu-end" liDropdownMenu>
+    <button liDropdownItem>Profile</button>
+
+    <div liDropdownSubmenu placement="start">
+      <button liDropdownItem liDropdownSubmenuToggle>
+        Theme
+      </button>
+
+      <div liDropdownSubmenuMenu>
+        <button liDropdownItem>Light</button>
+        <button liDropdownItem>Dark</button>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+`liDropdownSubmenuToggle` opens the nested menu without collapsing the parent dropdown, while nested `liDropdownItem` elements remain part of the same keyboard navigation model only when that submenu is open.
 
 ### Scrollspy
 

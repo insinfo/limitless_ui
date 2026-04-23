@@ -6,14 +6,19 @@
   position: relative;
 }
 
+.tokenfield-set {
+  float: left;
+  max-width: 100%;
+}
+
 .li-token-field--with-menu {
   padding-right: 2.75rem;
 }
 
 .li-token-field__input {
-  width: 100%;
+  width: 20px;
   max-width: 100%;
-  min-width: 7rem;
+  min-width: 20px;
 }
 
 .li-token-field__menu {

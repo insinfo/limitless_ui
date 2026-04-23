@@ -31,12 +31,17 @@ class LiTokenFieldItemView {
   ],
 )
 class LiTokenFieldComponent
-    implements ControlValueAccessor<List<String>>, AfterChanges, OnDestroy {
-  LiTokenFieldComponent(this._changeDetectorRef) {
+  implements
+    ControlValueAccessor<List<String>>,
+    AfterChanges,
+    AfterViewInit,
+    OnDestroy {
+  LiTokenFieldComponent(this._changeDetectorRef, this._rootElement) {
     _rebuildActionMenuOptions();
   }
 
   final ChangeDetectorRef _changeDetectorRef;
+  final html.Element _rootElement;
   final StreamController<List<String>> _changeController =
       StreamController<List<String>>.broadcast();
   final StreamController<void> _copyActionController =
@@ -45,10 +50,13 @@ class LiTokenFieldComponent
       StreamController<void>.broadcast();
   final StreamController<void> _clearActionController =
       StreamController<void>.broadcast();
+  StreamSubscription<html.Event>? _resizeSubscription;
 
   ChangeFunction<List<String>>? _onChange;
   TouchFunction _onTouched = () {};
   bool _touched = false;
+  bool _isDestroyed = false;
+  int? _syncInputWidthFrameId;
 
   @Input('disabled')
   bool isDisabled = false;
@@ -192,7 +200,16 @@ class LiTokenFieldComponent
   @override
   void ngAfterChanges() {
     _rebuildActionMenuOptions();
+    _scheduleInputWidthSync();
     _markForCheck();
+  }
+
+  @override
+  void ngAfterViewInit() {
+    _resizeSubscription = html.window.onResize.listen((_) {
+      _scheduleInputWidthSync();
+    });
+    _scheduleInputWidthSync();
   }
 
   @override
@@ -200,6 +217,7 @@ class LiTokenFieldComponent
     items = (newVal ?? const <String>[])
         .map((String value) => LiTokenFieldItemView(value: value))
         .toList(growable: true);
+    _scheduleInputWidthSync();
     _markForCheck();
   }
 
@@ -233,6 +251,7 @@ class LiTokenFieldComponent
     if (inputToken != null) {
       inputToken!.value = '';
     }
+    _scheduleInputWidthSync();
   }
 
   void inputKeypressHandle(html.KeyboardEvent event) {
@@ -375,12 +394,14 @@ class LiTokenFieldComponent
 
   void onInputFocus() {
     isFocused = true;
+    _scheduleInputWidthSync();
     _markForCheck();
   }
 
   void onInputBlur() {
     isFocused = false;
     _markTouched();
+    _scheduleInputWidthSync();
     _markForCheck();
   }
 
@@ -497,6 +518,12 @@ class LiTokenFieldComponent
 
   @override
   void ngOnDestroy() {
+    _isDestroyed = true;
+    _resizeSubscription?.cancel();
+    if (_syncInputWidthFrameId != null) {
+      html.window.cancelAnimationFrame(_syncInputWidthFrameId!);
+      _syncInputWidthFrameId = null;
+    }
     _changeController.close();
     _copyActionController.close();
     _pasteActionController.close();
@@ -547,7 +574,73 @@ class LiTokenFieldComponent
     _changeController.add(emittedTokens);
     _onChange?.call(emittedTokens);
     _markTouched();
+    _scheduleInputWidthSync();
     _markForCheck();
+  }
+
+  void _scheduleInputWidthSync() {
+    if (_isDestroyed) {
+      return;
+    }
+
+    if (_syncInputWidthFrameId != null) {
+      html.window.cancelAnimationFrame(_syncInputWidthFrameId!);
+      _syncInputWidthFrameId = null;
+    }
+
+    _syncInputWidthFrameId = html.window.requestAnimationFrame((_) {
+      _syncInputWidthFrameId = null;
+      if (_isDestroyed) {
+        return;
+      }
+      _syncInputWidth();
+    });
+  }
+
+  void _syncInputWidth() {
+    final input = inputToken;
+    final container = _rootElement.querySelector('.li-token-field');
+    if (input == null || container == null) {
+      return;
+    }
+
+    final containerRect = container.getBoundingClientRect();
+    if (containerRect.width <= 0) {
+      return;
+    }
+
+    final computedStyle = container.getComputedStyle();
+    final leftInset = _parsePixels(computedStyle.paddingLeft) +
+        _parsePixels(computedStyle.borderLeftWidth);
+    final rightInset = _parsePixels(computedStyle.paddingRight) +
+        _parsePixels(computedStyle.borderRightWidth);
+    final inputStyle = input.getComputedStyle();
+    final inputHorizontalInset = _parsePixels(inputStyle.paddingLeft) +
+      _parsePixels(inputStyle.paddingRight) +
+      _parsePixels(inputStyle.borderLeftWidth) +
+      _parsePixels(inputStyle.borderRightWidth);
+
+    input.style.width = '20px';
+
+    final inputRect = input.getBoundingClientRect();
+    final remainingWidth = containerRect.right - inputRect.left - rightInset - 1;
+    final fallbackWidth =
+        containerRect.width - leftInset - rightInset - 1;
+    final resolvedWidth = remainingWidth > 20 ? remainingWidth : fallbackWidth;
+    if (resolvedWidth <= 0) {
+      return;
+    }
+
+    final adjustedWidth = resolvedWidth - inputHorizontalInset;
+    input.style.width = '${adjustedWidth > 20 ? adjustedWidth.floor() : 20}px';
+  }
+
+  double _parsePixels(String? rawValue) {
+    if (rawValue == null) {
+      return 0;
+    }
+
+    return double.tryParse(rawValue.replaceAll('px', '').trim()) ?? 0;
   }
 
   void _clearItemSelection() {

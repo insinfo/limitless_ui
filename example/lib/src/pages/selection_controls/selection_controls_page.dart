@@ -143,8 +143,8 @@ class SelectionControlsPageComponent {
       : 'Stacked, reversed, inline, color, inverse block, and validation scenario';
   String get radiosTitle => 'Radios';
   String get radiosSubtitle => isPt
-      ? 'Padrão neutro, cores contextuais e casos de formulário mais próximos do SALI'
-      : 'Neutral defaults, contextual colors, and form cases closer to SALI';
+      ? 'Padrao neutro, cores contextuais e casos de formulario mais proximos de fluxos administrativos'
+      : 'Neutral defaults, contextual colors, and form cases closer to administrative flows';
   String get togglesTitle => 'Toggles';
   String get togglesSubtitle => isPt
       ? 'Booleanos, valores mapeados, bloco inverso e exemplo com feedback'
@@ -292,8 +292,8 @@ class SelectionControlsPageComponent {
       ? 'Enviar notificação de escalonamento'
       : 'Send escalation notification';
   String get toggleFormDescription => isPt
-      ? 'Replica o padrão do SALI em campos binários com feedback inline.'
-      : 'Mirrors the SALI pattern for binary fields with inline feedback.';
+      ? 'Replica o padrao da interface administrativa em campos binarios com feedback inline.'
+      : 'Mirrors the administrative UI pattern for binary fields with inline feedback.';
   bool get toggleFormInvalid => requiresValidationWindow && !escalationToggleEnabled;
 
   String get checkboxSummary {

@@ -134,14 +134,6 @@
                    (input)="onSidebarFilterInput(sidebarSearchInput.value ?? '')">
           </div>
 
-          <button *ngIf="hasSidebarFilter"
-                  type="button"
-                  class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-resize-hide"
-                  (click)="clearSidebarFilter()"
-                  [attr.aria-label]="clearSidebarFilterLabel">
-            <i class="ph-x"></i>
-          </button>
-
           <button type="button"
                   class="btn btn-flat-white btn-icon btn-sm rounded-pill border-transparent sidebar-resize-show"
                   (click)="openSidebarSearch()"

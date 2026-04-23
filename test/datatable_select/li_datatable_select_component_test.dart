@@ -79,12 +79,34 @@ class SelectedPersonRef {
       [multiple]="true"
       [(ngModel)]="selectedPeople">
     </li-datatable-select>
+
+    <li-datatable-select
+      #selectWithCustomHeader
+      [settings]="settings"
+      [dataTableFilter]="filter"
+      [data]="data"
+      [searchInFields]="searchFields"
+      [modalCompactHeader]="true"
+      [modalSmallHeader]="true">
+      <template li-datatable-header let-ctx>
+        <div class="custom-datatable-select-header">
+          <span>{{ ctx.searchPlaceholder }}</span>
+        </div>
+      </template>
+      <template li-datatable-footer let-ctx>
+        <div class="custom-datatable-select-footer">
+          <span>{{ ctx.currentPage }}/{{ ctx.numPages }}</span>
+        </div>
+      </template>
+    </li-datatable-select>
   ''',
   directives: [
     coreDirectives,
     formDirectives,
     LiDatatableSelectComponent,
     LiDatatableSelectModalContentDirective,
+    LiDatatableHeaderDirective,
+    LiDatatableFooterDirective,
   ],
 )
 class DatatableSelectTestHostComponent {
@@ -130,6 +152,9 @@ class DatatableSelectTestHostComponent {
 
   @ViewChild('selectMultiple')
   LiDatatableSelectComponent? selectMultiple;
+
+  @ViewChild('selectWithCustomHeader')
+  LiDatatableSelectComponent? selectWithCustomHeader;
 
   String personLabel(dynamic instance) => (instance as PersonRecord).name;
 
@@ -222,7 +247,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final triggers =
         fixture.rootElement.querySelectorAll('.datatable-select-trigger');
-    final multipleTrigger = triggers.last as html.ButtonElement;
+    final multipleTrigger = triggers[2] as html.ButtonElement;
 
     await fixture.update((_) {
       multipleTrigger.click();
@@ -257,6 +282,46 @@ void main() {
           'Maria Silva',
         ]));
     expect(multipleTrigger.text, contains('Ana Souza'));
+  });
+
+  test('passes custom datatable header and compact modal header to inner modal',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final triggers =
+        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final customHeaderTrigger = triggers[3] as html.ButtonElement;
+
+    await fixture.update((_) {
+      customHeaderTrigger.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    expect(
+      html.document.querySelector('.modal.show .custom-datatable-select-header'),
+      isNotNull,
+    );
+    expect(
+      html.document.querySelector('.modal.show .datatable-search-toolbar'),
+      isNull,
+    );
+    expect(
+      html.document.querySelector('.modal.show .custom-datatable-select-footer'),
+      isNotNull,
+    );
+    expect(
+      html.document.querySelector('.modal.show .dataTables_info'),
+      isNull,
+    );
+    expect(
+      html.document.querySelector('.modal.show .modal-header.modal-header-compact'),
+      isNotNull,
+    );
+    expect(
+      html.document.querySelector('.modal.show .modal-header.modal-header-small'),
+      isNotNull,
+    );
   });
 }
 

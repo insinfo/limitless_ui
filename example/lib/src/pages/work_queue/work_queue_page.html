@@ -2,17 +2,48 @@
   <div class="page-header page-header-light shadow-sm rounded-0 border">
     <div class="page-header-content d-lg-flex">
       <div class="d-flex">
-        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+        <h4 class="page-title mb-0">
+          {{ pageTitle }}
+          <span class="badge bg-warning text-body ms-2 align-middle">{{ betaLabel }}</span>
+          <span class="fw-normal d-block d-lg-inline mt-2 mt-lg-0 ms-lg-2">{{ pageSubtitle }}</span>
+        </h4>
       </div>
     </div>
+
     <div class="page-header-content d-lg-flex border-top">
       <demo-page-breadcrumb [currentLabel]="breadcrumbLabel"></demo-page-breadcrumb>
     </div>
   </div>
 
   <div class="content">
-    <div class="card">
-      <div class="card-body pb-2">
+    <div class="card shadow-sm">
+      <div class="card-header border-bottom-0 pb-0 work-queue-page__header">
+        <div class="alert alert-info alert-icon-start mb-3 work-queue-page__hint-alert">
+          <span class="alert-icon bg-info text-white">
+            <i class="ph ph-columns"></i>
+          </span>
+          <span>
+            <span class="fw-semibold d-block">{{ responsiveHintTitle }}</span>
+            <span>{{ responsiveHintBody }}</span>
+          </span>
+        </div>
+
+        <ul class="nav nav-tabs nav-tabs-highlight work-queue-page__tabs mb-0" role="tablist"
+          [attr.aria-label]="tabListLabel">
+          <li *ngFor="let tab of inboxTabs" class="nav-item" role="presentation">
+            <button type="button" class="nav-link work-queue-page__tab"
+              [class.active]="isInboxTabActive(tab.id)" (click)="selectInboxTab(tab.id)">
+              <span class="work-queue-page__tab-copy">
+                <span class="fw-semibold">{{ tab.label }}</span>
+                <span class="work-queue-page__tab-helper">{{ tab.helper }}</span>
+              </span>
+              <span class="badge rounded-pill work-queue-page__tab-count">{{ tab.count }}</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card-body pt-3">
         <div *ngIf="lastActionText.isNotEmpty" class="alert alert-primary alert-icon-start mb-3 work-queue-page__status">
           <span class="alert-icon bg-primary text-white">
             <i class="ph ph-info"></i>
@@ -20,7 +51,7 @@
           {{ lastActionText }}
         </div>
 
-        <div>
+        <div class="bg-light border rounded p-3 p-xl-4 work-queue-page__filters-shell">
           <div class="row g-3">
             <div class="col-md-2 col-xl-1">
               <label class="form-label">{{ digitalLabel }}</label>
@@ -31,20 +62,26 @@
               </select>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-4 col-xl-3">
               <label class="form-label">{{ requesterLabel }}</label>
               <input class="form-control" type="text" [value]="requesterQuery" [placeholder]="requesterPlaceholder"
                 (input)="onRequesterInput($event.target.value)">
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-4 col-xl-3">
+              <label class="form-label">{{ responsibleLabel }}</label>
+              <input class="form-control" type="text" [value]="responsibleQuery" [placeholder]="responsiblePlaceholder"
+                (input)="onResponsibleInput($event.target.value)">
+            </div>
+
+            <div class="col-md-3 col-xl-2">
               <label class="form-label">{{ classificationLabel }}</label>
               <li-select [dataSource]="classificationOptions" labelKey="label" valueKey="id"
                 [(ngModel)]="selectedClassificationId" (currentValueChange)="onClassificationChanged($event)">
               </li-select>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-3 col-xl-2">
               <label class="form-label">{{ subjectLabel }}</label>
               <li-select [dataSource]="subjectOptions" labelKey="label" valueKey="id"
                 [(ngModel)]="selectedSubjectId" (currentValueChange)="onSubjectChanged($event)">
@@ -73,7 +110,7 @@
                 (input)="onListCodeInput($event.target.value)">
             </div>
 
-            <div class="col-md-4 col-xl-2">
+            <div class="col-md-4 col-xl-4">
               <label class="form-label">{{ tagFilterLabel }}</label>
               <li-tag-filter [dataSource]="tagCatalog" labelKey="name" valueKey="id" colorKey="color"
                 [showReloadButton]="true" [locale]="localeCode" [showInlineRemove]="false"
@@ -81,32 +118,53 @@
                 (currentValueChange)="onSelectedTagFilterChange($event)" (reloadRequest)="onTagFilterReloadRequest()">
               </li-tag-filter>
             </div>
+          </div>
 
-            <div class="col-12 work-queue-page__actions">
-              <button type="button" class="btn btn-flat-primary border-transparent btn-icon" (click)="clearFilters()">
+          <div class="work-queue-page__toolbar border-top mt-3 pt-3">
+            <div class="work-queue-page__toolbar-copy">
+              <h6 class="mb-1">{{ actionBarTitle }}</h6>
+              <p class="mb-0 text-muted">{{ actionBarBody }}</p>
+            </div>
+
+            <div class="work-queue-page__actions">
+              <button type="button" class="btn btn-light" (click)="clearFilters()">
                 <i class="ph ph-broom me-2"></i>{{ clearButtonLabel }}
               </button>
-              <button type="button" class="btn btn-primary btn-labeled btn-labeled-start" (click)="applyPrimaryAction()">
-                <span class="btn-labeled-icon bg-black bg-opacity-20">
-                  <i class="ph ph-paper-plane"></i>
-                </span>
-                {{ primaryActionLabel }}
+              <button type="button" class="btn" [class.btn-primary]="isPrimaryQueueAction('forward')"
+                [class.btn-outline-primary]="!isPrimaryQueueAction('forward')" (click)="applyQueueAction('forward')">
+                <i class="ph ph-arrow-bend-up-right me-2"></i>{{ forwardActionLabel }}
+              </button>
+              <button type="button" class="btn" [class.btn-primary]="isPrimaryQueueAction('dispatch')"
+                [class.btn-outline-primary]="!isPrimaryQueueAction('dispatch')" (click)="applyQueueAction('dispatch')">
+                <i class="ph ph-paper-plane-tilt me-2"></i>{{ dispatchActionLabel }}
+              </button>
+              <button type="button" class="btn" [class.btn-primary]="isPrimaryQueueAction('receive')"
+                [class.btn-outline-primary]="!isPrimaryQueueAction('receive')" (click)="applyQueueAction('receive')">
+                <i class="ph ph-upload-simple me-2"></i>{{ receiveActionLabel }}
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <li-datatable #queueTable [dataTableFilter]="tableFilters" [data]="workItems" [settings]="datatableSettings"
-        [searchInFields]="searchFields" [disableRowClick]="true" [limitPerPageOptions]="limitPerPageOptions"
-        (dataRequest)="onTableRequest($event)" (limitChange)="onTableRequest($event)"
-        (searchRequest)="onTableRequest($event)">
-      </li-datatable>
+      <div class="card-body border-top bg-light work-queue-page__table-callout">
+        <div class="text-uppercase small fw-semibold text-primary mb-1">{{ tableCalloutTitle }}</div>
+        <p class="mb-0 text-muted">{{ tableCalloutBody }}</p>
+      </div>
+
+      <div class="work-queue-page__datatable">
+        <li-datatable #queueTable [dataTableFilter]="tableFilters" [data]="workItems" [settings]="datatableSettings"
+          [searchInFields]="searchFields" [disableRowClick]="true" [limitPerPageOptions]="limitPerPageOptions"
+          [showCheckboxToSelectRow]="true" [showExportMenu]="false" [responsiveAutoHideColumns]="true"
+          [responsiveCollapse]="true" [responsiveCollapseMaxWidth]="760" (dataRequest)="onTableRequest($event)"
+          (limitChange)="onTableRequest($event)" (searchRequest)="onTableRequest($event)">
+        </li-datatable>
+      </div>
     </div>
   </div>
 
   <li-modal #tagModal [title-text]="tagModalTitle" size="modal-sm" headerColor="primary"
-    [enableModalBodyClass]="false">
+    [enableModalBodyClass]="false" [compactHeader]="true" [smallHeader]="true">
     <div class="p-3">
       <li-tag-manager [dataSource]="tagCatalog" [selectedValues]="activeRecordTagIds" labelKey="name"
         valueKey="id" colorKey="color" [showReloadButton]="true" [locale]="localeCode"

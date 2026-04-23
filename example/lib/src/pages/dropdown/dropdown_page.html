@@ -140,6 +140,96 @@
                 </div>
               </div>
 
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ submenuTitle }}</h6>
+                  <p class="text-muted mb-3">{{ submenuBody }}</p>
+
+                  <div class="d-flex justify-content-end mb-3">
+                    <div liDropdown class="nav-item nav-item-dropdown-lg dropdown">
+                      <a class="navbar-nav-link align-items-center rounded-pill cursor-pointer p-0 d-inline-flex"
+                         href=""
+                         liDropdownToggle
+                         [attr.aria-label]="accountMenuLabel">
+                        <span class="status-indicator-container me-2 position-relative d-inline-flex">
+                          <span class="bg-primary text-white rounded-pill d-inline-flex align-items-center justify-content-center"
+                                style="width: 32px; height: 32px;">
+                            <i class="ph ph-user"></i>
+                          </span>
+                          <span class="status-indicator bg-success"></span>
+                        </span>
+                        <span class="d-inline-block text-truncate">{{ demoUserName }}</span>
+                      </a>
+
+                      <div class="dropdown-menu dropdown-menu-end wmin-sm-250" liDropdownMenu>
+                        <div class="dropdown-item-text">{{ userCgmLabel }}</div>
+                        <button liDropdownItem type="button" title="Login Integrado do Portal">
+                          <i class="ph ph-user-circle me-2"></i>
+                          {{ loggedAsLabel }}
+                        </button>
+
+                        <div class="dropdown-divider"></div>
+
+                        <button liDropdownItem type="button" (click)="toggleDemoStatusBar()">
+                          <i class="ph ph-clipboard-text me-2"></i>
+                          {{ toggleStatusBarLabel }}
+                        </button>
+
+                        <div liDropdownSubmenu placement="start" class="user-menu-dropdown-submenu">
+                          <button liDropdownItem liDropdownSubmenuToggle type="button"
+                                  class="user-menu-submenu-toggle"
+                                  [class.active]="selectedSubmenuTheme.isNotEmpty">
+                            <i class="ph ph-palette me-2"></i>
+                            {{ themeMenuLabel }}
+                          </button>
+
+                          <div liDropdownSubmenuMenu class="user-menu-submenu wmin-sm-200">
+                            <button liDropdownItem type="button"
+                                    [class.active]="selectedSubmenuTheme == 'light'"
+                                    (click)="onDemoThemeSelected('light')">
+                              <i class="ph ph-sun me-2"></i>
+                              {{ lightThemeLabel }}
+                            </button>
+                            <button liDropdownItem type="button"
+                                    [class.active]="selectedSubmenuTheme == 'medium'"
+                                    (click)="onDemoThemeSelected('medium')">
+                              <i class="ph ph-star-half me-2"></i>
+                              {{ mediumThemeLabel }}
+                            </button>
+                            <button liDropdownItem type="button"
+                                    [class.active]="selectedSubmenuTheme == 'dark'"
+                                    (click)="onDemoThemeSelected('dark')">
+                              <i class="ph ph-moon me-2"></i>
+                              {{ darkThemeLabel }}
+                            </button>
+                            <button liDropdownItem type="button"
+                                    [class.active]="selectedSubmenuTheme == 'pink'"
+                                    (click)="onDemoThemeSelected('pink')">
+                              <i class="ph ph-heart-half me-2"></i>
+                              {{ pinkThemeLabel }}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <div class="dropdown-item-text text-muted small">{{ sessionIsolationLabel }}</div>
+
+                        <button liDropdownItem type="button" (click)="onDemoSignOut()">
+                          <i class="ph ph-sign-out me-2"></i>
+                          {{ signOutLabel }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="fw-semibold mb-2">{{ submenuStateTitle }}</div>
+                    <div class="bg-light border rounded-3 p-3">{{ submenuStateSummary }}</div>
+                  </div>
+                </div>
+              </div>
+
               <div class="col-12">
                 <div class="card card-body">
                   <h6 class="mb-2">{{ compactMenuTitle }}</h6>
@@ -210,6 +300,10 @@
 
             <div class="mb-3">
               <li-highlight [code]="compactMenuApiSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mb-3">
+              <li-highlight [code]="submenuApiSnippet" language="html"></li-highlight>
             </div>
 
             <li-highlight [code]="manualApiSnippet" language="html"></li-highlight>

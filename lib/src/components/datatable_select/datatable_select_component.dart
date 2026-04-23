@@ -267,6 +267,12 @@ class LiDatatableSelectComponent
   @Input()
   bool fullScreenOnMobile = true;
 
+  @Input()
+  bool modalCompactHeader = false;
+
+  @Input()
+  bool modalSmallHeader = false;
+
   // -- Datatable pass-through inputs --
 
   @Input()
@@ -321,6 +327,11 @@ class LiDatatableSelectComponent
   @Input()
   bool responsiveCollapse = false;
 
+  /// When `true`, changing items per page reloads data through
+  /// the inner datatable `dataRequest` output.
+  @Input()
+  bool requestDataOnItemsPerPageChange = false;
+
   // ---------------------------------------------------------------------------
   // Outputs
   // ---------------------------------------------------------------------------
@@ -365,6 +376,12 @@ class LiDatatableSelectComponent
 
   @ContentChild(LiDatatableSelectModalContentDirective)
   LiDatatableSelectModalContentDirective? modalContentTemplate;
+
+  @ContentChild(LiDatatableHeaderDirective)
+  LiDatatableHeaderDirective? datatableHeaderTemplate;
+
+  @ContentChild(LiDatatableFooterDirective)
+  LiDatatableFooterDirective? datatableFooterTemplate;
 
   // ---------------------------------------------------------------------------
   // State

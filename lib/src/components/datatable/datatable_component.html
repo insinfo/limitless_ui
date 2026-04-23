@@ -1,6 +1,14 @@
 <!--datatable_component.html-->
 <div [attr.data-label]="'datatable'" #card class="dataTables_wrapper dt-bootstrap5 no-footer">
-    <div class="datatable-header" [class.p-0]="disableHeaderPadding == true">
+    <div class="datatable-header" [class.p-0]="disableHeaderPadding == true"
+        [class.datatable-header--custom]="hasCustomHeader">
+        <template [ngIf]="hasCustomHeader">
+            <template [ngTemplateOutlet]="resolvedHeaderTemplate"
+                [ngTemplateOutletValue]="headerTemplateContext">
+            </template>
+        </template>
+
+        <template [ngIf]="!hasCustomHeader">
         <div class="dataTables_filter" *ngIf="searchInFields.isNotEmpty">
             <div class="datatable-search-toolbar">
                 <input [(ngModel)]="dataTableFilter.searchString" #inputSearchElement
@@ -81,11 +89,12 @@
                 </option>
             </select>
         </div>
+        </template>
     </div>
 
-    <div class="datatable-scroll" [class.hide]="gridMode">
+    <div #scrollContainer class="datatable-scroll" [class.hide]="gridMode">
         <table #table class="table datatable-basic dataTable no-footer dtr-inline"
-            [class.table-hover]="disableRowClick == false" [class.collapsed]="responsiveCollapse">
+            [class.table-hover]="disableRowClick == false" [class.collapsed]="hasResponsiveCollapsedColumns">
             <thead>
                 <tr role="row">
                     <th *ngIf="showCheckboxToSelectRow" class="datatable-first-col">
@@ -95,9 +104,9 @@
                     </th>
                     <th *ngFor="let colDef of settings.colsDefinitions; trackBy: trackByColumnKey"
                         [class]="colDef.headerClass ?? ''" [class.sorting]="colDef.enableSorting"
-                        [class.hide]="!colDef.visibility"
-                        [class.datatable-mobile-hidden]="responsiveCollapse && colDef.hideOnMobile"
-                        [class.dtr-hidden]="responsiveCollapse && colDef.hideOnMobile" [attr.data-key]="colDef.key"
+                        [class.hide]="!colDef.visibility || isRuntimeResponsiveHidden(colDef)"
+                        [class.datatable-mobile-hidden]="isRuntimeResponsiveHidden(colDef)"
+                        [class.dtr-hidden]="isRuntimeResponsiveHidden(colDef)" [attr.data-key]="colDef.key"
                         [attr.data-sort-key]="colDef.sortingBy ?? ''" [cssStyle]="colDef.headerStyleCss"
                         (click)="onOrder(colDef)" tabindex="0">
                         {{colDef.title}}
@@ -121,9 +130,9 @@
                         </td>
 
                         <td *ngFor="let column of view.row.columns; let idxC = index; trackBy: trackByColumnKey"
-                            [class]="column.cellClass ?? ''" [class.hide]="!column.visibility"
-                            [class.datatable-mobile-hidden]="responsiveCollapse && column.hideOnMobile"
-                            [class.dtr-hidden]="responsiveCollapse && column.hideOnMobile"
+                            [class]="column.cellClass ?? ''" [class.hide]="!column.visibility || isRuntimeResponsiveHidden(column)"
+                            [class.datatable-mobile-hidden]="isRuntimeResponsiveHidden(column)"
+                            [class.dtr-hidden]="isRuntimeResponsiveHidden(column)"
                             [class.dtr-control]="isResponsiveControlColumn(view, column)"
                             [class.datatable-group-title-cell]="view.row.type == DatatableRowType.groupTitle"
                             [attr.aria-expanded]="isResponsiveControlColumn(view, column) ? view.row.isExpanded.toString() : null"
@@ -211,7 +220,14 @@
         </div>
     </div>
 
-    <div class="datatable-footer">
+    <div class="datatable-footer" [class.datatable-footer--custom]="hasCustomFooter">
+        <template [ngIf]="hasCustomFooter">
+            <template [ngTemplateOutlet]="resolvedFooterTemplate"
+                [ngTemplateOutletValue]="footerTemplateContext">
+            </template>
+        </template>
+
+        <template [ngIf]="!hasCustomFooter">
         <div class="dataTables_info" role="status" aria-live="polite">
             Mostrando de {{dataTableFilter.offset}} a {{getCurrentTotalItems}} de {{totalRecords}} entradas,
             {{numPages}} paginas
@@ -246,5 +262,6 @@
                 </template>
             </li-pagination>
         </div>
+        </template>
     </div>
 </div>

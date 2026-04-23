@@ -12,10 +12,12 @@ import 'datatable_demo_service.dart';
   styleUrls: ['datatable_page.css'],
   directives: [
     coreDirectives,
+    formDirectives,
     DemoPageBreadcrumbComponent,
     LiAccordionComponent,
     LiAccordionBodyDirective,
     LiAccordionItemComponent,
+    LiDatatableHeaderDirective,
     LiHighlightComponent,
     LiModalComponent,
     LiTabsComponent,
@@ -44,6 +46,8 @@ class DatatablePageComponent implements OnInit {
         items: <Map<String, dynamic>>[], totalRecords: 0);
     modalTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
+    processLookupTableData = DataFrame<Map<String, dynamic>>(
+      items: <Map<String, dynamic>>[], totalRecords: 0);
     groupedTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
     multiSortTableData = DataFrame<Map<String, dynamic>>(
@@ -55,10 +59,12 @@ class DatatablePageComponent implements OnInit {
     _advancedTableSettingsEn = _buildAdvancedTableSettings(en.MessagesEn());
     _advancedGridSettingsPt = _buildAdvancedGridSettings(Messages());
     _advancedGridSettingsEn = _buildAdvancedGridSettings(en.MessagesEn());
+    _processLookupTableSettings = _buildProcessLookupTableSettings();
     _groupedTableSettings = _buildGroupedTableSettings();
     _multiSortTableSettings = _buildMultiSortTableSettings();
     _searchFieldsPt = _buildSearchFields(Messages());
     _searchFieldsEn = _buildSearchFields(en.MessagesEn());
+    _processLookupSearchFields = _buildProcessLookupSearchFields();
     _groupedSearchFields = _buildGroupedSearchFields();
     _multiSortSearchFields = _buildMultiSortSearchFields();
     multiSortFilters.setOrderFields(_buildDefaultMultiSortOrderFields());
@@ -78,10 +84,12 @@ class DatatablePageComponent implements OnInit {
   late final DatatableSettings _advancedTableSettingsEn;
   late final DatatableSettings _advancedGridSettingsPt;
   late final DatatableSettings _advancedGridSettingsEn;
+  late final DatatableSettings _processLookupTableSettings;
   late final DatatableSettings _groupedTableSettings;
   late final DatatableSettings _multiSortTableSettings;
   late final List<DatatableSearchField> _searchFieldsPt;
   late final List<DatatableSearchField> _searchFieldsEn;
+  late final List<DatatableSearchField> _processLookupSearchFields;
   late final List<DatatableSearchField> _groupedSearchFields;
   late final List<DatatableSearchField> _multiSortSearchFields;
 
@@ -98,6 +106,9 @@ class DatatablePageComponent implements OnInit {
 
   DatatableSettings get multiSortTableSettings => _multiSortTableSettings;
 
+  DatatableSettings get processLookupTableSettings =>
+      _processLookupTableSettings;
+
   List<DatatableSearchField> get searchFields =>
       i18n.isPortuguese ? _searchFieldsPt : _searchFieldsEn;
 
@@ -105,6 +116,9 @@ class DatatablePageComponent implements OnInit {
 
   List<DatatableSearchField> get multiSortSearchFields =>
       _multiSortSearchFields;
+
+  List<DatatableSearchField> get processLookupSearchFields =>
+      _processLookupSearchFields;
 
   DatatableDemoService get _datatableDemoService =>
       i18n.isPortuguese ? _datatableDemoServicePt : _datatableDemoServiceEn;
@@ -253,6 +267,94 @@ class DatatablePageComponent implements OnInit {
     );
   }
 
+  DatatableSettings _buildProcessLookupTableSettings() {
+    return DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(
+          key: 'processCode',
+          title: 'Código',
+          enableSorting: true,
+          sortingBy: 'processCode',
+          width: '110px',
+          minWidth: '110px',
+          nowrap: true,
+          responsiveAutoHideRequired: true,
+        ),
+        DatatableCol(
+          key: 'requester',
+          title: 'Requerente',
+          enableSorting: true,
+          sortingBy: 'requester',
+          minWidth: '270px',
+          headerClass: 'datatable-process-lookup-table__requester-col',
+          responsiveAutoHidePriority: 40,
+        ),
+        DatatableCol(
+          key: 'personType',
+          title: 'Tipo Cgm',
+          enableSorting: true,
+          sortingBy: 'personType',
+          width: '120px',
+          minWidth: '120px',
+          responsiveAutoHidePriority: 10,
+        ),
+        DatatableCol(
+          key: 'classification',
+          title: 'Classificação',
+          enableSorting: true,
+          sortingBy: 'classification',
+          minWidth: '130px',
+          responsiveAutoHidePriority: 20,
+        ),
+        DatatableCol(
+          key: 'subject',
+          title: 'Assunto',
+          enableSorting: true,
+          sortingBy: 'subject',
+          minWidth: '170px',
+          responsiveAutoHidePriority: 30,
+        ),
+        DatatableCol(
+          key: 'createdAt',
+          title: 'Inclusão',
+          enableSorting: true,
+          sortingBy: 'createdAtOrder',
+          minWidth: '155px',
+          nowrap: true,
+          responsiveAutoHidePriority: 15,
+        ),
+        DatatableCol(
+          key: 'status',
+          title: 'Situação',
+          enableSorting: true,
+          sortingBy: 'status',
+          minWidth: '170px',
+          responsiveAutoHidePriority: 50,
+        ),
+        DatatableCol(
+          key: 'digitalLabel',
+          title: 'Digital',
+          enableSorting: true,
+          sortingBy: 'digitalOrder',
+          width: '90px',
+          minWidth: '90px',
+          textAlign: 'center',
+          responsiveAutoHidePriority: 5,
+          customRenderHtml: _buildProcessLookupDigitalBadge,
+        ),
+        DatatableCol(
+          key: 'actions',
+          title: 'Ações',
+          width: '90px',
+          minWidth: '90px',
+          textAlign: 'center',
+          responsiveAutoHideRequired: true,
+          customRenderHtml: _buildProcessLookupActionsCell,
+        ),
+      ],
+    );
+  }
+
   DatatableSettings _buildMultiSortTableSettings() {
     return DatatableSettings(
       colsDefinitions: <DatatableCol>[
@@ -343,6 +445,32 @@ class DatatablePageComponent implements OnInit {
     ];
   }
 
+  List<DatatableSearchField> _buildProcessLookupSearchFields() {
+    return <DatatableSearchField>[
+      DatatableSearchField(
+        label: 'Nº Processo',
+        field: 'processCode',
+        operator: 'like',
+        selected: true,
+      ),
+      DatatableSearchField(
+        label: 'Objeto/Observações',
+        field: 'detail',
+        operator: 'like',
+      ),
+      DatatableSearchField(
+        label: 'Assunto Reduzido',
+        field: 'subject',
+        operator: 'like',
+      ),
+      DatatableSearchField(
+        label: 'CGM requerente',
+        field: 'requester',
+        operator: 'like',
+      ),
+    ];
+  }
+
   List<DatatableSearchField> _buildMultiSortSearchFields() {
     return <DatatableSearchField>[
       DatatableSearchField(
@@ -361,6 +489,7 @@ class DatatablePageComponent implements OnInit {
   @override
   Future<void> ngOnInit() async {
     await _loadMainTable();
+    await _loadProcessLookupTable();
     await _loadGroupedTable();
   }
 
@@ -382,6 +511,9 @@ class DatatablePageComponent implements OnInit {
   @ViewChild('groupedDemoTable')
   LiDataTableComponent? groupedDemoTable;
 
+  @ViewChild('processLookupDemoTable')
+  LiDataTableComponent? processLookupDemoTable;
+
   @ViewChild('multiSortDemoTable')
   LiDataTableComponent? multiSortDemoTable;
 
@@ -394,9 +526,13 @@ class DatatablePageComponent implements OnInit {
   final Filters customTableFilters = Filters(limit: 4, offset: 0);
   final Filters customGridFilters = Filters(limit: 4, offset: 0);
   final Filters modalTableFilters = Filters(limit: 4, offset: 0);
+  final Filters processLookupFilters = Filters(limit: 12, offset: 0);
   final Filters groupedFilters = Filters(limit: 8, offset: 0);
   final Filters multiSortFilters = Filters(limit: 8, offset: 0);
   final List<int> customGridLimitOptions = const <int>[4, 8, 12];
+  final List<int> processLookupLimitOptions = const <int>[12, 24, 48];
+  String processLookupRequesterFilter = '';
+  String processLookupDigitalFilter = '';
   bool showReadonlyDemo = false;
   bool showGridPreviewDemo = false;
   bool showCustomTableDemo = false;
@@ -462,6 +598,18 @@ class DatatablePageComponent implements OnInit {
     return root;
   },
 )''';
+  final String processLookupHeaderSnippet = '''<li-datatable
+    [dataTableFilter]="processLookupFilters"
+    [data]="processLookupTableData"
+    [settings]="processLookupTableSettings"
+    [searchInFields]="processLookupSearchFields"
+    [limitPerPageOptions]="processLookupLimitOptions"
+    [responsiveAutoHideColumns]="true"
+    [showCheckboxToSelectRow]="false">
+  <template li-datatable-header let-ctx>
+    <!-- header inspirado em uma tela de consulta de processos -->
+  </template>
+</li-datatable>''';
   final String multiSortSnippet =
       '''final filters = Filters(limit: 8, offset: 0)
   ..setOrderFields([
@@ -631,6 +779,7 @@ class ProductController {
   late DataFrame<Map<String, dynamic>> customTableData;
   late DataFrame<Map<String, dynamic>> customGridData;
   late DataFrame<Map<String, dynamic>> modalTableData;
+  late DataFrame<Map<String, dynamic>> processLookupTableData;
   late DataFrame<Map<String, dynamic>> groupedTableData;
   late DataFrame<Map<String, dynamic>> multiSortTableData;
   String groupedSelectionLog = 'Nenhum item selecionado.';
@@ -679,6 +828,58 @@ class ProductController {
   Future<void> onGroupedTableRequest(Filters nextFilters) async {
     groupedFilters.fillFromFilters(nextFilters);
     await _loadGroupedTable();
+  }
+
+  Future<void> onProcessLookupTableRequest(Filters nextFilters) async {
+    processLookupFilters.fillFromFilters(nextFilters);
+    await _loadProcessLookupTable();
+  }
+
+  Future<void> onProcessLookupHeaderSearchFieldChange(
+    LiDatatableHeaderContext ctx,
+    String? value,
+  ) async {
+    final index = int.tryParse(value ?? '');
+    if (index == null) {
+      return;
+    }
+
+    ctx.selectSearchField(index);
+    await onProcessLookupTableRequest(ctx.dataTableFilter);
+  }
+
+  Future<void> onProcessLookupHeaderLimitChange(
+    LiDatatableHeaderContext ctx,
+    String? value,
+  ) async {
+    final limit = int.tryParse(value ?? '');
+    if (limit == null) {
+      return;
+    }
+
+    ctx.changeItemsPerPage(limit);
+    await onProcessLookupTableRequest(ctx.dataTableFilter);
+  }
+
+  Future<void> onProcessLookupRequesterFilterInput(String value) async {
+    processLookupRequesterFilter = value;
+    processLookupFilters.offset = 0;
+    await _loadProcessLookupTable();
+  }
+
+  Future<void> onProcessLookupDigitalFilterChange(String? value) async {
+    processLookupDigitalFilter = value ?? '';
+    processLookupFilters.offset = 0;
+    await _loadProcessLookupTable();
+  }
+
+  Future<void> clearProcessLookupHeaderFilters() async {
+    processLookupRequesterFilter = '';
+    processLookupDigitalFilter = '';
+    processLookupFilters
+      ..offset = 0
+      ..searchString = '';
+    await _loadProcessLookupTable();
   }
 
   Future<void> onMultiSortTableRequest(Filters nextFilters) async {
@@ -822,6 +1023,37 @@ class ProductController {
   Future<void> _loadModalTable() async {
     modalTableData = await _datatableDemoService.query(modalTableFilters);
     _flushView();
+  }
+
+  Future<void> _loadProcessLookupTable() async {
+    processLookupDemoTable?.showLoading();
+    try {
+      var records = _buildProcessLookupSeedRecords();
+
+      final requesterFilter = processLookupRequesterFilter.trim().toLowerCase();
+      if (requesterFilter.isNotEmpty) {
+        records = records
+            .where((record) =>
+                (record['requester']?.toString().toLowerCase() ?? '')
+                    .contains(requesterFilter))
+            .toList(growable: false);
+      }
+
+          final digitalFilter = processLookupDigitalFilter.trim().toLowerCase();
+      if (digitalFilter.isNotEmpty) {
+        records = records
+            .where((record) =>
+                (record['digitalLabel']?.toString().toLowerCase() ?? '') ==
+                digitalFilter)
+            .toList(growable: false);
+      }
+
+      processLookupTableData =
+          await DatatableDemoService(records).query(processLookupFilters);
+    } finally {
+      processLookupDemoTable?.hideLoading();
+      _flushView();
+    }
   }
 
   Future<void> _loadGroupedTable() async {
@@ -994,6 +1226,195 @@ class ProductController {
     return groupedEntries
         .map((entry) => Map<String, dynamic>.from(entry))
         .toList(growable: false);
+  }
+
+  static List<Map<String, dynamic>> _buildProcessLookupSeedRecords() {
+    return <Map<String, dynamic>>[
+      _buildProcessLookupRecord(
+        processCode: '1860/96',
+        requester: 'TEREZINHA GROLA',
+        personType: 'Padrão',
+        classification: 'Solicitação, faz',
+        subject: 'Solicitação',
+        detail: 'Solicitação do processo',
+        createdAt: '21/10/2016 15:29:33',
+        createdAtOrder: 20161021152933,
+        status: 'Anexado',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16269/2026',
+        requester: 'CINTIA MARIA PIMENTEL HERMIDA DOS SANTOS',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Abono de permanência - requerimento principal',
+        createdAt: '20/04/2026 15:55:28',
+        createdAtOrder: 20260420155528,
+        status: 'Em andamento, recebido',
+        digitalLabel: 'Sim',
+        digitalOrder: 1,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16268/2026',
+        requester: 'Isaque Neves Sant\'ana',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Observações do abono de permanência',
+        createdAt: '18/04/2026 01:00:34',
+        createdAtOrder: 20260418010034,
+        status: 'Em andamento, recebido',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16267/2026',
+        requester: 'Isaque Neves Sant\'ana',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Processo aguardando conferência',
+        createdAt: '18/04/2026 01:00:34',
+        createdAtOrder: 20260418010034,
+        status: 'Em andamento, a receber',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16266/2026',
+        requester: 'Isaque Neves Sant\'ana',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Recebimento pendente de digitalização',
+        createdAt: '18/04/2026 01:00:34',
+        createdAtOrder: 20260418010034,
+        status: 'Em andamento, a receber',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16265/2026',
+        requester: 'Isaque Neves Sant\'ana',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Fluxo recebido na unidade',
+        createdAt: '18/04/2026 01:00:34',
+        createdAtOrder: 20260418010034,
+        status: 'Em andamento, recebido',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16264/2026',
+        requester: 'Isaque Neves Sant\'ana',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Processo anexado ao volume principal',
+        createdAt: '18/04/2026 01:00:34',
+        createdAtOrder: 20260418010034,
+        status: 'Anexado',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16263/2026',
+        requester: 'Isaque Neves Sant\'ana',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Recebimento pela unidade de protocolo',
+        createdAt: '18/04/2026 01:00:34',
+        createdAtOrder: 20260418010034,
+        status: 'Em andamento, recebido',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16262/2026',
+        requester: 'Isaque Neves Sant\'ana',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Tramitação em andamento',
+        createdAt: '18/04/2026 01:00:33',
+        createdAtOrder: 20260418010033,
+        status: 'Em andamento, recebido',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16261/2026',
+        requester: 'Isaque Neves Sant\'ana',
+        personType: 'Padrão',
+        classification: 'Abono',
+        subject: 'Abono de Permanência',
+        detail: 'Arquivado definitivamente',
+        createdAt: '18/04/2026 01:00:33',
+        createdAtOrder: 20260418010033,
+        status: 'Arquivado definitivo',
+        digitalLabel: 'Não',
+        digitalOrder: 0,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16260/2026',
+        requester: 'Jorgito Inocencio Santos',
+        personType: 'Padrão',
+        classification: 'Cadastro',
+        subject: 'Atualização cadastral',
+        detail: 'Objeto e observações do cadastro',
+        createdAt: '16/04/2026 10:12:20',
+        createdAtOrder: 20260416101220,
+        status: 'Em análise',
+        digitalLabel: 'Sim',
+        digitalOrder: 1,
+      ),
+      _buildProcessLookupRecord(
+        processCode: '16259/2026',
+        requester: 'JULIA RAMOS',
+        personType: 'Padrão',
+        classification: 'Licença',
+        subject: 'Licença especial',
+        detail: 'Observações sobre licença especial',
+        createdAt: '15/04/2026 09:05:10',
+        createdAtOrder: 20260415090510,
+        status: 'Em andamento, recebido',
+        digitalLabel: 'Sim',
+        digitalOrder: 1,
+      ),
+    ];
+  }
+
+  static Map<String, dynamic> _buildProcessLookupRecord({
+    required String processCode,
+    required String requester,
+    required String personType,
+    required String classification,
+    required String subject,
+    required String detail,
+    required String createdAt,
+    required int createdAtOrder,
+    required String status,
+    required String digitalLabel,
+    required int digitalOrder,
+  }) {
+    return <String, dynamic>{
+      'processCode': processCode,
+      'requester': requester,
+      'personType': personType,
+      'classification': classification,
+      'subject': subject,
+      'detail': detail,
+      'createdAt': createdAt,
+      'createdAtOrder': createdAtOrder,
+      'status': status,
+      'digitalLabel': digitalLabel,
+      'digitalOrder': digitalOrder,
+    };
   }
 
   static List<Map<String, dynamic>> _buildMultiSortSeedRecords() {
@@ -1280,6 +1701,73 @@ class ProductController {
 
     return root;
   }
+
+  Element _buildProcessLookupDigitalBadge(
+    Map<String, dynamic> itemMap,
+    dynamic itemInstance,
+  ) {
+    final isDigital = (itemMap['digitalLabel']?.toString() ?? '') == 'Sim';
+    final badge = SpanElement()
+      ..classes.addAll(<String>[
+        'datatable-process-lookup-badge',
+        isDigital
+            ? 'datatable-process-lookup-badge--primary'
+            : 'datatable-process-lookup-badge--muted',
+      ])
+      ..text = itemMap['digitalLabel']?.toString() ?? '';
+    return badge;
+  }
+
+  Element _buildProcessLookupActionsCell(
+    Map<String, dynamic> itemMap,
+    dynamic itemInstance,
+  ) {
+    final root = DivElement()..classes.add('datatable-process-lookup-actions');
+
+    final documentAction = SpanElement()
+      ..classes.addAll(<String>['datatable-process-lookup-action', 'ph', 'ph-file'])
+      ..title = 'Abrir processo';
+
+    final favoriteAction = SpanElement()
+      ..classes.addAll(<String>['datatable-process-lookup-action', 'ph', 'ph-star'])
+      ..title = 'Favoritar';
+
+    root
+      ..append(documentAction)
+      ..append(favoriteAction);
+
+    return root;
+  }
+
+    String get processLookupDemoTitle => i18n.isPortuguese
+      ? 'Layout de consulta de processos'
+      : 'Process lookup layout';
+
+    String get processLookupDemoIntro => i18n.isPortuguese
+      ? 'Demonstra como usar header customizado via TemplateRef para reproduzir a busca em duas linhas, filtros auxiliares e barra de ações da tela de consultar processo.'
+      : 'Shows how to use a custom TemplateRef header to reproduce the two-row search area, helper filters, and action bar from a process lookup screen.';
+
+    String get processLookupRequesterLabel =>
+      i18n.isPortuguese ? 'Requerente:' : 'Requester:';
+
+    String get processLookupRequesterPlaceholder => i18n.isPortuguese
+      ? 'Clique para buscar...'
+      : 'Click to search...';
+
+    String get processLookupDigitalLabel => 'Digital:';
+
+    String get processLookupClearLabel => i18n.isPortuguese ? 'Limpar' : 'Clear';
+
+    String get processLookupSearchPlaceholder =>
+      i18n.isPortuguese ? 'Digite para buscar' : 'Type to search';
+
+    String get processLookupSearchCaption => i18n.isPortuguese
+      ? 'Pesquisa rápida por campo'
+      : 'Quick field search';
+
+    String get processLookupHeaderEventLog => i18n.isPortuguese
+      ? 'A demo usa header customizado e filtros externos sem substituir a paginação, ordenação e renderização do li-datatable.'
+      : 'This demo uses a custom header and external filters without replacing li-datatable pagination, sorting, or rendering.';
 
   String _statusColor(String status) {
     switch (status) {
