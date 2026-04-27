@@ -640,10 +640,10 @@ class OverviewPagesMessages {
       """API unificada para modal, confirmação, prompt, toast e também gatilho declarativo.""";
 
   /// ```dart
-  /// "Bloco leve para snippets de Dart, HTML e CSS na documentação do example."
+  /// "Bloco leve para snippets de Dart, HTML, CSS e SQL na documentação do example."
   /// ```
   String get featureHighlightBody =>
-      """Bloco leve para snippets de Dart, HTML e CSS na documentação do example.""";
+      """Bloco leve para snippets de Dart, HTML, CSS e SQL na documentação do example.""";
 
   /// ```dart
   /// "Campo de texto com ngModel, floating label, textarea e addons de prefixo ou sufixo."
@@ -5593,7 +5593,7 @@ Map<String, String> get messagesMap => {
       """pages.overview.featureSweetAlertBody""":
           """API unificada para modal, confirmação, prompt, toast e também gatilho declarativo.""",
       """pages.overview.featureHighlightBody""":
-          """Bloco leve para snippets de Dart, HTML e CSS na documentação do example.""",
+          """Bloco leve para snippets de Dart, HTML, CSS e SQL na documentação do example.""",
       """pages.overview.featureInputsFieldBody""":
           """Campo de texto com ngModel, floating label, textarea e addons de prefixo ou sufixo.""",
       """pages.overview.featureFabBody""":

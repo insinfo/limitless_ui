@@ -106,7 +106,7 @@ pages:
     featureHelpersTitle: Utilitários
     featureHelpersBody: Loading, dialogs, toasts e popovers prontos para uso.
     featureSweetAlertBody: API unificada para modal, confirmação, prompt, toast e também gatilho declarativo.
-    featureHighlightBody: Bloco leve para snippets de Dart, HTML e CSS na documentação do example.
+    featureHighlightBody: "Bloco leve para snippets de Dart, HTML, CSS e SQL na documentação do example."
     featureInputsFieldBody: Campo de texto com ngModel, floating label, textarea e addons de prefixo ou sufixo.
     featureFabBody: Speed dial compacto para ações rápidas globais ou inline.
   alerts:

@@ -643,10 +643,10 @@ class OverviewPagesMessagesEn extends OverviewPagesMessages {
       """Unified API for modals, confirmation, prompt, toast, and also a declarative trigger.""";
 
   /// ```dart
-  /// "Lightweight block for Dart, HTML, and CSS snippets in the example documentation."
+  /// "Lightweight block for Dart, HTML, CSS, and SQL snippets in the example documentation."
   /// ```
   String get featureHighlightBody =>
-      """Lightweight block for Dart, HTML, and CSS snippets in the example documentation.""";
+      """Lightweight block for Dart, HTML, CSS, and SQL snippets in the example documentation.""";
 
   /// ```dart
   /// "Text field with ngModel, floating label, textarea, and prefix or suffix addons."
@@ -5600,7 +5600,7 @@ Map<String, String> get messagesEnMap => {
       """pages.overview.featureSweetAlertBody""":
           """Unified API for modals, confirmation, prompt, toast, and also a declarative trigger.""",
       """pages.overview.featureHighlightBody""":
-          """Lightweight block for Dart, HTML, and CSS snippets in the example documentation.""",
+          """Lightweight block for Dart, HTML, CSS, and SQL snippets in the example documentation.""",
       """pages.overview.featureInputsFieldBody""":
           """Text field with ngModel, floating label, textarea, and prefix or suffix addons.""",
       """pages.overview.featureFabBody""":

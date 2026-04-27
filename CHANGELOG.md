@@ -1,3 +1,7 @@
+## 1.0.0-dev.12
+
+- Expanded `li-highlight` with lightweight SQL highlighting support in the core parser, including common SQL aliases, and updated the example highlight page with a dedicated SQL demo snippet for visual verification in the browser.
+
 ## 1.0.0-dev.11
 
 - Expanded `li-datatable` with optional responsive auto-hide columns driven by per-column priority and required-visibility flags, so narrow layouts can collapse low-priority columns into the child/details row before horizontal scrolling appears; the example app now exercises that behavior both in the process-lookup datatable demo and in a dedicated responsive inbox/work-queue screen.

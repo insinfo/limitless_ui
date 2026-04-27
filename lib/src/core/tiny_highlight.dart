@@ -28,6 +28,17 @@ class TinyHighlight {
     r'(#[0-9a-fA-F]{3,6}\b|\b\d+(?:px|em|rem|%|vh|vw|s|ms)\b)',
   );
 
+  static final RegExp _sqlRegex = RegExp(
+    r'(--.*|/\*[\s\S]*?\*/)|'
+    r"('(?:''|[^'])*'|"
+    r'"(?:\\.|[^"\\])*")|'
+    r'\b(select|from|where|insert|into|update|delete|create|alter|drop|table|join|left|right|inner|outer|full|cross|on|group|order|by|having|limit|offset|as|distinct|union|all|null|is|like|in|between|exists|values|set|and|or|not|case|when|then|else|end|primary|key|foreign|references|returning)\b|'
+    r'\b(int|integer|bigint|smallint|decimal|numeric|float|double|real|char|varchar|text|date|time|timestamp|boolean|bool|json|jsonb|uuid)\b|'
+    r'\b(\d+(?:\.\d+)?)\b',
+    caseSensitive: false,
+    multiLine: true,
+  );
+
   /// Retorna o código formatado com as tags <span> de highlight.
   static String highlight(String code, String language) {
     if (code.isEmpty) return '';
@@ -50,6 +61,13 @@ class TinyHighlight {
         break;
       case 'css':
         highlighted = _highlightCss(code);
+        break;
+      case 'sql':
+      case 'mysql':
+      case 'postgres':
+      case 'postgresql':
+      case 'sqlite':
+        highlighted = _highlightSql(code);
         break;
       default:
         highlighted = _escapeHtml(code);
@@ -86,6 +104,17 @@ class TinyHighlight {
       if (match.group(2) != null) return 'th-string';
       if (match.group(3) != null) return 'th-prop';
       if (match.group(4) != null) return 'th-number';
+      return '';
+    });
+  }
+
+  static String _highlightSql(String code) {
+    return _processMatches(code, _sqlRegex, (match) {
+      if (match.group(1) != null) return 'th-comment';
+      if (match.group(2) != null) return 'th-string';
+      if (match.group(3) != null) return 'th-keyword';
+      if (match.group(4) != null) return 'th-type';
+      if (match.group(5) != null) return 'th-number';
       return '';
     });
   }

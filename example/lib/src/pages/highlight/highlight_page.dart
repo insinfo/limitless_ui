@@ -59,6 +59,19 @@ class ReviewCardComponent {
   font-weight: 600;
 }''';
 
+  final String sqlSnippet = '''SELECT
+  p.id,
+  p.protocol_number,
+  u.display_name AS owner_name,
+  p.status,
+  p.updated_at
+FROM processes p
+INNER JOIN users u ON u.id = p.owner_id
+WHERE p.status IN ('OPEN', 'REVIEW')
+  AND p.priority >= 3
+ORDER BY p.updated_at DESC
+LIMIT 10;''';
+
   final String componentSnippet = '''<li-highlight
     [code]="snippet"
     language="html">
@@ -74,8 +87,8 @@ class ReviewCardComponent {
       : 'LiHighlightComponent is a simple visual block for internal documentation, API examples, and integration snippets without depending on heavy browser-side libraries.';
   String get descriptionTitle => _isPt ? 'Escopo' : 'Scope';
   String get descriptionBody => _isPt
-      ? 'Hoje o componente cobre Dart, HTML e CSS com um highlighter pequeno e cacheado.'
-      : 'Today the component covers Dart, HTML, and CSS with a small cached highlighter.';
+      ? 'Hoje o componente cobre Dart, HTML, CSS e SQL com um highlighter pequeno e cacheado.'
+      : 'Today the component covers Dart, HTML, CSS, and SQL with a small cached highlighter.';
   String get strengthsTitle => _isPt ? 'Onde ele ajuda' : 'Where it helps';
   String get strengthsBody => _isPt
       ? 'É adequado para páginas de demo, documentação embutida e exemplos rápidos ao lado do componente real.'
@@ -92,11 +105,13 @@ class ReviewCardComponent {
   String get templateTitle => _isPt ? 'Template' : 'Template';
   String get componentTitle => _isPt ? 'Componente' : 'Component';
   String get apiIntro => _isPt
-      ? 'A API é deliberadamente curta: `code` recebe a string e `language` controla o parser leve disponível.'
-      : 'The API is intentionally short: `code` receives the string and `language` controls the available lightweight parser.';
+      ? 'A API é deliberadamente curta: `code` recebe a string e `language` controla o parser leve disponível, incluindo aliases comuns de SQL.'
+      : 'The API is intentionally short: `code` receives the string and `language` controls the available lightweight parser, including common SQL aliases.';
 
   String get activeSnippetTitle {
     switch (selectedSnippet) {
+      case 'sql':
+        return _isPt ? 'Consulta SQL' : 'SQL query';
       case 'html':
         return _isPt ? 'Template HTML' : 'HTML template';
       case 'css':
@@ -109,6 +124,8 @@ class ReviewCardComponent {
 
   String get activeSnippetLanguage {
     switch (selectedSnippet) {
+      case 'sql':
+        return 'sql';
       case 'html':
         return 'html';
       case 'css':
@@ -121,6 +138,8 @@ class ReviewCardComponent {
 
   String get activeSnippetCode {
     switch (selectedSnippet) {
+      case 'sql':
+        return sqlSnippet;
       case 'html':
         return htmlSnippet;
       case 'css':
