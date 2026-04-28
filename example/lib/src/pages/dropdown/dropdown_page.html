@@ -244,6 +244,7 @@
                         triggerClass="btn btn-outline-primary btn-sm"
                         menuClass="wmin-sm-200"
                         container="inline"
+                        menuMaxHeight="12rem"
                         [closeOtherMenusOnOpen]="false"
                         (valueChange)="onCompactMenuAction($event)">
                     </li-dropdown-menu>
@@ -256,6 +257,7 @@
                         triggerClass="btn btn-outline-secondary btn-sm"
                         menuClass="wmin-sm-200"
                         container="inline"
+                        menuMaxHeight="12rem"
                         [closeOtherMenusOnOpen]="false"
                         (valueChange)="onCompactMenuAction($event)">
                     </li-dropdown-menu>
@@ -264,6 +266,48 @@
                   <div class="alert alert-info alert-icon-start mb-3">
                     <span class="alert-icon bg-info text-white"><i class="ph-info"></i></span>
                     {{ compactMenuUseCase }}
+                  </div>
+
+                  <div>
+                    <div class="fw-semibold mb-2">{{ compactMenuStateTitle }}</div>
+                    <div class="bg-light border rounded-3 p-3">{{ compactMenuState.isEmpty ? compactMenuWaitingState : compactMenuState }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="card card-body">
+                  <h6 class="mb-2">{{ mobileMenuTitle }}</h6>
+                  <p class="text-muted mb-3">{{ mobileMenuBody }}</p>
+
+                  <div class="d-flex flex-wrap gap-2 align-items-start mb-3">
+                    <li-dropdown-menu
+                        [options]="longActionOptions"
+                        ariaLabel="mobile-modal-menu"
+                        triggerLabel="{{ mobileModalLabel }}"
+                        triggerIconClass="ph-list"
+                        triggerClass="btn btn-outline-primary btn-sm"
+                        menuClass="wmin-sm-250"
+                        mobilePresentation="modal"
+                        mobileBreakpoint="9999px"
+                        mobileMenuTitle="{{ mobileMenuSelectionTitle }}"
+                        menuMaxHeight="22rem"
+                        (valueChange)="onCompactMenuAction($event)">
+                    </li-dropdown-menu>
+
+                    <li-dropdown-menu
+                        [options]="longActionOptions"
+                        ariaLabel="mobile-sheet-menu"
+                        triggerLabel="{{ mobileSheetLabel }}"
+                        triggerIconClass="ph-rows"
+                        triggerClass="btn btn-outline-secondary btn-sm"
+                        menuClass="wmin-sm-250"
+                        mobilePresentation="sheet"
+                        mobileBreakpoint="9999px"
+                        mobileMenuTitle="{{ mobileMenuSelectionTitle }}"
+                        menuMaxHeight="70vh"
+                        (valueChange)="onCompactMenuAction($event)">
+                    </li-dropdown-menu>
                   </div>
 
                   <div>
@@ -300,6 +344,10 @@
 
             <div class="mb-3">
               <li-highlight [code]="compactMenuApiSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mb-3">
+              <li-highlight [code]="mobileMenuApiSnippet" language="html"></li-highlight>
             </div>
 
             <div class="mb-3">

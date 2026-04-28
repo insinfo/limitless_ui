@@ -59,6 +59,7 @@ class DropdownPageComponent {
   triggerLabel="Filters"
   triggerIconClass="ph-funnel"
   container="inline"
+  [adaptToViewport]="true"
   [closeOtherMenusOnOpen]="false"
   (valueChange)="onCompactMenuAction(\$event)">
 </li-dropdown-menu>
@@ -69,6 +70,29 @@ class DropdownPageComponent {
   triggerIconClass="ph-sliders-horizontal"
   container="inline"
   [closeOtherMenusOnOpen]="false"
+  (valueChange)="onCompactMenuAction(\$event)">
+</li-dropdown-menu>''';
+
+  static const String mobileMenuApiSnippet = '''
+<li-dropdown-menu
+  [options]="longActionOptions"
+  triggerLabel="Mobile modal"
+  triggerIconClass="ph-list"
+  mobilePresentation="modal"
+  mobileBreakpoint="575.98px"
+  mobileMenuTitle="Choose an option"
+  menuMaxHeight="22rem"
+  (valueChange)="onCompactMenuAction(\$event)">
+</li-dropdown-menu>
+
+<li-dropdown-menu
+  [options]="longActionOptions"
+  triggerLabel="Bottom sheet"
+  triggerIconClass="ph-rows"
+  mobilePresentation="sheet"
+  mobileBreakpoint="575.98px"
+  mobileMenuTitle="Choose an option"
+  menuMaxHeight="70vh"
   (valueChange)="onCompactMenuAction(\$event)">
 </li-dropdown-menu>''';
 
@@ -93,6 +117,114 @@ class DropdownPageComponent {
 
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;
+
+  static const List<LiDropdownMenuOption> _longActionOptionsPt =
+      <LiDropdownMenuOption>[
+    LiDropdownMenuOption(
+      value: 'open',
+      label: 'Abrir documento',
+      iconClass: 'ph-file-text',
+    ),
+    LiDropdownMenuOption(
+      value: 'sign',
+      label: 'Assinar',
+      iconClass: 'ph-signature',
+    ),
+    LiDropdownMenuOption(
+      value: 'review',
+      label: 'Enviar para revisão',
+      iconClass: 'ph-eye',
+    ),
+    LiDropdownMenuOption(
+      value: 'route',
+      label: 'Encaminhar',
+      iconClass: 'ph-share-fat',
+    ),
+    LiDropdownMenuOption(
+      value: 'favorite',
+      label: 'Favoritar',
+      iconClass: 'ph-star',
+    ),
+    LiDropdownMenuOption(
+      value: 'download',
+      label: 'Baixar',
+      iconClass: 'ph-download',
+    ),
+    LiDropdownMenuOption(
+      value: 'print',
+      label: 'Imprimir',
+      iconClass: 'ph-printer',
+    ),
+    LiDropdownMenuOption(
+      value: 'history',
+      label: 'Ver histórico',
+      iconClass: 'ph-clock-counter-clockwise',
+    ),
+    LiDropdownMenuOption(
+      value: 'archive',
+      label: 'Arquivar',
+      iconClass: 'ph-archive',
+    ),
+    LiDropdownMenuOption(
+      value: 'delete',
+      label: 'Excluir',
+      iconClass: 'ph-trash',
+    ),
+  ];
+
+  static const List<LiDropdownMenuOption> _longActionOptionsEn =
+      <LiDropdownMenuOption>[
+    LiDropdownMenuOption(
+      value: 'open',
+      label: 'Open document',
+      iconClass: 'ph-file-text',
+    ),
+    LiDropdownMenuOption(
+      value: 'sign',
+      label: 'Sign',
+      iconClass: 'ph-signature',
+    ),
+    LiDropdownMenuOption(
+      value: 'review',
+      label: 'Send to review',
+      iconClass: 'ph-eye',
+    ),
+    LiDropdownMenuOption(
+      value: 'route',
+      label: 'Route',
+      iconClass: 'ph-share-fat',
+    ),
+    LiDropdownMenuOption(
+      value: 'favorite',
+      label: 'Favorite',
+      iconClass: 'ph-star',
+    ),
+    LiDropdownMenuOption(
+      value: 'download',
+      label: 'Download',
+      iconClass: 'ph-download',
+    ),
+    LiDropdownMenuOption(
+      value: 'print',
+      label: 'Print',
+      iconClass: 'ph-printer',
+    ),
+    LiDropdownMenuOption(
+      value: 'history',
+      label: 'View history',
+      iconClass: 'ph-clock-counter-clockwise',
+    ),
+    LiDropdownMenuOption(
+      value: 'archive',
+      label: 'Archive',
+      iconClass: 'ph-archive',
+    ),
+    LiDropdownMenuOption(
+      value: 'delete',
+      label: 'Delete',
+      iconClass: 'ph-trash',
+    ),
+  ];
 
   String dropdownState = '';
   String compactMenuState = '';
@@ -159,6 +291,9 @@ class DropdownPageComponent {
             iconClass: 'ph-calendar-blank',
           ),
         ];
+
+  List<LiDropdownMenuOption> get longActionOptions =>
+      _isPt ? _longActionOptionsPt : _longActionOptionsEn;
 
   String get pageTitle => _isPt ? 'Componentes' : 'Components';
   String get pageSubtitle => 'Dropdown';
@@ -258,6 +393,16 @@ class DropdownPageComponent {
   String get compactMenuWaitingState => _isPt
       ? 'Menus compactos: aguardando interação'
       : 'Compact menus: waiting for interaction';
+  String get mobileMenuTitle => _isPt
+      ? 'Apresentação mobile do li-dropdown-menu'
+      : 'li-dropdown-menu mobile presentation';
+  String get mobileMenuBody => _isPt
+      ? 'Quando o viewport fica estreito, o menu pode trocar o dropdown ancorado por modal centralizado ou bottom sheet. Neste demo o breakpoint é alto para visualizar o comportamento também no desktop.'
+      : 'When the viewport gets narrow, the menu can swap the anchored dropdown for a centered modal or a bottom sheet. This demo uses a high breakpoint so the behavior is visible on desktop too.';
+  String get mobileModalLabel => _isPt ? 'Modal mobile' : 'Mobile modal';
+  String get mobileSheetLabel => _isPt ? 'Bottom sheet' : 'Bottom sheet';
+  String get mobileMenuSelectionTitle =>
+      _isPt ? 'Escolha uma ação' : 'Choose an action';
   String get navbarDropdownLabel =>
       _isPt ? 'Dropdown da navbar' : 'Navbar dropdown';
   String get profileLabel => _isPt ? 'Perfil' : 'Profile';
@@ -317,7 +462,7 @@ class DropdownPageComponent {
           'liDropdownMenu recebe classes de menu e delega a navegação por teclado.',
           'liDropdownItem marca itens focáveis e retira itens desabilitados da rotação.',
           'liDropdownSubmenu, liDropdownSubmenuToggle e liDropdownSubmenuMenu permitem submenus reaproveitáveis sem fechar o dropdown pai ao acionar o toggle do submenu.',
-          'li-dropdown-menu usa listas de opções prontas e fecha outras instâncias por padrão, com opt-out via closeOtherMenusOnOpen.',
+          'li-dropdown-menu usa listas de opções prontas, fecha outras instâncias por padrão, adapta a viewport por padrão, aceita menuMaxHeight e pode abrir como modal ou bottom sheet no mobile.',
         ]
       : const <String>[
           'liDropdown controls open state, autoClose, placement, and container.',
@@ -326,7 +471,7 @@ class DropdownPageComponent {
           'liDropdownMenu receives menu classes and delegates keyboard navigation.',
           'liDropdownItem marks focusable items and removes disabled items from rotation.',
           'liDropdownSubmenu, liDropdownSubmenuToggle, and liDropdownSubmenuMenu provide reusable submenus without collapsing the parent dropdown when the submenu toggle is activated.',
-          'li-dropdown-menu uses ready-made option lists and closes other instances by default, with an opt-out through closeOtherMenusOnOpen.',
+          'li-dropdown-menu uses ready-made option lists, closes other instances by default, adapts to the viewport by default, accepts menuMaxHeight, and can open as a mobile modal or bottom sheet.',
         ];
   String get waitingState => _isPt
       ? 'Dropdown: aguardando interação'

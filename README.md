@@ -1553,7 +1553,8 @@ Each item is a `LiDropdownMenuOption` with:
 
 The component also supports `triggerLabel`, `triggerIconClass`, `triggerClass`,
 `menuClass`, `placement`, `rounded`, `showCaret`, `closeOnSelect`,
-`closeOtherMenusOnOpen`, and `container`.
+`closeOtherMenusOnOpen`, `menuMaxHeight`, `mobilePresentation`,
+`mobileBreakpoint`, `mobileMenuTitle`, `adaptToViewport`, and `container`.
 
 ```dart
 final options = <LiDropdownMenuOption>[
@@ -1577,11 +1578,21 @@ final options = <LiDropdownMenuOption>[
   triggerLabel="Actions"
   container="body"
   placement="dropend"
+  menuMaxHeight="18rem"
+  mobilePresentation="sheet"
+  mobileMenuTitle="Actions"
+  [adaptToViewport]="true"
   (valueChange)="onAction($event)">
 </li-dropdown-menu>
 ```
 
 Use `container="body"` when the trigger lives inside clipped panels, tables, cards, or any `overflow: hidden`/`auto` ancestor and you want the menu to escape that stacking context. Use `container="inline"` when normal DOM flow is preferred. The same inline-versus-body overlay choice is also available on the lower-level `dropdownmenu` directive through `dropdownmenuContainer`.
+
+Use `menuMaxHeight` for longer option lists so the menu scrolls vertically instead of growing past the viewport.
+
+Set `mobilePresentation="modal"` or `mobilePresentation="sheet"` when small screens should use a touch-friendly fixed presentation instead of an anchored dropdown. The mobile mode is selected with `mobileBreakpoint`, which defaults to `575.98px`; `mobileMenuTitle` adds an optional header/title to the mobile surface. Modal and sheet presentations cap themselves to the visual viewport and scroll their option list internally.
+
+`adaptToViewport` is enabled by default. For `container="body"`, Popper uses fallback placements and the component applies an available-height cap when needed, so the option list can scroll instead of being clipped. For `container="inline"`, the component automatically flips a default downward menu to `dropup` when there is not enough space below the trigger and there is more room above it, and applies the same available-height cap with vertical scrolling when needed.
 
 The menu closes on outside click, `Escape`, or selection depending on `closeOnSelect`. Main reference: [lib/src/components/dropdown_menu/dropdown_menu_component.dart](lib/src/components/dropdown_menu/dropdown_menu_component.dart).
 

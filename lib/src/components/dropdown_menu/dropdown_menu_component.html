@@ -10,25 +10,49 @@
     <span *ngIf="triggerLabel.isNotEmpty">{{ triggerLabel }}</span>
   </button>
 
-  <div #menuElement [class]="resolvedMenuClasses">
-    <template ngFor let-option [ngForOf]="options">
-      <div *ngIf="option.divider" class="dropdown-divider"></div>
+  <div
+      *ngIf="usesMobilePresentation"
+      class="li-dropdown-menu__mobile-backdrop"
+      (click)="closeDropdown()"></div>
 
+  <div
+      #menuElement
+      [class]="resolvedMenuClasses"
+      [style.max-height]="resolvedMenuMaxHeight"
+      [style.overflow-y]="resolvedMenuOverflowY"
+      [attr.role]="usesMobilePresentation ? 'dialog' : null"
+      [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
+    <div *ngIf="showsMobileModalHeader" class="li-dropdown-menu__mobile-header">
+      <span class="li-dropdown-menu__mobile-title">{{ mobileMenuTitle }}</span>
       <button
-          *ngIf="!option.divider"
           type="button"
-          [class]="resolvedItemClasses(option)"
-          [disabled]="option.disabled"
-          (click)="selectOption(option, $event)">
-        <i *ngIf="option.iconClass.trim().isNotEmpty" [class]="resolvedItemIconClasses(option)"></i>
-
-        <span class="flex-fill">
-          <span class="d-block">{{ option.label }}</span>
-          <small *ngIf="option.description.isNotEmpty" class="d-block text-muted">
-            {{ option.description }}
-          </small>
-        </span>
+          class="li-dropdown-menu__mobile-close"
+          aria-label="Fechar"
+          (click)="closeFromMobilePresentation()">
+        <i class="ph ph-x"></i>
       </button>
-    </template>
+    </div>
+
+    <div class="li-dropdown-menu__items">
+      <template ngFor let-option [ngForOf]="options">
+        <div *ngIf="option.divider" class="dropdown-divider"></div>
+
+        <button
+            *ngIf="!option.divider"
+            type="button"
+            [class]="resolvedItemClasses(option)"
+            [disabled]="option.disabled"
+            (click)="selectOption(option, $event)">
+          <i *ngIf="option.iconClass.trim().isNotEmpty" [class]="resolvedItemIconClasses(option)"></i>
+
+          <span class="flex-fill">
+            <span class="d-block">{{ option.label }}</span>
+            <small *ngIf="option.description.isNotEmpty" class="d-block text-muted">
+              {{ option.description }}
+            </small>
+          </span>
+        </button>
+      </template>
+    </div>
   </div>
 </div>

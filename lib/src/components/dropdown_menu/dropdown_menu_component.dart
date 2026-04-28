@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:math';
 
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
@@ -46,6 +47,11 @@ class LiDropdownMenuComponent implements OnDestroy {
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   PopperAnchoredOverlay? _overlay;
   bool _overlayRelayoutPending = false;
+  bool _inlineViewportRelayoutPending = false;
+  bool _openUpwardForViewport = false;
+  bool _menuContentOverflows = false;
+  String _viewportMaxHeight = '';
+  String _menuMaxHeight = '';
 
   @Input()
   List<LiDropdownMenuOption> options = const <LiDropdownMenuOption>[];
@@ -68,6 +74,34 @@ class LiDropdownMenuComponent implements OnDestroy {
   @Input()
   String menuClass = 'dropdown-menu-end';
 
+  /// Optional CSS max-height for long option lists.
+  ///
+  /// When set, the menu scrolls vertically instead of growing past the
+  /// viewport or covering too much surrounding UI.
+  @Input()
+  set menuMaxHeight(String value) {
+    _menuMaxHeight = value;
+    _syncMenuStyleState();
+  }
+
+  String get menuMaxHeight => _menuMaxHeight;
+
+  /// Mobile presentation for small viewports.
+  ///
+  /// `dropdown` keeps the normal anchored menu. `modal` shows the menu as a
+  /// centered fixed dialog with a backdrop, and `sheet` shows it as a bottom
+  /// sheet, when the viewport matches [mobileBreakpoint].
+  @Input()
+  String mobilePresentation = 'dropdown';
+
+  /// CSS media-query width used by [mobilePresentation].
+  @Input()
+  String mobileBreakpoint = '575.98px';
+
+  /// Optional title shown at the top of the mobile modal menu.
+  @Input()
+  String mobileMenuTitle = '';
+
   /// Rendering container: `inline` keeps the menu in normal DOM flow,
   /// `body` renders it in a portal anchored with Popper.
   @Input()
@@ -76,6 +110,11 @@ class LiDropdownMenuComponent implements OnDestroy {
   /// Dropdown direction: dropdown, dropup, dropstart, or dropend.
   @Input()
   String placement = 'dropdown';
+
+  /// When `true`, inline dropdowns flip upward if the menu would overflow the
+  /// viewport bottom. Body overlays already use Popper fallback placements.
+  @Input()
+  bool adaptToViewport = true;
 
   @Input()
   bool showCaret = true;
@@ -106,18 +145,23 @@ class LiDropdownMenuComponent implements OnDestroy {
   final _valueChange = StreamController<String>.broadcast();
 
   bool isOpen = false;
+  String? resolvedMenuMaxHeight;
+  String? resolvedMenuOverflowY;
 
   String get resolvedHostClasses {
     final normalizedPlacement = placement.trim().toLowerCase();
-    final placementClass = switch (normalizedPlacement) {
-      'dropup' => 'dropup',
-      'dropstart' => 'dropstart',
-      'dropend' => 'dropend',
-      _ => 'dropdown',
-    };
+    final placementClass = _openUpwardForViewport
+        ? 'dropup'
+        : switch (normalizedPlacement) {
+            'dropup' => 'dropup',
+            'dropstart' => 'dropstart',
+            'dropend' => 'dropend',
+            _ => 'dropdown',
+          };
 
     return _joinClasses(<String>[
       placementClass,
+      usesMobilePresentation ? 'li-dropdown-menu--mobile-open' : '',
       isOpen ? 'show' : '',
     ]);
   }
@@ -146,14 +190,93 @@ class LiDropdownMenuComponent implements OnDestroy {
     return _joinClasses(<String>[
       'dropdown-menu',
       'li-dropdown-menu__menu',
+      usesMobileModal ? 'li-dropdown-menu__menu--mobile-modal' : '',
+      usesMobileSheet ? 'li-dropdown-menu__menu--mobile-sheet' : '',
       menuClass,
       isOpen ? 'show' : '',
     ]);
   }
 
+  String? _resolveMenuMaxHeight() {
+    final normalizedMaxHeight = _menuMaxHeight.trim();
+    if (usesMobilePresentation) {
+      final viewportHeight = _viewportHeight;
+      final inset = usesMobileSheet ? 24 : 32;
+      final maxHeight = max(120, viewportHeight - inset).floor();
+      return '${maxHeight}px';
+    }
+
+    final resolvedMaxHeight = _viewportMaxHeight.isNotEmpty
+        ? _viewportMaxHeight
+        : normalizedMaxHeight;
+    if (resolvedMaxHeight.isEmpty) {
+      return null;
+    }
+
+    return resolvedMaxHeight;
+  }
+
+  String? _resolveMenuOverflowY(String? maxHeight) {
+    if (usesMobilePresentation || maxHeight == null) {
+      return null;
+    }
+
+    return _viewportMaxHeight.isNotEmpty || _menuContentOverflows
+        ? 'auto'
+        : 'hidden';
+  }
+
+  void _syncMenuStyleState() {
+    final nextMaxHeight = _resolveMenuMaxHeight();
+    final nextOverflowY = _resolveMenuOverflowY(nextMaxHeight);
+    resolvedMenuMaxHeight = nextMaxHeight;
+    resolvedMenuOverflowY = nextOverflowY;
+  }
+
+  bool get usesMobileModal {
+    return isOpen && _shouldUseMobilePresentation('modal');
+  }
+
+  bool get usesMobileSheet {
+    return isOpen && _shouldUseMobilePresentation('sheet');
+  }
+
+  bool get usesMobilePresentation => usesMobileModal || usesMobileSheet;
+
+  bool _shouldUseMobilePresentation(String presentation) {
+    if (mobilePresentation.trim().toLowerCase() != presentation) {
+      return false;
+    }
+
+    final breakpoint = mobileBreakpoint.trim();
+    if (breakpoint.isEmpty) {
+      return false;
+    }
+
+    return html.window.matchMedia('(max-width: $breakpoint)').matches;
+  }
+
+  bool get showsMobileModalHeader =>
+      usesMobilePresentation && mobileMenuTitle.trim().isNotEmpty;
+
+  double get _viewportHeight {
+    final windowHeight = html.window.innerHeight?.toDouble() ?? 0;
+    final documentHeight =
+        html.document.documentElement?.clientHeight.toDouble() ?? 0;
+    if (windowHeight > 0 && documentHeight > 0) {
+      return min(windowHeight, documentHeight);
+    }
+    return max(windowHeight, documentHeight);
+  }
+
   bool get usesNavbarTrigger => triggerClass.contains('navbar-nav-link');
 
   bool get usesBodyOverlay => container.trim().toLowerCase() == 'body';
+
+  bool get usesBodyDropdownOverlay =>
+      usesBodyOverlay &&
+      !_shouldUseMobilePresentation('modal') &&
+      !_shouldUseMobilePresentation('sheet');
 
   bool get _alignEnd =>
       RegExp(r'(^|\s)dropdown-menu-end(\s|$)').hasMatch(menuClass);
@@ -227,16 +350,18 @@ class LiDropdownMenuComponent implements OnDestroy {
       _closeOtherOpenMenus();
     }
 
-    if (usesBodyOverlay) {
+    if (usesBodyDropdownOverlay) {
       _ensureOverlay();
     }
     _bindDocumentListeners();
     isOpen = true;
     _registerAsOpenMenu();
-    if (usesBodyOverlay) {
+    _syncMenuStyleState();
+    if (usesBodyDropdownOverlay) {
       _overlay?.startAutoUpdate();
       _scheduleOverlayUpdate();
     }
+    _scheduleViewportAdaptation();
     _changeDetectorRef.markForCheck();
   }
 
@@ -247,8 +372,13 @@ class LiDropdownMenuComponent implements OnDestroy {
 
     isOpen = false;
     _overlayRelayoutPending = false;
+    _inlineViewportRelayoutPending = false;
+    _openUpwardForViewport = false;
+    _menuContentOverflows = false;
+    _viewportMaxHeight = '';
+    _syncMenuStyleState();
     _unregisterAsOpenMenu();
-    if (usesBodyOverlay) {
+    if (usesBodyDropdownOverlay) {
       _overlay?.stopAutoUpdate();
     }
     _unbindDocumentListeners();
@@ -273,6 +403,10 @@ class LiDropdownMenuComponent implements OnDestroy {
     if (closeOnSelect) {
       closeDropdown();
     }
+  }
+
+  void closeFromMobilePresentation() {
+    closeDropdown(restoreFocus: true);
   }
 
   void _ensureOverlay() {
@@ -343,7 +477,7 @@ class LiDropdownMenuComponent implements OnDestroy {
   }
 
   void _scheduleOverlayUpdate() {
-    if (!usesBodyOverlay || _overlayRelayoutPending || !isOpen) {
+    if (!usesBodyDropdownOverlay || _overlayRelayoutPending || !isOpen) {
       return;
     }
 
@@ -355,6 +489,77 @@ class LiDropdownMenuComponent implements OnDestroy {
       }
 
       _overlay?.update();
+    });
+  }
+
+  void _scheduleViewportAdaptation() {
+    if (!adaptToViewport ||
+        usesMobilePresentation ||
+        _inlineViewportRelayoutPending ||
+        !isOpen) {
+      return;
+    }
+
+    final normalizedPlacement = _normalizedPlacement;
+    if (!usesBodyDropdownOverlay &&
+        normalizedPlacement != 'dropdown' &&
+        normalizedPlacement.isNotEmpty) {
+      return;
+    }
+
+    _inlineViewportRelayoutPending = true;
+    html.window.requestAnimationFrame((_) {
+      _inlineViewportRelayoutPending = false;
+      if (!isOpen || usesMobilePresentation) {
+        return;
+      }
+
+      final trigger = triggerButtonElement;
+      final menu = menuElement;
+      if (trigger == null || menu == null) {
+        return;
+      }
+
+      final triggerRect = trigger.getBoundingClientRect();
+      final menuRect = menu.getBoundingClientRect();
+      final viewportHeight = _viewportHeight;
+      if (viewportHeight <= 0 || menuRect.height <= 0) {
+        return;
+      }
+
+      final spaceBelow = viewportHeight - triggerRect.bottom;
+      final spaceAbove = triggerRect.top;
+      final shouldOpenUpward = !usesBodyDropdownOverlay &&
+          menuRect.bottom > viewportHeight - 8 &&
+          spaceAbove > spaceBelow;
+      final availableSpace = usesBodyDropdownOverlay
+          ? viewportHeight - menuRect.top
+          : (shouldOpenUpward ? spaceAbove : spaceBelow);
+      final availableHeight = max(80, availableSpace - 8).floor();
+      final nextMaxHeight =
+          menuRect.height > availableHeight ? '${availableHeight}px' : '';
+      final menuItems = menu.querySelector('.li-dropdown-menu__items');
+      final itemContentHeight = menu
+          .querySelectorAll('.li-dropdown-menu__items > *')
+          .fold<double>(0, (height, element) {
+        return height + element.getBoundingClientRect().height;
+      });
+      final contentHeight = itemContentHeight > 0
+          ? itemContentHeight.ceil()
+          : menuItems is html.Element
+              ? menuItems.scrollHeight
+              : menu.scrollHeight;
+      final contentOverflows = contentHeight > menu.clientHeight + 4;
+
+      if (_openUpwardForViewport != shouldOpenUpward ||
+          _viewportMaxHeight != nextMaxHeight ||
+          _menuContentOverflows != contentOverflows) {
+        _openUpwardForViewport = shouldOpenUpward;
+        _viewportMaxHeight = nextMaxHeight;
+        _menuContentOverflows = contentOverflows;
+        _syncMenuStyleState();
+        _changeDetectorRef.markForCheck();
+      }
     });
   }
 

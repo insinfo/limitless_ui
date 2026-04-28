@@ -1,3 +1,9 @@
+## 1.0.0-dev.13
+
+- Added `menuMaxHeight` to `li-dropdown-menu`, allowing long option lists to scroll vertically without forcing consumers to create custom menu classes.
+- Added mobile presentations to `li-dropdown-menu` through `mobilePresentation="modal"` and `mobilePresentation="sheet"`, with configurable breakpoint, optional mobile menu title, internal option-list scrolling, and example coverage for both modes.
+- Added default viewport adaptation for `li-dropdown-menu` through `adaptToViewport`, so menus near viewport edges flip upward where applicable and cap their height instead of being clipped.
+
 ## 1.0.0-dev.12
 
 - Expanded `li-highlight` with lightweight SQL highlighting support in the core parser, including common SQL aliases, and updated the example highlight page with a dedicated SQL demo snippet for visual verification in the browser.
