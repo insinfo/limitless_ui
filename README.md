@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml/badge.svg)](https://github.com/insinfo/limitless_ui/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/insinfo/limitless_ui/branch/main/graph/badge.svg)](https://codecov.io/gh/insinfo/limitless_ui)
+[![pub package](https://img.shields.io/pub/v/limitless_ui.svg)](https://pub.dev/packages/limitless_ui)
 
 Reusable AngularDart UI components, directives, and browser helpers for applications built on the Limitless visual language and Bootstrap-based CSS: https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css.
 
