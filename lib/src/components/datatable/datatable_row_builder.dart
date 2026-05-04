@@ -36,6 +36,7 @@ class DatatableRowBuilder {
     required bool gridMode,
     required bool responsiveCollapse,
     required int responsiveCollapseMaxWidth,
+    bool? responsiveCollapseActive,
     Set<String> autoHiddenColumnKeys = const <String>{},
   }) {
     final rows = <DatatableRow>[];
@@ -55,6 +56,7 @@ class DatatableRowBuilder {
       final row = DatatableRow(
         index: i,
         instance: itemInstance,
+        itemMap: itemMap,
         columns: <DatatableCol>[],
       );
 
@@ -134,6 +136,7 @@ class DatatableRowBuilder {
         rows: rows,
         responsiveCollapse: responsiveCollapse,
         responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+        responsiveCollapseActive: responsiveCollapseActive,
         autoHiddenColumnKeys: autoHiddenColumnKeys,
       ),
     );
@@ -171,12 +174,14 @@ class DatatableRowBuilder {
     required List<DatatableRow> rows,
     required bool responsiveCollapse,
     required int responsiveCollapseMaxWidth,
+    bool? responsiveCollapseActive,
     Set<String> autoHiddenColumnKeys = const <String>{},
   }) {
-    final responsiveActive = _isResponsiveViewportActive(
-      responsiveCollapse: responsiveCollapse,
-      responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
-    );
+    final responsiveActive = responsiveCollapseActive ??
+        _isResponsiveViewportActive(
+          responsiveCollapse: responsiveCollapse,
+          responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+        );
     final hasAutoHiddenColumns = autoHiddenColumnKeys.isNotEmpty;
 
     return rows.map((row) {

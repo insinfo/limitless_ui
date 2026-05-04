@@ -7,6 +7,7 @@ enum DatatableRowType { normal, groupTitle }
 
 class DatatableRow {
   dynamic instance;
+  Map<String, dynamic>? itemMap;
   dynamic id;
   int index;
   List<DatatableCol> columns = [];
@@ -22,6 +23,7 @@ class DatatableRow {
   DatatableRow(
       {required this.columns,
       this.instance,
+      this.itemMap,
       this.id,
       this.index = -1,
       this.styleCss,

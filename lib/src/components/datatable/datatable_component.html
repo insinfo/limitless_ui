@@ -3,92 +3,103 @@
     <div class="datatable-header" [class.p-0]="disableHeaderPadding == true"
         [class.datatable-header--custom]="hasCustomHeader">
         <template [ngIf]="hasCustomHeader">
-            <template [ngTemplateOutlet]="resolvedHeaderTemplate"
-                [ngTemplateOutletValue]="headerTemplateContext">
+            <template [ngTemplateOutlet]="resolvedHeaderTemplate" [ngTemplateOutletValue]="headerTemplateContext">
             </template>
         </template>
 
         <template [ngIf]="!hasCustomHeader">
-        <div class="dataTables_filter" *ngIf="searchInFields.isNotEmpty">
-            <div class="datatable-search-toolbar">
-                <input [(ngModel)]="dataTableFilter.searchString" #inputSearchElement
-                    (keypress)="handleSearchInputKeypress($event)" [attr.data-label]="'datatable_input_search'"
-                    type="search" class="form-control data-table-search-field datatable-search-input"
-                    placeholder="{{searchPlaceholder}}" />
-                <div class="datatable-search-toolbar-secondary">
-                    <select #selectSearchField (change)="handleSearchFieldSelectChange($event, selectSearchField.value)"
-                        class="form-select datatable-search-field-select"
-                        [attr.data-label]="'datatable_select_search_field'">
-                        <option *ngFor="let field of searchInFields; let i = index" value="{{i}}"
-                            [selected]="field.selected">
-                            {{field.label}}
-                        </option>
-                    </select>
-                    <button class="btn btn-flat-primary border-transparent btn-icon datatable-search-submit"
-                        title="Clique para buscar" type="button" (click)="onSearch()"
-                        [attr.data-label]="'datatable_btn_search'">
-                        <i class="ph-magnifying-glass"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="dataTables_length d-flex align-items-center datatable-header-actions">
-            <div *ngIf="showExportMenu" class="dropdown me-2" dropdownmenu="bottom-end">
-                <button type="button" title="Exportar para PDF/Excel"
-                    class="btn btn-flat-primary border-transparent btn-icon li-dropdown-trigger" aria-expanded="false">
-                    <i class="ph ph-file-arrow-down"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-end">
-                    <button type="button" (click)="exportPdf()" class="dropdown-item cursor-pointer li-dropdown-close">
-                        <i class="ph-file-pdf me-2"></i>
-                        Exportar para PDF
-                    </button>
-                    <button type="button" (click)="exportXlsx()" class="dropdown-item cursor-pointer li-dropdown-close">
-                        <i class="ph-file-xls me-2"></i>
-                        Exportar para Excel
-                    </button>
-                    <button *ngFor="let menuAction of exportMenuActions"
-                        type="button" (click)="menuAction.action()"
-                        class="dropdown-item cursor-pointer li-dropdown-close">
-                        <i *ngIf="menuAction.iconClass != null" [class]="menuAction.iconClass ?? ''" class="me-2"></i>
-                        {{menuAction.label}}
-                    </button>
-                </div>
-            </div>
-
-            <button (click)="changeViewMode()" title="Modo lista ou grade"
-                class="btn btn-flat-primary border-transparent btn-icon me-2" type="button">
-                <i [class.ph-squares-four]="!gridMode" [class.ph-list-bullets]="gridMode"></i>
-            </button>
-
-            <div class="dropdown me-2" dropdownmenu="bottom-end">
-                <button type="button" class="btn btn-flat-primary border-transparent btn-icon li-dropdown-trigger"
-                    title="Clique para exibir ou ocultar uma coluna" aria-expanded="false">
-                    <i class="ph-eye"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-end">
-                    <div class="dropdown-item border-bottom mb-1 pb-1">
-                        <button type="button" class="btn btn-sm btn-light w-100"
-                            (click)="toggleAllColumnsVisibility()">
-                            {{allColumnsVisible ? 'Ocultar tudo' : 'Exibir tudo'}}
+            <div class="dataTables_filter" *ngIf="searchInFields.isNotEmpty">
+                <div class="datatable-search-toolbar">
+                    <input [(ngModel)]="dataTableFilter.searchString" #inputSearchElement
+                        (keypress)="handleSearchInputKeypress($event)" [attr.data-label]="'datatable_input_search'"
+                        type="search" class="form-control data-table-search-field datatable-search-input"
+                        placeholder="{{searchPlaceholder}}" />
+                    <div class="datatable-search-toolbar-secondary">
+                        <select #selectSearchField
+                            (change)="handleSearchFieldSelectChange($event, selectSearchField.value)"
+                            class="form-select datatable-search-field-select"
+                            [attr.data-label]="'datatable_select_search_field'">
+                            <option *ngFor="let field of searchInFields; let i = index" value="{{i}}"
+                                [selected]="field.selected">
+                                {{field.label}}
+                            </option>
+                        </select>
+                        <button class="btn btn-flat-primary border-transparent btn-icon datatable-search-submit"
+                            [attr.title]="searchButtonTitle"
+                            [attr.aria-label]="searchButtonTitle"
+                            type="button" (click)="onSearch()"
+                            [attr.data-label]="'datatable_btn_search'">
+                            <i class="ph-magnifying-glass"></i>
                         </button>
                     </div>
-                    <label *ngFor="let col of settings.colsDefinitions" class="dropdown-item">
-                        <input (click)="changeVisibilityOfCol(col)" type="checkbox"
-                            class="form-check-input cursor-pointer m-0 me-3" [checked]="isColumnEffectivelyVisible(col)" />
-                        {{col.title}}
-                    </label>
                 </div>
             </div>
+            <div class="dataTables_length d-flex align-items-center datatable-header-actions">
+                <div *ngIf="showExportMenu" class="dropdown me-2" dropdownmenu="bottom-end">
+                    <button type="button" [attr.title]="exportMenuButtonTitle"
+                        [attr.aria-label]="exportMenuButtonTitle"
+                        class="btn btn-flat-primary border-transparent btn-icon li-dropdown-trigger"
+                        aria-expanded="false">
+                        <i class="ph ph-file-arrow-down"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <button type="button" (click)="exportPdf()"
+                            class="dropdown-item cursor-pointer li-dropdown-close">
+                            <i class="ph-file-pdf me-2"></i>
+                            {{exportPdfLabel}}
+                        </button>
+                        <button type="button" (click)="exportXlsx()"
+                            class="dropdown-item cursor-pointer li-dropdown-close">
+                            <i class="ph-file-xls me-2"></i>
+                            {{exportXlsxLabel}}
+                        </button>
+                        <button *ngFor="let menuAction of exportMenuActions" type="button" (click)="menuAction.action()"
+                            class="dropdown-item cursor-pointer li-dropdown-close">
+                            <i *ngIf="menuAction.iconClass != null" [class]="menuAction.iconClass ?? ''"
+                                class="me-2"></i>
+                            {{menuAction.label}}
+                        </button>
+                    </div>
+                </div>
 
-            <select #selectItemsPerPage (change)="changeItemsPerPageHandler(selectItemsPerPage)"
-                name="DataTables_length" class="form-select datatable-items-per-page-select">
-                <option *ngFor="let ipp of limitPerPageOptions" value="{{ipp}}"
-                    [selected]="ipp == dataTableFilter.limit">
-                    {{ipp}}
-                </option>
-            </select>
-        </div>
+                <button (click)="changeViewMode()"
+                    [attr.title]="toggleViewModeButtonTitle"
+                    [attr.aria-label]="toggleViewModeButtonTitle"
+                    class="btn btn-flat-primary border-transparent btn-icon me-2" type="button">
+                    <i [class.ph-squares-four]="!gridMode" [class.ph-list-bullets]="gridMode"></i>
+                </button>
+
+                <div class="dropdown me-2" dropdownmenu="bottom-end">
+                    <button type="button" class="btn btn-flat-primary border-transparent btn-icon li-dropdown-trigger"
+                        [attr.title]="toggleColumnsButtonTitle"
+                        [attr.aria-label]="toggleColumnsButtonTitle"
+                        aria-expanded="false">
+                        <i class="ph-eye"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <div class="dropdown-item border-bottom mb-1 pb-1">
+                            <button type="button" class="btn btn-sm btn-light w-100"
+                                (click)="toggleAllColumnsVisibility()">
+                                {{allColumnsVisible ? 'Ocultar tudo' : 'Exibir tudo'}}
+                            </button>
+                        </div>
+                        <label *ngFor="let col of settings.colsDefinitions" class="dropdown-item">
+                            <input (click)="changeVisibilityOfCol(col)" type="checkbox"
+                                class="form-check-input cursor-pointer m-0 me-3"
+                                [checked]="isColumnEffectivelyVisible(col)" />
+                            {{col.title}}
+                        </label>
+                    </div>
+                </div>
+
+                <select #selectItemsPerPage (change)="changeItemsPerPageHandler(selectItemsPerPage)"
+                    name="DataTables_length" class="form-select datatable-items-per-page-select">
+                    <option *ngFor="let ipp of limitPerPageOptions" value="{{ipp}}"
+                        [selected]="ipp == dataTableFilter.limit">
+                        {{ipp}}
+                    </option>
+                </select>
+            </div>
         </template>
     </div>
 
@@ -110,8 +121,8 @@
                         [class.datatable-fixed-col--right]="isRightFixedColumn(colDef)"
                         [class.datatable-mobile-hidden]="isRuntimeResponsiveHidden(colDef)"
                         [class.dtr-hidden]="isRuntimeResponsiveHidden(colDef)" [attr.data-key]="colDef.key"
-                        [attr.data-sort-key]="colDef.sortingBy ?? ''" [cssStyle]="resolvedHeaderStyleCss(colDef, idxCol)"
-                        (click)="onOrder(colDef)" tabindex="0">
+                        [attr.data-sort-key]="colDef.sortingBy ?? ''"
+                        [cssStyle]="resolvedHeaderStyleCss(colDef, idxCol)" (click)="onOrder(colDef)" tabindex="0">
                         {{colDef.title}}
                     </th>
                 </tr>
@@ -125,15 +136,16 @@
                         [attr.data-index]="view.row.index.toString()"
                         [attr.data-label]="'datatable_row_' + idxR.toString()" [cssStyle]="view.row.styleCss"
                         (click)="rowClickHandler(view.row)">
-                        <td *ngIf="showCheckboxToSelectRow && view.row.type == DatatableRowType.normal" class="datatable-first-col"
-                            (click)="$event.stopPropagation()">
+                        <td *ngIf="showCheckboxToSelectRow && view.row.type == DatatableRowType.normal"
+                            class="datatable-first-col" (click)="$event.stopPropagation()">
                             <input class="cursor-pointer form-check-input m-0 me-3" (click)="onSelect($event, view.row)"
                                 type="checkbox" [checked]="view.row.selected" autocomplete="off" tabindex="-1"
                                 [attr.data-label]="'datatable_col_checkbox'" />
                         </td>
 
                         <td *ngFor="let column of view.row.columns; let idxC = index; trackBy: trackByColumnKey"
-                            [class]="column.cellClass ?? ''" [class.hide]="!column.visibility || isRuntimeResponsiveHidden(column)"
+                            [class]="column.cellClass ?? ''"
+                            [class.hide]="!column.visibility || isRuntimeResponsiveHidden(column)"
                             [class.datatable-fixed-col]="isFixedColumn(column)"
                             [class.datatable-fixed-col--left]="isLeftFixedColumn(column)"
                             [class.datatable-fixed-col--right]="isRightFixedColumn(column)"
@@ -143,9 +155,16 @@
                             [class.datatable-group-title-cell]="view.row.type == DatatableRowType.groupTitle"
                             [attr.aria-expanded]="isResponsiveControlColumn(view, column) ? view.row.isExpanded.toString() : null"
                             [attr.colspan]="column.colspan.toString()" [cssStyle]="resolvedCellStyleCss(column, idxC)"
-                            [attr.data-label]="'datatable_col_' + idxC.toString()" [safeHtml]="column.value"
-                            [safeHtmlNode]="column.htmlElement"
+                            [attr.data-label]="'datatable_col_' + idxC.toString()"
                             (click)="isResponsiveControlColumn(view, column) ? onResponsiveControlClick($event, view) : null">
+                            <template [ngIf]="hasCellTemplateFor(column)">
+                                <template [ngTemplateOutlet]="resolveCellTemplateFor(column)"
+                                    [ngTemplateOutletValue]="resolveCellTemplateContext(view, column, idxR, idxC)">
+                                </template>
+                            </template>
+                            <template [ngIf]="!hasCellTemplateFor(column)">
+                                <span [safeHtml]="column.value" [safeHtmlNode]="column.htmlElement"></span>
+                            </template>
                         </td>
                     </tr>
                     <tr *ngIf="view.row.isExpanded && view.hasResponsiveHiddenColumns" class="child">
@@ -166,8 +185,7 @@
         </table>
     </div>
 
-    <div *ngIf="gridMode == true" [attr.class]="gridContainerClass"
-        [cssStyle]="settings.gridContainerStyle">
+    <div *ngIf="gridMode == true" [attr.class]="gridContainerClass" [cssStyle]="settings.gridContainerStyle">
 
 
 
@@ -186,8 +204,7 @@
             <div *ngFor="let row of rows; let i = index; trackBy: trackByRow" class="grid-item"
                 [class.content-divider]="row.type == DatatableRowType.groupTitle"
                 [class.card]="row.type == DatatableRowType.normal && row.customCardElement == null"
-                [class.datatable-grid-item-custom]="row.customCardElement != null"
-                [cssStyle]="row.styleCss">
+                [class.datatable-grid-item-custom]="row.customCardElement != null" [cssStyle]="row.styleCss">
 
                 <span *ngIf="row.type == DatatableRowType.groupTitle" class="text-center text-muted p-2">
                     <span *ngFor="let column of row.columns; trackBy: trackByColumnKey" [safeHtml]="column.value"
@@ -228,46 +245,37 @@
 
     <div class="datatable-footer" [class.datatable-footer--custom]="hasCustomFooter">
         <template [ngIf]="hasCustomFooter">
-            <template [ngTemplateOutlet]="resolvedFooterTemplate"
-                [ngTemplateOutletValue]="footerTemplateContext">
+            <template [ngTemplateOutlet]="resolvedFooterTemplate" [ngTemplateOutletValue]="footerTemplateContext">
             </template>
         </template>
 
         <template [ngIf]="!hasCustomFooter">
-        <div class="dataTables_info" role="status" aria-live="polite">
-            Mostrando de {{dataTableFilter.offset}} a {{getCurrentTotalItems}} de {{totalRecords}} entradas,
-            {{numPages}} paginas
-        </div>
-        <div class="dataTables_paginate paging_simple_numbers datatable-pagination-scroll">
-            <li-pagination
-                appearance="datatable"
-                variant="flat"
-                linkClass="rounded"
-                [collectionSize]="totalRecords"
-                [pageSize]="dataTableFilter.limit ?? 0"
-                [page]="getCurrentPage"
-                [maxSize]="resolvedPaginationButtonQuantity"
-                [rotate]="true"
-                [ellipses]="false"
-                [boundaryLinks]="numPages > 1"
-                (pageChange)="changePage($event)">
-                <template liPaginationFirst>
-                    <i class="ph ph-arrow-line-left"></i>
-                </template>
+            <div class="dataTables_info" role="status" aria-live="polite">
+                Mostrando de {{dataTableFilter.offset}} a {{getCurrentTotalItems}} de {{totalRecords}} entradas,
+                {{numPages}} paginas
+            </div>
+            <div class="dataTables_paginate paging_simple_numbers datatable-pagination-scroll">
+                <li-pagination appearance="datatable" variant="flat" linkClass="rounded" [collectionSize]="totalRecords"
+                    [pageSize]="dataTableFilter.limit ?? 0" [page]="getCurrentPage"
+                    [maxSize]="resolvedPaginationButtonQuantity" [rotate]="true" [ellipses]="false"
+                    [boundaryLinks]="numPages > 1" (pageChange)="changePage($event)">
+                    <template liPaginationFirst>
+                        <i class="ph ph-arrow-line-left"></i>
+                    </template>
 
-                <template liPaginationPrevious>
-                    <i class="ph ph-caret-left"></i>
-                </template>
+                    <template liPaginationPrevious>
+                        <i class="ph ph-caret-left"></i>
+                    </template>
 
-                <template liPaginationNext>
-                    <i class="ph ph-caret-right"></i>
-                </template>
+                    <template liPaginationNext>
+                        <i class="ph ph-caret-right"></i>
+                    </template>
 
-                <template liPaginationLast>
-                    <i class="ph ph-arrow-line-right"></i>
-                </template>
-            </li-pagination>
-        </div>
+                    <template liPaginationLast>
+                        <i class="ph ph-arrow-line-right"></i>
+                    </template>
+                </li-pagination>
+            </div>
         </template>
     </div>
 </div>

@@ -92,6 +92,22 @@
                   <button class="btn btn-outline-dark" type="button" (click)="openLarge()">{{ largeButton }}</button>
                 </div>
               </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="border rounded p-3 h-100">
+                  <h6 class="mb-2">{{ flexTitle }}</h6>
+                  <p class="text-muted mb-3">{{ flexBody }}</p>
+                  <button class="btn btn-outline-info" type="button" (click)="openFlex()">{{ flexButton }}</button>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="border rounded p-3 h-100">
+                  <h6 class="mb-2">{{ realWorldTitle }}</h6>
+                  <p class="text-muted mb-3">{{ realWorldBody }}</p>
+                  <button class="btn btn-outline-danger" type="button" (click)="openRealWorld()">{{ realWorldButton }}</button>
+                </div>
+              </div>
             </div>
 
             <div class="alert alert-info alert-icon-start mt-4 mb-0">
@@ -321,6 +337,94 @@
     <div liOffcanvasFooter class="border-top p-3 d-flex justify-content-end gap-2">
       <button class="btn btn-light" type="button" (click)="largeOffcanvas?.close()">{{ cancelLabel }}</button>
       <button class="btn btn-primary" type="button" (click)="largeOffcanvas?.close()">{{ saveReviewLabel }}</button>
+    </div>
+  </li-offcanvas>
+
+  <li-offcanvas #flexOffcanvas
+                [title-text]="flexTitle"
+                position="end"
+                [enableDefaultBodyClass]="false"
+                bodyClass="p-0 d-flex flex-column h-100 bg-light"
+                (shown)="onShown(flexTitle)"
+                (hidden)="onHidden(flexTitle)"
+                (close)="onClosed(flexTitle)"
+                (dismiss)="onDismissed(flexTitle, $event)">
+    <div class="bg-primary text-white p-3 text-center">
+      <i class="ph-layout ph-2x mb-2 d-block"></i>
+      <h6 class="mb-0">Custom Flex Section</h6>
+    </div>
+    <div class="flex-grow-1 p-3 overflow-auto">
+      <p class="text-muted">This area behaves cleanly inside a flexible column using utilities, without being forced by <code>.offcanvas-body</code> constraints, since it disabled <code>enableDefaultBodyClass</code> and <code>enableBodyWrapper</code> parameters.</p>
+      <div style="height: 400px; border: 2px dashed #bbb; display: flex; align-items: center; justify-content: center; background: #fff;">
+        <span class="text-muted">Flexible Custom Scrollable Container</span>
+      </div>
+      <p class="mt-3 text-muted">More trailing content below the flex container.</p>
+    </div>
+    <div class="bg-white border-top p-3 text-end mt-auto">
+      <button class="btn btn-outline-primary" type="button" (click)="flexOffcanvas?.close()">Fechar container</button>
+    </div>
+  </li-offcanvas>
+  <li-offcanvas #realWorldOffcanvas
+                position="start"
+                size="sm"
+                panelClass="offcanvas-process-timeline"
+                [enableHeader]="false"
+                [enableDefaultBodyClass]="false"
+                bodyClass="p-0 d-flex flex-column h-100 overflow-hidden process-timeline-shell"
+                (shown)="onShown(realWorldTitle)"
+                (hidden)="onHidden(realWorldTitle)"
+                (close)="onClosed(realWorldTitle)"
+                (dismiss)="onDismissed(realWorldTitle, $event)">
+    <div class="process-timeline-header">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0">{{ realWorldPanelTitle }}</h6>
+        <button type="button" class="btn-close" (click)="realWorldOffcanvas?.close()"></button>
+      </div>
+
+      <div class="process-timeline-filters">
+        <input type="search"
+               class="form-control form-control-sm flex-1"
+               [value]="timelineSearch"
+               [attr.placeholder]="realWorldSearchPlaceholder"
+               (input)="onRealWorldSearch($event.target.value)">
+
+        <li-dropdown-menu class="process-timeline-type-dropdown"
+                          [options]="timelineFilterOptions"
+                          [value]="timelineFilter"
+                          [triggerLabel]="timelineFilterLabel"
+                          triggerIconClass="ph ph-funnel"
+                          triggerClass="btn btn-light btn-sm process-timeline-type-trigger"
+                          menuClass="dropdown-menu-end wmin-sm-250"
+                          container="body"
+                          (valueChange)="onTimelineFilterChange($event)">
+        </li-dropdown-menu>
+      </div>
+    </div>
+
+    <div class="process-timeline-scroll">
+      <div class="process-timeline-rail">
+        <article *ngFor="let item of filteredTimelineItems" class="process-timeline-item">
+          <span class="process-timeline-dot"></span>
+          <div class="process-timeline-card">
+            <div class="d-flex justify-content-between gap-2">
+              <a class="process-timeline-code">{{ item.code }}</a>
+              <span class="text-muted small flex-shrink-0">{{ item.timeLabel }}</span>
+            </div>
+
+            <div class="process-timeline-signature">
+              <i class="ph-signature me-1 text-success"></i>
+              {{ item.signatureLabel }}
+            </div>
+            <div class="text-muted mt-1 small">{{ item.userName }}</div>
+            <div *ngIf="item.details != null" class="text-muted mt-1 small">{{ item.details }}</div>
+          </div>
+        </article>
+
+        <div *ngIf="filteredTimelineItems.isEmpty" class="process-timeline-empty">
+          <i class="ph-magnifying-glass me-1"></i>
+          {{ realWorldEmptyState }}
+        </div>
+      </div>
     </div>
   </li-offcanvas>
 </div>

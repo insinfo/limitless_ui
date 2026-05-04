@@ -1,15 +1,17 @@
+import 'dart:async';
+
 import 'datatable_col.dart';
 import 'datatable_row.dart';
 
 /// Callback for custom PDF export. Receives the same data the built-in
 /// exporter uses so callers can build their own PDF layout.
-typedef DatatableExportPdfCallback = Future<void> Function(
+typedef DatatableExportPdfCallback = FutureOr<void> Function(
   List<DatatableRow> rows,
   List<DatatableCol> visibleColumns,
 );
 
 /// Callback for custom XLSX export.
-typedef DatatableExportXlsxCallback = void Function(
+typedef DatatableExportXlsxCallback = FutureOr<void> Function(
   List<DatatableRow> rows,
   List<DatatableCol> visibleColumns,
 );
@@ -18,7 +20,7 @@ typedef DatatableExportXlsxCallback = void Function(
 class DatatableMenuAction {
   final String label;
   final String? iconClass;
-  final void Function() action;
+  final FutureOr<void> Function() action;
 
   DatatableMenuAction({
     required this.label,

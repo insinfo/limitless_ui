@@ -3,18 +3,18 @@ enum PaginationButtonType { prev, next, page }
 enum PaginationType { carousel, cube }
 
 class PaginationItem {
-  Function() action;
+  void Function() action;
   String label;
-  String get cssClass => cssClasses!.join(' ');
-  List<String>? cssClasses = [];
+  String get cssClass => cssClasses.join(' ');
+  final List<String> cssClasses;
   String? id;
 
   void addClass(String className) {
-    cssClasses!.add(className);
+    cssClasses.add(className);
   }
 
   void removeClass(String className) {
-    cssClasses!.remove(className);
+    cssClasses.remove(className);
   }
 
   bool isActive;
@@ -22,9 +22,9 @@ class PaginationItem {
   PaginationItem({
     required this.action,
     required this.label,
-    this.cssClasses,
+    List<String>? cssClasses,
     this.isActive = false,
     this.id,
     this.paginationButtonType = PaginationButtonType.page,
-  });
+  }) : cssClasses = cssClasses ?? <String>[];
 }

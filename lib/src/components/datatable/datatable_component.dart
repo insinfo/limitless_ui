@@ -60,7 +60,7 @@ class LiDatatableHeaderContext {
   final void Function() toggleViewMode;
   final void Function() toggleAllColumnsVisibility;
   final Future<void> Function() exportPdf;
-  final void Function() exportXlsx;
+  final Future<void> Function() exportXlsx;
 }
 
 class LiDatatableFooterContext {
@@ -108,6 +108,34 @@ class LiDatatableFooterDirective {
   final TemplateRef templateRef;
 }
 
+class LiDatatableCellContext {
+  final DatatableRow row;
+  final DatatableCol column;
+  final Map<String, dynamic> itemMap;
+  final dynamic itemInstance;
+  final int rowIndex;
+  final int columnIndex;
+
+  LiDatatableCellContext({
+    required this.row,
+    required this.column,
+    required this.itemMap,
+    required this.itemInstance,
+    required this.rowIndex,
+    required this.columnIndex,
+  });
+}
+
+@Directive(selector: 'template[li-datatable-cell]')
+class LiDatatableCellDirective {
+  LiDatatableCellDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+
+  @Input('li-datatable-cell')
+  String columnKey = '';
+}
+
 @Component(
   selector: 'li-datatable',
   styleUrls: ['datatable_component.css', 'grid.css'],
@@ -134,7 +162,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       toggleViewMode: changeViewMode,
       toggleAllColumnsVisibility: toggleAllColumnsVisibility,
       exportPdf: _exportPdfFromTemplate,
-      exportXlsx: exportXlsx,
+      exportXlsx: _exportXlsxFromTemplate,
     );
     _footerTemplateContext = LiDatatableFooterContext(
       requestData: onRequestData,
@@ -170,6 +198,9 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   @ContentChild(LiDatatableFooterDirective)
   LiDatatableFooterDirective? projectedFooterTemplateDirective;
+
+  @ContentChildren(LiDatatableCellDirective)
+  List<LiDatatableCellDirective>? projectedCellTemplateDirectives;
 
   @Input()
   TemplateRef? headerTemplate;
@@ -242,6 +273,12 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   int responsiveCollapseMaxWidth = 767;
 
   @Input()
+  bool responsiveCollapseByContainer = false;
+
+  @Input()
+  int responsiveCollapseContainerMaxWidth = 767;
+
+  @Input()
   bool responsiveAutoHideColumns = false;
 
   @Input()
@@ -299,6 +336,24 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   @Input('searchPlaceholder')
   String searchPlaceholder = 'Digite para buscar';
+
+  @Input()
+  String searchButtonTitle = 'Clique para buscar';
+
+  @Input()
+  String exportMenuButtonTitle = 'Exportar para PDF/Excel';
+
+  @Input()
+  String exportPdfLabel = 'Exportar para PDF';
+
+  @Input()
+  String exportXlsxLabel = 'Exportar para Excel';
+
+  @Input()
+  String toggleViewModeButtonTitle = 'Modo lista ou grade';
+
+  @Input()
+  String toggleColumnsButtonTitle = 'Clique para exibir ou ocultar uma coluna';
 
   @Input()
   String totalRecordsLabel = 'Total:';
@@ -394,6 +449,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   @Input('settings')
   set settings(DatatableSettings value) {
     _settings = value;
+    _resetResponsiveMeasurementCache();
     final validKeys = _settings.colsDefinitions
         .map((column) => column.key)
         .where((key) => key.trim().isNotEmpty)
@@ -420,6 +476,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   @Input('data')
   set data(DataFrame value) {
     _data = value;
+    _resetResponsiveMeasurementCache();
     totalRecords = _data.totalRecords;
     isLoading = false;
     _syncCurrentPageFromOffset();
@@ -565,6 +622,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       gridMode,
       responsiveCollapse,
       responsiveCollapseMaxWidth,
+      responsiveCollapseByContainer,
+      responsiveCollapseContainerMaxWidth,
       responsiveAutoHideColumns,
       _manualRowsRevision,
     );
@@ -578,6 +637,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         rows: rows,
         responsiveCollapse: responsiveCollapse,
         responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+        responsiveCollapseActive: _isResponsiveCollapseActive,
         autoHiddenColumnKeys: _autoHiddenColumnKeys,
       );
       drawPagination();
@@ -608,6 +668,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       gridMode: gridMode,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      responsiveCollapseActive: _isResponsiveCollapseActive,
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     rows = buildResult.rows;
@@ -627,7 +688,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
     final autoHideChanged = _syncResponsiveAutoHideNow();
 
-    if (!_isResponsiveCollapseViewportActive && _autoHiddenColumnKeys.isEmpty) {
+    if (!_isResponsiveCollapseActive && _autoHiddenColumnKeys.isEmpty) {
       for (final row in rows) {
         row.isExpanded = false;
       }
@@ -641,6 +702,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       rows: rows,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      responsiveCollapseActive: _isResponsiveCollapseActive,
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     _syncTemplateContexts();
@@ -1117,6 +1179,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       rows: rows,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      responsiveCollapseActive: _isResponsiveCollapseActive,
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     _syncTemplateContexts();
@@ -1158,6 +1221,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       rows: rows,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      responsiveCollapseActive: _isResponsiveCollapseActive,
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     _syncTemplateContexts();
@@ -1223,6 +1287,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return exportPdf();
   }
 
+  Future<void> _exportXlsxFromTemplate() {
+    return exportXlsx();
+  }
+
   Object? trackByRenderedRow(int index, dynamic item) {
     if (item is! DatatableRenderedRow) {
       return index;
@@ -1267,6 +1335,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           rows: <DatatableRow>[row],
           responsiveCollapse: responsiveCollapse,
           responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+          responsiveCollapseActive: _isResponsiveCollapseActive,
           autoHiddenColumnKeys: _autoHiddenColumnKeys,
         )
         .first
@@ -1279,10 +1348,55 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           rows: <DatatableRow>[row],
           responsiveCollapse: responsiveCollapse,
           responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+          responsiveCollapseActive: _isResponsiveCollapseActive,
           autoHiddenColumnKeys: _autoHiddenColumnKeys,
         )
         .first
         .responsiveHiddenColumns;
+  }
+
+  bool hasCellTemplateFor(DatatableCol column) {
+    return _resolveCellTemplate(column) != null;
+  }
+
+  TemplateRef? resolveCellTemplateFor(DatatableCol column) {
+    return _resolveCellTemplate(column);
+  }
+
+  LiDatatableCellContext resolveCellTemplateContext(
+    DatatableRenderedRow view,
+    DatatableCol column,
+    int rowIndex,
+    int columnIndex,
+  ) {
+    return LiDatatableCellContext(
+      row: view.row,
+      column: column,
+      itemMap: view.row.itemMap ?? const <String, dynamic>{},
+      itemInstance: view.row.instance,
+      rowIndex: rowIndex,
+      columnIndex: columnIndex,
+    );
+  }
+
+  TemplateRef? _resolveCellTemplate(DatatableCol column) {
+    final columnKey = column.key.trim();
+    if (columnKey.isEmpty) {
+      return null;
+    }
+
+    final directives = projectedCellTemplateDirectives;
+    if (directives == null || directives.isEmpty) {
+      return null;
+    }
+
+    for (final directive in directives) {
+      if (directive.columnKey.trim() == columnKey) {
+        return directive.templateRef;
+      }
+    }
+
+    return null;
   }
 
   bool get _isResponsiveCollapseViewportActive =>
@@ -1290,8 +1404,22 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       window.innerWidth! <= responsiveCollapseMaxWidth &&
       responsiveCollapse;
 
+  bool get _isResponsiveCollapseContainerActive {
+    if (!responsiveCollapse || !responsiveCollapseByContainer) {
+      return false;
+    }
+
+    final availableWidth = _resolveResponsiveAvailableWidth();
+    return availableWidth > 0 &&
+        availableWidth <= responsiveCollapseContainerMaxWidth;
+  }
+
+  bool get _isResponsiveCollapseActive =>
+      _isResponsiveCollapseViewportActive ||
+      _isResponsiveCollapseContainerActive;
+
   bool get hasResponsiveCollapsedColumns =>
-      _isResponsiveCollapseViewportActive || _autoHiddenColumnKeys.isNotEmpty;
+      _isResponsiveCollapseActive || _autoHiddenColumnKeys.isNotEmpty;
 
   bool isFixedColumn(DatatableCol column) {
     return column.fixedPosition != null && isColumnEffectivelyVisible(column);
@@ -1332,8 +1460,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return false;
     }
 
-    final hiddenOnMobile =
-        _isResponsiveCollapseViewportActive && column.hideOnMobile;
+    final hiddenOnMobile = _isResponsiveCollapseActive && column.hideOnMobile;
     final hiddenByPriority = _autoHiddenColumnKeys.contains(column.key);
     return hiddenOnMobile || hiddenByPriority;
   }
@@ -1366,6 +1493,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         rows: <DatatableRow>[viewOrRow],
         responsiveCollapse: responsiveCollapse,
         responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+        responsiveCollapseActive: _isResponsiveCollapseActive,
         autoHiddenColumnKeys: _autoHiddenColumnKeys,
       ).first;
     } else {
@@ -1391,9 +1519,9 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _changeDetectorRef.markForCheck();
   }
 
-  void exportXlsx() {
+  Future<void> exportXlsx() async {
     if (onExportXlsx != null) {
-      onExportXlsx!(rows, settings.visibleColumns);
+      await onExportXlsx!(rows, settings.visibleColumns);
       return;
     }
     DatatableExporter.exportXlsx(
@@ -1427,6 +1555,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       rows: rows,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      responsiveCollapseActive: _isResponsiveCollapseActive,
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
     _syncTemplateContexts();
@@ -1456,7 +1585,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       final measuredWidth =
           rectWidth > 0 ? rectWidth : cell.offsetWidth.toDouble();
       if (measuredWidth > 0) {
-        _responsiveColumnWidthCache[key] = measuredWidth;
+        final cachedWidth = _responsiveColumnWidthCache[key];
+        _responsiveColumnWidthCache[key] = cachedWidth == null
+            ? measuredWidth
+            : (measuredWidth < cachedWidth ? measuredWidth : cachedWidth);
       }
     }
 
@@ -1474,8 +1606,16 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     final measuredWidth =
         rectWidth > 0 ? rectWidth : checkboxCell.offsetWidth.toDouble();
     if (measuredWidth > 0) {
-      _responsiveCheckboxWidthCache = measuredWidth;
+      _responsiveCheckboxWidthCache =
+          measuredWidth < _responsiveCheckboxWidthCache
+              ? measuredWidth
+              : _responsiveCheckboxWidthCache;
     }
+  }
+
+  void _resetResponsiveMeasurementCache() {
+    _responsiveColumnWidthCache.clear();
+    _responsiveCheckboxWidthCache = 44;
   }
 
   void _scheduleResponsiveAutoHideSync() {
@@ -1500,7 +1640,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   bool _syncResponsiveAutoHideNow() {
-    final nextKeys = _computeResponsiveAutoHiddenColumnKeys();
+    final availableWidth = _resolveResponsiveAvailableWidth();
+    final nextKeys = _computeResponsiveAutoHiddenColumnKeys(
+      availableWidth: availableWidth,
+    );
     if (_setEquals(nextKeys, _autoHiddenColumnKeys)) {
       return false;
     }
@@ -1513,18 +1656,21 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return true;
   }
 
-  Set<String> _computeResponsiveAutoHiddenColumnKeys() {
+  Set<String> _computeResponsiveAutoHiddenColumnKeys({
+    double? availableWidth,
+  }) {
     if (!responsiveAutoHideColumns || gridMode) {
       return const <String>{};
     }
 
-    final availableWidth = _resolveResponsiveAvailableWidth();
-    if (availableWidth <= 0) {
+    final resolvedAvailableWidth =
+        availableWidth ?? _resolveResponsiveAvailableWidth();
+    if (resolvedAvailableWidth <= 0) {
       return const <String>{};
     }
 
     final baseVisibleColumns = settings.colsDefinitions.where((column) {
-      final hiddenOnMobile = _isResponsiveCollapseViewportActive &&
+      final hiddenOnMobile = _isResponsiveCollapseActive &&
           column.hideOnMobile &&
           !_isColumnForcedVisible(column);
       return column.visibility && !hiddenOnMobile;
@@ -1536,10 +1682,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
     final totalWidth = baseVisibleColumns.fold<double>(
       showCheckboxToSelectRow ? _responsiveCheckboxWidthCache : 0,
-      (sum, column) => sum + _resolveResponsiveColumnWidth(column),
+      (sum, column) => sum + _resolveResponsiveAutoHideColumnWidth(column),
     );
 
-    if (totalWidth <= availableWidth) {
+    if (totalWidth <= resolvedAvailableWidth) {
       return const <String>{};
     }
 
@@ -1562,8 +1708,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         return priorityCompare;
       }
 
-      final widthCompare = _resolveResponsiveColumnWidth(right)
-          .compareTo(_resolveResponsiveColumnWidth(left));
+      final widthCompare = _resolveResponsiveAutoHideColumnWidth(right)
+          .compareTo(_resolveResponsiveAutoHideColumnWidth(left));
       if (widthCompare != 0) {
         return widthCompare;
       }
@@ -1576,12 +1722,12 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     final hiddenKeys = <String>{};
     var remainingWidth = totalWidth;
     for (final candidate in candidates) {
-      if (remainingWidth <= availableWidth) {
+      if (remainingWidth <= resolvedAvailableWidth) {
         break;
       }
 
       hiddenKeys.add(candidate.key);
-      remainingWidth -= _resolveResponsiveColumnWidth(candidate);
+      remainingWidth -= _resolveResponsiveAutoHideColumnWidth(candidate);
     }
 
     return hiddenKeys;
@@ -1601,7 +1747,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return 0;
   }
 
-  double _resolveResponsiveColumnWidth(DatatableCol column) {
+  double _resolveResponsiveAutoHideColumnWidth(DatatableCol column) {
     final configuredWidth = _parseCssLength(column.width) ??
         _parseCssLength(column.minWidth) ??
         _parseCssLength(column.maxWidth);
@@ -1609,13 +1755,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return configuredWidth;
     }
 
-    final fallbackWidth = column.nowrap ? 140.0 : 120.0;
-    final cachedWidth = _responsiveColumnWidthCache[column.key];
-    if (cachedWidth != null && cachedWidth > 0) {
-      return cachedWidth < fallbackWidth ? cachedWidth : fallbackWidth;
-    }
-
-    return fallbackWidth;
+    return column.nowrap ? 140.0 : 120.0;
   }
 
   void _syncFixedColumnOffsets() {

@@ -1,3 +1,11 @@
+## 1.0.0-dev.14
+
+- Expanded `li-offcanvas` with `enableDefaultBodyClass` and `enableBodyWrapper`, allowing fully custom flex layouts in the panel body without forcing the default `.offcanvas-body` wrapper/class; also updated the internal panel shell to a column flex layout and added the `li-offcanvas-contents` passthrough class for projected content flows.
+- Expanded the offcanvas example page with a denser operational “complex scenario” panel (fixed filter header, searchable/filtered timeline list, responsive sizing), plus themed scrollbar coverage for generic `.overflow-auto` containers to keep custom offcanvas bodies visually consistent.
+- Fixed `li-dropdown-menu` rounded-corner clipping when vertical scrolling is activated: overflow control was moved from the outer menu container to the inner items container for desktop/inline modes, while mobile modal/sheet sizing behavior remains isolated to the outer menu wrapper.
+- Expanded `li-datatable` action rendering with `DatatableActionAppearance.linkIcon` and `iconOnly`, enabling icon-only link-style actions (no button background) while preserving accessible labels; also updated the datatable example favorite action to support this visual mode where state is expressed by icon color only.
+- Fixed `li-datatable` responsive auto-hide recovery after viewport/container re-expansion by recalculating with stable column widths instead of stretched runtime measurements, and added browser regression coverage for the shrink-then-expand flow.
+
 ## 1.0.0-dev.13
 
 - Added `menuMaxHeight` to `li-dropdown-menu`, allowing long option lists to scroll vertically without forcing consumers to create custom menu classes.

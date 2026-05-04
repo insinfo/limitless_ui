@@ -29,6 +29,18 @@ import 'li_offcanvas_component_test.template.dart' as ng;
                     (dismiss)="dismissCount = dismissCount + 1">
         <div id="lazy-body">Lazy body</div>
       </li-offcanvas>
+
+      <li-offcanvas #defaultBodyOffcanvas title-text="Default body">
+        <div id="default-body-content">Default content</div>
+      </li-offcanvas>
+
+      <li-offcanvas #customBodyOffcanvas
+                    title-text="Custom body"
+                    [enableDefaultBodyClass]="false"
+                    [enableBodyWrapper]="false"
+                    bodyClass="custom-body-shell">
+        <div id="custom-body-content">Custom content</div>
+      </li-offcanvas>
     </div>
   ''',
   directives: [coreDirectives, liOffcanvasDirectives],
@@ -36,6 +48,12 @@ import 'li_offcanvas_component_test.template.dart' as ng;
 class BasicTestHostComponent {
   @ViewChild('basicOffcanvas')
   LiOffcanvasComponent? basicOffcanvas;
+
+  @ViewChild('defaultBodyOffcanvas')
+  LiOffcanvasComponent? defaultBodyOffcanvas;
+
+  @ViewChild('customBodyOffcanvas')
+  LiOffcanvasComponent? customBodyOffcanvas;
 
   int closeCount = 0;
   int dismissCount = 0;
@@ -237,6 +255,54 @@ void main() {
 
     expect(host.guardedOffcanvas?.isOpen, isFalse);
     expect(host.dismissCount, 1);
+  });
+
+  test('supports body wrapper and class customization for flex layouts',
+      () async {
+    final fixture = await basicTestBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((_) {
+      host.defaultBodyOffcanvas?.open();
+      host.customBodyOffcanvas?.open();
+    });
+    await _settle(fixture);
+
+    final defaultContent =
+        html.document.body!.querySelector('#default-body-content');
+    final customContent =
+        html.document.body!.querySelector('#custom-body-content');
+
+    expect(defaultContent, isNotNull);
+    expect(customContent, isNotNull);
+
+    final defaultBodyWrapper = defaultContent!.parent;
+    final customBodyWrapper = customContent!.parent;
+
+    expect(defaultBodyWrapper, isNotNull);
+    expect(customBodyWrapper, isNotNull);
+    expect(defaultBodyWrapper!.classes.contains('offcanvas-body'), isTrue);
+    expect(customBodyWrapper!.classes.contains('offcanvas-body'), isFalse);
+    expect(customBodyWrapper.classes.contains('li-offcanvas-contents'), isTrue);
+    expect(customBodyWrapper.classes.contains('custom-body-shell'), isTrue);
+  });
+
+  test('renders offcanvas panel as a flex column shell', () async {
+    final fixture = await basicTestBed.create();
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-basic');
+    });
+    await _settle(fixture);
+
+    final panel = html.document.body!.querySelector('.offcanvas.show');
+    expect(panel, isNotNull);
+
+    final computedStyle = panel!.getComputedStyle();
+    expect(computedStyle.display, 'flex');
+    expect(computedStyle.flexDirection, 'column');
   });
 }
 

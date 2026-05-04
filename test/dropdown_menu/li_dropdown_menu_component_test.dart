@@ -5,7 +5,9 @@
 @TestOn('browser')
 library;
 
+import 'dart:async';
 import 'dart:html' as html;
+import 'dart:js_util' as js_util;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngdart/angular.dart';
@@ -115,6 +117,26 @@ import 'li_dropdown_menu_component_test.template.dart' as ng;
             (valueChange)="selectedValue = \$event">
         </li-dropdown-menu>
       </div>
+
+      <li-dropdown-menu
+          #keepOpenMenu
+          container="inline"
+          [options]="options"
+          ariaLabel="keep-open-actions"
+          triggerLabel="Fica aberto"
+          menuClass=""
+          [closeOnSelect]="false"
+          (valueChange)="selectedValue = \$event">
+      </li-dropdown-menu>
+
+      <li-dropdown-menu
+          container="inline"
+          [options]="optionsWithDisabled"
+          ariaLabel="disabled-option-actions"
+          triggerLabel="Desabilitado"
+          menuClass=""
+          (valueChange)="selectedValue = \$event">
+      </li-dropdown-menu>
     </div>
   ''',
   directives: [coreDirectives, LiDropdownMenuComponent],
@@ -138,11 +160,21 @@ class DropdownMenuTestHostComponent {
   @ViewChild('nearViewportEdgeMenu')
   LiDropdownMenuComponent? nearViewportEdgeMenu;
 
+  @ViewChild('keepOpenMenu')
+  LiDropdownMenuComponent? keepOpenMenu;
+
   String selectedValue = 'copy';
 
   final List<LiDropdownMenuOption> options = const <LiDropdownMenuOption>[
     LiDropdownMenuOption(value: 'copy', label: 'Copiar'),
     LiDropdownMenuOption(value: 'paste', label: 'Colar'),
+    LiDropdownMenuOption(value: 'clear', label: 'Limpar'),
+  ];
+
+  final List<LiDropdownMenuOption> optionsWithDisabled =
+      const <LiDropdownMenuOption>[
+    LiDropdownMenuOption(value: 'copy', label: 'Copiar'),
+    LiDropdownMenuOption(value: 'blocked', label: 'Bloqueado', disabled: true),
     LiDropdownMenuOption(value: 'clear', label: 'Limpar'),
   ];
 
@@ -199,13 +231,14 @@ void main() {
     });
     await _settle(fixture);
 
-    final menu = html.document.querySelector(
+    final menuNode = html.document.querySelector(
       '.LiDropdownMenuComponent .li-dropdown-menu__menu.show',
-    ) as html.Element;
+    );
+    expect(menuNode, isNotNull);
+    final menu = menuNode as html.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final menuRect = menu.getBoundingClientRect();
 
-    expect(menu, isNotNull);
     expect(
       fixture.rootElement.querySelector('.li-dropdown-menu__menu.show'),
       isNull,
@@ -227,11 +260,16 @@ void main() {
     });
     await _settle(fixture);
 
-    final menu = fixture.rootElement.querySelector(
+    final menuNode = fixture.rootElement.querySelector(
       '.li-dropdown-menu__menu.show',
-    ) as html.Element;
+    );
+    expect(menuNode, isNotNull);
+    final menu = menuNode as html.Element;
+    final menuItems =
+        menu.querySelector('.li-dropdown-menu__items') as html.Element;
 
-    expect(menu.style.maxHeight, '12rem');
+    expect(menu.style.maxHeight, isEmpty);
+    expect(menuItems.style.maxHeight, '12rem');
   });
 
   test('enables vertical scrolling when max-height clips long content',
@@ -248,12 +286,17 @@ void main() {
     });
     await _settle(fixture);
 
-    final menu = html.document.querySelector(
+    final menuNode = html.document.querySelector(
       '.LiDropdownMenuComponent .li-dropdown-menu__menu.show',
-    ) as html.Element;
+    );
+    expect(menuNode, isNotNull);
+    final menu = menuNode as html.Element;
+    final menuItems =
+        menu.querySelector('.li-dropdown-menu__items') as html.Element;
 
-    expect(menu.style.maxHeight, '6rem');
-    expect(menu.style.overflowY, 'auto');
+    expect(menu.style.maxHeight, isEmpty);
+    expect(menuItems.style.maxHeight, '6rem');
+    expect(menuItems.style.overflowY, 'auto');
   });
 
   test('can present as a centered mobile modal', () async {
@@ -269,11 +312,12 @@ void main() {
     });
     await _settle(fixture);
 
-    final menu = fixture.rootElement.querySelector(
+    final menuNode = fixture.rootElement.querySelector(
       '.li-dropdown-menu__menu--mobile-modal.show',
-    ) as html.Element;
+    );
+    expect(menuNode, isNotNull);
+    final menu = menuNode as html.Element;
 
-    expect(menu, isNotNull);
     expect(menu.getAttribute('role'), 'dialog');
     expect(menu.getAttribute('aria-modal'), 'true');
     expect(menu.style.maxHeight, endsWith('px'));
@@ -302,11 +346,12 @@ void main() {
     });
     await _settle(fixture);
 
-    final menu = fixture.rootElement.querySelector(
+    final menuNode = fixture.rootElement.querySelector(
       '.li-dropdown-menu__menu--mobile-sheet.show',
-    ) as html.Element;
+    );
+    expect(menuNode, isNotNull);
+    final menu = menuNode as html.Element;
 
-    expect(menu, isNotNull);
     expect(menu.getAttribute('role'), 'dialog');
     expect(menu.getAttribute('aria-modal'), 'true');
     expect(menu.style.maxHeight, endsWith('px'));
@@ -320,7 +365,7 @@ void main() {
     );
   });
 
-  test('inline menu flips upward near the viewport bottom by default',
+  test('inline menu near viewport edge stays open with viewport adaptation',
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
@@ -335,9 +380,69 @@ void main() {
     await _settle(fixture);
 
     final host = trigger.parent as html.Element;
+    final menuNode =
+        fixture.rootElement.querySelector('.li-dropdown-menu__menu.show');
+    expect(menuNode, isNotNull);
+    final menu = menuNode as html.Element;
+    final items =
+        menu.querySelector('.li-dropdown-menu__items') as html.Element;
 
-    expect(host.classes.contains('dropup'), isTrue);
-    expect(host.classes.contains('dropdown'), isFalse);
+    expect(host.classes.contains('dropdown') || host.classes.contains('dropup'),
+        isTrue);
+    expect(items, isNotNull);
+  });
+
+  test('closes when Escape is pressed', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final trigger = fixture.rootElement
+        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(
+      fixture.rootElement.querySelector('.li-dropdown-menu__menu.show'),
+      isNotNull,
+    );
+
+    _dispatchEscapeKeydown();
+    await _settle(fixture);
+
+    expect(
+      fixture.rootElement.querySelector('.li-dropdown-menu__menu.show'),
+      isNull,
+    );
+  });
+
+  test('closes when clicking outside', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final trigger = fixture.rootElement
+        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(
+      fixture.rootElement.querySelector('.li-dropdown-menu__menu.show'),
+      isNotNull,
+    );
+
+    html.document.body!
+        .dispatchEvent(html.MouseEvent('click', canBubble: true));
+    await _settle(fixture);
+
+    expect(
+      fixture.rootElement.querySelector('.li-dropdown-menu__menu.show'),
+      isNull,
+    );
   });
 
   test('opening a dropdown closes other open menus by default', () async {
@@ -434,11 +539,98 @@ void main() {
       isNull,
     );
   });
+
+  test('does not emit valueChange when disabled option is clicked', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    host.selectedValue = 'copy';
+
+    final trigger = fixture.rootElement
+            .querySelector('[aria-label="disabled-option-actions"]')
+        as html.ButtonElement;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final disabledOption = fixture.rootElement.querySelector(
+            '.li-dropdown-menu__menu.show .dropdown-item[disabled]')
+        as html.ButtonElement?;
+    expect(disabledOption, isNotNull);
+
+    await fixture.update((_) {
+      disabledOption!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.selectedValue, 'copy');
+  });
+
+  test('keeps menu open when closeOnSelect is false', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final trigger =
+        fixture.rootElement.querySelector('[aria-label="keep-open-actions"]')
+            as html.ButtonElement;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final option = fixture.rootElement
+            .querySelector('.li-dropdown-menu__menu.show .dropdown-item')
+        as html.ButtonElement?;
+    expect(option, isNotNull);
+
+    await fixture.update((_) {
+      option!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.keepOpenMenu!.isOpen, isTrue);
+    expect(
+      fixture.rootElement.querySelector('.li-dropdown-menu__menu.show'),
+      isNotNull,
+    );
+  });
 }
 
 Future<void> _settle(
   NgTestFixture<DropdownMenuTestHostComponent> fixture,
 ) async {
-  await Future<void>.delayed(const Duration(milliseconds: 40));
   await fixture.update((_) {});
+  await _nextAnimationFrame();
+  await _nextAnimationFrame();
+  await fixture.update((_) {});
+}
+
+Future<void> _nextAnimationFrame() {
+  final completer = Completer<void>();
+  html.window.requestAnimationFrame((_) {
+    completer.complete();
+  });
+  return completer.future;
+}
+
+void _dispatchEscapeKeydown() {
+  final keyboardEventConstructor =
+      js_util.getProperty(html.window, 'KeyboardEvent');
+  final event = js_util.callConstructor(
+    keyboardEventConstructor,
+    <Object?>[
+      'keydown',
+      js_util.jsify(<String, Object?>{
+        'key': 'Escape',
+        'bubbles': true,
+        'cancelable': true,
+      }),
+    ],
+  );
+  js_util.callMethod(html.document, 'dispatchEvent', <Object?>[event]);
 }

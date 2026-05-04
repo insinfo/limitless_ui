@@ -19,7 +19,6 @@
       #menuElement
       [class]="resolvedMenuClasses"
       [style.max-height]="resolvedMenuMaxHeight"
-      [style.overflow-y]="resolvedMenuOverflowY"
       [attr.role]="usesMobilePresentation ? 'dialog' : null"
       [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
     <div *ngIf="showsMobileModalHeader" class="li-dropdown-menu__mobile-header">
@@ -33,7 +32,10 @@
       </button>
     </div>
 
-    <div class="li-dropdown-menu__items">
+    <div
+        class="li-dropdown-menu__items"
+        [style.max-height]="resolvedItemsMaxHeight"
+        [style.overflow-y]="resolvedItemsOverflowY">
       <template ngFor let-option [ngForOf]="options">
         <div *ngIf="option.divider" class="dropdown-divider"></div>
 

@@ -17,6 +17,7 @@ import 'datatable_demo_service.dart';
     LiAccordionComponent,
     LiAccordionBodyDirective,
     LiAccordionItemComponent,
+    LiDatatableCellDirective,
     LiDatatableHeaderDirective,
     LiHighlightComponent,
     LiModalComponent,
@@ -50,6 +51,8 @@ class DatatablePageComponent implements OnInit {
         items: <Map<String, dynamic>>[], totalRecords: 0);
     processLookupTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
+    processLookupActionColumnTableData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
     groupedTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
     multiSortTableData = DataFrame<Map<String, dynamic>>(
@@ -63,7 +66,9 @@ class DatatablePageComponent implements OnInit {
     _advancedTableSettingsEn = _buildAdvancedTableSettings(en.MessagesEn());
     _advancedGridSettingsPt = _buildAdvancedGridSettings(Messages());
     _advancedGridSettingsEn = _buildAdvancedGridSettings(en.MessagesEn());
-    _processLookupTableSettings = _buildProcessLookupTableSettings();
+    _processLookupTableSettings = _buildProcessLookupTemplateTableSettings();
+    _processLookupActionColumnTableSettings =
+        _buildProcessLookupActionColumnTableSettings();
     _groupedTableSettings = _buildGroupedTableSettings();
     _multiSortTableSettings = _buildMultiSortTableSettings();
     _stickyColumnsTableSettingsPt = _buildStickyColumnsTableSettings(true);
@@ -94,6 +99,7 @@ class DatatablePageComponent implements OnInit {
   late final DatatableSettings _advancedGridSettingsPt;
   late final DatatableSettings _advancedGridSettingsEn;
   late final DatatableSettings _processLookupTableSettings;
+  late final DatatableSettings _processLookupActionColumnTableSettings;
   late final DatatableSettings _groupedTableSettings;
   late final DatatableSettings _multiSortTableSettings;
   late final DatatableSettings _stickyColumnsTableSettingsPt;
@@ -121,6 +127,9 @@ class DatatablePageComponent implements OnInit {
 
   DatatableSettings get processLookupTableSettings =>
       _processLookupTableSettings;
+
+  DatatableSettings get processLookupActionColumnTableSettings =>
+      _processLookupActionColumnTableSettings;
 
   DatatableSettings get stickyColumnsTableSettings => i18n.isPortuguese
       ? _stickyColumnsTableSettingsPt
@@ -288,91 +297,146 @@ class DatatablePageComponent implements OnInit {
     );
   }
 
-  DatatableSettings _buildProcessLookupTableSettings() {
-    return DatatableSettings(
-      colsDefinitions: <DatatableCol>[
-        DatatableCol(
-          key: 'processCode',
-          title: 'Código',
-          enableSorting: true,
-          sortingBy: 'processCode',
-          width: '110px',
-          minWidth: '110px',
-          nowrap: true,
-          responsiveAutoHideRequired: true,
-        ),
-        DatatableCol(
-          key: 'requester',
-          title: 'Requerente',
-          enableSorting: true,
-          sortingBy: 'requester',
-          minWidth: '270px',
-          headerClass: 'datatable-process-lookup-table__requester-col',
-          responsiveAutoHidePriority: 40,
-        ),
-        DatatableCol(
-          key: 'personType',
-          title: 'Tipo Cgm',
-          enableSorting: true,
-          sortingBy: 'personType',
-          width: '120px',
-          minWidth: '120px',
-          responsiveAutoHidePriority: 10,
-        ),
-        DatatableCol(
-          key: 'classification',
-          title: 'Classificação',
-          enableSorting: true,
-          sortingBy: 'classification',
-          minWidth: '130px',
-          responsiveAutoHidePriority: 20,
-        ),
-        DatatableCol(
-          key: 'subject',
-          title: 'Assunto',
-          enableSorting: true,
-          sortingBy: 'subject',
-          minWidth: '170px',
-          responsiveAutoHidePriority: 30,
-        ),
-        DatatableCol(
-          key: 'createdAt',
-          title: 'Inclusão',
-          enableSorting: true,
-          sortingBy: 'createdAtOrder',
-          minWidth: '155px',
-          nowrap: true,
-          responsiveAutoHidePriority: 15,
-        ),
-        DatatableCol(
-          key: 'status',
-          title: 'Situação',
-          enableSorting: true,
-          sortingBy: 'status',
-          minWidth: '170px',
-          responsiveAutoHidePriority: 50,
-        ),
-        DatatableCol(
-          key: 'digitalLabel',
-          title: 'Digital',
-          enableSorting: true,
-          sortingBy: 'digitalOrder',
-          width: '90px',
-          minWidth: '90px',
-          textAlign: 'center',
-          responsiveAutoHidePriority: 5,
-          customRenderHtml: _buildProcessLookupDigitalBadge,
-        ),
+  List<DatatableCol> _buildProcessLookupBaseCols() {
+    return <DatatableCol>[
+      DatatableCol(
+        key: 'processCode',
+        title: 'Código',
+        enableSorting: true,
+        sortingBy: 'processCode',
+        width: '110px',
+        minWidth: '110px',
+        nowrap: true,
+        responsiveAutoHideRequired: true,
+      ),
+      DatatableCol(
+        key: 'requester',
+        title: 'Requerente',
+        enableSorting: true,
+        sortingBy: 'requester',
+        minWidth: '270px',
+        headerClass: 'datatable-process-lookup-table__requester-col',
+        responsiveAutoHidePriority: 40,
+      ),
+      DatatableCol(
+        key: 'personType',
+        title: 'Tipo Cgm',
+        enableSorting: true,
+        sortingBy: 'personType',
+        width: '120px',
+        minWidth: '120px',
+        responsiveAutoHidePriority: 10,
+      ),
+      DatatableCol(
+        key: 'classification',
+        title: 'Classificação',
+        enableSorting: true,
+        sortingBy: 'classification',
+        minWidth: '130px',
+        responsiveAutoHidePriority: 20,
+      ),
+      DatatableCol(
+        key: 'subject',
+        title: 'Assunto',
+        enableSorting: true,
+        sortingBy: 'subject',
+        minWidth: '170px',
+        responsiveAutoHidePriority: 30,
+      ),
+      DatatableCol(
+        key: 'createdAt',
+        title: 'Inclusão',
+        enableSorting: true,
+        sortingBy: 'createdAtOrder',
+        minWidth: '155px',
+        nowrap: true,
+        responsiveAutoHidePriority: 15,
+      ),
+      DatatableCol(
+        key: 'status',
+        title: 'Situação',
+        enableSorting: true,
+        sortingBy: 'status',
+        minWidth: '170px',
+        hideOnMobile: true,
+        responsiveAutoHidePriority: 50,
+      ),
+      DatatableCol(
+        key: 'digitalLabel',
+        title: 'Digital',
+        enableSorting: true,
+        sortingBy: 'digitalOrder',
+        width: '90px',
+        minWidth: '90px',
+        textAlign: 'center',
+        responsiveAutoHidePriority: 5,
+        customRenderHtml: _buildProcessLookupDigitalBadge,
+      ),
+    ];
+  }
+
+  DatatableSettings _buildProcessLookupTemplateTableSettings() {
+    final colsDefinitions = _buildProcessLookupBaseCols()
+      ..add(
         DatatableCol(
           key: 'actions',
           title: 'Ações',
-          width: '90px',
-          minWidth: '90px',
+          width: '104px',
+          minWidth: '104px',
           textAlign: 'center',
           responsiveAutoHideRequired: true,
-          customRenderHtml: _buildProcessLookupActionsCell,
         ),
-      ],
+      );
+
+    return DatatableSettings(
+      colsDefinitions: colsDefinitions,
+    );
+  }
+
+  DatatableSettings _buildProcessLookupActionColumnTableSettings() {
+    final colsDefinitions = _buildProcessLookupBaseCols()
+      ..add(
+        DatatableActionColumn(
+          key: 'actions',
+          title: 'Ações',
+          // containerClass:
+          //     'datatable-action-cell d-inline-flex align-items-center justify-content-center gap-2 w-100',
+          // width: '96px',
+          // minWidth: '96px',
+          responsiveAutoHideRequired: true,
+          actions: <DatatableAction>[
+            DatatableAction(
+              label: 'Abrir',
+              title: 'Abrir processo',
+              iconClass: 'ph ph-eye',
+              appearance: DatatableActionAppearance.linkIcon,
+              iconOnly: true,
+              onTap: (ctx) => openProcessLookupItem(ctx.itemMap),
+            ),
+            DatatableAction(
+              label: 'Favoritar',
+              title: 'Favoritar processo',
+              iconClass: 'ph ph-star',
+              appearance: DatatableActionAppearance.linkIcon,
+              iconOnly: true,
+              visibleWhen: (ctx) => !isProcessLookupFavorited(ctx.itemMap),
+              onTap: (ctx) => toggleProcessLookupFavorite(ctx.itemMap),
+            ),
+            DatatableAction(
+              label: 'Desfavoritar',
+              title: 'Desfavoritar processo',
+              iconClass: 'ph ph-heart text-danger',
+              appearance: DatatableActionAppearance.linkIcon,
+              iconOnly: true,
+              visibleWhen: (ctx) => isProcessLookupFavorited(ctx.itemMap),
+              onTap: (ctx) => toggleProcessLookupFavorite(ctx.itemMap),
+            ),
+          ],
+        ),
+      );
+
+    return DatatableSettings(
+      colsDefinitions: colsDefinitions,
     );
   }
 
@@ -607,6 +671,7 @@ class DatatablePageComponent implements OnInit {
   Future<void> ngOnInit() async {
     await _loadMainTable();
     await _loadProcessLookupTable();
+    await _loadProcessLookupActionColumnTable();
     await _loadGroupedTable();
   }
 
@@ -631,6 +696,9 @@ class DatatablePageComponent implements OnInit {
   @ViewChild('processLookupDemoTable')
   LiDataTableComponent? processLookupDemoTable;
 
+  @ViewChild('processLookupActionColumnDemoTable')
+  LiDataTableComponent? processLookupActionColumnDemoTable;
+
   @ViewChild('multiSortDemoTable')
   LiDataTableComponent? multiSortDemoTable;
 
@@ -647,6 +715,7 @@ class DatatablePageComponent implements OnInit {
   final Filters customGridFilters = Filters(limit: 4, offset: 0);
   final Filters modalTableFilters = Filters(limit: 4, offset: 0);
   final Filters processLookupFilters = Filters(limit: 12, offset: 0);
+  final Filters processLookupActionColumnFilters = Filters(limit: 8, offset: 0);
   final Filters groupedFilters = Filters(limit: 8, offset: 0);
   final Filters multiSortFilters = Filters(limit: 8, offset: 0);
   final Filters stickyColumnsFilters = Filters(limit: 5, offset: 0);
@@ -728,9 +797,14 @@ class DatatablePageComponent implements OnInit {
     [searchInFields]="processLookupSearchFields"
     [limitPerPageOptions]="processLookupLimitOptions"
     [responsiveAutoHideColumns]="true"
+    [responsiveCollapse]="true"
+    [responsiveCollapseByContainer]="true"
     [showCheckboxToSelectRow]="false">
   <template li-datatable-header let-ctx>
     <!-- header inspirado em uma tela de consulta de processos -->
+  </template>
+  <template li-datatable-cell="actions" let-ctx>
+    <!-- ações customizadas em HTML -->
   </template>
 </li-datatable>''';
   final String multiSortSnippet =
@@ -778,6 +852,104 @@ class DatatablePageComponent implements OnInit {
     [showCheckboxToSelectRow]="false"
     [disableRowClick]="true">
 </li-datatable>''';
+  final String serverFlowDartSnippet =
+      '''final Filters filters = Filters(limit: 12, offset: 0);
+DataFrame<Map<String, dynamic>> tableData =
+    DataFrame<Map<String, dynamic>>(items: <Map<String, dynamic>>[], totalRecords: 0);
+
+Future<void> onTableRequest(Filters nextFilters) async {
+  filters.fillFromFilters(nextFilters);
+  tableData = await datatableService.query(filters);
+}''';
+  final String serverFlowHtmlSnippet = '''<li-datatable
+  [dataTableFilter]="filters"
+  [data]="tableData"
+  [settings]="tableSettings"
+  [searchInFields]="searchFields"
+  (dataRequest)="onTableRequest(\$event)"
+  (searchRequest)="onTableRequest(\$event)"
+  (limitChange)="onTableRequest(\$event)">
+</li-datatable>''';
+  final String responsiveContainerDartSnippet =
+      '''final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'codigo', title: 'Código', responsiveAutoHideRequired: true),
+    DatatableCol(
+      key: 'detalhe',
+      title: 'Detalhe',
+      responsiveAutoHidePriority: 10,
+      hideOnMobile: true,
+    ),
+  ],
+);''';
+  final String responsiveContainerHtmlSnippet =
+      '''<div style="max-width: 760px;">
+  <li-datatable
+    [dataTableFilter]="filters"
+    [data]="tableData"
+    [settings]="settings"
+    [responsiveCollapse]="true"
+    [responsiveCollapseByContainer]="true"
+    [responsiveCollapseContainerMaxWidth]="760"
+    [responsiveAutoHideColumns]="true">
+  </li-datatable>
+</div>''';
+  final String cellTemplateDartSnippet = '''final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'processCode', title: 'Código'),
+    DatatableCol(key: 'actions', title: 'Ações'),
+  ],
+);
+
+void openProcess(Map<String, dynamic> itemMap) {
+  final code = itemMap['processCode']?.toString() ?? '';
+  // sua ação
+}''';
+  final String cellTemplateHtmlSnippet =
+      '''<li-datatable [settings]="settings" [data]="tableData" [dataTableFilter]="filters">
+  <template li-datatable-cell="actions" let-ctx>
+    <button type="button" class="btn btn-sm btn-light" (click)="openProcess(ctx.itemMap)">
+      Abrir {{ ctx.itemMap['processCode'] }}
+    </button>
+  </template>
+</li-datatable>''';
+  final String actionColumnDartSnippet = '''final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'processCode', title: 'Código'),
+    DatatableActionColumn(
+      key: 'actions',
+      title: 'Ações',
+      containerClass:
+          'datatable-action-cell d-inline-flex align-items-center justify-content-center gap-2 w-100',
+      actions: <DatatableAction>[
+        DatatableAction(
+          label: 'Abrir',
+          iconClass: 'ph ph-eye',
+          appearance: DatatableActionAppearance.linkIcon,
+          iconOnly: false,
+          onTap: (ctx) => openProcessLookupItem(ctx.itemMap),
+        ),
+        DatatableAction(
+          label: 'Favoritar',
+          iconClass: 'ph ph-star',
+          appearance: DatatableActionAppearance.linkIcon,
+          iconOnly: true,
+          visibleWhen: (ctx) => !isProcessLookupFavorited(ctx.itemMap),
+          onTap: (ctx) => toggleProcessLookupFavorite(ctx.itemMap),
+        ),
+        DatatableAction(
+          label: 'Desfavoritar',
+          iconClass: 'ph ph-heart text-danger',
+          appearance: DatatableActionAppearance.linkIcon,
+          iconOnly: true,
+          visibleWhen: (ctx) => isProcessLookupFavorited(ctx.itemMap),
+          onTap: (ctx) => toggleProcessLookupFavorite(ctx.itemMap),
+        ),
+      ],
+    ),
+  ],
+);
+''';
   final String productModelSnippet = '''import 'serialize_base.dart';
 
 class Product implements SerializeBase {
@@ -932,6 +1104,7 @@ class ProductController {
   late DataFrame<Map<String, dynamic>> customGridData;
   late DataFrame<Map<String, dynamic>> modalTableData;
   late DataFrame<Map<String, dynamic>> processLookupTableData;
+  late DataFrame<Map<String, dynamic>> processLookupActionColumnTableData;
   late DataFrame<Map<String, dynamic>> groupedTableData;
   late DataFrame<Map<String, dynamic>> multiSortTableData;
   late DataFrame<Map<String, dynamic>> stickyColumnsTableData;
@@ -986,6 +1159,13 @@ class ProductController {
   Future<void> onProcessLookupTableRequest(Filters nextFilters) async {
     processLookupFilters.fillFromFilters(nextFilters);
     await _loadProcessLookupTable();
+  }
+
+  Future<void> onProcessLookupActionColumnTableRequest(
+    Filters nextFilters,
+  ) async {
+    processLookupActionColumnFilters.fillFromFilters(nextFilters);
+    await _loadProcessLookupActionColumnTable();
   }
 
   Future<void> onProcessLookupHeaderSearchFieldChange(
@@ -1222,6 +1402,22 @@ class ProductController {
           await DatatableDemoService(records).query(processLookupFilters);
     } finally {
       processLookupDemoTable?.hideLoading();
+      _flushView();
+    }
+  }
+
+  Future<void> _loadProcessLookupActionColumnTable() async {
+    processLookupActionColumnDemoTable?.showLoading();
+    try {
+      final records = _buildProcessLookupSeedRecords();
+      processLookupActionColumnTableData = await DatatableDemoService(records)
+          .query(processLookupActionColumnFilters);
+      _syncAccordionTable(
+        processLookupActionColumnDemoTable,
+        processLookupActionColumnTableData,
+      );
+    } finally {
+      processLookupActionColumnDemoTable?.hideLoading();
       _flushView();
     }
   }
@@ -2006,28 +2202,49 @@ class ProductController {
     return badge;
   }
 
-  Element _buildProcessLookupActionsCell(
-    Map<String, dynamic> itemMap,
-    dynamic itemInstance,
-  ) {
-    final root = DivElement()..classes.add('datatable-process-lookup-actions');
+  final Set<String> _favoritedProcessCodes = <String>{};
 
-    final documentAction = SpanElement()
-      ..classes
-          .addAll(<String>['datatable-process-lookup-action', 'ph', 'ph-file'])
-      ..title = 'Abrir processo';
-
-    final favoriteAction = SpanElement()
-      ..classes
-          .addAll(<String>['datatable-process-lookup-action', 'ph', 'ph-star'])
-      ..title = 'Favoritar';
-
-    root
-      ..append(documentAction)
-      ..append(favoriteAction);
-
-    return root;
+  bool isProcessLookupFavorited(Map<String, dynamic> itemMap) {
+    final code = itemMap['processCode']?.toString() ?? '';
+    if (code.isEmpty) {
+      return false;
+    }
+    return _favoritedProcessCodes.contains(code);
   }
+
+  void openProcessLookupItem(Map<String, dynamic> itemMap) {
+    final code = itemMap['processCode']?.toString() ?? '';
+    if (code.isEmpty) {
+      return;
+    }
+    datatableEventLog = i18n.isPortuguese
+        ? 'Processo $code aberto pela célula customizada.'
+        : 'Process $code opened from the custom cell.';
+    _flushView();
+  }
+
+  void toggleProcessLookupFavorite(Map<String, dynamic> itemMap) {
+    final code = itemMap['processCode']?.toString() ?? '';
+    if (code.isEmpty) {
+      return;
+    }
+    if (_favoritedProcessCodes.contains(code)) {
+      _favoritedProcessCodes.remove(code);
+    } else {
+      _favoritedProcessCodes.add(code);
+    }
+    processLookupDemoTable?.update();
+    processLookupActionColumnDemoTable?.update();
+    _flushView();
+  }
+
+  String processLookupOpenActionLabel(Map<String, dynamic> itemMap) =>
+      i18n.isPortuguese
+          ? 'Abrir processo ${itemMap['processCode'] ?? ''}'
+          : 'Open process ${itemMap['processCode'] ?? ''}';
+
+  String get processLookupFavoriteActionLabel =>
+      i18n.isPortuguese ? 'Favoritar processo' : 'Favorite process';
 
   Element _buildStickyColumnsActionsCell(
     Map<String, dynamic> itemMap,
@@ -2075,6 +2292,18 @@ class ProductController {
   String get processLookupDemoIntro => i18n.isPortuguese
       ? 'Demonstra como usar header customizado via TemplateRef para reproduzir a busca em duas linhas, filtros auxiliares e barra de ações da tela de consultar processo.'
       : 'Shows how to use a custom TemplateRef header to reproduce the two-row search area, helper filters, and action bar from a process lookup screen.';
+
+  String get processLookupActionColumnDemoTitle => i18n.isPortuguese
+      ? 'Ações via DatatableActionColumn (Dart)'
+      : 'Actions via DatatableActionColumn (Dart)';
+
+  String get processLookupActionColumnDemoIntro => i18n.isPortuguese
+      ? 'Mesmo conjunto de colunas, mas com ações declaradas no Dart usando DatatableActionColumn em modo link-icon.'
+      : 'Same column set, but with actions declared in Dart using DatatableActionColumn in link-icon mode.';
+
+  String get processLookupActionColumnEventLog => i18n.isPortuguese
+      ? 'Neste exemplo, as ações da coluna são montadas no Dart e atualizadas sem template de célula no HTML.'
+      : 'In this example, action cells are built in Dart with no HTML cell template.';
 
   String get processLookupRequesterLabel =>
       i18n.isPortuguese ? 'Requerente:' : 'Requester:';

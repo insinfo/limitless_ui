@@ -5,6 +5,7 @@
 :host .li-dropdown-menu__menu {
   max-width: min(22rem, calc(100vw - 16px));
   pointer-events: auto;
+  overflow: hidden;
 }
 
 :host .dropup > .li-dropdown-menu__menu {

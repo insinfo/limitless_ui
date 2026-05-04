@@ -10,3 +10,132 @@
   display: grid;
   gap: 1rem;
 }
+
+.offcanvas-process-timeline.offcanvas-start {
+  --bs-offcanvas-width: min(100vw, 24rem);
+}
+
+.process-timeline-shell {
+  background: var(--body-bg);
+}
+
+.process-timeline-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.process-timeline-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.process-timeline-filters .form-control {
+  min-width: 0;
+}
+
+.process-timeline-type-dropdown {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.process-timeline-type-dropdown .process-timeline-type-trigger {
+  min-width: 6.875rem;
+  max-width: 11rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.process-timeline-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.process-timeline-rail {
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+.process-timeline-rail::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0.1875rem;
+  width: 2px;
+  background: var(--primary);
+  opacity: 0.9;
+}
+
+.process-timeline-item {
+  position: relative;
+  margin-bottom: 0.75rem;
+}
+
+.process-timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.process-timeline-dot {
+  position: absolute;
+  top: 0.875rem;
+  left: -1.25rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 0 2px var(--body-bg);
+}
+
+.process-timeline-card {
+  padding: 0.75rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color-translucent);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+}
+
+.process-timeline-code {
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.process-timeline-signature {
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--body-color-secondary, #6c757d);
+}
+
+.process-timeline-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 10rem;
+  color: var(--body-color-secondary, #6c757d);
+  text-align: center;
+}
+
+@media (max-width: 575.98px) {
+  .offcanvas-process-timeline.offcanvas-start {
+    --bs-offcanvas-width: 100vw;
+  }
+
+  .process-timeline-header {
+    padding: 0.875rem;
+  }
+
+  .process-timeline-scroll {
+    padding: 0.875rem;
+  }
+}

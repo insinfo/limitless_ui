@@ -179,6 +179,15 @@
     max-width: 12.5rem;
 }
 
+.datatable-action-button--icon-only {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+}
+
 .datatable-empty-state {
     width: 100%;
     min-height: 13rem;
@@ -321,6 +330,35 @@
     background: transparent !important;
 }
 
+.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control,
+.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control {
+    cursor: pointer;
+    position: relative;
+    padding-left: 1.75rem;
+    white-space: nowrap;
+}
+
+.datatable-scroll .dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before,
+.datatable-scroll .dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control::before {
+    position: absolute;
+    top: 50%;
+    left: .75rem;
+    display: block;
+    box-sizing: border-box;
+    content: '';
+    border-top: 5px solid transparent;
+    border-left: 10px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 5px solid transparent;
+    border-right: 0 solid transparent;
+    transform: translateY(-50%) rotate(0deg);
+    transform-origin: 35% 50%;
+}
+
+.datatable-scroll .dataTable.dtr-inline.collapsed > tbody > tr.dtr-expanded > td.dtr-control::before,
+.datatable-scroll .dataTable.dtr-inline.collapsed > tbody > tr.dtr-expanded > th.dtr-control::before {
+    transform: translate(-1px, -50%) rotate(90deg);
+}
+
 @media (max-width: 767.98px) {
     .datatable-header {
         display: flex;
@@ -406,33 +444,6 @@
     .dataTable.dtr-inline.collapsed > tbody > tr > th {
         padding-top: .75rem;
         padding-bottom: .75rem;
-    }
-
-    .dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control,
-    .dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control {
-        cursor: pointer;
-        white-space: nowrap;
-    }
-
-    .dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control::before,
-    .dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control::before {
-        margin-right: .5em;
-        display: inline-block;
-        box-sizing: border-box;
-        content: '';
-        border-top: 5px solid transparent;
-        border-left: 10px solid rgba(0, 0, 0, 0.5);
-        border-bottom: 5px solid transparent;
-        border-right: 0 solid transparent;
-        vertical-align: middle;
-    }
-
-    .dataTable.dtr-inline.collapsed > tbody > tr.dtr-expanded > td.dtr-control::before,
-    .dataTable.dtr-inline.collapsed > tbody > tr.dtr-expanded > th.dtr-control::before {
-        border-top: 10px solid rgba(0, 0, 0, 0.5);
-        border-left: 5px solid transparent;
-        border-bottom: 0 solid transparent;
-        border-right: 5px solid transparent;
     }
 
     .datatable-first-col .form-check-input {

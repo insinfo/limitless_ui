@@ -26,7 +26,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.11`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.14`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -47,7 +47,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.11
+  limitless_ui: ^1.0.0-dev.14
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -56,7 +56,7 @@ If the application will use `li-datatable`, `li-datatable-select`, `li-select`, 
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.11
+  limitless_ui: ^1.0.0-dev.14
   essential_core: ^1.2.0
 ```
 
@@ -555,6 +555,14 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiTreeViewPageLoader`, `TreeViewLoadRequest`, `TreeViewLoadResult`,
   `LiTreeviewSelectNodeDirective`, `LiTreeviewSelectTriggerDirective`.
 
+## Recent additions in `1.0.0-dev.14`
+
+- Expanded `li-offcanvas` with `enableDefaultBodyClass` and `enableBodyWrapper`, allowing fully custom flex layouts in the panel body without forcing the default `.offcanvas-body` wrapper/class; also updated the internal panel shell to a column flex layout and added the `li-offcanvas-contents` passthrough class for projected content flows.
+- Expanded the offcanvas example page with a denser operational “complex scenario” panel (fixed filter header, searchable/filtered timeline list, responsive sizing), plus themed scrollbar coverage for generic `.overflow-auto` containers to keep custom offcanvas bodies visually consistent.
+- Fixed `li-dropdown-menu` rounded-corner clipping when vertical scrolling is activated: overflow control was moved from the outer menu container to the inner items container for desktop/inline modes, while mobile modal/sheet sizing behavior remains isolated to the outer menu wrapper.
+- Expanded `li-datatable` action rendering with `DatatableActionAppearance.linkIcon` and `iconOnly`, enabling icon-only link-style actions (no button background) while preserving accessible labels; also updated the datatable example favorite action to support this visual mode where state is expressed by icon color only.
+- Fixed `li-datatable` responsive auto-hide recovery after viewport/container re-expansion by recalculating with stable column widths instead of stretched runtime measurements, and added browser regression coverage for the shrink-then-expand flow.
+
 ## Recent additions in `1.0.0-dev.11`
 
 - Expanded `li-datatable` with `responsiveAutoHideColumns` plus per-column `responsiveAutoHidePriority` and `responsiveAutoHideRequired` flags so narrower layouts can progressively move secondary columns into the responsive details row before horizontal scrolling appears.
@@ -720,8 +728,10 @@ Most useful features:
 - column-targeted search with `searchInFields`;
 - events such as `(dataRequest)`, `(searchRequest)`, and `(limitChange)` for server-driven flows;
 - columns with `enableSorting`, `sortingBy`, `hideOnMobile`, `responsiveAutoHidePriority`, `responsiveAutoHideRequired`, `textAlign`, `nowrap`, `width`, and custom classes;
+- responsive collapse driven by viewport (`responsiveCollapseMaxWidth`) or by container width (`responsiveCollapseByContainer` + `responsiveCollapseContainerMaxWidth`) for desktop shells that shrink horizontally;
 - sticky edge columns with `fixedPosition: DatatableFixedColumnPosition.left` or `DatatableFixedColumnPosition.right` when critical actions or identifiers must remain visible during horizontal scroll;
 - optional custom toolbar/footer templates via `headerTemplate`, `footerTemplate`, or projected `<template li-datatable-header let-ctx>` and `<template li-datatable-footer let-ctx>`;
+- per-column template projection with `<template li-datatable-cell="columnKey" let-ctx>` for HTML-driven custom cells without replacing existing `customRenderHtml`;
 - `LiDatatableHeaderContext` and `LiDatatableFooterContext` so custom templates can still call search, pagination, export, page-size, and view-mode actions;
 - `responsiveAutoHideColumns` when lower-priority columns should collapse into the details row before horizontal scrolling appears;
 - `requestDataOnItemsPerPageChange` when changing page size should emit through `(dataRequest)` instead of only `(limitChange)`;
@@ -821,6 +831,62 @@ For screens that need a custom operational toolbar or footer shell without repla
 </li-datatable>
 ```
 
+For row actions or other rich cells, project a column-scoped template. The `ctx` object exposes `row`, `column`, `itemMap`, `itemInstance`, `rowIndex`, and `columnIndex`:
+
+```html
+<li-datatable
+  [data]="usersFrame"
+  [settings]="settings"
+  [dataTableFilter]="filters">
+  <template li-datatable-cell="actions" let-ctx>
+    <div class="d-inline-flex gap-1">
+      <button
+        type="button"
+        class="btn btn-sm btn-light"
+        (click)="openUser(ctx.itemMap)">
+        Open
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-light"
+        (click)="toggleFavorite(ctx.itemMap)">
+        Favorite
+      </button>
+    </div>
+  </template>
+</li-datatable>
+```
+
+If you prefer a purely Dart-defined API for actions, use `DatatableActionColumn` in `colsDefinitions` (declarative) and optionally `DatatableActionController` (imperative updates), without touching the legacy `customRenderHtml` path:
+
+```dart
+final actionController = DatatableActionController(
+  actions: <DatatableAction>[
+    DatatableAction(
+      label: 'Open',
+      iconClass: 'ph ph-folder-open',
+      appearance: DatatableActionAppearance.linkIcon,
+      iconOnly: true,
+      onTap: (ctx) => openUser(ctx.itemMap),
+    ),
+  ],
+);
+
+final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'name', title: 'Name'),
+    DatatableActionColumn(
+      key: 'actions',
+      title: 'Actions',
+      controller: actionController,
+      fixedPosition: DatatableFixedColumnPosition.right,
+    ),
+  ],
+);
+```
+
+For icon-only actions with no button background, use `appearance: DatatableActionAppearance.linkIcon` and `iconOnly: true`. This keeps accessibility via `label`/`title` while rendering a link-like icon button.
+
 For denser visual layouts, the same dataset can be reused in grid mode:
 
 ```dart
@@ -876,6 +942,107 @@ final advancedSettings = DatatableSettings(
     root.text = itemMap['feature']?.toString() ?? '';
     return root;
   },
+);
+```
+
+Mini tutorials:
+
+1. Server-driven pagination and search
+
+```dart
+final Filters filters = Filters(limit: 12, offset: 0);
+DataFrame<Map<String, dynamic>> tableData =
+    DataFrame<Map<String, dynamic>>(items: <Map<String, dynamic>>[], totalRecords: 0);
+
+Future<void> onTableRequest(Filters nextFilters) async {
+  filters.fillFromFilters(nextFilters);
+  tableData = await service.query(filters);
+}
+```
+
+```html
+<li-datatable
+  [dataTableFilter]="filters"
+  [data]="tableData"
+  [settings]="settings"
+  [searchInFields]="searchFields"
+  (dataRequest)="onTableRequest($event)"
+  (searchRequest)="onTableRequest($event)"
+  (limitChange)="onTableRequest($event)">
+</li-datatable>
+```
+
+2. Responsive collapse on desktop by container width
+
+```dart
+final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(
+      key: 'code',
+      title: 'Code',
+      responsiveAutoHideRequired: true,
+    ),
+    DatatableCol(
+      key: 'details',
+      title: 'Details',
+      hideOnMobile: true,
+      responsiveAutoHidePriority: 10,
+    ),
+  ],
+);
+```
+
+```html
+<div style="max-width: 760px;">
+  <li-datatable
+    [data]="tableData"
+    [settings]="settings"
+    [dataTableFilter]="filters"
+    [responsiveCollapse]="true"
+    [responsiveCollapseByContainer]="true"
+    [responsiveCollapseContainerMaxWidth]="760"
+    [responsiveAutoHideColumns]="true">
+  </li-datatable>
+</div>
+```
+
+3. Action cells with TemplateRef and with DatatableActionColumn
+
+```html
+<li-datatable [data]="tableData" [settings]="settings" [dataTableFilter]="filters">
+  <template li-datatable-cell="actions" let-ctx>
+    <div class="d-inline-flex gap-1">
+      <button type="button" class="btn btn-sm btn-light" (click)="openItem(ctx.itemMap)">
+        Open
+      </button>
+      <button type="button" class="btn btn-sm btn-light" (click)="toggleFavorite(ctx.itemMap)">
+        Favorite
+      </button>
+    </div>
+  </template>
+</li-datatable>
+```
+
+```dart
+final actionController = DatatableActionController(
+  actions: <DatatableAction>[
+    DatatableAction(
+      label: 'Open',
+      iconClass: 'ph ph-folder-open',
+      onTap: (ctx) => openItem(ctx.itemMap),
+    ),
+  ],
+);
+
+final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'name', title: 'Name'),
+    DatatableActionColumn(
+      key: 'actions',
+      title: 'Actions',
+      controller: actionController,
+    ),
+  ],
 );
 ```
 

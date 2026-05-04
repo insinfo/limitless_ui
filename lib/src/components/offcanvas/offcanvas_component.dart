@@ -155,6 +155,12 @@ class LiOffcanvasComponent
   bool enableHeader = true;
 
   @Input()
+  bool enableBodyWrapper = true;
+
+  @Input()
+  bool enableDefaultBodyClass = true;
+
+  @Input()
   bool enableBackdrop = true;
 
   @Input()
@@ -268,7 +274,10 @@ class LiOffcanvasComponent
   }
 
   String get defaultBodyClasses {
-    final classes = <String>['offcanvas-body'];
+    final classes = <String>[];
+    if (enableDefaultBodyClass) {
+      classes.add('offcanvas-body');
+    }
     final extraClasses = bodyClass?.trim();
     if (extraClasses != null && extraClasses.isNotEmpty) {
       classes.addAll(extraClasses.split(RegExp(r'\s+')));

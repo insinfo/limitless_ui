@@ -21,7 +21,8 @@
 
 .offcanvas {
     z-index: 1201;
-    display: block;
+    display: flex;
+    flex-direction: column;
     pointer-events: auto;
 }
 
@@ -43,6 +44,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+}
+
+.li-offcanvas-contents {
+    display: contents !important;
 }
 
 [liOffcanvasFooter] {

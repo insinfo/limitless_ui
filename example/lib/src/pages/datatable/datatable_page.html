@@ -105,6 +105,7 @@
               <li-datatable #processLookupDemoTable [dataTableFilter]="processLookupFilters" [data]="processLookupTableData"
                 [settings]="processLookupTableSettings" [searchInFields]="processLookupSearchFields"
                 [limitPerPageOptions]="processLookupLimitOptions" [responsiveAutoHideColumns]="true"
+                [responsiveCollapse]="true" [responsiveCollapseByContainer]="true"
                 [showCheckboxToSelectRow]="false"
                 [showExportMenu]="false" [disableRowClick]="true" (dataRequest)="onProcessLookupTableRequest($event)"
                 (limitChange)="onProcessLookupTableRequest($event)" (searchRequest)="onProcessLookupTableRequest($event)">
@@ -183,9 +184,60 @@
                     </div>
                   </div>
                 </template>
+
+                <template li-datatable-cell="actions" let-ctx>
+                  <div class="d-inline-flex align-items-center justify-content-center gap-2 w-100">
+                    <button type="button" class="btn btn-flat-primary border-transparent btn-icon"
+                      [attr.title]="processLookupOpenActionLabel(ctx.itemMap)"
+                      [attr.aria-label]="processLookupOpenActionLabel(ctx.itemMap)"
+                      (click)="openProcessLookupItem(ctx.itemMap)">
+                      <i class="ph ph-eye"></i>
+                    </button>
+
+                    <button *ngIf="!isProcessLookupFavorited(ctx.itemMap)" type="button"
+                      class="btn btn-flat-primary border-transparent btn-icon"
+                      [attr.title]="processLookupFavoriteActionLabel" [attr.aria-label]="processLookupFavoriteActionLabel"
+                      (click)="toggleProcessLookupFavorite(ctx.itemMap)">
+                      <i class="ph ph-star"></i>
+                    </button>
+
+                    <button *ngIf="isProcessLookupFavorited(ctx.itemMap)" type="button"
+                      class="btn btn-flat-primary border-transparent btn-icon text-danger"
+                      [attr.title]="processLookupFavoriteActionLabel" [attr.aria-label]="processLookupFavoriteActionLabel"
+                      (click)="toggleProcessLookupFavorite(ctx.itemMap)">
+                      <i class="ph ph-heart"></i>
+                    </button>
+                  </div>
+                </template>
+
               </li-datatable>
 
               <div class="bg-light rounded border p-3 mt-3">{{ processLookupHeaderEventLog }}</div>
+            </div>
+
+            <div class="card-body pt-4">
+              <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                <div>
+                  <h6 class="mb-2">{{ processLookupActionColumnDemoTitle }}</h6>
+                  <p class="text-muted mb-0">{{ processLookupActionColumnDemoIntro }}</p>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <li-highlight [code]="actionColumnDartSnippet" language="dart"></li-highlight>
+              </div>
+
+              <li-datatable #processLookupActionColumnDemoTable [dataTableFilter]="processLookupActionColumnFilters"
+                [data]="processLookupActionColumnTableData" [settings]="processLookupActionColumnTableSettings"
+                [searchInFields]="processLookupSearchFields" [limitPerPageOptions]="processLookupLimitOptions"
+                [responsiveAutoHideColumns]="true" [responsiveCollapse]="true" [responsiveCollapseByContainer]="true"
+                [showCheckboxToSelectRow]="false" [showExportMenu]="false"
+                [disableRowClick]="true" (dataRequest)="onProcessLookupActionColumnTableRequest($event)"
+                (limitChange)="onProcessLookupActionColumnTableRequest($event)"
+                (searchRequest)="onProcessLookupActionColumnTableRequest($event)">
+              </li-datatable>
+
+              <div class="bg-light rounded border p-3 mt-3">{{ processLookupActionColumnEventLog }}</div>
             </div>
 
             <div class="card-body pt-1">
@@ -461,6 +513,72 @@
                 </ul>
 
                 <li-highlight [code]="rowStyleGridSnippet" language="dart"></li-highlight>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <h6 class="mb-2">Mini tutoriais (Dart + HTML)</h6>
+              <p class="text-muted mb-3">
+                Os blocos abaixo mostram fluxos completos com setup em Dart e template em HTML para acelerar integração.
+              </p>
+
+              <div class="row g-4">
+                <div class="col-xl-6">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">1. Fluxo server-side</h6>
+                      <p class="text-muted mb-3">
+                        Recarrega dados no backend para paginação, busca e ordenação.
+                      </p>
+                      <li-highlight [code]="serverFlowDartSnippet" language="dart"></li-highlight>
+                      <div class="mt-3">
+                        <li-highlight [code]="serverFlowHtmlSnippet" language="html"></li-highlight>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">2. Colapso no desktop por container</h6>
+                      <p class="text-muted mb-3">
+                        Ativa detalhe responsivo conforme a largura do bloco da tabela, não só do viewport.
+                      </p>
+                      <li-highlight [code]="responsiveContainerDartSnippet" language="dart"></li-highlight>
+                      <div class="mt-3">
+                        <li-highlight [code]="responsiveContainerHtmlSnippet" language="html"></li-highlight>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">3. Célula customizada com TemplateRef</h6>
+                      <p class="text-muted mb-3">
+                        Renderiza botões de ação por coluna sem substituir o restante do datatable.
+                      </p>
+                      <li-highlight [code]="cellTemplateDartSnippet" language="dart"></li-highlight>
+                      <div class="mt-3">
+                        <li-highlight [code]="cellTemplateHtmlSnippet" language="html"></li-highlight>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">4. Ações declarativas e imperativas</h6>
+                      <p class="text-muted mb-3">
+                        Usa <code>DatatableActionColumn</code> e atualiza ações em runtime com controller.
+                      </p>
+                      <li-highlight [code]="actionColumnDartSnippet" language="dart"></li-highlight>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 

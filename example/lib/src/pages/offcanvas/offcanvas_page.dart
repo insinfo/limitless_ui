@@ -11,6 +11,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
+    LiDropdownMenuComponent,
     liOffcanvasDirectives,
   ],
 )
@@ -87,6 +88,12 @@ ref.close();''';
   @ViewChild('largeOffcanvas')
   LiOffcanvasComponent? largeOffcanvas;
 
+  @ViewChild('flexOffcanvas')
+  LiOffcanvasComponent? flexOffcanvas;
+
+  @ViewChild('realWorldOffcanvas')
+  LiOffcanvasComponent? realWorldOffcanvas;
+
   final List<String> _reviewStepsPt = <String>[
     'Conferir os filtros ativos antes de abrir a lista lateral.',
     'Revisar contexto adicional sem trocar de rota.',
@@ -100,6 +107,59 @@ ref.close();''';
   ];
 
   List<String> get reviewSteps => _isPt ? _reviewStepsPt : _reviewStepsEn;
+
+  static const List<LiDropdownMenuOption> _timelineFilterOptionsPt =
+      <LiDropdownMenuOption>[
+    LiDropdownMenuOption(value: 't', label: 'Todos'),
+    LiDropdownMenuOption(value: 'da', label: 'Despachos + Anexos'),
+    LiDropdownMenuOption(value: 'd', label: 'Despachos'),
+    LiDropdownMenuOption(value: 'a', label: 'Anexos'),
+    LiDropdownMenuOption(value: 'er', label: 'Encaminhamentos/Recebimentos'),
+  ];
+
+  static const List<LiDropdownMenuOption> _timelineFilterOptionsEn =
+      <LiDropdownMenuOption>[
+    LiDropdownMenuOption(value: 't', label: 'All'),
+    LiDropdownMenuOption(value: 'da', label: 'Dispatches + Attachments'),
+    LiDropdownMenuOption(value: 'd', label: 'Dispatches'),
+    LiDropdownMenuOption(value: 'a', label: 'Attachments'),
+    LiDropdownMenuOption(value: 'er', label: 'Routing/Receipts'),
+  ];
+
+  final List<OffcanvasTimelineItem> _timelineItems =
+      List<OffcanvasTimelineItem>.generate(28, (index) {
+    final itemIndex = index + 1;
+    final kind = switch (itemIndex % 5) {
+      0 => 'er',
+      1 => 'd',
+      2 => 'a',
+      3 => 'd',
+      _ => 'a',
+    };
+    final titlePrefix = switch (kind) {
+      'd' => 'Despacho Nº',
+      'a' => 'Anexo Nº',
+      _ => 'Andamento Nº',
+    };
+    final signature = switch (itemIndex % 4) {
+      0 => 'Assinado digitalmente',
+      1 => 'Assinado pelo sistema',
+      2 => 'Assinado externamente',
+      _ => 'Sem assinatura digital',
+    };
+    return OffcanvasTimelineItem(
+      id: itemIndex,
+      code: '$titlePrefix ${10540 + itemIndex}',
+      userName: 'João da Silva $itemIndex',
+      timeLabel: '09:${(40 + itemIndex).toString().padLeft(2, '0')}',
+      signatureLabel: signature,
+      kind: kind,
+      details: kind == 'er' ? 'Movimentação interna' : null,
+    );
+  });
+
+  String timelineSearch = '';
+  String timelineFilter = 'da';
 
   String eventLog;
   bool blockGuardDismiss = true;
@@ -163,6 +223,69 @@ ref.close();''';
       ? 'Demonstra o input size para painéis de revisão com mais densidade.'
       : 'Demonstrates the size input for denser review panels.';
   String get largeButton => _isPt ? 'Abrir tamanho lg' : 'Open large size';
+  String get flexTitle => _isPt
+      ? 'Layout Flexível (Sem body default)'
+      : 'Flexible Layout (No default body)';
+  String get flexBody => _isPt
+      ? 'Desabilita o estilo padrão para controle total do CSS e altura.'
+      : 'Disables default styling for full height and flex CSS control.';
+  String get flexButton => _isPt ? 'Abrir Flex' : 'Open Flex';
+
+  String get realWorldTitle => _isPt ? 'Cenário Complexo' : 'Complex Scenario';
+  String get realWorldBody => _isPt
+      ? 'Simula uma estrutura complexa com lista scrollable e barra de filtros fixa.'
+      : 'Simulates a complex list with fixed filter bar and flex scrolling.';
+  String get realWorldButton =>
+      _isPt ? 'Abrir Cenário Complexo' : 'Open Complex Scenario';
+  String get realWorldPanelTitle =>
+      _isPt ? 'Itens do processo' : 'Process items';
+  String get realWorldSearchPlaceholder =>
+      _isPt ? 'Digite para buscar' : 'Type to search';
+  String get realWorldEmptyState => _isPt
+      ? 'Nenhum item encontrado para o filtro atual.'
+      : 'No items found for the current filter.';
+  String get timelineFilterLabel {
+    switch (timelineFilter) {
+      case 't':
+        return _isPt ? 'Todos' : 'All';
+      case 'd':
+        return _isPt ? 'Despachos' : 'Dispatches';
+      case 'a':
+        return _isPt ? 'Anexos' : 'Attachments';
+      case 'er':
+        return _isPt ? 'Enc./Rec.' : 'Routing/Receipts';
+      case 'da':
+      default:
+        return _isPt ? 'Desp. + Anexos' : 'Disp. + Att.';
+    }
+  }
+
+  List<LiDropdownMenuOption> get timelineFilterOptions =>
+      _isPt ? _timelineFilterOptionsPt : _timelineFilterOptionsEn;
+
+  List<OffcanvasTimelineItem> get filteredTimelineItems {
+    final query = timelineSearch.trim().toLowerCase();
+    return _timelineItems.where((item) {
+      final filterMatches = switch (timelineFilter) {
+        'd' => item.kind == 'd',
+        'a' => item.kind == 'a',
+        'er' => item.kind == 'er',
+        'da' => item.kind == 'd' || item.kind == 'a',
+        _ => true,
+      };
+      if (!filterMatches) {
+        return false;
+      }
+      if (query.isEmpty) {
+        return true;
+      }
+      final text =
+          '${item.code} ${item.userName} ${item.signatureLabel} ${item.details ?? ''}'
+              .toLowerCase();
+      return text.contains(query);
+    }).toList();
+  }
+
   String get idleEventLog => _isPt
       ? 'Abra um exemplo para validar posição, backdrop, foco e lazy content.'
       : 'Open an example to validate position, backdrop, focus, and lazy content.';
@@ -319,6 +442,26 @@ ref.close();''';
     eventLog = _isPt ? 'Offcanvas largo aberto.' : 'Large offcanvas opened.';
   }
 
+  void openFlex() {
+    flexOffcanvas?.open();
+    eventLog = _isPt ? 'Offcanvas flexível aberto.' : 'Flex offcanvas opened.';
+  }
+
+  void openRealWorld() {
+    realWorldOffcanvas?.open();
+    eventLog = _isPt
+        ? 'Offcanvas de cenário complexo aberto.'
+        : 'Complex scenario offcanvas opened.';
+  }
+
+  void onRealWorldSearch(String? value) {
+    timelineSearch = value ?? '';
+  }
+
+  void onTimelineFilterChange(String value) {
+    timelineFilter = value;
+  }
+
   void openViaService() {
     final ref = offcanvasService.open('service-demo');
     activeServiceRef = ref;
@@ -372,4 +515,24 @@ ref.close();''';
         ? '$label dispensado por ${reason.name}.'
         : '$label dismissed by ${reason.name}.';
   }
+}
+
+class OffcanvasTimelineItem {
+  const OffcanvasTimelineItem({
+    required this.id,
+    required this.code,
+    required this.userName,
+    required this.timeLabel,
+    required this.signatureLabel,
+    required this.kind,
+    this.details,
+  });
+
+  final int id;
+  final String code;
+  final String userName;
+  final String timeLabel;
+  final String signatureLabel;
+  final String kind;
+  final String? details;
 }

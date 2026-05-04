@@ -24,6 +24,8 @@ import 'li_datatable_component_test.template.dart' as ng;
         [data]="data"
         [settings]="settings"
         [responsiveCollapse]="responsiveCollapse"
+        [responsiveCollapseByContainer]="responsiveCollapseByContainer"
+        [responsiveCollapseContainerMaxWidth]="responsiveCollapseContainerMaxWidth"
         [responsiveAutoHideColumns]="responsiveAutoHideColumns"
         [requestDataOnItemsPerPageChange]="requestDataOnItemsPerPageChange"
         [searchInFields]="searchInFields"
@@ -82,6 +84,8 @@ class TestHostComponent {
 
   bool allowSingleSelectionOnly = false;
   bool responsiveCollapse = false;
+  bool responsiveCollapseByContainer = false;
+  int responsiveCollapseContainerMaxWidth = 767;
   bool responsiveAutoHideColumns = false;
   bool requestDataOnItemsPerPageChange = false;
   String tableContainerStyle = '';
@@ -134,6 +138,15 @@ class TestHostComponent {
           <button id="custom-footer-next" type="button" (click)="ctx.nextPage()">Proxima</button>
         </div>
       </template>
+      <template li-datatable-cell="acoes" let-ctx>
+        <button
+          type="button"
+          class="cell-action-btn"
+          [attr.data-candidate]="ctx.itemMap['nome']"
+          (click)="onOpen(ctx.itemMap['nome'])">
+          Abrir {{ ctx.itemMap['nome'] }}
+        </button>
+      </template>
     </li-datatable>
   ''',
   directives: [
@@ -141,9 +154,31 @@ class TestHostComponent {
     LiDataTableComponent,
     LiDatatableHeaderDirective,
     LiDatatableFooterDirective,
+    LiDatatableCellDirective,
   ],
 )
-class CustomHeaderTestHostComponent extends TestHostComponent {}
+class CustomHeaderTestHostComponent extends TestHostComponent {
+  String? lastOpenedName;
+
+  CustomHeaderTestHostComponent() {
+    settings = DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(key: 'nome', title: 'Nome'),
+        DatatableCol(key: 'idade', title: 'Idade'),
+        DatatableCol(
+          key: 'acoes',
+          title: 'Ações',
+          customRenderHtml: (itemMap, itemInstance) =>
+              SpanElement()..text = 'LEGACY',
+        ),
+      ],
+    );
+  }
+
+  void onOpen(String? name) {
+    lastOpenedName = name;
+  }
+}
 
 class _FakeKeyPressEvent {
   _FakeKeyPressEvent(this.keyCode);
@@ -351,6 +386,25 @@ void main() {
     expect(host.lastDataRequest!.limit, 10);
   });
 
+  test('renderiza template de célula por chave da coluna e mantém clique',
+      () async {
+    final fixture = await customHeaderTestBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final buttons = fixture.rootElement.querySelectorAll('.cell-action-btn');
+    expect(buttons, isNotEmpty);
+    expect(buttons.length, 2);
+    expect(buttons.first.text, contains('Ana'));
+    expect(fixture.text, isNot(contains('LEGACY')));
+
+    await fixture.update((_) {
+      (buttons.first as ButtonElement).click();
+    });
+
+    expect(host.lastOpenedName, 'Ana');
+  });
+
   test(
       'permite selecionar varias linhas quando single selection esta desabilitado',
       () async {
@@ -441,6 +495,29 @@ void main() {
     expect(fixture.text, contains('Idade'));
     expect(fixture.text, contains('30'));
     expect(fixture.rootElement.querySelector('tbody tr.child'), isNotNull);
+  });
+
+  test(
+      'expande linha filha em desktop quando o container atinge largura de colapso',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.tableContainerStyle = 'width: 360px;';
+      component.responsiveCollapse = true;
+      component.responsiveCollapseByContainer = true;
+      component.responsiveCollapseContainerMaxWidth = 420;
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final toggleCell = fixture.rootElement.querySelector(
+      'tbody tr td.dtr-control',
+    ) as TableCellElement?;
+
+    expect(
+      host.table!.hasResponsiveHiddenColumns(host.table!.rows.first),
+      isTrue,
+    );
+    expect(toggleCell, isNotNull);
   });
 
   test('não expande linha quando não há colunas configuradas para mobile',
@@ -1322,6 +1399,90 @@ void main() {
     expect(assuntoHeader!.classes.contains('hide'), isFalse);
   });
 
+  test('ignora largura esticada anterior ao recalcular auto-hide no resize',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 1200px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'codigo',
+            title: 'Codigo',
+            responsiveAutoHideRequired: true,
+          ),
+          DatatableCol(
+            key: 'solicitante',
+            title: 'Solicitante',
+            responsiveAutoHidePriority: 10,
+          ),
+          DatatableCol(
+            key: 'assunto',
+            title: 'Assunto',
+            responsiveAutoHidePriority: 20,
+          ),
+          DatatableCol(
+            key: 'situacao',
+            title: 'Situacao',
+            responsiveAutoHidePriority: 30,
+          ),
+        ],
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'codigo': '61109/2016',
+            'solicitante': 'Nucleo de Governanca',
+            'assunto': 'Revisao documental',
+            'situacao': 'Em analise',
+          },
+        ],
+        totalRecords: 1,
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isFalse);
+
+    await fixture.update((component) {
+      component.tableContainerStyle = 'width: 300px;';
+      window.dispatchEvent(Event('resize'));
+    });
+    await _settleAfterResize(fixture);
+    await _settleAfterResize(fixture);
+
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isTrue);
+    expect(
+      host.table!.renderedRows.first.responsiveHiddenColumns
+          .map((column) => column.key),
+      contains('solicitante'),
+    );
+
+    await fixture.update((component) {
+      component.tableContainerStyle = 'width: 720px;';
+      window.dispatchEvent(Event('resize'));
+    });
+    await _settleAfterResize(fixture);
+    await _settleAfterResize(fixture);
+
+    final solicitanteHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="solicitante"]',
+    );
+    final assuntoHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="assunto"]',
+    );
+
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isFalse);
+    expect(solicitanteHeader, isNotNull);
+    expect(assuntoHeader, isNotNull);
+    expect(solicitanteHeader!.classes.contains('hide'), isFalse);
+    expect(assuntoHeader!.classes.contains('hide'), isFalse);
+  });
+
   test('mantem a coluna de acoes fixada a direita durante scroll horizontal',
       () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
@@ -1398,6 +1559,134 @@ void main() {
     expect(dataCell.style.right, '0px');
     expect(headerCell.getComputedStyle().position, 'sticky');
     expect(dataCell.getComputedStyle().position, 'sticky');
+  });
+
+  test('renderiza e executa DatatableActionColumn declarativa', () async {
+    var triggered = 0;
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Abrir',
+                iconClass: 'ph ph-eye',
+                onTap: (context) {
+                  triggered++;
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final actionButton = fixture.rootElement.querySelector(
+      '.datatable-action-cell button',
+    ) as ButtonElement?;
+    expect(actionButton, isNotNull);
+    expect(actionButton!.text, contains('Abrir'));
+
+    await fixture.update((_) {
+      actionButton.click();
+    });
+
+    expect(triggered, 1);
+  });
+
+  test('suporta ação com aparência link-icon sem fundo', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Favoritar',
+                iconClass: 'ph ph-heart',
+                appearance: DatatableActionAppearance.linkIcon,
+                iconOnly: true,
+                onTap: (_) {},
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final actionButton = fixture.rootElement.querySelector(
+      '.datatable-action-cell button',
+    ) as ButtonElement?;
+    expect(actionButton, isNotNull);
+    expect(
+      actionButton!.classes.contains('btn-link'),
+      isTrue,
+    );
+    expect(actionButton.classes.contains('btn-icon'), isTrue);
+    expect(
+      actionButton.classes.contains('datatable-action-button--icon-only'),
+      isTrue,
+    );
+    expect(actionButton.querySelector('i.ph-heart'), isNotNull);
+    expect(actionButton.text?.trim(), isEmpty);
+  });
+
+  test('permite atualizar DatatableActionColumn via controller', () async {
+    final controller = DatatableActionController(
+      actions: <DatatableAction>[
+        DatatableAction(
+          label: 'Visualizar',
+          onTap: (_) {},
+        ),
+      ],
+    );
+
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            controller: controller,
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    var actionButton = fixture.rootElement.querySelector(
+      '.datatable-action-cell button',
+    ) as ButtonElement?;
+    expect(actionButton, isNotNull);
+    expect(actionButton!.text, contains('Visualizar'));
+
+    await fixture.update((component) {
+      controller.setActions(<DatatableAction>[
+        DatatableAction(
+          label: 'Editar',
+          onTap: (_) {},
+        ),
+      ]);
+      component.table!.update();
+    });
+    await _settleTable(fixture);
+
+    actionButton = fixture.rootElement.querySelector(
+      '.datatable-action-cell button',
+    ) as ButtonElement?;
+    expect(actionButton, isNotNull);
+    expect(actionButton!.text, contains('Editar'));
   });
 }
 

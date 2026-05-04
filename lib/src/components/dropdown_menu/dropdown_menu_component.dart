@@ -146,7 +146,8 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   bool isOpen = false;
   String? resolvedMenuMaxHeight;
-  String? resolvedMenuOverflowY;
+  String? resolvedItemsMaxHeight;
+  String? resolvedItemsOverflowY;
 
   String get resolvedHostClasses {
     final normalizedPlacement = placement.trim().toLowerCase();
@@ -198,14 +199,22 @@ class LiDropdownMenuComponent implements OnDestroy {
   }
 
   String? _resolveMenuMaxHeight() {
-    final normalizedMaxHeight = _menuMaxHeight.trim();
-    if (usesMobilePresentation) {
-      final viewportHeight = _viewportHeight;
-      final inset = usesMobileSheet ? 24 : 32;
-      final maxHeight = max(120, viewportHeight - inset).floor();
-      return '${maxHeight}px';
+    if (!usesMobilePresentation) {
+      return null;
     }
 
+    final viewportHeight = _viewportHeight;
+    final inset = usesMobileSheet ? 24 : 32;
+    final maxHeight = max(120, viewportHeight - inset).floor();
+    return '${maxHeight}px';
+  }
+
+  String? _resolveItemsMaxHeight() {
+    if (usesMobilePresentation) {
+      return null;
+    }
+
+    final normalizedMaxHeight = _menuMaxHeight.trim();
     final resolvedMaxHeight = _viewportMaxHeight.isNotEmpty
         ? _viewportMaxHeight
         : normalizedMaxHeight;
@@ -216,7 +225,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     return resolvedMaxHeight;
   }
 
-  String? _resolveMenuOverflowY(String? maxHeight) {
+  String? _resolveItemsOverflowY(String? maxHeight) {
     if (usesMobilePresentation || maxHeight == null) {
       return null;
     }
@@ -227,10 +236,12 @@ class LiDropdownMenuComponent implements OnDestroy {
   }
 
   void _syncMenuStyleState() {
-    final nextMaxHeight = _resolveMenuMaxHeight();
-    final nextOverflowY = _resolveMenuOverflowY(nextMaxHeight);
-    resolvedMenuMaxHeight = nextMaxHeight;
-    resolvedMenuOverflowY = nextOverflowY;
+    final nextMenuMaxHeight = _resolveMenuMaxHeight();
+    final nextItemsMaxHeight = _resolveItemsMaxHeight();
+    final nextItemsOverflowY = _resolveItemsOverflowY(nextItemsMaxHeight);
+    resolvedMenuMaxHeight = nextMenuMaxHeight;
+    resolvedItemsMaxHeight = nextItemsMaxHeight;
+    resolvedItemsOverflowY = nextItemsOverflowY;
   }
 
   bool get usesMobileModal {
