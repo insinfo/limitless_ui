@@ -53,6 +53,22 @@ responda sempre em portugues
 - When you need to select from the host element downward, use `:host > .child` instead of `.foo > .child`. AngularDart compiles `:host` to `[_nghost-xxx]`, which correctly targets the host.
 - Real example: the wizard component had `@HostBinding('class.wizard')` on its host, but `.wizard > .steps > ul > li .number::after` in the SCSS never matched. Replacing `.wizard >` with `:host >` fixed the icon rendering.
 
+## Offcanvas DOM and internal scroll contract
+
+- `LiOffcanvasComponent` appends its host element to `document.body` in `ngOnInit()`. Treat the rendered panel as body-level DOM, not as a visual child of the component that declared `<li-offcanvas>`.
+- Because of that, parent component styles using emulated encapsulation are not a reliable way to style the internal `.offcanvas` panel. Prefer the component contract: `panelClass`, `bodyClass`, `headerClass`, `size`, `position`, `enableDefaultBodyClass`, and `enableBodyWrapper`.
+- The effective DOM shape is: `.li-offcanvas-shell` -> optional `.li-offcanvas-backdrop` -> `.offcanvas ...` -> optional header -> body wrapper -> projected content.
+- `enableDefaultBodyClass = true` adds Bootstrap-compatible `offcanvas-body` to the wrapper. `enableDefaultBodyClass = false` removes that class but keeps the wrapper. `enableBodyWrapper = false` turns the wrapper into `display: contents` through `.li-offcanvas-contents`.
+- The library relies on Limitless/Bootstrap base CSS where `.offcanvas` is a fixed flex column panel and `.offcanvas-body` is `flex-grow: 1` with `overflow-y: auto`.
+- When consumers want the projected child component to own the scroll area, the safest pattern is usually:
+  - keep `enableBodyWrapper = true`;
+  - set `enableDefaultBodyClass = false`;
+  - pass a `bodyClass` such as `d-flex flex-column h-100 overflow-hidden`;
+  - ensure the projected component host itself has explicit height or a valid flex contract.
+- Never assume `overflow-y: auto` on the innermost child is enough. If the projected host has no usable height, the scroll node will expand to content height and no scrolling will happen.
+- For library docs, examples, and fixes, describe offcanvas bugs by checking the real DOM height chain: panel -> body wrapper -> projected host -> projected shell -> scroll node.
+- If a demo needs to show a complex scrollable offcanvas, prefer a projected component or projected markup that explicitly defines `height: 100%`, `min-height: 0`, a flex-column shell, and a dedicated `flex: 1 1 auto` scroll node.
+
 ## Popover-specific lesson learned
 
 - The popover example page froze the browser because `palettePopovers` was implemented as a getter that recreated 11 objects on every change-detection cycle while being consumed by `*ngFor`.

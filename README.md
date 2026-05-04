@@ -113,6 +113,132 @@ The demo fixes that with a global override in [example/web/style.scss](example/w
 
 `\e9fe` is the `ph-caret-down` glyph from the Phosphor font bundle used by the demo.
 
+## Offcanvas DOM, Limitless CSS, and projected scroll areas
+
+`li-offcanvas` is not just a visual wrapper around projected content. It composes three layers:
+
+- the Limitless/Bootstrap base offcanvas rules coming from `all.css`;
+- the AngularDart wrapper and lifecycle owned by `LiOffcanvasComponent`;
+- the projected content supplied by the consumer application.
+
+Understanding that composition is essential for debugging sizing and scrolling bugs.
+
+### DOM contract
+
+At runtime, `LiOffcanvasComponent` appends its host element to `document.body` in `ngOnInit()`. The effective DOM is therefore body-level, even if the template declared the component deep inside another page.
+
+The relevant structure is:
+
+```html
+<li-offcanvas>
+  <div class="li-offcanvas-shell">
+    <div class="li-offcanvas-backdrop"></div>
+    <div class="offcanvas offcanvas-start li-offcanvas-size-sm show">
+      <div class="offcanvas-header">...</div>
+      <div class="offcanvas-body or custom bodyClass wrapper">
+        <projected-content-host></projected-content-host>
+      </div>
+    </div>
+  </div>
+</li-offcanvas>
+```
+
+The key implication is that parent component SCSS with emulated encapsulation should not be treated as the primary tool for styling the internal panel. Consumers should prefer the offcanvas API itself.
+
+### How `all.css` participates
+
+The host application usually loads the Limitless/Bootstrap bundle where:
+
+- `.offcanvas` is a fixed flex-column panel;
+- `.offcanvas.offcanvas-start` and friends position the panel and read width/height from CSS variables;
+- `.offcanvas-body` is `flex-grow: 1` and `overflow-y: auto`.
+
+`limitless_ui` builds on top of that contract by adding:
+
+- `.li-offcanvas-shell`;
+- `.li-offcanvas-backdrop`;
+- `li-offcanvas-size-sm|lg|xl|full` width/height helpers;
+- `.li-offcanvas-contents` when `enableBodyWrapper = false`.
+
+In other words, the library does not replace the Limitless offcanvas model. It extends it.
+
+### Wrapper behavior
+
+Three inputs define how projected content is inserted:
+
+- `enableDefaultBodyClass`: when `true`, the internal wrapper gets `offcanvas-body`.
+- `enableBodyWrapper`: when `false`, the internal wrapper stays in the DOM but becomes `display: contents` through `.li-offcanvas-contents`.
+- `bodyClass`: extra classes applied to the internal wrapper.
+
+This distinction matters when the consumer wants the projected content to own scrolling.
+
+### Internal scroll is a height-chain problem
+
+The most common offcanvas mistake is assuming that adding `overflow-y: auto` to the innermost node is enough. It is not.
+
+If the projected content host does not have a valid height chain, the scroll node expands to the full content height and never becomes scrollable.
+
+When a consumer wants a dedicated internal scroll region inside projected content, the recommended pattern is:
+
+1. Keep the offcanvas body wrapper as a flex shell.
+2. Give the projected host an explicit height or flex contract.
+3. Inside the projected component, use a flex-column shell plus a dedicated `flex: 1 1 auto` scroll node.
+
+Example:
+
+```html
+<li-offcanvas
+  position="start"
+  size="sm"
+  [enableHeader]="false"
+  [enableDefaultBodyClass]="false"
+  bodyClass="p-0 d-flex flex-column h-100 overflow-hidden">
+  <my-scrollable-panel class="h-100"></my-scrollable-panel>
+</li-offcanvas>
+```
+
+```scss
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel-shell {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.panel-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+```
+
+### Practical debugging checklist
+
+When an offcanvas does not scroll correctly, inspect these nodes in DevTools in this exact order:
+
+1. `.offcanvas`
+2. internal body wrapper
+3. projected content host
+4. projected shell
+5. intended scroll node
+
+If the intended scroll node has the same height as the full content, the bug is not the overflow declaration itself. The bug is missing vertical constraint higher in the chain.
+
+### Guidance for future examples and fixes
+
+- Use offcanvas API inputs first; do not reach for parent-emulated styles to control the panel.
+- Keep examples explicit about where scrolling lives.
+- If the goal is an app-like side panel with sticky filters and an internal timeline, document the height chain in the example instead of only showing the final CSS.
+- Prefer `enableDefaultBodyClass = false` plus a custom body flex shell when the projected child should own the scroll area.
+
 ## AngularDart stylesheets
 
 - In this repository, component styles are authored in `.scss` and compiled by `sass_builder`.

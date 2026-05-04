@@ -17,6 +17,19 @@
           <div class="card-body">
             <p class="text-muted mb-3">{{ overviewIntro }}</p>
 
+            <div class="alert alert-warning alert-icon-start mb-4">
+              <span class="alert-icon bg-warning text-white">
+                <i class="ph-arrows-vertical"></i>
+              </span>
+              <div>
+                <div class="fw-semibold mb-1">{{ scrollContractTitle }}</div>
+                <p class="mb-2">{{ scrollContractBody }}</p>
+                <ul class="mb-0 ps-3">
+                  <li *ngFor="let item of scrollContractChecks">{{ item }}</li>
+                </ul>
+              </div>
+            </div>
+
             <div class="row g-3">
               <div class="col-md-6 col-xl-4">
                 <div class="border rounded p-3 h-100">
@@ -132,6 +145,14 @@
 
               <div class="col-12">
                 <li-highlight [code]="projectedSnippet" language="html"></li-highlight>
+              </div>
+
+              <div class="col-12">
+                <li-highlight [code]="scrollMarkupSnippet" language="html"></li-highlight>
+              </div>
+
+              <div class="col-12">
+                <li-highlight [code]="scrollStylesSnippet" language="scss"></li-highlight>
               </div>
             </div>
           </div>
@@ -354,7 +375,7 @@
       <h6 class="mb-0">Custom Flex Section</h6>
     </div>
     <div class="flex-grow-1 p-3 overflow-auto">
-      <p class="text-muted">This area behaves cleanly inside a flexible column using utilities, without being forced by <code>.offcanvas-body</code> constraints, since it disabled <code>enableDefaultBodyClass</code> and <code>enableBodyWrapper</code> parameters.</p>
+      <p class="text-muted">This area behaves cleanly inside a flexible column using utilities, without being forced by <code>.offcanvas-body</code> constraints, because it disables <code>enableDefaultBodyClass</code> and turns the body into a custom flex shell through <code>bodyClass</code>.</p>
       <div style="height: 400px; border: 2px dashed #bbb; display: flex; align-items: center; justify-content: center; background: #fff;">
         <span class="text-muted">Flexible Custom Scrollable Container</span>
       </div>
