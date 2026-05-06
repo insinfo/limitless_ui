@@ -1079,7 +1079,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       isVirtualScrollActive ? _virtualStartIndex : 0;
 
   int _selectionKeyForItem(dynamic instance, {required int index}) {
-    return Object.hash(instance == null ? null : instance.hashCode, index);
+    return Object.hash(instance?.hashCode, index);
   }
 
   int _selectionKeyForRow(DatatableRow row) {
