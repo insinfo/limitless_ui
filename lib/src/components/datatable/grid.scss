@@ -3,11 +3,19 @@
     background: var(--body-bg);
 }
 
+.datatable-grid-scroll {
+    width: 100%;
+}
+
 .grid-layout {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.25rem;
     align-items: start;
+}
+
+.grid-layout--virtual {
+    align-content: start;
 }
 
 .grid-item {
@@ -17,40 +25,78 @@
     margin: 0;
 }
 
-.grid-item.card {
-    overflow: hidden;
+.grid-virtual-spacer {
+    grid-column: 1 / -1;
+    pointer-events: none;
 }
 
-.grid-item .card-body {
-    display: flex;
-    flex-direction: column;
-    gap: .625rem;
+.grid-item.datatable-grid-item-default {
+    align-self: stretch;
+}
 
-    > div {
-        width: 100%;
-        margin: 0;
-        min-width: 0;
-        padding: 0;
+.datatable-grid-default-card {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border-color-translucent, rgba(0, 0, 0, .12));
+    border-radius: var(--border-radius, .375rem);
+    background: var(--card-bg, #fff);
+    box-shadow: var(--box-shadow-sm, 0 1px 2px rgba(0, 0, 0, .1));
+    contain: layout paint;
+}
+
+.datatable-grid-default-card__field {
+    min-width: 0;
+
+    & + & {
+        margin-top: .75rem;
     }
+}
 
-    h6 {
+.datatable-grid-default-card__label {
+    display: block;
+    margin-bottom: .125rem;
+    color: rgba(var(--body-color-rgb, 31, 41, 55), .7);
+    font-size: .75rem;
+    line-height: 1.25;
+}
+
+.datatable-grid-default-card__value {
+    min-width: 0;
+    word-break: break-word;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
         margin: 0;
     }
 }
 
-.grid-item .card-footer {
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
+.datatable-grid-default-card__footer {
+    margin-top: .875rem;
+    padding-top: .875rem;
+    border-top: 1px solid var(--border-color-translucent, rgba(0, 0, 0, .12));
 }
 
-.datatable-custom-card {
+.datatable-grid-default-card.cursor-pointer:hover {
+    border-color: rgba(var(--component-active-bg-rgb, 12, 131, 255), .35);
+}
+
+.datatable-custom-card,
+.datatable-template-card {
     display: block;
     width: 100%;
     max-width: 100%;
 }
 
-.datatable-custom-card > * {
+.datatable-custom-card > *,
+.datatable-template-card > * {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -65,7 +111,7 @@
 }
 
 .content-divider>span {
-    background-color: #f1f4f9 !important;
+    background-color: var(--body-bg) !important;
 }
 
 @media (max-width: 767.98px) {

@@ -206,6 +206,8 @@ class AppComponent implements OnDestroy {
   String get inputsLabel => i18n.isPortuguese ? 'Inputs' : 'Inputs';
   String get pickersLabel => i18n.isPortuguese ? 'Pickers' : 'Pickers';
   String get dataLabel => i18n.isPortuguese ? 'Dados' : 'Data';
+  String get datatableProcessLookupLabel =>
+      i18n.isPortuguese ? 'Datatable Processos' : 'Process datatable';
   String get utilitiesLabel => i18n.isPortuguese ? 'Utilitários' : 'Utilities';
   String get workQueueLabel =>
       i18n.isPortuguese ? 'Inbox responsiva' : 'Responsive inbox';
@@ -422,6 +424,11 @@ class AppComponent implements OnDestroy {
               url: DemoRoutePaths.datatable.toUrl(),
             ),
             DemoNavItem(
+              label: datatableProcessLookupLabel,
+              iconClass: 'ph-file-search',
+              url: DemoRoutePaths.datatableProcessLookup.toUrl(),
+            ),
+            DemoNavItem(
               label: t.nav.datatableSelect,
               iconClass: 'ph-table',
               url: DemoRoutePaths.datatableSelect.toUrl(),
@@ -495,6 +502,12 @@ class AppComponent implements OnDestroy {
     '/time-picker': <String>['hora', 'relogio', 'time'],
     '/date-range': <String>['periodo', 'intervalo', 'range'],
     '/datatable': <String>['tabela', 'grid', 'table'],
+    '/datatable-process-lookup': <String>[
+      'consulta de processos',
+      'layout de consulta de processos',
+      'process lookup',
+      'datatable processos',
+    ],
     '/datatable-select': <String>['tabela seletiva', 'grid select'],
     '/work-queue': <String>[
       'fila',

@@ -1,3 +1,4 @@
+//datatable_col.dart
 import 'dart:async';
 import 'dart:html';
 
@@ -9,6 +10,77 @@ typedef DatatableCellStyleResolver = String? Function(
   Map<String, dynamic> itemMap,
   dynamic itemInstance,
 );
+
+typedef DatatableTitleRenderString = String Function(DatatableCol column);
+typedef DatatableTitleRenderHtml = Element Function(DatatableCol column);
+
+enum DatatableTitleTooltipDisplayMode { icon, title }
+
+class DatatableTitleTooltipConfig {
+  const DatatableTitleTooltipConfig({
+    required this.text,
+    this.placement = 'top',
+    this.trigger = 'hover focus',
+    this.displayMode = DatatableTitleTooltipDisplayMode.icon,
+    this.useNativeTitle = false,
+    this.allowHtml = false,
+    this.tooltipClass,
+    this.iconClass = 'ph ph-info',
+    this.buttonClass =
+        'btn btn-link btn-icon p-0 border-0 bg-transparent datatable-title-help-button',
+    this.ariaLabel,
+    this.container = 'body',
+    this.openDelay = 0,
+    this.closeDelay = 0,
+  });
+
+  final Object text;
+  final String placement;
+  final String trigger;
+  final DatatableTitleTooltipDisplayMode displayMode;
+  final bool useNativeTitle;
+  final bool allowHtml;
+  final String? tooltipClass;
+  final String iconClass;
+  final String buttonClass;
+  final String? ariaLabel;
+  final String? container;
+  final int openDelay;
+  final int closeDelay;
+}
+
+class DatatableTitlePopoverConfig {
+  const DatatableTitlePopoverConfig({
+    required this.body,
+    this.title,
+    this.placement = 'top',
+    this.trigger = 'click',
+    this.allowHtml = false,
+    this.popoverClass,
+    this.iconClass = 'ph ph-question',
+    this.buttonClass =
+        'btn btn-link btn-icon p-0 border-0 bg-transparent datatable-title-help-button',
+    this.ariaLabel,
+    this.container = 'body',
+    this.autoClose = 'outside',
+    this.openDelay = 0,
+    this.closeDelay = 0,
+  });
+
+  final Object body;
+  final Object? title;
+  final String placement;
+  final String trigger;
+  final bool allowHtml;
+  final String? popoverClass;
+  final String iconClass;
+  final String buttonClass;
+  final String? ariaLabel;
+  final String? container;
+  final Object autoClose;
+  final int openDelay;
+  final int closeDelay;
+}
 
 enum DatatableColType { normal, groupTitle }
 
@@ -32,13 +104,21 @@ typedef DatatableActionPredicate = bool Function(
 
 enum DatatableActionAppearance { button, linkIcon }
 
+enum DatatableActionResponsiveMode {
+  normal,
+  desktopTextMobileIcon,
+  desktopTextAndIconMobileIcon,
+}
+
 class DatatableAction {
   final String label;
   final String? iconClass;
   final String? title;
   final String buttonClass;
+  final String size;
   final DatatableActionAppearance appearance;
   final bool iconOnly;
+  final DatatableActionResponsiveMode responsiveMode;
   final DatatableActionPredicate? visibleWhen;
   final DatatableActionPredicate? enabledWhen;
   final DatatableActionHandler onTap;
@@ -49,8 +129,10 @@ class DatatableAction {
     this.iconClass,
     this.title,
     this.buttonClass = '',
+    this.size = '',
     this.appearance = DatatableActionAppearance.button,
     this.iconOnly = false,
+    this.responsiveMode = DatatableActionResponsiveMode.normal,
     this.visibleWhen,
     this.enabledWhen,
   });
@@ -89,6 +171,8 @@ class DatatableActionColumn extends DatatableCol {
   DatatableActionColumn({
     required super.key,
     super.title = 'Ações',
+    super.titleTextAlign = 'center',
+    super.exportable = false,
     List<DatatableAction> actions = const <DatatableAction>[],
     this.controller,
     this.wrapActions = false,
@@ -107,6 +191,10 @@ class DatatableActionColumn extends DatatableCol {
     super.responsiveAutoHidePriority,
     super.fixedPosition,
     super.showAsFooterOnCard = false,
+    super.customRenderTitleString,
+    super.customRenderTitleHtml,
+    super.titleTooltip,
+    super.titlePopover,
   })  : _actions = List<DatatableAction>.from(actions),
         super(
           enableSorting: false,
@@ -144,63 +232,160 @@ class DatatableActionColumn extends DatatableCol {
     final container = DivElement()..className = classes;
 
     for (final action in actions) {
-      final normalizedButtonClass = action.buttonClass.trim();
-      final defaultButtonClass =
-          action.appearance == DatatableActionAppearance.linkIcon
-              ? (action.iconOnly ? 'btn btn-link btn-icon' : 'btn btn-link')
-              : (action.iconOnly
-                  ? 'btn btn-flat-primary border-transparent btn-icon'
-                  : 'btn btn-flat-primary border-transparent');
-      final classNames = <String>[
-        normalizedButtonClass.isEmpty
-            ? defaultButtonClass
-            : normalizedButtonClass,
-        if (action.iconOnly) 'datatable-action-button--icon-only',
-      ];
-
-      final button = ButtonElement()
-        ..type = 'button'
-        ..className =
-            classNames.where((value) => value.trim().isNotEmpty).join(' ')
-        ..title = (action.title ?? action.label)
-        ..setAttribute('aria-label', action.title ?? action.label);
-
-      var isEnabled = true;
-      final enabledWhen = action.enabledWhen;
-      if (enabledWhen != null) {
-        try {
-          isEnabled = enabledWhen(context);
-        } catch (_) {
-          isEnabled = false;
-        }
-      }
-      if (!isEnabled) {
-        button.disabled = true;
-      }
-
       final iconClass = action.iconClass?.trim();
-      if (iconClass != null && iconClass.isNotEmpty) {
-        final resolvedIconClass =
-            !action.iconOnly ? '$iconClass me-1' : iconClass;
-        final icon = Element.tag('i')..className = resolvedIconClass;
-        button.append(icon);
+      final useDesktopTextMobileIcon =
+          !action.iconOnly &&
+          action.responsiveMode ==
+              DatatableActionResponsiveMode.desktopTextMobileIcon &&
+          iconClass != null &&
+          iconClass.isNotEmpty;
+      final useDesktopTextAndIconMobileIcon =
+          !action.iconOnly &&
+          action.responsiveMode ==
+              DatatableActionResponsiveMode.desktopTextAndIconMobileIcon &&
+          iconClass != null &&
+          iconClass.isNotEmpty;
+      final baseButtonClass = _resolveActionBaseButtonClass(action);
+
+      if (useDesktopTextMobileIcon || useDesktopTextAndIconMobileIcon) {
+        container.append(
+          _buildActionButton(
+            action: action,
+            context: context,
+            baseButtonClass: baseButtonClass,
+            renderIcon: useDesktopTextAndIconMobileIcon,
+            renderLabel: true,
+            extraButtonClasses: const <String>['d-none', 'd-md-inline-flex'],
+          ),
+        );
+
+        container.append(
+          _buildActionButton(
+            action: action,
+            context: context,
+            baseButtonClass: baseButtonClass,
+            renderIcon: true,
+            renderLabel: false,
+            extraButtonClasses: const <String>[
+              'btn-icon',
+              'd-inline-flex',
+              'd-md-none',
+            ],
+          ),
+        );
+        continue;
       }
 
-      final renderLabel = !action.iconOnly || button.nodes.isEmpty;
-      if (renderLabel) {
-        button.appendText(action.label);
-      }
-
-      button.onClick.listen((event) {
-        event.preventDefault();
-        event.stopPropagation();
-        Future.sync(() => action.onTap(context));
-      });
-
-      container.append(button);
+      container.append(
+        _buildActionButton(
+          action: action,
+          context: context,
+          baseButtonClass: baseButtonClass,
+          renderIcon: iconClass != null && iconClass.isNotEmpty,
+          renderLabel: !action.iconOnly || iconClass == null || iconClass.isEmpty,
+          forceIconOnlyClass: action.iconOnly,
+        ),
+      );
     }
 
     return container;
+  }
+
+  String _resolveActionBaseButtonClass(DatatableAction action) {
+    final normalizedButtonClass = action.buttonClass.trim();
+    if (normalizedButtonClass.isNotEmpty) {
+      return normalizedButtonClass;
+    }
+
+    return action.appearance == DatatableActionAppearance.linkIcon
+        ? (action.iconOnly ? 'btn btn-link btn-icon' : 'btn btn-link')
+        : (action.iconOnly
+            ? 'btn btn-flat-primary border-transparent btn-icon'
+            : 'btn btn-flat-primary border-transparent');
+  }
+
+  String _resolveActionSizeClass(DatatableAction action) {
+    switch (action.size.trim().toLowerCase()) {
+      case 'sm':
+        return 'btn-sm';
+      case 'lg':
+        return 'btn-lg';
+      default:
+        return '';
+    }
+  }
+
+  ButtonElement _buildActionButton({
+    required DatatableAction action,
+    required DatatableActionContext context,
+    required String baseButtonClass,
+    required bool renderIcon,
+    required bool renderLabel,
+    bool forceIconOnlyClass = false,
+    List<String> extraButtonClasses = const <String>[],
+    List<String> extraIconClasses = const <String>[],
+  }) {
+    final sizeClass = _resolveActionSizeClass(action);
+    final classNames = <String>[
+      baseButtonClass,
+      sizeClass,
+      if (forceIconOnlyClass) 'datatable-action-button--icon-only',
+      ...extraButtonClasses,
+    ];
+
+    final button = ButtonElement()
+      ..type = 'button'
+      ..className = classNames
+          .where((value) => value.trim().isNotEmpty)
+          .join(' ')
+      ..title = (action.title ?? action.label)
+      ..setAttribute('aria-label', action.title ?? action.label);
+
+    if (!_isActionEnabled(action, context)) {
+      button.disabled = true;
+    }
+
+    final iconClass = action.iconClass?.trim();
+    if (renderIcon && iconClass != null && iconClass.isNotEmpty) {
+      final iconClasses = <String>[
+        iconClass,
+        if (renderLabel) 'me-2',
+        ...extraIconClasses,
+      ];
+      final icon = Element.tag('i')
+        ..className = iconClasses
+            .where((value) => value.trim().isNotEmpty)
+            .join(' ');
+      button.append(icon);
+    }
+
+    if (renderLabel) {
+      button.appendText(action.label);
+    }
+
+    button.onClick.listen((event) {
+      event.preventDefault();
+      event.stopPropagation();
+      Future.sync(() => action.onTap(context));
+    });
+
+    return button;
+  }
+
+  bool _isActionEnabled(
+    DatatableAction action,
+    DatatableActionContext context,
+  ) {
+    final enabledWhen = action.enabledWhen;
+    if (enabledWhen == null) {
+      return true;
+    }
+
+    try {
+      return enabledWhen(context);
+    } catch (_) {
+      return false;
+    }
   }
 }
 
@@ -217,6 +402,8 @@ class DatatableCol {
   Element? htmlElement;
   dynamic instance;
   String title;
+  String renderedTitle = '';
+  Element? titleHtmlElement;
   DatatableFormat? format;
   String? styleCss;
   String? headerStyleCss;
@@ -226,8 +413,14 @@ class DatatableCol {
   String? minWidth;
   String? maxWidth;
   String? textAlign;
+  String? titleTextAlign;
+  bool exportable;
   bool nowrap = false;
   DatatableCellStyleResolver? cellStyleResolver;
+  DatatableTitleRenderString? customRenderTitleString;
+  DatatableTitleRenderHtml? customRenderTitleHtml;
+  DatatableTitleTooltipConfig? titleTooltip;
+  DatatableTitlePopoverConfig? titlePopover;
 
   /// Whether the column is visible in table mode.
   bool visibility = true;
@@ -292,10 +485,16 @@ class DatatableCol {
     this.minWidth,
     this.maxWidth,
     this.textAlign,
+    this.titleTextAlign,
+    this.exportable = true,
     this.nowrap = false,
     this.cellStyleResolver,
     this.visibility = true,
     this.enableSorting = false,
+    this.customRenderTitleString,
+    this.customRenderTitleHtml,
+    this.titleTooltip,
+    this.titlePopover,
     this.customRenderString,
     this.customRenderHtml,
     this.multiValSeparator = ' - ',
@@ -313,5 +512,7 @@ class DatatableCol {
     this.fixedPosition,
     this.showAsFooterOnCard = false,
     this.type = DatatableColType.normal,
-  });
+  }) {
+    renderedTitle = title;
+  }
 }

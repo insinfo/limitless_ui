@@ -1319,6 +1319,8 @@ class ProjectsPage implements OnInit {
 </li-datatable>
 ```
 
+Performance note: `li-datatable` is safe for regular paginated lists, but dense tables rendered without `virtualScroll` can freeze the browser when the page size grows past roughly 100 rows. For larger pages, enable `virtualScroll` and keep the viewport height explicit, or keep pagination capped on the backend/frontend contract.
+
 ### Backend route test
 
 `backend/test/projects/projects_routes_test.dart`

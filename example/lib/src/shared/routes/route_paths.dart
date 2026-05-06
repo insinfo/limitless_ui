@@ -31,6 +31,8 @@ class DemoRoutePaths {
   static final nav = RoutePath(path: 'nav');
   static final dropdown = RoutePath(path: 'dropdown');
   static final datatable = RoutePath(path: 'datatable');
+  static final datatableProcessLookup =
+      RoutePath(path: 'datatable-process-lookup');
   static final datatableSelect = RoutePath(path: 'datatable-select');
   static final workQueue = RoutePath(path: 'work-queue');
   static final toast = RoutePath(path: 'toast');

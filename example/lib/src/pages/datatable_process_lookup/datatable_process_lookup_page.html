@@ -1,0 +1,189 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumbLabel"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-body pb-0">
+        <div class="d-flex flex-wrap gap-3 align-items-start justify-content-between mb-3">
+          <div class="pe-xl-5">
+            <h6 class="mb-2">Layout de consulta de processos</h6>
+            <p class="text-muted mb-0">{{ demoIntro }}</p>
+          </div>
+        </div>
+      </div>
+
+      <li-datatable #processLookupStandaloneTable
+        [dataTableFilter]="processLookupFilters"
+        [data]="processLookupTableData"
+        [settings]="processLookupTableSettings"
+        [searchInFields]="processLookupSearchFields"
+        [limitPerPageOptions]="processLookupLimitOptions"
+        [requestDataOnItemsPerPageChange]="true"
+        [deferInitialDrawUntilData]="true"
+        [virtualScroll]="true"
+        [stickyTableHeaderOnVirtualScroll]="true"
+        [virtualViewportHeight]="'72vh'"
+        [virtualGridItemHeight]="250"
+        [virtualGridMinItemWidth]="280"
+        [responsiveAutoHideColumns]="true"
+        [responsiveCollapse]="true"
+        [responsiveCollapseByContainer]="true"
+        [showCheckboxToSelectRow]="false"
+        [showExportMenu]="false"
+        [disableRowClick]="true"
+        (dataRequest)="onProcessLookupTableRequest($event)"
+        (searchRequest)="onProcessLookupTableRequest($event)">
+        <template li-datatable-header let-ctx>
+          <div class="card shadow-none mb-0">
+            <div class="card-body p-3">
+            <div class="row g-3 align-items-end">
+              <div class="col-12 col-xl-7">
+                <label class="form-label">Requerente:</label>
+                <input class="form-control" type="search" [ngModel]="processLookupRequesterFilter"
+                  (ngModelChange)="onProcessLookupRequesterFilterInput($event)"
+                  placeholder="Clique para buscar..." />
+              </div>
+
+              <div class="col-12 col-md-4 col-xl-3">
+                <label class="form-label">Digital:</label>
+                <select #processLookupDigitalSelect class="form-select"
+                  [ngModel]="processLookupDigitalFilter"
+                  (ngModelChange)="onProcessLookupDigitalFilterChange($event)">
+                  <option value=""></option>
+                  <option value="Sim">Sim</option>
+                  <option value="Não">Não</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-2 d-flex align-items-end">
+                <button class="btn btn-flat-primary border-transparent w-100" type="button"
+                  (click)="clearProcessLookupHeaderFilters()">
+                  <i class="ph ph-eraser me-1"></i>
+                  Limpar
+                </button>
+              </div>
+            </div>
+
+            <div class="row g-3 align-items-center pt-3 mt-3 border-top">
+              <div class="col-12 col-xl">
+                <div class="row g-2 align-items-center">
+                  <div class="col-12 col-lg">
+                    <input [(ngModel)]="ctx.dataTableFilter.searchString" class="form-control data-table-search-field"
+                      type="search" placeholder="Digite para buscar" (keypress)="ctx.search()" />
+                  </div>
+
+                  <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                    <select #processLookupSearchFieldSelect class="form-select"
+                      (change)="onProcessLookupHeaderSearchFieldChange(ctx, processLookupSearchFieldSelect.value)">
+                      <option *ngFor="let field of ctx.searchInFields; let i = index" value="{{i}}"
+                        [selected]="i == ctx.selectedSearchFieldIndex">
+                        {{field.label}}
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="col-auto">
+                    <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                      (click)="ctx.search()" aria-label="Pesquisa rápida por campo">
+                      <i class="ph-magnifying-glass"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-xl-auto">
+                <div class="d-flex flex-wrap align-items-center gap-2 justify-content-xl-end">
+                  <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                    (click)="ctx.exportPdf()" aria-label="Exportar PDF">
+                    <i class="ph ph-file-pdf"></i>
+                  </button>
+                  <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                    (click)="ctx.toggleViewMode()" aria-label="Alternar modo de visualização">
+                    <i [class.ph-squares-four]="!ctx.gridMode" [class.ph-list-bullets]="ctx.gridMode"></i>
+                  </button>
+                  <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                    (click)="ctx.toggleAllColumnsVisibility()" aria-label="Alternar colunas">
+                    <i class="ph-eye"></i>
+                  </button>
+                  <select #processLookupPageSizeSelect class="form-select w-auto"
+                    (change)="onProcessLookupHeaderLimitChange(ctx, processLookupPageSizeSelect.value)">
+                    <option *ngFor="let option of ctx.limitPerPageOptions" value="{{option}}"
+                      [selected]="option == ctx.limitPerPage">
+                      {{option}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            </div>
+          </div>
+        </template>
+
+        <!-- <template li-datatable-card let-ctx>
+          <article class="card h-100 shadow-none mb-0">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                <div>
+                  <div class="text-uppercase fs-sm lh-sm text-muted fw-semibold">Código</div>
+                  <div class="fw-semibold fs-5">{{ ctx.itemMap['processCode'] }}</div>
+                </div>
+
+                <span class="badge rounded-pill"
+                  [class.bg-primary]="ctx.itemMap['isDigital'] == true"
+                  [class.text-white]="ctx.itemMap['isDigital'] == true"
+                  [class.bg-light]="ctx.itemMap['isDigital'] != true"
+                  [class.text-body]="ctx.itemMap['isDigital'] != true">
+                  {{ ctx.itemMap['digitalLabel'] }}
+                </span>
+              </div>
+
+              <div class="mb-3">
+                <div class="text-uppercase fs-sm lh-sm text-muted fw-semibold">Requerente</div>
+                <div class="fw-semibold">{{ ctx.itemMap['requester'] }}</div>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-sm-6">
+                  <div class="text-uppercase fs-sm lh-sm text-muted fw-semibold">Tipo Cgm</div>
+                  <div>{{ ctx.itemMap['personType'] }}</div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                  <div class="text-uppercase fs-sm lh-sm text-muted fw-semibold">Classificação</div>
+                  <div>{{ ctx.itemMap['classification'] }}</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="text-uppercase fs-sm lh-sm text-muted fw-semibold">Assunto</div>
+                <div>{{ ctx.itemMap['subject'] }}</div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12 col-sm-6">
+                  <div class="text-uppercase fs-sm lh-sm text-muted fw-semibold">Inclusão</div>
+                  <div>{{ ctx.itemMap['createdAt'] }}</div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                  <div class="text-uppercase fs-sm lh-sm text-muted fw-semibold">Situação</div>
+                  <div>{{ ctx.itemMap['status'] }}</div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </template> -->
+      </li-datatable>
+    </div>
+  </div>
+</div>

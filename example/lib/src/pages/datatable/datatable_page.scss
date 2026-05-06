@@ -4,12 +4,85 @@
   flex-direction: column;
   min-height: 100%;
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-color-translucent);
   border-radius: 1rem;
   background:
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.85), transparent 38%),
-    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    radial-gradient(circle at top right, rgba(var(--component-active-bg-rgb, 12, 131, 255), 0.16), transparent 38%),
+    linear-gradient(180deg, rgba(var(--body-color-rgb), 0.04) 0%, rgba(var(--body-color-rgb), 0.015) 100%),
+    var(--card-bg, var(--body-bg));
+  box-shadow: var(--box-shadow-lg);
+}
+
+.datatable-process-card {
+  display: flex;
+  min-height: 100%;
+  border: 1px solid var(--border-color-translucent);
+  border-radius: 1rem;
+  background:
+    linear-gradient(180deg, rgba(var(--body-color-rgb), 0.035) 0%, rgba(var(--body-color-rgb), 0.015) 100%),
+    var(--card-bg, var(--body-bg));
+  box-shadow: var(--box-shadow-lg);
+}
+
+.datatable-process-card__body {
+  display: grid;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 1rem;
+}
+
+.datatable-process-card__top,
+.datatable-process-card__footer,
+.datatable-process-card__meta {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.datatable-process-card__top {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.datatable-process-card__meta,
+.datatable-process-card__footer {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.datatable-process-card__field {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.datatable-process-card__field--compact {
+  gap: 0.15rem;
+}
+
+.datatable-process-card__label {
+  color: rgba(var(--body-color-rgb), 0.68);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.datatable-process-card__value {
+  color: var(--body-color);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.datatable-process-card__value--code {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.datatable-process-card__actions {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
 }
 
 :host ::ng-deep .datatable-api-card::before {
@@ -41,7 +114,7 @@
   font-size: 1.15rem;
   font-weight: 700;
   line-height: 1.25;
-  color: #0f172a;
+  color: var(--body-color);
 }
 
 :host ::ng-deep .datatable-api-card__body {
@@ -51,7 +124,7 @@
 }
 
 :host ::ng-deep .datatable-api-card__meta {
-  color: #475569;
+  color: rgba(var(--body-color-rgb), 0.78);
   font-size: 0.95rem;
 }
 
@@ -97,14 +170,14 @@
 }
 
 :host ::ng-deep .datatable-api-card__badge--muted {
-  color: #475569;
-  background: rgba(148, 163, 184, 0.18);
-  border-color: rgba(148, 163, 184, 0.24);
+  color: rgba(var(--body-color-rgb), 0.78);
+  background: rgba(var(--body-color-rgb), 0.1);
+  border-color: var(--border-color-translucent);
 }
 
 :host ::ng-deep .datatable-api-card__summary {
   margin: 0;
-  color: #334155;
+  color: rgba(var(--body-color-rgb), 0.82);
   line-height: 1.65;
 }
 
@@ -113,8 +186,8 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
   padding: 0.85rem 1rem 1rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.18);
-  background: rgba(255, 255, 255, 0.56);
+  border-top: 1px solid var(--border-color-translucent);
+  background: rgba(var(--body-color-rgb), 0.04);
 }
 
 :host ::ng-deep .datatable-api-card__metric {
@@ -127,13 +200,13 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #64748b;
+  color: rgba(var(--body-color-rgb), 0.68);
 }
 
 :host ::ng-deep .datatable-api-card__metric-value {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--body-color);
 }
 
 :host ::ng-deep .datatable-api-card--success {
@@ -210,9 +283,11 @@
   display: grid;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--border-color-translucent);
   border-radius: 1rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.92) 100%);
+  background:
+    linear-gradient(180deg, rgba(var(--body-color-rgb), 0.035) 0%, rgba(var(--body-color-rgb), 0.015) 100%),
+    var(--card-bg, var(--body-bg));
 }
 
 .datatable-process-lookup-grid {
@@ -237,7 +312,7 @@
 .datatable-process-lookup-field .form-label {
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #334155;
+  color: rgba(var(--body-color-rgb), 0.82);
 }
 
 .datatable-process-lookup-field__ghost-label {
@@ -285,8 +360,8 @@
 }
 
 .datatable-process-lookup-badge--muted {
-  color: #334155;
-  background: rgba(148, 163, 184, 0.16);
+  color: rgba(var(--body-color-rgb), 0.82);
+  background: rgba(var(--body-color-rgb), 0.1);
 }
 
 .datatable-sticky-demo__intro {
@@ -360,6 +435,15 @@
   .datatable-process-lookup-search-group__select {
     width: 100%;
     max-width: none;
+  }
+
+  .datatable-process-card__meta,
+  .datatable-process-card__footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .datatable-process-card__actions {
+    justify-content: flex-start;
   }
 
   .datatable-multisort-chip {

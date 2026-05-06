@@ -73,3 +73,11 @@ responda sempre em portugues
 
 - The popover example page froze the browser because `palettePopovers` was implemented as a getter that recreated 11 objects on every change-detection cycle while being consumed by `*ngFor`.
 - For demo pages with many rich components, always prefer stable references and incremental updates over recomputing the whole collection in a getter.
+
+## Limitless theme token rules for datatable and shared surfaces
+
+- Neste repositório, não use variáveis Bootstrap `--bs-*` em SCSS de componentes customizados do pacote quando estiver estilizando superfícies, bordas, hover ou texto secundário. O tema real do example expõe tokens como `--body-bg`, `--card-bg`, `--body-color`, `--body-color-rgb` e `--border-color-translucent`.
+- Antes de concluir qualquer ajuste visual em `li-datatable`, `grid.scss` ou superfícies similares, confirme que light e dark mode continuam corretos. Fallbacks para `#fff`, `#f8f9fa` ou `--bs-body-bg` em headers sticky, colunas fixas e painéis costumam quebrar imediatamente o dark theme.
+- Para headers sticky e colunas fixas do datatable, prefira fundos derivados de `--card-bg`/`--body-bg`, separadores com `--border-color-translucent` e texto secundário com `rgba(var(--body-color-rgb), alpha)`.
+- Quando precisar de hover em superfícies customizadas do datatable e não houver token direto, derive com `color-mix` a partir de `--card-bg`/`--body-bg` e `--body-color` em vez de usar cores claras hardcoded.
+- Lição aprendida: o sticky header do datatable que usava `--bs-tertiary-bg`, `--bs-body-bg` e `--bs-table-hover-bg` ficou branco no dark theme. Trate esse caso como regressão conhecida a evitar.

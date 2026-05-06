@@ -16,6 +16,8 @@ import 'datatable_demo_service.dart';
     DemoPageBreadcrumbComponent,
     LiAccordionComponent,
     LiAccordionBodyDirective,
+    LiDatatableCardDirective,
+    LiDatatableHeaderCellDirective,
     LiAccordionItemComponent,
     LiDatatableCellDirective,
     LiDatatableHeaderDirective,
@@ -59,6 +61,8 @@ class DatatablePageComponent implements OnInit {
         items: <Map<String, dynamic>>[], totalRecords: 0);
     stickyColumnsTableData = DataFrame<Map<String, dynamic>>(
         items: <Map<String, dynamic>>[], totalRecords: 0);
+    headerTitleTableData = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[], totalRecords: 0);
 
     _tableSettingsPt = _buildTableSettings(Messages());
     _tableSettingsEn = _buildTableSettings(en.MessagesEn());
@@ -73,6 +77,8 @@ class DatatablePageComponent implements OnInit {
     _multiSortTableSettings = _buildMultiSortTableSettings();
     _stickyColumnsTableSettingsPt = _buildStickyColumnsTableSettings(true);
     _stickyColumnsTableSettingsEn = _buildStickyColumnsTableSettings(false);
+    _headerTitleTableSettingsPt = _buildHeaderTitleTableSettings(true);
+    _headerTitleTableSettingsEn = _buildHeaderTitleTableSettings(false);
     _searchFieldsPt = _buildSearchFields(Messages());
     _searchFieldsEn = _buildSearchFields(en.MessagesEn());
     _processLookupSearchFields = _buildProcessLookupSearchFields();
@@ -104,6 +110,8 @@ class DatatablePageComponent implements OnInit {
   late final DatatableSettings _multiSortTableSettings;
   late final DatatableSettings _stickyColumnsTableSettingsPt;
   late final DatatableSettings _stickyColumnsTableSettingsEn;
+  late final DatatableSettings _headerTitleTableSettingsPt;
+  late final DatatableSettings _headerTitleTableSettingsEn;
   late final List<DatatableSearchField> _searchFieldsPt;
   late final List<DatatableSearchField> _searchFieldsEn;
   late final List<DatatableSearchField> _processLookupSearchFields;
@@ -134,6 +142,10 @@ class DatatablePageComponent implements OnInit {
   DatatableSettings get stickyColumnsTableSettings => i18n.isPortuguese
       ? _stickyColumnsTableSettingsPt
       : _stickyColumnsTableSettingsEn;
+
+  DatatableSettings get headerTitleTableSettings => i18n.isPortuguese
+      ? _headerTitleTableSettingsPt
+      : _headerTitleTableSettingsEn;
 
   List<DatatableSearchField> get searchFields =>
       i18n.isPortuguese ? _searchFieldsPt : _searchFieldsEn;
@@ -407,27 +419,27 @@ class DatatablePageComponent implements OnInit {
           actions: <DatatableAction>[
             DatatableAction(
               label: 'Abrir',
-              title: 'Abrir processo',
               iconClass: 'ph ph-eye',
               appearance: DatatableActionAppearance.linkIcon,
-              iconOnly: true,
+              responsiveMode:
+                  DatatableActionResponsiveMode.desktopTextAndIconMobileIcon,
               onTap: (ctx) => openProcessLookupItem(ctx.itemMap),
             ),
             DatatableAction(
               label: 'Favoritar',
-              title: 'Favoritar processo',
               iconClass: 'ph ph-star',
               appearance: DatatableActionAppearance.linkIcon,
               iconOnly: true,
+              size: 'sm',
               visibleWhen: (ctx) => !isProcessLookupFavorited(ctx.itemMap),
               onTap: (ctx) => toggleProcessLookupFavorite(ctx.itemMap),
             ),
             DatatableAction(
               label: 'Desfavoritar',
-              title: 'Desfavoritar processo',
               iconClass: 'ph ph-heart text-danger',
               appearance: DatatableActionAppearance.linkIcon,
               iconOnly: true,
+              size: 'sm',
               visibleWhen: (ctx) => isProcessLookupFavorited(ctx.itemMap),
               onTap: (ctx) => toggleProcessLookupFavorite(ctx.itemMap),
             ),
@@ -550,11 +562,93 @@ class DatatablePageComponent implements OnInit {
           width: '132px',
           minWidth: '132px',
           textAlign: 'center',
+          titleTextAlign: 'center',
           nowrap: true,
           fixedPosition: DatatableFixedColumnPosition.right,
           customRenderHtml: _buildStickyColumnsActionsCell,
         ),
       ],
+    );
+  }
+
+  DatatableSettings _buildHeaderTitleTableSettings(bool isPortuguese) {
+    return DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(
+          key: 'feature',
+          title: isPortuguese ? 'Recurso' : 'Feature',
+          enableSorting: true,
+          sortingBy: 'feature',
+          titleTooltip: DatatableTitleTooltipConfig(
+            text: isPortuguese
+                ? 'Esta coluna também foi definida como gatilho do collapse responsivo.'
+                : 'This column is also configured as the responsive collapse trigger.',
+            displayMode: DatatableTitleTooltipDisplayMode.title,
+            useNativeTitle: true,
+          ),
+          customRenderTitleString: (column) =>
+              isPortuguese ? 'Recurso / Entrega' : 'Feature / Delivery',
+        ),
+        DatatableCol(
+          key: 'owner',
+          title: isPortuguese ? 'Responsável' : 'Owner',
+          enableSorting: true,
+          sortingBy: 'owner',
+          minWidth: '180px',
+          responsiveAutoHidePriority: 10,
+        ),
+        DatatableCol(
+          key: 'status',
+          title: isPortuguese ? 'Situação' : 'Status',
+          enableSorting: true,
+          sortingBy: 'status',
+          width: '150px',
+          textAlign: 'center',
+          titleTextAlign: 'center',
+          hideOnMobile: true,
+          responsiveAutoHidePriority: 20,
+          customRenderTitleHtml: (column) =>
+              _buildHeaderTitleStatusElement(isPortuguese),
+        ),
+        DatatableActionColumn(
+          key: 'actions',
+          title: isPortuguese ? 'Ações' : 'Actions',
+          width: '132px',
+          minWidth: '132px',
+          titleTextAlign: 'center',
+          titlePopover: DatatableTitlePopoverConfig(
+            title: isPortuguese ? 'Ações rápidas' : 'Quick actions',
+            body: isPortuguese
+                ? 'Este cabeçalho centralizado agrupa as ações rápidas de cada linha.'
+                : 'This centered header groups the quick actions available on each row.',
+          ),
+          responsiveAutoHideRequired: true,
+          actions: <DatatableAction>[
+            DatatableAction(
+              label: isPortuguese ? 'Abrir' : 'Open',
+              title: isPortuguese ? 'Abrir item' : 'Open item',
+              iconClass: 'ph ph-eye',
+              appearance: DatatableActionAppearance.button,
+              size: 'sm',
+              responsiveMode:
+                  DatatableActionResponsiveMode.desktopTextAndIconMobileIcon,
+              onTap: (_) {},
+            ),
+            DatatableAction(
+              label: isPortuguese ? 'Arquivar' : 'Archive',
+              title: isPortuguese ? 'Arquivar item' : 'Archive item',
+              iconClass: 'ph ph-archive-box',
+              appearance: DatatableActionAppearance.button,
+              iconOnly: true,
+              size: 'sm',
+              onTap: (_) {},
+            ),
+          ],
+          containerClass:
+              'datatable-action-cell d-inline-flex align-items-center justify-content-start gap-2',
+        ),
+      ],
+      responsiveControlColumnKey: 'feature',
     );
   }
 
@@ -670,9 +764,6 @@ class DatatablePageComponent implements OnInit {
   @override
   Future<void> ngOnInit() async {
     await _loadMainTable();
-    await _loadProcessLookupTable();
-    await _loadProcessLookupActionColumnTable();
-    await _loadGroupedTable();
   }
 
   @ViewChild('demoTable')
@@ -705,6 +796,9 @@ class DatatablePageComponent implements OnInit {
   @ViewChild('stickyColumnsDemoTable')
   LiDataTableComponent? stickyColumnsDemoTable;
 
+  @ViewChild('headerTitleDemoTable')
+  LiDataTableComponent? headerTitleDemoTable;
+
   @ViewChild('lazyDatatableModal')
   LiModalComponent? lazyDatatableModal;
 
@@ -719,6 +813,7 @@ class DatatablePageComponent implements OnInit {
   final Filters groupedFilters = Filters(limit: 8, offset: 0);
   final Filters multiSortFilters = Filters(limit: 8, offset: 0);
   final Filters stickyColumnsFilters = Filters(limit: 5, offset: 0);
+  final Filters headerTitleFilters = Filters(limit: 4, offset: 0);
   final List<int> customGridLimitOptions = const <int>[4, 8, 12];
   final List<int> processLookupLimitOptions = const <int>[12, 24, 48];
   final List<int> stickyColumnsLimitOptions = const <int>[5, 10, 15];
@@ -730,6 +825,10 @@ class DatatablePageComponent implements OnInit {
   bool showCustomGridDemo = false;
   bool showMultiSortDemo = false;
   bool showStickyColumnsDemo = false;
+  bool showProcessLookupDemo = false;
+  bool showProcessLookupActionColumnDemo = false;
+  bool showHeaderTitleDemo = false;
+  bool showGroupedDemo = false;
   bool datatableGridMode = false;
   bool singleSelectionOnly = false;
   String datatableEventLog = '';
@@ -773,6 +872,18 @@ class DatatablePageComponent implements OnInit {
         ? 'color: #b91c1c; font-weight: 700;'
         : 'color: #0f766e; font-weight: 700;';
   },
+        DatatableCol(
+          key: 'status',
+          title: t.pages.datatable.statusCol,
+          enableSorting: true,
+          sortingBy: 'status',
+          width: '150px',
+          textAlign: 'center',
+          titleTextAlign: 'center',
+          responsiveAutoHidePriority: 20,
+          customRenderTitleHtml: (column) =>
+              _buildHeaderTitleStatusElement(isPortuguese),
+        ),
 )''';
   final String rowStyleGridSnippet = '''DatatableSettings(
   colsDefinitions: cols,
@@ -790,6 +901,31 @@ class DatatablePageComponent implements OnInit {
     return root;
   },
 )''';
+  final String gridCardTemplateDartSnippet =
+      '''final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'feature', title: 'Recurso'),
+    DatatableCol(key: 'owner', title: 'Responsável'),
+    DatatableCol(key: 'status', title: 'Situação', showAsFooterOnCard: true),
+  ],
+  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gridGap: '1rem',
+);''';
+  final String gridCardTemplateHtmlSnippet = '''<li-datatable
+  [dataTableFilter]="filters"
+  [data]="tableData"
+  [settings]="settings"
+  [gridMode]="true">
+  <template li-datatable-card let-ctx>
+    <article class="card h-100 mb-0">
+      <div class="card-body">
+        <div class="text-muted fs-sm mb-2">{{ ctx.itemMap['owner'] }}</div>
+        <h6 class="mb-2">{{ ctx.itemMap['feature'] }}</h6>
+        <span class="badge bg-primary">{{ ctx.itemMap['status'] }}</span>
+      </div>
+    </article>
+  </template>
+</li-datatable>''';
   final String processLookupHeaderSnippet = '''<li-datatable
     [dataTableFilter]="processLookupFilters"
     [data]="processLookupTableData"
@@ -805,6 +941,9 @@ class DatatablePageComponent implements OnInit {
   </template>
   <template li-datatable-cell="actions" let-ctx>
     <!-- ações customizadas em HTML -->
+  </template>
+  <template li-datatable-card let-ctx>
+    <!-- card customizado para o modo grid -->
   </template>
 </li-datatable>''';
   final String multiSortSnippet =
@@ -836,6 +975,7 @@ class DatatablePageComponent implements OnInit {
     DatatableCol(
       key: 'actions',
       title: 'Ações',
+          exportable: false,
       width: '132px',
       minWidth: '132px',
       textAlign: 'center',
@@ -897,7 +1037,7 @@ Future<void> onTableRequest(Filters nextFilters) async {
   final String cellTemplateDartSnippet = '''final settings = DatatableSettings(
   colsDefinitions: <DatatableCol>[
     DatatableCol(key: 'processCode', title: 'Código'),
-    DatatableCol(key: 'actions', title: 'Ações'),
+    DatatableCol(key: 'actions', title: 'Ações', exportable: false),
   ],
 );
 
@@ -919,14 +1059,16 @@ void openProcess(Map<String, dynamic> itemMap) {
     DatatableActionColumn(
       key: 'actions',
       title: 'Ações',
+      titleTextAlign: 'center',
       containerClass:
-          'datatable-action-cell d-inline-flex align-items-center justify-content-center gap-2 w-100',
+          'datatable-action-cell d-inline-flex align-items-center justify-content-start gap-2',
       actions: <DatatableAction>[
         DatatableAction(
           label: 'Abrir',
           iconClass: 'ph ph-eye',
           appearance: DatatableActionAppearance.linkIcon,
-          iconOnly: false,
+          responsiveMode:
+              DatatableActionResponsiveMode.desktopTextMobileIcon,
           onTap: (ctx) => openProcessLookupItem(ctx.itemMap),
         ),
         DatatableAction(
@@ -934,6 +1076,7 @@ void openProcess(Map<String, dynamic> itemMap) {
           iconClass: 'ph ph-star',
           appearance: DatatableActionAppearance.linkIcon,
           iconOnly: true,
+          size: 'sm',
           visibleWhen: (ctx) => !isProcessLookupFavorited(ctx.itemMap),
           onTap: (ctx) => toggleProcessLookupFavorite(ctx.itemMap),
         ),
@@ -942,6 +1085,7 @@ void openProcess(Map<String, dynamic> itemMap) {
           iconClass: 'ph ph-heart text-danger',
           appearance: DatatableActionAppearance.linkIcon,
           iconOnly: true,
+          size: 'sm',
           visibleWhen: (ctx) => isProcessLookupFavorited(ctx.itemMap),
           onTap: (ctx) => toggleProcessLookupFavorite(ctx.itemMap),
         ),
@@ -950,6 +1094,82 @@ void openProcess(Map<String, dynamic> itemMap) {
   ],
 );
 ''';
+  final String titleCustomizationDartSnippet =
+      '''final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(
+      key: 'feature',
+      title: 'Recurso',
+      titleTooltip: DatatableTitleTooltipConfig(
+        text: 'Esta coluna foi fixada como gatilho do collapse responsivo.',
+        displayMode: DatatableTitleTooltipDisplayMode.title,
+        useNativeTitle: true,
+      ),
+      customRenderTitleString: (column) => 'Recurso / Entrega',
+    ),
+    DatatableCol(
+      key: 'owner',
+      title: 'Responsável',
+      minWidth: '180px',
+      responsiveAutoHidePriority: 10,
+    ),
+    DatatableCol(
+      key: 'status',
+      title: 'Situação',
+      titleTextAlign: 'center',
+      textAlign: 'center',
+      hideOnMobile: true,
+      responsiveAutoHidePriority: 20,
+      customRenderTitleHtml: (column) {
+        final root = SpanElement()
+          ..classes.addAll(<String>['d-inline-flex', 'align-items-center', 'gap-1']);
+        root.append(Element.tag('i')..className = 'ph ph-seal-check text-primary');
+        root.appendText('Situação');
+        return root;
+      },
+    ),
+    DatatableActionColumn(
+      key: 'actions',
+      title: 'Ações',
+      titleTextAlign: 'center',
+      titlePopover: DatatableTitlePopoverConfig(
+        title: 'Ações rápidas',
+        body: 'Este cabeçalho centralizado reúne as ações rápidas da linha.',
+      ),
+      actions: <DatatableAction>[
+        DatatableAction(
+          label: 'Abrir',
+          iconClass: 'ph ph-eye',
+          appearance: DatatableActionAppearance.linkIcon,
+          size: 'sm',
+          responsiveMode: DatatableActionResponsiveMode
+              .desktopTextAndIconMobileIcon,
+          onTap: (ctx) => openItem(ctx.itemMap),
+        ),
+        DatatableAction(
+          label: 'Arquivar',
+          iconClass: 'ph ph-archive-box',
+          appearance: DatatableActionAppearance.linkIcon,
+          iconOnly: true,
+          size: 'sm',
+          onTap: (ctx) => archiveItem(ctx.itemMap),
+        ),
+      ],
+    ),
+  ],
+  responsiveControlColumnKey: 'feature',
+);''';
+  final String titleCustomizationHtmlSnippet = '''<li-datatable
+  [dataTableFilter]="filters"
+  [data]="tableData"
+  [settings]="settings">
+  <template li-datatable-header-cell="actions" let-ctx>
+    <span class="d-inline-flex align-items-center justify-content-center gap-1 w-100">
+      <i class="ph ph-lightning"></i>
+      {{ ctx.column.title }}
+    </span>
+  </template>
+</li-datatable>''';
   final String productModelSnippet = '''import 'serialize_base.dart';
 
 class Product implements SerializeBase {
@@ -1108,6 +1328,7 @@ class ProductController {
   late DataFrame<Map<String, dynamic>> groupedTableData;
   late DataFrame<Map<String, dynamic>> multiSortTableData;
   late DataFrame<Map<String, dynamic>> stickyColumnsTableData;
+  late DataFrame<Map<String, dynamic>> headerTitleTableData;
   String groupedSelectionLog = 'Nenhum item selecionado.';
 
   List<DatatableSearchField> get readonlySearchFields => searchFields;
@@ -1166,6 +1387,11 @@ class ProductController {
   ) async {
     processLookupActionColumnFilters.fillFromFilters(nextFilters);
     await _loadProcessLookupActionColumnTable();
+  }
+
+  Future<void> onHeaderTitleTableRequest(Filters nextFilters) async {
+    headerTitleFilters.fillFromFilters(nextFilters);
+    await _loadHeaderTitleTable();
   }
 
   Future<void> onProcessLookupHeaderSearchFieldChange(
@@ -1291,6 +1517,54 @@ class ProductController {
     _flushView();
   }
 
+  Future<void> onProcessLookupDemoExpanded(bool expanded) async {
+    if (expanded) {
+      await _loadProcessLookupTable();
+      showProcessLookupDemo = true;
+      _flushView();
+      return;
+    }
+
+    showProcessLookupDemo = false;
+    _flushView();
+  }
+
+  Future<void> onProcessLookupActionColumnDemoExpanded(bool expanded) async {
+    if (expanded) {
+      await _loadProcessLookupActionColumnTable();
+      showProcessLookupActionColumnDemo = true;
+      _flushView();
+      return;
+    }
+
+    showProcessLookupActionColumnDemo = false;
+    _flushView();
+  }
+
+  Future<void> onHeaderTitleDemoExpanded(bool expanded) async {
+    if (expanded) {
+      await _loadHeaderTitleTable();
+      showHeaderTitleDemo = true;
+      _flushView();
+      return;
+    }
+
+    showHeaderTitleDemo = false;
+    _flushView();
+  }
+
+  Future<void> onGroupedDemoExpanded(bool expanded) async {
+    if (expanded) {
+      await _loadGroupedTable();
+      showGroupedDemo = true;
+      _flushView();
+      return;
+    }
+
+    showGroupedDemo = false;
+    _flushView();
+  }
+
   Future<void> onStickyColumnsDemoExpanded(bool expanded) async {
     if (expanded) {
       await _loadStickyColumnsTable();
@@ -1372,6 +1646,12 @@ class ProductController {
 
   Future<void> _loadModalTable() async {
     modalTableData = await _datatableDemoService.query(modalTableFilters);
+    _flushView();
+  }
+
+  Future<void> _loadHeaderTitleTable() async {
+    headerTitleTableData =
+        await _datatableDemoService.query(headerTitleFilters);
     _flushView();
   }
 
@@ -2285,6 +2565,31 @@ class ProductController {
     return root;
   }
 
+  Element _buildHeaderTitleStatusElement(bool isPortuguese) {
+    final root = SpanElement()
+      ..classes.addAll(<String>[
+        'd-inline-flex',
+        'align-items-center',
+        'justify-content-center',
+        'gap-1',
+      ]);
+
+    root.append(
+      SpanElement()
+        ..classes.addAll(<String>['ph', 'ph-seal-check', 'text-primary']),
+    );
+    root.appendText(isPortuguese ? 'Situação' : 'Status');
+    return root;
+  }
+
+  String get headerTitleDemoTitle => i18n.isPortuguese
+      ? 'Títulos de coluna customizados'
+      : 'Custom column titles';
+
+  String get headerTitleDemoDescription => i18n.isPortuguese
+      ? 'Combina alinhamento dedicado do título, renderização em Dart e um TemplateRef por coluna para deixar o cabeçalho mais expressivo, especialmente em colunas de ações.'
+      : 'Combines dedicated title alignment, Dart-based header rendering, and a per-column TemplateRef so headers can be more expressive, especially for action columns.';
+
   String get processLookupDemoTitle => i18n.isPortuguese
       ? 'Layout de consulta de processos'
       : 'Process lookup layout';
@@ -2304,6 +2609,22 @@ class ProductController {
   String get processLookupActionColumnEventLog => i18n.isPortuguese
       ? 'Neste exemplo, as ações da coluna são montadas no Dart e atualizadas sem template de célula no HTML.'
       : 'In this example, action cells are built in Dart with no HTML cell template.';
+
+  String get processLookupAccordionDescription => i18n.isPortuguese
+      ? 'Mantém a demo completa de consulta de processos fora do DOM até a expansão, reduzindo o peso fixo da página.'
+      : 'Keeps the full process lookup demo out of the DOM until expanded, reducing the page\'s fixed cost.';
+
+  String get processLookupActionColumnAccordionDescription => i18n.isPortuguese
+      ? 'Carrega a variação com DatatableActionColumn só quando aberta, evitando mais uma grade responsiva viva na mesma tela.'
+      : 'Loads the DatatableActionColumn variant only when expanded, avoiding another live responsive grid on the same screen.';
+
+  String get headerTitleAccordionDescription => i18n.isPortuguese
+      ? 'Adia o exemplo de títulos customizados até a expansão para cortar instâncias permanentes do datatable.'
+      : 'Defers the custom title example until expansion to cut permanent datatable instances.';
+
+  String get groupedAccordionDescription => i18n.isPortuguese
+      ? 'Move o agrupamento com seleção para carga sob demanda, preservando a demo sem mantê-la sempre renderizada.'
+      : 'Moves grouping with selection to on-demand loading, preserving the demo without keeping it always rendered.';
 
   String get processLookupRequesterLabel =>
       i18n.isPortuguese ? 'Requerente:' : 'Requester:';

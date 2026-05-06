@@ -90,190 +90,344 @@
                 datatableEventLog }}</div>
             </div>
 
-            <div class="card-body pt-4">
-              <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
-                <div>
-                  <h6 class="mb-2">{{ processLookupDemoTitle }}</h6>
-                  <p class="text-muted mb-0">{{ processLookupDemoIntro }}</p>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <li-highlight [code]="processLookupHeaderSnippet" language="html"></li-highlight>
-              </div>
-
-              <li-datatable #processLookupDemoTable [dataTableFilter]="processLookupFilters" [data]="processLookupTableData"
-                [settings]="processLookupTableSettings" [searchInFields]="processLookupSearchFields"
-                [limitPerPageOptions]="processLookupLimitOptions" [responsiveAutoHideColumns]="true"
-                [responsiveCollapse]="true" [responsiveCollapseByContainer]="true"
-                [showCheckboxToSelectRow]="false"
-                [showExportMenu]="false" [disableRowClick]="true" (dataRequest)="onProcessLookupTableRequest($event)"
-                (limitChange)="onProcessLookupTableRequest($event)" (searchRequest)="onProcessLookupTableRequest($event)">
-                <template li-datatable-header let-ctx>
-                  <div class="datatable-process-lookup-shell">
-                    <div class="datatable-process-lookup-grid datatable-process-lookup-grid--filters">
-                      <div class="datatable-process-lookup-field datatable-process-lookup-field--requester">
-                        <label class="form-label">{{ processLookupRequesterLabel }}</label>
-                        <input class="form-control" type="search" [ngModel]="processLookupRequesterFilter"
-                          (ngModelChange)="onProcessLookupRequesterFilterInput($event)"
-                          [placeholder]="processLookupRequesterPlaceholder" />
-                      </div>
-
-                      <div class="datatable-process-lookup-field datatable-process-lookup-field--digital">
-                        <label class="form-label">{{ processLookupDigitalLabel }}</label>
-                        <select #processLookupDigitalSelect class="form-select"
-                          [ngModel]="processLookupDigitalFilter"
-                          (ngModelChange)="onProcessLookupDigitalFilterChange($event)">
-                          <option value=""></option>
-                          <option value="Sim">Sim</option>
-                          <option value="Não">Não</option>
-                        </select>
-                      </div>
-
-                      <div class="datatable-process-lookup-field datatable-process-lookup-field--clear">
-                        <label class="form-label datatable-process-lookup-field__ghost-label">Ações</label>
-                        <button class="btn btn-flat-primary border-transparent" type="button"
-                          (click)="clearProcessLookupHeaderFilters()">
-                          <i class="ph ph-eraser me-1"></i>
-                          {{ processLookupClearLabel }}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="datatable-process-lookup-grid datatable-process-lookup-grid--search">
-                      <div class="datatable-process-lookup-search-group">
-                        <input [(ngModel)]="ctx.dataTableFilter.searchString" class="form-control data-table-search-field"
-                          type="search" [placeholder]="processLookupSearchPlaceholder"
-                          (keypress)="ctx.search()" />
-
-                        <select #processLookupSearchFieldSelect class="form-select datatable-process-lookup-search-group__select"
-                          (change)="onProcessLookupHeaderSearchFieldChange(ctx, processLookupSearchFieldSelect.value)">
-                          <option *ngFor="let field of ctx.searchInFields; let i = index" value="{{i}}"
-                            [selected]="i == ctx.selectedSearchFieldIndex">
-                            {{field.label}}
-                          </option>
-                        </select>
-
-                        <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
-                          (click)="ctx.search()" [attr.aria-label]="processLookupSearchCaption">
-                          <i class="ph-magnifying-glass"></i>
-                        </button>
-                      </div>
-
-                      <div class="datatable-process-lookup-actions-bar">
-                        <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
-                          (click)="ctx.exportPdf()" aria-label="Exportar PDF">
-                          <i class="ph ph-file-pdf"></i>
-                        </button>
-                        <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
-                          (click)="ctx.toggleViewMode()" aria-label="Alternar modo de visualização">
-                          <i [class.ph-squares-four]="!ctx.gridMode" [class.ph-list-bullets]="ctx.gridMode"></i>
-                        </button>
-                        <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
-                          (click)="ctx.toggleAllColumnsVisibility()" aria-label="Alternar colunas">
-                          <i class="ph-eye"></i>
-                        </button>
-                        <select #processLookupPageSizeSelect class="form-select datatable-process-lookup-actions-bar__limit"
-                          (change)="onProcessLookupHeaderLimitChange(ctx, processLookupPageSizeSelect.value)">
-                          <option *ngFor="let option of ctx.limitPerPageOptions" value="{{option}}"
-                            [selected]="option == ctx.limitPerPage">
-                            {{option}}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </template>
-
-                <template li-datatable-cell="actions" let-ctx>
-                  <div class="d-inline-flex align-items-center justify-content-center gap-2 w-100">
-                    <button type="button" class="btn btn-flat-primary border-transparent btn-icon"
-                      [attr.title]="processLookupOpenActionLabel(ctx.itemMap)"
-                      [attr.aria-label]="processLookupOpenActionLabel(ctx.itemMap)"
-                      (click)="openProcessLookupItem(ctx.itemMap)">
-                      <i class="ph ph-eye"></i>
-                    </button>
-
-                    <button *ngIf="!isProcessLookupFavorited(ctx.itemMap)" type="button"
-                      class="btn btn-flat-primary border-transparent btn-icon"
-                      [attr.title]="processLookupFavoriteActionLabel" [attr.aria-label]="processLookupFavoriteActionLabel"
-                      (click)="toggleProcessLookupFavorite(ctx.itemMap)">
-                      <i class="ph ph-star"></i>
-                    </button>
-
-                    <button *ngIf="isProcessLookupFavorited(ctx.itemMap)" type="button"
-                      class="btn btn-flat-primary border-transparent btn-icon text-danger"
-                      [attr.title]="processLookupFavoriteActionLabel" [attr.aria-label]="processLookupFavoriteActionLabel"
-                      (click)="toggleProcessLookupFavorite(ctx.itemMap)">
-                      <i class="ph ph-heart"></i>
-                    </button>
-                  </div>
-                </template>
-
-              </li-datatable>
-
-              <div class="bg-light rounded border p-3 mt-3">{{ processLookupHeaderEventLog }}</div>
-            </div>
-
-            <div class="card-body pt-4">
-              <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
-                <div>
-                  <h6 class="mb-2">{{ processLookupActionColumnDemoTitle }}</h6>
-                  <p class="text-muted mb-0">{{ processLookupActionColumnDemoIntro }}</p>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <li-highlight [code]="actionColumnDartSnippet" language="dart"></li-highlight>
-              </div>
-
-              <li-datatable #processLookupActionColumnDemoTable [dataTableFilter]="processLookupActionColumnFilters"
-                [data]="processLookupActionColumnTableData" [settings]="processLookupActionColumnTableSettings"
-                [searchInFields]="processLookupSearchFields" [limitPerPageOptions]="processLookupLimitOptions"
-                [responsiveAutoHideColumns]="true" [responsiveCollapse]="true" [responsiveCollapseByContainer]="true"
-                [showCheckboxToSelectRow]="false" [showExportMenu]="false"
-                [disableRowClick]="true" (dataRequest)="onProcessLookupActionColumnTableRequest($event)"
-                (limitChange)="onProcessLookupActionColumnTableRequest($event)"
-                (searchRequest)="onProcessLookupActionColumnTableRequest($event)">
-              </li-datatable>
-
-              <div class="bg-light rounded border p-3 mt-3">{{ processLookupActionColumnEventLog }}</div>
-            </div>
-
-            <div class="card-body pt-1">
-              <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
-                <div>
-                  <h6 class="mb-2">Agrupamento com seleção</h6>
-                  <p class="text-muted mb-0">
-                    Esta demonstração reproduz o cenário com <code>enableGrouping</code> e
-                    <code>showCheckboxToSelectRow</code> ativos. O checkbox deve aparecer apenas nas linhas de dados,
-                    nunca na linha divisora do grupo.
-                  </p>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <li-highlight [code]="groupedSnippet" language="dart"></li-highlight>
-              </div>
-            </div>
-
-            <li-datatable #groupedDemoTable [dataTableFilter]="groupedFilters" [data]="groupedTableData"
-              [settings]="groupedTableSettings" [searchInFields]="groupedSearchFields"
-              [searchPlaceholder]="'Busque por descrição, classificação ou assunto'"
-              (dataRequest)="onGroupedTableRequest($event)" (limitChange)="onGroupedTableRequest($event)"
-              (searchRequest)="onGroupedTableRequest($event)" (selectAll)="onGroupedSelectionChange($event)">
-            </li-datatable>
-
-            <div class="card-body pt-3">
-              <div class="bg-light rounded border p-3">{{ groupedSelectionLog }}</div>
-            </div>
-
             <div class="card-body pt-1">
               <h6 class="mb-2">{{ t.pages.datatable.onDemandTitle }}</h6>
               <p class="text-muted mb-3">{{ t.pages.datatable.onDemandIntro }}</p>
             </div>
 
             <li-accordion [lazy]="true" [destroyOnCollapse]="true" [bodyPadding]="false">
+              <li-accordion-item [header]="processLookupDemoTitle"
+                [description]="processLookupAccordionDescription"
+                (expandedChange)="onProcessLookupDemoExpanded($event)">
+                <template li-accordion-body>
+                  <div class="card-body pt-4">
+                    <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                      <div>
+                        <h6 class="mb-2">{{ processLookupDemoTitle }}</h6>
+                        <p class="text-muted mb-0">{{ processLookupDemoIntro }}</p>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <li-highlight [code]="processLookupHeaderSnippet" language="html"></li-highlight>
+                    </div>
+
+                    <li-datatable #processLookupDemoTable *ngIf="showProcessLookupDemo"
+                      [dataTableFilter]="processLookupFilters" [data]="processLookupTableData"
+                      [settings]="processLookupTableSettings" [searchInFields]="processLookupSearchFields"
+                      [limitPerPageOptions]="processLookupLimitOptions" [responsiveAutoHideColumns]="true"
+                      [responsiveCollapse]="true" [responsiveCollapseByContainer]="true"
+                      [showCheckboxToSelectRow]="false" [showExportMenu]="false" [disableRowClick]="true"
+                      (dataRequest)="onProcessLookupTableRequest($event)"
+                      (limitChange)="onProcessLookupTableRequest($event)"
+                      (searchRequest)="onProcessLookupTableRequest($event)">
+                      <template li-datatable-header let-ctx>
+                        <div class="datatable-process-lookup-shell">
+                          <div class="datatable-process-lookup-grid datatable-process-lookup-grid--filters">
+                            <div class="datatable-process-lookup-field datatable-process-lookup-field--requester">
+                              <label class="form-label">{{ processLookupRequesterLabel }}</label>
+                              <input class="form-control" type="search" [ngModel]="processLookupRequesterFilter"
+                                (ngModelChange)="onProcessLookupRequesterFilterInput($event)"
+                                [placeholder]="processLookupRequesterPlaceholder" />
+                            </div>
+
+                            <div class="datatable-process-lookup-field datatable-process-lookup-field--digital">
+                              <label class="form-label">{{ processLookupDigitalLabel }}</label>
+                              <select #processLookupDigitalSelect class="form-select"
+                                [ngModel]="processLookupDigitalFilter"
+                                (ngModelChange)="onProcessLookupDigitalFilterChange($event)">
+                                <option value=""></option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                              </select>
+                            </div>
+
+                            <div class="datatable-process-lookup-field datatable-process-lookup-field--clear">
+                              <label class="form-label datatable-process-lookup-field__ghost-label">Ações</label>
+                              <button class="btn btn-flat-primary border-transparent" type="button"
+                                (click)="clearProcessLookupHeaderFilters()">
+                                <i class="ph ph-eraser me-1"></i>
+                                {{ processLookupClearLabel }}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div class="datatable-process-lookup-grid datatable-process-lookup-grid--search">
+                            <div class="datatable-process-lookup-search-group">
+                              <input [(ngModel)]="ctx.dataTableFilter.searchString"
+                                class="form-control data-table-search-field" type="search"
+                                [placeholder]="processLookupSearchPlaceholder" (keypress)="ctx.search()" />
+
+                              <select #processLookupSearchFieldSelect
+                                class="form-select datatable-process-lookup-search-group__select"
+                                (change)="onProcessLookupHeaderSearchFieldChange(ctx, processLookupSearchFieldSelect.value)">
+                                <option *ngFor="let field of ctx.searchInFields; let i = index" value="{{i}}"
+                                  [selected]="i == ctx.selectedSearchFieldIndex">
+                                  {{field.label}}
+                                </option>
+                              </select>
+
+                              <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                                (click)="ctx.search()" [attr.aria-label]="processLookupSearchCaption">
+                                <i class="ph-magnifying-glass"></i>
+                              </button>
+                            </div>
+
+                            <div class="datatable-process-lookup-actions-bar">
+                              <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                                (click)="ctx.exportPdf()" aria-label="Exportar PDF">
+                                <i class="ph ph-file-pdf"></i>
+                              </button>
+                              <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                                (click)="ctx.toggleViewMode()" aria-label="Alternar modo de visualização">
+                                <i [class.ph-squares-four]="!ctx.gridMode" [class.ph-list-bullets]="ctx.gridMode"></i>
+                              </button>
+                              <button class="btn btn-flat-primary border-transparent btn-icon" type="button"
+                                (click)="ctx.toggleAllColumnsVisibility()" aria-label="Alternar colunas">
+                                <i class="ph-eye"></i>
+                              </button>
+                              <select #processLookupPageSizeSelect class="form-select datatable-process-lookup-actions-bar__limit"
+                                (change)="onProcessLookupHeaderLimitChange(ctx, processLookupPageSizeSelect.value)">
+                                <option *ngFor="let option of ctx.limitPerPageOptions" value="{{option}}"
+                                  [selected]="option == ctx.limitPerPage">
+                                  {{option}}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </template>
+
+                      <template li-datatable-cell="actions" let-ctx>
+                        <div class="d-inline-flex align-items-center justify-content-center gap-2 w-100">
+                          <button type="button" class="btn btn-flat-primary border-transparent btn-icon"
+                            [attr.title]="processLookupOpenActionLabel(ctx.itemMap)"
+                            [attr.aria-label]="processLookupOpenActionLabel(ctx.itemMap)"
+                            (click)="openProcessLookupItem(ctx.itemMap)">
+                            <i class="ph ph-eye"></i>
+                          </button>
+
+                          <button *ngIf="!isProcessLookupFavorited(ctx.itemMap)" type="button"
+                            class="btn btn-flat-primary border-transparent btn-icon"
+                            [attr.title]="processLookupFavoriteActionLabel"
+                            [attr.aria-label]="processLookupFavoriteActionLabel"
+                            (click)="toggleProcessLookupFavorite(ctx.itemMap)">
+                            <i class="ph ph-star"></i>
+                          </button>
+
+                          <button *ngIf="isProcessLookupFavorited(ctx.itemMap)" type="button"
+                            class="btn btn-flat-primary border-transparent btn-icon text-danger"
+                            [attr.title]="processLookupFavoriteActionLabel"
+                            [attr.aria-label]="processLookupFavoriteActionLabel"
+                            (click)="toggleProcessLookupFavorite(ctx.itemMap)">
+                            <i class="ph ph-heart"></i>
+                          </button>
+                        </div>
+                      </template>
+
+                      <template li-datatable-card let-ctx>
+                        <article class="datatable-process-card">
+                          <div class="datatable-process-card__body">
+                            <div class="datatable-process-card__top">
+                              <div class="datatable-process-card__field datatable-process-card__field--compact">
+                                <span class="datatable-process-card__label">Código</span>
+                                <span class="datatable-process-card__value datatable-process-card__value--code">
+                                  {{ ctx.itemMap['processCode'] }}
+                                </span>
+                              </div>
+
+                              <span class="datatable-process-lookup-badge"
+                                [class.datatable-process-lookup-badge--primary]="ctx.itemMap['digitalLabel'] == 'Sim'"
+                                [class.datatable-process-lookup-badge--muted]="ctx.itemMap['digitalLabel'] != 'Sim'">
+                                {{ ctx.itemMap['digitalLabel'] }}
+                              </span>
+                            </div>
+
+                            <div class="datatable-process-card__field">
+                              <span class="datatable-process-card__label">Requerente</span>
+                              <span class="datatable-process-card__value">{{ ctx.itemMap['requester'] }}</span>
+                            </div>
+
+                            <div class="datatable-process-card__meta">
+                              <div class="datatable-process-card__field datatable-process-card__field--compact">
+                                <span class="datatable-process-card__label">Tipo Cgm</span>
+                                <span class="datatable-process-card__value">{{ ctx.itemMap['personType'] }}</span>
+                              </div>
+
+                              <div class="datatable-process-card__field datatable-process-card__field--compact">
+                                <span class="datatable-process-card__label">Classificação</span>
+                                <span class="datatable-process-card__value">{{ ctx.itemMap['classification'] }}</span>
+                              </div>
+                            </div>
+
+                            <div class="datatable-process-card__field datatable-process-card__field--compact">
+                              <span class="datatable-process-card__label">Assunto</span>
+                              <span class="datatable-process-card__value">{{ ctx.itemMap['subject'] }}</span>
+                            </div>
+
+                            <div class="datatable-process-card__footer">
+                              <div class="datatable-process-card__field datatable-process-card__field--compact">
+                                <span class="datatable-process-card__label">Inclusão</span>
+                                <span class="datatable-process-card__value">{{ ctx.itemMap['createdAt'] }}</span>
+                              </div>
+
+                              <div class="datatable-process-card__field datatable-process-card__field--compact">
+                                <span class="datatable-process-card__label">Situação</span>
+                                <span class="datatable-process-card__value">{{ ctx.itemMap['status'] }}</span>
+                              </div>
+
+                              <div class="datatable-process-card__actions">
+                                <button type="button" class="btn btn-flat-primary border-transparent btn-icon"
+                                  [attr.title]="processLookupOpenActionLabel(ctx.itemMap)"
+                                  [attr.aria-label]="processLookupOpenActionLabel(ctx.itemMap)"
+                                  (click)="openProcessLookupItem(ctx.itemMap)">
+                                  <i class="ph ph-eye"></i>
+                                </button>
+
+                                <button *ngIf="!isProcessLookupFavorited(ctx.itemMap)" type="button"
+                                  class="btn btn-flat-primary border-transparent btn-icon"
+                                  [attr.title]="processLookupFavoriteActionLabel"
+                                  [attr.aria-label]="processLookupFavoriteActionLabel"
+                                  (click)="toggleProcessLookupFavorite(ctx.itemMap)">
+                                  <i class="ph ph-star"></i>
+                                </button>
+
+                                <button *ngIf="isProcessLookupFavorited(ctx.itemMap)" type="button"
+                                  class="btn btn-flat-primary border-transparent btn-icon text-danger"
+                                  [attr.title]="processLookupFavoriteActionLabel"
+                                  [attr.aria-label]="processLookupFavoriteActionLabel"
+                                  (click)="toggleProcessLookupFavorite(ctx.itemMap)">
+                                  <i class="ph ph-heart"></i>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </article>
+                      </template>
+                    </li-datatable>
+
+                    <div class="bg-light rounded border p-3 mt-3">{{ processLookupHeaderEventLog }}</div>
+                  </div>
+                </template>
+              </li-accordion-item>
+
+              <li-accordion-item [header]="processLookupActionColumnDemoTitle"
+                [description]="processLookupActionColumnAccordionDescription"
+                (expandedChange)="onProcessLookupActionColumnDemoExpanded($event)">
+                <template li-accordion-body>
+                  <div class="card-body pt-4">
+                    <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                      <div>
+                        <h6 class="mb-2">{{ processLookupActionColumnDemoTitle }}</h6>
+                        <p class="text-muted mb-0">{{ processLookupActionColumnDemoIntro }}</p>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <li-highlight [code]="actionColumnDartSnippet" language="dart"></li-highlight>
+                    </div>
+
+                    <li-datatable #processLookupActionColumnDemoTable *ngIf="showProcessLookupActionColumnDemo"
+                      [dataTableFilter]="processLookupActionColumnFilters"
+                      [data]="processLookupActionColumnTableData"
+                      [settings]="processLookupActionColumnTableSettings"
+                      [searchInFields]="processLookupSearchFields" [limitPerPageOptions]="processLookupLimitOptions"
+                      [responsiveAutoHideColumns]="true" [responsiveCollapse]="true"
+                      [responsiveCollapseByContainer]="true" [showCheckboxToSelectRow]="false"
+                      [showExportMenu]="false" [disableRowClick]="true"
+                      (dataRequest)="onProcessLookupActionColumnTableRequest($event)"
+                      (limitChange)="onProcessLookupActionColumnTableRequest($event)"
+                      (searchRequest)="onProcessLookupActionColumnTableRequest($event)">
+                    </li-datatable>
+
+                    <div class="bg-light rounded border p-3 mt-3">{{ processLookupActionColumnEventLog }}</div>
+                  </div>
+                </template>
+              </li-accordion-item>
+
+              <li-accordion-item [header]="headerTitleDemoTitle"
+                [description]="headerTitleAccordionDescription"
+                (expandedChange)="onHeaderTitleDemoExpanded($event)">
+                <template li-accordion-body>
+                  <div class="card-body pt-4">
+                    <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                      <div>
+                        <h6 class="mb-2">{{ headerTitleDemoTitle }}</h6>
+                        <p class="text-muted mb-0">{{ headerTitleDemoDescription }}</p>
+                      </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                      <div class="col-xl-6">
+                        <li-highlight [code]="titleCustomizationDartSnippet" language="dart"></li-highlight>
+                      </div>
+                      <div class="col-xl-6">
+                        <li-highlight [code]="titleCustomizationHtmlSnippet" language="html"></li-highlight>
+                      </div>
+                    </div>
+
+                    <li-datatable #headerTitleDemoTable *ngIf="showHeaderTitleDemo"
+                      [dataTableFilter]="headerTitleFilters" [data]="headerTitleTableData"
+                      [settings]="headerTitleTableSettings" [searchInFields]="searchFields"
+                      [showCheckboxToSelectRow]="false" [showExportMenu]="false" [disableRowClick]="true"
+                      [responsiveCollapse]="true" [responsiveCollapseByContainer]="true"
+                      [responsiveCollapseContainerMaxWidth]="760" [responsiveAutoHideColumns]="true"
+                      (dataRequest)="onHeaderTitleTableRequest($event)"
+                      (limitChange)="onHeaderTitleTableRequest($event)"
+                      (searchRequest)="onHeaderTitleTableRequest($event)">
+                      <template li-datatable-header-cell="actions" let-ctx>
+                        <span class="d-inline-flex align-items-center justify-content-center gap-1 w-100">
+                          <i class="ph ph-lightning"></i>
+                          {{ ctx.column.title }}
+                        </span>
+                      </template>
+                    </li-datatable>
+
+                    <div class="bg-light rounded border p-3 mt-3">
+                      O cabeçalho de <code>feature</code> vem de <code>customRenderTitleString</code>,
+                      <code>status</code> vem de <code>customRenderTitleHtml</code>,
+                      <code>feature</code> ainda recebe <code>titleTooltip</code> com <code>title</code> nativo no próprio texto e
+                      <code>actions</code> usa <code>DatatableActionColumn</code> com <code>responsiveMode</code>, alinhamento central por <code>titleTextAlign</code> e <code>titlePopover</code>.
+                    </div>
+                  </div>
+                </template>
+              </li-accordion-item>
+
+              <li-accordion-item [header]="'Agrupamento com seleção'"
+                [description]="groupedAccordionDescription"
+                (expandedChange)="onGroupedDemoExpanded($event)">
+                <template li-accordion-body>
+                  <div class="card-body pt-1">
+                    <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                      <div>
+                        <h6 class="mb-2">Agrupamento com seleção</h6>
+                        <p class="text-muted mb-0">
+                          Esta demonstração reproduz o cenário com <code>enableGrouping</code> e
+                          <code>showCheckboxToSelectRow</code> ativos. O checkbox deve aparecer apenas nas linhas de dados,
+                          nunca na linha divisora do grupo.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <li-highlight [code]="groupedSnippet" language="dart"></li-highlight>
+                    </div>
+                  </div>
+
+                  <li-datatable #groupedDemoTable *ngIf="showGroupedDemo" [dataTableFilter]="groupedFilters"
+                    [data]="groupedTableData" [settings]="groupedTableSettings"
+                    [searchInFields]="groupedSearchFields"
+                    [searchPlaceholder]="'Busque por descrição, classificação ou assunto'"
+                    (dataRequest)="onGroupedTableRequest($event)" (limitChange)="onGroupedTableRequest($event)"
+                    (searchRequest)="onGroupedTableRequest($event)" (selectAll)="onGroupedSelectionChange($event)">
+                  </li-datatable>
+
+                  <div class="card-body pt-3">
+                    <div class="bg-light rounded border p-3">{{ groupedSelectionLog }}</div>
+                  </div>
+                </template>
+              </li-accordion-item>
+
               <li-accordion-item [header]="t.pages.datatable.readonlyTitle"
                 [description]="t.pages.datatable.readonlyDescription" (expandedChange)="onReadonlyDemoExpanded($event)">
                 <template li-accordion-body>
@@ -507,6 +661,7 @@
                   <li><code>rowStyleResolver</code> permite destacar uma linha inteira sem alterar o template.</li>
                   <li><code>gridTemplateColumns</code> define a malha do grid.</li>
                   <li><code>gridGap</code> controla o espaçamento entre cartões.</li>
+                  <li><code>li-datatable-card</code> permite montar o card com <code>TemplateRef</code> em AngularDart.</li>
                   <li><code>customCardBuilder</code> recebe <code>itemMap</code>, <code>itemInstance</code> e
                     <code>row</code> para montar um <code>Element</code> completo.
                   </li>
@@ -576,6 +731,38 @@
                         Usa <code>DatatableActionColumn</code> e atualiza ações em runtime com controller.
                       </p>
                       <li-highlight [code]="actionColumnDartSnippet" language="dart"></li-highlight>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">5. Títulos de coluna flexíveis</h6>
+                      <p class="text-muted mb-3">
+                        Mistura alinhamento do título, renderização em Dart e <code>TemplateRef</code> quando a coluna
+                        precisa de um cabeçalho mais elaborado, como em <code>Ações</code>.
+                      </p>
+                      <li-highlight [code]="titleCustomizationDartSnippet" language="dart"></li-highlight>
+                      <div class="mt-3">
+                        <li-highlight [code]="titleCustomizationHtmlSnippet" language="html"></li-highlight>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">6. Card customizado no grid com TemplateRef</h6>
+                      <p class="text-muted mb-3">
+                        Usa <code>li-datatable-card</code> para montar o conteúdo do card em AngularDart sem precisar
+                        construir DOM manualmente em Dart.
+                      </p>
+                      <li-highlight [code]="gridCardTemplateDartSnippet" language="dart"></li-highlight>
+                      <div class="mt-3">
+                        <li-highlight [code]="gridCardTemplateHtmlSnippet" language="html"></li-highlight>
+                      </div>
                     </div>
                   </div>
                 </div>

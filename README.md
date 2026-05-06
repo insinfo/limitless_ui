@@ -664,6 +664,7 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiTypeaheadComponent`, `LiTypeaheadItem`, `LiTypeaheadSelectItemEvent`, `LiTypeaheadConfig`, `LiTypeaheadHighlightComponent`.
 - Datatable:
   `LiDataTableComponent`, `LiDatatableHeaderDirective`,
+  `LiDatatableHeaderCellDirective`,
   `LiDatatableFooterDirective`, `LiDatatableHeaderContext`,
   `LiDatatableFooterContext`, `DatatableCol`, `DatatableSettings`,
   `DatatableRow`, `DatatableStyle`.
@@ -681,6 +682,14 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiTreeViewComponent`, `LiTreeviewSelectComponent`,
   `LiTreeViewPageLoader`, `TreeViewLoadRequest`, `TreeViewLoadResult`,
   `LiTreeviewSelectNodeDirective`, `LiTreeviewSelectTriggerDirective`.
+
+## Recent additions in `1.0.0-dev.15`
+
+- Expanded `li-datatable` responsive behavior with explicit `responsiveControlColumnKey`, so the details-toggle/control cell can stay on a predictable visible column even when `responsiveAutoHideColumns` is collapsing lower-priority fields.
+- Expanded `li-datatable` header composition with `titleTextAlign`, `customRenderTitleString`, `customRenderTitleHtml`, `titleTooltip`, `titlePopover`, and projected `<template li-datatable-header-cell="columnKey" let-ctx>` templates, including inline tooltip support directly on the title text plus optional native browser `title` tooltips through `useNativeTitle`.
+- Expanded `DatatableAction` and `DatatableActionColumn` with responsive desktop/mobile layouts (`desktopTextMobileIcon` and `desktopTextAndIconMobileIcon`), semantic `size` support (`btn-sm` / `btn-lg`), default centered action headers via `titleTextAlign`, and export-safe defaults where `DatatableActionColumn` stays out of built-in PDF/XLSX generation unless `exportable: true` is set deliberately.
+- Expanded grid mode with projected `<template li-datatable-card>` support alongside `customCardBuilder`, plus refreshed example coverage showing richer header-title customization, custom cards, and safer action alignment in card/grid footers without forcing centered action groups.
+- Added virtual-scroll guidance for dense operational tables, including the new `stickyTableHeaderOnVirtualScroll` flow for table mode, and documented the current limitation that non-virtual pages above roughly 100 dense rows can still stall the browser.
 
 ## Recent additions in `1.0.0-dev.14`
 
@@ -854,17 +863,46 @@ Most useful features:
 
 - column-targeted search with `searchInFields`;
 - events such as `(dataRequest)`, `(searchRequest)`, and `(limitChange)` for server-driven flows;
-- columns with `enableSorting`, `sortingBy`, `hideOnMobile`, `responsiveAutoHidePriority`, `responsiveAutoHideRequired`, `textAlign`, `nowrap`, `width`, and custom classes;
+- columns with `enableSorting`, `sortingBy`, `hideOnMobile`, `responsiveAutoHidePriority`, `responsiveAutoHideRequired`, `textAlign`, `titleTextAlign`, `nowrap`, `width`, custom title renderers, and custom classes;
 - responsive collapse driven by viewport (`responsiveCollapseMaxWidth`) or by container width (`responsiveCollapseByContainer` + `responsiveCollapseContainerMaxWidth`) for desktop shells that shrink horizontally;
+- `responsiveControlColumnKey` when the responsive collapse trigger must stay on a specific visible column such as `code`, `name`, or `actions`;
 - sticky edge columns with `fixedPosition: DatatableFixedColumnPosition.left` or `DatatableFixedColumnPosition.right` when critical actions or identifiers must remain visible during horizontal scroll;
 - optional custom toolbar/footer templates via `headerTemplate`, `footerTemplate`, or projected `<template li-datatable-header let-ctx>` and `<template li-datatable-footer let-ctx>`;
+- per-column header-title customization with `customRenderTitleString`, `customRenderTitleHtml`, `titleTooltip`, `titlePopover`, and `<template li-datatable-header-cell="columnKey" let-ctx>` for rich header content without forking the whole table header;
 - per-column template projection with `<template li-datatable-cell="columnKey" let-ctx>` for HTML-driven custom cells without replacing existing `customRenderHtml`;
 - `LiDatatableHeaderContext` and `LiDatatableFooterContext` so custom templates can still call search, pagination, export, page-size, and view-mode actions;
 - `responsiveAutoHideColumns` when lower-priority columns should collapse into the details row before horizontal scrolling appears;
 - `requestDataOnItemsPerPageChange` when changing page size should emit through `(dataRequest)` instead of only `(limitChange)`;
+- `virtualScroll`, `virtualRowHeight`, `virtualViewportHeight`, and `stickyTableHeaderOnVirtualScroll` for large datasets where the DOM must stay bounded while keeping the table header visible;
 - per-cell styling with `cellStyleResolver` and per-row styling with `rowStyleResolver`;
-- grid mode with `gridMode`, `gridTemplateColumns`, `gridGap`, and `customCardBuilder`;
+- grid mode with `gridMode`, `gridTemplateColumns`, `gridGap`, projected `<template li-datatable-card let-ctx>`, and `customCardBuilder`;
 - built-in XLSX and PDF export support.
+
+Known limitation: when `virtualScroll` is disabled, page sizes above roughly 100 rows can freeze or severely stall the browser on dense operational tables. For limits above that range, prefer enabling `virtualScroll` or keep the page size server-driven and capped.
+
+Operational guidance for dense tables:
+
+- In table mode, combine `virtualScroll`, `virtualRowHeight`, and an explicit `virtualViewportHeight` so the DOM stays bounded while paging through large result sets.
+- When that dense table still needs persistent column labels during scroll, enable `stickyTableHeaderOnVirtualScroll`; the sticky header is intentionally opt-in and only activates for virtualized table mode.
+- In grid mode, pair `virtualScroll` with `virtualGridItemHeight` and `virtualGridMinItemWidth` so the viewport can estimate rows of cards without rendering the full dataset.
+- For `DatatableActionColumn` inside default grid cards, keep the default container or use `justify-content-start` when you want the footer actions aligned from the left. Using `justify-content-center` together with `w-100` will intentionally center the action group across the whole card footer.
+
+Example for dense server-driven tables with sticky header on virtual scroll:
+
+```html
+<li-datatable
+  [data]="usersFrame"
+  [settings]="settings"
+  [dataTableFilter]="filters"
+  [searchInFields]="searchFields"
+  [requestDataOnItemsPerPageChange]="true"
+  [virtualScroll]="true"
+  [virtualRowHeight]="44"
+  [virtualViewportHeight]="'72vh'"
+  [stickyTableHeaderOnVirtualScroll]="true"
+  (dataRequest)="loadUsers($event)">
+</li-datatable>
+```
 
 ```dart
 final filters = Filters(limit: 10, offset: 0);
@@ -888,14 +926,17 @@ final settings = DatatableSettings(
       enableSorting: true,
       sortingBy: 'status',
       hideOnMobile: true,
+      titleTextAlign: 'center',
     ),
     DatatableCol(
       key: 'actions',
       title: 'Actions',
       width: '128px',
+      titleTextAlign: 'center',
       fixedPosition: DatatableFixedColumnPosition.right,
     ),
   ],
+  responsiveControlColumnKey: 'feature',
 );
 
 final searchFields = <DatatableSearchField>[
@@ -984,6 +1025,76 @@ For row actions or other rich cells, project a column-scoped template. The `ctx`
 </li-datatable>
 ```
 
+Column titles can be customized independently from body cells. Use `titleTextAlign` for header alignment, `customRenderTitleString` for pure-text titles, `customRenderTitleHtml` for DOM-driven titles, `titleTooltip` or `titlePopover` for contextual help, or a projected header-cell template when Angular bindings are needed. When the tooltip should appear directly over the title text, set `displayMode: DatatableTitleTooltipDisplayMode.title`. If you prefer the browser-native tooltip instead of the library overlay, add `useNativeTitle: true`:
+
+```dart
+final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(
+      key: 'protocol',
+      title: 'Protocol',
+      titleTooltip: DatatableTitleTooltipConfig(
+        text: 'This column also acts as the responsive collapse trigger.',
+        displayMode: DatatableTitleTooltipDisplayMode.title,
+        useNativeTitle: true,
+      ),
+      customRenderTitleString: (column) => 'Protocol / ID',
+    ),
+    DatatableCol(
+      key: 'status',
+      title: 'Status',
+      titleTextAlign: 'center',
+      textAlign: 'center',
+      customRenderTitleHtml: (column) {
+        final root = SpanElement()
+          ..classes.addAll(<String>['d-inline-flex', 'align-items-center', 'gap-1']);
+        root.append(Element.tag('i')..className = 'ph ph-seal-check text-success');
+        root.appendText('Status');
+        return root;
+      },
+    ),
+    DatatableActionColumn(
+      key: 'actions',
+      title: 'Actions',
+      titleTextAlign: 'center',
+      titlePopover: DatatableTitlePopoverConfig(
+        title: 'Quick actions',
+        body: 'This centered header groups the actions available on each row.',
+      ),
+      actions: <DatatableAction>[
+        DatatableAction(
+          label: 'Open',
+          iconClass: 'ph ph-folder-open',
+          appearance: DatatableActionAppearance.linkIcon,
+          responsiveMode: DatatableActionResponsiveMode
+              .desktopTextAndIconMobileIcon,
+          onTap: (ctx) => openUser(ctx.itemMap),
+        ),
+        DatatableAction(
+          label: 'Archive',
+          iconClass: 'ph ph-archive-box',
+          appearance: DatatableActionAppearance.linkIcon,
+          iconOnly: true,
+          size: 'sm',
+          onTap: (ctx) => archiveUser(ctx.itemMap),
+        ),
+      ],
+    ),
+  ],
+);
+```
+
+```html
+<li-datatable [data]="usersFrame" [settings]="settings" [dataTableFilter]="filters">
+  <template li-datatable-header-cell="actions" let-ctx>
+    <span class="d-inline-flex align-items-center justify-content-center gap-1 w-100">
+      <i class="ph ph-lightning"></i>
+      {{ ctx.column.title }}
+    </span>
+  </template>
+</li-datatable>
+```
+
 If you prefer a purely Dart-defined API for actions, use `DatatableActionColumn` in `colsDefinitions` (declarative) and optionally `DatatableActionController` (imperative updates), without touching the legacy `customRenderHtml` path:
 
 ```dart
@@ -1013,6 +1124,16 @@ final settings = DatatableSettings(
 ```
 
 For icon-only actions with no button background, use `appearance: DatatableActionAppearance.linkIcon` and `iconOnly: true`. This keeps accessibility via `label`/`title` while rendering a link-like icon button.
+
+If the same action should show only text on desktop but collapse to an icon on mobile, use `responsiveMode: DatatableActionResponsiveMode.desktopTextMobileIcon` together with `iconClass`.
+
+If the same action should show icon + text on desktop and collapse to icon-only on mobile, use `responsiveMode: DatatableActionResponsiveMode.desktopTextAndIconMobileIcon`.
+
+For denser action columns, set `size: 'sm'` on `DatatableAction` to emit `btn-sm` while keeping the default Limitless button contract for spacing and icon-only buttons.
+
+`DatatableActionColumn` is excluded from built-in PDF/XLSX exports by default. If a specific action column really needs to appear in exports, opt in explicitly with `exportable: true` on the column.
+
+If the same actions also appear in default grid/card footers, keep the default `containerClass` or move to `justify-content-start` when you want a left-aligned operational footer. A `containerClass` such as `justify-content-center w-100` is useful only when the design intentionally calls for centered action groups.
 
 For denser visual layouts, the same dataset can be reused in grid mode:
 
@@ -1072,6 +1193,28 @@ final advancedSettings = DatatableSettings(
 );
 ```
 
+If you prefer AngularDart templating over building DOM in Dart, project a card template for grid mode:
+
+```html
+<li-datatable
+  [data]="usersFrame"
+  [settings]="advancedSettings"
+  [dataTableFilter]="filters"
+  [gridMode]="true">
+  <template li-datatable-card let-ctx>
+    <article class="card h-100 mb-0">
+      <div class="card-body">
+        <div class="text-muted fs-sm mb-2">{{ ctx.itemMap['owner'] }}</div>
+        <h6 class="mb-2">{{ ctx.itemMap['feature'] }}</h6>
+        <span class="badge bg-primary">{{ ctx.itemMap['status'] }}</span>
+      </div>
+    </article>
+  </template>
+</li-datatable>
+```
+
+When both APIs are present, `customCardBuilder` keeps priority for backward compatibility and the projected `li-datatable-card` template is used only when no custom card element was produced in Dart.
+
 Mini tutorials:
 
 1. Server-driven pagination and search
@@ -1116,6 +1259,7 @@ final settings = DatatableSettings(
       responsiveAutoHidePriority: 10,
     ),
   ],
+  responsiveControlColumnKey: 'code',
 );
 ```
 
@@ -1151,6 +1295,15 @@ final settings = DatatableSettings(
 ```
 
 ```dart
+final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'name', title: 'Name'),
+    DatatableCol(key: 'actions', title: 'Actions', exportable: false),
+  ],
+);
+```
+
+```dart
 final actionController = DatatableActionController(
   actions: <DatatableAction>[
     DatatableAction(
@@ -1167,10 +1320,75 @@ final settings = DatatableSettings(
     DatatableActionColumn(
       key: 'actions',
       title: 'Actions',
+      titleTextAlign: 'center',
       controller: actionController,
     ),
   ],
 );
+```
+
+For TemplateRef-based action columns built with a plain `DatatableCol`, set `exportable: false` explicitly when that column should stay out of PDF/XLSX exports.
+
+4. Custom column titles with alignment, Dart renderers, and TemplateRef
+
+```dart
+final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(
+      key: 'name',
+      title: 'Name',
+      titleTooltip: DatatableTitleTooltipConfig(
+        text: 'Use this header to explain why this column is the responsive trigger.',
+        displayMode: DatatableTitleTooltipDisplayMode.title,
+        useNativeTitle: true,
+      ),
+      customRenderTitleString: (column) => 'Name / Display',
+    ),
+    DatatableCol(
+      key: 'status',
+      title: 'Status',
+      titleTextAlign: 'center',
+      textAlign: 'center',
+      customRenderTitleHtml: (column) {
+        final root = SpanElement()
+          ..classes.addAll(<String>['d-inline-flex', 'align-items-center', 'gap-1']);
+        root.append(Element.tag('i')..className = 'ph ph-chart-line-up text-primary');
+        root.appendText('Status');
+        return root;
+      },
+    ),
+    DatatableActionColumn(
+      key: 'actions',
+      title: 'Actions',
+      titleTextAlign: 'center',
+      titlePopover: DatatableTitlePopoverConfig(
+        title: 'Quick actions',
+        body: 'Keep dense row actions discoverable without overloading the title text.',
+      ),
+      actions: <DatatableAction>[
+        DatatableAction(
+          label: 'Open',
+          iconClass: 'ph ph-folder-open',
+          appearance: DatatableActionAppearance.linkIcon,
+          responsiveMode: DatatableActionResponsiveMode
+              .desktopTextAndIconMobileIcon,
+          onTap: (ctx) => openUser(ctx.itemMap),
+        ),
+      ],
+    ),
+  ],
+);
+```
+
+```html
+<li-datatable [data]="tableData" [settings]="settings" [dataTableFilter]="filters">
+  <template li-datatable-header-cell="actions" let-ctx>
+    <span class="d-inline-flex align-items-center justify-content-center gap-1 w-100">
+      <i class="ph ph-dots-three-outline"></i>
+      {{ ctx.column.title }}
+    </span>
+  </template>
+</li-datatable>
 ```
 
 Best practices:

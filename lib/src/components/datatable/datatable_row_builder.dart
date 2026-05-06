@@ -1,3 +1,4 @@
+//datatable_row_builder.dart
 import 'dart:html';
 
 import 'package:essential_core/essential_core.dart';
@@ -26,6 +27,8 @@ class DatatableRowBuilder {
   void applyComputedColumnMetadataToSettings(DatatableSettings settings) {
     for (final col in settings.colsDefinitions) {
       col.headerStyleCss = _resolveHeaderStyle(col);
+      col.renderedTitle = _resolveTitle(col);
+      col.titleHtmlElement = _resolveTitleHtmlElement(col);
     }
   }
 
@@ -36,6 +39,7 @@ class DatatableRowBuilder {
     required bool gridMode,
     required bool responsiveCollapse,
     required int responsiveCollapseMaxWidth,
+    int rowIndexOffset = 0,
     bool? responsiveCollapseActive,
     Set<String> autoHiddenColumnKeys = const <String>{},
   }) {
@@ -54,7 +58,7 @@ class DatatableRowBuilder {
       final itemMap = resolvedItemMaps[i];
       final itemInstance = data[i];
       final row = DatatableRow(
-        index: i,
+        index: rowIndexOffset + i,
         instance: itemInstance,
         itemMap: itemMap,
         columns: <DatatableCol>[],
@@ -67,6 +71,7 @@ class DatatableRowBuilder {
             itemMap: itemMap,
             itemInstance: itemInstance,
             nullIsEmpty: nullIsEmpty,
+            gridMode: gridMode,
           ),
         );
       }
@@ -137,6 +142,7 @@ class DatatableRowBuilder {
         responsiveCollapse: responsiveCollapse,
         responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
         responsiveCollapseActive: responsiveCollapseActive,
+        responsiveControlColumnKey: settings.responsiveControlColumnKey,
         autoHiddenColumnKeys: autoHiddenColumnKeys,
       ),
     );
@@ -175,6 +181,7 @@ class DatatableRowBuilder {
     required bool responsiveCollapse,
     required int responsiveCollapseMaxWidth,
     bool? responsiveCollapseActive,
+    String? responsiveControlColumnKey,
     Set<String> autoHiddenColumnKeys = const <String>{},
   }) {
     final responsiveActive = responsiveCollapseActive ??
@@ -207,7 +214,12 @@ class DatatableRowBuilder {
 
       String? controlColumnKey;
       if (hiddenColumns.isNotEmpty) {
+        final normalizedRequestedControlColumnKey =
+            responsiveControlColumnKey?.trim();
         DatatableCol? fallbackVisibleColumn;
+        DatatableCol? requiredVisibleColumn;
+        DatatableCol? requestedVisibleColumn;
+
         for (final candidate in row.columns) {
           final hiddenOnMobile = responsiveActive && candidate.hideOnMobile;
           final hiddenByPriority = autoHiddenColumnKeys.contains(candidate.key);
@@ -216,13 +228,21 @@ class DatatableRowBuilder {
           }
 
           fallbackVisibleColumn ??= candidate;
+
+          if (normalizedRequestedControlColumnKey != null &&
+              normalizedRequestedControlColumnKey.isNotEmpty &&
+              candidate.key == normalizedRequestedControlColumnKey) {
+            requestedVisibleColumn ??= candidate;
+          }
+
           if (candidate.responsiveAutoHideRequired) {
-            controlColumnKey = candidate.key;
-            break;
+            requiredVisibleColumn ??= candidate;
           }
         }
 
-        controlColumnKey ??= fallbackVisibleColumn?.key;
+        controlColumnKey = requestedVisibleColumn?.key ??
+            requiredVisibleColumn?.key ??
+            fallbackVisibleColumn?.key;
       }
 
       return DatatableRenderedRow(
@@ -247,6 +267,7 @@ class DatatableRowBuilder {
     required Map<String, dynamic> itemMap,
     required dynamic itemInstance,
     required bool nullIsEmpty,
+    required bool gridMode,
   }) {
     final rawValue = _resolveRawColumnValue(
       colDefinition: colDefinition,
@@ -272,7 +293,12 @@ class DatatableRowBuilder {
       key: colDefinition.key,
       title: colDefinition.title,
       visibility: colDefinition.visibility,
-      styleCss: _resolveCellStyle(colDefinition, itemMap, itemInstance),
+      styleCss: _resolveCellStyle(
+        colDefinition,
+        itemMap,
+        itemInstance,
+        gridMode: gridMode,
+      ),
       headerStyleCss: colDefinition.headerStyleCss,
       headerClass: colDefinition.headerClass,
       cellClass: _resolveCellClass(colDefinition),
@@ -280,8 +306,13 @@ class DatatableRowBuilder {
       minWidth: colDefinition.minWidth,
       maxWidth: colDefinition.maxWidth,
       textAlign: colDefinition.textAlign,
+      titleTextAlign: colDefinition.titleTextAlign,
       nowrap: colDefinition.nowrap,
       cellStyleResolver: colDefinition.cellStyleResolver,
+      customRenderTitleString: colDefinition.customRenderTitleString,
+      customRenderTitleHtml: colDefinition.customRenderTitleHtml,
+      titleTooltip: colDefinition.titleTooltip,
+      titlePopover: colDefinition.titlePopover,
       htmlElement: htmlElement,
       enableGrouping: colDefinition.enableGrouping,
       groupByKey: colDefinition.groupByKey,
@@ -297,7 +328,9 @@ class DatatableRowBuilder {
       defaultSortDirection: colDefinition.defaultSortDirection,
       sortingBy: colDefinition.sortingBy,
       enableSorting: colDefinition.enableSorting,
-    );
+    )
+      ..renderedTitle = colDefinition.renderedTitle
+      ..titleHtmlElement = colDefinition.titleHtmlElement;
   }
 
   dynamic _resolveRawColumnValue({
@@ -428,16 +461,40 @@ class DatatableRowBuilder {
 
   String? _resolveHeaderStyle(DatatableCol colDefinition) {
     return _mergeStyleDeclarations(<String?>[
-      _buildBaseColumnStyle(colDefinition),
+      _buildHeaderColumnStyle(colDefinition),
       colDefinition.headerStyleCss,
     ]);
   }
 
-  String? _resolveCellStyle(
-    DatatableCol colDefinition,
-    Map<String, dynamic> itemMap,
-    dynamic itemInstance,
-  ) {
+  String _resolveTitle(DatatableCol colDefinition) {
+    final customRenderTitleString = colDefinition.customRenderTitleString;
+    if (customRenderTitleString == null) {
+      return colDefinition.title;
+    }
+
+    try {
+      return customRenderTitleString(colDefinition);
+    } catch (_) {
+      return colDefinition.title;
+    }
+  }
+
+  Element? _resolveTitleHtmlElement(DatatableCol colDefinition) {
+    final customRenderTitleHtml = colDefinition.customRenderTitleHtml;
+    if (customRenderTitleHtml == null) {
+      return null;
+    }
+
+    try {
+      return customRenderTitleHtml(colDefinition);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String? _resolveCellStyle(DatatableCol colDefinition,
+      Map<String, dynamic> itemMap, dynamic itemInstance,
+      {required bool gridMode}) {
     String? resolvedCellStyle;
     if (colDefinition.cellStyleResolver != null) {
       try {
@@ -449,7 +506,9 @@ class DatatableRowBuilder {
     }
 
     return _mergeStyleDeclarations(<String?>[
-      _buildBaseColumnStyle(colDefinition),
+      gridMode
+          ? _buildCardColumnStyle(colDefinition)
+          : _buildBaseColumnStyle(colDefinition),
       colDefinition.styleCss,
       resolvedCellStyle,
     ]);
@@ -483,6 +542,41 @@ class DatatableRowBuilder {
     }
 
     return '${declarations.join('; ')};';
+  }
+
+  String? _buildHeaderColumnStyle(DatatableCol colDefinition) {
+    final declarations = <String>[];
+
+    if (colDefinition.width?.trim().isNotEmpty == true) {
+      declarations.add('width: ${colDefinition.width!.trim()}');
+    }
+    if (colDefinition.minWidth?.trim().isNotEmpty == true) {
+      declarations.add('min-width: ${colDefinition.minWidth!.trim()}');
+    }
+    if (colDefinition.maxWidth?.trim().isNotEmpty == true) {
+      declarations.add('max-width: ${colDefinition.maxWidth!.trim()}');
+    }
+
+    final titleTextAlign = colDefinition.titleTextAlign?.trim();
+    if (titleTextAlign != null && titleTextAlign.isNotEmpty) {
+      declarations.add('text-align: $titleTextAlign');
+    } else if (colDefinition.textAlign?.trim().isNotEmpty == true) {
+      declarations.add('text-align: ${colDefinition.textAlign!.trim()}');
+    }
+
+    if (colDefinition.nowrap) {
+      declarations.add('white-space: nowrap');
+    }
+
+    if (declarations.isEmpty) {
+      return null;
+    }
+
+    return '${declarations.join('; ')};';
+  }
+
+  String? _buildCardColumnStyle(DatatableCol colDefinition) {
+    return null;
   }
 
   String? _mergeStyleDeclarations(Iterable<String?> declarations) {

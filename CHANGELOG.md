@@ -1,3 +1,14 @@
+## 1.0.0-dev.15
+
+- Expanded `li-datatable` responsive rendering with explicit `responsiveControlColumnKey`, allowing the responsive collapse trigger/control cell to stay attached to a predictable visible column instead of depending only on `responsiveAutoHideRequired` ordering.
+- Expanded datatable header composition with `titleTextAlign`, `customRenderTitleString`, `customRenderTitleHtml`, `titleTooltip`, `titlePopover`, and projected `<template li-datatable-header-cell="columnKey">` templates, including inline title-level tooltip support and optional native browser `title` tooltips through `useNativeTitle`.
+- Expanded grid mode with projected `<template li-datatable-card>` support alongside `customCardBuilder`, refreshed the datatable example page with live demos and mini tutorials for custom column titles and template-driven cards, and kept the default grid/card action guidance aligned with left-start operational footers instead of forced centered action groups.
+- Expanded `DatatableAction` with desktop/mobile responsive layouts (`desktopTextMobileIcon` and `desktopTextAndIconMobileIcon`), semantic `size` support for `btn-sm` and `btn-lg`, and default `me-2` icon spacing for text buttons; also made `DatatableActionColumn` center its header by default while staying out of built-in PDF/XLSX exports unless `exportable: true` is enabled explicitly.
+- Expanded `li-datatable` virtualization with documented `virtualScroll` guidance for dense operational lists, opt-in `stickyTableHeaderOnVirtualScroll` support for virtualized table mode, and an isolated process-lookup demo route that exercises dense table/grid switching with sequential process numbers and safer page-size experiments.
+- Fixed the virtual-scroll edge case where dragging the scrollbar to the bottom could oscillate the rendered window and trigger endless redraws when the viewport was pinned to the end of the dataset; browser regression coverage now protects that bottom-of-list flow.
+- Fixed datatable dark-theme regressions around sticky headers, fixed columns, hover surfaces, empty states, and default grid cards by aligning the component styles with the real Limitless theme tokens instead of Bootstrap `--bs-*` fallbacks; also normalized the default grid card radius to `--border-radius`.
+- Documented the current non-virtual performance limitation more explicitly: dense pages above roughly 100 rows can still stall the browser, so larger limits should use `virtualScroll` or remain capped/server-driven.
+
 ## 1.0.0-dev.14
 
 - Expanded `li-offcanvas` with `enableDefaultBodyClass` and `enableBodyWrapper`, allowing fully custom flex layouts in the panel body without forcing the default `.offcanvas-body` wrapper/class; also updated the internal panel shell to a column flex layout and added the `li-offcanvas-contents` passthrough class for projected content flows.

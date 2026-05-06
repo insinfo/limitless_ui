@@ -1,5 +1,4 @@
 //datatable_settings.dart
-//import 'datatable_row.dart';
 import 'dart:html';
 
 import 'datatable_col.dart';
@@ -40,6 +39,15 @@ class DatatableSettings {
   String? gridContainerClass;
   String? gridContainerStyle;
 
+  /// Chave da coluna que deve receber o controle de expandir/recolher
+  /// quando houver colunas ocultas no modo responsivo.
+  ///
+  /// Quando nula, o componente mantém o comportamento legado:
+  /// prioriza a primeira coluna visível marcada com
+  /// [DatatableCol.responsiveAutoHideRequired] e, na falta dela,
+  /// usa a primeira coluna visível.
+  String? responsiveControlColumnKey;
+
   /// [colsDefinitions] define as colunas que vão aparecer na tabela
   /// [showOrderNumberColumn] exibe uma coluna com um numero que enumera as linhas dos dados exbidos no dataTable
   DatatableSettings({
@@ -52,6 +60,7 @@ class DatatableSettings {
     this.gridGap = '1.25rem',
     this.gridContainerClass,
     this.gridContainerStyle,
+    this.responsiveControlColumnKey,
   }) {
     if (showOrderNumberColumn) {
       final col = DatatableCol(
@@ -88,4 +97,10 @@ class DatatableSettings {
 
   List<DatatableCol> get visibleColumns =>
       colsDefinitions.where((c) => c.visibility).toList();
+
+    List<DatatableCol> get exportColumns =>
+      colsDefinitions.where((c) => c.exportable).toList();
+
+    List<DatatableCol> get visibleExportColumns =>
+      colsDefinitions.where((c) => c.visibility && c.exportable).toList();
 }

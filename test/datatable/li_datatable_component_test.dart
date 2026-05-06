@@ -23,6 +23,15 @@ import 'li_datatable_component_test.template.dart' as ng;
         [dataTableFilter]="filter"
         [data]="data"
         [settings]="settings"
+        [virtualScroll]="virtualScroll"
+        [stickyTableHeaderOnVirtualScroll]="stickyTableHeaderOnVirtualScroll"
+        [virtualRowHeight]="virtualRowHeight"
+        [virtualOverscan]="virtualOverscan"
+        [virtualViewportHeight]="virtualViewportHeight"
+        [virtualGridItemHeight]="virtualGridItemHeight"
+        [virtualGridMinItemWidth]="virtualGridMinItemWidth"
+        [onExportPdf]="onExportPdfCallback"
+        [onExportXlsx]="onExportXlsxCallback"
         [responsiveCollapse]="responsiveCollapse"
         [responsiveCollapseByContainer]="responsiveCollapseByContainer"
         [responsiveCollapseContainerMaxWidth]="responsiveCollapseContainerMaxWidth"
@@ -83,6 +92,13 @@ class TestHostComponent {
   ];
 
   bool allowSingleSelectionOnly = false;
+  bool virtualScroll = false;
+  bool stickyTableHeaderOnVirtualScroll = false;
+  int virtualRowHeight = 44;
+  int virtualOverscan = 10;
+  String virtualViewportHeight = '70vh';
+  int virtualGridItemHeight = 260;
+  int virtualGridMinItemWidth = 280;
   bool responsiveCollapse = false;
   bool responsiveCollapseByContainer = false;
   int responsiveCollapseContainerMaxWidth = 767;
@@ -93,6 +109,8 @@ class TestHostComponent {
   Filters? lastLimitChange;
   Filters? lastSearchRequest;
   List<dynamic>? lastSelectedRows;
+  DatatableExportPdfCallback? onExportPdfCallback;
+  DatatableExportXlsxCallback? onExportXlsxCallback;
 
   @ViewChild(LiDataTableComponent)
   LiDataTableComponent? table;
@@ -180,6 +198,116 @@ class CustomHeaderTestHostComponent extends TestHostComponent {
   }
 }
 
+@Component(
+  selector: 'test-header-title-host',
+  template: '''
+    <div [attr.style]="tableContainerStyle">
+      <li-datatable
+        [dataTableFilter]="filter"
+        [data]="data"
+        [settings]="settings"
+        [searchInFields]="searchInFields"
+        [showCheckboxToSelectRow]="false"
+        [responsiveCollapse]="true"
+        [responsiveCollapseByContainer]="true"
+        [responsiveCollapseContainerMaxWidth]="760"
+        [responsiveAutoHideColumns]="true">
+        <template li-datatable-header-cell="acoes" let-ctx>
+          <span class="header-template-marker" [attr.data-column]="ctx.column.key">
+            Cabecalho template
+          </span>
+        </template>
+      </li-datatable>
+    </div>
+  ''',
+  directives: [
+    coreDirectives,
+    LiDataTableComponent,
+    LiDatatableHeaderCellDirective,
+  ],
+)
+class HeaderTitleTestHostComponent extends TestHostComponent {
+  HeaderTitleTestHostComponent() {
+    searchInFields = <DatatableSearchField>[];
+    settings = DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(
+          key: 'nome',
+          title: 'Nome',
+          width: '180px',
+          minWidth: '180px',
+          customRenderTitleString: (column) => 'Nome exibido',
+          titleTooltip: DatatableTitleTooltipConfig(
+            text: 'Nome usado para identificar o arquivo original.',
+            displayMode: DatatableTitleTooltipDisplayMode.title,
+          ),
+        ),
+        DatatableCol(
+          key: 'idade',
+          title: 'Idade',
+          width: '120px',
+          minWidth: '120px',
+          titleTooltip: DatatableTitleTooltipConfig(
+            text: 'Tooltip nativo do navegador para a idade.',
+            displayMode: DatatableTitleTooltipDisplayMode.title,
+            useNativeTitle: true,
+          ),
+          responsiveAutoHidePriority: 20,
+          customRenderTitleHtml: (column) => SpanElement()
+            ..className = 'header-html-marker'
+            ..text = 'Idade HTML',
+        ),
+        DatatableCol(
+          key: 'acoes',
+          title: 'Ações',
+          width: '110px',
+          minWidth: '110px',
+          titleTextAlign: 'center',
+          responsiveAutoHideRequired: true,
+          titlePopover: DatatableTitlePopoverConfig(
+            title: 'Ações rápidas',
+            body: 'Use esta coluna para editar ou remover o item.',
+          ),
+          customRenderTitleHtml: (column) => SpanElement()
+            ..className = 'header-html-fallback'
+            ..text = 'Fallback HTML',
+        ),
+      ],
+      responsiveControlColumnKey: 'nome',
+    );
+  }
+}
+
+@Component(
+  selector: 'test-card-template-host',
+  template: '''
+    <li-datatable
+      [dataTableFilter]="filter"
+      [data]="data"
+      [settings]="settings"
+      [searchInFields]="searchInFields"
+      [showCheckboxToSelectRow]="false"
+      [gridMode]="true">
+      <template li-datatable-card let-ctx>
+        <article class="grid-card-template-marker" [attr.data-row]="ctx.rowIndex.toString()">
+          <h6 class="grid-card-template-name">{{ ctx.itemMap['nome'] }}</h6>
+          <div class="grid-card-template-age">{{ ctx.itemMap['idade'] }}</div>
+        </article>
+      </template>
+    </li-datatable>
+  ''',
+  directives: [
+    coreDirectives,
+    LiDataTableComponent,
+    LiDatatableCardDirective,
+  ],
+)
+class CardTemplateTestHostComponent extends TestHostComponent {
+  CardTemplateTestHostComponent() {
+    searchInFields = <DatatableSearchField>[];
+  }
+}
+
 class _FakeKeyPressEvent {
   _FakeKeyPressEvent(this.keyCode);
 
@@ -200,6 +328,12 @@ void main() {
   final customHeaderTestBed = NgTestBed<CustomHeaderTestHostComponent>(
     ng.CustomHeaderTestHostComponentNgFactory,
   );
+  final headerTitleTestBed = NgTestBed<HeaderTitleTestHostComponent>(
+    ng.HeaderTitleTestHostComponentNgFactory,
+  );
+  final cardTemplateTestBed = NgTestBed<CardTemplateTestHostComponent>(
+    ng.CardTemplateTestHostComponentNgFactory,
+  );
 
   test('renderiza cabecalhos e linhas iniciais', () async {
     final fixture = await testBed.create();
@@ -209,6 +343,171 @@ void main() {
     expect(fixture.text, contains('Idade'));
     expect(fixture.text, contains('Ana'));
     expect(fixture.text, contains('Bruno'));
+  });
+
+  test('customiza titulos com alinhamento, render Dart e TemplateRef',
+      () async {
+    final fixture = await headerTitleTestBed.create();
+    await _settleTable(fixture);
+
+    final nomeHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="nome"]',
+    );
+    final idadeHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="idade"]',
+    );
+    final acoesHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="acoes"]',
+    );
+
+    expect(nomeHeader, isNotNull);
+    expect(nomeHeader!.text, contains('Nome exibido'));
+
+    expect(idadeHeader, isNotNull);
+    expect(idadeHeader!.querySelector('.header-html-marker'), isNotNull);
+    expect(idadeHeader.text, contains('Idade HTML'));
+    expect(
+      idadeHeader
+          .querySelector('[title="Tooltip nativo do navegador para a idade."]'),
+      isNotNull,
+    );
+
+    expect(acoesHeader, isNotNull);
+    expect(
+      acoesHeader!.querySelector('.header-template-marker'),
+      isNotNull,
+    );
+    expect(acoesHeader.getAttribute('style'), contains('text-align: center'));
+    expect(acoesHeader.text, isNot(contains('Fallback HTML')));
+
+    final tooltipHost = nomeHeader.querySelector(
+      '[data-header-help="tooltip-inline"]',
+    ) as HtmlElement?;
+    final popoverButton = acoesHeader.querySelector(
+      'button[data-header-help="popover"]',
+    ) as ButtonElement?;
+
+    expect(tooltipHost, isNotNull);
+    expect(popoverButton, isNotNull);
+
+    tooltipHost!.dispatchEvent(MouseEvent('mouseenter'));
+    await _settleTable(fixture);
+
+    final tooltip = document.body!.querySelector('.tooltip');
+    expect(tooltip, isNotNull);
+    expect(tooltip!.text, contains('identificar o arquivo original'));
+
+    popoverButton!.click();
+    await _settleTable(fixture);
+
+    final popover = document.body!.querySelector('.popover');
+    expect(popover, isNotNull);
+    expect(popover!.text, contains('Ações rápidas'));
+    expect(popover.text, contains('editar ou remover o item'));
+  });
+
+  test('DatatableActionColumn nao entra nas colunas exportaveis por padrao',
+      () {
+    final settings = DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(key: 'nome', title: 'Nome'),
+        DatatableActionColumn(
+          key: 'acoes',
+          title: 'Ações',
+          actions: <DatatableAction>[
+            DatatableAction(label: 'Abrir', onTap: (_) {}),
+          ],
+        ),
+      ],
+    );
+
+    expect(
+        settings.exportColumns.map((column) => column.key), <String>['nome']);
+    expect(
+      settings.visibleExportColumns.map((column) => column.key),
+      <String>['nome'],
+    );
+  });
+
+  test('renderiza card customizado com TemplateRef no modo grid', () async {
+    final fixture = await cardTemplateTestBed.create();
+    await _settleTable(fixture);
+
+    final templateCards = fixture.rootElement.querySelectorAll(
+      '.grid-card-template-marker',
+    );
+    final defaultCardBodies = fixture.rootElement.querySelectorAll(
+      '.grid-layout .grid-item > .card-body',
+    );
+    final defaultCardFooters = fixture.rootElement.querySelectorAll(
+      '.grid-layout .grid-item > .card-footer',
+    );
+
+    expect(templateCards, hasLength(2));
+    expect(templateCards.first.text, contains('Ana'));
+    expect(templateCards.first.getAttribute('data-row'), '0');
+    expect(defaultCardBodies, isEmpty);
+    expect(defaultCardFooters, isEmpty);
+  });
+
+  test('callbacks de exportacao recebem apenas colunas exportaveis', () async {
+    List<String>? xlsxColumns;
+    List<String>? pdfColumns;
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade', visibility: false),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Ações',
+            exportable: false,
+          ),
+        ],
+      );
+      component.onExportXlsxCallback = (rows, exportColumns) {
+        xlsxColumns = exportColumns.map((column) => column.key).toList();
+      };
+      component.onExportPdfCallback = (rows, exportColumns) {
+        pdfColumns = exportColumns.map((column) => column.key).toList();
+      };
+    });
+    await _settleTable(fixture);
+
+    await fixture.update((component) async {
+      await component.table!.exportXlsx();
+      await component.table!.exportPdf();
+    });
+
+    expect(xlsxColumns, <String>['nome', 'idade']);
+    expect(pdfColumns, <String>['nome']);
+  });
+
+  test('host de titulos customizados colapsa colunas em container estreito',
+      () async {
+    final fixture = await headerTitleTestBed.create(beforeChangeDetection: (
+      component,
+    ) {
+      component.tableContainerStyle = 'width: 260px;';
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+    final toggleCell = fixture.rootElement.querySelector(
+      'tbody tr td.dtr-control',
+    ) as TableCellElement?;
+
+    expect(toggleCell, isNotNull);
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isTrue);
+    expect(host.table!.renderedRows.first.responsiveControlColumnKey, 'nome');
+    expect(
+      host.table!.renderedRows.first.responsiveHiddenColumns
+          .map((column) => column.key),
+      contains('idade'),
+    );
   });
 
   test('seleciona automaticamente o primeiro campo de busca', () async {
@@ -746,6 +1045,55 @@ void main() {
     expect(fixture.text, contains('Ana'));
   });
 
+  test('permite escolher explicitamente a coluna de controle responsivo',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 260px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'nome',
+            title: 'Nome',
+            width: '180px',
+            minWidth: '180px',
+            responsiveAutoHideRequired: true,
+            responsiveAutoHidePriority: 1,
+          ),
+          DatatableCol(
+            key: 'idade',
+            title: 'Idade',
+            width: '120px',
+            minWidth: '120px',
+            responsiveAutoHidePriority: 2,
+          ),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Ações',
+            width: '110px',
+            minWidth: '110px',
+            responsiveAutoHideRequired: true,
+            customRenderString: (itemMap, itemInstance) => 'Ver',
+          ),
+        ],
+        responsiveControlColumnKey: 'nome',
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final toggleCell = fixture.rootElement.querySelector(
+      'tbody tr td.dtr-control',
+    ) as TableCellElement?;
+
+    expect(toggleCell, isNotNull);
+    expect(toggleCell!.getAttribute('data-label'), 'datatable_col_0');
+    expect(host.table!.renderedRows.first.responsiveControlColumnKey, 'nome');
+  });
+
   test('onSelectAll marca e desmarca todas as linhas pelo checkbox do header',
       () async {
     final fixture = await testBed.create();
@@ -1175,10 +1523,72 @@ void main() {
     expect(host.table!.gridMode, isTrue);
     expect(gridContainer, isNotNull);
     expect(gridItems.length, 2);
-    expect(tableContainer, isNotNull);
-    expect((tableContainer as HtmlElement).classes.contains('hide'), isTrue);
+    expect(tableContainer, isNull);
     expect(fixture.text, contains('Ana'));
     expect(fixture.text, contains('Bruno'));
+  });
+
+  test('desmonta a view inativa ao alternar entre tabela e grid', () async {
+    final fixture = await testBed.create();
+    await _settleTable(fixture);
+
+    expect(fixture.rootElement.querySelector('.datatable-scroll'), isNotNull);
+    expect(fixture.rootElement.querySelector('.datatable-grid-scroll'), isNull);
+
+    await fixture.update((component) {
+      component.table!.changeViewMode();
+    });
+    await _settleTable(fixture);
+
+    expect(fixture.rootElement.querySelector('.datatable-scroll'), isNull);
+    expect(
+        fixture.rootElement.querySelector('.datatable-grid-scroll'), isNotNull);
+
+    await fixture.update((component) {
+      component.table!.changeViewMode();
+    });
+    await _settleTable(fixture);
+
+    expect(fixture.rootElement.querySelector('.datatable-scroll'), isNotNull);
+    expect(fixture.rootElement.querySelector('.datatable-grid-scroll'), isNull);
+  });
+
+  test('modo grid padrao nao herda largura fixa das colunas no card', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'nome',
+            title: 'Nome',
+            width: '220px',
+            minWidth: '220px',
+            textAlign: 'center',
+            nowrap: true,
+          ),
+          DatatableCol(
+            key: 'idade',
+            title: 'Idade',
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.table!.changeViewMode();
+    });
+    await _settleTable(fixture);
+
+    final firstCardColumn = fixture.rootElement.querySelector(
+      '.grid-layout .datatable-grid-default-card__field',
+    ) as HtmlElement?;
+
+    expect(firstCardColumn, isNotNull);
+    expect(firstCardColumn!.style.width, isEmpty);
+    expect(firstCardColumn.style.minWidth, isEmpty);
+    expect(firstCardColumn.style.maxWidth, isEmpty);
+    expect(firstCardColumn.style.whiteSpace, isEmpty);
+    expect(firstCardColumn.style.textAlign, isEmpty);
   });
 
   test('preserva a classe padrao do grid-container sem customização', () async {
@@ -1586,11 +1996,20 @@ void main() {
     });
     await _settleTable(fixture);
 
+    final actionHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="acoes"]',
+    ) as TableCellElement?;
     final actionButton = fixture.rootElement.querySelector(
       '.datatable-action-cell button',
     ) as ButtonElement?;
+    final actionIcon =
+        actionButton?.querySelector('i.ph.ph-eye') as HtmlElement?;
+    expect(actionHeader, isNotNull);
+    expect(actionHeader!.getAttribute('style'), contains('text-align: center'));
     expect(actionButton, isNotNull);
     expect(actionButton!.text, contains('Abrir'));
+    expect(actionIcon, isNotNull);
+    expect(actionIcon!.classes.contains('me-2'), isTrue);
 
     await fixture.update((_) {
       actionButton.click();
@@ -1638,6 +2057,143 @@ void main() {
     );
     expect(actionButton.querySelector('i.ph-heart'), isNotNull);
     expect(actionButton.text?.trim(), isEmpty);
+  });
+
+  test('suporta ação com texto no desktop e ícone no mobile', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Abrir',
+                iconClass: 'ph ph-eye',
+                appearance: DatatableActionAppearance.linkIcon,
+                responsiveMode:
+                    DatatableActionResponsiveMode.desktopTextMobileIcon,
+                onTap: (_) {},
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final actionCell = fixture.rootElement.querySelector(
+      '.datatable-action-cell',
+    ) as HtmlElement?;
+    final actionButtons =
+        actionCell!.querySelectorAll('button').cast<ButtonElement>();
+    final desktopButton = actionButtons.first;
+    final mobileButton = actionButtons.last;
+
+    expect(actionButtons, hasLength(2));
+    expect(desktopButton.text?.trim(), 'Abrir');
+    expect(desktopButton.classes.contains('d-none'), isTrue);
+    expect(desktopButton.classes.contains('d-md-inline-flex'), isTrue);
+    expect(desktopButton.querySelector('i'), isNull);
+    expect(desktopButton.classes.contains('btn-icon'), isFalse);
+
+    expect(mobileButton.text?.trim(), isEmpty);
+    expect(mobileButton.classes.contains('btn-icon'), isTrue);
+    expect(mobileButton.classes.contains('d-inline-flex'), isTrue);
+    expect(mobileButton.classes.contains('d-md-none'), isTrue);
+    expect(mobileButton.querySelector('i.ph.ph-eye'), isNotNull);
+  });
+
+  test('suporta ação com ícone e texto no desktop e só ícone no mobile',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Abrir',
+                iconClass: 'ph ph-eye',
+                appearance: DatatableActionAppearance.linkIcon,
+                responsiveMode:
+                    DatatableActionResponsiveMode.desktopTextAndIconMobileIcon,
+                onTap: (_) {},
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final actionCell = fixture.rootElement.querySelector(
+      '.datatable-action-cell',
+    ) as HtmlElement?;
+    final actionButtons =
+        actionCell!.querySelectorAll('button').cast<ButtonElement>();
+    final desktopButton = actionButtons.first;
+    final mobileButton = actionButtons.last;
+    final desktopIcon =
+        desktopButton.querySelector('i.ph.ph-eye') as HtmlElement?;
+    final mobileIcon =
+        mobileButton.querySelector('i.ph.ph-eye') as HtmlElement?;
+
+    expect(actionButtons, hasLength(2));
+    expect(desktopButton.text?.trim(), 'Abrir');
+    expect(desktopButton.classes.contains('d-none'), isTrue);
+    expect(desktopButton.classes.contains('d-md-inline-flex'), isTrue);
+    expect(desktopButton.classes.contains('btn-icon'), isFalse);
+    expect(desktopIcon, isNotNull);
+    expect(desktopIcon!.classes.contains('me-2'), isTrue);
+
+    expect(mobileButton.text?.trim(), isEmpty);
+    expect(mobileButton.classes.contains('btn-icon'), isTrue);
+    expect(mobileButton.classes.contains('d-inline-flex'), isTrue);
+    expect(mobileButton.classes.contains('d-md-none'), isTrue);
+    expect(mobileIcon, isNotNull);
+  });
+
+  test('aplica size sm nas actions responsivas de desktop e mobile', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Abrir',
+                iconClass: 'ph ph-eye',
+                appearance: DatatableActionAppearance.linkIcon,
+                size: 'sm',
+                responsiveMode:
+                    DatatableActionResponsiveMode.desktopTextAndIconMobileIcon,
+                onTap: (_) {},
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final actionCell = fixture.rootElement.querySelector(
+      '.datatable-action-cell',
+    ) as HtmlElement?;
+    final actionButtons =
+        actionCell!.querySelectorAll('button').cast<ButtonElement>();
+
+    expect(actionButtons, hasLength(2));
+    expect(actionButtons.first.classes.contains('btn-sm'), isTrue);
+    expect(actionButtons.last.classes.contains('btn-sm'), isTrue);
   });
 
   test('permite atualizar DatatableActionColumn via controller', () async {
@@ -1688,6 +2244,182 @@ void main() {
     expect(actionButton, isNotNull);
     expect(actionButton!.text, contains('Editar'));
   });
+
+  test('virtualiza a tabela renderizando apenas a janela visivel', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.virtualScroll = true;
+      component.virtualRowHeight = 40;
+      component.virtualOverscan = 2;
+      component.virtualViewportHeight = '200px';
+      component.searchInFields = <DatatableSearchField>[];
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: List<Map<String, dynamic>>.generate(
+          200,
+          (index) => <String, dynamic>{
+            'nome': 'Pessoa $index',
+            'idade': 20 + (index % 50),
+          },
+        ),
+        totalRecords: 200,
+      );
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+    final bodyRows = fixture.rootElement.querySelectorAll('tbody > tr');
+
+    expect(host.table!.rows.length, lessThan(20));
+    expect(bodyRows.length, lessThan(24));
+    expect(host.table!.rows.first.index, 0);
+
+    final scrollContainer = fixture.rootElement.querySelector(
+      '.datatable-scroll',
+    ) as HtmlElement?;
+    expect(scrollContainer, isNotNull);
+
+    scrollContainer!.scrollTop = 1200;
+    scrollContainer.dispatchEvent(Event('scroll'));
+    await _settleAfterScroll(fixture);
+
+    expect(host.table!.rows.first.index, greaterThan(0));
+    expect(host.table!.rows.length, lessThan(20));
+  });
+
+  test('permite fixar o header quando virtual scroll esta ativo', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.virtualScroll = true;
+      component.stickyTableHeaderOnVirtualScroll = true;
+      component.virtualRowHeight = 40;
+      component.virtualOverscan = 2;
+      component.virtualViewportHeight = '200px';
+      component.searchInFields = <DatatableSearchField>[];
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: List<Map<String, dynamic>>.generate(
+          80,
+          (index) => <String, dynamic>{
+            'nome': 'Pessoa $index',
+            'idade': 20 + (index % 50),
+          },
+        ),
+        totalRecords: 80,
+      );
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final scrollContainer = fixture.rootElement.querySelector(
+      '.datatable-scroll',
+    ) as HtmlElement?;
+    final headerCell = fixture.rootElement.querySelector(
+      'thead th[data-key="nome"]',
+    ) as HtmlElement?;
+
+    expect(scrollContainer, isNotNull);
+    expect(
+      scrollContainer!.classes.contains('datatable-scroll--sticky-header'),
+      isTrue,
+    );
+    expect(headerCell, isNotNull);
+    expect(headerCell!.getComputedStyle().position, 'sticky');
+    expect(headerCell.getComputedStyle().top, '0px');
+  });
+
+  test('mantem a janela virtual estavel quando o scroll chega ao fim',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.virtualScroll = true;
+      component.virtualRowHeight = 40;
+      component.virtualOverscan = 2;
+      component.virtualViewportHeight = '200px';
+      component.searchInFields = <DatatableSearchField>[];
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: List<Map<String, dynamic>>.generate(
+          50,
+          (index) => <String, dynamic>{
+            'nome': 'Pessoa $index',
+            'idade': 20 + (index % 50),
+          },
+        ),
+        totalRecords: 50,
+      );
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+    final scrollContainer = fixture.rootElement.querySelector(
+      '.datatable-scroll',
+    ) as HtmlElement?;
+
+    expect(scrollContainer, isNotNull);
+
+    scrollContainer!.scrollTop = 999999;
+    scrollContainer.dispatchEvent(Event('scroll'));
+    await _settleAfterScroll(fixture);
+    await _settleAfterScroll(fixture);
+
+    final firstIndexAtBottom = host.table!.rows.first.index;
+    final lastIndexAtBottom = host.table!.rows.last.index;
+    final rowCountAtBottom = host.table!.rows.length;
+
+    await _settleAfterScroll(fixture);
+    await _settleAfterScroll(fixture);
+
+    expect(host.table!.rows.first.index, firstIndexAtBottom);
+    expect(host.table!.rows.last.index, lastIndexAtBottom);
+    expect(host.table!.rows.length, rowCountAtBottom);
+    expect(lastIndexAtBottom, 49);
+  });
+
+  test('virtualiza o grid renderizando apenas a janela visivel', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.virtualScroll = true;
+      component.virtualOverscan = 1;
+      component.virtualViewportHeight = '220px';
+      component.virtualGridItemHeight = 140;
+      component.virtualGridMinItemWidth = 280;
+      component.tableContainerStyle = 'width: 960px;';
+      component.searchInFields = <DatatableSearchField>[];
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: List<Map<String, dynamic>>.generate(
+          200,
+          (index) => <String, dynamic>{
+            'nome': 'Pessoa $index',
+            'idade': 20 + (index % 50),
+          },
+        ),
+        totalRecords: 200,
+      );
+    });
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.table!.changeViewMode();
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+    final gridItems =
+        fixture.rootElement.querySelectorAll('.grid-layout .grid-item');
+    final gridScrollContainer = fixture.rootElement.querySelector(
+      '.datatable-grid-scroll',
+    ) as HtmlElement?;
+
+    expect(fixture.rootElement.querySelector('.datatable-scroll'), isNull);
+    expect(gridScrollContainer, isNotNull);
+    expect(host.table!.rows.length, lessThan(20));
+    expect(gridItems.length, lessThan(20));
+    expect(host.table!.rows.first.index, 0);
+
+    gridScrollContainer!.scrollTop = 1000;
+    gridScrollContainer.dispatchEvent(Event('scroll'));
+    await _settleAfterScroll(fixture);
+
+    expect(host.table!.rows.first.index, greaterThan(0));
+    expect(host.table!.rows.length, lessThan(20));
+  });
 }
 
 Future<void> _settleTable(NgTestFixture<TestHostComponent> fixture) async {
@@ -1698,5 +2430,11 @@ Future<void> _settleTable(NgTestFixture<TestHostComponent> fixture) async {
 Future<void> _settleAfterResize(
     NgTestFixture<TestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 180));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleAfterScroll(
+    NgTestFixture<TestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 40));
   await fixture.update((_) {});
 }

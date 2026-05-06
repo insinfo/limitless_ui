@@ -1,3 +1,4 @@
+//datatable_models.dart
 import 'dart:async';
 
 import 'datatable_col.dart';
@@ -7,13 +8,13 @@ import 'datatable_row.dart';
 /// exporter uses so callers can build their own PDF layout.
 typedef DatatableExportPdfCallback = FutureOr<void> Function(
   List<DatatableRow> rows,
-  List<DatatableCol> visibleColumns,
+  List<DatatableCol> exportColumns,
 );
 
 /// Callback for custom XLSX export.
 typedef DatatableExportXlsxCallback = FutureOr<void> Function(
   List<DatatableRow> rows,
-  List<DatatableCol> visibleColumns,
+  List<DatatableCol> exportColumns,
 );
 
 /// A custom action that appears in the export/actions dropdown menu.
@@ -44,6 +45,48 @@ class DatatableSearchField {
 
   void select() {
     selected = true;
+  }
+}
+
+class LiDatatableInstrumentationEvent {
+  LiDatatableInstrumentationEvent({
+    required this.label,
+    required this.stage,
+    required this.timestamp,
+    this.elapsedMicroseconds,
+    Map<String, Object?> details = const <String, Object?>{},
+  }) : details = Map<String, Object?>.unmodifiable(
+          Map<String, Object?>.from(details),
+        );
+
+  final String label;
+  final String stage;
+  final DateTime timestamp;
+  final int? elapsedMicroseconds;
+  final Map<String, Object?> details;
+
+  double? get elapsedMilliseconds => elapsedMicroseconds == null
+      ? null
+      : elapsedMicroseconds! / Duration.microsecondsPerMillisecond;
+
+  String get formattedMessage {
+    final buffer = StringBuffer(stage);
+    final elapsed = elapsedMilliseconds;
+
+    if (elapsed != null) {
+      buffer.write(' ${elapsed.toStringAsFixed(3)}ms');
+    }
+
+    if (details.isNotEmpty) {
+      buffer.write(' | ');
+      buffer.write(
+        details.entries
+            .map((entry) => '${entry.key}=${entry.value}')
+            .join(' | '),
+      );
+    }
+
+    return buffer.toString();
   }
 }
 

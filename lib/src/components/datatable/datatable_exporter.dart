@@ -1,3 +1,4 @@
+//datatable_exporter.dart
 import 'dart:async';
 import 'dart:html';
 import 'dart:js_util' as js_util;
@@ -51,8 +52,8 @@ class DatatableExporter {
     required List<DatatableRow> rows,
     DivElement? card,
   }) {
-    // Always export all columns regardless of visibility.
-    final allColumns = settings.colsDefinitions;
+    // Always export all exportable columns regardless of visibility.
+    final allColumns = settings.exportColumns;
     if (allColumns.isEmpty) {
       return;
     }
@@ -344,7 +345,7 @@ class DatatableExporter {
   }
 
   static List<DatatableCol> _visibleExportColumns(DatatableSettings settings) {
-    return settings.colsDefinitions.where((col) => col.visibility).toList();
+    return settings.visibleExportColumns;
   }
 
   static List<List<String>> _buildExportRows(
