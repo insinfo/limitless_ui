@@ -1,0 +1,12 @@
+.github/
+.dart_tool_tool/
+referencias/
+scripts/
+site-angulardart/
+site_ngdart/
+
+# Heavy example-only static assets that are not needed in the published package.
+example/web/assets/audio/
+example/web/assets/images/
+example/web/assets/css/
+example/web/themes/
