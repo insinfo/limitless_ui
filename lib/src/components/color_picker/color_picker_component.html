@@ -1,4 +1,5 @@
 <div class="color-picker-wrapper" [class.sp-flat-host]="flat">
+    <div *ngIf="usesMobilePresentation" class="color-picker-mobile-backdrop" (click)="close(source: 'backdrop')"></div>
     <div *ngIf="!flat" class="color-picker-trigger">
         <button #triggerElement type="button" class="btn btn-light sp-replacer" [class.sp-active]="isOpen"
             [class.sp-disabled]="isDisabled" [class.is-invalid]="effectiveInvalid" [class.is-valid]="effectiveValid"
@@ -21,7 +22,10 @@
         [class.sp-clear-enabled]="allowEmpty" [class.sp-buttons-disabled]="!showButtons"
         [class.sp-palette-buttons-disabled]="!showTogglePaletteButton" [class.sp-palette-disabled]="!hasPaletteContent"
         [class.sp-palette-only]="isPaletteOnlyView" [class.sp-initial-disabled]="!(showInitial && hasInitialColor)"
-        [class.sp-dragging]="isDragging" (click)="onPanelClick($event)">
+        [class.sp-dragging]="isDragging" [class.sp-container--mobile-modal]="usesMobileModal"
+        [class.sp-container--mobile-sheet]="usesMobileSheet" (click)="onPanelClick($event)"
+        [attr.role]="usesMobilePresentation ? 'dialog' : null"
+        [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
         <div class="sp-palette-container">
             <div *ngIf="hasPaletteContent" class="sp-palette sp-thumb sp-cf">
                 <div *ngFor="let row of resolvedPaletteRows; trackBy: trackByPaletteRow" [class]="row.rowClass">

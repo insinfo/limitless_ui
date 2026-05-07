@@ -224,6 +224,21 @@ class LiDateRangePickerComponent
   @Input()
   bool showClearButton = true;
 
+  /// Mobile presentation for small viewports.
+  ///
+  /// `dropdown` keeps the normal anchored overlay. `modal` shows a centered
+  /// fixed dialog with a backdrop, and `sheet` shows a bottom sheet.
+  @Input()
+  String mobilePresentation = 'dropdown';
+
+  /// CSS `max-width` media-query used by [mobilePresentation].
+  @Input()
+  String mobileBreakpoint = '767.98px';
+
+  /// Optional CSS `max-height` media-query used by [mobilePresentation].
+  @Input()
+  String mobileHeightBreakpoint = '';
+
   @Output()
   Stream<DateTime?> get inicioChange => _inicioChangeController.stream;
 
@@ -383,6 +398,26 @@ class LiDateRangePickerComponent
 
   String get rightHeaderLabel => _headerLabel(rightMonth, rightViewMode);
 
+  bool get usesMobileModal =>
+      isOpen &&
+      matchesResponsivePresentation(
+        configuredPresentation: mobilePresentation,
+        presentation: 'modal',
+        widthBreakpoint: mobileBreakpoint,
+        heightBreakpoint: mobileHeightBreakpoint,
+      );
+
+  bool get usesMobileSheet =>
+      isOpen &&
+      matchesResponsivePresentation(
+        configuredPresentation: mobilePresentation,
+        presentation: 'sheet',
+        widthBreakpoint: mobileBreakpoint,
+        heightBreakpoint: mobileHeightBreakpoint,
+      );
+
+  bool get usesMobilePresentation => usesMobileModal || usesMobileSheet;
+
   void toggleOpen() {
     if (isDisabled) {
       return;
@@ -396,7 +431,6 @@ class LiDateRangePickerComponent
   }
 
   void _open() {
-    _ensureOverlay();
     draftInicio = _normalize(inicio);
     draftFim = _normalize(fim);
     hoverDateValue = null;
@@ -405,8 +439,13 @@ class LiDateRangePickerComponent
     leftViewMode = DateRangePickerViewMode.day;
     rightViewMode = DateRangePickerViewMode.day;
     isOpen = true;
-    _overlay?.startAutoUpdate();
-    _overlay?.update();
+    if (!usesMobilePresentation) {
+      _ensureOverlay();
+      _overlay?.startAutoUpdate();
+      _overlay?.update();
+    } else {
+      _overlay?.stopAutoUpdate();
+    }
     _bindDocumentListeners();
     _markForCheck();
   }
@@ -662,10 +701,11 @@ class LiDateRangePickerComponent
     _overlay = PopperAnchoredOverlay.attach(
       referenceElement: reference,
       floatingElement: floating,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiDateRangePickerComponent',
-        hostZIndex: '1085',
-        floatingZIndex: '1086',
+        referenceElement: reference,
+        baseHostZIndex: 1085,
+        baseFloatingZIndex: 1086,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',
@@ -684,6 +724,10 @@ class LiDateRangePickerComponent
 
   void _handleOverlayLayout(PopperLayout layout) {
     normalizeOverlayVerticalPosition(
+      floatingElement: panelElement,
+      layout: layout,
+    );
+    constrainOverlayHeightToViewport(
       floatingElement: panelElement,
       layout: layout,
     );

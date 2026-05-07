@@ -80,6 +80,37 @@ class DateRangePickerAliasTestHostComponent {
   }
 }
 
+@Component(
+  selector: 'li-date-range-picker-mobile-test-host',
+  template: '''
+    <li-date-range-picker
+        #picker
+        [inicio]="rangeStart"
+        [fim]="rangeEnd"
+        mobilePresentation="modal"
+        mobileHeightBreakpoint="9999px"
+        (inicioChange)="onStartChange(\$event)"
+        (fimChange)="onEndChange(\$event)">
+    </li-date-range-picker>
+  ''',
+  directives: [coreDirectives, LiDateRangePickerComponent],
+)
+class DateRangePickerMobileTestHostComponent {
+  @ViewChild('picker')
+  LiDateRangePickerComponent? picker;
+
+  DateTime? rangeStart = DateTime(2026, 4, 10);
+  DateTime? rangeEnd = DateTime(2026, 4, 12);
+
+  void onStartChange(DateTime? value) {
+    rangeStart = value;
+  }
+
+  void onEndChange(DateTime? value) {
+    rangeEnd = value;
+  }
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
 
@@ -88,6 +119,9 @@ void main() {
   );
   final aliasTestBed = NgTestBed<DateRangePickerAliasTestHostComponent>(
     ng.DateRangePickerAliasTestHostComponentNgFactory,
+  );
+  final mobileTestBed = NgTestBed<DateRangePickerMobileTestHostComponent>(
+    ng.DateRangePickerMobileTestHostComponentNgFactory,
   );
 
   test('clear button resets the selected range', () async {
@@ -327,6 +361,30 @@ void main() {
     expect(host.picker!.inicio, DateTime(2026, 4, 8));
     expect(host.picker!.fim, DateTime(2026, 4, 20));
   });
+
+  test('can present as a centered mobile modal', () async {
+    final fixture = await mobileTestBed.create();
+    await _settleMobile(fixture);
+
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleMobile(fixture);
+
+    final panel = fixture.rootElement.querySelector(
+      '.date-range-open--mobile-modal.is-open',
+    );
+    expect(panel, isNotNull);
+    expect(panel!.getAttribute('role'), 'dialog');
+    expect(panel.getAttribute('aria-modal'), 'true');
+    expect(
+      fixture.rootElement.querySelector('.date-range-mobile-backdrop'),
+      isNotNull,
+    );
+  });
 }
 
 Future<void> _settle(
@@ -338,6 +396,13 @@ Future<void> _settle(
 
 Future<void> _settleAlias(
   NgTestFixture<DateRangePickerAliasTestHostComponent> fixture,
+) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleMobile(
+  NgTestFixture<DateRangePickerMobileTestHostComponent> fixture,
 ) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});

@@ -29,10 +29,19 @@ class ModalSizeShowcaseItem {
   directives: [
     coreDirectives,
     DemoPageBreadcrumbComponent,
+    formDirectives,
+    LiColorPickerComponent,
+    LiDatePickerComponent,
+    LiDateRangePickerComponent,
     LiHighlightComponent,
+    LiMultiSelectComponent,
     LiTabsComponent,
     LiTabxDirective,
     LiModalComponent,
+    LiSelectComponent,
+    LiTagFilterComponent,
+    LiTimePickerComponent,
+    LiTooltipDirective,
   ],
 )
 class ModalPageComponent {
@@ -274,7 +283,53 @@ void closeReviewModal() {
   @ViewChild('lazyPreviewModal')
   LiModalComponent? lazyPreviewModal;
 
+  @ViewChild('overlayFieldsModal')
+  LiModalComponent? overlayFieldsModal;
+
+  @ViewChild('overlayPickersModal')
+  LiModalComponent? overlayPickersModal;
+
+  @ViewChild('stackedOverlayParentModal')
+  LiModalComponent? stackedOverlayParentModal;
+
+  @ViewChild('stackedOverlayChildModal')
+  LiModalComponent? stackedOverlayChildModal;
+
   final List<int> scrollLines = List<int>.generate(18, (index) => index + 1);
+
+  final List<Map<String, dynamic>> modalStatusOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 'draft', 'label': 'Draft'},
+    <String, dynamic>{'id': 'review', 'label': 'Review'},
+    <String, dynamic>{'id': 'approved', 'label': 'Approved'},
+  ];
+
+  final List<Map<String, dynamic>> modalChannelOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 'email', 'label': 'Email'},
+    <String, dynamic>{'id': 'push', 'label': 'Push'},
+    <String, dynamic>{'id': 'sms', 'label': 'SMS'},
+    <String, dynamic>{'id': 'portal', 'label': 'Portal'},
+  ];
+
+  final List<Map<String, dynamic>> modalTagOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 1, 'nome': 'Financeiro', 'cor': '#0c83ff'},
+    <String, dynamic>{'id': 2, 'nome': 'Sigiloso', 'cor': '#ef4444'},
+    <String, dynamic>{'id': 3, 'nome': 'Prioridade alta', 'cor': '#f59e0b'},
+  ];
+
+  String modalSelectedStatus = 'review';
+  List<dynamic> modalSelectedChannels = <dynamic>['email', 'push'];
+  List<dynamic> modalSelectedTags = <dynamic>[2];
+  List<dynamic> modalSelectedTagModels = <dynamic>[];
+  int modalTagReloadCount = 0;
+  DateTime? modalSelectedDate = DateTime(2026, 5, 14);
+  DateTime? modalRangeStart = DateTime(2026, 5, 14);
+  DateTime? modalRangeEnd = DateTime(2026, 5, 20);
+  Duration? modalSelectedTime = const Duration(hours: 14, minutes: 30);
+  String? modalAccentColor = '#27ADCA';
+
+  DateTime? parentStackedDate = DateTime(2026, 5, 16);
+  DateTime? childStackedDate = DateTime(2026, 5, 18);
+  List<dynamic> childStackedChannels = <dynamic>['portal', 'sms'];
 
   List<String> get rolloutSteps => _isPt
       ? const <String>[
@@ -515,6 +570,75 @@ void closeReviewModal() {
           'When closed, the body is removed again.',
         ];
   String get closeLabel => _isPt ? 'Fechar' : 'Close';
+  String get overlayLabTitle =>
+      _isPt ? 'Laboratório de overlays em modal' : 'Modal overlay lab';
+  String get overlayLabLead => _isPt
+      ? 'Abra os cenários abaixo para validar componentes que renderizam overlay acima do backdrop e também em modal sobre modal.'
+      : 'Open the scenarios below to validate components that render overlays above the backdrop, including modal-over-modal flows.';
+  String get overlayFieldsTitle =>
+      _isPt ? 'Tooltip, select e filtros' : 'Tooltip, select, and filters';
+  String get overlayFieldsBody => _isPt
+      ? 'Reúne tooltip com container body, select, multi-select e tag filter no mesmo diálogo.'
+      : 'Combines a body-mounted tooltip, select, multi-select, and tag filter inside the same dialog.';
+  String get overlayPickersTitle =>
+      _isPt ? 'Date, range, time e color' : 'Date, range, time, and color';
+  String get overlayPickersBody => _isPt
+      ? 'Exercita os pickers com portal acima do modal para inspeção visual rápida.'
+      : 'Exercises the pickers with portal overlays above the modal for quick visual inspection.';
+  String get stackedOverlayTitle =>
+      _isPt ? 'Modal dentro de modal' : 'Modal inside modal';
+  String get stackedOverlayBody => _isPt
+      ? 'Abre um segundo modal por cima do primeiro para validar date picker e tooltip no topo da pilha.'
+      : 'Opens a second modal above the first to validate date pickers and tooltips at the top of the stack.';
+  String get openOverlayFieldsLabel =>
+      _isPt ? 'Abrir cenário de fields' : 'Open fields scenario';
+  String get openOverlayPickersLabel =>
+      _isPt ? 'Abrir cenário de pickers' : 'Open pickers scenario';
+  String get openStackedOverlayLabel =>
+      _isPt ? 'Abrir cenário empilhado' : 'Open stacked scenario';
+  String get overlayTooltipText => _isPt
+      ? 'Tooltip com container body dentro do modal. Ele deve aparecer acima do backdrop e do conteúdo do diálogo.'
+      : 'Tooltip with container body inside the modal. It should render above the backdrop and the dialog content.';
+  String get overlayFieldsModalTitle => _isPt
+      ? 'Campos com overlay dentro do modal'
+      : 'Overlay fields inside modal';
+  String get overlayPickersModalTitle => _isPt
+      ? 'Pickers com overlay dentro do modal'
+      : 'Overlay pickers inside modal';
+  String get stackedParentModalTitle =>
+      _isPt ? 'Modal pai com overlays' : 'Parent modal with overlays';
+  String get stackedChildModalTitle =>
+      _isPt ? 'Modal filho com overlays' : 'Child modal with overlays';
+  String get selectedStatusInModalLabel =>
+      _isPt ? 'Status selecionado' : 'Selected status';
+  String get selectedChannelsInModalLabel =>
+      _isPt ? 'Canais selecionados' : 'Selected channels';
+  String get selectedTagsInModalLabel =>
+      _isPt ? 'Etiquetas selecionadas' : 'Selected tags';
+  String get reloadCountLabel => _isPt ? 'Recargas pedidas' : 'Reload requests';
+  String get selectedDateInModalLabel =>
+      _isPt ? 'Data selecionada' : 'Selected date';
+  String get selectedRangeInModalLabel =>
+      _isPt ? 'Período selecionado' : 'Selected range';
+  String get selectedTimeInModalLabel =>
+      _isPt ? 'Hora selecionada' : 'Selected time';
+  String get selectedColorInModalLabel =>
+      _isPt ? 'Cor selecionada' : 'Selected color';
+  String get openChildModalLabel =>
+      _isPt ? 'Abrir modal filho' : 'Open child modal';
+  String get closeParentModalLabel =>
+      _isPt ? 'Fechar modal pai' : 'Close parent modal';
+  String get closeChildModalLabel =>
+      _isPt ? 'Fechar modal filho' : 'Close child modal';
+  String get stackedParentLead => _isPt
+      ? 'Use o botão abaixo para abrir um segundo modal e depois teste tooltip, select e date picker na camada superior.'
+      : 'Use the button below to open a second modal and then test tooltip, select, and date pickers on the upper layer.';
+  String get overlayFieldSummaryIntro => _isPt
+      ? 'Clique no tooltip, abra os selects e acione o reload do tag filter para conferir a sobreposição.'
+      : 'Click the tooltip, open the selects, and trigger tag filter reload to confirm overlay stacking.';
+  String get overlayPickerSummaryIntro => _isPt
+      ? 'Abra cada picker dentro do modal e verifique se o painel aparece acima do backdrop.'
+      : 'Open each picker inside the modal and verify that the panel appears above the backdrop.';
 
   String get activeSizeShowcaseTitle =>
       _isPt ? activeSizeShowcase.titlePt : activeSizeShowcase.titleEn;
@@ -663,7 +787,116 @@ void closeReviewModal() {
     modalEventLog = 'Modal lazy aberto. O conteúdo só foi montado agora.';
   }
 
+  void openOverlayFieldsModal() {
+    _setInitialLog();
+    overlayFieldsModal?.open();
+    modalEventLog = _isPt
+        ? 'Laboratório de tooltip, select e filtros aberto.'
+        : 'Tooltip, select, and filter lab opened.';
+  }
+
+  void openOverlayPickersModal() {
+    _setInitialLog();
+    overlayPickersModal?.open();
+    modalEventLog =
+        _isPt ? 'Laboratório de pickers aberto.' : 'Picker lab opened.';
+  }
+
+  void openStackedOverlayParentModal() {
+    _setInitialLog();
+    stackedOverlayParentModal?.open();
+    modalEventLog = _isPt
+        ? 'Modal pai do cenário empilhado aberto.'
+        : 'Stacked scenario parent modal opened.';
+  }
+
+  void openStackedOverlayChildModal() {
+    stackedOverlayChildModal?.open();
+    modalEventLog = _isPt
+        ? 'Modal filho aberto sobre o modal pai.'
+        : 'Child modal opened above the parent modal.';
+  }
+
+  void onModalTagModelsChange(List<dynamic> models) {
+    modalSelectedTagModels = models;
+  }
+
+  void onModalTagReloadRequest() {
+    modalTagReloadCount += 1;
+  }
+
+  void onStackedParentClosed() {
+    stackedOverlayChildModal?.close();
+    onModalClosed(_isPt ? 'Modal pai empilhado' : 'Stacked parent modal');
+  }
+
   void onModalClosed(String label) {
     modalEventLog = '$label fechado.';
+  }
+
+  String get modalSelectedStatusLabel =>
+      _labelFor(modalSelectedStatus, modalStatusOptions, 'id', 'label');
+
+  String get modalSelectedChannelsLabel => modalSelectedChannels
+      .map((dynamic id) =>
+          _labelFor(id.toString(), modalChannelOptions, 'id', 'label'))
+      .join(', ');
+
+  String get modalSelectedTagsLabel {
+    if (modalSelectedTagModels.isNotEmpty) {
+      return modalSelectedTagModels
+          .map((dynamic item) => (item as Map<String, dynamic>)['nome'])
+          .join(', ');
+    }
+    return modalSelectedTags
+        .map((dynamic id) => _labelFor(id, modalTagOptions, 'id', 'nome'))
+        .join(', ');
+  }
+
+  String get modalSelectedDateLabel => _formatDate(modalSelectedDate);
+
+  String get modalSelectedRangeLabel =>
+      '${_formatDate(modalRangeStart)} - ${_formatDate(modalRangeEnd)}';
+
+  String get modalSelectedTimeLabel => _formatDuration(modalSelectedTime);
+
+  String get modalSelectedColorLabel =>
+      modalAccentColor == null || modalAccentColor!.isEmpty
+          ? (_isPt ? 'Sem cor' : 'No color')
+          : modalAccentColor!;
+
+  String _labelFor(
+    dynamic value,
+    List<Map<String, dynamic>> source,
+    String valueKey,
+    String labelKey,
+  ) {
+    for (final item in source) {
+      if (item[valueKey] == value) {
+        return item[labelKey] as String;
+      }
+    }
+    return '$value';
+  }
+
+  String _formatDate(DateTime? value) {
+    if (value == null) {
+      return _isPt ? 'Nao definida' : 'Not set';
+    }
+    final day = value.day.toString().padLeft(2, '0');
+    final month = value.month.toString().padLeft(2, '0');
+    return '$day/$month/${value.year}';
+  }
+
+  String _formatDuration(Duration? value) {
+    if (value == null) {
+      return _isPt ? 'Nao definida' : 'Not set';
+    }
+    final totalMinutes = value.inMinutes % (24 * 60);
+    final normalizedMinutes =
+        totalMinutes < 0 ? totalMinutes + (24 * 60) : totalMinutes;
+    final hour = (normalizedMinutes ~/ 60).toString().padLeft(2, '0');
+    final minute = (normalizedMinutes % 60).toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 }

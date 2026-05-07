@@ -83,6 +83,9 @@ class _LiPopoverFloatingOverlay {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiPopoverComponent implements OnDestroy {
+  static const int _defaultOverlayZIndex = 1080;
+  static const int _modalOverlayZIndexOffset = 1;
+
   LiPopoverComponent(this._hostElement, this._viewContainerRef,
       [@Optional() LiPopoverConfig? config])
       : _config = config ?? LiPopoverConfig() {
@@ -712,16 +715,17 @@ class LiPopoverComponent implements OnDestroy {
     _bindPopoverHoverListeners();
 
     final localContainer = _resolveOverlayContainer();
+    final overlayZIndex = _resolveOverlayZIndex().toString();
 
     _overlay = _LiPopoverFloatingOverlay.attach(
       referenceElement: _referenceElement,
       floatingElement: popoverElement,
       localContainer: localContainer,
       appendToBody: _appendToBody,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: PopperPortalOptions(
         hostClassName: 'LiPopoverComponent',
-        hostZIndex: '1080',
-        floatingZIndex: '1080',
+        hostZIndex: overlayZIndex,
+        floatingZIndex: overlayZIndex,
       ),
       popperOptions: _buildPopperOptions(popoverArrowElement),
     );
@@ -1050,6 +1054,59 @@ class LiPopoverComponent implements OnDestroy {
     return _referenceElement.parent ??
         _hostElement.parent ??
         html.document.body!;
+  }
+
+  int _resolveOverlayZIndex() {
+    final owningModal = _resolveOwningModalElement();
+    final owningModalZIndex = _parseElementZIndex(owningModal);
+    if (owningModalZIndex != null) {
+      return owningModalZIndex + _modalOverlayZIndexOffset;
+    }
+
+    final topModalZIndex = _highestOpenModalZIndex();
+    if (topModalZIndex != null) {
+      return topModalZIndex + _modalOverlayZIndexOffset;
+    }
+
+    return _defaultOverlayZIndex;
+  }
+
+  html.Element? _resolveOwningModalElement() {
+    return _referenceElement.closest('.modal') ??
+        _hostElement.closest('.modal');
+  }
+
+  int? _highestOpenModalZIndex() {
+    final openModals =
+        html.document.querySelectorAll('.modal[data-status="open"]');
+    int? highestZIndex;
+
+    for (final modal in openModals) {
+      final zIndex = _parseElementZIndex(modal);
+      if (zIndex == null) {
+        continue;
+      }
+      if (highestZIndex == null || zIndex > highestZIndex) {
+        highestZIndex = zIndex;
+      }
+    }
+
+    return highestZIndex;
+  }
+
+  int? _parseElementZIndex(html.Element? element) {
+    if (element == null) {
+      return null;
+    }
+
+    final inlineZIndex = int.tryParse(element.style.zIndex.trim());
+    if (inlineZIndex != null) {
+      return inlineZIndex;
+    }
+
+    final computedZIndex =
+        int.tryParse(element.getComputedStyle().zIndex.trim());
+    return computedZIndex;
   }
 
   void _bindDocumentListeners() {

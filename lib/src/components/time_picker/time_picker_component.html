@@ -1,4 +1,5 @@
 <div class="time-picker-wrapper">
+    <div *ngIf="usesMobilePresentation" class="time-picker-mobile-backdrop" (click)="close()"></div>
     <div *ngIf="usesOverlayTriggerIcon" #triggerElement class="time-picker-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedOverlayInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
@@ -32,7 +33,12 @@
     <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>
     <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 
-    <div #panelElement class="time-picker-panel daterangepicker single ltr show-calendar opensright" [class.is-open]="isOpen">
+    <div #panelElement class="time-picker-panel daterangepicker single ltr show-calendar opensright"
+        [class.time-picker-panel--mobile-modal]="usesMobileModal"
+        [class.time-picker-panel--mobile-sheet]="usesMobileSheet"
+        [class.is-open]="isOpen"
+        [attr.role]="usesMobilePresentation ? 'dialog' : null"
+        [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
         <div class="time-picker-panel-shell">
             <div class="time-picker-title">{{ titleLabel }}</div>
 
@@ -91,9 +97,9 @@
             </div>
 
             <div class="time-picker-footer">
-                <button *ngIf="showClearButton" type="button" class="btn btn-link" (click)="clear()">{{ clearLabel }}</button>
-                <button type="button" class="btn btn-link" (click)="close()">{{ cancelLabel }}</button>
-                <button type="button" class="btn btn-link text-primary" (click)="apply()">{{ okLabel }}</button>
+                <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" (click)="clear()">{{ clearLabel }}</button>
+                <button type="button" class="btn btn-light btn-sm" (click)="close()">{{ cancelLabel }}</button>
+                <button type="button" class="btn btn-primary btn-sm" (click)="apply()">{{ okLabel }}</button>
             </div>
         </div>
     </div>

@@ -10,6 +10,19 @@
 .date-range-wrapper {
     position: relative;
     width: 100%;
+    --li-date-range-trigger-bg: var(--input-group-addon-bg, var(--gray-100));
+    --li-date-range-trigger-color: var(--input-group-addon-color, var(--body-color));
+    --li-date-range-trigger-border-color: var(--input-group-addon-border-color, var(--gray-400));
+    --li-date-range-trigger-hover-bg: color-mix(in srgb, var(--li-date-range-trigger-bg) 92%, var(--body-color) 8%);
+    --li-date-range-trigger-disabled-bg: var(--input-disabled-bg, var(--li-date-range-trigger-bg));
+    --li-date-range-trigger-disabled-border-color: var(--input-disabled-border-color, var(--li-date-range-trigger-border-color));
+}
+
+.date-range-mobile-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1085;
+    background: rgba(0, 0, 0, 0.35);
 }
 
 .date-range-trigger-shell {
@@ -101,22 +114,22 @@
 }
 
 .date-range-trigger-button {
-    background-color: var(--input-bg, var(--card-bg, var(--white)));
-    color: var(--input-color, var(--body-color));
-    border-color: var(--input-border-color, var(--border-color));
+    background-color: var(--li-date-range-trigger-bg);
+    color: var(--li-date-range-trigger-color);
+    border-color: var(--li-date-range-trigger-border-color);
 }
 
 .date-range-trigger-button:not(:disabled):hover,
 .date-range-trigger-button:not(:disabled):focus {
-    background-color: var(--input-focus-bg, var(--input-bg, var(--card-bg, var(--white))));
-    color: var(--input-color, var(--body-color));
-    border-color: var(--input-border-color, var(--border-color));
+    background-color: var(--li-date-range-trigger-hover-bg);
+    color: var(--li-date-range-trigger-color);
+    border-color: var(--li-date-range-trigger-border-color);
 }
 
 .date-range-trigger-button:disabled {
-    background-color: var(--input-disabled-bg, color-mix(in srgb, var(--body-bg) 88%, var(--body-color) 12%));
+    background-color: var(--li-date-range-trigger-disabled-bg);
     color: var(--text-muted);
-    border-color: var(--input-disabled-border-color, var(--border-color));
+    border-color: var(--li-date-range-trigger-disabled-border-color);
 }
 
 .daterangepicker.date-range-open {
@@ -128,8 +141,65 @@
     display: none;
 }
 
-.daterangepicker.date-range-open.is-open {
+.daterangepicker.date-range-open.date-range-open--mobile-modal,
+.daterangepicker.date-range-open.date-range-open--mobile-sheet {
+    position: fixed !important;
+    z-index: 1086;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 2rem) !important;
+    overflow: hidden !important;
+    overscroll-behavior: contain;
+}
+
+.daterangepicker.date-range-open.date-range-open--mobile-modal {
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: min(calc(100vw - 2rem), 44rem) !important;
+    max-width: none !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.daterangepicker.date-range-open.date-range-open--mobile-sheet {
+    top: auto !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: calc(100dvh - 1.5rem) !important;
+    transform: none !important;
+}
+
+.daterangepicker.date-range-open.date-range-open--mobile-modal .drp-calendars,
+.daterangepicker.date-range-open.date-range-open--mobile-sheet .drp-calendars {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.daterangepicker.date-range-open.date-range-open--mobile-modal .drp-calendar,
+.daterangepicker.date-range-open.date-range-open--mobile-sheet .drp-calendar {
+    min-width: 0;
+}
+
+.daterangepicker.date-range-open.date-range-open--mobile-modal .drp-calendar.left,
+.daterangepicker.date-range-open.date-range-open--mobile-sheet .drp-calendar.left {
+    border-right: var(--border-width) solid var(--border-color);
+    border-bottom: 0;
+}
+
+.daterangepicker.date-range-open.is-open:not(.date-range-open--mobile-modal):not(.date-range-open--mobile-sheet) {
     display: block;
+}
+
+.daterangepicker.date-range-open.date-range-open--mobile-modal.is-open,
+.daterangepicker.date-range-open.date-range-open--mobile-sheet.is-open {
+    display: flex;
 }
 
 .daterangepicker .drp-calendars {
@@ -255,9 +325,18 @@
 .daterangepicker.date-range-open .drp-buttons {
     display: flex;
     flex-wrap: wrap;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: flex-end;
     gap: 0.5rem;
+}
+
+.daterangepicker.date-range-open.date-range-open--mobile-modal .drp-buttons,
+.daterangepicker.date-range-open.date-range-open--mobile-sheet .drp-buttons {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    background: var(--drp-bg, color-mix(in srgb, var(--body-bg) 94%, var(--body-color) 6%));
 }
 
 .daterangepicker.date-range-open .drp-selected {
@@ -265,7 +344,7 @@
 }
 
 @media (max-width: 767.98px) {
-    .daterangepicker.date-range-open {
+    .daterangepicker.date-range-open:not(.date-range-open--mobile-modal):not(.date-range-open--mobile-sheet) {
         left: 50% !important;
         right: auto !important;
         top: 50% !important;
@@ -277,15 +356,15 @@
         transform: translate(-50%, -50%) !important;
     }
 
-    .daterangepicker .drp-calendars {
+    .daterangepicker.date-range-open .drp-calendars {
         display: block;
     }
 
-    .daterangepicker .drp-calendar {
+    .daterangepicker.date-range-open .drp-calendar {
         min-width: 0;
     }
 
-    .daterangepicker .drp-calendar.left {
+    .daterangepicker.date-range-open .drp-calendar.left {
         border-right: 0;
         border-bottom: var(--border-width) solid var(--border-color);
     }
@@ -297,5 +376,22 @@
     .daterangepicker.date-range-open .drp-selected {
         flex: 1 1 100%;
         margin-right: 0;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .daterangepicker.date-range-open.date-range-open--mobile-modal {
+        top: 0.75rem !important;
+        right: 0.75rem !important;
+        bottom: 0.75rem !important;
+        left: 0.75rem !important;
+        width: auto !important;
+        max-height: calc(100dvh - 1.5rem) !important;
+        transform: none !important;
+    }
+
+    .daterangepicker.date-range-open.date-range-open--mobile-modal .drp-calendars,
+    .daterangepicker.date-range-open.date-range-open--mobile-sheet .drp-calendars {
+        display: block;
     }
 }

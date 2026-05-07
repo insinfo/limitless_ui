@@ -128,6 +128,21 @@ class LiTimePickerComponent
   @Input()
   bool showClearButton = true;
 
+  /// Mobile presentation for small viewports.
+  ///
+  /// `dropdown` keeps the normal anchored overlay. `modal` shows a centered
+  /// fixed dialog with a backdrop, and `sheet` shows a bottom sheet.
+  @Input()
+  String mobilePresentation = 'dropdown';
+
+  /// CSS `max-width` media-query used by [mobilePresentation].
+  @Input()
+  String mobileBreakpoint = '767.98px';
+
+  /// Optional CSS `max-height` media-query used by [mobilePresentation].
+  @Input()
+  String mobileHeightBreakpoint = '';
+
   @Output()
   Stream<Duration?> get valueChange => _valueChangeController.stream;
 
@@ -321,6 +336,26 @@ class LiTimePickerComponent
         showsTriggerIcon ? 'time-picker-field--overlay-trigger' : '',
       ]);
 
+  bool get usesMobileModal =>
+      isOpen &&
+      matchesResponsivePresentation(
+        configuredPresentation: mobilePresentation,
+        presentation: 'modal',
+        widthBreakpoint: mobileBreakpoint,
+        heightBreakpoint: mobileHeightBreakpoint,
+      );
+
+  bool get usesMobileSheet =>
+      isOpen &&
+      matchesResponsivePresentation(
+        configuredPresentation: mobilePresentation,
+        presentation: 'sheet',
+        widthBreakpoint: mobileBreakpoint,
+        heightBreakpoint: mobileHeightBreakpoint,
+      );
+
+  bool get usesMobilePresentation => usesMobileModal || usesMobileSheet;
+
   double get handDegrees => isHourMode
       ? ((use24Hour ? draftHour24 % 12 : displayHour12 % 12) * 30).toDouble()
       : draftMinute * 6.0;
@@ -395,13 +430,17 @@ class LiTimePickerComponent
   }
 
   void _open() {
-    _ensureOverlay();
     _syncDraftFromValue();
     _syncInputTexts();
     dialMode = TimePickerDialMode.hour;
     isOpen = true;
-    _overlay?.startAutoUpdate();
-    _overlay?.update();
+    if (!usesMobilePresentation) {
+      _ensureOverlay();
+      _overlay?.startAutoUpdate();
+      _overlay?.update();
+    } else {
+      _overlay?.stopAutoUpdate();
+    }
     _bindDocumentListeners();
     _markForCheck();
   }
@@ -667,10 +706,11 @@ class LiTimePickerComponent
     _overlay = PopperAnchoredOverlay.attach(
       referenceElement: reference,
       floatingElement: floating,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiTimePickerComponent',
-        hostZIndex: '1085',
-        floatingZIndex: '1086',
+        referenceElement: reference,
+        baseHostZIndex: 1085,
+        baseFloatingZIndex: 1086,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',
@@ -689,6 +729,10 @@ class LiTimePickerComponent
 
   void _handleOverlayLayout(PopperLayout layout) {
     normalizeOverlayVerticalPosition(
+      floatingElement: panelElement,
+      layout: layout,
+    );
+    constrainOverlayHeightToViewport(
       floatingElement: panelElement,
       layout: layout,
     );

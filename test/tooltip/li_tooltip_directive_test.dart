@@ -95,10 +95,25 @@ import 'li_tooltip_directive_test.template.dart' as ng;
       </button>
 
       <button id="outside-target" type="button">Outside target</button>
+
+      <button id="open-modal-host" type="button" (click)="modalHost?.open()">
+        Open modal host
+      </button>
+
+      <li-modal #modalHost title-text="Tooltip modal host">
+        <button
+            id="modal-body-trigger"
+            [liTooltip]="modalBodyText"
+            triggers="click"
+            container="body"
+            [animation]="false">
+          Modal body trigger
+        </button>
+      </li-modal>
     </div>
   ''',
   providers: [ClassProvider(LiTooltipConfig)],
-  directives: [coreDirectives, LiTooltipDirective],
+  directives: [coreDirectives, LiModalComponent, LiTooltipDirective],
 )
 class TooltipTestHostComponent {
   TooltipTestHostComponent(this.tooltipConfig) {
@@ -122,12 +137,16 @@ class TooltipTestHostComponent {
   String configText = 'Tooltip driven by config defaults';
   String inlineText = 'Inline tooltip body';
   String bodyText = 'Body tooltip body';
+  String modalBodyText = 'Tooltip body inside modal';
   String templateText = 'Tooltip rendered from TemplateRef';
 
   int showCount = 0;
   int shownCount = 0;
   int hideCount = 0;
   int hiddenCount = 0;
+
+  @ViewChild('modalHost')
+  LiModalComponent? modalHost;
 
   void toggleManualTooltip() {
     manualTooltip?.toggle();
@@ -342,15 +361,65 @@ void main() {
     expect(templateBody, isNotNull);
     expect(templateBody!.text, contains('Tooltip rendered from TemplateRef'));
   });
+
+  test('tooltip em modal renderiza acima do z-index do modal', () async {
+    final fixture = await testBed.create();
+    await _settleTooltip(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-modal-host');
+    });
+    await _settleTooltip(fixture);
+
+    await fixture.update((_) {
+      _clickById('modal-body-trigger');
+    });
+    await _settleTooltip(fixture);
+
+    final tooltip = _tooltipElement();
+    final tooltipPortalHost = _tooltipPortalHost();
+    final modalRoot = _modalRootByTitle('Tooltip modal host');
+
+    expect(tooltip, isNotNull);
+    expect(tooltipPortalHost, isNotNull);
+    expect(modalRoot, isNotNull);
+    expect(
+      int.parse(tooltipPortalHost!.style.zIndex),
+      greaterThan(int.parse(modalRoot!.style.zIndex)),
+    );
+  });
 }
 
 void _click(html.Element element) {
   element.dispatchEvent(html.MouseEvent('click', canBubble: true));
 }
 
+void _clickById(String id) {
+  final element = html.document.body!.querySelector('#$id');
+  if (element is html.Element) {
+    _click(element);
+  }
+}
+
 html.DivElement? _tooltipElement() {
   final tooltip = html.document.querySelector('.tooltip');
   return tooltip is html.DivElement ? tooltip : null;
+}
+
+html.DivElement? _tooltipPortalHost() {
+  final host = html.document.querySelector('.LiTooltipComponent');
+  return host is html.DivElement ? host : null;
+}
+
+html.Element? _modalRootByTitle(String titleText) {
+  final titles = html.document.body!.querySelectorAll('.modal-title');
+  for (final title in titles) {
+    if (title.text?.trim() != titleText) {
+      continue;
+    }
+    return title.closest('.modal');
+  }
+  return null;
 }
 
 Future<void> _settleTooltip(

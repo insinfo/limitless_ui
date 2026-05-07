@@ -1,6 +1,19 @@
 .time-picker-wrapper {
     position: relative;
     width: 100%;
+    --li-time-picker-trigger-bg: var(--input-group-addon-bg, var(--gray-100));
+    --li-time-picker-trigger-color: var(--input-group-addon-color, var(--body-color));
+    --li-time-picker-trigger-border-color: var(--input-group-addon-border-color, var(--gray-400));
+    --li-time-picker-trigger-hover-bg: color-mix(in srgb, var(--li-time-picker-trigger-bg) 92%, var(--body-color) 8%);
+    --li-time-picker-trigger-disabled-bg: var(--input-disabled-bg, var(--li-time-picker-trigger-bg));
+    --li-time-picker-trigger-disabled-border-color: var(--input-disabled-border-color, var(--li-time-picker-trigger-border-color));
+}
+
+.time-picker-mobile-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1085;
+    background: rgba(0, 0, 0, 0.35);
 }
 
 .time-picker-trigger-shell {
@@ -101,22 +114,22 @@
 }
 
 .time-picker-trigger-button {
-    background-color: var(--input-bg, var(--card-bg, var(--white)));
-    color: var(--input-color, var(--body-color));
-    border-color: var(--input-border-color, var(--border-color));
+    background-color: var(--li-time-picker-trigger-bg);
+    color: var(--li-time-picker-trigger-color);
+    border-color: var(--li-time-picker-trigger-border-color);
 }
 
 .time-picker-trigger-button:not(:disabled):hover,
 .time-picker-trigger-button:not(:disabled):focus {
-    background-color: var(--input-focus-bg, var(--input-bg, var(--card-bg, var(--white))));
-    color: var(--input-color, var(--body-color));
-    border-color: var(--input-border-color, var(--border-color));
+    background-color: var(--li-time-picker-trigger-hover-bg);
+    color: var(--li-time-picker-trigger-color);
+    border-color: var(--li-time-picker-trigger-border-color);
 }
 
 .time-picker-trigger-button:disabled {
-    background-color: var(--input-disabled-bg, color-mix(in srgb, var(--body-bg) 88%, var(--body-color) 12%));
+    background-color: var(--li-time-picker-trigger-disabled-bg);
     color: var(--text-muted);
-    border-color: var(--input-disabled-border-color, var(--border-color));
+    border-color: var(--li-time-picker-trigger-disabled-border-color);
 }
 
 .time-picker-panel {
@@ -133,11 +146,52 @@
     box-shadow: var(--drp-box-shadow, var(--box-shadow-lg));
 }
 
-.time-picker-panel.is-open {
+.time-picker-panel.time-picker-panel--mobile-modal,
+.time-picker-panel.time-picker-panel--mobile-sheet {
+    position: fixed !important;
+    z-index: 1086;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 2rem) !important;
+    overflow: hidden !important;
+    overscroll-behavior: contain;
+}
+
+.time-picker-panel.time-picker-panel--mobile-modal {
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: min(calc(100vw - 2rem), 22rem) !important;
+    max-width: none !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.time-picker-panel.time-picker-panel--mobile-sheet {
+    top: auto !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: calc(100dvh - 1.5rem) !important;
+    transform: none !important;
+}
+
+.time-picker-panel.is-open:not(.time-picker-panel--mobile-modal):not(.time-picker-panel--mobile-sheet) {
     display: block;
 }
 
+.time-picker-panel.time-picker-panel--mobile-modal.is-open,
+.time-picker-panel.time-picker-panel--mobile-sheet.is-open {
+    display: flex;
+}
+
 .time-picker-panel-shell {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
     padding: var(--drp-padding, 0.9375rem);
 }
 
@@ -328,8 +382,16 @@
     margin-top: 0.25rem;
 }
 
+.time-picker-panel--mobile-modal .time-picker-footer,
+.time-picker-panel--mobile-sheet .time-picker-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    padding-top: 0.5rem;
+    background: var(--drp-bg, color-mix(in srgb, var(--body-bg) 94%, var(--body-color) 6%));
+}
+
 .time-picker-footer .btn {
-    text-decoration: none;
     font-weight: 500;
 }
 

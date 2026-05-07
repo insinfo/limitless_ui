@@ -1,4 +1,5 @@
 <div class="date-picker-wrapper">
+    <div *ngIf="usesMobilePresentation" class="date-picker-mobile-backdrop" (click)="close()"></div>
     <div *ngIf="usesOverlayTriggerIcon" #triggerElement class="date-picker-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedOverlayInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
@@ -34,7 +35,11 @@
 
     <div #panelElement class="daterangepicker date-picker-open single ltr show-calendar opensright"
         (click)="onPanelClick($event)"
-        [class.is-open]="isOpen">
+        [class.date-picker-open--mobile-modal]="usesMobileModal"
+        [class.date-picker-open--mobile-sheet]="usesMobileSheet"
+        [class.is-open]="isOpen"
+        [attr.role]="usesMobilePresentation ? 'dialog' : null"
+        [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
         <div class="drp-calendar left single-calendar">
             <div class="date-picker-panel-header">
                 <button type="button" class="calendar-nav prev available" (click)="navigateBackward()">

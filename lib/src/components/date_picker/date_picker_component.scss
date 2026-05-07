@@ -10,6 +10,19 @@
 .date-picker-wrapper {
     position: relative;
     width: 100%;
+    --li-date-picker-trigger-bg: var(--input-group-addon-bg, var(--gray-100));
+    --li-date-picker-trigger-color: var(--input-group-addon-color, var(--body-color));
+    --li-date-picker-trigger-border-color: var(--input-group-addon-border-color, var(--gray-400));
+    --li-date-picker-trigger-hover-bg: color-mix(in srgb, var(--li-date-picker-trigger-bg) 92%, var(--body-color) 8%);
+    --li-date-picker-trigger-disabled-bg: var(--input-disabled-bg, var(--li-date-picker-trigger-bg));
+    --li-date-picker-trigger-disabled-border-color: var(--input-disabled-border-color, var(--li-date-picker-trigger-border-color));
+}
+
+.date-picker-mobile-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1085;
+    background: rgba(0, 0, 0, 0.35);
 }
 
 .date-picker-trigger-shell {
@@ -101,22 +114,22 @@
 }
 
 .date-picker-trigger-button {
-    background-color: var(--input-bg, var(--card-bg, var(--white)));
-    color: var(--input-color, var(--body-color));
-    border-color: var(--input-border-color, var(--border-color));
+    background-color: var(--li-date-picker-trigger-bg);
+    color: var(--li-date-picker-trigger-color);
+    border-color: var(--li-date-picker-trigger-border-color);
 }
 
 .date-picker-trigger-button:not(:disabled):hover,
 .date-picker-trigger-button:not(:disabled):focus {
-    background-color: var(--input-focus-bg, var(--input-bg, var(--card-bg, var(--white))));
-    color: var(--input-color, var(--body-color));
-    border-color: var(--input-border-color, var(--border-color));
+    background-color: var(--li-date-picker-trigger-hover-bg);
+    color: var(--li-date-picker-trigger-color);
+    border-color: var(--li-date-picker-trigger-border-color);
 }
 
 .date-picker-trigger-button:disabled {
-    background-color: var(--input-disabled-bg, color-mix(in srgb, var(--body-bg) 88%, var(--body-color) 12%));
+    background-color: var(--li-date-picker-trigger-disabled-bg);
     color: var(--text-muted);
-    border-color: var(--input-disabled-border-color, var(--border-color));
+    border-color: var(--li-date-picker-trigger-disabled-border-color);
 }
 
 .daterangepicker.date-picker-open {
@@ -129,12 +142,53 @@
     display: none;
 }
 
-.daterangepicker.date-picker-open.is-open {
+.daterangepicker.date-picker-open.date-picker-open--mobile-modal,
+.daterangepicker.date-picker-open.date-picker-open--mobile-sheet {
+    position: fixed !important;
+    z-index: 1086;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100dvh - 2rem) !important;
+    overflow: hidden !important;
+    overscroll-behavior: contain;
+}
+
+.daterangepicker.date-picker-open.date-picker-open--mobile-modal {
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: min(calc(100vw - 2rem), 22rem) !important;
+    max-width: none !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.daterangepicker.date-picker-open.date-picker-open--mobile-sheet {
+    top: auto !important;
+    right: 0.75rem !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: calc(100dvh - 1.5rem) !important;
+    transform: none !important;
+}
+
+.daterangepicker.date-picker-open.is-open:not(.date-picker-open--mobile-modal):not(.date-picker-open--mobile-sheet) {
     display: block;
+}
+
+.daterangepicker.date-picker-open.date-picker-open--mobile-modal.is-open,
+.daterangepicker.date-picker-open.date-picker-open--mobile-sheet.is-open {
+    display: flex;
 }
 
 .daterangepicker.date-picker-open .single-calendar {
     display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
     padding: var(--drp-padding, 0.9375rem);
 }
 
@@ -247,9 +301,18 @@
 .daterangepicker.date-picker-open .drp-buttons {
     display: flex;
     flex-wrap: wrap;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: flex-end;
     gap: 0.5rem;
+}
+
+.daterangepicker.date-picker-open.date-picker-open--mobile-modal .drp-buttons,
+.daterangepicker.date-picker-open.date-picker-open--mobile-sheet .drp-buttons {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    background: var(--drp-bg, color-mix(in srgb, var(--body-bg) 94%, var(--body-color) 6%));
 }
 
 .daterangepicker.date-picker-open .drp-selected {

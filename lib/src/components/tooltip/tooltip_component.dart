@@ -4,6 +4,7 @@ import 'dart:html' as html;
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
 
+import '../../core/overlay_positioning.dart';
 import 'tooltip_config.dart';
 
 /// Public directives used by tooltip APIs.
@@ -574,10 +575,11 @@ class _LiTooltipOverlay implements OnDestroy {
       floatingElement: tooltipElement,
       localContainer: localContainer,
       appendToBody: _appendToBody,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiTooltipComponent',
-        hostZIndex: '1080',
-        floatingZIndex: '1080',
+        referenceElement: _referenceElement,
+        baseHostZIndex: 1080,
+        baseFloatingZIndex: 1080,
       ),
       popperOptions: PopperOptions(
         placement: _resolvedPlacement,

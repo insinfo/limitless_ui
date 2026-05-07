@@ -113,6 +113,16 @@ The demo fixes that with a global override in [example/web/style.scss](example/w
 
 `\e9fe` is the `ph-caret-down` glyph from the Phosphor font bundle used by the demo.
 
+## Overlay components inside modals
+
+Recent picker/overlay updates in `limitless_ui` are focused on modal-safe behavior:
+
+- `li-tooltip` and `li-popover` now keep body-mounted overlays above modal/backdrop stacks.
+- `li-date-picker`, `li-date-range-picker`, `li-time-picker`, and `li-color-picker` support adaptive mobile presentation via `mobilePresentation` and `mobileHeightBreakpoint`.
+- The example modal page includes dedicated overlay labs (fields, pickers, and stacked modal-on-modal scenarios) to visually validate z-index and viewport clamping.
+
+For modal demos in the example app, overlay field surfaces were simplified to remove decorative wrapper backgrounds, keeping focus on overlay behavior instead of container chrome.
+
 ## Offcanvas DOM, Limitless CSS, and projected scroll areas
 
 `li-offcanvas` is not just a visual wrapper around projected content. It composes three layers:

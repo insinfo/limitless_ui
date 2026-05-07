@@ -33,11 +33,34 @@ class ColorPickerTestHostComponent {
   String? value = '#20bf7e';
 }
 
+@Component(
+  selector: 'li-color-picker-mobile-test-host',
+  template: '''
+    <li-color-picker
+        #picker
+        [value]="value"
+        mobilePresentation="modal"
+        mobileHeightBreakpoint="9999px"
+        (valueChange)="value = \$event">
+    </li-color-picker>
+  ''',
+  directives: [coreDirectives, LiColorPickerComponent],
+)
+class ColorPickerMobileTestHostComponent {
+  @ViewChild('picker')
+  LiColorPickerComponent? picker;
+
+  String? value = '#20bf7e';
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
 
   final testBed = NgTestBed<ColorPickerTestHostComponent>(
     ng.ColorPickerTestHostComponentNgFactory,
+  );
+  final mobileTestBed = NgTestBed<ColorPickerMobileTestHostComponent>(
+    ng.ColorPickerMobileTestHostComponentNgFactory,
   );
 
   test('opens overlay aligned directly below the trigger', () async {
@@ -61,6 +84,31 @@ void main() {
 
     expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
+  });
+
+  test('can present as a centered mobile modal', () async {
+    final fixture = await mobileTestBed.create();
+    await _settleMobile(fixture);
+
+    final trigger = fixture.rootElement.querySelector(
+      '.color-picker-trigger .sp-replacer',
+    ) as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleMobile(fixture);
+
+    final panel = fixture.rootElement.querySelector(
+      '.sp-container--mobile-modal:not(.sp-hidden)',
+    );
+    expect(panel, isNotNull);
+    expect(panel!.getAttribute('role'), 'dialog');
+    expect(panel.getAttribute('aria-modal'), 'true');
+    expect(
+      fixture.rootElement.querySelector('.color-picker-mobile-backdrop'),
+      isNotNull,
+    );
   });
 
   test('closes with one outside click after dragging', () async {
@@ -134,6 +182,13 @@ void main() {
 
 Future<void> _settle(
   NgTestFixture<ColorPickerTestHostComponent> fixture,
+) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleMobile(
+  NgTestFixture<ColorPickerMobileTestHostComponent> fixture,
 ) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});

@@ -1,3 +1,11 @@
+## 1.0.0-dev.16
+
+- Expanded overlay stack behavior across `li-tooltip` and `li-popover` so body-mounted overlays render above modal layers, including regression coverage for trigger usage inside `li-modal`.
+- Expanded adaptive/mobile overlay presentation for `li-date-picker`, `li-date-range-picker`, `li-time-picker`, and `li-color-picker` with centered modal/sheet flows, viewport-aware clamping, and dedicated browser regression tests.
+- Expanded picker APIs with `mobilePresentation`/`mobileHeightBreakpoint` support in real modal demo scenarios (including stacked modal flows) and updated modal examples to validate select/multi-select/tag-filter/tooltip/popover/picker interaction in the same z-index stack.
+- Refined picker styling for dark themes and trigger/action consistency, including cleanup of modal demo wrapper classes in overlay demo surfaces and alignment of footer/action spacing behavior in mobile modal picker panels.
+- Added `overlay_positioning.dart` shared utilities to normalize container resolution, viewport bounds handling, and adaptive placement decisions used by popup-style components.
+
 ## 1.0.0-dev.15
 
 - Expanded `li-datatable` responsive rendering with explicit `responsiveControlColumnKey`, allowing the responsive collapse trigger/control cell to stay attached to a predictable visible column instead of depending only on `responsiveAutoHideRequired` ordering.

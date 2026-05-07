@@ -103,6 +103,46 @@
 	box-shadow: var(--modal-demo-shadow);
 }
 
+.modal-demo-overlay-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem;
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-xl);
+	background: linear-gradient(180deg, var(--modal-demo-surface-soft), var(--card-bg, var(--body-bg, #fff)));
+	box-shadow: var(--modal-demo-shadow);
+}
+
+.modal-demo-overlay-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.modal-demo-overlay-grid > div {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.modal-demo-overlay-grid > div:nth-child(3):last-child {
+	grid-column: 1 / -1;
+}
+
+.modal-demo-summary {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem 1rem;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-lg);
+	background: rgba(var(--primary-rgb), 0.04);
+}
+
 .modal-demo-size-card__top,
 .modal-demo-live__header,
 .modal-demo-live__stats,
@@ -271,7 +311,9 @@
 @media (max-width: 767.98px) {
 	.modal-demo-kpis,
 	.modal-demo-live__grid,
-	.modal-demo-live__stats {
+	.modal-demo-live__stats,
+	.modal-demo-overlay-grid,
+	.modal-demo-summary {
 		grid-template-columns: 1fr;
 	}
 

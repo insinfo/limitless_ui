@@ -138,10 +138,31 @@ import 'li_popover_component_test.template.dart' as ng;
       </button>
 
       <button id="outside-target" type="button">Outside target</button>
+
+      <button id="open-modal-host" type="button" (click)="modalHost?.open()">
+        Open modal host
+      </button>
+
+      <li-modal #modalHost title-text="Popover modal host">
+        <li-popover
+          #modalBodyPopover
+          [popoverTitle]="modalPopoverTitle"
+          [popover]="modalPopoverBody"
+          trigger="click"
+          container="body"
+          [animation]="false">
+          <button id="modal-body-trigger" type="button">Modal body trigger</button>
+        </li-popover>
+      </li-modal>
     </div>
   ''',
   providers: [ClassProvider(LiPopoverConfig)],
-  directives: [coreDirectives, LiPopoverComponent, LiPopoverDirective],
+  directives: [
+    coreDirectives,
+    LiModalComponent,
+    LiPopoverComponent,
+    LiPopoverDirective,
+  ],
 )
 class TestHostComponent {
   TestHostComponent(this.popoverConfig) {
@@ -171,6 +192,8 @@ class TestHostComponent {
   String optionsText = 'Options text';
   String directiveTitle = 'Directive title';
   String directiveText = 'Directive body';
+  String modalPopoverTitle = 'Modal popover title';
+  String modalPopoverBody = 'Modal popover body';
   String insideBodyHtml =
       '<button id="inside-close" type="button">Close from inside</button>';
   String outsideBodyHtml =
@@ -219,6 +242,12 @@ class TestHostComponent {
 
   @ViewChild('directivePopover')
   LiPopoverDirective? directivePopover;
+
+  @ViewChild('modalHost')
+  LiModalComponent? modalHost;
+
+  @ViewChild('modalBodyPopover')
+  LiPopoverComponent? modalBodyPopover;
 
   void onClickShown() {
     clickShownCount += 1;
@@ -639,6 +668,33 @@ void main() {
     expect(popover!.classes.contains('bs-popover-bottom'), isTrue);
   });
 
+  test('popover em modal renderiza acima do z-index do modal', () async {
+    final fixture = await testBed.create();
+    await _settlePopover(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-modal-host');
+    });
+    await _settlePopover(fixture);
+
+    await fixture.update((_) {
+      _clickById('modal-body-trigger');
+    });
+    await _settlePopover(fixture);
+
+    final popover = _popoverElement();
+    final popoverPortalHost = _popoverPortalHost();
+    final modalRoot = _modalRootByTitle('Popover modal host');
+
+    expect(popover, isNotNull);
+    expect(popoverPortalHost, isNotNull);
+    expect(modalRoot, isNotNull);
+    expect(
+      int.parse(popoverPortalHost!.style.zIndex),
+      greaterThan(int.parse(modalRoot!.style.zIndex)),
+    );
+  });
+
   test('diretiva [liPopover] expõe API manual paralela ao tooltip', () async {
     final fixture = await testBed.create();
     await _settlePopover(fixture);
@@ -712,9 +768,32 @@ void _focusIn(html.Element element) {
   element.dispatchEvent(html.Event('focusin', canBubble: true));
 }
 
+void _clickById(String id) {
+  final element = html.document.body!.querySelector('#$id');
+  if (element is html.Element) {
+    _click(element);
+  }
+}
+
 html.DivElement? _popoverElement() {
   final popover = html.document.querySelector('.popover');
   return popover is html.DivElement ? popover : null;
+}
+
+html.DivElement? _popoverPortalHost() {
+  final host = html.document.querySelector('.LiPopoverComponent');
+  return host is html.DivElement ? host : null;
+}
+
+html.Element? _modalRootByTitle(String titleText) {
+  final titles = html.document.body!.querySelectorAll('.modal-title');
+  for (final title in titles) {
+    if (title.text?.trim() != titleText) {
+      continue;
+    }
+    return title.closest('.modal');
+  }
+  return null;
 }
 
 html.DivElement? _popoverArrowElement() {

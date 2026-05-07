@@ -595,10 +595,11 @@ class LiTagFilterComponent
     _overlay = PopperAnchoredOverlay.attach(
       referenceElement: reference,
       floatingElement: floating,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiTagFilterComponent',
-        hostZIndex: '1000',
-        floatingZIndex: '1000',
+        referenceElement: reference,
+        baseHostZIndex: 1000,
+        baseFloatingZIndex: 1000,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',

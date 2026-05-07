@@ -8,6 +8,13 @@
   position: relative;
 }
 
+.color-picker-mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1085;
+  background: rgba(0, 0, 0, 0.35);
+}
+
 .color-picker-trigger {
   display: inline-block;
 }
@@ -61,6 +68,67 @@
 
 .sp-container {
   z-index: 1086;
+}
+
+.sp-container.sp-container--mobile-modal,
+.sp-container.sp-container--mobile-sheet {
+  position: fixed !important;
+  z-index: 1086;
+  display: block !important;
+  max-height: calc(100dvh - 2rem) !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+}
+
+.sp-container.sp-container--mobile-modal {
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.sp-container.sp-container--mobile-sheet {
+  top: auto !important;
+  right: 0.75rem !important;
+  bottom: 0.75rem !important;
+  left: 0.75rem !important;
+  width: auto !important;
+  max-width: none !important;
+  max-height: calc(100dvh - 1.5rem) !important;
+  transform: none !important;
+}
+
+.sp-container.sp-container--mobile-modal .sp-picker-container,
+.sp-container.sp-container--mobile-sheet .sp-picker-container,
+.sp-container.sp-container--mobile-modal .sp-palette-container,
+.sp-container.sp-container--mobile-sheet .sp-palette-container {
+  min-height: 0;
+}
+
+.sp-container.sp-container--mobile-modal .sp-picker-container,
+.sp-container.sp-container--mobile-sheet .sp-picker-container {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sp-container.sp-container--mobile-modal.sp-palette-disabled,
+.sp-container.sp-container--mobile-sheet.sp-palette-disabled {
+  width: fit-content !important;
+}
+
+.sp-container.sp-container--mobile-modal.sp-palette-disabled .sp-palette-container,
+.sp-container.sp-container--mobile-sheet.sp-palette-disabled .sp-palette-container {
+  display: none !important;
+}
+
+.sp-container.sp-container--mobile-modal .sp-picker-container,
+.sp-container.sp-container--mobile-sheet .sp-picker-container {
+  width: auto !important;
 }
 
 .sp-preview {

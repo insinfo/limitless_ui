@@ -32,11 +32,34 @@ class DatePickerTestHostComponent {
   DateTime? value = DateTime(2026, 4, 6);
 }
 
+@Component(
+  selector: 'li-date-picker-mobile-test-host',
+  template: '''
+    <li-date-picker
+        #picker
+        [value]="value"
+        mobilePresentation="modal"
+        mobileHeightBreakpoint="9999px"
+        (valueChange)="value = \$event">
+    </li-date-picker>
+  ''',
+  directives: [coreDirectives, LiDatePickerComponent],
+)
+class DatePickerMobileTestHostComponent {
+  @ViewChild('picker')
+  LiDatePickerComponent? picker;
+
+  DateTime? value = DateTime(2026, 4, 6);
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
 
   final testBed = NgTestBed<DatePickerTestHostComponent>(
     ng.DatePickerTestHostComponentNgFactory,
+  );
+  final mobileTestBed = NgTestBed<DatePickerMobileTestHostComponent>(
+    ng.DatePickerMobileTestHostComponentNgFactory,
   );
 
   test('opens overlay aligned directly below the trigger', () async {
@@ -59,10 +82,41 @@ void main() {
     expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
   });
+
+  test('can present as a centered mobile modal', () async {
+    final fixture = await mobileTestBed.create();
+    await _settleMobile(fixture);
+
+    final trigger = fixture.rootElement
+        .querySelector('.date-picker-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settleMobile(fixture);
+
+    final panel = fixture.rootElement.querySelector(
+      '.date-picker-open--mobile-modal.is-open',
+    );
+    expect(panel, isNotNull);
+    expect(panel!.getAttribute('role'), 'dialog');
+    expect(panel.getAttribute('aria-modal'), 'true');
+    expect(
+      fixture.rootElement.querySelector('.date-picker-mobile-backdrop'),
+      isNotNull,
+    );
+  });
 }
 
 Future<void> _settle(
   NgTestFixture<DatePickerTestHostComponent> fixture,
+) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleMobile(
+  NgTestFixture<DatePickerMobileTestHostComponent> fixture,
 ) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});

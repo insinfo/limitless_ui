@@ -142,6 +142,56 @@
             <section class="mb-4">
               <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-lg-between gap-2 mb-3">
                 <div>
+                  <h5 class="mb-1">{{ overlayLabTitle }}</h5>
+                  <p class="text-muted mb-0">{{ overlayLabLead }}</p>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-lg-4">
+                  <div class="modal-demo-overlay-card h-100">
+                    <div>
+                      <h6 class="mb-2">{{ overlayFieldsTitle }}</h6>
+                      <p class="text-muted mb-0">{{ overlayFieldsBody }}</p>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm align-self-start" type="button"
+                      (click)="openOverlayFieldsModal()">
+                      {{ openOverlayFieldsLabel }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <div class="modal-demo-overlay-card h-100">
+                    <div>
+                      <h6 class="mb-2">{{ overlayPickersTitle }}</h6>
+                      <p class="text-muted mb-0">{{ overlayPickersBody }}</p>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm align-self-start" type="button"
+                      (click)="openOverlayPickersModal()">
+                      {{ openOverlayPickersLabel }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <div class="modal-demo-overlay-card h-100">
+                    <div>
+                      <h6 class="mb-2">{{ stackedOverlayTitle }}</h6>
+                      <p class="text-muted mb-0">{{ stackedOverlayBody }}</p>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm align-self-start" type="button"
+                      (click)="openStackedOverlayParentModal()">
+                      {{ openStackedOverlayLabel }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="mb-4">
+              <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-lg-between gap-2 mb-3">
+                <div>
                   <h5 class="mb-1">{{ sizeShowcaseTitle }}</h5>
                   <p class="text-muted mb-0">{{ sizeShowcaseIntro }}</p>
                 </div>
@@ -612,6 +662,262 @@
     </div>
     <div class="text-end mt-3">
       <button class="btn btn-success" type="button" (click)="lazyPreviewModal?.close()">{{ closeLabel }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #overlayFieldsModal
+            [title-text]="overlayFieldsModalTitle"
+            headerColor="primary"
+            size="xtra-large"
+            [lazyContent]="true"
+            [enableShadow]="true"
+            [fullScreenOnMobile]="true"
+            (close)="onModalClosed(overlayFieldsModalTitle)">
+    <div class="alert alert-info alert-icon-start mb-4">
+      <span class="alert-icon bg-info text-white">
+        <i class="ph-layers"></i>
+      </span>
+      {{ overlayFieldSummaryIntro }}
+    </div>
+
+    <div class="modal-demo-overlay-grid">
+      <div>
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-3 flex-wrap">
+          <div>
+            <div class="fw-semibold">Tooltip</div>
+            <div class="text-muted small">container="body"</div>
+          </div>
+          <button type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  [liTooltip]="overlayTooltipText"
+                  triggers="click"
+                  container="body"
+                  [animation]="false">
+            Testar tooltip
+          </button>
+        </div>
+
+        <label class="form-label fw-semibold">Workflow status</label>
+        <li-select
+            [dataSource]="modalStatusOptions"
+            labelKey="label"
+            valueKey="id"
+            [(ngModel)]="modalSelectedStatus">
+        </li-select>
+      </div>
+
+      <div>
+        <label class="form-label fw-semibold">Channels</label>
+        <li-multi-select
+            [dataSource]="modalChannelOptions"
+            labelKey="label"
+            valueKey="id"
+            [(ngModel)]="modalSelectedChannels">
+        </li-multi-select>
+      </div>
+
+      <div>
+        <label class="form-label fw-semibold">Tags</label>
+        <li-tag-filter
+            [dataSource]="modalTagOptions"
+            labelKey="nome"
+            valueKey="id"
+            colorKey="cor"
+            [showReloadButton]="true"
+            [(ngModel)]="modalSelectedTags"
+            (modelChange)="onModalTagModelsChange($event)"
+            (reloadRequest)="onModalTagReloadRequest()">
+        </li-tag-filter>
+      </div>
+    </div>
+
+    <div class="modal-demo-summary mt-4">
+      <div><strong>{{ selectedStatusInModalLabel }}:</strong> {{ modalSelectedStatusLabel }}</div>
+      <div><strong>{{ selectedChannelsInModalLabel }}:</strong> {{ modalSelectedChannelsLabel }}</div>
+      <div><strong>{{ selectedTagsInModalLabel }}:</strong> {{ modalSelectedTagsLabel }}</div>
+      <div><strong>{{ reloadCountLabel }}:</strong> {{ modalTagReloadCount }}</div>
+    </div>
+
+    <div class="demo-modal-actions mt-4">
+      <button class="btn btn-primary" type="button" (click)="overlayFieldsModal?.close()">{{ closeLabel }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #overlayPickersModal
+            [title-text]="overlayPickersModalTitle"
+            headerColor="teal"
+            size="xtra-large"
+            [lazyContent]="true"
+            [enableShadow]="true"
+            [fullScreenOnMobile]="true"
+            (close)="onModalClosed(overlayPickersModalTitle)">
+    <div class="alert alert-primary alert-icon-start mb-4">
+      <span class="alert-icon bg-primary text-white">
+        <i class="ph-calendar-blank"></i>
+      </span>
+      {{ overlayPickerSummaryIntro }}
+    </div>
+
+    <div class="modal-demo-overlay-grid">
+      <div>
+        <label class="form-label fw-semibold">Date picker</label>
+        <li-date-picker
+            [(ngModel)]="modalSelectedDate"
+            mobilePresentation="modal"
+            mobileHeightBreakpoint="820px">
+        </li-date-picker>
+      </div>
+
+      <div>
+        <label class="form-label fw-semibold">Date range picker</label>
+        <li-date-range-picker
+            [start]="modalRangeStart"
+            [end]="modalRangeEnd"
+            mobilePresentation="modal"
+            mobileHeightBreakpoint="820px"
+            (startChange)="modalRangeStart = $event"
+            (endChange)="modalRangeEnd = $event">
+        </li-date-range-picker>
+      </div>
+
+      <div>
+        <label class="form-label fw-semibold">Time picker</label>
+        <li-time-picker
+            [(ngModel)]="modalSelectedTime"
+            [use24Hour]="true"
+            mobilePresentation="modal"
+            mobileHeightBreakpoint="820px">
+        </li-time-picker>
+      </div>
+
+      <div>
+        <label class="form-label fw-semibold">Color picker</label>
+        <li-color-picker
+            [(ngModel)]="modalAccentColor"
+            [showInput]="true"
+            mobilePresentation="modal"
+            mobileHeightBreakpoint="820px"
+            [allowEmpty]="true">
+        </li-color-picker>
+      </div>
+    </div>
+
+    <div class="modal-demo-summary mt-4">
+      <div><strong>{{ selectedDateInModalLabel }}:</strong> {{ modalSelectedDateLabel }}</div>
+      <div><strong>{{ selectedRangeInModalLabel }}:</strong> {{ modalSelectedRangeLabel }}</div>
+      <div><strong>{{ selectedTimeInModalLabel }}:</strong> {{ modalSelectedTimeLabel }}</div>
+      <div><strong>{{ selectedColorInModalLabel }}:</strong> {{ modalSelectedColorLabel }}</div>
+    </div>
+
+    <div class="demo-modal-actions mt-4">
+      <button class="btn btn-primary" type="button" (click)="overlayPickersModal?.close()">{{ closeLabel }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #stackedOverlayParentModal
+            [title-text]="stackedParentModalTitle"
+            headerColor="indigo"
+            size="large"
+            [lazyContent]="true"
+            [enableShadow]="true"
+            [fullScreenOnMobile]="true"
+            (close)="onStackedParentClosed()">
+    <div class="alert alert-warning alert-icon-start mb-4">
+      <span class="alert-icon bg-warning text-white">
+        <i class="ph-stack"></i>
+      </span>
+      {{ stackedParentLead }}
+    </div>
+
+    <div class="modal-demo-overlay-grid">
+      <div>
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-3 flex-wrap">
+          <label class="form-label fw-semibold mb-0">Parent tooltip</label>
+          <button type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  [liTooltip]="overlayTooltipText"
+                  triggers="click"
+                  container="body"
+                  [animation]="false">
+            Testar tooltip
+          </button>
+        </div>
+
+        <label class="form-label fw-semibold">Parent date picker</label>
+        <li-date-picker
+            [(ngModel)]="parentStackedDate"
+            mobilePresentation="modal"
+            mobileHeightBreakpoint="820px">
+        </li-date-picker>
+      </div>
+
+      <div>
+        <label class="form-label fw-semibold">Parent color picker</label>
+        <li-color-picker
+            [(ngModel)]="modalAccentColor"
+            [showInput]="true"
+            mobilePresentation="modal"
+            mobileHeightBreakpoint="820px">
+        </li-color-picker>
+      </div>
+    </div>
+
+    <div class="demo-modal-actions mt-4">
+      <button class="btn btn-outline-primary" type="button" (click)="openStackedOverlayChildModal()">
+        {{ openChildModalLabel }}
+      </button>
+      <button class="btn btn-primary" type="button" (click)="stackedOverlayParentModal?.close()">
+        {{ closeParentModalLabel }}
+      </button>
+    </div>
+  </li-modal>
+
+  <li-modal #stackedOverlayChildModal
+            [title-text]="stackedChildModalTitle"
+            headerColor="dark"
+            size="large"
+            [lazyContent]="true"
+            [enableShadow]="true"
+            [verticalCenter]="true"
+            [fullScreenOnMobile]="true"
+            (close)="onModalClosed(stackedChildModalTitle)">
+    <div class="modal-demo-overlay-grid">
+      <div>
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-3 flex-wrap">
+          <label class="form-label fw-semibold mb-0">Child tooltip</label>
+          <button type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  [liTooltip]="overlayTooltipText"
+                  triggers="click"
+                  container="body"
+                  [animation]="false">
+            Testar tooltip
+          </button>
+        </div>
+
+        <label class="form-label fw-semibold">Child date picker</label>
+        <li-date-picker
+            [(ngModel)]="childStackedDate"
+            mobilePresentation="modal"
+            mobileHeightBreakpoint="820px">
+        </li-date-picker>
+      </div>
+
+      <div>
+        <label class="form-label fw-semibold">Child multi-select</label>
+        <li-multi-select
+            [dataSource]="modalChannelOptions"
+            labelKey="label"
+            valueKey="id"
+            [(ngModel)]="childStackedChannels">
+        </li-multi-select>
+      </div>
+    </div>
+
+    <div class="demo-modal-actions mt-4">
+      <button class="btn btn-primary" type="button" (click)="stackedOverlayChildModal?.close()">
+        {{ closeChildModalLabel }}
+      </button>
     </div>
   </li-modal>
 
