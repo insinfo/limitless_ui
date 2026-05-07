@@ -38,6 +38,7 @@ class ModalSizeShowcaseItem {
     LiTabsComponent,
     LiTabxDirective,
     LiModalComponent,
+    LiPopoverComponent,
     LiSelectComponent,
     LiTagFilterComponent,
     LiTimePickerComponent,
@@ -599,6 +600,11 @@ void closeReviewModal() {
   String get overlayTooltipText => _isPt
       ? 'Tooltip com container body dentro do modal. Ele deve aparecer acima do backdrop e do conteúdo do diálogo.'
       : 'Tooltip with container body inside the modal. It should render above the backdrop and the dialog content.';
+  String get overlayPopoverTitle =>
+      _isPt ? 'Popover dentro do modal' : 'Popover inside modal';
+  String get overlayPopoverText => _isPt
+      ? 'Este popover usa container body e deve aparecer acima do backdrop/modal sem corte.'
+      : 'This popover uses container body and should render above backdrop/modal without clipping.';
   String get overlayFieldsModalTitle => _isPt
       ? 'Campos com overlay dentro do modal'
       : 'Overlay fields inside modal';

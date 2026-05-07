@@ -687,14 +687,26 @@
             <div class="fw-semibold">Tooltip</div>
             <div class="text-muted small">container="body"</div>
           </div>
-          <button type="button"
-                  class="btn btn-outline-secondary btn-sm"
-                  [liTooltip]="overlayTooltipText"
-                  triggers="click"
-                  container="body"
-                  [animation]="false">
-            Testar tooltip
-          </button>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    [liTooltip]="overlayTooltipText"
+                    triggers="click"
+                    container="body"
+                    [animation]="false">
+              Testar tooltip
+            </button>
+            <li-popover
+                [popoverTitle]="overlayPopoverTitle"
+                [popover]="overlayPopoverText"
+                trigger="click"
+                placement="bottom"
+                container="body">
+              <button type="button" class="btn btn-outline-primary btn-sm">
+                Testar popover
+              </button>
+            </li-popover>
+          </div>
         </div>
 
         <label class="form-label fw-semibold">Workflow status</label>
