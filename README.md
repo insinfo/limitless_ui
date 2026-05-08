@@ -693,6 +693,17 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiTreeViewPageLoader`, `TreeViewLoadRequest`, `TreeViewLoadResult`,
   `LiTreeviewSelectNodeDirective`, `LiTreeviewSelectTriggerDirective`.
 
+## Recent additions in `1.0.0-dev.17`
+
+- Refactored `li-datatable` into focused controllers for sorting, pagination, search, export, selection, responsive state, virtual scroll, title help, and instrumentation while preserving the public API.
+- Added `DatatablePerformanceProfile` with `saliPaged` for small server-paged operational tables, plus `enableGridMode`, `enableResponsiveFeatures`, `fixedTableLayout`, and stable `rowKeyResolver` support.
+- Improved dense-table rendering by building row ranges without `sublist()`, using simpler header/cell bindings on plain paths, and caching responsive viewport/container state so template getters do not read DOM dimensions on every change-detection pass.
+- Added browser benchmarks for virtual scroll and per-feature datatable cost. The measured expensive paths are `responsiveAutoHideColumns` by priority and `responsiveCollapseByContainer`, because they need real DOM width measurements and can otherwise cause forced reflow/layout thrashing. Action columns, title customization, `table-layout`, and virtual scroll were not the primary regression source in those scenarios.
+- Added stable `data-li-datatable-action-cell` and `data-li-datatable-action` markers to `DatatableActionColumn`, expanded debug instrumentation with action-cell/action-element/configured-action-column metrics, and added regression coverage for `saliPaged` action rendering plus desktop container collapse without priority auto-hide.
+- Refreshed the example datatable page with a visible performance summary, fixed the frozen-column horizontal-scroll demo spacing for action buttons, and removed component-level fixed-column background overrides so Limitless theme CSS owns those colors.
+- Added a `datatable-process-lookup` dense SALI-style profile demo and a `protocol-workflow` demo route with protocol dispatch/attachment datatables inside modals and tabs.
+- Added selector-based `liCollapseToggle` and forwarded `enableGridMode`/`enableResponsiveFeatures` through `li-datatable-select` for denser modal table flows.
+
 ## Recent additions in `1.0.0-dev.15`
 
 - Expanded `li-datatable` responsive behavior with explicit `responsiveControlColumnKey`, so the details-toggle/control cell can stay on a predictable visible column even when `responsiveAutoHideColumns` is collapsing lower-priority fields.
@@ -874,6 +885,7 @@ Most useful features:
 - column-targeted search with `searchInFields`;
 - events such as `(dataRequest)`, `(searchRequest)`, and `(limitChange)` for server-driven flows;
 - columns with `enableSorting`, `sortingBy`, `hideOnMobile`, `responsiveAutoHidePriority`, `responsiveAutoHideRequired`, `textAlign`, `titleTextAlign`, `nowrap`, `width`, custom title renderers, and custom classes;
+- performance controls with `performanceProfile`, `DatatablePerformanceProfile.saliPaged`, `enableGridMode`, `enableResponsiveFeatures`, `fixedTableLayout`, and stable selection through `rowKeyResolver`;
 - responsive collapse driven by viewport (`responsiveCollapseMaxWidth`) or by container width (`responsiveCollapseByContainer` + `responsiveCollapseContainerMaxWidth`) for desktop shells that shrink horizontally;
 - `responsiveControlColumnKey` when the responsive collapse trigger must stay on a specific visible column such as `code`, `name`, or `actions`;
 - sticky edge columns with `fixedPosition: DatatableFixedColumnPosition.left` or `DatatableFixedColumnPosition.right` when critical actions or identifiers must remain visible during horizontal scroll;
@@ -888,13 +900,35 @@ Most useful features:
 - grid mode with `gridMode`, `gridTemplateColumns`, `gridGap`, projected `<template li-datatable-card let-ctx>`, and `customCardBuilder`;
 - built-in XLSX and PDF export support.
 
-Known limitation: when `virtualScroll` is disabled, page sizes above roughly 100 rows can freeze or severely stall the browser on dense operational tables. For limits above that range, prefer enabling `virtualScroll` or keep the page size server-driven and capped.
+Current datatable performance notes:
+
+The latest browser benchmarks are focused on keeping `li-datatable` predictable in AngularDart change detection: plain table paths should stay cheap, and DOM-measuring responsive features should remain explicit opt-ins. Results below came from `dart run build_runner test -- -p chrome -j 1 test/datatable/li_datatable_feature_cost_benchmark_test.dart` on a local Chrome run, using the benchmark's measured instrumentation totals.
+
+| Scenario | Rows / shape | Virtual scroll | Responsive features | Measured total | Main signal | Guidance |
+| --- | --- | --- | --- | ---: | --- | --- |
+| `baseline-plain` | 12 rows, plain columns | Off | Off | 21.900 ms | Baseline path | Reference for small paged tables. |
+| `title-tooltip-popover` | 12 rows, rich header help | Off | Off | 22.600 ms | Header help stayed close to baseline | Safe for normal tables; not the regression source. |
+| `custom-title-html` | 12 rows, custom title DOM | Off | Off | 23.400 ms | Custom title rendering stayed close to baseline | Safe when title DOM is stable. |
+| `sali-paged-baseline` | 12 rows, `saliPaged` | Off | Disabled by profile | 24.100 ms | No responsive DOM measurement | Recommended for small server-paged operational screens. |
+| `collapse-on-mobile` | 12 rows, `hideOnMobile` details | Off | Viewport collapse | 24.700 ms | Details row without priority auto-hide | Good default for mobile collapse. |
+| `action-column` | 12 rows, action column | Off | Off | 29.000 ms | `actionElements=44`, close to baseline | Action columns add DOM, but were not the main bottleneck. |
+| `sali-paged-action-column` | 12 rows, `saliPaged` + actions | Off | Disabled by profile | 30.600 ms | `actionElements=44`, measured correctly | Good for SALI-style paged tables with action buttons. |
+| `collapse-by-container` | 12 rows, desktop container collapse | Off | Container collapse | 55.700 ms | Container width measurement dominates | Useful for modals/split panes; keep it opt-in. |
+| `responsive-priority-autohide` | 12 rows, priority auto-hide | Off | Priority auto-hide | 98.900 ms | High measured cost | Treat as the expensive path; enable deliberately. |
+| `combined-rich-features` | 12 rows, title help + actions + responsive | Off | Container collapse + priority auto-hide | 129.700 ms | DOM measurement and rich DOM combine | Use only when the UX needs all rich responsive behavior. |
+
+A manual local demo validation also rendered about 3,000 table rows without `virtualScroll` on the optimized plain/SALI-style path without freezing the browser. Treat that as a practical capability of the lean path, not a promise for every table shape: custom cell components, projected templates, many action buttons, grouping, or DOM-measuring responsive features can still make virtualization or server-side paging the better choice.
 
 Operational guidance for dense tables:
 
+- For plain table-heavy screens, first try the lean path: `performanceProfile: DatatablePerformanceProfile.saliPaged`, `enableGridMode: false`, `enableResponsiveFeatures: false`, `virtualScroll: false`, stable row keys, and server-driven filters. This path is the one validated manually with roughly 3,000 rendered rows without browser lockups.
 - In table mode, combine `virtualScroll`, `virtualRowHeight`, and an explicit `virtualViewportHeight` so the DOM stays bounded while paging through large result sets.
 - When that dense table still needs persistent column labels during scroll, enable `stickyTableHeaderOnVirtualScroll`; the sticky header is intentionally opt-in and only activates for virtualized table mode.
 - In grid mode, pair `virtualScroll` with `virtualGridItemHeight` and `virtualGridMinItemWidth` so the viewport can estimate rows of cards without rendering the full dataset.
+- For small server-paged tables where every page already contains a bounded number of rows, prefer `performanceProfile: DatatablePerformanceProfile.saliPaged`, keep `virtualScroll` disabled, and set `enableResponsiveFeatures` to `false` unless the screen really needs responsive details rows.
+- `responsiveCollapse` can be used as a DataTables Responsive-style details row on desktop too: enable `responsiveCollapseByContainer` and configure `hideOnMobile` columns when a desktop shell or modal becomes narrow. This avoids the priority auto-hide algorithm and is usually cheaper than `responsiveAutoHideColumns`.
+- Treat `responsiveAutoHideColumns` plus `responsiveAutoHidePriority` as an opt-in feature for layouts that truly need progressive priority hiding before horizontal scroll. It measures available width and column widths after render, so it is more expensive than plain mobile/container collapse.
+- Keep DOM-measuring responsive features off in dense benchmark-sensitive views unless they are required. The component caches responsive viewport state internally, but container collapse and priority auto-hide still depend on real browser layout measurements.
 - For `DatatableActionColumn` inside default grid cards, keep the default container or use `justify-content-start` when you want the footer actions aligned from the left. Using `justify-content-center` together with `w-100` will intentionally center the action group across the whole card footer.
 
 Example for dense server-driven tables with sticky header on virtual scroll:

@@ -61,6 +61,76 @@
               <li-highlight [code]="overviewSnippet" language="html"></li-highlight>
             </div>
 
+            <div class="datatable-performance-summary mb-4">
+              <div class="datatable-performance-summary__header">
+                <div>
+                  <h6 class="mb-2">{{ performanceSummaryTitle }}</h6>
+                  <p class="text-muted mb-0">{{ performanceSummaryIntro }}</p>
+                </div>
+              </div>
+
+              <div class="row g-3 mt-1">
+                <div class="col-xl-3 col-md-6">
+                  <div class="datatable-performance-summary__item">
+                    <i class="ph ph-gauge"></i>
+                    <span>{{ performanceSummaryLeanPath }}</span>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                  <div class="datatable-performance-summary__item">
+                    <i class="ph ph-chart-line-up"></i>
+                    <span>{{ performanceSummaryBenchmark }}</span>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                  <div class="datatable-performance-summary__item">
+                    <i class="ph ph-table"></i>
+                    <span>{{ performanceSummaryDenseRows }}</span>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                  <div class="datatable-performance-summary__item">
+                    <i class="ph ph-sliders-horizontal"></i>
+                    <span>{{ performanceSummaryDocs }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="table-responsive mt-3">
+                <table class="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th>{{ i18n.isPortuguese ? 'Cenário' : 'Scenario' }}</th>
+                      <th>{{ i18n.isPortuguese ? 'Total medido' : 'Measured total' }}</th>
+                      <th>{{ i18n.isPortuguese ? 'Sinal principal' : 'Main signal' }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>sali-paged-baseline</code></td>
+                      <td>24.100 ms</td>
+                      <td>{{ i18n.isPortuguese ? 'Sem medição responsiva de DOM' : 'No responsive DOM measurement' }}</td>
+                    </tr>
+                    <tr>
+                      <td><code>action-column</code></td>
+                      <td>29.000 ms</td>
+                      <td>{{ i18n.isPortuguese ? 'Ações próximas do baseline' : 'Actions close to baseline' }}</td>
+                    </tr>
+                    <tr>
+                      <td><code>collapse-by-container</code></td>
+                      <td>55.700 ms</td>
+                      <td>{{ i18n.isPortuguese ? 'Mede largura do container' : 'Measures container width' }}</td>
+                    </tr>
+                    <tr>
+                      <td><code>responsive-priority-autohide</code></td>
+                      <td>98.900 ms</td>
+                      <td>{{ i18n.isPortuguese ? 'Caminho caro, use deliberadamente' : 'Expensive path, enable deliberately' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             <div class="mb-0">
               <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
                 <p class="text-muted mb-0">{{ t.pages.datatable.demoIntro }}</p>

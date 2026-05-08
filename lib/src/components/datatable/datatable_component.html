@@ -62,7 +62,8 @@
                     </div>
                 </div>
 
-                <button (click)="changeViewMode()"
+                <button *ngIf="enableGridMode"
+                    (click)="changeViewMode()"
                     [attr.title]="toggleViewModeButtonTitle"
                     [attr.aria-label]="toggleViewModeButtonTitle"
                     class="btn btn-flat-primary border-transparent btn-icon me-2" type="button">
@@ -108,6 +109,8 @@
         [class.datatable-scroll--sticky-header]="isStickyTableHeaderOnVirtualScrollActive"
         [cssStyle]="resolvedScrollContainerStyleCss" (scroll)="onVirtualViewportScroll()">
         <table #table class="table datatable-basic dataTable no-footer dtr-inline"
+            [class.datatable-fast-table]="isSaliPagedPerformanceProfile"
+            [class.datatable-table-layout-fixed]="fixedTableLayout"
             [class.table-hover]="disableRowClick == false" [class.collapsed]="hasResponsiveCollapsedColumns">
             <thead>
                 <tr role="row">
@@ -128,65 +131,71 @@
                         [cssStyle]="resolvedHeaderStyleCss(colDef, idxCol)" (click)="onHeaderCellClick($event, colDef)"
                         tabindex="0">
                         <span class="datatable-header-title-shell">
-                            <span class="datatable-header-title-content"
-                                [class.datatable-header-title-inline-help]="isTitleTooltipInline(colDef)"
-                                [liTooltip]="resolveTitleTooltipText(colDef)"
-                                [disableTooltip]="!isTitleTooltipInline(colDef) || useNativeTitleTooltip(colDef)"
-                                [placement]="resolveTitleTooltipPlacement(colDef)"
-                                [triggers]="resolveTitleTooltipTrigger(colDef)"
-                                [html]="resolveTitleTooltipAllowHtml(colDef)"
-                                [tooltipClass]="resolveTitleTooltipClass(colDef)"
-                                [container]="resolveTitleTooltipContainer(colDef)"
-                                [openDelay]="resolveTitleTooltipOpenDelay(colDef)"
-                                [closeDelay]="resolveTitleTooltipCloseDelay(colDef)"
-                                [attr.title]="isTitleTooltipInline(colDef) ? resolveNativeTitleTooltipText(colDef) : null"
-                                [attr.data-header-help]="isTitleTooltipInline(colDef) ? 'tooltip-inline' : null">
-                                <template [ngIf]="hasHeaderCellTemplateFor(colDef)">
-                                    <template [ngTemplateOutlet]="resolveHeaderCellTemplateFor(colDef)"
-                                        [ngTemplateOutletValue]="resolveHeaderCellTemplateContext(colDef, idxCol)">
-                                    </template>
-                                </template>
-                                <template [ngIf]="!hasHeaderCellTemplateFor(colDef) && hasRenderedTitleHtml(colDef)">
-                                    <span [safeHtml]="''" [safeHtmlNode]="colDef.titleHtmlElement"></span>
-                                </template>
-                                <template [ngIf]="!hasHeaderCellTemplateFor(colDef) && !hasRenderedTitleHtml(colDef)">
-                                    {{resolveRenderedTitle(colDef)}}
-                                </template>
+                            <span *ngIf="useSimpleHeaderTitle(colDef)" class="datatable-header-title-content">
+                                {{titleHelp.resolveRenderedTitle(colDef)}}
                             </span>
 
-                            <button *ngIf="hasTitleTooltip(colDef) && !isTitleTooltipInline(colDef)" type="button"
-                                [class]="resolveTitleTooltipButtonClass(colDef) + ' datatable-header-help-control'"
-                                [liTooltip]="resolveTitleTooltipText(colDef)"
-                                [disableTooltip]="useNativeTitleTooltip(colDef)"
-                                [placement]="resolveTitleTooltipPlacement(colDef)"
-                                [triggers]="resolveTitleTooltipTrigger(colDef)"
-                                [html]="resolveTitleTooltipAllowHtml(colDef)"
-                                [tooltipClass]="resolveTitleTooltipClass(colDef)"
-                                [container]="resolveTitleTooltipContainer(colDef)"
-                                [openDelay]="resolveTitleTooltipOpenDelay(colDef)"
-                                [closeDelay]="resolveTitleTooltipCloseDelay(colDef)"
-                                [attr.title]="resolveNativeTitleTooltipText(colDef)"
-                                [attr.aria-label]="resolveTitleTooltipAriaLabel(colDef)"
-                                [attr.data-header-help]="'tooltip'">
-                                <i [class]="resolveTitleTooltipIconClass(colDef)"></i>
-                            </button>
+                            <template [ngIf]="!useSimpleHeaderTitle(colDef)">
+                                <span class="datatable-header-title-content"
+                                    [class.datatable-header-title-inline-help]="titleHelp.isTitleTooltipInline(colDef)"
+                                    [liTooltip]="titleHelp.resolveTitleTooltipText(colDef)"
+                                    [disableTooltip]="!titleHelp.isTitleTooltipInline(colDef) || titleHelp.useNativeTitleTooltip(colDef)"
+                                    [placement]="titleHelp.resolveTitleTooltipPlacement(colDef)"
+                                    [triggers]="titleHelp.resolveTitleTooltipTrigger(colDef)"
+                                    [html]="titleHelp.resolveTitleTooltipAllowHtml(colDef)"
+                                    [tooltipClass]="titleHelp.resolveTitleTooltipClass(colDef)"
+                                    [container]="titleHelp.resolveTitleTooltipContainer(colDef)"
+                                    [openDelay]="titleHelp.resolveTitleTooltipOpenDelay(colDef)"
+                                    [closeDelay]="titleHelp.resolveTitleTooltipCloseDelay(colDef)"
+                                    [attr.title]="titleHelp.isTitleTooltipInline(colDef) ? titleHelp.resolveNativeTitleTooltipText(colDef) : null"
+                                    [attr.data-header-help]="titleHelp.isTitleTooltipInline(colDef) ? 'tooltip-inline' : null">
+                                    <template [ngIf]="hasHeaderCellTemplateFor(colDef)">
+                                        <template [ngTemplateOutlet]="resolveHeaderCellTemplateFor(colDef)"
+                                            [ngTemplateOutletValue]="resolveHeaderCellTemplateContext(colDef, idxCol)">
+                                        </template>
+                                    </template>
+                                    <template [ngIf]="!hasHeaderCellTemplateFor(colDef) && titleHelp.hasRenderedTitleHtml(colDef)">
+                                        <span [safeHtml]="''" [safeHtmlNode]="colDef.titleHtmlElement"></span>
+                                    </template>
+                                    <template [ngIf]="!hasHeaderCellTemplateFor(colDef) && !titleHelp.hasRenderedTitleHtml(colDef)">
+                                        {{titleHelp.resolveRenderedTitle(colDef)}}
+                                    </template>
+                                </span>
 
-                            <button *ngIf="hasTitlePopover(colDef)" type="button"
-                                [class]="resolveTitlePopoverButtonClass(colDef) + ' datatable-header-help-control'"
-                                [liPopover]="resolveTitlePopoverBody(colDef)"
-                                [popoverTitle]="resolveTitlePopoverTitle(colDef)"
-                                [placement]="resolveTitlePopoverPlacement(colDef)"
-                                [trigger]="resolveTitlePopoverTrigger(colDef)"
-                                [html]="resolveTitlePopoverAllowHtml(colDef)"
-                                [popoverClass]="resolveTitlePopoverClass(colDef)"
-                                [container]="resolveTitlePopoverContainer(colDef)"
-                                [autoClose]="resolveTitlePopoverAutoClose(colDef)"
-                                [openDelay]="resolveTitlePopoverOpenDelay(colDef)"
-                                [closeDelay]="resolveTitlePopoverCloseDelay(colDef)"
-                                [attr.aria-label]="resolveTitlePopoverAriaLabel(colDef)"
-                                [attr.data-header-help]="'popover'">
-                                <i [class]="resolveTitlePopoverIconClass(colDef)"></i>
-                            </button>
+                                <button *ngIf="titleHelp.hasTitleTooltip(colDef) && !titleHelp.isTitleTooltipInline(colDef)" type="button"
+                                    [class]="titleHelp.resolveTitleTooltipButtonClass(colDef) + ' datatable-header-help-control'"
+                                    [liTooltip]="titleHelp.resolveTitleTooltipText(colDef)"
+                                    [disableTooltip]="titleHelp.useNativeTitleTooltip(colDef)"
+                                    [placement]="titleHelp.resolveTitleTooltipPlacement(colDef)"
+                                    [triggers]="titleHelp.resolveTitleTooltipTrigger(colDef)"
+                                    [html]="titleHelp.resolveTitleTooltipAllowHtml(colDef)"
+                                    [tooltipClass]="titleHelp.resolveTitleTooltipClass(colDef)"
+                                    [container]="titleHelp.resolveTitleTooltipContainer(colDef)"
+                                    [openDelay]="titleHelp.resolveTitleTooltipOpenDelay(colDef)"
+                                    [closeDelay]="titleHelp.resolveTitleTooltipCloseDelay(colDef)"
+                                    [attr.title]="titleHelp.resolveNativeTitleTooltipText(colDef)"
+                                    [attr.aria-label]="titleHelp.resolveTitleTooltipAriaLabel(colDef)"
+                                    [attr.data-header-help]="'tooltip'">
+                                    <i [class]="titleHelp.resolveTitleTooltipIconClass(colDef)"></i>
+                                </button>
+
+                                <button *ngIf="titleHelp.hasTitlePopover(colDef)" type="button"
+                                    [class]="titleHelp.resolveTitlePopoverButtonClass(colDef) + ' datatable-header-help-control'"
+                                    [liPopover]="titleHelp.resolveTitlePopoverBody(colDef)"
+                                    [popoverTitle]="titleHelp.resolveTitlePopoverTitle(colDef)"
+                                    [placement]="titleHelp.resolveTitlePopoverPlacement(colDef)"
+                                    [trigger]="titleHelp.resolveTitlePopoverTrigger(colDef)"
+                                    [html]="titleHelp.resolveTitlePopoverAllowHtml(colDef)"
+                                    [popoverClass]="titleHelp.resolveTitlePopoverClass(colDef)"
+                                    [container]="titleHelp.resolveTitlePopoverContainer(colDef)"
+                                    [autoClose]="titleHelp.resolveTitlePopoverAutoClose(colDef)"
+                                    [openDelay]="titleHelp.resolveTitlePopoverOpenDelay(colDef)"
+                                    [closeDelay]="titleHelp.resolveTitlePopoverCloseDelay(colDef)"
+                                    [attr.aria-label]="titleHelp.resolveTitlePopoverAriaLabel(colDef)"
+                                    [attr.data-header-help]="'popover'">
+                                    <i [class]="titleHelp.resolveTitlePopoverIconClass(colDef)"></i>
+                                </button>
+                            </template>
                         </span>
                     </th>
                 </tr>
@@ -230,7 +239,10 @@
                                     [ngTemplateOutletValue]="resolveCellTemplateContext(view, column, idxR, idxC)">
                                 </template>
                             </template>
-                            <template [ngIf]="!hasCellTemplateFor(column)">
+                            <template [ngIf]="usePlainTextCell(column)">
+                                {{column.value}}
+                            </template>
+                            <template [ngIf]="!usePlainTextCell(column) && !hasCellTemplateFor(column)">
                                 <span [safeHtml]="column.value" [safeHtmlNode]="column.htmlElement"></span>
                             </template>
                         </td>

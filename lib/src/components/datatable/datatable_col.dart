@@ -229,18 +229,18 @@ class DatatableActionColumn extends DatatableCol {
     }).toList(growable: false);
 
     final classes = wrapActions ? '$containerClass flex-wrap' : containerClass;
-    final container = DivElement()..className = classes;
+    final container = DivElement()
+      ..className = classes
+      ..setAttribute('data-li-datatable-action-cell', 'true');
 
     for (final action in actions) {
       final iconClass = action.iconClass?.trim();
-      final useDesktopTextMobileIcon =
-          !action.iconOnly &&
+      final useDesktopTextMobileIcon = !action.iconOnly &&
           action.responsiveMode ==
               DatatableActionResponsiveMode.desktopTextMobileIcon &&
           iconClass != null &&
           iconClass.isNotEmpty;
-      final useDesktopTextAndIconMobileIcon =
-          !action.iconOnly &&
+      final useDesktopTextAndIconMobileIcon = !action.iconOnly &&
           action.responsiveMode ==
               DatatableActionResponsiveMode.desktopTextAndIconMobileIcon &&
           iconClass != null &&
@@ -282,7 +282,8 @@ class DatatableActionColumn extends DatatableCol {
           context: context,
           baseButtonClass: baseButtonClass,
           renderIcon: iconClass != null && iconClass.isNotEmpty,
-          renderLabel: !action.iconOnly || iconClass == null || iconClass.isEmpty,
+          renderLabel:
+              !action.iconOnly || iconClass == null || iconClass.isEmpty,
           forceIconOnlyClass: action.iconOnly,
         ),
       );
@@ -335,11 +336,11 @@ class DatatableActionColumn extends DatatableCol {
 
     final button = ButtonElement()
       ..type = 'button'
-      ..className = classNames
-          .where((value) => value.trim().isNotEmpty)
-          .join(' ')
+      ..className =
+          classNames.where((value) => value.trim().isNotEmpty).join(' ')
       ..title = (action.title ?? action.label)
-      ..setAttribute('aria-label', action.title ?? action.label);
+      ..setAttribute('aria-label', action.title ?? action.label)
+      ..setAttribute('data-li-datatable-action', 'true');
 
     if (!_isActionEnabled(action, context)) {
       button.disabled = true;
@@ -353,9 +354,8 @@ class DatatableActionColumn extends DatatableCol {
         ...extraIconClasses,
       ];
       final icon = Element.tag('i')
-        ..className = iconClasses
-            .where((value) => value.trim().isNotEmpty)
-            .join(' ');
+        ..className =
+            iconClasses.where((value) => value.trim().isNotEmpty).join(' ');
       button.append(icon);
     }
 

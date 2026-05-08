@@ -7,6 +7,7 @@ import 'collapse_config.dart';
 
 const liCollapseDirectives = <Object>[
   LiCollapseDirective,
+  LiCollapseToggleDirective,
 ];
 
 /// Controller that applies Bootstrap/Limitless collapse classes and transitions.
@@ -337,5 +338,173 @@ class LiCollapseDirective implements OnInit, OnDestroy {
   void ngOnDestroy() {
     _collapseChangeController.close();
     _controller.ngOnDestroy();
+  }
+}
+
+/// Trigger directive for selector-based collapse toggles.
+///
+/// This covers the common Bootstrap pattern:
+/// `<a href="#filters" data-bs-toggle="collapse">`.
+/// Use `[liCollapseToggle]="'#filters'"` or omit the value when the host
+/// already has an `href="#filters"` attribute.
+@Directive(
+  selector: '[liCollapseToggle]',
+  exportAs: 'liCollapseToggle',
+)
+class LiCollapseToggleDirective implements OnInit, OnDestroy {
+  LiCollapseToggleDirective(this._host);
+
+  final html.HtmlElement _host;
+  final StreamController<bool> _collapseChangeController =
+      StreamController<bool>.broadcast();
+
+  StreamSubscription<html.MouseEvent>? _clickSubscription;
+  LiCollapseController? _controller;
+  html.HtmlElement? _targetElement;
+  bool _collapsed = true;
+  bool _animation = true;
+  bool _horizontal = false;
+
+  @Input('liCollapseToggle')
+  String? target;
+
+  @Input('liCollapseToggleCollapsed')
+  set collapsed(bool value) {
+    _setCollapsed(value, emitChange: false);
+  }
+
+  bool get collapsed => _collapsed;
+
+  @Input('liCollapseToggleAnimation')
+  set animation(bool value) {
+    _animation = value;
+    _controller?.updateOptions(
+      animation: _animation,
+      horizontal: _horizontal,
+    );
+  }
+
+  bool get animation => _animation;
+
+  @Input('liCollapseToggleHorizontal')
+  set horizontal(bool value) {
+    _horizontal = value;
+    _controller?.updateOptions(
+      animation: _animation,
+      horizontal: _horizontal,
+    );
+  }
+
+  bool get horizontal => _horizontal;
+
+  @Output('liCollapseToggleChange')
+  Stream<bool> get collapseChange => _collapseChangeController.stream;
+
+  @override
+  void ngOnInit() {
+    _clickSubscription = _host.onClick.listen(_handleClick);
+    Timer.run(_connectToTarget);
+    _syncHostState();
+  }
+
+  void toggle([bool? open]) {
+    final nextCollapsed = open == null ? !_collapsed : !open;
+    _setCollapsed(nextCollapsed);
+  }
+
+  void _handleClick(html.MouseEvent event) {
+    event.preventDefault();
+    toggle();
+  }
+
+  void _connectToTarget() {
+    final resolvedTarget = _resolveTargetElement();
+    if (resolvedTarget == null) {
+      return;
+    }
+
+    _targetElement = resolvedTarget;
+    _controller = LiCollapseController(resolvedTarget)
+      ..initialize(
+        collapsed: _collapsed,
+        animation: _animation,
+        horizontal: _horizontal,
+      );
+    _syncHostState();
+  }
+
+  html.HtmlElement? _resolveTargetElement() {
+    final selector = _resolveTargetSelector();
+    if (selector == null || selector.isEmpty) {
+      return null;
+    }
+
+    if (selector.startsWith('#')) {
+      final byId = html.document.getElementById(selector.substring(1));
+      if (byId is html.HtmlElement) {
+        return byId;
+      }
+    }
+
+    try {
+      final bySelector = html.document.querySelector(selector);
+      if (bySelector is html.HtmlElement) {
+        return bySelector;
+      }
+    } catch (_) {
+      final byId = html.document.getElementById(selector);
+      if (byId is html.HtmlElement) {
+        return byId;
+      }
+    }
+
+    return null;
+  }
+
+  String? _resolveTargetSelector() {
+    final configuredTarget = target?.trim();
+    if (configuredTarget != null && configuredTarget.isNotEmpty) {
+      return configuredTarget;
+    }
+
+    final hrefTarget = _host.getAttribute('href')?.trim();
+    if (hrefTarget != null && hrefTarget.startsWith('#')) {
+      return hrefTarget;
+    }
+
+    return null;
+  }
+
+  void _setCollapsed(bool value, {bool emitChange = true}) {
+    _collapsed = value;
+    _controller?.setCollapsed(_collapsed);
+    _syncHostState();
+
+    if (emitChange) {
+      _collapseChangeController.add(_collapsed);
+    }
+  }
+
+  void _syncHostState() {
+    _host.setAttribute('aria-expanded', (!_collapsed).toString());
+
+    final targetId = _targetElement?.id;
+    if (targetId != null && targetId.isNotEmpty) {
+      _host.setAttribute('aria-controls', targetId);
+    }
+
+    if (_collapsed) {
+      _host.classes.add('collapsed');
+      return;
+    }
+
+    _host.classes.remove('collapsed');
+  }
+
+  @override
+  void ngOnDestroy() {
+    _clickSubscription?.cancel();
+    _controller?.ngOnDestroy();
+    _collapseChangeController.close();
   }
 }

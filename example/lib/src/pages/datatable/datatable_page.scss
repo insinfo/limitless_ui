@@ -355,8 +355,8 @@
 }
 
 .datatable-process-lookup-badge--primary {
-  color: #fff;
-  background: #0d6efd;
+  color: var(--component-active-color);
+  background: var(--component-active-bg);
 }
 
 .datatable-process-lookup-badge--muted {
@@ -403,18 +403,43 @@
 .datatable-sticky-demo-shell {
   max-width: 980px;
   margin: 0 1rem 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--border-color-translucent);
   border-radius: 1rem;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.98);
 }
 
 .datatable-sticky-demo-actions {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  width: 100%;
+  min-width: 8rem;
+}
+
+.datatable-performance-summary {
+  padding: 1rem;
+  border: 1px solid var(--border-color-translucent);
+  border-radius: var(--border-radius);
+}
+
+.datatable-performance-summary__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.datatable-performance-summary__item {
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border: 1px solid var(--border-color-translucent);
+  border-radius: var(--border-radius);
+}
+
+.datatable-performance-summary__item i {
+  flex: 0 0 auto;
+  margin-top: 0.125rem;
+  color: var(--component-active-bg);
+  font-size: 1.25rem;
 }
 
 @media (max-width: 767.98px) {

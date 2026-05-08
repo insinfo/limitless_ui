@@ -17,8 +17,12 @@ import 'package:limitless_ui_example/src/pages/color_picker/color_picker_page.te
     as color_picker_page;
 import 'package:limitless_ui_example/src/pages/datatable/datatable_page.template.dart'
     as datatable_page;
+import 'package:limitless_ui_example/src/pages/datatable_process_lookup/datatable_process_lookup_page.template.dart'
+    as datatable_process_lookup_page;
 import 'package:limitless_ui_example/src/pages/datatable_select/datatable_select_page.template.dart'
     as datatable_select_page;
+import 'package:limitless_ui_example/src/pages/protocol_workflow/protocol_workflow_page.template.dart'
+    as protocol_workflow_page;
 import 'package:limitless_ui_example/src/pages/date_picker/date_picker_page.template.dart'
     as date_picker_page;
 import 'package:limitless_ui_example/src/pages/date_range/date_range_page.template.dart'
@@ -195,6 +199,17 @@ class DemoRoutes {
     component: datatable_page.DatatablePageComponentNgFactory,
   );
 
+  static final datatableProcessLookup = RouteDefinition(
+    routePath: DemoRoutePaths.datatableProcessLookup,
+    component: datatable_process_lookup_page
+        .DatatableProcessLookupPageComponentNgFactory,
+  );
+
+  static final protocolWorkflow = RouteDefinition(
+    routePath: DemoRoutePaths.protocolWorkflow,
+    component: protocol_workflow_page.ProtocolWorkflowPageComponentNgFactory,
+  );
+
   static final datatableSelect = RouteDefinition(
     routePath: DemoRoutePaths.datatableSelect,
     component: datatable_select_page.DatatableSelectPageComponentNgFactory,
@@ -256,6 +271,8 @@ class DemoRoutes {
     tooltip,
     popover,
     datatable,
+    datatableProcessLookup,
+    protocolWorkflow,
     datatableSelect,
     workQueue,
     toast,

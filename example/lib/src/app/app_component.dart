@@ -208,6 +208,8 @@ class AppComponent implements OnDestroy {
   String get dataLabel => i18n.isPortuguese ? 'Dados' : 'Data';
   String get datatableProcessLookupLabel =>
       i18n.isPortuguese ? 'Datatable Processos' : 'Process datatable';
+  String get protocolWorkflowLabel =>
+      i18n.isPortuguese ? 'Fluxo de protocolo' : 'Protocol workflow';
   String get utilitiesLabel => i18n.isPortuguese ? 'Utilitários' : 'Utilities';
   String get workQueueLabel =>
       i18n.isPortuguese ? 'Inbox responsiva' : 'Responsive inbox';
@@ -429,6 +431,11 @@ class AppComponent implements OnDestroy {
               url: DemoRoutePaths.datatableProcessLookup.toUrl(),
             ),
             DemoNavItem(
+              label: protocolWorkflowLabel,
+              iconClass: 'ph-folders',
+              url: DemoRoutePaths.protocolWorkflow.toUrl(),
+            ),
+            DemoNavItem(
               label: t.nav.datatableSelect,
               iconClass: 'ph-table',
               url: DemoRoutePaths.datatableSelect.toUrl(),
@@ -507,6 +514,13 @@ class AppComponent implements OnDestroy {
       'layout de consulta de processos',
       'process lookup',
       'datatable processos',
+    ],
+    '/protocol-workflow': <String>[
+      'despachos',
+      'anexos',
+      'andamento',
+      'modal responsivo',
+      'process workflow',
     ],
     '/datatable-select': <String>['tabela seletiva', 'grid select'],
     '/work-queue': <String>[

@@ -30,6 +30,7 @@ import 'li_datatable_component_test.template.dart' as ng;
         [virtualViewportHeight]="virtualViewportHeight"
         [virtualGridItemHeight]="virtualGridItemHeight"
         [virtualGridMinItemWidth]="virtualGridMinItemWidth"
+        [performanceProfile]="performanceProfile"
         [onExportPdf]="onExportPdfCallback"
         [onExportXlsx]="onExportXlsxCallback"
         [responsiveCollapse]="responsiveCollapse"
@@ -39,9 +40,15 @@ import 'li_datatable_component_test.template.dart' as ng;
         [requestDataOnItemsPerPageChange]="requestDataOnItemsPerPageChange"
         [searchInFields]="searchInFields"
         [allowSingleSelectionOnly]="allowSingleSelectionOnly"
+        [enableGridMode]="enableGridMode"
+        [enableResponsiveFeatures]="enableResponsiveFeatures"
+        [fixedTableLayout]="fixedTableLayout"
+        [debugInstrumentation]="debugInstrumentation"
+        [debugInstrumentationLabel]="debugInstrumentationLabel"
         (dataRequest)="onDataRequest(\$event)"
         (limitChange)="onLimitChange(\$event)"
         (searchRequest)="onSearchRequest(\$event)"
+        (instrumentation)="onInstrumentation(\$event)"
         (selectAll)="onSelectedRows(\$event)">
       </li-datatable>
     </div>
@@ -92,7 +99,12 @@ class TestHostComponent {
   ];
 
   bool allowSingleSelectionOnly = false;
+  bool enableGridMode = true;
+  bool enableResponsiveFeatures = true;
+  bool fixedTableLayout = false;
   bool virtualScroll = false;
+  DatatablePerformanceProfile performanceProfile =
+      DatatablePerformanceProfile.flexible;
   bool stickyTableHeaderOnVirtualScroll = false;
   int virtualRowHeight = 44;
   int virtualOverscan = 10;
@@ -104,11 +116,15 @@ class TestHostComponent {
   int responsiveCollapseContainerMaxWidth = 767;
   bool responsiveAutoHideColumns = false;
   bool requestDataOnItemsPerPageChange = false;
+  bool debugInstrumentation = false;
+  String debugInstrumentationLabel = 'datatable-test';
   String tableContainerStyle = '';
   Filters? lastDataRequest;
   Filters? lastLimitChange;
   Filters? lastSearchRequest;
   List<dynamic>? lastSelectedRows;
+  final List<LiDatatableInstrumentationEvent> instrumentationEvents =
+      <LiDatatableInstrumentationEvent>[];
   DatatableExportPdfCallback? onExportPdfCallback;
   DatatableExportXlsxCallback? onExportXlsxCallback;
 
@@ -129,6 +145,10 @@ class TestHostComponent {
 
   void onSelectedRows(List<dynamic> rows) {
     lastSelectedRows = List<dynamic>.from(rows);
+  }
+
+  void onInstrumentation(LiDatatableInstrumentationEvent event) {
+    instrumentationEvents.add(event);
   }
 }
 
@@ -819,6 +839,69 @@ void main() {
     expect(toggleCell, isNotNull);
   });
 
+  test('colapsa em desktop por container sem auto-hide por prioridade',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.tableContainerStyle = 'width: 360px;';
+      component.responsiveCollapse = true;
+      component.responsiveCollapseByContainer = true;
+      component.responsiveCollapseContainerMaxWidth = 420;
+      component.responsiveAutoHideColumns = false;
+      component.debugInstrumentation = true;
+      component.debugInstrumentationLabel = 'desktop-collapse-no-priority';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(
+            key: 'idade',
+            title: 'Idade',
+            hideOnMobile: true,
+          ),
+          DatatableCol(
+            key: 'setor',
+            title: 'Setor',
+            hideOnMobile: true,
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final renderedRow = host.table!.renderedRows.first;
+    final hiddenKeys =
+        renderedRow.responsiveHiddenColumns.map((column) => column.key).toSet();
+    final viewportEvents = host.instrumentationEvents
+        .where((event) => event.stage == 'responsiveViewportState.sync')
+        .toList(growable: false);
+
+    expect(host.table!.hasResponsiveCollapsedColumns, isTrue);
+    expect(renderedRow.hasResponsiveHiddenColumns, isTrue);
+    expect(hiddenKeys, containsAll(<String>['idade', 'setor']));
+    expect(
+      fixture.rootElement.querySelector('tbody tr td.dtr-control'),
+      isNotNull,
+    );
+    expect(
+      host.instrumentationEvents.any(
+        (event) =>
+            event.stage.startsWith('responsiveAutoHideSync') &&
+            event.stage != 'responsiveAutoHideSync.skipped',
+      ),
+      isFalse,
+    );
+    expect(viewportEvents, isNotEmpty);
+    expect(
+      viewportEvents.any(
+        (event) =>
+            event.details['collapseContainerActive'] == true &&
+            event.details['collapseActive'] == true,
+      ),
+      isTrue,
+    );
+  });
+
   test('não expande linha quando não há colunas configuradas para mobile',
       () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
@@ -865,6 +948,49 @@ void main() {
 
     expect(host.table!.rows.first.isExpanded, isFalse);
     expect(fixture.rootElement.querySelector('tbody tr.child'), isNull);
+  });
+
+  test('enableResponsiveFeatures false bloqueia collapse e auto-hide',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component
+        ..enableResponsiveFeatures = false
+        ..responsiveCollapse = true
+        ..responsiveAutoHideColumns = true
+        ..tableContainerStyle = 'width: 260px;'
+        ..settings = DatatableSettings(
+          colsDefinitions: <DatatableCol>[
+            DatatableCol(
+              key: 'nome',
+              title: 'Nome',
+              width: '180px',
+              hideOnMobile: true,
+              responsiveAutoHidePriority: 1,
+            ),
+            DatatableCol(
+              key: 'idade',
+              title: 'Idade',
+              width: '180px',
+              responsiveAutoHidePriority: 2,
+            ),
+          ],
+        );
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.table!.responsiveCollapseMaxWidth = 100000;
+    });
+    await _settleTable(fixture);
+
+    expect(host.table!.enableResponsiveFeatures, isFalse);
+    expect(host.table!.hasResponsiveCollapsedColumns, isFalse);
+    expect(host.table!.hasResponsiveHiddenColumns(host.table!.rows.first),
+        isFalse);
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isFalse);
+    expect(
+        fixture.rootElement.querySelector('tbody tr td.dtr-control'), isNull);
   });
 
   test('esconde colunas por prioridade antes de gerar rolagem horizontal',
@@ -924,6 +1050,66 @@ void main() {
     );
     expect(nomeHeader!.classes.contains('hide'), isTrue);
     expect(idadeHeader!.classes.contains('hide'), isFalse);
+    expect(acoesHeader!.classes.contains('hide'), isFalse);
+  });
+
+  test('nao trata largura percentual como pixels no auto-hide', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 330px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'id',
+            title: 'ID',
+            width: '70px',
+            minWidth: '70px',
+            responsiveAutoHideRequired: true,
+          ),
+          DatatableCol(
+            key: 'detalhes',
+            title: 'Detalhes',
+            width: '120px',
+            minWidth: '120px',
+            responsiveAutoHidePriority: 10,
+          ),
+          DatatableCol(
+            key: 'responsavel',
+            title: 'Responsavel',
+            width: '120px',
+            minWidth: '120px',
+            responsiveAutoHidePriority: 20,
+          ),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Acoes',
+            width: '1%',
+            minWidth: '1%',
+            nowrap: true,
+            responsiveAutoHideRequired: true,
+            customRenderString: (itemMap, itemInstance) => 'Abrir detalhes',
+          ),
+        ],
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final hiddenKeys = host.table!.renderedRows.first.responsiveHiddenColumns
+        .map((column) => column.key);
+    final detalhesHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="detalhes"]',
+    );
+    final acoesHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="acoes"]',
+    );
+
+    expect(hiddenKeys, contains('detalhes'));
+    expect(hiddenKeys, isNot(contains('acoes')));
+    expect(detalhesHeader!.classes.contains('hide'), isTrue);
     expect(acoesHeader!.classes.contains('hide'), isFalse);
   });
 
@@ -1504,6 +1690,66 @@ void main() {
     expect(host.table!.gridMode, isFalse);
   });
 
+  test('enableGridMode false bloqueia grid e remove botao de alternancia',
+      () async {
+    final fixture = await testBed.create(
+      beforeChangeDetection: (component) {
+        component.enableGridMode = false;
+      },
+    );
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(host.table!.enableGridMode, isFalse);
+    expect(host.table!.gridMode, isFalse);
+    expect(fixture.rootElement.querySelector('.datatable-grid-scroll'), isNull);
+    expect(
+      fixture.rootElement.querySelector('.ph-squares-four'),
+      isNull,
+    );
+
+    await fixture.update((component) {
+      component.table!.changeViewMode();
+    });
+    await _settleTable(fixture);
+
+    expect(host.table!.gridMode, isFalse);
+    expect(fixture.rootElement.querySelector('.datatable-scroll'), isNotNull);
+    expect(fixture.rootElement.querySelector('.datatable-grid-scroll'), isNull);
+  });
+
+  test('enableGridMode false ignora input gridMode true e custom card builder',
+      () async {
+    var customCardBuilderCalls = 0;
+    final fixture = await testBed.create(
+      beforeChangeDetection: (component) {
+        component
+          ..enableGridMode = false
+          ..settings = DatatableSettings(
+            customCardBuilder: (itemMap, itemInstance, row) {
+              customCardBuilderCalls++;
+              return DivElement()..text = 'card pesado';
+            },
+            colsDefinitions: <DatatableCol>[
+              DatatableCol(key: 'nome', title: 'Nome'),
+            ],
+          );
+      },
+    );
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.table!.gridMode = true;
+    });
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+    expect(host.table!.gridMode, isFalse);
+    expect(customCardBuilderCalls, 0);
+    expect(fixture.rootElement.querySelector('.datatable-scroll'), isNotNull);
+    expect(fixture.rootElement.querySelector('.datatable-grid-scroll'), isNull);
+  });
+
   test('renderiza layout de grid quando gridMode esta ativo', () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
@@ -2007,7 +2253,21 @@ void main() {
     expect(actionHeader, isNotNull);
     expect(actionHeader!.getAttribute('style'), contains('text-align: center'));
     expect(actionButton, isNotNull);
-    expect(actionButton!.text, contains('Abrir'));
+    expect(
+      fixture.rootElement.querySelectorAll(
+        '[data-li-datatable-action-cell="true"]',
+      ),
+      hasLength(2),
+    );
+    expect(
+      fixture.rootElement.querySelectorAll('[data-li-datatable-action="true"]'),
+      hasLength(2),
+    );
+    expect(
+      actionButton!.getAttribute('data-li-datatable-action'),
+      'true',
+    );
+    expect(actionButton.text, contains('Abrir'));
     expect(actionIcon, isNotNull);
     expect(actionIcon!.classes.contains('me-2'), isTrue);
 
@@ -2016,6 +2276,66 @@ void main() {
     });
 
     expect(triggered, 1);
+  });
+
+  test('instrumenta actions no perfil saliPaged sem depender do visual probe',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.performanceProfile = DatatablePerformanceProfile.saliPaged;
+      component.debugInstrumentation = true;
+      component.debugInstrumentationLabel = 'sali-actions-regression';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Abrir',
+                iconClass: 'ph ph-eye',
+                iconOnly: true,
+                onTap: (_) {},
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+
+    host.instrumentationEvents.clear();
+    await fixture.update((component) {
+      component.table!.scheduleDraw(
+        force: true,
+        reason: 'action instrumentation regression',
+      );
+    });
+    await _settleTable(fixture);
+
+    final drawEvents = host.instrumentationEvents
+        .where((event) => event.stage == 'draw.finish')
+        .toList(growable: false);
+
+    expect(host.table!.isSaliPagedPerformanceProfile, isTrue);
+    expect(
+      fixture.rootElement.querySelectorAll(
+        '[data-li-datatable-action-cell="true"]',
+      ),
+      hasLength(2),
+    );
+    expect(
+      fixture.rootElement.querySelectorAll('[data-li-datatable-action="true"]'),
+      hasLength(2),
+    );
+    expect(drawEvents, isNotEmpty);
+    expect(_maxDetailInt(drawEvents, 'configuredActionColumns'), 1);
+    expect(_maxDetailInt(drawEvents, 'actionCells'), 2);
+    expect(_maxDetailInt(drawEvents, 'actionElements'), 2);
+    expect(_maxDetailInt(drawEvents, 'actionButtons'), 2);
   });
 
   test('suporta ação com aparência link-icon sem fundo', () async {
@@ -2286,6 +2606,179 @@ void main() {
     expect(host.table!.rows.length, lessThan(20));
   });
 
+  test('perfil saliPaged ignora virtual scroll e responsividade rica',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.performanceProfile = DatatablePerformanceProfile.saliPaged;
+      component.virtualScroll = true;
+      component.responsiveAutoHideColumns = true;
+      component.responsiveCollapse = true;
+      component.responsiveCollapseByContainer = true;
+      component.tableContainerStyle = 'width: 260px;';
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'nome',
+            title: 'Nome',
+            sortingBy: 'nome',
+            enableSorting: true,
+          ),
+          DatatableCol(
+            key: 'digitalLabel',
+            title: 'Digital',
+            sortingBy: 'digitalOrder',
+            enableSorting: true,
+            headerStyleCss: 'width: 90px; min-width: 90px; text-align: center;',
+          ),
+        ],
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: List<Map<String, dynamic>>.generate(
+          30,
+          (index) => <String, dynamic>{
+            'nome': 'Pessoa $index',
+            'idade': 20 + (index % 50),
+            'digitalLabel': index.isEven ? 'Sim' : 'Nao',
+            'digitalOrder': index.isEven ? 1 : 0,
+          },
+        ),
+        totalRecords: 30,
+      );
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+    final scrollContainer = fixture.rootElement.querySelector(
+      '.datatable-scroll',
+    ) as HtmlElement?;
+    final table = fixture.rootElement.querySelector(
+      'table.dataTable',
+    ) as HtmlElement?;
+    final sortingHeader = fixture.rootElement.querySelector(
+      'table.datatable-fast-table thead th.sorting[data-key="digitalLabel"]',
+    ) as HtmlElement?;
+
+    expect(host.table!.isVirtualScrollActive, isFalse);
+    expect(host.table!.hasResponsiveCollapsedColumns, isFalse);
+    expect(host.table!.rows, hasLength(30));
+    expect(scrollContainer, isNotNull);
+    expect(scrollContainer!.classes.contains('datatable-scroll--virtual'),
+        isFalse);
+    expect(table, isNotNull);
+    expect(table!.classes.contains('datatable-fast-table'), isTrue);
+    expect(table.classes.contains('datatable-table-layout-fixed'), isFalse);
+    expect(table.getComputedStyle().getPropertyValue('table-layout'), 'auto');
+    expect(sortingHeader, isNotNull);
+
+    final titleShell = sortingHeader!.querySelector(
+      '.datatable-header-title-shell',
+    ) as HtmlElement?;
+    final titleContent = sortingHeader.querySelector(
+      '.datatable-header-title-content',
+    ) as HtmlElement?;
+    expect(titleShell, isNotNull);
+    expect(titleContent, isNotNull);
+
+    final paddingRight = double.tryParse(
+          sortingHeader.getComputedStyle().paddingRight.replaceAll('px', ''),
+        ) ??
+        0;
+
+    expect(paddingRight, greaterThanOrEqualTo(30));
+    expect(titleShell!.getComputedStyle().display, isNot('block'));
+    expect(titleContent!.getComputedStyle().overflow, isNot('hidden'));
+
+    await fixture.update((component) {
+      component.fixedTableLayout = true;
+    });
+    await _settleTable(fixture);
+
+    final fixedTable = fixture.rootElement.querySelector(
+      'table.datatable-fast-table',
+    ) as HtmlElement?;
+    final fixedSortingHeader = fixture.rootElement.querySelector(
+      'table.datatable-table-layout-fixed thead th.sorting[data-key="digitalLabel"]',
+    ) as HtmlElement?;
+    expect(fixedSortingHeader, isNotNull);
+
+    final fixedTitleShell = fixedSortingHeader!.querySelector(
+      '.datatable-header-title-shell',
+    ) as HtmlElement?;
+    final fixedTitleContent = fixedSortingHeader.querySelector(
+      '.datatable-header-title-content',
+    ) as HtmlElement?;
+    final fixedHeaderRect = fixedSortingHeader.getBoundingClientRect();
+    final fixedShellRect = fixedTitleShell!.getBoundingClientRect();
+
+    expect(fixedTable, isNotNull);
+    expect(
+        fixedTable!.classes.contains('datatable-table-layout-fixed'), isTrue);
+    expect(fixedTable.getComputedStyle().getPropertyValue('table-layout'),
+        'fixed');
+    expect(fixedTitleShell.getComputedStyle().display, 'block');
+    expect(fixedTitleContent!.getComputedStyle().overflow, 'hidden');
+    expect(fixedShellRect.right, lessThanOrEqualTo(fixedHeaderRect.right - 20));
+  });
+
+  test('mantem selecao virtual por rowKeyResolver apos reordenar dados',
+      () async {
+    late final List<Map<String, dynamic>> items;
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.virtualScroll = true;
+      component.virtualRowHeight = 40;
+      component.virtualOverscan = 2;
+      component.virtualViewportHeight = '200px';
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade'),
+        ],
+        rowKeyResolver: (itemMap, _, index) => itemMap['id'] ?? index,
+      );
+      items = List<Map<String, dynamic>>.generate(
+        80,
+        (index) => <String, dynamic>{
+          'id': index,
+          'nome': 'Pessoa $index',
+          'idade': 20 + (index % 50),
+        },
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: items,
+        totalRecords: items.length,
+      );
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.table!.onSelect(MouseEvent('click'), component.table!.rows[0]);
+    });
+
+    expect(
+      host.table!.getAllSelected<Map<String, dynamic>>().single['id'],
+      0,
+    );
+
+    await fixture.update((component) {
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: items.reversed.toList(growable: false),
+        totalRecords: items.length,
+      );
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final selected = host.table!.getAllSelected<Map<String, dynamic>>();
+    expect(selected, hasLength(1));
+    expect(selected.single['id'], 0);
+  });
+
   test('permite fixar o header quando virtual scroll esta ativo', () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
       component.virtualScroll = true;
@@ -2420,6 +2913,21 @@ void main() {
     expect(host.table!.rows.first.index, greaterThan(0));
     expect(host.table!.rows.length, lessThan(20));
   });
+}
+
+int _maxDetailInt(
+  Iterable<LiDatatableInstrumentationEvent> events,
+  String key,
+) {
+  final values = events
+      .map((event) => event.details[key])
+      .whereType<int>()
+      .toList(growable: false);
+  if (values.isEmpty) {
+    return 0;
+  }
+  values.sort();
+  return values.last;
 }
 
 Future<void> _settleTable(NgTestFixture<TestHostComponent> fixture) async {

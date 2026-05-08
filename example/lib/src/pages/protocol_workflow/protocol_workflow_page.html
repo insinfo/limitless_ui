@@ -1,0 +1,252 @@
+<div class="demo-page protocol-workflow-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex flex-fill">
+        <div class="page-title mb-0">
+          <h4 class="mb-0">Protocolo <span class="fw-normal">fluxo responsivo</span></h4>
+          <div class="text-muted small mt-1">Tabela principal, modal amplo, abas e datatables responsivos por container.</div>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+        <button type="button" class="btn btn-indigo btn-labeled btn-labeled-start">
+          <span class="btn-labeled-icon bg-black bg-opacity-20">
+            <i class="ph ph-paperclip"></i>
+          </span>
+          Anexar Arquivo
+        </button>
+        <button type="button" class="btn btn-primary btn-labeled btn-labeled-start">
+          <span class="btn-labeled-icon bg-black bg-opacity-20">
+            <i class="ph ph-scroll"></i>
+          </span>
+          Criar despacho
+        </button>
+      </div>
+    </div>
+
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb currentLabel="Fluxo de protocolo"></demo-page-breadcrumb>
+
+      <div class="d-lg-flex align-items-center mb-2 mb-lg-0 ms-lg-auto">
+        <a href="#protocol-workflow-filters"
+           liCollapseToggle
+           [liCollapseToggleAnimation]="false"
+           class="d-flex align-items-center text-body py-2 cursor-pointer">
+          <i class="ph-funnel me-2"></i>
+          Pesquisa Avançada
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div id="protocol-workflow-filters" class="show">
+        <div class="card-body border-bottom">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label">Digital:</label>
+              <select class="form-select">
+                <option>Todos</option>
+                <option>Sim</option>
+                <option>Não</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Assunto:</label>
+              <input type="text" class="form-control" placeholder="Selecione uma classificação">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Seleção de Processos:</label>
+              <input type="text" class="form-control" placeholder="Digite o número do processo e pressione enter.">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Incluído em:</label>
+              <input type="text" class="form-control" placeholder="Selecione o período">
+            </div>
+            <div class="col-md-8 d-flex justify-content-md-end gap-2">
+              <button type="button" class="btn btn-flat-primary border-transparent">
+                <i class="ph ph-eraser me-1"></i>
+                Limpar
+              </button>
+              <button type="button" class="btn btn-primary">
+                <i class="ph ph-magnifying-glass me-1"></i>
+                Pesquisar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <li-datatable
+          [dataTableFilter]="processFilters"
+          [data]="processData"
+          [settings]="processSettings"
+          [searchInFields]="searchFields"
+          [limitPerPageOptions]="limitPerPageOptions"
+          [showExportMenu]="false"
+          [disableRowClick]="true"
+          [responsiveCollapse]="true"
+          [responsiveCollapseMaxWidth]="991"
+          [responsiveCollapseByContainer]="true"
+          [responsiveCollapseContainerMaxWidth]="991"
+          [responsiveAutoHideColumns]="true"
+          [requestDataOnItemsPerPageChange]="true"
+          (dataRequest)="onProcessRequest($event)"
+          (searchRequest)="onProcessRequest($event)"
+          (limitChange)="onProcessRequest($event)">
+      </li-datatable>
+    </div>
+
+    <div class="alert alert-info alert-icon-start mt-3 mb-0">
+      <span class="alert-icon bg-info text-white">
+        <i class="ph ph-info"></i>
+      </span>
+      {{ lastAction }}
+    </div>
+  </div>
+
+  <li-modal #detailsModal
+            [start-open]="false"
+            title-text="Despachos e Anexos do andamento atual"
+            size="xtra-large"
+            headerColor="primary"
+            [enableModalBodyClass]="false">
+    <div class="p-2">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <span class="fw-semibold">Processo:</span>
+          <span class="ms-1">{{ selectedProcessCode }}</span>
+        </div>
+        <div *ngIf="selectedProcess != null" class="d-flex align-items-center gap-2">
+          <div class="text-muted small">
+            Andamento atual: {{ currentStepLabel }}
+          </div>
+          <button type="button"
+                  class="btn btn-flat-primary border-transparent btn-icon btn-sm"
+                  title="Atualizar dados do andamento atual"
+                  (click)="reloadDetails()">
+            <i class="ph ph-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ul class="nav nav-tabs nav-tabs-highlight">
+      <li class="nav-item">
+        <a class="nav-link cursor-pointer" [class.active]="isDispatchTab" (click)="selectTab('dispatches')">
+          Despachos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link cursor-pointer" [class.active]="isAttachmentTab" (click)="selectTab('attachments')">
+          Anexos
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane fade" [class.show]="isDispatchTab" [class.active]="isDispatchTab">
+        <div *ngIf="hasNoDispatches" class="alert alert-info m-3">
+          Nenhum despacho encontrado para o andamento atual do processo selecionado.
+        </div>
+        <li-datatable *ngIf="!hasNoDispatches"
+            [dataTableFilter]="dispatchFilters"
+            [data]="dispatchData"
+            [settings]="dispatchSettings"
+            [showCheckboxToSelectRow]="false"
+            [disableRowClick]="true"
+            [showExportMenu]="false"
+            [limitPerPageOptions]="limitPerPageOptions"
+            [responsiveCollapse]="true"
+            [responsiveCollapseMaxWidth]="991"
+            [responsiveCollapseByContainer]="true"
+            [responsiveCollapseContainerMaxWidth]="991"
+            [responsiveAutoHideColumns]="true"
+            (dataRequest)="onDispatchRequest($event)"
+            (limitChange)="onDispatchRequest($event)">
+        </li-datatable>
+      </div>
+
+      <div class="tab-pane fade" [class.show]="isAttachmentTab" [class.active]="isAttachmentTab">
+        <div *ngIf="hasNoAttachments" class="alert alert-info m-3">
+          Nenhum anexo encontrado para o andamento atual do processo selecionado.
+        </div>
+        <li-datatable *ngIf="!hasNoAttachments"
+            [dataTableFilter]="attachmentFilters"
+            [data]="attachmentData"
+            [settings]="attachmentSettings"
+            [showCheckboxToSelectRow]="false"
+            [disableRowClick]="true"
+            [showExportMenu]="false"
+            [limitPerPageOptions]="limitPerPageOptions"
+            [responsiveCollapse]="true"
+            [responsiveCollapseMaxWidth]="991"
+            [responsiveCollapseByContainer]="true"
+            [responsiveCollapseContainerMaxWidth]="991"
+            [responsiveAutoHideColumns]="true"
+            (dataRequest)="onAttachmentRequest($event)"
+            (limitChange)="onAttachmentRequest($event)">
+        </li-datatable>
+      </div>
+    </div>
+  </li-modal>
+
+  <li-modal #dispatchViewerModal
+            [start-open]="false"
+            [enableModalBodyClass]="false"
+            [title-text]="dispatchViewerTitle"
+            size="xtra-large"
+            headerColor="primary">
+    <div class="protocol-document-preview">
+      <div class="protocol-document-preview__toolbar">
+        <button type="button" class="btn btn-flat-primary border-transparent btn-icon" title="Imprimir">
+          <i class="ph ph-printer"></i>
+        </button>
+      </div>
+      <article class="protocol-document-preview__paper">
+        <h5 class="mb-3">{{ dispatchViewerTitle }}</h5>
+        <p class="mb-0">{{ dispatchViewerBody }}</p>
+      </article>
+    </div>
+  </li-modal>
+
+  <li-modal #signaturePanelModal
+            [start-open]="false"
+            title-text="Painel de assinaturas"
+            size="large"
+            headerColor="primary">
+    <div class="alert alert-primary alert-icon-start mb-3">
+      <span class="alert-icon bg-primary text-white">
+        <i class="ph ph-signature"></i>
+      </span>
+      Fluxo simulado para {{ signaturePanelTitle }}.
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-light" (click)="signaturePanelModal?.close()">Fechar</button>
+      <button type="button" class="btn btn-primary" (click)="signaturePanelModal?.close()">Assinar agora</button>
+    </div>
+  </li-modal>
+
+  <li-modal #previewModal
+            [start-open]="false"
+            [title-text]="previewTitle"
+            size="xtra-large"
+            headerColor="primary"
+            [enableModalBodyClass]="false"
+            [fullScreenOnMobile]="true"
+            (close)="onPreviewClose()">
+    <div *ngIf="previewUrl != null" class="protocol-pdf-preview">
+      <div class="protocol-pdf-preview__page">
+        <i class="ph ph-file-pdf"></i>
+        <h5>{{ previewTitle }}</h5>
+        <p class="text-muted mb-0">Pré-visualização simulada de PDF.</p>
+        <code>{{ previewUrl }}</code>
+      </div>
+    </div>
+
+    <div *ngIf="previewUrl == null" class="alert alert-info mb-0">
+      Documento não disponível para visualização.
+    </div>
+  </li-modal>
+</div>

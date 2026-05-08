@@ -43,22 +43,60 @@ class DatatableRowBuilder {
     bool? responsiveCollapseActive,
     Set<String> autoHiddenColumnKeys = const <String>{},
   }) {
+    return buildRange(
+      data: data,
+      settings: settings,
+      nullIsEmpty: nullIsEmpty,
+      gridMode: gridMode,
+      responsiveCollapse: responsiveCollapse,
+      responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      startIndex: 0,
+      endIndex: data.length,
+      rowIndexOffset: rowIndexOffset,
+      responsiveCollapseActive: responsiveCollapseActive,
+      autoHiddenColumnKeys: autoHiddenColumnKeys,
+    );
+  }
+
+  DatatableRowBuildResult buildRange({
+    required DataFrame data,
+    required DatatableSettings settings,
+    required bool nullIsEmpty,
+    required bool gridMode,
+    required bool responsiveCollapse,
+    required int responsiveCollapseMaxWidth,
+    required int startIndex,
+    required int endIndex,
+    int rowIndexOffset = 0,
+    bool? responsiveCollapseActive,
+    Set<String> autoHiddenColumnKeys = const <String>{},
+  }) {
     final rows = <DatatableRow>[];
     String? previousGroupingValue;
-    final itemsAsMap = data.itemsAsMap;
-    final resolvedItemMaps = List<Map<String, dynamic>>.generate(
-      data.length,
-      (index) => index < itemsAsMap.length
-          ? itemsAsMap[index]
-          : _coerceItemMap(data[index]),
-      growable: false,
-    );
 
-    for (var i = 0; i < resolvedItemMaps.length; i++) {
-      final itemMap = resolvedItemMaps[i];
-      final itemInstance = data[i];
+    List<Map<String, dynamic>>? itemsAsMap;
+    Map<String, dynamic> itemMapAt(int index) {
+      final itemInstance = data[index];
+      if (itemInstance is Map) {
+        return _coerceItemMap(itemInstance);
+      }
+
+      itemsAsMap ??= data.itemsAsMap;
+      return index < itemsAsMap!.length
+          ? itemsAsMap![index]
+          : _coerceItemMap(itemInstance);
+    }
+
+    final safeStartIndex = startIndex.clamp(0, data.length).toInt();
+    final safeEndIndex = endIndex.clamp(safeStartIndex, data.length).toInt();
+
+    for (var absoluteIndex = safeStartIndex;
+        absoluteIndex < safeEndIndex;
+        absoluteIndex++) {
+      final itemMap = itemMapAt(absoluteIndex);
+      final itemInstance = data[absoluteIndex];
       final row = DatatableRow(
-        index: rowIndexOffset + i,
+        index: rowIndexOffset + absoluteIndex,
         instance: itemInstance,
         itemMap: itemMap,
         columns: <DatatableCol>[],
@@ -99,8 +137,8 @@ class DatatableRowBuilder {
               .map((entry) => entry.value)
               .join('.');
 
-          if (i > 0) {
-            previousGroupingValue = resolvedItemMaps[i - 1]
+          if (absoluteIndex > 0) {
+            previousGroupingValue = itemMapAt(absoluteIndex - 1)
                 .entries
                 .where((entry) => groupBys.contains(entry.key))
                 .map((entry) => entry.value)

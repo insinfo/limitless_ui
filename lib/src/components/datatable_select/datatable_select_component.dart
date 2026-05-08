@@ -323,6 +323,20 @@ class LiDatatableSelectComponent
   @Input()
   bool gridMode = false;
 
+  /// Enables grid/card mode in the inner datatable.
+  ///
+  /// Set to `false` for table-only modal pickers to avoid grid-specific
+  /// rendering and row-building work.
+  @Input()
+  bool enableGridMode = true;
+
+  /// Enables responsive collapse and auto-hide in the inner datatable.
+  ///
+  /// Set to `false` for fixed-layout modal tables to avoid responsive width
+  /// measurement and resize-driven row rebuilds.
+  @Input()
+  bool enableResponsiveFeatures = true;
+
   /// When `true`, responsible collapse is enabled in the datatable.
   @Input()
   bool responsiveCollapse = false;

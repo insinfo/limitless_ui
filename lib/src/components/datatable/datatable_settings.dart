@@ -15,6 +15,19 @@ typedef DatatableCardBuilder = Element Function(
   DatatableRow row,
 );
 
+typedef DatatableRowKeyResolver = Object Function(
+  Map<String, dynamic> itemMap,
+  dynamic itemInstance,
+  int index,
+);
+
+enum DatatablePerformanceProfile {
+  fast,
+  flexible,
+  full,
+  saliPaged,
+}
+
 class DatatableSettings {
   /// define as colunas que vão aparecer na tabela
   List<DatatableCol> colsDefinitions = [];
@@ -33,6 +46,7 @@ class DatatableSettings {
   }
 
   RowStyleResolver? rowStyleResolver;
+  DatatableRowKeyResolver? rowKeyResolver;
   DatatableCardBuilder? customCardBuilder;
   String gridTemplateColumns;
   String gridGap;
@@ -55,6 +69,7 @@ class DatatableSettings {
     this.enableGrouping = false,
     this.showOrderNumberColumn = false,
     this.rowStyleResolver,
+    this.rowKeyResolver,
     this.customCardBuilder,
     this.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))',
     this.gridGap = '1.25rem',
@@ -98,9 +113,9 @@ class DatatableSettings {
   List<DatatableCol> get visibleColumns =>
       colsDefinitions.where((c) => c.visibility).toList();
 
-    List<DatatableCol> get exportColumns =>
+  List<DatatableCol> get exportColumns =>
       colsDefinitions.where((c) => c.exportable).toList();
 
-    List<DatatableCol> get visibleExportColumns =>
+  List<DatatableCol> get visibleExportColumns =>
       colsDefinitions.where((c) => c.visibility && c.exportable).toList();
 }

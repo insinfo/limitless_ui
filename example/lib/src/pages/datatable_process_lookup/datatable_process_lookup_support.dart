@@ -24,7 +24,10 @@ class DatatableProcessLookupExampleSupport {
     //   ),
     // );
 
-    return DatatableSettings(colsDefinitions: colsDefinitions);
+    return DatatableSettings(
+      colsDefinitions: colsDefinitions,
+      rowKeyResolver: (itemMap, _, index) => itemMap['processCode'] ?? index,
+    );
   }
 
   static List<DatatableCol> buildBaseCols({

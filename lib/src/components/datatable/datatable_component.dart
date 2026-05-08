@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:html';
-import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
@@ -16,178 +15,35 @@ import '../pagination/pagination_component.dart';
 import '../loading/loading.dart';
 import '../tooltip/tooltip_component.dart';
 import 'datatable_col.dart';
-import 'datatable_row.dart';
-import 'datatable_settings.dart';
-export 'datatable_models.dart';
-import 'datatable_exporter.dart';
+import 'datatable_css_utils.dart';
+import 'datatable_export_controller.dart';
+import 'datatable_instrumentation_controller.dart';
 import 'datatable_models.dart';
+import 'datatable_pagination_controller.dart';
+import 'datatable_responsive_controller.dart';
+import 'datatable_row.dart';
 import 'datatable_row_builder.dart';
+import 'datatable_search_controller.dart';
+import 'datatable_selection_controller.dart';
+import 'datatable_settings.dart';
+import 'datatable_sort_controller.dart';
+import 'datatable_template_contexts.dart';
+import 'datatable_template_directives.dart';
+import 'datatable_title_help_controller.dart';
+import 'datatable_virtual_scroll_controller.dart';
 
-class LiDatatableHeaderContext {
-  LiDatatableHeaderContext({
-    required this.search,
-    required this.requestData,
-    required this.selectSearchField,
-    required this.changeItemsPerPage,
-    required this.toggleViewMode,
-    required this.toggleAllColumnsVisibility,
-    required this.exportPdf,
-    required this.exportXlsx,
-  });
+export 'datatable_models.dart';
+export 'datatable_template_contexts.dart';
+export 'datatable_template_directives.dart';
 
-  DataFrame data = DataFrame(items: <dynamic>[], totalRecords: 0);
-  List<DatatableRow> rows = <DatatableRow>[];
-  List<DatatableRenderedRow> renderedRows = <DatatableRenderedRow>[];
-  Filters dataTableFilter = Filters();
-  DatatableSettings settings =
-      DatatableSettings(colsDefinitions: <DatatableCol>[]);
-  List<DatatableSearchField> searchInFields = <DatatableSearchField>[];
-  List<int> limitPerPageOptions = <int>[];
-  List<DatatableMenuAction> exportMenuActions = <DatatableMenuAction>[];
-  String searchLabel = '';
-  String searchPlaceholder = '';
-  bool gridMode = false;
-  bool showExportMenu = false;
-  bool disableHeaderPadding = false;
-  int totalRecords = 0;
-  int currentPage = 1;
-  int numPages = 1;
-  int? selectedSearchFieldIndex;
-  int? limitPerPage;
-  bool allColumnsVisible = true;
-
-  final void Function() search;
-  final void Function() requestData;
-  final void Function(int index) selectSearchField;
-  final void Function(int value) changeItemsPerPage;
-  final void Function() toggleViewMode;
-  final void Function() toggleAllColumnsVisibility;
-  final Future<void> Function() exportPdf;
-  final Future<void> Function() exportXlsx;
-}
-
-class LiDatatableFooterContext {
-  LiDatatableFooterContext({
-    required this.requestData,
-    required this.changePage,
-    required this.nextPage,
-    required this.prevPage,
-    required this.goToFirstPage,
-    required this.goToLastPage,
-  });
-
-  DataFrame data = DataFrame(items: <dynamic>[], totalRecords: 0);
-  List<DatatableRow> rows = <DatatableRow>[];
-  List<DatatableRenderedRow> renderedRows = <DatatableRenderedRow>[];
-  Filters dataTableFilter = Filters();
-  DatatableSettings settings =
-      DatatableSettings(colsDefinitions: <DatatableCol>[]);
-  int totalRecords = 0;
-  int currentPage = 1;
-  int numPages = 1;
-  int currentTotalItems = 0;
-  int pageSize = 0;
-  int resolvedPaginationButtonQuantity = 0;
-
-  final void Function() requestData;
-  final void Function(int page) changePage;
-  final void Function() nextPage;
-  final void Function() prevPage;
-  final void Function() goToFirstPage;
-  final void Function() goToLastPage;
-}
-
-@Directive(selector: 'template[li-datatable-header]')
-class LiDatatableHeaderDirective {
-  LiDatatableHeaderDirective(this.templateRef);
-
-  final TemplateRef templateRef;
-}
-
-@Directive(selector: 'template[li-datatable-footer]')
-class LiDatatableFooterDirective {
-  LiDatatableFooterDirective(this.templateRef);
-
-  final TemplateRef templateRef;
-}
-
-class LiDatatableCellContext {
-  final DatatableRow row;
-  final DatatableCol column;
-  final Map<String, dynamic> itemMap;
-  final dynamic itemInstance;
-  final int rowIndex;
-  final int columnIndex;
-
-  LiDatatableCellContext({
-    required this.row,
-    required this.column,
-    required this.itemMap,
-    required this.itemInstance,
-    required this.rowIndex,
-    required this.columnIndex,
-  });
-}
-
-class LiDatatableHeaderCellContext {
-  final DatatableCol column;
-  final int columnIndex;
-  final bool enableSorting;
-  final void Function() toggleSort;
-
-  LiDatatableHeaderCellContext({
-    required this.column,
-    required this.columnIndex,
-    required this.enableSorting,
-    required this.toggleSort,
-  });
-}
-
-class LiDatatableCardContext {
-  final DatatableRow row;
-  final Map<String, dynamic> itemMap;
-  final dynamic itemInstance;
-  final int rowIndex;
-  final List<DatatableCol> bodyColumns;
-  final List<DatatableCol> footerColumns;
-
-  LiDatatableCardContext({
-    required this.row,
-    required this.itemMap,
-    required this.itemInstance,
-    required this.rowIndex,
-    required this.bodyColumns,
-    required this.footerColumns,
-  });
-}
-
-@Directive(selector: 'template[li-datatable-cell]')
-class LiDatatableCellDirective {
-  LiDatatableCellDirective(this.templateRef);
-
-  final TemplateRef templateRef;
-
-  @Input('li-datatable-cell')
-  String columnKey = '';
-}
-
-@Directive(selector: 'template[li-datatable-header-cell]')
-class LiDatatableHeaderCellDirective {
-  LiDatatableHeaderCellDirective(this.templateRef);
-
-  final TemplateRef templateRef;
-
-  @Input('li-datatable-header-cell')
-  String columnKey = '';
-}
-
-@Directive(selector: 'template[li-datatable-card]')
-class LiDatatableCardDirective {
-  LiDatatableCardDirective(this.templateRef);
-
-  final TemplateRef templateRef;
-}
-
+/// High-performance AngularDart datatable with table/grid rendering, server-side
+/// data requests, selection, sorting, responsive columns, export, and virtual
+/// scroll support.
+///
+/// The component deliberately keeps DOM-sensitive orchestration local while
+/// delegating stateless template/context and CSS helper responsibilities to
+/// smaller files. That keeps the public API compatible and avoids additional
+/// work in the render path.
 @Component(
   selector: 'li-datatable',
   styleUrls: ['datatable_component.css', 'grid.css'],
@@ -244,6 +100,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   final Element rootElement;
   final ChangeDetectorRef _changeDetectorRef;
   final DatatableRowBuilder _rowBuilder = DatatableRowBuilder();
+  final DatatableSortController _sortController = DatatableSortController();
+  final DatatableVirtualScrollController _virtualScrollController =
+      DatatableVirtualScrollController();
+  final DatatableTitleHelpController titleHelp = DatatableTitleHelpController();
   late final LiDatatableHeaderContext _headerTemplateContext;
   late final LiDatatableFooterContext _footerTemplateContext;
 
@@ -296,7 +156,6 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   bool _drawScheduled = false;
   bool _viewInitialized = false;
   int _manualRowsRevision = 0;
-  int _instrumentationSequence = 0;
   int _visualProbeToken = 0;
   int _dataInputChangeCount = 0;
   int? _lastRowsSignature;
@@ -305,26 +164,29 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   List<DatatableRow>? _cachedTableRows;
   List<DatatableRow>? _cachedGridRows;
   bool _visible = true;
-  final Set<int> _virtualSelectedRowKeys = <int>{};
-  int _virtualStartIndex = 0;
-  int _virtualEndIndex = 0;
-  int _virtualTopSpacerHeight = 0;
-  int _virtualBottomSpacerHeight = 0;
-  bool _pendingVirtualScrollReset = false;
+  double _responsiveAvailableWidthCache = 0;
+  bool _responsiveCollapseViewportActiveCache = false;
+  bool _responsiveCollapseContainerActiveCache = false;
+  bool _responsiveCollapseActiveCache = false;
+  final DatatableSelectionController _selectionController =
+      DatatableSelectionController();
+  final DatatableResponsiveController _responsiveController =
+      DatatableResponsiveController();
+  final DatatableSearchController _searchController =
+      DatatableSearchController();
+  final DatatablePaginationController _paginationController =
+      DatatablePaginationController();
+  final DatatableExportController _exportController =
+      DatatableExportController();
+  final DatatableInstrumentationController _instrumentationController =
+      DatatableInstrumentationController();
   String resolvedScrollContainerStyleCss = '';
   String resolvedGridScrollContainerStyleCss = '';
-  final Map<String, double> _responsiveColumnWidthCache = <String, double>{};
-  final Map<int, double> _fixedLeftOffsets = <int, double>{};
-  final Map<int, double> _fixedRightOffsets = <int, double>{};
-  final Set<String> _autoHiddenColumnKeys = <String>{};
-  final Set<String> _forcedVisibleColumnKeys = <String>{};
-  double _responsiveCheckboxWidthCache = 44;
+
+  Set<String> get _autoHiddenColumnKeys =>
+      _responsiveController.autoHiddenColumnKeys;
 
   Filters _dataTableFilter = Filters();
-  final StreamController<LiDatatableInstrumentationEvent>
-      _instrumentationController =
-      StreamController<LiDatatableInstrumentationEvent>.broadcast();
-
   @Input()
   set dataTableFilter(Filters filter) {
     _dataTableFilter = filter;
@@ -337,20 +199,96 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   bool nullIsEmpty = true;
 
   @Input()
-  bool debugInstrumentation = false;
+  set debugInstrumentation(bool value) {
+    _instrumentationController.enabled = value;
+  }
+
+  bool get debugInstrumentation => _instrumentationController.enabled;
 
   @Input()
-  String debugInstrumentationLabel = '';
+  set debugInstrumentationLabel(String value) {
+    _instrumentationController.label = value;
+  }
 
+  String get debugInstrumentationLabel => _instrumentationController.label;
+
+  bool _enableGridMode = true;
+  bool _requestedGridMode = false;
   bool _gridMode = false;
 
+  /// Enables the grid/card view and its toggle button.
+  ///
+  /// Set this to `false` for table-only datatables. In that mode the component
+  /// coerces [gridMode] to `false`, skips grid layout binding work, avoids grid
+  /// row caches, ignores custom card templates/builders, and keeps virtual
+  /// scroll calculations on the lighter table path.
+  @Input()
+  set enableGridMode(bool value) {
+    if (_enableGridMode == value) {
+      return;
+    }
+
+    _enableGridMode = value;
+
+    if (!_enableGridMode) {
+      _clearGridRuntimeState();
+      if (_gridMode) {
+        _setGridMode(false, reason: 'enableGridMode input');
+        return;
+      }
+    } else if (_requestedGridMode && !_gridMode) {
+      _setGridMode(true, reason: 'enableGridMode input');
+      return;
+    }
+
+    _syncHeaderTemplateContext();
+    _syncGridBindingCaches();
+    _syncProjectedTemplateContextCaches();
+    _changeDetectorRef.markForCheck();
+  }
+
+  bool get enableGridMode => _enableGridMode;
+
+  /// Requests grid/card rendering when [enableGridMode] allows it.
+  ///
+  /// When grid mode is disabled this setter accepts the input for API
+  /// compatibility, but keeps the component in table mode to avoid grid-specific
+  /// work.
   @Input('gridMode')
   set gridMode(bool value) {
+    _requestedGridMode = value;
+
+    if (!_enableGridMode && value) {
+      _emitInstrumentation(
+        'gridMode.disabled',
+        details: <String, Object?>{
+          'requestedValue': value,
+          'manualRowsRevision': _manualRowsRevision,
+        },
+      );
+    }
+
+    _setGridMode(
+      _enableGridMode ? value : false,
+      reason: 'gridMode input',
+      requestedValue: value,
+    );
+  }
+
+  bool get gridMode => _enableGridMode && _gridMode;
+
+  void _setGridMode(
+    bool value, {
+    required String reason,
+    bool? requestedValue,
+  }) {
     if (_gridMode == value) {
       _emitInstrumentation(
         'gridMode.noop',
         details: <String, Object?>{
           'value': value,
+          'requestedValue': requestedValue,
+          'reason': reason,
           'manualRowsRevision': _manualRowsRevision,
         },
       );
@@ -359,28 +297,56 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
     _gridMode = value;
     if (virtualScroll) {
-      _pendingVirtualScrollReset = true;
+      _virtualScrollController.requestReset();
     }
     _emitInstrumentation(
       'gridMode.changed',
       details: <String, Object?>{
         'value': value,
+        'requestedValue': requestedValue,
+        'reason': reason,
         'manualRowsRevision': _manualRowsRevision,
       },
     );
     _syncHeaderTemplateContext();
     _syncGridBindingCaches();
-    if (_applyCachedModeSwitchIfAvailable(reason: 'gridMode input')) {
-      _scheduleModeSwitchVisualProbe('gridMode input');
+    if (_applyCachedModeSwitchIfAvailable(reason: reason)) {
+      _scheduleModeSwitchVisualProbe(reason);
       _changeDetectorRef.markForCheck();
       return;
     }
-    scheduleDraw(force: true, reason: 'gridMode input');
-    _scheduleModeSwitchVisualProbe('gridMode input');
+    scheduleDraw(force: true, reason: reason);
+    _scheduleModeSwitchVisualProbe(reason);
     _changeDetectorRef.markForCheck();
   }
 
-  bool get gridMode => _gridMode;
+  bool _enableResponsiveFeatures = true;
+
+  /// Enables responsive collapse and responsive auto-hide features.
+  ///
+  /// Set this to `false` for fixed-layout tables. It keeps the legacy
+  /// `[responsiveCollapse]` and `[responsiveAutoHideColumns]` inputs accepted,
+  /// but prevents them from hiding columns, measuring widths for auto-hide, or
+  /// rebuilding rows during resize.
+  @Input()
+  set enableResponsiveFeatures(bool value) {
+    if (_enableResponsiveFeatures == value) {
+      return;
+    }
+
+    _enableResponsiveFeatures = value;
+    if (!_enableResponsiveFeatures) {
+      _cancelResponsiveAutoHideFrame();
+      _responsiveController.clearRuntimeState();
+    }
+
+    _manualRowsRevision++;
+    scheduleDraw(force: true, reason: 'enableResponsiveFeatures input');
+    _syncTemplateContexts();
+    _changeDetectorRef.markForCheck();
+  }
+
+  bool get enableResponsiveFeatures => _enableResponsiveFeatures;
 
   @Input()
   bool responsiveCollapse = false;
@@ -405,6 +371,32 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   @Input()
   bool virtualScroll = false;
+
+  /// Opt-in for CSS `table-layout: fixed`.
+  ///
+  /// The default remains `auto` because small paginated tables keep good
+  /// performance without clipping column titles or cell content.
+  @Input()
+  bool fixedTableLayout = false;
+
+  DatatablePerformanceProfile _performanceProfile =
+      DatatablePerformanceProfile.flexible;
+
+  @Input()
+  set performanceProfile(DatatablePerformanceProfile value) {
+    if (_performanceProfile == value) {
+      return;
+    }
+
+    _performanceProfile = value;
+    _manualRowsRevision++;
+    if (virtualScroll) {
+      _virtualScrollController.requestReset();
+    }
+    scheduleDraw(force: true, reason: 'performanceProfile input');
+  }
+
+  DatatablePerformanceProfile get performanceProfile => _performanceProfile;
 
   @Input()
   bool stickyTableHeaderOnVirtualScroll = false;
@@ -433,7 +425,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _visible = value;
     if (_visible) {
       if (virtualScroll) {
-        _pendingVirtualScrollReset = true;
+        _virtualScrollController.requestReset();
       }
       scheduleDraw(force: true, reason: 'visible input');
     }
@@ -504,15 +496,12 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   @Input('limitPerPageOptions')
   List<int> limitPerPageOptions = [1, 5, 10, 12, 20, 24, 25];
 
-  List<DatatableSearchField> _searchInFields = <DatatableSearchField>[];
-
   @Input('searchInFields')
   set searchInFields(List<DatatableSearchField> fields) {
-    _searchInFields = fields;
-    _applySelectedSearchFieldToFilter();
+    _searchController.setFields(fields, dataTableFilter);
   }
 
-  List<DatatableSearchField> get searchInFields => _searchInFields;
+  List<DatatableSearchField> get searchInFields => _searchController.fields;
 
   TemplateRef? get resolvedHeaderTemplate =>
       headerTemplate ?? projectedHeaderTemplateDirective?.templateRef;
@@ -528,67 +517,22 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   LiDatatableFooterContext get footerTemplateContext => _footerTemplateContext;
 
-  TemplateRef? get resolvedCardTemplate =>
-      cardTemplate ?? projectedCardTemplateDirective?.templateRef;
+  TemplateRef? get resolvedCardTemplate => enableGridMode
+      ? cardTemplate ?? projectedCardTemplateDirective?.templateRef
+      : null;
 
   bool get hasCustomCardTemplate => resolvedCardTemplate != null;
 
   int? get selectedSearchFieldIndex {
-    if (_searchInFields.isEmpty) {
-      return null;
-    }
-
-    _ensureSelectedSearchField();
-    final index = _searchInFields.indexWhere((field) => field.selected);
-    return index < 0 ? null : index;
-  }
-
-  void _ensureSelectedSearchField() {
-    if (_searchInFields.isEmpty) {
-      return;
-    }
-
-    if (!_searchInFields.any((field) => field.selected)) {
-      _searchInFields.first.select();
-    }
-  }
-
-  DatatableSearchField? get _selectedSearchField {
-    if (_searchInFields.isEmpty) {
-      return null;
-    }
-
-    _ensureSelectedSearchField();
-    return _searchInFields.firstWhere((field) => field.selected);
+    return _searchController.selectedSearchFieldIndex;
   }
 
   void _applySelectedSearchFieldToFilter() {
-    final selectedSearchField = _selectedSearchField;
-    if (selectedSearchField == null) {
-      dataTableFilter.searchInFields = <FilterSearchField>[];
-      return;
-    }
-
-    dataTableFilter.searchInFields = <FilterSearchField>[
-      FilterSearchField(
-        active: true,
-        field: selectedSearchField.field,
-        operator: selectedSearchField.operator,
-        label: selectedSearchField.label,
-      ),
-    ];
+    _searchController.applySelectedFieldToFilter(dataTableFilter);
   }
 
   void _selectSearchFieldByIndex(int index) {
-    if (index < 0 || index >= _searchInFields.length) {
-      return;
-    }
-
-    for (var i = 0; i < _searchInFields.length; i++) {
-      _searchInFields[i].selected = i == index;
-    }
-
-    _applySelectedSearchFieldToFilter();
+    _searchController.selectSearchFieldByIndex(index, dataTableFilter);
   }
 
   DatatableSettings _settings =
@@ -606,7 +550,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         .map((column) => column.key)
         .where((key) => key.trim().isNotEmpty)
         .toSet();
-    _forcedVisibleColumnKeys.removeWhere((key) => !validKeys.contains(key));
+    _responsiveController.removeInvalidForcedKeys(validKeys);
     _rowBuilder.applyComputedColumnMetadataToSettings(_settings);
     _syncGridBindingCaches();
     _manualRowsRevision++;
@@ -614,6 +558,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       'settings.changed',
       details: <String, Object?>{
         'columns': _settings.colsDefinitions.length,
+        'performanceProfile': performanceProfile.name,
         'manualRowsRevision': _manualRowsRevision,
       },
     );
@@ -629,7 +574,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _data = value;
     _dataInputChangeCount++;
     if (virtualScroll) {
-      _pendingVirtualScrollReset = true;
+      _virtualScrollController.requestReset();
     }
     _resetResponsiveMeasurementCache();
     totalRecords = _data.totalRecords;
@@ -676,14 +621,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   int get getCurrentTotalItems {
-    if (totalRecords <= 0) {
-      return 0;
-    }
-
-    final limit = dataTableFilter.limit ?? 0;
-    final offset = dataTableFilter.offset ?? 0;
-    final total = offset + limit;
-    return total > totalRecords ? totalRecords : total;
+    return _paginationController.currentTotalItems(
+      dataTableFilter,
+      totalRecords,
+    );
   }
 
   @override
@@ -734,10 +675,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       window.cancelAnimationFrame(_postRenderAnimationFrameId!);
       _postRenderAnimationFrameId = null;
     }
-    if (_responsiveAutoHideAnimationFrameId != null) {
-      window.cancelAnimationFrame(_responsiveAutoHideAnimationFrameId!);
-      _responsiveAutoHideAnimationFrameId = null;
-    }
+    _cancelResponsiveAutoHideFrame();
     if (_visualProbeFrame1Id != null) {
       window.cancelAnimationFrame(_visualProbeFrame1Id!);
       _visualProbeFrame1Id = null;
@@ -750,9 +688,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       window.cancelAnimationFrame(_virtualScrollAnimationFrameId!);
       _virtualScrollAnimationFrameId = null;
     }
-    _dataRequest.close();
-    _limitChangeRequest.close();
-    _searchRequest.close();
+    _paginationController.close();
     _onRowClickStreamController.close();
     _selectAllStreamController.close();
     _selectStreamController.close();
@@ -791,20 +727,48 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         _data.totalRecords <= 0;
   }
 
-  bool get showTableView => !gridMode;
+  bool get showTableView => !showGridView;
 
-  bool get showGridView => gridMode;
+  bool get showGridView => enableGridMode && gridMode;
+
+  bool get _isSaliPagedPerformanceProfile =>
+      performanceProfile == DatatablePerformanceProfile.saliPaged;
+
+  bool get isSaliPagedPerformanceProfile => _isSaliPagedPerformanceProfile;
+
+  bool get _isFastPerformanceProfile =>
+      performanceProfile == DatatablePerformanceProfile.fast ||
+      _isSaliPagedPerformanceProfile;
+
+  bool get _areResponsiveFeaturesActive =>
+      enableResponsiveFeatures && !_isSaliPagedPerformanceProfile;
+
+  int get _effectiveVirtualOverscan {
+    final requestedOverscan = virtualOverscan < 0 ? 0 : virtualOverscan;
+    if (!_isFastPerformanceProfile) {
+      return requestedOverscan;
+    }
+    return requestedOverscan > 6 ? 6 : requestedOverscan;
+  }
 
   bool get isTableVirtualScrollActive {
+    if (_isSaliPagedPerformanceProfile) {
+      return false;
+    }
+
     return virtualScroll &&
-        !gridMode &&
+        !showGridView &&
         !settings.enableGrouping &&
         !_isResponsiveCollapseActive &&
-        _autoHiddenColumnKeys.isEmpty;
+        (_autoHiddenColumnKeys.isEmpty || _isFastPerformanceProfile);
   }
 
   bool get isGridVirtualScrollActive {
-    return virtualScroll && gridMode && !settings.enableGrouping;
+    if (_isSaliPagedPerformanceProfile) {
+      return false;
+    }
+
+    return virtualScroll && showGridView && !settings.enableGrouping;
   }
 
   bool get isVirtualScrollActive =>
@@ -823,12 +787,13 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return visibleColumnCount + (showCheckboxToSelectRow ? 1 : 0);
   }
 
-  int get virtualTopSpacerHeight => _virtualTopSpacerHeight;
+  int get virtualTopSpacerHeight => _virtualScrollController.topSpacerHeight;
 
-  int get virtualBottomSpacerHeight => _virtualBottomSpacerHeight;
+  int get virtualBottomSpacerHeight =>
+      _virtualScrollController.bottomSpacerHeight;
 
   HtmlElement? get _activeVirtualScrollContainer =>
-      gridMode ? gridScrollContainer : scrollContainer;
+      showGridView ? gridScrollContainer : scrollContainer;
 
   void onVirtualViewportScroll() {
     if (!isVirtualScrollActive || _isDestroyed) {
@@ -857,233 +822,46 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     });
   }
 
-  int _resolveVirtualViewportHeightPx() {
-    final normalized = virtualViewportHeight.trim().toLowerCase();
-    if (normalized.endsWith('px')) {
-      return int.tryParse(normalized.replaceAll('px', '').trim()) ?? 0;
-    }
-
-    if (normalized.endsWith('vh')) {
-      final value = double.tryParse(normalized.replaceAll('vh', '').trim());
-      final innerHeight = window.innerHeight;
-      if (value == null || innerHeight == null) {
-        return 0;
-      }
-      return ((innerHeight * value) / 100).round();
-    }
-
-    return int.tryParse(normalized) ?? 0;
-  }
-
-  int _resolveVirtualGridMinItemWidthPx() {
-    final configured = math.max(1, virtualGridMinItemWidth);
-    final templateColumns = settings.gridTemplateColumns.trim().toLowerCase();
-    final minmaxMatch = RegExp(r'minmax\(([^,]+),').firstMatch(templateColumns);
-    final parsed = _parseCssLength(minmaxMatch?.group(1));
-    if (parsed == null || parsed <= 0) {
-      return configured;
-    }
-
-    return math.max(1, parsed.round());
-  }
-
-  int _resolveVirtualGridColumnCount() {
-    final containerWidth =
-        (_activeVirtualScrollContainer?.clientWidth ?? rootElement.clientWidth)
-            .toDouble();
-    if (containerWidth <= 0) {
-      return 1;
-    }
-
-    final minItemWidth = _resolveVirtualGridMinItemWidthPx().toDouble();
-    final gapWidth = _parseCssLength(settings.gridGap) ?? 20.0;
-    final columnCount =
-        ((containerWidth + gapWidth) / (minItemWidth + gapWidth)).floor();
-    return math.max(1, columnCount);
-  }
-
-  bool _isVirtualViewportPinnedToEnd({
-    required HtmlElement? scrollContainer,
-    required int fallbackItemExtent,
-    required int totalExtentUnits,
-    required int viewportHeight,
-  }) {
-    if (scrollContainer == null) {
-      final maxScrollTop = math.max(
-        0,
-        (totalExtentUnits * fallbackItemExtent) - viewportHeight,
-      );
-      return maxScrollTop <= 0;
-    }
-
-    final scrollTop = scrollContainer.scrollTop.toDouble();
-    final measuredMaxScrollTop = math.max(
-      0,
-      scrollContainer.scrollHeight - scrollContainer.clientHeight,
-    ).toDouble();
-    final fallbackMaxScrollTop = math.max(
-      0,
-      (totalExtentUnits * fallbackItemExtent) - viewportHeight,
-    ).toDouble();
-    final resolvedMaxScrollTop = measuredMaxScrollTop > 0
-        ? measuredMaxScrollTop
-        : fallbackMaxScrollTop;
-    final tolerance = math.max(2.0, fallbackItemExtent / 4);
-    return resolvedMaxScrollTop <= 0 ||
-        scrollTop >= (resolvedMaxScrollTop - tolerance);
-  }
-
   bool _syncVirtualWindow() {
-    final totalItems = _data.items.length;
+    return _virtualScrollController.sync(
+      isActive: isVirtualScrollActive,
+      isGridActive: isGridVirtualScrollActive,
+      totalItems: _data.items.length,
+      scrollContainer: _activeVirtualScrollContainer,
+      fallbackContainerWidth: rootElement.clientWidth,
+      windowInnerHeight: window.innerHeight ?? 0,
+      viewportHeight: virtualViewportHeight,
+      overscan: _effectiveVirtualOverscan,
+      rowHeight: virtualRowHeight,
+      gridItemHeight: virtualGridItemHeight,
+      gridMinItemWidth: virtualGridMinItemWidth,
+      gridTemplateColumns: settings.gridTemplateColumns,
+      gridGap: settings.gridGap,
+    );
+  }
+
+  int get _resolvedBuildStartIndex {
     if (!isVirtualScrollActive) {
-      final changed = _virtualStartIndex != 0 ||
-          _virtualEndIndex != totalItems ||
-          _virtualTopSpacerHeight != 0 ||
-          _virtualBottomSpacerHeight != 0;
-      _virtualStartIndex = 0;
-      _virtualEndIndex = totalItems;
-      _virtualTopSpacerHeight = 0;
-      _virtualBottomSpacerHeight = 0;
-      return changed;
+      return 0;
     }
 
-    final resolvedOverscan = math.max(0, virtualOverscan);
-    final activeScrollContainer = _activeVirtualScrollContainer;
-
-    if (_pendingVirtualScrollReset) {
-      activeScrollContainer?.scrollTop = 0;
-      _pendingVirtualScrollReset = false;
+    final startIndex = _virtualScrollController.startIndex;
+    if (startIndex < 0) {
+      return 0;
     }
-
-    var viewportHeight = activeScrollContainer?.clientHeight ?? 0;
-    final configuredViewportHeight = _resolveVirtualViewportHeightPx();
-    if (viewportHeight <= 0) {
-      viewportHeight = configuredViewportHeight;
-    } else if (configuredViewportHeight > 0) {
-      viewportHeight = math.min(viewportHeight, configuredViewportHeight);
-    }
-    final scrollTop = activeScrollContainer?.scrollTop ?? 0;
-
-    late final int startIndex;
-    late final int endIndex;
-    late final int topSpacerHeight;
-    late final int bottomSpacerHeight;
-
-    if (isGridVirtualScrollActive) {
-      final resolvedItemHeight = math.max(1, virtualGridItemHeight);
-      if (viewportHeight <= 0) {
-        viewportHeight = resolvedItemHeight * 4;
-      }
-
-      final columnsPerRow = _resolveVirtualGridColumnCount();
-      final visibleRowCount = math.max(
-        1,
-        (viewportHeight / resolvedItemHeight).ceil(),
-      );
-      final totalGridRows =
-          columnsPerRow <= 0 ? 0 : (totalItems / columnsPerRow).ceil();
-
-      if (_isVirtualViewportPinnedToEnd(
-        scrollContainer: activeScrollContainer,
-        fallbackItemExtent: resolvedItemHeight,
-        totalExtentUnits: totalGridRows,
-        viewportHeight: viewportHeight,
-      )) {
-        final pinnedStartRow = math.max(
-          0,
-          totalGridRows - visibleRowCount - resolvedOverscan,
-        );
-        startIndex = math.min(totalItems, pinnedStartRow * columnsPerRow);
-        endIndex = totalItems;
-        topSpacerHeight = pinnedStartRow * resolvedItemHeight;
-        bottomSpacerHeight = 0;
-      } else {
-        final firstVisibleRow = scrollTop ~/ resolvedItemHeight;
-        final startRow = math.max(0, firstVisibleRow - resolvedOverscan);
-        final endRow = firstVisibleRow + visibleRowCount + resolvedOverscan;
-
-        startIndex = math.min(totalItems, startRow * columnsPerRow);
-        endIndex = math.min(totalItems, endRow * columnsPerRow);
-        topSpacerHeight = startRow * resolvedItemHeight;
-        final renderedRowsCount = columnsPerRow <= 0
-            ? 0
-            : ((math.max(0, totalItems - endIndex)) / columnsPerRow).ceil();
-        bottomSpacerHeight =
-            math.max(0, renderedRowsCount * resolvedItemHeight);
-      }
-    } else {
-      final resolvedRowHeight = math.max(1, virtualRowHeight);
-      if (viewportHeight <= 0) {
-        viewportHeight = resolvedRowHeight * 10;
-      }
-
-      final visibleCount = math.max(
-        1,
-        (viewportHeight / resolvedRowHeight).ceil(),
-      );
-
-      if (_isVirtualViewportPinnedToEnd(
-        scrollContainer: activeScrollContainer,
-        fallbackItemExtent: resolvedRowHeight,
-        totalExtentUnits: totalItems,
-        viewportHeight: viewportHeight,
-      )) {
-        final pinnedWindowSize = math.max(1, visibleCount + resolvedOverscan);
-        startIndex = math.max(0, totalItems - pinnedWindowSize);
-        endIndex = totalItems;
-        topSpacerHeight = startIndex * resolvedRowHeight;
-        bottomSpacerHeight = 0;
-      } else {
-        final firstVisibleIndex = scrollTop ~/ resolvedRowHeight;
-
-        startIndex = math.max(0, firstVisibleIndex - resolvedOverscan);
-        endIndex = math.min(
-          totalItems,
-          firstVisibleIndex + visibleCount + resolvedOverscan,
-        );
-        topSpacerHeight = startIndex * resolvedRowHeight;
-        bottomSpacerHeight = math.max(
-          0,
-          (totalItems - endIndex) * resolvedRowHeight,
-        );
-      }
-    }
-
-    final changed = _virtualStartIndex != startIndex ||
-        _virtualEndIndex != endIndex ||
-        _virtualTopSpacerHeight != topSpacerHeight ||
-        _virtualBottomSpacerHeight != bottomSpacerHeight;
-
-    _virtualStartIndex = startIndex;
-    _virtualEndIndex = endIndex;
-    _virtualTopSpacerHeight = topSpacerHeight;
-    _virtualBottomSpacerHeight = bottomSpacerHeight;
-    return changed;
+    return startIndex > _data.items.length ? _data.items.length : startIndex;
   }
 
-  DataFrame _resolvedBuildData() {
+  int get _resolvedBuildEndIndex {
     if (!isVirtualScrollActive) {
-      return _data;
+      return _data.items.length;
     }
 
-    final startIndex = math.min(_virtualStartIndex, _data.items.length);
-    final endIndex = math.min(_virtualEndIndex, _data.items.length);
-    final items = endIndex <= startIndex
-        ? <dynamic>[]
-        : _data.items.sublist(startIndex, endIndex);
-
-    return DataFrame(items: items, totalRecords: _data.totalRecords);
-  }
-
-  int get _resolvedRowBuildOffset =>
-      isVirtualScrollActive ? _virtualStartIndex : 0;
-
-  int _selectionKeyForItem(dynamic instance, {required int index}) {
-    return Object.hash(instance?.hashCode, index);
-  }
-
-  int _selectionKeyForRow(DatatableRow row) {
-    return _selectionKeyForItem(row.instance, index: row.index);
+    final endIndex = _virtualScrollController.endIndex;
+    if (endIndex < _resolvedBuildStartIndex) {
+      return _resolvedBuildStartIndex;
+    }
+    return endIndex > _data.items.length ? _data.items.length : endIndex;
   }
 
   void _applyVirtualSelectionState(List<DatatableRow> rowsToSync) {
@@ -1091,25 +869,18 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    for (final row in rowsToSync) {
-      if (row.type != DatatableRowType.normal) {
-        continue;
-      }
-      row.selected = _virtualSelectedRowKeys.contains(_selectionKeyForRow(row));
-    }
+    _selectionController.applyVirtualSelectionState(
+      rowsToSync,
+      rowKeyResolver: settings.rowKeyResolver,
+    );
   }
 
   List<dynamic> _collectVirtualSelectedInstances() {
-    final selected = <dynamic>[];
-    for (var index = 0; index < _data.items.length; index++) {
-      final instance = _data.items[index];
-      if (_virtualSelectedRowKeys.contains(
-        _selectionKeyForItem(instance, index: index),
-      )) {
-        selected.add(instance);
-      }
-    }
-    return selected;
+    return _selectionController.collectVirtualSelectedInstances(
+      _data.items,
+      itemMaps: _data.itemsAsMap,
+      rowKeyResolver: settings.rowKeyResolver,
+    );
   }
 
   @Output()
@@ -1179,46 +950,16 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     });
   }
 
-  String get _resolvedInstrumentationLabel {
-    final normalized = debugInstrumentationLabel.trim();
-    if (normalized.isNotEmpty) {
-      return normalized;
-    }
-
-    final elementId = rootElement.id.trim();
-    if (elementId.isNotEmpty) {
-      return elementId;
-    }
-
-    return 'datatable';
-  }
-
   void _emitInstrumentation(
     String stage, {
     int? elapsedMicroseconds,
     Map<String, Object?> details = const <String, Object?>{},
   }) {
-    if (!debugInstrumentation) {
-      return;
-    }
-
-    final event = LiDatatableInstrumentationEvent(
-      label: _resolvedInstrumentationLabel,
-      stage: stage,
-      timestamp: DateTime.now(),
+    _instrumentationController.emit(
+      stage,
+      rootElement: rootElement,
       elapsedMicroseconds: elapsedMicroseconds,
-      details: <String, Object?>{
-        'seq': ++_instrumentationSequence,
-        ...details,
-      },
-    );
-
-    if (!_instrumentationController.isClosed) {
-      _instrumentationController.add(event);
-    }
-
-    window.console.log(
-      '[li-datatable:${event.label}] ${event.formattedMessage}',
+      details: details,
     );
   }
 
@@ -1256,10 +997,24 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         : gridLayout.children
             .where((child) => child.classes.contains('grid-item'))
             .length;
-    final actionButtons = rootElement
+    final legacyActionButtons = rootElement
         .querySelectorAll(
             '.datatable-action-cell button, [data-label="datatable"] .btn-icon')
         .length;
+    final actionCells = rootElement
+        .querySelectorAll(
+            '.datatable-action-cell, [data-li-datatable-action-cell="true"]')
+        .length;
+    final actionElements = rootElement
+        .querySelectorAll(
+          '[data-li-datatable-action="true"], '
+          '.datatable-action-cell button, '
+          '.datatable-action-cell a, '
+          '.datatable-action-cell [role="button"], '
+          '.datatable-action-cell .btn',
+        )
+        .length;
+    final visibleDomNodes = rootElement.querySelectorAll('*').length;
 
     return <String, Object?>{
       'tableVisible': tableElement != null && showTableView,
@@ -1267,20 +1022,56 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       'tbodyRows': visibleBodyRows,
       'tbodyCells': visibleBodyCells,
       'gridItems': gridItems,
-      'actionButtons': actionButtons,
+      'visibleDomNodes': visibleDomNodes,
+      'legacyActionButtons': legacyActionButtons,
+      'actionCells': actionCells,
+      'actionElements': actionElements,
+      'actionButtons': actionElements,
+      'configuredActionColumns': _configuredActionColumnCount,
       'tableDomPresent': tableElement != null,
       'gridDomPresent': gridLayout != null,
       'tableHiddenClass': false,
       'tableViewportPresent': tableScrollContainer != null,
       'gridViewportPresent': gridScrollViewport != null,
       'virtualScroll': isVirtualScrollActive,
-      'virtualStartIndex': _virtualStartIndex,
-      'virtualEndIndex': _virtualEndIndex,
+      'virtualStartIndex': _virtualScrollController.startIndex,
+      'virtualEndIndex': _virtualScrollController.endIndex,
+    };
+  }
+
+  int get _configuredActionColumnCount {
+    var count = 0;
+    for (final column in settings.colsDefinitions) {
+      final columnKey = column.key.trim().toLowerCase();
+      if (column is DatatableActionColumn ||
+          columnKey == 'actions' ||
+          columnKey == 'acoes') {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  Map<String, Object?> _collectDrawPerformanceDetails(Stopwatch? stopwatch) {
+    final elapsedMilliseconds = stopwatch == null
+        ? null
+        : stopwatch.elapsedMicroseconds / Duration.microsecondsPerMillisecond;
+    final visibleDomStats = _collectVisibleDomStats();
+
+    return <String, Object?>{
+      ...visibleDomStats,
+      'frameBudgetExceeded':
+          elapsedMilliseconds != null && elapsedMilliseconds > 16.7,
+      'highRefreshBudgetExceeded':
+          elapsedMilliseconds != null && elapsedMilliseconds > 8.3,
+      'longDraw': elapsedMilliseconds != null && elapsedMilliseconds > 50,
     };
   }
 
   void _scheduleModeSwitchVisualProbe(String reason) {
-    if (!debugInstrumentation || _isDestroyed) {
+    if (!debugInstrumentation ||
+        _isDestroyed ||
+        _isSaliPagedPerformanceProfile) {
       return;
     }
 
@@ -1342,7 +1133,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   int _computeRowsSignature() {
-    return Object.hash(
+    return Object.hashAll(<Object?>[
       _data,
       _data.totalRecords,
       _data.items.length,
@@ -1350,37 +1141,43 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       _settings.colsDefinitions.length,
       nullIsEmpty,
       gridMode,
+      performanceProfile,
+      enableResponsiveFeatures,
       responsiveCollapse,
       responsiveCollapseMaxWidth,
       responsiveCollapseByContainer,
       responsiveCollapseContainerMaxWidth,
+      _responsiveCollapseActiveCache,
       responsiveAutoHideColumns,
       isVirtualScrollActive,
       isGridVirtualScrollActive,
-      _virtualStartIndex,
-      _virtualEndIndex,
+      _virtualScrollController.startIndex,
+      _virtualScrollController.endIndex,
       virtualGridItemHeight,
       virtualGridMinItemWidth,
       _manualRowsRevision,
-    );
+    ]);
   }
 
   int _computeRowBuildSignature() {
-    return Object.hash(
+    return Object.hashAll(<Object?>[
       _data,
       _data.totalRecords,
       _data.items.length,
       _settings,
       _settings.colsDefinitions.length,
       nullIsEmpty,
+      performanceProfile,
+      enableResponsiveFeatures,
+      _responsiveCollapseActiveCache,
       isVirtualScrollActive,
       isGridVirtualScrollActive,
-      _virtualStartIndex,
-      _virtualEndIndex,
+      _virtualScrollController.startIndex,
+      _virtualScrollController.endIndex,
       virtualGridItemHeight,
       virtualGridMinItemWidth,
       _manualRowsRevision,
-    );
+    ]);
   }
 
   List<DatatableRow>? _resolveCachedRowsForMode(
@@ -1388,6 +1185,9 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     int buildSignature,
   ) {
     if (targetGridMode) {
+      if (!enableGridMode) {
+        return null;
+      }
       if (_cachedGridRowsSignature == buildSignature) {
         return _cachedGridRows;
       }
@@ -1406,7 +1206,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void _cacheRowsForCurrentMode(int buildSignature, List<DatatableRow> rows) {
-    if (gridMode) {
+    if (showGridView) {
       _cachedGridRowsSignature = buildSignature;
       _cachedGridRows = rows;
       return;
@@ -1417,6 +1217,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   bool _applyCachedModeSwitchIfAvailable({required String reason}) {
+    _syncResponsiveViewportState(reason: 'modeSwitch:$reason');
     _syncVirtualWindow();
     resolvedScrollContainerStyleCss = isTableVirtualScrollActive
         ? 'max-height: $virtualViewportHeight; overflow-y: auto;'
@@ -1426,7 +1227,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         : '';
 
     final buildSignature = _computeRowBuildSignature();
-    final cachedRows = _resolveCachedRowsForMode(_gridMode, buildSignature);
+    final cachedRows = _resolveCachedRowsForMode(gridMode, buildSignature);
     if (cachedRows == null) {
       _emitInstrumentation(
         'modeSwitch.cacheMiss',
@@ -1462,41 +1263,35 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   DatatableRowBuildResult _buildRows({required String reason}) {
-    if (!debugInstrumentation) {
-      return _rowBuilder.build(
-        data: _resolvedBuildData(),
-        settings: settings,
-        nullIsEmpty: nullIsEmpty,
-        gridMode: gridMode,
-        responsiveCollapse: responsiveCollapse,
-        responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
-        rowIndexOffset: _resolvedRowBuildOffset,
-        responsiveCollapseActive: _isResponsiveCollapseActive,
-        autoHiddenColumnKeys: _autoHiddenColumnKeys,
-      );
-    }
-
-    final stopwatch = Stopwatch()..start();
-    final result = _rowBuilder.build(
-      data: _resolvedBuildData(),
+    final buildStartIndex = _resolvedBuildStartIndex;
+    final buildEndIndex = _resolvedBuildEndIndex;
+    final stopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
+    final result = _rowBuilder.buildRange(
+      data: _data,
       settings: settings,
       nullIsEmpty: nullIsEmpty,
       gridMode: gridMode,
       responsiveCollapse: responsiveCollapse,
       responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
-      rowIndexOffset: _resolvedRowBuildOffset,
+      startIndex: buildStartIndex,
+      endIndex: buildEndIndex,
       responsiveCollapseActive: _isResponsiveCollapseActive,
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
-    stopwatch.stop();
+
+    if (!debugInstrumentation) {
+      return result;
+    }
+
+    stopwatch?.stop();
 
     _emitInstrumentation(
       'draw.buildRows',
-      elapsedMicroseconds: stopwatch.elapsedMicroseconds,
+      elapsedMicroseconds: stopwatch?.elapsedMicroseconds,
       details: <String, Object?>{
         'reason': reason,
         'items': _data.items.length,
-        'windowItems': _resolvedBuildData().items.length,
+        'windowItems': buildEndIndex - buildStartIndex,
         'rows': result.rows.length,
         'renderedRows': result.renderedRows.length,
         'htmlCells': _countHtmlBackedCells(result.rows),
@@ -1511,18 +1306,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     required String reason,
     required List<DatatableRow> rowsToRender,
   }) {
-    if (!debugInstrumentation) {
-      return _rowBuilder.rebuildRenderedRows(
-        rows: rowsToRender,
-        responsiveCollapse: responsiveCollapse,
-        responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
-        responsiveCollapseActive: _isResponsiveCollapseActive,
-        responsiveControlColumnKey: settings.responsiveControlColumnKey,
-        autoHiddenColumnKeys: _autoHiddenColumnKeys,
-      );
-    }
-
-    final stopwatch = Stopwatch()..start();
+    final stopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
     final result = _rowBuilder.rebuildRenderedRows(
       rows: rowsToRender,
       responsiveCollapse: responsiveCollapse,
@@ -1531,11 +1315,16 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       responsiveControlColumnKey: settings.responsiveControlColumnKey,
       autoHiddenColumnKeys: _autoHiddenColumnKeys,
     );
-    stopwatch.stop();
+
+    if (!debugInstrumentation) {
+      return result;
+    }
+
+    stopwatch?.stop();
 
     _emitInstrumentation(
       'draw.rebuildRenderedRows',
-      elapsedMicroseconds: stopwatch.elapsedMicroseconds,
+      elapsedMicroseconds: stopwatch?.elapsedMicroseconds,
       details: <String, Object?>{
         'reason': reason,
         'rows': rowsToRender.length,
@@ -1551,6 +1340,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   void draw({String reason = 'manual'}) {
     final totalStopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
+    _syncResponsiveViewportState(reason: reason);
     _syncVirtualWindow();
     resolvedScrollContainerStyleCss = isTableVirtualScrollActive
         ? 'max-height: $virtualViewportHeight; overflow-y: auto;'
@@ -1568,6 +1358,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         'lastSignature': _lastRowsSignature,
         'items': _data.items.length,
         'gridMode': gridMode,
+        'performanceProfile': performanceProfile.name,
+        'virtualOverscan': _effectiveVirtualOverscan,
         'manualRowsRevision': _manualRowsRevision,
       },
     );
@@ -1591,6 +1383,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           'path': 'signature-match',
           'rows': rows.length,
           'renderedRows': renderedRows.length,
+          ..._collectDrawPerformanceDetails(totalStopwatch),
         },
       );
       return;
@@ -1613,6 +1406,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         details: <String, Object?>{
           'reason': reason,
           'path': 'empty-columns',
+          ..._collectDrawPerformanceDetails(totalStopwatch),
         },
       );
       return;
@@ -1643,6 +1437,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           'path': 'rows-cache-hit',
           'rows': rows.length,
           'renderedRows': renderedRows.length,
+          ..._collectDrawPerformanceDetails(totalStopwatch),
         },
       );
       return;
@@ -1671,14 +1466,29 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         'rows': rows.length,
         'renderedRows': renderedRows.length,
         'htmlCells': _countHtmlBackedCells(rows),
+        ..._collectDrawPerformanceDetails(totalStopwatch),
       },
     );
   }
 
   void _handleViewportChange() {
+    final responsiveStateChanged = _syncResponsiveViewportState(
+      reason: 'viewport change',
+    );
+
     if (isVirtualScrollActive) {
       scheduleDraw(force: true, reason: 'viewport change');
       return;
+    }
+
+    if (!_areResponsiveFeaturesActive) {
+      _syncFixedColumnOffsets();
+      _changeDetectorRef.markForCheck();
+      return;
+    }
+
+    if (responsiveStateChanged) {
+      _manualRowsRevision++;
     }
 
     _syncResponsiveColumnWidthCache();
@@ -1740,6 +1550,13 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         return;
       }
       final stopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
+      final responsiveStateChanged = _syncResponsiveViewportState(
+        reason: 'postRenderSync.frame',
+      );
+      if (responsiveStateChanged) {
+        _manualRowsRevision++;
+        scheduleDraw(force: true, reason: 'responsive viewport state');
+      }
       _syncSortingIndicators();
       _syncResponsiveColumnWidthCache();
       _syncFixedColumnOffsets();
@@ -1758,18 +1575,11 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   int totalRecords = 0;
-  int _currentPage = 1;
 
-  int get getCurrentPage => _currentPage;
+  int get getCurrentPage => _paginationController.currentPage;
 
   int get numPages {
-    final limit = dataTableFilter.limit ?? 1;
-    if (limit <= 0) {
-      return 1;
-    }
-
-    final totalPages = (totalRecords / limit).ceil();
-    return totalPages <= 0 ? 1 : totalPages;
+    return _paginationController.numPages(dataTableFilter, totalRecords);
   }
 
   @Input()
@@ -1796,15 +1606,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       : paginationButtonQuantity;
 
   void _syncCurrentPageFromOffset() {
-    final resolvedLimit = dataTableFilter.limit ?? 1;
-    final resolvedOffset = dataTableFilter.offset ?? 0;
-    if (resolvedLimit <= 0) {
-      _currentPage = 1;
-      return;
-    }
-
-    final currentPage = (resolvedOffset ~/ resolvedLimit) + 1;
-    _currentPage = currentPage <= 0 ? 1 : currentPage;
+    _paginationController.syncCurrentPageFromOffset(dataTableFilter);
   }
 
   void drawPagination() {
@@ -1813,60 +1615,48 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void prevPage() {
-    if (_currentPage > 1) {
-      _currentPage--;
-      changePage(_currentPage);
+    if (_paginationController.previousPage()) {
+      changePage(_paginationController.currentPage);
     }
   }
 
   void nextPage() {
-    if (_currentPage < numPages) {
-      _currentPage++;
-      changePage(_currentPage);
+    if (_paginationController.nextPage(dataTableFilter, totalRecords)) {
+      changePage(_paginationController.currentPage);
     }
   }
 
   void changePage(int page) {
-    if (page != _currentPage) {
-      _currentPage = page;
-    }
+    _paginationController.setPage(page);
     _syncTemplateContexts();
     onRequestData();
     _changeDetectorRef.markForCheck();
   }
 
   void irParaUltimaPagina() {
-    final lastPage = numPages;
-    _currentPage = lastPage;
-    changePage(lastPage);
+    changePage(
+      _paginationController.goToLastPage(dataTableFilter, totalRecords),
+    );
   }
 
   void irParaPrimeiraPagina() {
-    _currentPage = 1;
-    changePage(1);
+    changePage(_paginationController.goToFirstPage());
   }
 
-  final _dataRequest = StreamController<Filters>();
-
   @Output()
-  Stream<Filters> get dataRequest => _dataRequest.stream;
+  Stream<Filters> get dataRequest => _paginationController.dataRequest;
 
   bool isLoading = true;
 
   void onRequestData() {
     isLoading = true;
-    final currentPage = _currentPage == 1 ? 0 : _currentPage - 1;
-    dataTableFilter.offset = currentPage * (dataTableFilter.limit ?? 0);
-    _settings.setOrdemStartIndex(dataTableFilter.offset ?? 0);
     _syncTemplateContexts();
-    _dataRequest.add(dataTableFilter);
+    _paginationController.requestData(dataTableFilter, _settings);
     _changeDetectorRef.markForCheck();
   }
 
-  final _limitChangeRequest = StreamController<Filters>();
-
   @Output()
-  Stream<Filters> get limitChange => _limitChangeRequest.stream;
+  Stream<Filters> get limitChange => _paginationController.limitChange;
 
   void changeItemsPerPageHandler(SelectElement select) {
     final li = int.tryParse(select.selectedOptions.first.value);
@@ -1878,26 +1668,24 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    _currentPage = 1;
-    dataTableFilter.limit = limit;
-    if (requestDataOnItemsPerPageChange) {
-      onRequestData();
-    } else {
+    final emittedDataRequest = _paginationController.changeItemsPerPage(
+      limit,
+      dataTableFilter,
+      _settings,
+      requestDataOnItemsPerPageChange: requestDataOnItemsPerPageChange,
+    );
+    if (!emittedDataRequest) {
       _syncTemplateContexts();
-      _limitChangeRequest.add(dataTableFilter);
     }
     _changeDetectorRef.markForCheck();
   }
 
-  final _searchRequest = StreamController<Filters>();
-
   @Output()
-  Stream<Filters> get searchRequest => _searchRequest.stream;
+  Stream<Filters> get searchRequest => _paginationController.searchRequest;
 
   void onSearch() {
-    _currentPage = 1;
+    _paginationController.search(dataTableFilter);
     _syncTemplateContexts();
-    _searchRequest.add(dataTableFilter);
     _changeDetectorRef.markForCheck();
     onRequestData();
   }
@@ -1978,13 +1766,14 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     isSelectAll = checkbox.checked ?? false;
 
     if (virtualScroll) {
-      _virtualSelectedRowKeys.clear();
       if (isSelectAll) {
-        for (var index = 0; index < _data.items.length; index++) {
-          _virtualSelectedRowKeys.add(
-            _selectionKeyForItem(_data.items[index], index: index),
-          );
-        }
+        _selectionController.selectAllVirtualItems(
+          _data.items,
+          itemMaps: _data.itemsAsMap,
+          rowKeyResolver: settings.rowKeyResolver,
+        );
+      } else {
+        _selectionController.clearVirtualSelection();
       }
     }
 
@@ -1997,7 +1786,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void unSelectAll() {
-    _virtualSelectedRowKeys.clear();
+    _selectionController.clearVirtualSelection();
     for (final row in _selectableRows) {
       row.selected = false;
     }
@@ -2009,15 +1798,12 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     final selectableRows = _selectableRows.toList(growable: false);
 
     if (virtualScroll) {
-      _virtualSelectedRowKeys.clear();
-      for (var index = 0; index < _data.items.length; index++) {
-        final instance = _data.items[index];
-        if (predicate(instance)) {
-          _virtualSelectedRowKeys.add(
-            _selectionKeyForItem(instance, index: index),
-          );
-        }
-      }
+      _selectionController.syncVirtualSelection(
+        _data.items,
+        predicate,
+        itemMaps: _data.itemsAsMap,
+        rowKeyResolver: settings.rowKeyResolver,
+      );
     }
 
     for (final row in selectableRows) {
@@ -2031,13 +1817,12 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   void unSelectItemInstance(dynamic item) {
     if (virtualScroll) {
-      for (var index = 0; index < _data.items.length; index++) {
-        if (_data.items[index] == item) {
-          _virtualSelectedRowKeys.remove(
-            _selectionKeyForItem(item, index: index),
-          );
-        }
-      }
+      _selectionController.unselectItemInstance(
+        _data.items,
+        item,
+        itemMaps: _data.itemsAsMap,
+        rowKeyResolver: settings.rowKeyResolver,
+      );
     }
 
     for (final row in rows) {
@@ -2059,9 +1844,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     if (allowSingleSelectionOnly) {
       if (intendedSelectionState) {
         if (virtualScroll) {
-          _virtualSelectedRowKeys
-            ..clear()
-            ..add(_selectionKeyForRow(item));
+          _selectionController.selectSingleVirtualRow(
+            item,
+            rowKeyResolver: settings.rowKeyResolver,
+          );
         }
         for (final row in _selectableRows) {
           if (!identical(row, item)) {
@@ -2073,7 +1859,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         _selectStreamController.add(item.instance);
       } else {
         if (virtualScroll) {
-          _virtualSelectedRowKeys.remove(_selectionKeyForRow(item));
+          _selectionController.unselectVirtualRow(
+            item,
+            rowKeyResolver: settings.rowKeyResolver,
+          );
         }
         item.selected = false;
       }
@@ -2081,7 +1870,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       item.selected = intendedSelectionState;
       if (item.selected) {
         if (virtualScroll) {
-          _virtualSelectedRowKeys.add(_selectionKeyForRow(item));
+          _selectionController.selectVirtualRow(
+            item,
+            rowKeyResolver: settings.rowKeyResolver,
+          );
         }
         _selectStreamController.add(item.instance);
         final selectableRows = _selectableRows.toList(growable: false);
@@ -2089,7 +1881,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
             selectableRows.every((row) => row.selected);
       } else {
         if (virtualScroll) {
-          _virtualSelectedRowKeys.remove(_selectionKeyForRow(item));
+          _selectionController.unselectVirtualRow(
+            item,
+            rowKeyResolver: settings.rowKeyResolver,
+          );
         }
         isSelectAll = false;
       }
@@ -2123,34 +1918,11 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    final nextDirection = _nextSortDirection(
-      sortingBy,
-      colDefinition.defaultSortDirection,
+    _sortController.applyColumnSort(
+      dataTableFilter,
+      column: colDefinition,
+      enableMultiColumnSorting: enableMultiColumnSorting,
     );
-
-    if (enableMultiColumnSorting) {
-      final orderFields = _resolvedOrderFields().toList(growable: true);
-      final existingIndex =
-          orderFields.indexWhere((field) => field.field == sortingBy);
-      if (existingIndex >= 0) {
-        orderFields[existingIndex] = FilterOrderField(
-          field: sortingBy,
-          direction: nextDirection,
-        );
-      } else {
-        orderFields.add(
-          FilterOrderField(
-            field: sortingBy,
-            direction: colDefinition.defaultSortDirection,
-          ),
-        );
-      }
-      dataTableFilter.orderFields = orderFields;
-    } else {
-      dataTableFilter.orderBy = sortingBy;
-      dataTableFilter.orderDir = nextDirection;
-      dataTableFilter.orderFields = <FilterOrderField>[];
-    }
 
     _syncSortingIndicators();
     onRequestData();
@@ -2158,31 +1930,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   List<FilterOrderField> _resolvedOrderFields() {
-    if (enableMultiColumnSorting && dataTableFilter.orderFields.isNotEmpty) {
-      return List<FilterOrderField>.from(dataTableFilter.orderFields);
-    }
-
-    final orderBy = dataTableFilter.orderBy;
-    if (orderBy == null || orderBy.trim().isEmpty) {
-      return <FilterOrderField>[];
-    }
-
-    return <FilterOrderField>[
-      FilterOrderField(
-        field: orderBy,
-        direction: dataTableFilter.orderDir ?? 'desc',
-      ),
-    ];
-  }
-
-  String _nextSortDirection(String sortingBy, String defaultSortDirection) {
-    for (final orderField in _resolvedOrderFields()) {
-      if (orderField.field == sortingBy) {
-        return orderField.direction == 'asc' ? 'desc' : 'asc';
-      }
-    }
-
-    return defaultSortDirection;
+    return _sortController.resolveOrderFields(
+      dataTableFilter,
+      enableMultiColumnSorting: enableMultiColumnSorting,
+    );
   }
 
   void _syncSortingIndicators() {
@@ -2239,11 +1990,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     col.visibilityOnCard = shouldShowColumn;
 
     if (columnKey.isNotEmpty) {
-      if (shouldShowColumn) {
-        _forcedVisibleColumnKeys.add(columnKey);
-      } else {
-        _forcedVisibleColumnKeys.remove(columnKey);
-      }
+      _responsiveController.setForcedVisible(columnKey, shouldShowColumn);
     }
 
     for (final row in rows) {
@@ -2280,11 +2027,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         continue;
       }
 
-      if (newVisibility) {
-        _forcedVisibleColumnKeys.add(columnKey);
-      } else {
-        _forcedVisibleColumnKeys.remove(columnKey);
-      }
+      _responsiveController.setForcedVisible(columnKey, newVisibility);
     }
 
     for (final row in rows) {
@@ -2324,6 +2067,14 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void _syncGridBindingCaches() {
+    if (!enableGridMode) {
+      resolvedGridContainerClass = 'grid-container';
+      resolvedGridContainerStyleCss = '';
+      resolvedGridLayoutStyleCss = '';
+      resolvedGridScrollContainerStyleCss = '';
+      return;
+    }
+
     final customClass = _settings.gridContainerClass?.trim();
     resolvedGridContainerClass = customClass == null || customClass.isEmpty
         ? 'grid-container'
@@ -2344,6 +2095,15 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
     resolvedGridLayoutStyleCss =
         gridStyleParts.isEmpty ? '' : '${gridStyleParts.join('; ')};';
+  }
+
+  void _clearGridRuntimeState() {
+    _cachedGridRowsSignature = null;
+    _cachedGridRows = null;
+    _cardTemplateContextCache.clear();
+    resolvedGridScrollContainerStyleCss = '';
+    resolvedGridContainerStyleCss = '';
+    resolvedGridLayoutStyleCss = '';
   }
 
   void _syncProjectedTemplateContextCaches() {
@@ -2380,16 +2140,18 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       ..renderedRows = renderedRows
       ..dataTableFilter = dataTableFilter
       ..settings = settings
-      ..searchInFields = _searchInFields
+      ..searchInFields = searchInFields
       ..limitPerPageOptions = limitPerPageOptions
       ..exportMenuActions = exportMenuActions
       ..searchLabel = searchLabel
       ..searchPlaceholder = searchPlaceholder
       ..gridMode = gridMode
+      ..enableGridMode = enableGridMode
+      ..enableResponsiveFeatures = enableResponsiveFeatures
       ..showExportMenu = showExportMenu
       ..disableHeaderPadding = disableHeaderPadding
       ..totalRecords = totalRecords
-      ..currentPage = _currentPage
+      ..currentPage = getCurrentPage
       ..numPages = numPages
       ..selectedSearchFieldIndex = selectedSearchFieldIndex
       ..limitPerPage = dataTableFilter.limit
@@ -2404,7 +2166,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       ..dataTableFilter = dataTableFilter
       ..settings = settings
       ..totalRecords = totalRecords
-      ..currentPage = _currentPage
+      ..currentPage = getCurrentPage
       ..numPages = numPages
       ..currentTotalItems = getCurrentTotalItems
       ..pageSize = dataTableFilter.limit ?? 0
@@ -2561,35 +2323,32 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   bool hasResponsiveHiddenColumns(DatatableRow row) {
-    return _rowBuilder
-        .rebuildRenderedRows(
-          rows: <DatatableRow>[row],
-          responsiveCollapse: responsiveCollapse,
-          responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
-          responsiveCollapseActive: _isResponsiveCollapseActive,
-          responsiveControlColumnKey: settings.responsiveControlColumnKey,
-          autoHiddenColumnKeys: _autoHiddenColumnKeys,
-        )
-        .first
-        .hasResponsiveHiddenColumns;
+    return _responsiveRenderedRowFor(row).hasResponsiveHiddenColumns;
   }
 
   Iterable<DatatableCol> responsiveHiddenColumns(DatatableRow row) {
-    return _rowBuilder
-        .rebuildRenderedRows(
-          rows: <DatatableRow>[row],
-          responsiveCollapse: responsiveCollapse,
-          responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
-          responsiveCollapseActive: _isResponsiveCollapseActive,
-          responsiveControlColumnKey: settings.responsiveControlColumnKey,
-          autoHiddenColumnKeys: _autoHiddenColumnKeys,
-        )
-        .first
-        .responsiveHiddenColumns;
+    return _responsiveRenderedRowFor(row).responsiveHiddenColumns;
+  }
+
+  DatatableRenderedRow _responsiveRenderedRowFor(DatatableRow row) {
+    return _rowBuilder.rebuildRenderedRows(
+      rows: <DatatableRow>[row],
+      responsiveCollapse: responsiveCollapse,
+      responsiveCollapseMaxWidth: responsiveCollapseMaxWidth,
+      responsiveCollapseActive: _isResponsiveCollapseActive,
+      responsiveControlColumnKey: settings.responsiveControlColumnKey,
+      autoHiddenColumnKeys: _autoHiddenColumnKeys,
+    ).first;
   }
 
   bool hasCellTemplateFor(DatatableCol column) {
     return _resolveCellTemplate(column) != null;
+  }
+
+  bool usePlainTextCell(DatatableCol column) {
+    return _isSaliPagedPerformanceProfile &&
+        column.htmlElement == null &&
+        !hasCellTemplateFor(column);
   }
 
   TemplateRef? resolveCellTemplateFor(DatatableCol column) {
@@ -2619,6 +2378,13 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   bool hasHeaderCellTemplateFor(DatatableCol column) {
     return _resolveHeaderCellTemplate(column) != null;
+  }
+
+  bool useSimpleHeaderTitle(DatatableCol column) {
+    return !hasHeaderCellTemplateFor(column) &&
+        !titleHelp.hasRenderedTitleHtml(column) &&
+        !titleHelp.hasTitleTooltip(column) &&
+        !titleHelp.hasTitlePopover(column);
   }
 
   TemplateRef? resolveHeaderCellTemplateFor(DatatableCol column) {
@@ -2659,139 +2425,6 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       bodyColumns: row.columnsCardBody,
       footerColumns: row.columnsCardFooter,
     );
-  }
-
-  bool hasRenderedTitleHtml(DatatableCol column) {
-    return column.titleHtmlElement != null;
-  }
-
-  String resolveRenderedTitle(DatatableCol column) {
-    return column.renderedTitle;
-  }
-
-  bool hasTitleTooltip(DatatableCol column) {
-    return column.titleTooltip != null;
-  }
-
-  bool isTitleTooltipInline(DatatableCol column) {
-    return column.titleTooltip?.displayMode ==
-        DatatableTitleTooltipDisplayMode.title;
-  }
-
-  bool useNativeTitleTooltip(DatatableCol column) {
-    return column.titleTooltip?.useNativeTitle ?? false;
-  }
-
-  bool hasTitlePopover(DatatableCol column) {
-    return column.titlePopover != null;
-  }
-
-  Object? resolveTitleTooltipText(DatatableCol column) {
-    return column.titleTooltip?.text;
-  }
-
-  String resolveTitleTooltipPlacement(DatatableCol column) {
-    return column.titleTooltip?.placement ?? 'top';
-  }
-
-  String resolveTitleTooltipTrigger(DatatableCol column) {
-    return column.titleTooltip?.trigger ?? 'hover focus';
-  }
-
-  bool resolveTitleTooltipAllowHtml(DatatableCol column) {
-    return column.titleTooltip?.allowHtml ?? false;
-  }
-
-  String? resolveTitleTooltipClass(DatatableCol column) {
-    return column.titleTooltip?.tooltipClass;
-  }
-
-  String? resolveTitleTooltipContainer(DatatableCol column) {
-    return column.titleTooltip?.container;
-  }
-
-  int resolveTitleTooltipOpenDelay(DatatableCol column) {
-    return column.titleTooltip?.openDelay ?? 0;
-  }
-
-  int resolveTitleTooltipCloseDelay(DatatableCol column) {
-    return column.titleTooltip?.closeDelay ?? 0;
-  }
-
-  String resolveTitleTooltipIconClass(DatatableCol column) {
-    return column.titleTooltip?.iconClass ?? 'ph ph-info';
-  }
-
-  String resolveTitleTooltipButtonClass(DatatableCol column) {
-    return column.titleTooltip?.buttonClass ??
-        'btn btn-link btn-icon p-0 border-0 bg-transparent datatable-title-help-button';
-  }
-
-  String resolveTitleTooltipAriaLabel(DatatableCol column) {
-    return column.titleTooltip?.ariaLabel ?? 'Ajuda da coluna ${column.title}';
-  }
-
-  String? resolveNativeTitleTooltipText(DatatableCol column) {
-    if (!useNativeTitleTooltip(column)) {
-      return null;
-    }
-
-    final text = column.titleTooltip?.text;
-    return text?.toString();
-  }
-
-  Object? resolveTitlePopoverBody(DatatableCol column) {
-    return column.titlePopover?.body;
-  }
-
-  Object? resolveTitlePopoverTitle(DatatableCol column) {
-    return column.titlePopover?.title;
-  }
-
-  String resolveTitlePopoverPlacement(DatatableCol column) {
-    return column.titlePopover?.placement ?? 'top';
-  }
-
-  String resolveTitlePopoverTrigger(DatatableCol column) {
-    return column.titlePopover?.trigger ?? 'click';
-  }
-
-  bool resolveTitlePopoverAllowHtml(DatatableCol column) {
-    return column.titlePopover?.allowHtml ?? false;
-  }
-
-  String? resolveTitlePopoverClass(DatatableCol column) {
-    return column.titlePopover?.popoverClass;
-  }
-
-  String? resolveTitlePopoverContainer(DatatableCol column) {
-    return column.titlePopover?.container;
-  }
-
-  Object resolveTitlePopoverAutoClose(DatatableCol column) {
-    return column.titlePopover?.autoClose ?? 'outside';
-  }
-
-  int resolveTitlePopoverOpenDelay(DatatableCol column) {
-    return column.titlePopover?.openDelay ?? 0;
-  }
-
-  int resolveTitlePopoverCloseDelay(DatatableCol column) {
-    return column.titlePopover?.closeDelay ?? 0;
-  }
-
-  String resolveTitlePopoverIconClass(DatatableCol column) {
-    return column.titlePopover?.iconClass ?? 'ph ph-question';
-  }
-
-  String resolveTitlePopoverButtonClass(DatatableCol column) {
-    return column.titlePopover?.buttonClass ??
-        'btn btn-link btn-icon p-0 border-0 bg-transparent datatable-title-help-button';
-  }
-
-  String resolveTitlePopoverAriaLabel(DatatableCol column) {
-    return column.titlePopover?.ariaLabel ??
-        'Mais informações da coluna ${column.title}';
   }
 
   void onHeaderCellClick(MouseEvent event, DatatableCol colDefinition) {
@@ -2844,44 +2477,38 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return null;
   }
 
-  bool get _isResponsiveCollapseViewportActive =>
-      window.innerWidth != null &&
-      window.innerWidth! <= responsiveCollapseMaxWidth &&
-      responsiveCollapse;
-
-  bool get _isResponsiveCollapseContainerActive {
-    if (!responsiveCollapse || !responsiveCollapseByContainer) {
-      return false;
-    }
-
-    final availableWidth = _resolveResponsiveAvailableWidth();
-    return availableWidth > 0 &&
-        availableWidth <= responsiveCollapseContainerMaxWidth;
-  }
-
-  bool get _isResponsiveCollapseActive =>
-      _isResponsiveCollapseViewportActive ||
-      _isResponsiveCollapseContainerActive;
+  bool get _isResponsiveCollapseActive => _responsiveCollapseActiveCache;
 
   bool get hasResponsiveCollapsedColumns =>
-      _isResponsiveCollapseActive || _autoHiddenColumnKeys.isNotEmpty;
+      _areResponsiveFeaturesActive &&
+      (_isResponsiveCollapseActive || _autoHiddenColumnKeys.isNotEmpty);
 
   bool isFixedColumn(DatatableCol column) {
-    return column.fixedPosition != null && isColumnEffectivelyVisible(column);
+    return _responsiveController.isFixedColumn(
+      column: column,
+      responsiveEnabled: _areResponsiveFeaturesActive,
+      collapseActive: _isResponsiveCollapseActive,
+    );
   }
 
   bool isLeftFixedColumn(DatatableCol column) {
-    return column.fixedPosition == DatatableFixedColumnPosition.left &&
-        isFixedColumn(column);
+    return _responsiveController.isLeftFixedColumn(
+      column: column,
+      responsiveEnabled: _areResponsiveFeaturesActive,
+      collapseActive: _isResponsiveCollapseActive,
+    );
   }
 
   bool isRightFixedColumn(DatatableCol column) {
-    return column.fixedPosition == DatatableFixedColumnPosition.right &&
-        isFixedColumn(column);
+    return _responsiveController.isRightFixedColumn(
+      column: column,
+      responsiveEnabled: _areResponsiveFeaturesActive,
+      collapseActive: _isResponsiveCollapseActive,
+    );
   }
 
   String resolvedHeaderStyleCss(DatatableCol column, int index) {
-    return _mergeCssDeclarations(
+    return DatatableCssUtils.mergeDeclarations(
           column.headerStyleCss,
           _fixedColumnStyleCss(column, index),
         ) ??
@@ -2889,7 +2516,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   String resolvedCellStyleCss(DatatableCol column, int index) {
-    return _mergeCssDeclarations(
+    return DatatableCssUtils.mergeDeclarations(
           column.styleCss,
           _fixedColumnStyleCss(column, index),
         ) ??
@@ -2897,26 +2524,19 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   bool isColumnEffectivelyVisible(DatatableCol column) {
-    return column.visibility && !isRuntimeResponsiveHidden(column);
+    return _responsiveController.isColumnEffectivelyVisible(
+      column: column,
+      responsiveEnabled: _areResponsiveFeaturesActive,
+      collapseActive: _isResponsiveCollapseActive,
+    );
   }
 
   bool isRuntimeResponsiveHidden(DatatableCol column) {
-    if (_isColumnForcedVisible(column)) {
-      return false;
-    }
-
-    final hiddenOnMobile = _isResponsiveCollapseActive && column.hideOnMobile;
-    final hiddenByPriority = _autoHiddenColumnKeys.contains(column.key);
-    return hiddenOnMobile || hiddenByPriority;
-  }
-
-  bool _isColumnForcedVisible(DatatableCol column) {
-    final columnKey = column.key.trim();
-    if (columnKey.isEmpty) {
-      return false;
-    }
-
-    return _forcedVisibleColumnKeys.contains(columnKey);
+    return _responsiveController.isRuntimeResponsiveHidden(
+      column: column,
+      responsiveEnabled: _areResponsiveFeaturesActive,
+      collapseActive: _isResponsiveCollapseActive,
+    );
   }
 
   bool isResponsiveControlColumn(
@@ -2956,10 +2576,22 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void changeViewMode() {
-    _gridMode = !_gridMode;
-    if (virtualScroll) {
-      _pendingVirtualScrollReset = true;
+    if (!enableGridMode) {
+      _emitInstrumentation(
+        'changeViewMode.disabled',
+        details: <String, Object?>{
+          'gridMode': gridMode,
+          'rows': rows.length,
+          'renderedRows': renderedRows.length,
+        },
+      );
+      _syncHeaderTemplateContext();
+      _changeDetectorRef.markForCheck();
+      return;
     }
+
+    _requestedGridMode = !gridMode;
+    _setGridMode(_requestedGridMode, reason: 'changeViewMode()');
     _emitInstrumentation(
       'changeViewMode',
       details: <String, Object?>{
@@ -2968,39 +2600,23 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         'renderedRows': renderedRows.length,
       },
     );
-    _syncHeaderTemplateContext();
-    _syncGridBindingCaches();
-    if (_applyCachedModeSwitchIfAvailable(reason: 'changeViewMode()')) {
-      _scheduleModeSwitchVisualProbe('changeViewMode()');
-      _changeDetectorRef.markForCheck();
-      return;
-    }
-    scheduleDraw(force: true, reason: 'changeViewMode()');
-    _scheduleModeSwitchVisualProbe('changeViewMode()');
-    _changeDetectorRef.markForCheck();
   }
 
   Future<void> exportXlsx() async {
-    if (onExportXlsx != null) {
-      await onExportXlsx!(rows, settings.exportColumns);
-      return;
-    }
-    DatatableExporter.exportXlsx(
+    await _exportController.exportXlsx(
       settings: settings,
       rows: rows,
       card: card,
+      onExportXlsx: onExportXlsx,
     );
   }
 
   Future<void> exportPdf([bool isPrint = false, bool isDownload = true]) async {
-    if (onExportPdf != null) {
-      await onExportPdf!(rows, settings.visibleExportColumns);
-      return;
-    }
-    await DatatableExporter.exportPdf(
+    await _exportController.exportPdf(
       settings: settings,
       rows: rows,
       card: card,
+      onExportPdf: onExportPdf,
       isPrint: isPrint,
       isDownload: isDownload,
     );
@@ -3031,71 +2647,42 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void _syncResponsiveColumnWidthCache() {
-    final tableElement = table;
-    if (tableElement == null) {
+    if (!_areResponsiveFeaturesActive ||
+        !responsiveAutoHideColumns ||
+        gridMode) {
       return;
     }
 
-    final headerCells = tableElement.querySelectorAll('thead th[data-key]');
-    for (final cell in headerCells.whereType<TableCellElement>()) {
-      if (cell.classes.contains('hide')) {
-        continue;
-      }
-
-      final key = cell.getAttribute('data-key')?.trim() ?? '';
-      if (key.isEmpty) {
-        continue;
-      }
-
-      final rectWidth = cell.getBoundingClientRect().width.toDouble();
-      final measuredWidth =
-          rectWidth > 0 ? rectWidth : cell.offsetWidth.toDouble();
-      if (measuredWidth > 0) {
-        final cachedWidth = _responsiveColumnWidthCache[key];
-        _responsiveColumnWidthCache[key] = cachedWidth == null
-            ? measuredWidth
-            : (measuredWidth < cachedWidth ? measuredWidth : cachedWidth);
-      }
-    }
-
-    if (!showCheckboxToSelectRow) {
-      return;
-    }
-
-    final checkboxCell =
-        tableElement.querySelector('thead th.datatable-first-col');
-    if (checkboxCell is! TableCellElement) {
-      return;
-    }
-
-    final rectWidth = checkboxCell.getBoundingClientRect().width.toDouble();
-    final measuredWidth =
-        rectWidth > 0 ? rectWidth : checkboxCell.offsetWidth.toDouble();
-    if (measuredWidth > 0) {
-      _responsiveCheckboxWidthCache =
-          measuredWidth < _responsiveCheckboxWidthCache
-              ? measuredWidth
-              : _responsiveCheckboxWidthCache;
-    }
+    _responsiveController.syncColumnWidthCache(
+      tableElement: table,
+      showCheckboxToSelectRow: showCheckboxToSelectRow,
+    );
   }
 
   void _resetResponsiveMeasurementCache() {
-    _responsiveColumnWidthCache.clear();
-    _responsiveCheckboxWidthCache = 44;
+    _responsiveController.resetMeasurementCache();
+  }
+
+  bool _cancelResponsiveAutoHideFrame() {
+    if (_responsiveAutoHideAnimationFrameId == null) {
+      return false;
+    }
+
+    window.cancelAnimationFrame(_responsiveAutoHideAnimationFrameId!);
+    _responsiveAutoHideAnimationFrameId = null;
+    return true;
   }
 
   void _scheduleResponsiveAutoHideSync() {
-    if (_isDestroyed) {
+    if (_isDestroyed ||
+        !_areResponsiveFeaturesActive ||
+        !responsiveAutoHideColumns) {
       _emitInstrumentation('responsiveAutoHideSync.skipped');
       return;
     }
 
     var canceledPreviousFrame = false;
-    if (_responsiveAutoHideAnimationFrameId != null) {
-      window.cancelAnimationFrame(_responsiveAutoHideAnimationFrameId!);
-      _responsiveAutoHideAnimationFrameId = null;
-      canceledPreviousFrame = true;
-    }
+    canceledPreviousFrame = _cancelResponsiveAutoHideFrame();
 
     _emitInstrumentation(
       'responsiveAutoHideSync.queued',
@@ -3114,6 +2701,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       }
 
       final stopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
+      _syncResponsiveViewportState(reason: 'responsiveAutoHideSync.frame');
       _syncResponsiveColumnWidthCache();
       _syncResponsiveAutoHideNow();
       stopwatch?.stop();
@@ -3130,10 +2718,16 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   bool _syncResponsiveAutoHideNow() {
     final stopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
     final availableWidth = _resolveResponsiveAvailableWidth();
-    final nextKeys = _computeResponsiveAutoHiddenColumnKeys(
+    final changed = _responsiveController.syncAutoHiddenColumns(
+      responsiveEnabled: _areResponsiveFeaturesActive,
+      autoHideEnabled: responsiveAutoHideColumns,
+      gridMode: gridMode,
       availableWidth: availableWidth,
+      columns: settings.colsDefinitions,
+      collapseActive: _isResponsiveCollapseActive,
+      showCheckboxToSelectRow: showCheckboxToSelectRow,
     );
-    if (_setEquals(nextKeys, _autoHiddenColumnKeys)) {
+    if (!changed) {
       stopwatch?.stop();
       _emitInstrumentation(
         'responsiveAutoHideSync.noChange',
@@ -3146,9 +2740,6 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return false;
     }
 
-    _autoHiddenColumnKeys
-      ..clear()
-      ..addAll(nextKeys);
     _manualRowsRevision++;
     stopwatch?.stop();
     _emitInstrumentation(
@@ -3164,84 +2755,110 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return true;
   }
 
-  Set<String> _computeResponsiveAutoHiddenColumnKeys({
-    double? availableWidth,
-  }) {
-    if (!responsiveAutoHideColumns || gridMode) {
-      return const <String>{};
-    }
-
-    final resolvedAvailableWidth =
-        availableWidth ?? _resolveResponsiveAvailableWidth();
-    if (resolvedAvailableWidth <= 0) {
-      return const <String>{};
-    }
-
-    final baseVisibleColumns = settings.colsDefinitions.where((column) {
-      final hiddenOnMobile = _isResponsiveCollapseActive &&
-          column.hideOnMobile &&
-          !_isColumnForcedVisible(column);
-      return column.visibility && !hiddenOnMobile;
-    }).toList(growable: false);
-
-    if (baseVisibleColumns.isEmpty) {
-      return const <String>{};
-    }
-
-    final totalWidth = baseVisibleColumns.fold<double>(
-      showCheckboxToSelectRow ? _responsiveCheckboxWidthCache : 0,
-      (sum, column) => sum + _resolveResponsiveAutoHideColumnWidth(column),
-    );
-
-    if (totalWidth <= resolvedAvailableWidth) {
-      return const <String>{};
-    }
-
-    final candidates = baseVisibleColumns
-        .where((column) =>
-            !column.responsiveAutoHideRequired &&
-            column.fixedPosition == null &&
-            !_isColumnForcedVisible(column) &&
-            column.responsiveAutoHidePriority != null)
-        .toList(growable: false);
-
-    if (candidates.isEmpty) {
-      return const <String>{};
-    }
-
-    candidates.sort((left, right) {
-      final priorityCompare = left.responsiveAutoHidePriority!
-          .compareTo(right.responsiveAutoHidePriority!);
-      if (priorityCompare != 0) {
-        return priorityCompare;
-      }
-
-      final widthCompare = _resolveResponsiveAutoHideColumnWidth(right)
-          .compareTo(_resolveResponsiveAutoHideColumnWidth(left));
-      if (widthCompare != 0) {
-        return widthCompare;
-      }
-
-      return settings.colsDefinitions
-          .indexOf(left)
-          .compareTo(settings.colsDefinitions.indexOf(right));
-    });
-
-    final hiddenKeys = <String>{};
-    var remainingWidth = totalWidth;
-    for (final candidate in candidates) {
-      if (remainingWidth <= resolvedAvailableWidth) {
-        break;
-      }
-
-      hiddenKeys.add(candidate.key);
-      remainingWidth -= _resolveResponsiveAutoHideColumnWidth(candidate);
-    }
-
-    return hiddenKeys;
+  double _resolveResponsiveAvailableWidth() {
+    return _responsiveAvailableWidthCache;
   }
 
-  double _resolveResponsiveAvailableWidth() {
+  bool _syncResponsiveViewportState({required String reason}) {
+    final stopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
+    final previousAvailableWidth = _responsiveAvailableWidthCache;
+    final previousViewportActive = _responsiveCollapseViewportActiveCache;
+    final previousContainerActive = _responsiveCollapseContainerActiveCache;
+    final previousActive = _responsiveCollapseActiveCache;
+
+    if (!_areResponsiveFeaturesActive) {
+      _responsiveAvailableWidthCache = 0;
+      _responsiveCollapseViewportActiveCache = false;
+      _responsiveCollapseContainerActiveCache = false;
+      _responsiveCollapseActiveCache = false;
+      return _emitResponsiveViewportStateSync(
+        reason: reason,
+        stopwatch: stopwatch,
+        previousAvailableWidth: previousAvailableWidth,
+        previousViewportActive: previousViewportActive,
+        previousContainerActive: previousContainerActive,
+        previousActive: previousActive,
+      );
+    }
+
+    if (!responsiveCollapse) {
+      _responsiveAvailableWidthCache =
+          responsiveAutoHideColumns ? _measureResponsiveAvailableWidth() : 0;
+      _responsiveCollapseViewportActiveCache = false;
+      _responsiveCollapseContainerActiveCache = false;
+      _responsiveCollapseActiveCache = false;
+      return _emitResponsiveViewportStateSync(
+        reason: reason,
+        stopwatch: stopwatch,
+        previousAvailableWidth: previousAvailableWidth,
+        previousViewportActive: previousViewportActive,
+        previousContainerActive: previousContainerActive,
+        previousActive: previousActive,
+      );
+    }
+
+    final viewportActive = window.innerWidth != null &&
+        window.innerWidth! <= responsiveCollapseMaxWidth;
+    final shouldMeasureAvailableWidth =
+        responsiveCollapseByContainer || responsiveAutoHideColumns;
+    final availableWidth = shouldMeasureAvailableWidth
+        ? _measureResponsiveAvailableWidth()
+        : _responsiveAvailableWidthCache;
+    final containerActive = responsiveCollapseByContainer &&
+        availableWidth > 0 &&
+        availableWidth <= responsiveCollapseContainerMaxWidth;
+
+    _responsiveAvailableWidthCache = availableWidth;
+    _responsiveCollapseViewportActiveCache = viewportActive;
+    _responsiveCollapseContainerActiveCache = containerActive;
+    _responsiveCollapseActiveCache = viewportActive || containerActive;
+
+    return _emitResponsiveViewportStateSync(
+      reason: reason,
+      stopwatch: stopwatch,
+      previousAvailableWidth: previousAvailableWidth,
+      previousViewportActive: previousViewportActive,
+      previousContainerActive: previousContainerActive,
+      previousActive: previousActive,
+    );
+  }
+
+  bool _emitResponsiveViewportStateSync({
+    required String reason,
+    required Stopwatch? stopwatch,
+    required double previousAvailableWidth,
+    required bool previousViewportActive,
+    required bool previousContainerActive,
+    required bool previousActive,
+  }) {
+    final changed = previousAvailableWidth != _responsiveAvailableWidthCache ||
+        previousViewportActive != _responsiveCollapseViewportActiveCache ||
+        previousContainerActive != _responsiveCollapseContainerActiveCache ||
+        previousActive != _responsiveCollapseActiveCache;
+
+    stopwatch?.stop();
+
+    _emitInstrumentation(
+      'responsiveViewportState.sync',
+      elapsedMicroseconds: stopwatch?.elapsedMicroseconds,
+      details: <String, Object?>{
+        'reason': reason,
+        'changed': changed,
+        'availableWidth': _responsiveAvailableWidthCache,
+        'collapseViewportActive': _responsiveCollapseViewportActiveCache,
+        'collapseContainerActive': _responsiveCollapseContainerActiveCache,
+        'collapseActive': _responsiveCollapseActiveCache,
+      },
+    );
+
+    if (changed) {
+      _emitInstrumentation('responsiveViewportState.changed');
+    }
+
+    return changed;
+  }
+
+  double _measureResponsiveAvailableWidth() {
     final scrollElement = scrollContainer;
     if (scrollElement != null && scrollElement.clientWidth > 0) {
       return scrollElement.clientWidth.toDouble();
@@ -3255,21 +2872,14 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     return 0;
   }
 
-  double _resolveResponsiveAutoHideColumnWidth(DatatableCol column) {
-    final configuredWidth = _parseCssLength(column.width) ??
-        _parseCssLength(column.minWidth) ??
-        _parseCssLength(column.maxWidth);
-    if (configuredWidth != null && configuredWidth > 0) {
-      return configuredWidth;
-    }
-
-    return column.nowrap ? 140.0 : 120.0;
-  }
-
   void _syncFixedColumnOffsets() {
     final stopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
-    _fixedLeftOffsets.clear();
-    _fixedRightOffsets.clear();
+    _responsiveController.syncFixedColumnOffsets(
+      gridMode: gridMode,
+      columns: settings.colsDefinitions,
+      responsiveEnabled: _areResponsiveFeaturesActive,
+      collapseActive: _isResponsiveCollapseActive,
+    );
 
     if (gridMode || settings.colsDefinitions.isEmpty) {
       stopwatch?.stop();
@@ -3284,136 +2894,23 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    var leftOffset = 0.0;
-    for (var index = 0; index < settings.colsDefinitions.length; index++) {
-      final column = settings.colsDefinitions[index];
-      if (!isLeftFixedColumn(column)) {
-        continue;
-      }
-
-      _fixedLeftOffsets[index] = leftOffset;
-      leftOffset += _resolveFixedColumnWidth(column);
-    }
-
-    var rightOffset = 0.0;
-    for (var index = settings.colsDefinitions.length - 1; index >= 0; index--) {
-      final column = settings.colsDefinitions[index];
-      if (!isRightFixedColumn(column)) {
-        continue;
-      }
-
-      _fixedRightOffsets[index] = rightOffset;
-      rightOffset += _resolveFixedColumnWidth(column);
-    }
-
     stopwatch?.stop();
     _emitInstrumentation(
       'syncFixedColumnOffsets',
       elapsedMicroseconds: stopwatch?.elapsedMicroseconds,
       details: <String, Object?>{
-        'leftFixed': _fixedLeftOffsets.length,
-        'rightFixed': _fixedRightOffsets.length,
+        'leftFixed': _responsiveController.leftFixedCount,
+        'rightFixed': _responsiveController.rightFixedCount,
       },
     );
   }
 
-  double _resolveFixedColumnWidth(DatatableCol column) {
-    final cachedWidth = _responsiveColumnWidthCache[column.key];
-    if (cachedWidth != null && cachedWidth > 0) {
-      return cachedWidth;
-    }
-
-    return _parseCssLength(column.width) ??
-        _parseCssLength(column.minWidth) ??
-        _parseCssLength(column.maxWidth) ??
-        (column.nowrap ? 140.0 : 120.0);
-  }
-
   String? _fixedColumnStyleCss(DatatableCol column, int index) {
-    if (!isFixedColumn(column)) {
-      return null;
-    }
-
-    if (column.fixedPosition == DatatableFixedColumnPosition.left) {
-      final offset = _fixedLeftOffsets[index] ?? 0;
-      return 'left: ${_formatPixelValue(offset)}';
-    }
-
-    if (column.fixedPosition == DatatableFixedColumnPosition.right) {
-      final offset = _fixedRightOffsets[index] ?? 0;
-      return 'right: ${_formatPixelValue(offset)}';
-    }
-
-    return null;
-  }
-
-  String _formatPixelValue(double value) {
-    final roundedValue = value.roundToDouble();
-    if ((value - roundedValue).abs() < 0.01) {
-      return '${roundedValue.toInt()}px';
-    }
-
-    return '${value.toStringAsFixed(2)}px';
-  }
-
-  String? _mergeCssDeclarations(String? baseStyle, String? extraStyle) {
-    final parts = <String>[];
-    final normalizedBase = baseStyle?.trim();
-    final normalizedExtra = extraStyle?.trim();
-
-    if (normalizedBase != null && normalizedBase.isNotEmpty) {
-      parts.add(normalizedBase);
-    }
-
-    if (normalizedExtra != null && normalizedExtra.isNotEmpty) {
-      parts.add(normalizedExtra);
-    }
-
-    if (parts.isEmpty) {
-      return null;
-    }
-
-    return parts.join('; ');
-  }
-
-  double? _parseCssLength(String? rawValue) {
-    if (rawValue == null) {
-      return null;
-    }
-
-    final normalized = rawValue.trim().toLowerCase();
-    if (normalized.isEmpty) {
-      return null;
-    }
-
-    final numericValue =
-        double.tryParse(normalized.replaceAll(RegExp(r'[^0-9\.-]'), ''));
-    if (numericValue == null) {
-      return null;
-    }
-
-    if (normalized.endsWith('rem') || normalized.endsWith('em')) {
-      return numericValue * 16;
-    }
-
-    if (normalized.endsWith('px')) {
-      return numericValue;
-    }
-
-    return numericValue;
-  }
-
-  bool _setEquals(Set<String> left, Set<String> right) {
-    if (left.length != right.length) {
-      return false;
-    }
-
-    for (final value in left) {
-      if (!right.contains(value)) {
-        return false;
-      }
-    }
-
-    return true;
+    return _responsiveController.fixedColumnStyleCss(
+      column: column,
+      index: index,
+      responsiveEnabled: _areResponsiveFeaturesActive,
+      collapseActive: _isResponsiveCollapseActive,
+    );
   }
 }

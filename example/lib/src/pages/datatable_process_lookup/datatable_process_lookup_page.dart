@@ -58,6 +58,8 @@ class DatatableProcessLookupPageComponent implements OnInit {
   ];
   final DatatableSettings processLookupTableSettings;
   final List<DatatableSearchField> processLookupSearchFields;
+  final DatatablePerformanceProfile processLookupPerformanceProfile =
+      DatatablePerformanceProfile.saliPaged;
   final Set<String> _favoritedProcessCodes = <String>{};
 
   late DataFrame<Map<String, dynamic>> processLookupTableData;

@@ -83,6 +83,15 @@ import 'li_accordion_directive_test.template.dart' as ng;
       </div>
 
       <button id="collapse-toggle" type="button" (click)="togglePanel()">Toggle panel</button>
+
+      <a id="collapse-selector-toggle" href="#selector-collapse-panel"
+          liCollapseToggle
+          [liCollapseToggleAnimation]="false">
+        Toggle selector panel
+      </a>
+      <div id="selector-collapse-panel">
+        <div class="border p-2">Selector collapse</div>
+      </div>
     </div>
   ''',
   directives: [
@@ -96,6 +105,7 @@ import 'li_accordion_directive_test.template.dart' as ng;
     LiAccordionBodyComponent,
     LiAccordionBodyTemplateDirective,
     LiCollapseDirective,
+    LiCollapseToggleDirective,
     LiAccordionComponent,
     LiAccordionItemComponent,
   ],
@@ -346,6 +356,42 @@ void main() {
 
     expect(panel.classes.contains('show'), isFalse);
     expect(host.collapseHiddenCount, 1);
+  });
+
+  test('liCollapseToggle controls a selector target without component state',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final panel = fixture.rootElement.querySelector('#selector-collapse-panel');
+    final toggleButton =
+        fixture.rootElement.querySelector('#collapse-selector-toggle');
+
+    expect(panel, isNotNull);
+    expect(toggleButton, isNotNull);
+    expect(panel!.classes.contains('collapse'), isTrue);
+    expect(panel.classes.contains('show'), isFalse);
+    expect(toggleButton!.classes.contains('collapsed'), isTrue);
+    expect(toggleButton.getAttribute('aria-expanded'), 'false');
+    expect(
+        toggleButton.getAttribute('aria-controls'), 'selector-collapse-panel');
+
+    await fixture.update((_) {
+      _click(toggleButton);
+    });
+    await _settle(fixture);
+
+    expect(panel.classes.contains('show'), isTrue);
+    expect(toggleButton.classes.contains('collapsed'), isFalse);
+    expect(toggleButton.getAttribute('aria-expanded'), 'true');
+
+    await fixture.update((_) {
+      _click(toggleButton);
+    });
+    await _settle(fixture);
+
+    expect(panel.classes.contains('show'), isFalse);
+    expect(toggleButton.classes.contains('collapsed'), isTrue);
+    expect(toggleButton.getAttribute('aria-expanded'), 'false');
   });
 }
 

@@ -559,8 +559,8 @@ class DatatablePageComponent implements OnInit {
         DatatableCol(
           key: 'actions',
           title: isPortuguese ? 'Ações' : 'Actions',
-          width: '132px',
-          minWidth: '132px',
+          width: '168px',
+          minWidth: '168px',
           textAlign: 'center',
           titleTextAlign: 'center',
           nowrap: true,
@@ -976,8 +976,8 @@ class DatatablePageComponent implements OnInit {
       key: 'actions',
       title: 'Ações',
           exportable: false,
-      width: '132px',
-      minWidth: '132px',
+      width: '168px',
+      minWidth: '168px',
       textAlign: 'center',
       fixedPosition: DatatableFixedColumnPosition.right,
       customRenderHtml: buildActionsCell,
@@ -2530,7 +2530,15 @@ class ProductController {
     Map<String, dynamic> itemMap,
     dynamic itemInstance,
   ) {
-    final root = DivElement()..classes.add('datatable-sticky-demo-actions');
+    final root = DivElement()
+      ..classes.addAll(<String>[
+        'datatable-sticky-demo-actions',
+        'd-inline-flex',
+        'align-items-center',
+        'justify-content-center',
+        'gap-2',
+        'w-100',
+      ]);
 
     final openAction = ButtonElement()
       ..type = 'button'
@@ -2665,6 +2673,30 @@ class ProductController {
   String get stickyColumnsDemoNote => i18n.isPortuguese
       ? 'Role horizontalmente dentro da grade: a primeira coluna continua ancorada à esquerda e a coluna de ações permanece visível à direita.'
       : 'Scroll horizontally inside the grid: the first column stays pinned on the left and the actions column remains visible on the right.';
+
+  String get performanceSummaryTitle => i18n.isPortuguese
+      ? 'Melhorias recentes de performance'
+      : 'Recent performance improvements';
+
+  String get performanceSummaryIntro => i18n.isPortuguese
+      ? 'O li-datatable agora tem um caminho enxuto para telas operacionais paginadas, mantém ações e títulos próximos do baseline e deixa recursos responsivos que medem DOM como opções explícitas.'
+      : 'li-datatable now has a lean path for paged operational screens, keeps actions and title customization close to baseline, and leaves DOM-measuring responsive behavior as explicit opt-ins.';
+
+  String get performanceSummaryLeanPath => i18n.isPortuguese
+      ? 'Perfil saliPaged: tabela pequena paginada, sem grid/responsividade rica, sem virtualização obrigatória.'
+      : 'saliPaged profile: small paged table, without grid/rich responsive work, and without mandatory virtualization.';
+
+  String get performanceSummaryBenchmark => i18n.isPortuguese
+      ? 'Benchmark browser: action column, título HTML e tooltip/popover ficaram perto do baseline; priority auto-hide e collapse por container são os caminhos caros por dependerem de medidas reais de layout.'
+      : 'Browser benchmark: action column, HTML titles, and tooltip/popover stayed close to baseline; priority auto-hide and container collapse are the expensive paths because they depend on real layout measurements.';
+
+  String get performanceSummaryDenseRows => i18n.isPortuguese
+      ? 'Validação local: cerca de 3.000 linhas renderizadas sem virtualScroll no caminho enxuto, sem travar o navegador.'
+      : 'Local validation: about 3,000 rows rendered without virtualScroll on the lean path, without freezing the browser.';
+
+  String get performanceSummaryDocs => i18n.isPortuguese
+      ? 'Use enableGridMode=false e enableResponsiveFeatures=false quando a tela for uma tabela densa e previsível; ligue auto-hide por prioridade somente quando essa experiência for realmente necessária.'
+      : 'Use enableGridMode=false and enableResponsiveFeatures=false for dense predictable table screens; enable priority auto-hide only when that experience is really needed.';
 
   String _statusColor(String status) {
     switch (status) {

@@ -33,6 +33,7 @@ class DemoRoutePaths {
   static final datatable = RoutePath(path: 'datatable');
   static final datatableProcessLookup =
       RoutePath(path: 'datatable-process-lookup');
+  static final protocolWorkflow = RoutePath(path: 'protocol-workflow');
   static final datatableSelect = RoutePath(path: 'datatable-select');
   static final workQueue = RoutePath(path: 'work-queue');
   static final toast = RoutePath(path: 'toast');

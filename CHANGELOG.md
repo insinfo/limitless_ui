@@ -1,3 +1,16 @@
+## 1.0.0-dev.17
+
+- Refactored `li-datatable` internals into focused controllers for sorting, pagination, search, export, selection, responsive state, virtual scroll, title help, and debug instrumentation while preserving the public component API.
+- Added `DatatablePerformanceProfile` with the `saliPaged` profile for small server-paged operational tables, plus `enableGridMode`, `enableResponsiveFeatures`, stable `rowKeyResolver` selection keys, and `fixedTableLayout` as an opt-in instead of forcing `table-layout: fixed`.
+- Improved dense-table rendering by building virtual ranges without `sublist()`, avoiding rich header/cell bindings on simple paths, and caching responsive viewport/container state so template getters no longer read DOM dimensions on every change-detection pass.
+- Added browser benchmarks for virtual scroll and per-feature datatable cost. The feature benchmark documents that `responsiveAutoHideColumns` by priority and `responsiveCollapseByContainer` are the expensive paths because they must measure real DOM widths, while action columns, title customization, `table-layout`, and virtual scroll are not the primary regression source in the measured scenarios.
+- Added stable `data-li-datatable-action-cell` and `data-li-datatable-action` markers for `DatatableActionColumn`, expanded debug instrumentation with explicit action-cell/action-element/configured-action-column metrics, and added regression coverage for `saliPaged` action rendering plus desktop container collapse without responsive priority auto-hide.
+- Refreshed the datatable demo page with an in-page performance summary, benchmark highlights, and guidance for lean SALI-style tables. The fixed-column horizontal-scroll example now gives the action column enough width and spacing for icon buttons.
+- Removed datatable component background overrides from fixed/frozen columns so sticky edge columns inherit the active Limitless table/theme CSS instead of forcing local card/body colors.
+- Expanded the process lookup example to use the `saliPaged` profile, stable `rowKeyResolver`, disabled grid/responsive work for the dense table path, and debug instrumentation for profiling the operational screen.
+- Added a protocol workflow demo route with nested datatables in modals/tabs for dispatches and attachments, and added `liCollapseToggle` for selector-based collapse triggers with browser coverage.
+- Forwarded `enableGridMode` and `enableResponsiveFeatures` through `li-datatable-select` so modal picker tables can opt out of grid and responsive measurement work.
+
 ## 1.0.0-dev.16
 
 - Expanded overlay stack behavior across `li-tooltip` and `li-popover` so body-mounted overlays render above modal layers, including regression coverage for trigger usage inside `li-modal`.
