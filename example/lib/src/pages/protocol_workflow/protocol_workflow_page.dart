@@ -63,8 +63,10 @@ class ProtocolWorkflowPageComponent implements OnInit {
       DatatableActionColumn(
         key: 'actions',
         title: 'Ações',
+        maxVisibleActions: 1,
         actions: <DatatableAction>[
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
             label: 'Criar despacho',
             iconClass: 'ph ph-scroll',
             iconOnly: true,
@@ -72,6 +74,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
             onTap: (context) => createDraft(_asMap(context.itemInstance)),
           ),
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
             label: 'Anexar arquivo',
             iconClass: 'ph ph-paperclip',
             iconOnly: true,
@@ -81,6 +84,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
             onTap: (context) => attachFile(_asMap(context.itemInstance)),
           ),
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
             label: 'Despachos e anexos',
             iconClass: 'ph ph-chat-circle-text',
             iconOnly: true,
@@ -88,6 +92,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
             onTap: (context) => openDetails(_asMap(context.itemInstance)),
           ),
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.alwaysVisible,
             label: 'Consultar processo',
             iconClass: 'ph ph-eye',
             iconOnly: true,
@@ -150,8 +155,10 @@ class ProtocolWorkflowPageComponent implements OnInit {
       DatatableActionColumn(
         key: 'actions',
         title: 'Ações',
+        maxVisibleActions: 2,
         actions: <DatatableAction>[
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.alwaysVisible,
             label: 'Visualizar despacho',
             iconClass: 'ph ph-eye',
             iconOnly: true,
@@ -170,6 +177,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
             ),
           ),
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
             label: 'Editar rascunho',
             iconClass: 'ph ph-pencil',
             iconOnly: true,
@@ -179,6 +187,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
             onTap: (context) => editDraft(_asMap(context.itemInstance)),
           ),
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
             label: 'Excluir rascunho',
             iconClass: 'ph ph-trash',
             iconOnly: true,
@@ -232,8 +241,10 @@ class ProtocolWorkflowPageComponent implements OnInit {
       DatatableActionColumn(
         key: 'actions',
         title: 'Ações',
+        maxVisibleActions: 2,
         actions: <DatatableAction>[
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.alwaysVisible,
             label: 'Visualizar anexo',
             iconClass: 'ph ph-eye',
             iconOnly: true,
@@ -252,6 +263,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
             ),
           ),
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
             label: 'Finalizar rascunho',
             iconClass: 'ph ph-check',
             iconOnly: true,
@@ -262,6 +274,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
                 finalizeAttachment(_asMap(context.itemInstance)),
           ),
           DatatableAction(
+            overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
             label: 'Excluir rascunho',
             iconClass: 'ph ph-trash',
             iconOnly: true,

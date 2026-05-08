@@ -2379,6 +2379,141 @@ void main() {
     expect(actionButton.text?.trim(), isEmpty);
   });
 
+  test('mantem acoes fixas visiveis e envia excedente para dropdown',
+      () async {
+    var opened = 0;
+    var archived = 0;
+    var deleted = 0;
+
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            maxVisibleActions: 1,
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Visualizar',
+                iconClass: 'ph ph-eye',
+                overflowBehavior:
+                    DatatableActionOverflowBehavior.alwaysVisible,
+                onTap: (_) {
+                  opened++;
+                },
+              ),
+              DatatableAction(
+                label: 'Arquivar',
+                iconClass: 'ph ph-archive-box',
+                onTap: (_) {
+                  archived++;
+                },
+              ),
+              DatatableAction(
+                label: 'Excluir',
+                iconClass: 'ph ph-trash',
+                overflowBehavior:
+                    DatatableActionOverflowBehavior.overflowMenu,
+                onTap: (_) {
+                  deleted++;
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final visibleButton = fixture.rootElement.querySelector(
+      '.datatable-action-cell > button[data-li-datatable-action="true"]',
+    ) as ButtonElement?;
+    final overflowToggle = fixture.rootElement.querySelector(
+      '[data-li-datatable-action-overflow-toggle="true"]',
+    ) as ButtonElement?;
+    expect(visibleButton, isNotNull);
+    expect(visibleButton!.text, contains('Visualizar'));
+    expect(overflowToggle, isNotNull);
+
+    await fixture.update((_) {
+      overflowToggle!.click();
+    });
+    await _settleTable(fixture);
+
+    final overflowMenu = document.body?.querySelector(
+      '[data-li-datatable-action-overflow-menu="true"]',
+    ) as HtmlElement?;
+
+    expect(overflowMenu, isNotNull);
+    expect(overflowMenu!.classes.contains('show'), isTrue);
+    expect(overflowMenu.text, contains('Arquivar'));
+    expect(overflowMenu.text, contains('Excluir'));
+
+    final overflowButtons = overflowMenu.querySelectorAll(
+      'button[data-li-datatable-action="true"]',
+    );
+    expect(overflowButtons, hasLength(2));
+
+    await fixture.update((_) {
+      (overflowButtons.first as ButtonElement).click();
+    });
+    await _settleTable(fixture);
+
+    expect(opened, 0);
+    expect(archived, 1);
+    expect(deleted, 0);
+    final closedOverflowMenu = document.body?.querySelector(
+      '[data-li-datatable-action-overflow-menu="true"]',
+    ) as HtmlElement?;
+    expect(closedOverflowMenu, isNotNull);
+    expect(closedOverflowMenu!.classes.contains('show'), isFalse);
+  });
+
+  test('permite enviar todas as actions para dropdown com maxVisibleActions zero',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            maxVisibleActions: 0,
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Visualizar',
+                iconClass: 'ph ph-eye',
+                onTap: (_) {},
+              ),
+              DatatableAction(
+                label: 'Editar',
+                iconClass: 'ph ph-pencil',
+                onTap: (_) {},
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    expect(
+      fixture.rootElement.querySelector(
+        '.datatable-action-cell > button[data-li-datatable-action="true"]',
+      ),
+      isNull,
+    );
+    expect(
+      fixture.rootElement.querySelector(
+        '[data-li-datatable-action-overflow-toggle="true"]',
+      ),
+      isNotNull,
+    );
+  });
+
   test('suporta ação com texto no desktop e ícone no mobile', () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
       component.searchInFields = <DatatableSearchField>[];

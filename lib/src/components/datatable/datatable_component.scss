@@ -245,6 +245,26 @@
     padding: 0;
 }
 
+.datatable-action-overflow {
+    position: relative;
+    display: inline-flex;
+}
+
+.datatable-action-overflow-menu {
+    margin-top: .25rem;
+    min-width: 11rem;
+}
+
+.datatable-action-overflow-menu.dropdown-menu-end {
+    right: 0;
+    left: auto;
+}
+
+.datatable-action-overflow-item {
+    display: flex;
+    align-items: center;
+}
+
 .datatable-header-title-shell {
     display: inline-flex;
     align-items: center;

@@ -1175,6 +1175,45 @@ If the same action should show icon + text on desktop and collapse to icon-only 
 
 For denser action columns, set `size: 'sm'` on `DatatableAction` to emit `btn-sm` while keeping the default Limitless button contract for spacing and icon-only buttons.
 
+When row actions should wrap into multiple lines instead of forcing a wider column, set `wrapActions: true` on `DatatableActionColumn`.
+
+When part of the action set should stay visible and the rest should move into an overflow menu, combine `maxVisibleActions` on `DatatableActionColumn` with `overflowBehavior` on each `DatatableAction`.
+
+- `DatatableActionOverflowBehavior.auto`: uses the normal inline flow and only moves to the overflow menu when the column reaches `maxVisibleActions`.
+- `DatatableActionOverflowBehavior.alwaysVisible`: always stays inline, even when the column reached `maxVisibleActions`.
+- `DatatableActionOverflowBehavior.overflowMenu`: always renders inside the overflow dropdown.
+
+Example with one fixed visible action and the rest inside the dropdown:
+
+```dart
+DatatableActionColumn(
+  key: 'actions',
+  title: 'Actions',
+  maxVisibleActions: 1,
+  actions: <DatatableAction>[
+    DatatableAction(
+      label: 'Open process',
+      iconClass: 'ph ph-eye',
+      overflowBehavior: DatatableActionOverflowBehavior.alwaysVisible,
+      onTap: (ctx) => openUser(ctx.itemMap),
+    ),
+    DatatableAction(
+      label: 'Archive',
+      iconClass: 'ph ph-archive-box',
+      onTap: (ctx) => archiveUser(ctx.itemMap),
+    ),
+    DatatableAction(
+      label: 'Delete',
+      iconClass: 'ph ph-trash',
+      overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
+      onTap: (ctx) => deleteUser(ctx.itemMap),
+    ),
+  ],
+)
+```
+
+Set `maxVisibleActions: 0` when the whole column should behave like an actions dropdown while still reusing the same declarative `DatatableAction` definitions.
+
 `DatatableActionColumn` is excluded from built-in PDF/XLSX exports by default. If a specific action column really needs to appear in exports, opt in explicitly with `exportable: true` on the column.
 
 If the same actions also appear in default grid/card footers, keep the default `containerClass` or move to `justify-content-start` when you want a left-aligned operational footer. A `containerClass` such as `justify-content-center w-100` is useful only when the design intentionally calls for centered action groups.
