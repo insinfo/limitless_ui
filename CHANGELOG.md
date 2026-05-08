@@ -2,6 +2,7 @@
 
 - Expanded `DatatableAction` and `DatatableActionColumn` with overflow-menu APIs for dense action columns: `DatatableActionOverflowBehavior` (`auto`, `alwaysVisible`, `overflowMenu`), `maxVisibleActions`, customizable overflow trigger/menu styling (`overflowButtonClass`, `overflowButtonIconClass`, `overflowButtonLabel`, `overflowButtonIconOnly`, `overflowMenuClass`, `overflowButtonAriaLabel`, `overflowButtonTitle`), plus a body-anchored Popper overflow menu that escapes clipped datatable containers and regression coverage for mixed inline-plus-dropdown action sets and full-dropdown action columns.
 - Expanded the `protocol-workflow` example to demonstrate the new `DatatableActionColumn` overflow API with always-visible primary actions, mixed inline actions, and secondary actions moved into the dropdown menu for dense desktop/mobile operational tables.
+- Fixed sticky/frozen datatable columns to render with an opaque theme surface instead of inheriting the Limitless table transparency token, so right/left fixed cells no longer look leaked in light and dark themes while still preserving row hover/striped/active overlays.
 
 ## 1.0.0-dev.17
 
