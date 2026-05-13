@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:js_util' as js_util;
 
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
@@ -799,9 +800,16 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
 
   bool get _canUseHoverInteraction {
     try {
-      return html.window
+      final supportsFineHover = html.window
           .matchMedia('(hover: hover) and (pointer: fine)')
           .matches;
+      if (supportsFineHover) {
+        return true;
+      }
+
+      final maxTouchPoints =
+          js_util.getProperty(html.window.navigator, 'maxTouchPoints');
+      return maxTouchPoints is! num || maxTouchPoints <= 0;
     } catch (_) {
       return true;
     }
