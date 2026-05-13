@@ -175,10 +175,10 @@
                           {{ toggleStatusBarLabel }}
                         </button>
 
-                        <div liDropdownSubmenu placement="start" class="user-menu-dropdown-submenu">
+                        <div liDropdownSubmenu #themeSubmenu="liDropdownSubmenu" placement="start" class="user-menu-dropdown-submenu">
                           <button liDropdownItem liDropdownSubmenuToggle type="button"
                                   class="user-menu-submenu-toggle"
-                                  [class.active]="selectedSubmenuTheme.isNotEmpty">
+                                  [class.active]="themeSubmenu.isOpen || selectedSubmenuTheme.isNotEmpty">
                             <i class="ph ph-palette me-2"></i>
                             {{ themeMenuLabel }}
                           </button>

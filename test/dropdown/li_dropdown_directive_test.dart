@@ -48,7 +48,8 @@ import 'li_dropdown_directive_test.template.dart' as ng;
         <div id="submenu-menu" class="dropdown-menu-end" liDropdownMenu>
           <button id="submenu-profile" liDropdownItem>Profile</button>
 
-          <div id="theme-submenu" liDropdownSubmenu placement="start">
+          <div id="theme-submenu" liDropdownSubmenu placement="start"
+              (openChange)="onSubmenuOpenChange(\$event)">
             <button id="theme-submenu-toggle" liDropdownItem liDropdownSubmenuToggle>
               Theme
             </button>
@@ -79,7 +80,13 @@ import 'li_dropdown_directive_test.template.dart' as ng;
     LiDropdownSubmenuMenuDirective,
   ],
 )
-class DropdownTestHostComponent {}
+class DropdownTestHostComponent {
+  final List<bool> submenuOpenEvents = <bool>[];
+
+  void onSubmenuOpenChange(bool open) {
+    submenuOpenEvents.add(open);
+  }
+}
 
 void main() {
   tearDown(disposeAnyRunningTest);
@@ -236,6 +243,38 @@ void main() {
     expect(submenuMenu!.classes.contains('show'), isTrue);
   });
 
+  test('submenu nao fecha quando hover sintetico precede o click', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final rootToggle = fixture.rootElement.querySelector('#submenu-toggle');
+    final submenuHost = fixture.rootElement.querySelector('#theme-submenu');
+    final submenuToggle =
+        fixture.rootElement.querySelector('#theme-submenu-toggle');
+    final submenuMenu =
+        fixture.rootElement.querySelector('#theme-submenu-menu');
+
+    await fixture.update((_) {
+      rootToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      submenuHost!.dispatchEvent(html.MouseEvent('mouseenter'));
+    });
+    await _settle(fixture);
+
+    expect(submenuHost!.classes.contains('show'), isTrue);
+    expect(submenuMenu!.classes.contains('show'), isTrue);
+
+    await fixture.update((_) {
+      submenuToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(submenuHost.classes.contains('show'), isTrue);
+    expect(submenuMenu.classes.contains('show'), isTrue);
+  });
+
   test('closed submenu items are skipped by parent keyboard navigation',
       () async {
     final fixture = await testBed.create();
@@ -296,6 +335,66 @@ void main() {
 
     expect(rootMenu!.classes.contains('show'), isFalse);
     expect(submenuHost!.classes.contains('show'), isFalse);
+  });
+
+  test('submenu start abre com ArrowLeft e fecha com ArrowRight', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final rootToggle = fixture.rootElement.querySelector('#submenu-toggle');
+    final submenuHost = fixture.rootElement.querySelector('#theme-submenu');
+    final submenuToggle =
+        fixture.rootElement.querySelector('#theme-submenu-toggle');
+    final submenuItem = fixture.rootElement.querySelector('#theme-light');
+
+    await fixture.update((_) {
+      rootToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      submenuToggle!.focus();
+      _dispatchKey(submenuToggle, 'ArrowLeft');
+    });
+    await _settle(fixture);
+
+    expect(submenuHost!.classes.contains('show'), isTrue);
+    expect(html.document.activeElement?.id, 'theme-light');
+
+    await fixture.update((_) {
+      _dispatchKey(submenuItem!, 'ArrowRight');
+    });
+    await _settle(fixture);
+
+    expect(submenuHost.classes.contains('show'), isFalse);
+    expect(html.document.activeElement?.id, 'theme-submenu-toggle');
+  });
+
+  test('submenu emite openChange para estado controlado pelo consumidor',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final rootToggle = fixture.rootElement.querySelector('#submenu-toggle');
+    final submenuToggle =
+        fixture.rootElement.querySelector('#theme-submenu-toggle');
+    final submenuItem = fixture.rootElement.querySelector('#theme-light');
+
+    await fixture.update((_) {
+      rootToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      submenuToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      submenuItem!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.submenuOpenEvents, <bool>[true, false]);
   });
 }
 

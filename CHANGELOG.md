@@ -1,3 +1,8 @@
+## 1.0.0-dev.19
+
+- Fixed `DatatableFormat.boolHighlightedBadge` in the `saliPaged` performance profile so positive boolean cells render the Bootstrap badge element instead of escaping the generated `<span>` as plain text.
+- Improved `liDropdown` submenus for dense account/navigation menus with bindable submenu state (`open`/`openChange`), optional `closeOnItemClick`, and keyboard navigation that respects `placement="start"` left-opening submenus.
+
 ## 1.0.0-dev.18
 
 - Expanded `DatatableAction` and `DatatableActionColumn` with overflow-menu APIs for dense action columns: `DatatableActionOverflowBehavior` (`auto`, `alwaysVisible`, `overflowMenu`), `maxVisibleActions`, customizable overflow trigger/menu styling (`overflowButtonClass`, `overflowButtonIconClass`, `overflowButtonLabel`, `overflowButtonIconOnly`, `overflowMenuClass`, `overflowButtonAriaLabel`, `overflowButtonTitle`), plus a body-anchored Popper overflow menu that escapes clipped datatable containers and regression coverage for mixed inline-plus-dropdown action sets and full-dropdown action columns.

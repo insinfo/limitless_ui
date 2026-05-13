@@ -102,7 +102,7 @@ class DropdownPageComponent {
   <div class="dropdown-menu-end" liDropdownMenu>
     <button liDropdownItem>Seu CGM: 140050</button>
 
-    <div liDropdownSubmenu placement="start">
+    <div liDropdownSubmenu #themeSubmenu="liDropdownSubmenu" placement="start">
       <button liDropdownItem liDropdownSubmenuToggle>
         Tema
       </button>

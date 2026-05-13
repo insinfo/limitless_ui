@@ -2193,18 +2193,57 @@ The menu closes on outside click, `Escape`, or selection depending on `closeOnSe
 
 By default, opening one `li-dropdown-menu` closes other open instances first, which is usually the right behavior for headers and action toolbars. Set `closeOtherMenusOnOpen="false"` only for special cases such as submenu-like compositions or coordinated multi-panel controls.
 
+### Declarative Dropdown Structure
+
+Use the lower-level `liDropdown` directives when the menu contains custom markup, account blocks, dividers, explanatory text, or nested submenus. This API intentionally follows the Bootstrap/Limitless dropdown DOM contract: the dropdown host owns one toggle/anchor and one menu.
+
+Keep this structure tight:
+
+```html
+<div liDropdown placement="bottom-end" container="body">
+  <button type="button" liDropdownToggle class="navbar-nav-link rounded-pill">
+    Account
+  </button>
+
+  <div liDropdownMenu class="dropdown-menu-end">
+    <button type="button" liDropdownItem>Profile</button>
+    <div class="dropdown-divider"></div>
+    <button type="button" liDropdownItem>Logout</button>
+  </div>
+</div>
+```
+
+The menu element should be the element with `liDropdownMenu`. Put placement classes such as `dropdown-menu-end` on that same element. Avoid wrapping `liDropdownMenu` inside extra positioned containers unless the wrapper is part of the dropdown host itself; extra wrappers are the most common reason a menu appears offset, clipped, or aligned to the wrong node.
+
+Do not mix `liDropdownToggle` with Bootstrap's `data-bs-toggle="dropdown"` for the same menu. Let `liDropdown` own the open state, `.show` classes, keyboard handling, outside click behavior, and Popper positioning.
+
+`display` defaults to `static` inside a `.navbar` and `dynamic` elsewhere. Static navbar dropdowns rely on the Limitless/Bootstrap CSS flow and usually work well for simple header menus. Use `display="dynamic"` when the menu must be positioned by Popper, especially for custom app bars, right-aligned account menus, or cases where the trigger is not inside a normal Bootstrap navbar flow.
+
+Use `container="body"` when the dropdown is declared inside a scrollable or clipped area such as a table, sidebar, card, modal body, `overflow: hidden`, or `overflow: auto` container. In this mode the menu is temporarily moved under `document.body` while open, so it escapes clipping and stacking-context bugs. The tradeoff is that component-scoped styles from the original parent may no longer reach the menu; use global classes, `dropdownClass`, or classes directly on `liDropdownMenu` for menu styling that must survive body mounting.
+
+Use inline rendering only when the menu should stay in the local DOM flow:
+
+```html
+<div liDropdown container="inline" display="static">
+  <button type="button" liDropdownToggle>Local menu</button>
+  <div liDropdownMenu>...</div>
+</div>
+```
+
+For account menus like SALI/Portal, prefer this pattern: `liDropdown` on the `li.nav-item` or a compact wrapper, `liDropdownToggle` on the clickable avatar/name button, and `liDropdownMenu` directly inside that same host. Put submenus inside the menu, not as sibling dropdowns.
+
 ### Dropdown Submenus
 
 When you need richer account menus or nested action trees, keep using the declarative dropdown API and add the submenu directives on top of it.
 
 ```html
-<div liDropdown>
+<div liDropdown placement="bottom-end" container="body" display="dynamic">
   <button liDropdownToggle>Account</button>
   <div class="dropdown-menu-end" liDropdownMenu>
     <button liDropdownItem>Profile</button>
 
-    <div liDropdownSubmenu placement="start">
-      <button liDropdownItem liDropdownSubmenuToggle>
+    <div liDropdownSubmenu #themeSubmenu="liDropdownSubmenu" placement="start">
+      <button liDropdownItem liDropdownSubmenuToggle [class.active]="themeSubmenu.isOpen">
         Theme
       </button>
 
@@ -2218,6 +2257,10 @@ When you need richer account menus or nested action trees, keep using the declar
 ```
 
 `liDropdownSubmenuToggle` opens the nested menu without collapsing the parent dropdown, while nested `liDropdownItem` elements remain part of the same keyboard navigation model only when that submenu is open.
+
+`placement="start"` opens the submenu to the left, which is usually what right-aligned account menus need near the viewport edge. Keyboard navigation follows the visual direction: for `placement="start"`, `ArrowLeft` opens the submenu and `ArrowRight` returns to the parent toggle. For the default end placement, the directions are reversed.
+
+Submenus expose `open`, `openChange`, `openOnHover`, `closeOnItemClick`, and the exported instance `#submenu="liDropdownSubmenu"`. Use these instead of maintaining parallel `.show` flags in application code.
 
 ### Scrollspy
 

@@ -549,7 +549,8 @@ class LiDropdownMenuDirective implements OnInit, OnDestroy {
 )
 class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   LiDropdownSubmenuDirective(
-    this.hostElement, [
+    this.hostElement,
+    this._changeDetectorRef, [
     @Optional() this.dropdown,
   ]);
 
@@ -557,7 +558,10 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
       <LiDropdownSubmenuDirective>[];
 
   final html.Element hostElement;
+  final ChangeDetectorRef _changeDetectorRef;
   final LiDropdownDirective? dropdown;
+  final StreamController<bool> _openChangeController =
+      StreamController<bool>.broadcast();
 
   LiDropdownSubmenuToggleDirective? _toggle;
   LiDropdownSubmenuMenuDirective? _menu;
@@ -565,6 +569,7 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   StreamSubscription<html.MouseEvent>? _documentClickSubscription;
 
   bool _open = false;
+  bool _openedByHover = false;
 
   @Input()
   String placement = 'end';
@@ -572,7 +577,28 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   @Input()
   bool openOnHover = true;
 
+  @Input()
+  bool closeOnItemClick = true;
+
+  @Input('open')
+  set opened(bool value) {
+    if (value) {
+      openSubmenu();
+      return;
+    }
+    closeSubmenu();
+  }
+
+  @Output()
+  Stream<bool> get openChange => _openChangeController.stream;
+
   bool get isOpen => _open;
+
+  bool get opensTowardStart => placement.trim().toLowerCase() == 'start';
+
+  String get openKeyboardKey => opensTowardStart ? 'ArrowLeft' : 'ArrowRight';
+
+  String get closeKeyboardKey => opensTowardStart ? 'ArrowRight' : 'ArrowLeft';
 
   @HostBinding('class.dropdown-submenu')
   bool hostDropdownSubmenuClass = true;
@@ -618,6 +644,11 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
 
   void toggleSubmenu({bool focusFirstItem = false}) {
     if (_open) {
+      if (_openedByHover) {
+        _openedByHover = false;
+        return;
+      }
+
       closeSubmenu();
       return;
     }
@@ -625,11 +656,24 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
     openSubmenu(focusFirstItem: focusFirstItem);
   }
 
-  void openSubmenu({bool focusFirstItem = false}) {
+  void openSubmenu({bool focusFirstItem = false, bool openedByHover = false}) {
+    if (_open) {
+      if (openedByHover) {
+        _openedByHover = true;
+      }
+      if (focusFirstItem) {
+        focusFirstItemInMenu();
+      }
+      return;
+    }
+
     _closeSiblingSubmenus();
     _open = true;
+    _openedByHover = openedByHover;
     _registerAsOpenSubmenu();
     _bindDocumentClick();
+    _openChangeController.add(true);
+    _changeDetectorRef.markForCheck();
 
     if (focusFirstItem) {
       focusFirstItemInMenu();
@@ -642,9 +686,12 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
     }
 
     _open = false;
+    _openedByHover = false;
     _unregisterAsOpenSubmenu();
     _closeDescendantSubmenus();
     _unbindDocumentClick();
+    _openChangeController.add(false);
+    _changeDetectorRef.markForCheck();
 
     if (focusToggle) {
       _toggle?.nativeElement.focus();
@@ -691,7 +738,7 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
       final clickedToggle =
           target.closest('.li-dropdown-submenu__toggle') != null;
       final clickedMenuItem = target.closest('.dropdown-item') != null;
-      if (!clickedToggle && clickedMenuItem) {
+      if (closeOnItemClick && !clickedToggle && clickedMenuItem) {
         closeSubmenu();
       }
     });
@@ -738,15 +785,25 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
 
   @HostListener('mouseenter')
   void onMouseEnter() {
-    if (openOnHover) {
-      openSubmenu();
+    if (openOnHover && _canUseHoverInteraction) {
+      openSubmenu(openedByHover: true);
     }
   }
 
   @HostListener('mouseleave')
   void onMouseLeave() {
-    if (openOnHover) {
+    if (openOnHover && _canUseHoverInteraction) {
       closeSubmenu();
+    }
+  }
+
+  bool get _canUseHoverInteraction {
+    try {
+      return html.window
+          .matchMedia('(hover: hover) and (pointer: fine)')
+          .matches;
+    } catch (_) {
+      return true;
     }
   }
 
@@ -754,6 +811,7 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   void ngOnDestroy() {
     closeSubmenu();
     _dropdownOpenChangeSubscription?.cancel();
+    _openChangeController.close();
   }
 }
 
@@ -793,12 +851,20 @@ class LiDropdownSubmenuToggleDirective implements OnInit, OnDestroy {
     switch (_normalizedDropdownKey(event)) {
       case ' ':
       case 'Enter':
-      case 'ArrowRight':
         submenu.openSubmenu(focusFirstItem: true);
         event.preventDefault();
         event.stopPropagation();
         return;
+      case 'ArrowRight':
       case 'ArrowLeft':
+        if (_normalizedDropdownKey(event) == submenu.openKeyboardKey) {
+          submenu.openSubmenu(focusFirstItem: true);
+        } else {
+          submenu.closeSubmenu(focusToggle: true);
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        return;
       case 'Escape':
         submenu.closeSubmenu(focusToggle: true);
         event.preventDefault();
@@ -845,10 +911,19 @@ class LiDropdownSubmenuMenuDirective implements OnInit, OnDestroy {
   void onKeyDown(html.KeyboardEvent event) {
     switch (_normalizedDropdownKey(event)) {
       case 'Escape':
-      case 'ArrowLeft':
         submenu.closeSubmenu(focusToggle: true);
         event.preventDefault();
         event.stopPropagation();
+        return;
+      case 'ArrowRight':
+      case 'ArrowLeft':
+        if (_normalizedDropdownKey(event) == submenu.closeKeyboardKey) {
+          submenu.closeSubmenu(focusToggle: true);
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+        dropdown.onKeyDown(event);
         return;
       default:
         dropdown.onKeyDown(event);

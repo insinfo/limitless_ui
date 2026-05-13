@@ -313,11 +313,18 @@ class DatatableRowBuilder {
       itemInstance: itemInstance,
     );
 
-    final htmlElement = colDefinition.customRenderHtml != null
+    final customHtmlElement = colDefinition.customRenderHtml != null
         ? colDefinition.customRenderHtml!(itemMap, itemInstance)
         : null;
+    final formattedHtmlElement = customHtmlElement == null
+        ? _resolveFormattedHtmlElement(
+            value: rawValue,
+            format: colDefinition.format,
+          )
+        : null;
+    final htmlElement = customHtmlElement ?? formattedHtmlElement;
 
-    final value = htmlElement != null
+    final value = customHtmlElement != null
         ? ''
         : _normalizeDisplayValue(
             value: rawValue,
@@ -406,8 +413,7 @@ class DatatableRowBuilder {
     switch (format) {
       case DatatableFormat.boolHighlightedBadge:
         if (normalized is bool) {
-          normalized =
-              normalized ? '<span class="badge bg-primary">Sim</span>' : 'Não';
+          normalized = normalized ? 'Sim' : 'Não';
         }
         break;
       case DatatableFormat.bool:
@@ -453,6 +459,30 @@ class DatatableRowBuilder {
     }
 
     return normalized?.toString() ?? '';
+  }
+
+  Element? _resolveFormattedHtmlElement({
+    required dynamic value,
+    required DatatableFormat? format,
+  }) {
+    switch (format) {
+      case DatatableFormat.boolHighlightedBadge:
+        if (value is bool && value) {
+          return SpanElement()
+            ..className = 'badge bg-primary'
+            ..text = 'Sim';
+        }
+        break;
+      case DatatableFormat.bool:
+      case DatatableFormat.date:
+      case DatatableFormat.dateTime:
+      case DatatableFormat.dateTimeShort:
+      case DatatableFormat.text:
+      case null:
+        break;
+    }
+
+    return null;
   }
 
   void _decorateRow({

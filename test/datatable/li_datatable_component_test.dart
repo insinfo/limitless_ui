@@ -2338,6 +2338,111 @@ void main() {
     expect(_maxDetailInt(drawEvents, 'actionButtons'), 2);
   });
 
+  test('perfil saliPaged renderiza boolHighlightedBadge como badge HTML',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.performanceProfile = DatatablePerformanceProfile.saliPaged;
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(
+            key: 'digital',
+            title: 'Digital',
+            format: DatatableFormat.boolHighlightedBadge,
+          ),
+        ],
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{'nome': 'Ana', 'digital': true},
+          <String, dynamic>{'nome': 'Bruno', 'digital': false},
+        ],
+        totalRecords: 2,
+      );
+    });
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+    final trueCell = fixture.rootElement.querySelector(
+      'tbody tr[data-index="0"] td[data-label="datatable_col_1"]',
+    ) as TableCellElement?;
+    final falseCell = fixture.rootElement.querySelector(
+      'tbody tr[data-index="1"] td[data-label="datatable_col_1"]',
+    ) as TableCellElement?;
+
+    expect(host.table!.isSaliPagedPerformanceProfile, isTrue);
+    expect(host.table!.rows.first.columns[1].htmlElement, isNotNull);
+    expect(host.table!.rows[1].columns[1].htmlElement, isNull);
+    expect(trueCell, isNotNull);
+    expect(falseCell, isNotNull);
+    expect(trueCell!.querySelector('.badge.bg-primary'), isNotNull);
+    expect(trueCell.text?.trim(), 'Sim');
+    expect(falseCell!.text?.trim(), 'Não');
+    expect(fixture.text, isNot(contains('<span')));
+  });
+
+  test('demais formatadores padrao permanecem texto puro no saliPaged',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.performanceProfile = DatatablePerformanceProfile.saliPaged;
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+              key: 'ativo', title: 'Ativo', format: DatatableFormat.bool),
+          DatatableCol(
+              key: 'data', title: 'Data', format: DatatableFormat.date),
+          DatatableCol(
+            key: 'dataHora',
+            title: 'Data hora',
+            format: DatatableFormat.dateTime,
+          ),
+          DatatableCol(
+            key: 'dataHoraCurta',
+            title: 'Data hora curta',
+            format: DatatableFormat.dateTimeShort,
+          ),
+          DatatableCol(
+              key: 'texto', title: 'Texto', format: DatatableFormat.text),
+        ],
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'ativo': true,
+            'data': '2026-05-13T10:20:30',
+            'dataHora': '2026-05-13T10:20:30',
+            'dataHoraCurta': '2026-05-13T10:20:30',
+            'texto': 'Texto simples',
+          },
+        ],
+        totalRecords: 1,
+      );
+    });
+    await _settleTable(fixture);
+
+    final host = fixture.assertOnlyInstance;
+    final renderedValues = host.table!.rows.single.columns
+        .map((column) => column.value)
+        .toList(growable: false);
+
+    expect(host.table!.isSaliPagedPerformanceProfile, isTrue);
+    expect(
+      host.table!.rows.single.columns
+          .every((column) => column.htmlElement == null),
+      isTrue,
+    );
+    expect(renderedValues, <String>[
+      'Sim',
+      '13/05/2026',
+      '13/05/2026 10:20:30',
+      '13/05/2026 10:20',
+      'Texto simples',
+    ]);
+    expect(fixture.text, isNot(contains('<span')));
+  });
+
   test('suporta ação com aparência link-icon sem fundo', () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
       component.searchInFields = <DatatableSearchField>[];
@@ -2379,8 +2484,7 @@ void main() {
     expect(actionButton.text?.trim(), isEmpty);
   });
 
-  test('mantem acoes fixas visiveis e envia excedente para dropdown',
-      () async {
+  test('mantem acoes fixas visiveis e envia excedente para dropdown', () async {
     var opened = 0;
     var archived = 0;
     var deleted = 0;
@@ -2398,8 +2502,7 @@ void main() {
               DatatableAction(
                 label: 'Visualizar',
                 iconClass: 'ph ph-eye',
-                overflowBehavior:
-                    DatatableActionOverflowBehavior.alwaysVisible,
+                overflowBehavior: DatatableActionOverflowBehavior.alwaysVisible,
                 onTap: (_) {
                   opened++;
                 },
@@ -2414,8 +2517,7 @@ void main() {
               DatatableAction(
                 label: 'Excluir',
                 iconClass: 'ph ph-trash',
-                overflowBehavior:
-                    DatatableActionOverflowBehavior.overflowMenu,
+                overflowBehavior: DatatableActionOverflowBehavior.overflowMenu,
                 onTap: (_) {
                   deleted++;
                 },
@@ -2471,7 +2573,8 @@ void main() {
     expect(closedOverflowMenu!.classes.contains('show'), isFalse);
   });
 
-  test('permite enviar todas as actions para dropdown com maxVisibleActions zero',
+  test(
+      'permite enviar todas as actions para dropdown com maxVisibleActions zero',
       () async {
     final fixture = await testBed.create(beforeChangeDetection: (component) {
       component.searchInFields = <DatatableSearchField>[];
