@@ -2201,7 +2201,10 @@ Keep this structure tight:
 
 ```html
 <div liDropdown placement="bottom-end" container="body">
-  <button type="button" liDropdownToggle class="navbar-nav-link rounded-pill">
+  <button type="button"
+          liDropdownToggle
+          liDropdownShowCaret="false"
+          class="navbar-nav-link rounded-pill">
     Account
   </button>
 
@@ -2216,6 +2219,8 @@ Keep this structure tight:
 The menu element should be the element with `liDropdownMenu`. Put placement classes such as `dropdown-menu-end` on that same element. Avoid wrapping `liDropdownMenu` inside extra positioned containers unless the wrapper is part of the dropdown host itself; extra wrappers are the most common reason a menu appears offset, clipped, or aligned to the wrong node.
 
 Do not mix `liDropdownToggle` with Bootstrap's `data-bs-toggle="dropdown"` for the same menu. Let `liDropdown` own the open state, `.show` classes, keyboard handling, outside click behavior, and Popper positioning.
+
+`liDropdownToggle` and `liDropdownAnchor` expose `liDropdownShowCaret` (default: `true`). Set `liDropdownShowCaret="false"` when you need navbar/avatar triggers without the theme caret pseudo-element (`.dropdown-toggle::after`).
 
 `display` defaults to `static` inside a `.navbar` and `dynamic` elsewhere. Static navbar dropdowns rely on the Limitless/Bootstrap CSS flow and usually work well for simple header menus. Use `display="dynamic"` when the menu must be positioned by Popper, especially for custom app bars, right-aligned account menus, or cases where the trigger is not inside a normal Bootstrap navbar flow.
 

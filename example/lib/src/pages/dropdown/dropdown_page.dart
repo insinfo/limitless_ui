@@ -115,6 +115,18 @@ class DropdownPageComponent {
   </div>
 </div>''';
 
+  static const String navbarNoCaretApiSnippet = '''
+<div liDropdown class="nav-item">
+  <a class="nav-link" href="" liDropdownToggle liDropdownShowCaret="false">
+    Conta
+  </a>
+
+  <div class="dropdown-menu-end" liDropdownMenu>
+    <button liDropdownItem>Perfil</button>
+    <button liDropdownItem>Cobranca</button>
+  </div>
+</div>''';
+
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;
 
@@ -376,8 +388,8 @@ class DropdownPageComponent {
   String get navbarTitle =>
       _isPt ? 'Exibição estática em navbar' : 'Static display in navbar';
   String get navbarBody => _isPt
-      ? 'Dentro de navbar, o display padrão vira estático para preservar o comportamento responsivo.'
-      : 'Inside a navbar, the default display becomes static to preserve responsive behavior.';
+      ? 'Dentro de navbar, o display padrão vira estático para preservar o comportamento responsivo. Use liDropdownShowCaret="false" quando quiser remover a seta padrão do toggle.'
+      : 'Inside a navbar, the default display becomes static to preserve responsive behavior. Use liDropdownShowCaret="false" when you want to remove the default toggle caret.';
   String get compactMenuTitle =>
       _isPt ? 'li-dropdown-menu coexistindo' : 'Coexisting li-dropdown-menu';
   String get compactMenuBody => _isPt
@@ -459,6 +471,7 @@ class DropdownPageComponent {
           'liDropdown controla estado aberto, autoClose, placement e container.',
           'liDropdownAnchor fornece a âncora visual sem alternar o estado por clique.',
           'liDropdownToggle alterna o menu por clique e por teclado.',
+          'liDropdownShowCaret permite ocultar a classe dropdown-toggle (e o caret ::after do tema) em gatilhos de avatar/navbar.',
           'liDropdownMenu recebe classes de menu e delega a navegação por teclado.',
           'liDropdownItem marca itens focáveis e retira itens desabilitados da rotação.',
           'liDropdownSubmenu, liDropdownSubmenuToggle e liDropdownSubmenuMenu permitem submenus reaproveitáveis sem fechar o dropdown pai ao acionar o toggle do submenu.',
@@ -468,6 +481,7 @@ class DropdownPageComponent {
           'liDropdown controls open state, autoClose, placement, and container.',
           'liDropdownAnchor provides the visual anchor without toggling the state on click.',
           'liDropdownToggle toggles the menu by click and keyboard.',
+          'liDropdownShowCaret lets you hide the dropdown-toggle class (and the theme caret ::after) on avatar/navbar triggers.',
           'liDropdownMenu receives menu classes and delegates keyboard navigation.',
           'liDropdownItem marks focusable items and removes disabled items from rotation.',
           'liDropdownSubmenu, liDropdownSubmenuToggle, and liDropdownSubmenuMenu provide reusable submenus without collapsing the parent dropdown when the submenu toggle is activated.',

@@ -951,8 +951,17 @@ class LiDropdownAnchorDirective implements OnInit, OnDestroy {
   final LiDropdownDirective dropdown;
   final html.Element nativeElement;
 
+  bool _showCaret = true;
+
+  @Input('liDropdownShowCaret')
+  set showCaretInput(Object? value) {
+    _showCaret = _coerceDropdownBoolean(value, defaultValue: true);
+  }
+
+  bool get showCaret => _showCaret;
+
   @HostBinding('class.dropdown-toggle')
-  bool hostDropdownToggleClass = true;
+  bool get hostDropdownToggleClass => _showCaret;
 
   @HostBinding('class.show')
   bool get hostShowClass => dropdown.isOpen();
@@ -1042,6 +1051,31 @@ class LiDropdownItemDirective implements OnInit, OnDestroy {
   void ngOnDestroy() {
     dropdown.unregisterItem(this);
   }
+}
+
+bool _coerceDropdownBoolean(Object? value, {required bool defaultValue}) {
+  if (value == null) {
+    return defaultValue;
+  }
+
+  if (value is bool) {
+    return value;
+  }
+
+  final normalized = value.toString().trim().toLowerCase();
+  if (normalized.isEmpty) {
+    return defaultValue;
+  }
+
+  if (normalized == 'false' || normalized == '0' || normalized == 'no') {
+    return false;
+  }
+
+  if (normalized == 'true' || normalized == '1' || normalized == 'yes') {
+    return true;
+  }
+
+  return defaultValue;
 }
 
 @Directive(selector: 'button[liDropdownItem]')

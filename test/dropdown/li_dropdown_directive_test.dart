@@ -43,6 +43,16 @@ import 'li_dropdown_directive_test.template.dart' as ng;
         </div>
       </div>
 
+      <div id="caret-dropdown" liDropdown>
+        <button id="caret-toggle" liDropdownToggle>Caret default</button>
+        <button id="no-caret-toggle" liDropdownToggle liDropdownShowCaret="false">
+          Caret disabled
+        </button>
+        <div id="caret-menu" liDropdownMenu>
+          <button id="caret-item-1" liDropdownItem>Item</button>
+        </div>
+      </div>
+
       <div id="submenu-dropdown" liDropdown>
         <button id="submenu-toggle" liDropdownToggle>User</button>
         <div id="submenu-menu" class="dropdown-menu-end" liDropdownMenu>
@@ -214,6 +224,20 @@ void main() {
 
     expect(dropdown!.contains(menu), isFalse);
     expect(html.document.body!.contains(menu), isTrue);
+  });
+
+  test('liDropdownShowCaret controls dropdown-toggle class on trigger',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final defaultToggle = fixture.rootElement.querySelector('#caret-toggle');
+    final noCaretToggle =
+        fixture.rootElement.querySelector('#no-caret-toggle');
+
+    expect(defaultToggle, isNotNull);
+    expect(noCaretToggle, isNotNull);
+    expect(defaultToggle!.classes.contains('dropdown-toggle'), isTrue);
+    expect(noCaretToggle!.classes.contains('dropdown-toggle'), isFalse);
   });
 
   test('submenu toggle opens nested menu without closing parent dropdown',

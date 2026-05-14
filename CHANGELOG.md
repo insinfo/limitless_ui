@@ -1,3 +1,7 @@
+## 1.0.0-dev.20
+
+- Added `liDropdownShowCaret` to `liDropdownToggle`/`liDropdownAnchor` so navbar and avatar triggers can opt out of the default `dropdown-toggle` caret (`::after`) without local CSS overrides, plus dropdown demo and README documentation for the no-caret navbar pattern.
+
 ## 1.0.0-dev.19
 
 - Fixed `DatatableFormat.boolHighlightedBadge` in the `saliPaged` performance profile so positive boolean cells render the Bootstrap badge element instead of escaping the generated `<span>` as plain text.

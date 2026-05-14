@@ -130,7 +130,7 @@
 
                   <nav class="navbar navbar-light bg-light border rounded-3 px-3 py-2">
                     <div liDropdown class="nav-item">
-                      <a class="nav-link" href="" liDropdownToggle>{{ navbarDropdownLabel }}</a>
+                      <a class="nav-link" href="" liDropdownToggle liDropdownShowCaret="false">{{ navbarDropdownLabel }}</a>
                       <div class="dropdown-menu-end" liDropdownMenu>
                         <button liDropdownItem>{{ profileLabel }}</button>
                         <button liDropdownItem>{{ billingLabel }}</button>
@@ -150,6 +150,7 @@
                       <a class="navbar-nav-link align-items-center rounded-pill cursor-pointer p-0 d-inline-flex"
                          href=""
                          liDropdownToggle
+                         liDropdownShowCaret="false"
                          [attr.aria-label]="accountMenuLabel">
                         <span class="status-indicator-container me-2 position-relative d-inline-flex">
                           <span class="bg-primary text-white rounded-pill d-inline-flex align-items-center justify-content-center"
@@ -352,6 +353,10 @@
 
             <div class="mb-3">
               <li-highlight [code]="submenuApiSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mb-3">
+              <li-highlight [code]="navbarNoCaretApiSnippet" language="html"></li-highlight>
             </div>
 
             <li-highlight [code]="manualApiSnippet" language="html"></li-highlight>
