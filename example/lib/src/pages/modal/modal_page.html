@@ -72,6 +72,15 @@
                     </tr>
                     <tr>
                       <td>
+                        <div class="fw-semibold">{{ shortViewportCardTitle }}</div>
+                        <div class="text-muted fs-sm">{{ shortViewportCardBody }}</div>
+                      </td>
+                      <td><button class="btn btn-outline-primary btn-sm" type="button" (click)="openShortViewportModal()">{{ shortViewportOpenButton }}</button></td>
+                      <td><code>closeOnBackdropClick</code>, {{ rootScrollbarLabel }}</td>
+                      <td>{{ isPortuguese ? 'Use com viewport baixa para validar que a barra de rolagem não é tratada como backdrop.' : 'Use with a short viewport to verify that the scrollbar is not treated as the backdrop.' }}</td>
+                    </tr>
+                    <tr>
+                      <td>
                         <div class="fw-semibold">{{ smallHeaderCardTitle }}</div>
                         <div class="text-muted fs-sm">{{ smallHeaderCardBody }}</div>
                       </td>
@@ -287,6 +296,7 @@
                     <li><code>open()</code> e <code>close()</code> controlam o ciclo de vida de forma imperativa.</li>
                     <li><code>start-open</code> inicializa o modal já aberto quando o fluxo pede atenção imediata.</li>
                     <li><code>enableShadow</code> ajuda a destacar o bloco em páginas densas.</li>
+                    <li>A área da scrollbar do root é ignorada pelo fechamento de backdrop; o modal só fecha em clique real fora do diálogo.</li>
                     <li><code>modal-full</code> já ocupa <code>100vw x 100dvh</code>; <code>fullScreenShell</code> não aumenta o tamanho, só remove o visual de modal-cartão e deixa o componente com cara de tela inteira.</li>
                   </ul>
                 </div>
@@ -341,6 +351,9 @@
 
                   <h6 class="mb-2 mt-4">{{ advancedSnippetTitle }}</h6>
                   <li-highlight [code]="advancedSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-2 mt-4">{{ shortViewportCardTitle }}</h6>
+                  <li-highlight [code]="shortViewportSnippet" language="html"></li-highlight>
 
                   <h6 class="mb-2 mt-4">{{ sizeSnippetTitle }}</h6>
                   <li-highlight [code]="sizesSnippet" language="html"></li-highlight>
@@ -462,6 +475,55 @@
     <p *ngFor="let index of scrollLines">{{ t.pages.modal.scrollableLine(index) }}</p>
     <div class="text-end">
       <button class="btn btn-primary" type="button" (click)="scrollableModal?.close()">{{ t.pages.modal.understood }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #shortViewportModal
+            [title-text]="shortViewportModalTitle"
+            headerColor="primary"
+            size="fluid"
+            [lazyContent]="true"
+            [enableShadow]="true"
+            [closeOnBackdropClick]="true"
+            (close)="onModalClosed('Modal de viewport baixo')">
+    <div class="modal-demo-short-viewport">
+      <div class="alert alert-primary alert-icon-start mb-4">
+        <span class="alert-icon bg-primary text-white">
+          <i class="ph-arrows-down-up"></i>
+        </span>
+        {{ shortViewportLead }}
+      </div>
+
+      <div class="modal-demo-short-viewport__grid">
+        <div class="modal-demo-live__panel">
+          <h6 class="mb-3">{{ shortViewportInstructionTitle }}</h6>
+          <ul class="mb-0 ps-3">
+            <li *ngFor="let item of shortViewportInstructions">{{ item }}</li>
+          </ul>
+        </div>
+
+        <div class="modal-demo-live__panel">
+          <h6 class="mb-3">API</h6>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-primary">size="fluid"</span>
+            <span class="badge bg-success">closeOnBackdropClick=true</span>
+            <span class="badge bg-light text-body border">root scrollbar</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-demo-document mt-4">
+        <div class="modal-demo-document__toolbar">
+          <span>{{ isPortuguese ? 'Página 1 / 3' : 'Page 1 / 3' }}</span>
+          <span>100%</span>
+        </div>
+        <div class="modal-demo-document__page">
+          <div class="modal-demo-document__line" *ngFor="let line of documentPreviewLines"></div>
+        </div>
+      </div>
+    </div>
+    <div class="text-end mt-4">
+      <button class="btn btn-primary" type="button" (click)="shortViewportModal?.close()">{{ closeLabel }}</button>
     </div>
   </li-modal>
 

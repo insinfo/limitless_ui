@@ -1,3 +1,8 @@
+## 1.0.0-dev.21
+
+- Fixed `li-modal` backdrop dismissal so interacting with the modal root scrollbar on short viewports no longer closes the dialog as an outside/backdrop click.
+- Added a modal example documenting the short-viewport scrollbar behavior while keeping real backdrop clicks enabled.
+
 ## 1.0.0-dev.20
 
 - Added `liDropdownShowCaret` to `liDropdownToggle`/`liDropdownAnchor` so navbar and avatar triggers can opt out of the default `dropdown-toggle` caret (`::after`) without local CSS overrides, plus dropdown demo and README documentation for the no-caret navbar pattern.

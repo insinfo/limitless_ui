@@ -160,11 +160,7 @@ class LiModalComponent implements OnInit, OnDestroy {
   void ngOnInit() {
     document.body?.append(rootElement);
 
-    rootElement.addEventListener('mousedown', (_) {
-      if (closeOnBackdropClick && _isTopmostModal) {
-        close();
-      }
-    });
+    rootElement.addEventListener('mousedown', _handleRootMouseDown);
 
     if (startOpen) {
       Future<void>.microtask(open);
@@ -173,6 +169,45 @@ class LiModalComponent implements OnInit, OnDestroy {
 
   void stopPropagation(event) {
     event.stopPropagation();
+  }
+
+  void _handleRootMouseDown(Event event) {
+    if (!closeOnBackdropClick || !_isTopmostModal) {
+      return;
+    }
+
+    final target = event.target;
+    if (!identical(target, modalRootElement)) {
+      return;
+    }
+
+    if (event is MouseEvent && _isScrollbarInteraction(event, target)) {
+      return;
+    }
+
+    close();
+  }
+
+  bool _isScrollbarInteraction(MouseEvent event, EventTarget? target) {
+    if (target is! Element) {
+      return false;
+    }
+
+    final rect = target.getBoundingClientRect();
+    final offsetX = event.client.x - rect.left;
+    final offsetY = event.client.y - rect.top;
+    final style = target.getComputedStyle();
+    final hasVerticalScrollbar = target.scrollHeight > target.clientHeight ||
+        target.offsetWidth > target.clientWidth ||
+        style.overflowY == 'auto' ||
+        style.overflowY == 'scroll';
+    final hasHorizontalScrollbar = target.scrollWidth > target.clientWidth ||
+        target.offsetHeight > target.clientHeight ||
+        style.overflowX == 'auto' ||
+        style.overflowX == 'scroll';
+
+    return hasVerticalScrollbar && offsetX >= target.clientWidth ||
+        hasHorizontalScrollbar && offsetY >= target.clientHeight;
   }
 
   DivElement backdropDiv = DivElement();

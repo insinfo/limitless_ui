@@ -186,6 +186,15 @@ class ModalPageComponent {
     [fullScreenOnMobile]="true">
 </li-modal>''';
 
+  static const String shortViewportSnippet = '''
+<li-modal
+    #shortViewportModal
+    title-text="Documento em viewport baixo"
+    size="fluid"
+    [closeOnBackdropClick]="true">
+  <div class="conteudo-alto">...</div>
+</li-modal>''';
+
   static const String sizesSnippet = '''
 <li-modal title-text="Padrão"></li-modal>
 <li-modal title-text="Mini" size="modal-xs"></li-modal>
@@ -251,6 +260,9 @@ void closeReviewModal() {
   @ViewChild('scrollableModal')
   LiModalComponent? scrollableModal;
 
+  @ViewChild('shortViewportModal')
+  LiModalComponent? shortViewportModal;
+
   @ViewChild('warningModal')
   LiModalComponent? warningModal;
 
@@ -297,6 +309,8 @@ void closeReviewModal() {
   LiModalComponent? stackedOverlayChildModal;
 
   final List<int> scrollLines = List<int>.generate(18, (index) => index + 1);
+  final List<int> documentPreviewLines =
+      List<int>.generate(28, (index) => index + 1);
 
   final List<Map<String, dynamic>> modalStatusOptions = <Map<String, dynamic>>[
     <String, dynamic>{'id': 'draft', 'label': 'Draft'},
@@ -434,6 +448,33 @@ void closeReviewModal() {
   String get scrollableCardBody => _isPt
       ? 'Mantém o header fixo e move o conteúdo longo dentro do corpo.'
       : 'Keeps the header fixed and moves long content inside the body.';
+  String get shortViewportCardTitle =>
+      _isPt ? 'Scrollbar em viewport baixo' : 'Short viewport scrollbar';
+  String get shortViewportCardBody => _isPt
+      ? 'Força rolagem no root do modal para validar que a barra não dispara fechamento por backdrop.'
+      : 'Forces root modal scrolling to verify that the scrollbar does not trigger backdrop dismissal.';
+  String get shortViewportOpenButton =>
+      _isPt ? 'Abrir teste de scrollbar' : 'Open scrollbar test';
+  String get rootScrollbarLabel =>
+      _isPt ? 'scrollbar do root' : 'root scrollbar';
+  String get shortViewportModalTitle =>
+      _isPt ? 'Documento em viewport baixo' : 'Document in a short viewport';
+  String get shortViewportLead => _isPt
+      ? 'Reduza a altura da janela ou abra o DevTools na parte inferior. A barra vertical do modal deve permitir rolagem sem fechar o diálogo; clicar fora do conteúdo ainda fecha porque closeOnBackdropClick está ativo.'
+      : 'Reduce the window height or dock DevTools at the bottom. The modal vertical scrollbar should scroll without closing the dialog; clicking outside the content still closes because closeOnBackdropClick is enabled.';
+  String get shortViewportInstructionTitle =>
+      _isPt ? 'O que validar' : 'What to validate';
+  List<String> get shortViewportInstructions => _isPt
+      ? const <String>[
+          'A barra de rolagem aparece quando a viewport fica baixa.',
+          'Clicar ou arrastar essa barra não fecha o modal.',
+          'Um clique real no backdrop continua fechando o modal.',
+        ]
+      : const <String>[
+          'The scrollbar appears when the viewport gets short.',
+          'Clicking or dragging that scrollbar does not close the modal.',
+          'A real backdrop click still closes the modal.',
+        ];
   String get warningCardTitle =>
       _isPt ? 'Header contextual' : 'Contextual header';
   String get warningCardBody => _isPt
@@ -720,6 +761,14 @@ void closeReviewModal() {
     _setInitialLog();
     scrollableModal?.open();
     modalEventLog = 'Modal scrollable aberto.';
+  }
+
+  void openShortViewportModal() {
+    _setInitialLog();
+    shortViewportModal?.open();
+    modalEventLog = _isPt
+        ? 'Teste de scrollbar em viewport baixo aberto.'
+        : 'Short viewport scrollbar test opened.';
   }
 
   void openWarningModal() {
