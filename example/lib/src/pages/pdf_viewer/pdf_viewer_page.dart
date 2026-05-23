@@ -41,7 +41,7 @@ class PdfViewerPageComponent {
   <li-pdf-viewer
       [bytes]="documentBytes"
       title="Release briefing"
-      pdfJsBasePath="/assets/js/pdf.js/5.4.149">
+      pdfJsBasePath="assets/js/pdf.js/5.4.149">
   </li-pdf-viewer>
 </div>''';
 
