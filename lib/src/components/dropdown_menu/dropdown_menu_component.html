@@ -56,5 +56,15 @@
         </button>
       </template>
     </div>
+
+    <div
+        *ngIf="usesMobilePresentation && mobileFooterTemplate != null"
+        class="li-dropdown-menu__mobile-footer"
+        (click)="closeFromMobilePresentation()">
+      <template
+          [ngTemplateOutlet]="mobileFooterTemplate"
+          [ngTemplateOutletValue]="mobileFooterContext">
+      </template>
+    </div>
   </div>
 </div>

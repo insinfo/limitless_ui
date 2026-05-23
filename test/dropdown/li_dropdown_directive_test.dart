@@ -43,6 +43,81 @@ import 'li_dropdown_directive_test.template.dart' as ng;
         </div>
       </div>
 
+      <div id="body-end-dropdown"
+          style="position: fixed; top: 24px; right: 24px;"
+          liDropdown
+          container="body"
+          placement="bottom-end">
+        <button id="body-end-toggle" liDropdownToggle>Body end</button>
+        <div id="body-end-menu" class="dropdown-menu-end" liDropdownMenu style="min-width: 22rem;">
+          <button id="body-end-item-1" liDropdownItem>Body end item</button>
+        </div>
+      </div>
+
+      <div id="body-start-dropdown"
+          style="position: fixed; top: 96px; left: 48px;"
+          liDropdown
+          container="body"
+          placement="bottom-start">
+        <button id="body-start-toggle" liDropdownToggle>Body start</button>
+        <div id="body-start-menu" liDropdownMenu style="min-width: 18rem;">
+          <button id="body-start-item-1" liDropdownItem>Body start item</button>
+        </div>
+      </div>
+
+      <div id="fallback-dropdown"
+          style="position: fixed; top: 16px; right: 16px;"
+          liDropdown
+          container="body"
+          placement="right-start">
+        <button id="fallback-toggle" liDropdownToggle>Fallback</button>
+        <div id="fallback-menu" liDropdownMenu style="min-width: 20rem;">
+          <button id="fallback-item-1" liDropdownItem>Long body item</button>
+        </div>
+      </div>
+
+      <div id="adaptive-dropdown"
+          style="position: fixed; top: 64px; right: 8px;"
+          liDropdown
+          container="body"
+          placement="bottom-end">
+        <button id="adaptive-toggle" liDropdownToggle>Adaptive</button>
+        <div id="adaptive-menu" class="dropdown-menu-end" liDropdownMenu style="width: max-content; max-width: none; white-space: nowrap;">
+          <button id="adaptive-item-1" liDropdownItem style="white-space: nowrap;">
+            DepartamentoSuperExtraordinariamenteExtensoDeRegistrosEDesenvolvimentoDePessoalComNomeMuitoLongo-637
+          </button>
+        </div>
+      </div>
+
+      <div id="adaptive-bottom-dropdown"
+          style="position: fixed; right: 8px; bottom: 8px;"
+          liDropdown
+          container="body"
+          placement="bottom-end">
+        <button id="adaptive-bottom-toggle" liDropdownToggle>Adaptive bottom</button>
+        <div id="adaptive-bottom-menu" class="dropdown-menu-end" liDropdownMenu style="width: 18rem;">
+          <button
+              *ngFor="let item of tallMenuItems"
+              liDropdownItem>
+            {{ item }}
+          </button>
+        </div>
+      </div>
+
+      <div id="capped-dropdown"
+          style="position: fixed; top: 112px; right: 24px;"
+          liDropdown
+          container="body"
+          placement="bottom-end"
+          menuMaxWidth="22rem">
+        <button id="capped-toggle" liDropdownToggle>Capped</button>
+        <div id="capped-menu" class="dropdown-menu-end" liDropdownMenu style="width: 1200px; max-width: none; white-space: nowrap;">
+          <button id="capped-item-1" liDropdownItem style="white-space: nowrap;">
+            MenuDeUsuarioComConteudoMuitoMaiorDoQueOEsperadoParaValidarLimiteDeLargura
+          </button>
+        </div>
+      </div>
+
       <div id="caret-dropdown" liDropdown>
         <button id="caret-toggle" liDropdownToggle>Caret default</button>
         <button id="no-caret-toggle" liDropdownToggle liDropdownShowCaret="false">
@@ -92,6 +167,11 @@ import 'li_dropdown_directive_test.template.dart' as ng;
 )
 class DropdownTestHostComponent {
   final List<bool> submenuOpenEvents = <bool>[];
+  final List<String> tallMenuItems = List<String>.generate(
+    40,
+    (index) => 'Tall item ${index + 1}',
+    growable: false,
+  );
 
   void onSubmenuOpenChange(bool open) {
     submenuOpenEvents.add(open);
@@ -224,6 +304,143 @@ void main() {
 
     expect(dropdown!.contains(menu), isFalse);
     expect(html.document.body!.contains(menu), isTrue);
+  });
+
+  test('container body uses fallback placement near the right viewport edge',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#fallback-toggle');
+    final menu = fixture.rootElement.querySelector('#fallback-menu');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final wrapper = menu!.parent;
+    expect(wrapper, isNotNull);
+    expect(
+      wrapper!.getAttribute('data-popper-placement'),
+      'left-start',
+    );
+  });
+
+  test('container body keeps bottom-end menu aligned to the trigger',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#body-end-toggle');
+    final menu = fixture.rootElement.querySelector('#body-end-menu');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final toggleRect = toggle!.getBoundingClientRect();
+    final menuRect = menu!.getBoundingClientRect();
+
+    expect((menuRect.right - toggleRect.right).abs(), lessThanOrEqualTo(3));
+    expect(menuRect.top, greaterThanOrEqualTo(toggleRect.bottom - 1));
+  });
+
+  test('container body keeps bottom-start menu aligned to the trigger',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#body-start-toggle');
+    final menu = fixture.rootElement.querySelector('#body-start-menu');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final toggleRect = toggle!.getBoundingClientRect();
+    final menuRect = menu!.getBoundingClientRect();
+
+    expect((menuRect.left - toggleRect.left).abs(), lessThanOrEqualTo(3));
+    expect(menuRect.top, greaterThanOrEqualTo(toggleRect.bottom - 1));
+  });
+
+  test('body overlay adapta menu largo para permanecer dentro da viewport',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#adaptive-toggle');
+    final menu = fixture.rootElement.querySelector('#adaptive-menu');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final viewportWidth = (html.window.innerWidth ?? 0).toDouble();
+    final menuRect = menu!.getBoundingClientRect();
+
+    expect(menuRect.width, lessThanOrEqualTo(viewportWidth - 14));
+    expect(menuRect.left, greaterThanOrEqualTo(7));
+    expect(menuRect.right, lessThanOrEqualTo(viewportWidth - 7));
+  });
+
+  test('body overlay adapta menu alto para nao sair da viewport', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#adaptive-bottom-toggle');
+    final menu = fixture.rootElement.querySelector('#adaptive-bottom-menu');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final viewportHeight = (html.window.innerHeight ?? 0).toDouble();
+    final menuRect = menu!.getBoundingClientRect();
+
+    expect(menuRect.height, lessThanOrEqualTo(viewportHeight - 14));
+    expect(menuRect.top, greaterThanOrEqualTo(7));
+    expect(menuRect.bottom, lessThanOrEqualTo(viewportHeight - 7));
+  });
+
+  test('menuMaxWidth limita largura sem perder alinhamento quando ha espaco',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#capped-toggle');
+    final menu = fixture.rootElement.querySelector('#capped-menu');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    const rootFontSize = 16.0;
+    final maxExpectedWidth = (22 * rootFontSize) + 1;
+    final toggleRect = toggle!.getBoundingClientRect();
+    final menuRect = menu!.getBoundingClientRect();
+
+    expect(menuRect.width, lessThanOrEqualTo(maxExpectedWidth));
+    expect((menuRect.right - toggleRect.right).abs(), lessThanOrEqualTo(3));
+    expect(menuRect.top, greaterThanOrEqualTo(toggleRect.bottom - 1));
   });
 
   test('liDropdownShowCaret controls dropdown-toggle class on trigger',
@@ -423,7 +640,9 @@ void main() {
 }
 
 Future<void> _settle(NgTestFixture<DropdownTestHostComponent> fixture) async {
-  await Future<void>.delayed(const Duration(milliseconds: 20));
+  await Future<void>.delayed(const Duration(milliseconds: 40));
+  await fixture.update((_) {});
+  await Future<void>.delayed(const Duration(milliseconds: 40));
   await fixture.update((_) {});
 }
 

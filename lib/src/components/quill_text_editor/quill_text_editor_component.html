@@ -1,0 +1,72 @@
+<div
+    [class]="containerClass.isEmpty ? 'li-quill-text-editor' : 'li-quill-text-editor ' + containerClass"
+    [style.--li-quill-editor-min-height]="minHeight">
+  <div [class]="toolbarVisible ? 'li-quill-text-editor__surface' : 'li-quill-text-editor__surface li-quill-text-editor__surface--toolbar-hidden'">
+    <div
+        #toolbar
+        [attr.aria-hidden]="toolbarVisible ? null : 'true'"
+        [class]="(toolbarClass.isEmpty ? 'ql-toolbar ql-snow li-quill-text-editor__toolbar' : 'ql-toolbar ql-snow li-quill-text-editor__toolbar ' + toolbarClass) + (toolbarVisible ? '' : ' li-quill-text-editor__toolbar--hidden')">
+      <div class="li-quill-text-editor__toolbar-main">
+        <button
+            *ngFor="let action of leadingToolbarActions"
+            type="button"
+            [disabled]="action.disabled"
+            [title]="action.title.isEmpty ? null : action.title"
+            [class]="'li-quill-text-editor__toolbar-action ' + action.buttonClass"
+            (click)="onToolbarActionClick(action)">
+          <i *ngIf="action.iconClass.isNotEmpty" [class]="action.iconClass"></i>
+          <span *ngIf="action.label.isNotEmpty">{{ action.label }}</span>
+        </button>
+
+        <div *ngFor="let item of resolvedToolbarItems" class="li-quill-text-editor__toolbar-item">
+          <button
+              *ngIf="item.isButton"
+              type="button"
+              [attr.value]="item.value.isEmpty ? null : item.value"
+              [title]="item.title.isEmpty ? null : item.title"
+              [class]="'li-quill-text-editor__toolbar-native-button ' + item.quillClass + (item.buttonClass.isEmpty ? '' : ' ' + item.buttonClass)">
+            <i *ngIf="item.iconClass.isNotEmpty" [class]="item.iconClass"></i>
+            <span *ngIf="item.label.isNotEmpty">{{ item.label }}</span>
+          </button>
+
+          <select
+              *ngIf="item.isSelect"
+              [title]="item.title.isEmpty ? null : item.title"
+              [class]="'li-quill-text-editor__toolbar-picker ' + item.quillClass + (item.selectClass.isEmpty ? '' : ' ' + item.selectClass)">
+            <option
+                *ngFor="let option of item.options"
+                [value]="option.value"
+                [attr.selected]="option.selected ? '' : null">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <span *ngIf="hasToolbarActionsTemplate" class="li-quill-text-editor__toolbar-template">
+          <template
+              [ngTemplateOutlet]="resolvedToolbarActionsTemplate"
+              [ngTemplateOutletValue]="templateContext"></template>
+        </span>
+
+        <button
+            *ngFor="let action of trailingToolbarActions"
+            type="button"
+            [disabled]="action.disabled"
+            [title]="action.title.isEmpty ? null : action.title"
+            [class]="'li-quill-text-editor__toolbar-action ' + action.buttonClass"
+            (click)="onToolbarActionClick(action)">
+          <i *ngIf="action.iconClass.isNotEmpty" [class]="action.iconClass"></i>
+          <span *ngIf="action.label.isNotEmpty">{{ action.label }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div
+        #editorContainer
+        [class]="editorClass.isEmpty ? 'li-quill-text-editor__editor' : 'li-quill-text-editor__editor ' + editorClass"></div>
+  </div>
+
+  <div *ngIf="errorMessage != null" class="li-quill-text-editor__error">
+    {{ errorMessage }}
+  </div>
+</div>

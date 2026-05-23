@@ -1,0 +1,362 @@
+<div class="demo-page workspace-shell-demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content workspace-shell-demo-page__content">
+    <div class="card card-body shadow-sm mb-3">
+      <p class="mb-0 text-muted">{{ intro }}</p>
+    </div>
+
+    <div class="workspace-shell-preview card border-0 shadow-lg overflow-visible">
+      <div class="workspace-shell-preview__frame" [attr.data-shell-theme]="selectedTheme">
+        <header class="workspace-shell-preview__topbar navbar navbar-dark navbar-expand-lg border-bottom border-bottom-white border-opacity-10">
+          <div class="container-fluid workspace-shell-preview__topbar-inner">
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="workspace-shell-preview__icon-button rounded-pill">
+                <i class="ph-list"></i>
+              </button>
+
+              <div class="workspace-shell-preview__brand">
+                <span class="workspace-shell-preview__brand-mark">
+                  <i class="ph-buildings"></i>
+                </span>
+
+                <div class="workspace-shell-preview__brand-copy position-relative">
+                  <div class="workspace-shell-preview__brand-title">Portal Operacional</div>
+                  <div class="workspace-shell-preview__brand-version">6.1.0</div>
+                  <span *ngIf="showBannerTestVersion" class="workspace-shell-preview__banner">{{ bannerLabel }}</span>
+                </div>
+              </div>
+            </div>
+
+            <form class="workspace-shell-preview__search" (ngSubmit)="submitSearch()">
+              <div class="workspace-shell-preview__search-field">
+                <i class="ph-magnifying-glass workspace-shell-preview__search-icon"></i>
+                <input
+                    [(ngModel)]="processLookup"
+                    class="form-control bg-transparent border-0 shadow-none"
+                    name="processLookup"
+                    [attr.placeholder]="searchPlaceholder">
+              </div>
+              <button type="submit" class="workspace-shell-preview__search-submit rounded-pill">
+                <i class="ph-check"></i>
+              </button>
+            </form>
+
+            <ul class="navbar-nav ms-auto align-items-center flex-row gap-2 workspace-shell-preview__actions">
+              <li class="nav-item" liDropdown placement="bottom-end" menuMaxWidth="20rem">
+                <button
+                    type="button"
+                    class="workspace-shell-preview__icon-button rounded-pill position-relative"
+                    liDropdownToggle
+                    [liDropdownShowCaret]="false">
+                  <i class="ph-bell"></i>
+                  <span class="workspace-shell-preview__counter">{{ notificationCount }}</span>
+                </button>
+
+                <div class="dropdown-menu dropdown-menu-end workspace-shell-preview__notification-menu" liDropdownMenu>
+                  <div class="dropdown-header">{{ notificationMenuTitle }}</div>
+                  <div
+                      *ngFor="let notification of notificationEntries; trackBy: trackByNotification"
+                      class="dropdown-item-text workspace-shell-preview__notification-item">
+                    <div class="fw-semibold mb-1">{{ notification.title }}</div>
+                    <div class="text-muted fs-sm mb-1">{{ notification.body }}</div>
+                    <span class="workspace-shell-preview__notification-time">{{ notification.time }}</span>
+                  </div>
+                </div>
+              </li>
+
+              <li
+                  class="nav-item dropdown nav-item-dropdown-lg"
+                  liDropdown
+                  placement="bottom-end"
+                  display="dynamic"
+                  container="body"
+                  dropdownClass="org-switcher-dropdown-wrapper">
+                <button
+                    type="button"
+                    class="navbar-nav-link rounded-pill cursor-pointer p-0 border-0 bg-transparent"
+                    liDropdownToggle
+                    [liDropdownShowCaret]="false"
+                    [attr.title]="currentOrg.name + ' - ' + currentOrg.id">
+                  <span class="workspace-shell-preview__icon-pill d-inline-flex d-lg-none align-items-center justify-content-center">
+                    <i class="ph-buildings"></i>
+                  </span>
+                  <span class="workspace-shell-preview__org-badge badge bg-yellow text-black d-none d-lg-inline-flex align-items-center gap-1">
+                    <span class="workspace-shell-preview__org-name">{{ currentOrg.name }}</span>
+                    <span class="workspace-shell-preview__org-sep">-</span>
+                    <span class="workspace-shell-preview__org-id">{{ currentOrg.id }}</span>
+                  </span>
+                </button>
+
+                <div class="dropdown-menu dropdown-menu-end workspace-shell-preview__org-menu" liDropdownMenu>
+                  <button
+                      type="button"
+                      *ngFor="let org of orgEntries; trackBy: trackByOrg"
+                      (click)="changeOrganogramaAtual(org)"
+                      class="cursor-pointer text-start workspace-shell-preview__org-item"
+                      liDropdownItem>
+                    <span class="workspace-shell-preview__org-item-name">{{ org.name }}</span>
+                    <span class="workspace-shell-preview__org-item-id">- {{ org.id }}</span>
+                  </button>
+                </div>
+              </li>
+
+                <li
+                  class="nav-item nav-item-dropdown-lg dropdown"
+                  liDropdown
+                  placement="bottom-end"
+                  display="dynamic"
+                  container="body"
+                  menuMaxWidth="18rem">
+                <button
+                    type="button"
+                    class="navbar-nav-link align-items-center rounded-pill cursor-pointer p-0 border-0 bg-transparent d-inline-flex"
+                    liDropdownToggle
+                    [liDropdownShowCaret]="false">
+                  <div class="workspace-shell-preview__avatar status-indicator-container">
+                    <span class="workspace-shell-preview__avatar-circle">IN</span>
+                    <span class="status-indicator bg-success"></span>
+                  </div>
+                  <span class="d-none d-lg-inline-block mx-lg-2 text-truncate workspace-shell-preview__user-name">
+                    Isaque Neves Sant'Ana
+                  </span>
+                </button>
+
+                <div class="dropdown-menu dropdown-menu-end workspace-shell-preview__user-menu" liDropdownMenu>
+                  <div class="dropdown-item-text">Seu CGM: 140050</div>
+                  <div class="dropdown-item-text workspace-shell-preview__user-current-org" [attr.title]="currentOrg.name + ' - ' + currentOrg.id">
+                    <span>Setor atual:</span>
+                    <span class="d-block mt-1">{{ currentOrg.name }} - {{ currentOrg.id }}</span>
+                  </div>
+                  <div class="dropdown-item-text">
+                    <i class="ph ph-user-circle me-1"></i>
+                    Logado como: Portal Integrado
+                  </div>
+                  <div class="dropdown-divider"></div>
+
+                  <button type="button" (click)="toggleStatusBar()" class="cursor-pointer text-start" liDropdownItem>
+                    <i class="ph ph-clipboard-text me-2"></i>
+                    {{ statusBarActionLabel }}
+                  </button>
+
+                  <div liDropdownSubmenu placement="start" class="workspace-shell-preview__submenu-host">
+                    <button
+                        type="button"
+                        class="cursor-pointer text-start workspace-shell-preview__submenu-toggle"
+                        liDropdownItem
+                        liDropdownSubmenuToggle>
+                      <i class="ph ph-palette me-2"></i>
+                      {{ themeMenuLabel }}
+                    </button>
+
+                    <div class="workspace-shell-preview__submenu-menu wmin-sm-200" liDropdownSubmenuMenu>
+                      <button
+                          type="button"
+                          (click)="changeTheme('light')"
+                          class="cursor-pointer text-start"
+                          liDropdownItem
+                          [class.active]="selectedTheme == 'light'">
+                        <i class="ph-sun me-2"></i>
+                        {{ themeOptionLabel('light') }}
+                      </button>
+                      <button
+                          type="button"
+                          (click)="changeTheme('blu')"
+                          class="cursor-pointer text-start"
+                          liDropdownItem
+                          [class.active]="selectedTheme == 'blu'">
+                        <i class="ph-star-half me-2"></i>
+                        {{ themeOptionLabel('blu') }}
+                      </button>
+                      <button
+                          type="button"
+                          (click)="changeTheme('dark')"
+                          class="cursor-pointer text-start"
+                          liDropdownItem
+                          [class.active]="selectedTheme == 'dark'">
+                        <i class="ph-moon me-2"></i>
+                        {{ themeOptionLabel('dark') }}
+                      </button>
+                      <button
+                          type="button"
+                          (click)="changeTheme('pin')"
+                          class="cursor-pointer text-start"
+                          liDropdownItem
+                          [class.active]="selectedTheme == 'pin'">
+                        <i class="ph-heart-half me-2"></i>
+                        {{ themeOptionLabel('pin') }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="dropdown-item-text workspace-shell-preview__session-note">{{ sessionNote }}</div>
+
+                  <button type="button" class="cursor-pointer text-start" liDropdownItem>
+                    <i class="ph-sign-out me-2"></i>
+                    Sair
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </header>
+
+        <div class="workspace-shell-preview__body">
+          <aside class="workspace-shell-preview__sidebar">
+            <div class="workspace-shell-preview__sidebar-header">
+              <div class="workspace-shell-preview__sidebar-title">Navegacao</div>
+              <button type="button" class="workspace-shell-preview__sidebar-toggle rounded-pill">
+                <i class="ph-arrow-bend-up-left"></i>
+              </button>
+            </div>
+
+            <label class="workspace-shell-preview__sidebar-search">
+              <i class="ph-magnifying-glass"></i>
+              <input type="text" value="Buscar modulo...">
+            </label>
+
+            <button
+                *ngFor="let item of sidebarEntries; trackBy: trackBySidebar"
+                type="button"
+                class="workspace-shell-preview__sidebar-item"
+                [class.workspace-shell-preview__sidebar-item--active]="item.active">
+              <span class="workspace-shell-preview__sidebar-item-label">
+                <i [class]="item.iconClass"></i>
+                {{ item.label }}
+              </span>
+              <span *ngIf="item.badge != null" class="workspace-shell-preview__sidebar-badge">{{ item.badge }}</span>
+            </button>
+          </aside>
+
+          <main class="workspace-shell-preview__main">
+            <section class="workspace-shell-preview__hero">
+              <div>
+                <div class="workspace-shell-preview__eyebrow">{{ heroEyebrow }}</div>
+                <h5 class="mb-2">{{ heroTitle }}</h5>
+                <p class="mb-0 text-muted">{{ heroBody }}</p>
+              </div>
+
+              <div class="workspace-shell-preview__hero-pills">
+                <span class="badge rounded-pill workspace-shell-preview__hero-pill">Tema: {{ selectedThemeLabel }}</span>
+                <span class="badge rounded-pill workspace-shell-preview__hero-pill">{{ statusBarStateLabel }}</span>
+              </div>
+            </section>
+
+            <div class="row g-3 mb-3">
+              <div *ngFor="let metric of metricEntries; trackBy: trackByMetric" class="col-md-4">
+                <div class="workspace-shell-preview__metric card border-0 shadow-sm h-100">
+                  <div class="card-body">
+                    <div class="workspace-shell-preview__metric-value">{{ metric.value }}</div>
+                    <h6 class="mb-1">{{ metric.label }}</h6>
+                    <p class="mb-0 text-muted fs-sm">{{ metric.help }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-xl-8">
+                <div class="workspace-shell-preview__panel card border-0 shadow-sm h-100">
+                  <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between gap-2 align-items-start mb-3">
+                      <div>
+                        <h6 class="mb-1">{{ quickPanelTitle }}</h6>
+                        <p class="mb-0 text-muted">{{ quickPanelBody }}</p>
+                      </div>
+                      <span class="badge rounded-pill workspace-shell-preview__accent-badge">{{ currentOrg.id }}</span>
+                    </div>
+
+                    <div class="workspace-shell-preview__queue-list">
+                      <article class="workspace-shell-preview__queue-item">
+                        <div>
+                          <div class="fw-semibold">Processo 24123/2026</div>
+                          <div class="text-muted fs-sm">Aguardando despacho conclusivo da equipe tecnica.</div>
+                        </div>
+                        <span class="badge bg-warning text-dark">Urgente</span>
+                      </article>
+
+                      <article class="workspace-shell-preview__queue-item">
+                        <div>
+                          <div class="fw-semibold">Solicitacao de cadastro unificado</div>
+                          <div class="text-muted fs-sm">Checklist documental validado e pronto para publicacao.</div>
+                        </div>
+                        <span class="badge bg-info text-white">Em fila</span>
+                      </article>
+
+                      <article class="workspace-shell-preview__queue-item">
+                        <div>
+                          <div class="fw-semibold">Revisao de despacho externo</div>
+                          <div class="text-muted fs-sm">Integracao concluida e pendente apenas de assinatura final.</div>
+                        </div>
+                        <span class="badge bg-success text-white">Pronto</span>
+                      </article>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-4">
+                <div class="workspace-shell-preview__panel card border-0 shadow-sm mb-3">
+                  <div class="card-body">
+                    <h6 class="mb-3">{{ shellStateTitle }}</h6>
+
+                    <div class="workspace-shell-preview__state-row">
+                      <span class="text-muted">Setor ativo</span>
+                      <strong>{{ currentOrg.id }}</strong>
+                    </div>
+                    <div class="workspace-shell-preview__state-row">
+                      <span class="text-muted">Tema aplicado</span>
+                      <strong>{{ selectedThemeLabel }}</strong>
+                    </div>
+                    <div class="workspace-shell-preview__state-row">
+                      <span class="text-muted">{{ searchStatusLabel }}</span>
+                      <strong class="workspace-shell-preview__state-value">{{ lookupStatus }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="workspace-shell-preview__panel card border-0 shadow-sm">
+                  <div class="card-body">
+                    <h6 class="mb-3">{{ notificationMenuTitle }}</h6>
+                    <div
+                        *ngFor="let notification of notificationEntries; trackBy: trackByNotification"
+                        class="workspace-shell-preview__inline-notification">
+                      <div class="fw-semibold mb-1">{{ notification.title }}</div>
+                      <div class="text-muted fs-sm mb-1">{{ notification.body }}</div>
+                      <span class="workspace-shell-preview__notification-time">{{ notification.time }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+
+        <div
+            *ngIf="statusBarVisible"
+            class="workspace-shell-preview__statusbar"
+            [class.workspace-shell-preview__statusbar--expanded]="statusBarExpanded">
+          <button type="button" class="workspace-shell-preview__statusbar-toggle" (click)="toggleExpandStatusBar()">
+            <i [class]="statusBarExpanded ? 'ph-caret-down' : 'ph-caret-up'"></i>
+          </button>
+
+          <ul class="workspace-shell-preview__toast-list">
+            <li *ngFor="let toast of toastEntries; trackBy: trackByToast" class="workspace-shell-preview__toast-item">
+              <span>{{ toast.message }}</span>
+              <span class="text-muted fs-sm">{{ toast.time }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

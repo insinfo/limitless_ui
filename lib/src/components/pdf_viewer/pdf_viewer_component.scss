@@ -1,0 +1,514 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+
+  --toolbar-height: 40px;
+  --toolbar-horizontal-padding: 8px;
+  --toolbar-vertical-padding: 4px;
+  --pdf-toolbar-bg: color-mix(in srgb, var(--card-bg) 88%, var(--body-bg) 12%);
+  --pdf-toolbar-border: var(--border-color-translucent);
+  --pdf-viewer-bg: color-mix(in srgb, var(--body-bg) 16%, var(--dark) 84%);
+  --pdf-input-bg: var(--card-bg);
+  --pdf-input-color: var(--body-color);
+  --pdf-input-border: var(--border-color-translucent);
+  --pdf-overlay-bg: rgba(15, 23, 42, 0.72);
+  --pdf-overlay-color: var(--white);
+  --pdf-page-shadow: 0 18px 40px rgba(var(--body-color-rgb), 0.18);
+  --pdf-page-bg: var(--white);
+  --pdf-page-margin: 1rem auto;
+}
+
+:host(.pdf-viewer-viewport-fullscreen),
+:host(:fullscreen),
+:host(:-webkit-full-screen) {
+  position: fixed;
+  inset: 0;
+  z-index: 1080;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  background: var(--pdf-viewer-bg);
+}
+
+:host ::ng-deep .pdfViewer,
+:host ::ng-deep .pdfViewer *,
+:host ::ng-deep .pdfViewer *::before,
+:host ::ng-deep .pdfViewer *::after {
+  box-sizing: content-box;
+}
+
+:host ::ng-deep li-dropdown-menu,
+:host ::ng-deep li-dropdown-menu *,
+:host ::ng-deep li-dropdown-menu *::before,
+:host ::ng-deep li-dropdown-menu *::after,
+:host ::ng-deep li-modal,
+:host ::ng-deep li-modal *,
+:host ::ng-deep li-modal *::before,
+:host ::ng-deep li-modal *::after {
+  box-sizing: border-box;
+}
+
+:host ::ng-deep .hiddenCanvasElement {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+#outerContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.li-pdf-viewer__content-shell {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+#toolbarContainer {
+  width: 100%;
+  height: var(--toolbar-height);
+  min-height: var(--toolbar-height);
+  padding: var(--toolbar-vertical-padding) var(--toolbar-horizontal-padding);
+  background: var(--pdf-toolbar-bg);
+  border-bottom: 1px solid var(--pdf-toolbar-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+#toolbarContainer .li-pdf-viewer__toolbar-button,
+#toolbarContainer .li-pdf-viewer__toolbar-button i,
+#toolbarContainer .li-pdf-viewer__custom-toolbar-button,
+#toolbarContainer .li-pdf-viewer__custom-toolbar-button i {
+  color: var(--body-color);
+}
+
+#toolbarContainer .li-pdf-viewer__toolbar-button:hover,
+#toolbarContainer .li-pdf-viewer__toolbar-button:focus-visible,
+#toolbarContainer .li-pdf-viewer__custom-toolbar-button:hover,
+#toolbarContainer .li-pdf-viewer__custom-toolbar-button:focus-visible {
+  color: var(--dropdown-link-hover-color, var(--body-color));
+  background: var(
+    --dropdown-link-hover-bg,
+    color-mix(in srgb, var(--card-bg) 86%, var(--body-color) 14%)
+  );
+  border-color: transparent;
+}
+
+#toolbarContainer .li-pdf-viewer__toolbar-button:focus-visible,
+#toolbarContainer .li-pdf-viewer__custom-toolbar-button:focus-visible {
+  box-shadow: var(
+    --focus-ring-box-shadow,
+    0 0 0 0.25rem color-mix(in srgb, var(--component-active-bg, var(--primary)) 20%, transparent)
+  );
+}
+
+#toolbarContainer .li-pdf-viewer__toolbar-button:disabled,
+#toolbarContainer .li-pdf-viewer__custom-toolbar-button:disabled {
+  opacity: 0.45;
+}
+
+.toolbarHorizontalGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.toolbar-page-navigation {
+  flex: 0 1 auto;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+#toolbarViewerMiddle {
+  flex: 1 1 auto;
+}
+
+.pdf-toolbar-overflow-menu {
+  display: none;
+  flex: 0 0 auto;
+}
+
+#toolbarContainer.toolbar-overflow-active {
+  gap: 4px;
+}
+
+#toolbarContainer.toolbar-overflow-active .toolbarHorizontalGroup {
+  gap: 4px;
+}
+
+#toolbarContainer.toolbar-overflow-active .pdf-secondary-toolbar-action,
+#toolbarContainer.toolbar-overflow-active .pdf-toolbar-actions-desktop {
+  display: none !important;
+}
+
+#toolbarContainer.toolbar-overflow-active .pdf-toolbar-overflow-menu {
+  display: block;
+}
+
+#toolbarContainer.toolbar-overflow-active .pdf-zoom-menu {
+  min-width: 0;
+}
+
+#toolbarContainer.toolbar-overflow-active .pdf-zoom-menu .pdf-zoom-trigger {
+  max-width: 8.5rem;
+}
+
+.pdf-toolbar-actions-mobile {
+  display: none;
+}
+
+.pdf-mobile-page-indicator {
+  display: none;
+}
+
+.pdf-zoom-menu {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 9rem;
+}
+
+:host ::ng-deep .pdf-zoom-menu .li-dropdown-menu__trigger {
+  width: auto;
+}
+
+:host ::ng-deep .pdf-zoom-menu .pdf-zoom-trigger {
+  max-width: 11rem;
+  justify-content: flex-start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.li-pdf-viewer__title {
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+.li-pdf-viewer__stack {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.li-pdf-viewer__custom-toolbar-button.is-active,
+.pdf-pan-mode-toggle.is-active {
+  background: color-mix(
+    in srgb,
+    var(--component-active-bg, var(--primary)) 14%,
+    transparent
+  );
+  color: var(--component-active-bg, var(--primary)) !important;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.li-pdf-viewer__side-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: min(100%, 34rem);
+  border-left: 1px solid var(--pdf-toolbar-border);
+  background: color-mix(in srgb, var(--card-bg) 92%, var(--body-bg) 8%);
+  color: var(--body-color);
+}
+
+.li-pdf-viewer__side-panel--modal {
+  min-height: 50vh;
+  max-width: none;
+  width: 100%;
+  border-left: 0;
+  background: transparent;
+}
+
+.li-pdf-viewer__side-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--pdf-toolbar-border);
+  background: color-mix(in srgb, var(--card-bg) 88%, var(--body-bg) 12%);
+}
+
+.li-pdf-viewer__side-panel-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.li-pdf-viewer__side-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+}
+
+#viewerContainer {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  outline: none;
+  background: var(--pdf-viewer-bg);
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  cursor: auto;
+}
+
+#viewerContainer.pan-mode-enabled {
+  cursor: grab;
+}
+
+#viewerContainer.mouse-panning {
+  cursor: grabbing;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pdfViewer {
+  --scale-factor: 1;
+  padding: 0 0 1rem;
+}
+
+:host ::ng-deep .pdfViewer .page {
+  --user-unit: 1;
+  --total-scale-factor: calc(var(--scale-factor) * var(--user-unit));
+  --scale-round-x: 1px;
+  --scale-round-y: 1px;
+  direction: ltr;
+  width: 816px;
+  height: 1056px;
+  margin: var(--pdf-page-margin);
+  position: relative;
+  overflow: hidden;
+  background: var(--pdf-page-bg);
+  box-shadow: var(--pdf-page-shadow) !important;
+  border-radius: 0.25rem;
+}
+
+:host ::ng-deep .pdfViewer .page .canvasWrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  contain: content;
+}
+
+:host ::ng-deep .textLayer {
+  position: absolute;
+  text-align: initial;
+  inset: 0;
+  overflow: clip;
+  opacity: 1;
+  line-height: 1;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+  caret-color: CanvasText;
+  z-index: 0;
+}
+
+:host ::ng-deep .annotationLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+:host ::ng-deep .annotationLayer a,
+:host ::ng-deep .annotationLayer input,
+:host ::ng-deep .annotationLayer select,
+:host ::ng-deep .annotationLayer textarea,
+:host ::ng-deep .annotationLayer button {
+  position: absolute;
+  display: block;
+  pointer-events: auto;
+}
+
+:host ::ng-deep .textLayer span,
+:host ::ng-deep .textLayer br {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+:host ::ng-deep .textLayer > :not(.markedContent),
+:host ::ng-deep .textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
+}
+
+:host ::ng-deep .textLayer span.markedContent {
+  top: 0;
+  height: 0;
+}
+
+:host ::ng-deep .textLayer span[role='img'] {
+  user-select: none;
+  cursor: default;
+}
+
+:host ::ng-deep .textLayer ::selection {
+  background: color-mix(in srgb, AccentColor, transparent 75%);
+}
+
+:host ::ng-deep .textLayer br::-moz-selection {
+  background: transparent;
+}
+
+:host ::ng-deep .textLayer br::selection {
+  background: transparent;
+}
+
+:host ::ng-deep canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  contain: content;
+}
+
+.li-pdf-viewer__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--pdf-overlay-bg);
+  color: var(--pdf-overlay-color);
+  text-align: center;
+  font-weight: 500;
+  z-index: 3;
+}
+
+.li-pdf-viewer__overlay--empty {
+  background: transparent;
+  color: rgba(var(--white-rgb), 0.82);
+}
+
+.li-pdf-viewer__overlay--error {
+  background: rgba(var(--danger-rgb), 0.82);
+}
+
+.toolbar-page-input {
+  min-width: 4ch;
+  text-align: center;
+  border: 1px solid var(--pdf-input-border);
+  border-radius: 5px;
+  background: var(--pdf-input-bg);
+  color: var(--pdf-input-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.toolbar-page-total {
+  display: inline-flex;
+  justify-content: flex-start;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 767.98px) {
+  :host {
+    --toolbar-height: auto;
+    --toolbar-horizontal-padding: 6px;
+    --toolbar-vertical-padding: 6px;
+  }
+
+  #toolbarContainer {
+    height: auto;
+    min-height: 40px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  #toolbarViewerLeft,
+  #toolbarViewerMiddle {
+    display: none !important;
+  }
+
+  #toolbarViewerMobileActions {
+    flex: 0 0 auto;
+  }
+
+  .toolbarHorizontalGroup {
+    gap: 4px;
+    min-width: 0;
+  }
+
+  #toolbarContainer .btn.btn-icon {
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    padding: 0.25rem;
+  }
+
+  .pdf-toolbar-actions-desktop,
+  .pdf-secondary-toolbar-action {
+    display: none !important;
+  }
+
+  .pdf-toolbar-actions-mobile {
+    display: flex;
+    gap: 2px;
+  }
+
+  .li-pdf-viewer__content-shell {
+    display: block;
+  }
+
+  .li-pdf-viewer__side-panel {
+    display: none;
+  }
+
+  .pdf-mobile-page-indicator {
+    display: inline-flex;
+    align-items: center;
+    margin-right: auto;
+    font-size: 0.8rem;
+    color: var(--pdf-input-color, var(--body-color));
+    opacity: 0.7;
+    white-space: nowrap;
+    padding: 0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #toolbarViewerMobileActions .btn.btn-icon {
+    flex: 0 0 2.25rem;
+  }
+
+  :host ::ng-deep .pdfViewer .page {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+}

@@ -80,6 +80,35 @@ import 'li_input_component_test.template.dart' as ng;
       [(ngModel)]="password">
     </li-input>
 
+    <li-password-input
+      id="signature-password-input"
+      label="Signature password"
+      helperText="Chrome-safe password input"
+      [(ngModel)]="signaturePassword">
+    </li-password-input>
+
+    <li-password-input
+      id="validated-password-input"
+      label="Validated password"
+      [required]="true"
+      pattern="^(?=.*[A-Z])(?=.*\\d).+\$"
+      [liRules]="validatedPasswordRules"
+      [liMessages]="validatedPasswordMessages"
+      [validateOnInput]="false"
+      liValidationMode="submittedOrTouchedOrDirty"
+      [(ngModel)]="validatedPassword">
+    </li-password-input>
+
+    <li-password-input
+      id="deferred-password-input"
+      label="Deferred password"
+      pattern="^(?=.*[A-Z]).+\$"
+      [liMessages]="deferredPasswordMessages"
+      [validateOnInput]="false"
+      liValidationMode="touched"
+      [(ngModel)]="deferredPassword">
+    </li-password-input>
+
     <li-input
         id="protocol-input"
         label="Protocol"
@@ -105,7 +134,12 @@ import 'li_input_component_test.template.dart' as ng;
       [(ngModel)]="defaultValidatedCpf">
     </li-input>
   ''',
-  directives: [coreDirectives, formDirectives, LiInputComponent],
+  directives: [
+    coreDirectives,
+    formDirectives,
+    LiInputComponent,
+    LiPasswordInputComponent,
+  ],
 )
 class InputTestHostComponent {
   String name = '';
@@ -113,6 +147,9 @@ class InputTestHostComponent {
   String cpf = '';
   String quantity = '1';
   String password = 'Secret@123';
+  String signaturePassword = 'Queue#2026';
+  String validatedPassword = '';
+  String deferredPassword = '';
   String protocol = '';
   String validatedCpf = '';
   String defaultValidatedCpf = '';
@@ -125,6 +162,31 @@ class InputTestHostComponent {
   final Map<String, String> cpfValidationMessages = const <String, String>{
     'required': 'Informe o CPF.',
     'cpf': 'CPF invalido customizado',
+  };
+
+  final Map<String, String> validatedPasswordMessages =
+      const <String, String>{
+    'required': 'Informe a senha.',
+    'pattern': 'Use ao menos uma letra maiuscula e um numero.',
+    'passwordSymbol': 'Adicione um caractere ! na senha.',
+  };
+
+  final List<LiRule> validatedPasswordRules = <LiRule>[
+    LiRule.custom(
+      (value) {
+        final normalized = '${value ?? ''}';
+        if (normalized.contains('!')) {
+          return null;
+        }
+        return 'Adicione um caractere ! na senha.';
+      },
+      code: 'passwordSymbol',
+    ),
+  ];
+
+  final Map<String, String> deferredPasswordMessages =
+      const <String, String>{
+    'pattern': 'Use ao menos uma letra maiuscula.',
   };
 
   void onBlur(dynamic _) => blurCount++;
@@ -382,6 +444,123 @@ void main() {
 
     final activeElement = html.document.activeElement;
     expect(activeElement?.id, 'password-input');
+  });
+
+  test('li-password-input masks in Dart while preserving the real ngModel value',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement
+        .querySelector('input#signature-password-input') as html.InputElement;
+    final toggle = input.parent!.querySelector('.li-input__password-toggle')
+        as html.ButtonElement;
+
+    expect(input.type, 'text');
+    expect(input.getAttribute('autocomplete'), 'new-password');
+    expect(input.getAttribute('autocorrect'), 'off');
+    expect(input.getAttribute('autocapitalize'), 'off');
+    expect(input.getAttribute('spellcheck'), 'false');
+    expect(input.getAttribute('data-lpignore'), 'true');
+    expect(input.getAttribute('data-1p-ignore'), 'true');
+    expect(input.getAttribute('data-bwignore'), 'true');
+    expect(input.getAttribute('name'), 'signature-password-input_secret');
+    expect(input.value, '•' * host.signaturePassword.length);
+
+    await fixture.update((_) {
+      input.value = 'Token#2040';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.signaturePassword, 'Token#2040');
+    expect(input.value, '•' * host.signaturePassword.length);
+
+    await fixture.update((_) {
+      toggle.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(input.value, host.signaturePassword);
+    expect(toggle.getAttribute('aria-label'), 'Ocultar senha');
+  });
+
+  test('li-password-input respects validateOnInput false until blur',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement
+        .querySelector('input#deferred-password-input') as html.InputElement;
+
+    await fixture.update((_) {
+      input.value = 'abc';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.deferredPassword, 'abc');
+    expect(input.classes.contains('is-invalid'), isFalse);
+    expect(
+        fixture.rootElement.text,
+        isNot(contains('Use ao menos uma letra maiuscula.')));
+
+    await fixture.update((_) {
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(input.classes.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.text,
+        contains('Use ao menos uma letra maiuscula.'));
+  });
+
+  test('li-password-input applies required, pattern and liRules validation',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement
+        .querySelector('input#validated-password-input') as html.InputElement;
+
+    await fixture.update((_) {
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(input.classes.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.text, contains('Informe a senha.'));
+
+    await fixture.update((_) {
+      input.value = 'abc123';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.validatedPassword, 'abc123');
+    expect(fixture.rootElement.text,
+        contains('Use ao menos uma letra maiuscula e um numero.'));
+
+    await fixture.update((_) {
+      input.value = 'Abc123';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.validatedPassword, 'Abc123');
+    expect(fixture.rootElement.text, contains('Adicione um caractere ! na senha.'));
+
+    await fixture.update((_) {
+      input.value = 'Abc123!';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.validatedPassword, 'Abc123!');
+    expect(input.classes.contains('is-invalid'), isFalse);
   });
 
   test('emits focus, click, blur, keydown and enter outputs', () async {

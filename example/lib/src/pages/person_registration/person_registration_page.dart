@@ -89,6 +89,7 @@ class PersonRegistrationFormState {
     LiFileUploadComponent,
     LiHighlightComponent,
     LiInputComponent,
+    LiPasswordInputComponent,
     LiMultiSelectComponent,
     LiRadioComponent,
     LiRadioGroupComponent,
@@ -526,8 +527,8 @@ if (!result.success) {
       ? 'Formulário completo com validação'
       : 'Complete form with validation';
   String get overviewIntro => isPt
-      ? 'Esta página junta `li-input`, selects, radios, toggles, date/time pickers e file upload em um cadastro completo com regras de frontend e um backend simulado.'
-      : 'This page combines `li-input`, selects, radios, toggles, date/time pickers, and file upload into a complete registration flow with frontend rules and a simulated backend.';
+      ? 'Esta página junta `li-input`, `li-password-input`, selects, radios, toggles, date/time pickers e file upload em um cadastro completo com regras de frontend e um backend simulado.'
+      : 'This page combines `li-input`, `li-password-input`, selects, radios, toggles, date/time pickers, and file upload into a complete registration flow with frontend rules and a simulated backend.';
   String get apiIntro => isPt
       ? 'O fluxo foi separado em duas camadas: validação imediata no host e uma chamada assíncrona para um service fake que devolve erros por campo.'
       : 'The flow is split into two layers: immediate host-side validation and an async call to a fake service that returns field-level errors.';

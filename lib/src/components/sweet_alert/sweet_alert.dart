@@ -41,6 +41,9 @@ enum SweetAlertDismissReason {
 
 typedef SweetAlertInputValidator = FutureOr<String?> Function(String value);
 typedef SweetAlertLifecycleCallback = void Function(html.Element popup);
+typedef SweetAlertResultCallback<T> = FutureOr<void> Function(
+  SweetAlertResult<T> result,
+);
 
 class SweetAlertResult<T> {
   const SweetAlertResult._({
@@ -117,6 +120,8 @@ class SweetAlert {
     String? confirmButtonClass,
     SweetAlertLifecycleCallback? onOpen,
     SweetAlertLifecycleCallback? onClose,
+    SweetAlertResultCallback<void>? onConfirmAction,
+    SweetAlertResultCallback<void>? onDismissAction,
   }) {
     return _show<void>(
       title: title,
@@ -148,6 +153,8 @@ class SweetAlert {
       confirmButtonClass: confirmButtonClass,
       onOpen: onOpen,
       onClose: onClose,
+      onConfirmAction: onConfirmAction,
+      onDismissAction: onDismissAction,
       onConfirm: (_) => null,
     ).result;
   }
@@ -182,6 +189,9 @@ class SweetAlert {
     String? cancelButtonClass,
     SweetAlertLifecycleCallback? onOpen,
     SweetAlertLifecycleCallback? onClose,
+    SweetAlertResultCallback<bool>? onConfirmAction,
+    SweetAlertResultCallback<bool>? onCancelAction,
+    SweetAlertResultCallback<bool>? onDismissAction,
   }) {
     return _show<bool>(
       title: title,
@@ -214,6 +224,9 @@ class SweetAlert {
       cancelButtonClass: cancelButtonClass,
       onOpen: onOpen,
       onClose: onClose,
+      onConfirmAction: onConfirmAction,
+      onCancelAction: onCancelAction,
+      onDismissAction: onDismissAction,
       onConfirm: (_) => true,
     ).result;
   }
@@ -258,6 +271,9 @@ class SweetAlert {
     String? cancelButtonClass,
     SweetAlertLifecycleCallback? onOpen,
     SweetAlertLifecycleCallback? onClose,
+    SweetAlertResultCallback<String>? onConfirmAction,
+    SweetAlertResultCallback<String>? onCancelAction,
+    SweetAlertResultCallback<String>? onDismissAction,
   }) {
     final instance = _show<String>(
       title: title,
@@ -300,6 +316,9 @@ class SweetAlert {
       inputValidator: inputValidator,
       onOpen: onOpen,
       onClose: onClose,
+      onConfirmAction: onConfirmAction,
+      onCancelAction: onCancelAction,
+      onDismissAction: onDismissAction,
       onConfirm: (activeInstance) => activeInstance.readInputValue(),
     );
     return instance.result;
@@ -389,6 +408,9 @@ class SweetAlert {
     String? cancelButtonClass,
     SweetAlertLifecycleCallback? onOpen,
     SweetAlertLifecycleCallback? onClose,
+    SweetAlertResultCallback<T>? onConfirmAction,
+    SweetAlertResultCallback<T>? onCancelAction,
+    SweetAlertResultCallback<T>? onDismissAction,
     required FutureOr<T?> Function(_SweetAlertInstance<T> instance) onConfirm,
   }) {
     final alertId = _sequence++;
@@ -606,6 +628,9 @@ class SweetAlert {
       inputValidator: inputValidator,
       onOpen: onOpen,
       onClose: onClose,
+      onConfirmAction: onConfirmAction,
+      onCancelAction: onCancelAction,
+      onDismissAction: onDismissAction,
       onConfirm: onConfirm,
     )..attach();
   }
@@ -916,6 +941,9 @@ class _SweetAlertInstance<T> {
     required this.inputValidator,
     required this.onOpen,
     required this.onClose,
+    required this.onConfirmAction,
+    required this.onCancelAction,
+    required this.onDismissAction,
     required this.onConfirm,
   });
 
@@ -932,6 +960,9 @@ class _SweetAlertInstance<T> {
   final SweetAlertInputValidator? inputValidator;
   final SweetAlertLifecycleCallback? onOpen;
   final SweetAlertLifecycleCallback? onClose;
+  final SweetAlertResultCallback<T>? onConfirmAction;
+  final SweetAlertResultCallback<T>? onCancelAction;
+  final SweetAlertResultCallback<T>? onDismissAction;
   final FutureOr<T?> Function(_SweetAlertInstance<T> instance) onConfirm;
 
   final Completer<SweetAlertResult<T>> _resultCompleter =
@@ -963,9 +994,9 @@ class _SweetAlertInstance<T> {
 
     final cancelButton = popup.querySelector('.swal2-cancel');
     if (cancelButton != null) {
-      _subscriptions.add(cancelButton.onClick.listen((event) {
+      _subscriptions.add(cancelButton.onClick.listen((event) async {
         event.preventDefault();
-        dismiss(SweetAlertDismissReason.cancel);
+        await cancel();
       }));
     }
 
@@ -1075,7 +1106,31 @@ class _SweetAlertInstance<T> {
     if (_closed) {
       return;
     }
-    _close(SweetAlertResult<T>.confirmed(value));
+    final result = SweetAlertResult<T>.confirmed(value);
+    if (onConfirmAction != null) {
+      await onConfirmAction!(result);
+      if (_closed) {
+        return;
+      }
+    }
+    _close(result);
+  }
+
+  Future<void> cancel() async {
+    if (_closed) {
+      return;
+    }
+
+    final result = SweetAlertResult<T>.dismissed(
+      SweetAlertDismissReason.cancel,
+    );
+    if (onCancelAction != null) {
+      await onCancelAction!(result);
+      if (_closed) {
+        return;
+      }
+    }
+    _close(result, reason: SweetAlertDismissReason.cancel);
   }
 
   String? readInputValue() {
@@ -1129,7 +1184,20 @@ class _SweetAlertInstance<T> {
     if (_closed) {
       return;
     }
-    _close(SweetAlertResult<T>.dismissed(reason), reason: reason);
+
+    final result = SweetAlertResult<T>.dismissed(reason);
+    final dismissalCallback = onDismissAction;
+    if (dismissalCallback != null) {
+      Future.sync(() => dismissalCallback(result)).then((_) {
+        if (_closed) {
+          return;
+        }
+        _close(result, reason: reason);
+      });
+      return;
+    }
+
+    _close(result, reason: reason);
   }
 
   void _close(

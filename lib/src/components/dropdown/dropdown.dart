@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:html' as html;
 import 'dart:js_util' as js_util;
+import 'dart:math' as math;
 
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
@@ -48,6 +49,28 @@ String _normalizedDropdownKey(html.KeyboardEvent event) {
   }
 }
 
+bool _normalizedDropdownBoolInput(Object? value, bool fallback) {
+  if (value == null) {
+    return fallback;
+  }
+
+  if (value is bool) {
+    return value;
+  }
+
+  final normalized = value.toString().trim().toLowerCase();
+  if (normalized.isEmpty) {
+    return true;
+  }
+  if (normalized == 'true' || normalized == '1' || normalized == 'yes') {
+    return true;
+  }
+  if (normalized == 'false' || normalized == '0' || normalized == 'no') {
+    return false;
+  }
+  return fallback;
+}
+
 /// Dropdown declarativo com API próxima ao `ng-bootstrap`.
 ///
 /// O visual do caret do gatilho depende do CSS do tema. No example usando
@@ -82,9 +105,21 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
 
   bool _open = false;
+  bool _positioningRefreshPending = false;
+  bool _viewportAdaptationPending = false;
+  bool _adaptToViewport = true;
+  bool _menuViewportBaselineCaptured = false;
   String? _dropdownClass;
   String? _container;
   String? _display;
+  String? _menuMaxWidth;
+  String? _menuMaxHeight;
+  String _menuInlineWidth = '';
+  String _menuInlineHeight = '';
+  String _menuInlineMaxWidth = '';
+  String _menuInlineMaxHeight = '';
+  String _menuInlineOverflowX = '';
+  String _menuInlineOverflowY = '';
   dynamic _autoClose = true;
   dynamic _placement = 'bottom-start bottom-end top-start top-end';
 
@@ -115,12 +150,46 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   String get display => _display ?? 'dynamic';
 
   @Input()
+  set adaptToViewport(Object? value) {
+    _adaptToViewport =
+        _normalizedDropdownBoolInput(value, _config.adaptToViewport);
+    if (_open) {
+      _scheduleViewportAdaptation();
+    }
+  }
+
+  bool get adaptToViewport => _adaptToViewport;
+
+  @Input()
   set dropdownClass(String? value) {
     _applyCustomDropdownClass(value?.trim(), _dropdownClass);
     _dropdownClass = value?.trim();
   }
 
   String? get dropdownClass => _dropdownClass;
+
+  @Input()
+  set menuMaxWidth(String? value) {
+    final normalized = value?.trim();
+    _menuMaxWidth = normalized == null || normalized.isEmpty ? null : normalized;
+    if (_open) {
+      _scheduleViewportAdaptation();
+    }
+  }
+
+  String? get menuMaxWidth => _menuMaxWidth;
+
+  @Input()
+  set menuMaxHeight(String? value) {
+    final normalized = value?.trim();
+    _menuMaxHeight =
+        normalized == null || normalized.isEmpty ? null : normalized;
+    if (_open) {
+      _scheduleViewportAdaptation();
+    }
+  }
+
+  String? get menuMaxHeight => _menuMaxHeight;
 
   @Input('open')
   set opened(bool value) {
@@ -157,6 +226,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     autoClose = _autoClose;
     container = _container;
     display = _display;
+    adaptToViewport = _adaptToViewport;
     placement = _placement;
 
     _display ??= _hostElement.closest('.navbar') != null ? 'static' : 'dynamic';
@@ -214,6 +284,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _updatePositioning();
     _openChangeController.add(true);
     _changeDetectorRef.markForCheck();
+    _schedulePostOpenPositioningRefresh();
   }
 
   void close() {
@@ -224,7 +295,10 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _open = false;
     _destroyDocumentHandlers();
     _destroyPopper();
+    _restoreViewportAdaptationStyles();
     _resetContainer();
+    _positioningRefreshPending = false;
+    _viewportAdaptationPending = false;
     _openChangeController.add(false);
     _changeDetectorRef.markForCheck();
   }
@@ -326,6 +400,54 @@ class LiDropdownDirective implements OnInit, OnDestroy {
       return 'bottom-start';
     }
     return normalized.split(RegExp(r'\s+')).first;
+  }
+
+  List<String> get _fallbackPlacements {
+    final currentPlacement = _placement;
+    if (currentPlacement is List && currentPlacement.length > 1) {
+      return currentPlacement
+          .skip(1)
+          .map((placement) => placement.toString().trim())
+          .where((placement) => placement.isNotEmpty)
+          .toList(growable: false);
+    }
+
+    final normalized = currentPlacement?.toString().trim() ?? '';
+    if (normalized.contains(RegExp(r'\s+'))) {
+      final placements = normalized
+          .split(RegExp(r'\s+'))
+          .map((placement) => placement.trim())
+          .where((placement) => placement.isNotEmpty)
+          .toList(growable: false);
+      return placements.length <= 1
+          ? _defaultFallbackPlacementsFor(_firstPlacement)
+          : placements.skip(1).toList(growable: false);
+    }
+
+    return _defaultFallbackPlacementsFor(_firstPlacement);
+  }
+
+  List<String> _defaultFallbackPlacementsFor(String placement) {
+    switch (placement.trim().toLowerCase()) {
+      case 'top-end':
+        return const <String>['bottom-end', 'top-start', 'bottom-start'];
+      case 'top-start':
+        return const <String>['bottom-start', 'top-end', 'bottom-end'];
+      case 'bottom-end':
+        return const <String>['top-end', 'bottom-start', 'top-start'];
+      case 'bottom-start':
+        return const <String>['top-start', 'bottom-end', 'top-end'];
+      case 'left-start':
+        return const <String>['right-start', 'bottom-start', 'top-start'];
+      case 'left-end':
+        return const <String>['right-end', 'bottom-end', 'top-end'];
+      case 'right-start':
+        return const <String>['left-start', 'bottom-end', 'top-end'];
+      case 'right-end':
+        return const <String>['left-end', 'bottom-start', 'top-start'];
+      default:
+        return const <String>['bottom-end', 'top-start', 'top-end'];
+    }
   }
 
   String get _autoCloseMode {
@@ -460,14 +582,246 @@ class LiDropdownDirective implements OnInit, OnDestroy {
       floatingElement: floatingElement,
       options: PopperOptions(
         placement: _firstPlacement,
+        fallbackPlacements: _fallbackPlacements,
         strategy: PopperStrategy.fixed,
         offset: const PopperOffset(mainAxis: 2),
         padding: const PopperInsets.all(8),
+        onLayout: (_) {
+          if (_adaptToViewport) {
+            _scheduleViewportAdaptation();
+          }
+        },
       ),
     );
     _popperController!.startAutoUpdate();
     _popperController!.update();
     _applyPlacementClasses();
+  }
+
+  void _schedulePostOpenPositioningRefresh() {
+    if (_positioningRefreshPending) {
+      return;
+    }
+
+    _positioningRefreshPending = true;
+    html.window.requestAnimationFrame((_) {
+      _positioningRefreshPending = false;
+      if (!_open) {
+        return;
+      }
+      _applyPlacementClasses();
+      _updatePositioning();
+      _scheduleViewportAdaptation();
+    });
+  }
+
+  void _scheduleViewportAdaptation() {
+    if (!_adaptToViewport ||
+        !_open ||
+        display == 'static' ||
+        _viewportAdaptationPending) {
+      return;
+    }
+
+    final menu = _menu?.nativeElement;
+    if (menu == null) {
+      return;
+    }
+
+    _viewportAdaptationPending = true;
+    html.window.requestAnimationFrame((_) {
+      _viewportAdaptationPending = false;
+      if (!_open) {
+        return;
+      }
+
+      final menuRect = menu.getBoundingClientRect();
+      final menuIsVisible = menu.classes.contains('show') &&
+          (menuRect.width > 0 || menuRect.height > 0);
+      if (!menuIsVisible) {
+        _scheduleViewportAdaptation();
+        return;
+      }
+
+      final changedStyles = _applyViewportAdaptationStyles(menu);
+      if (changedStyles) {
+        _updatePositioning();
+      }
+
+      _clampFloatingElementToViewport();
+    });
+  }
+
+  bool _applyViewportAdaptationStyles(html.Element menu) {
+    _captureViewportAdaptationBaseline(menu);
+
+    final viewportWidth = html.window.innerWidth?.toDouble() ?? 0;
+    final viewportHeight = html.window.innerHeight?.toDouble() ?? 0;
+    if (viewportWidth <= 0 || viewportHeight <= 0) {
+      return false;
+    }
+
+    const viewportInset = 8.0;
+    final maxViewportWidth = math.max(160.0, viewportWidth - (viewportInset * 2));
+    final maxViewportHeight =
+        math.max(120.0, viewportHeight - (viewportInset * 2));
+    final menuRect = menu.getBoundingClientRect();
+
+    final shouldClampWidth = menuRect.width > maxViewportWidth + 0.5;
+    final shouldClampHeight = menuRect.height > maxViewportHeight + 0.5;
+
+    final configuredMaxWidth = _menuMaxWidth;
+    final configuredMaxHeight = _menuMaxHeight;
+    final nextMaxWidth = shouldClampWidth
+      ? configuredMaxWidth != null
+        ? 'min($configuredMaxWidth, ${maxViewportWidth.floor()}px)'
+        : '${maxViewportWidth.floor()}px'
+      : (configuredMaxWidth ?? _menuInlineMaxWidth);
+    final nextOverflowX = shouldClampWidth ? 'auto' : _menuInlineOverflowX;
+    final nextWidth = shouldClampWidth && _menuInlineWidth.isNotEmpty
+      ? '${maxViewportWidth.floor()}px'
+      : _menuInlineWidth;
+    final nextMaxHeight = shouldClampHeight
+      ? configuredMaxHeight != null
+        ? 'min($configuredMaxHeight, ${maxViewportHeight.floor()}px)'
+        : '${maxViewportHeight.floor()}px'
+      : (configuredMaxHeight ?? _menuInlineMaxHeight);
+    final nextOverflowY = shouldClampHeight ? 'auto' : _menuInlineOverflowY;
+    final nextHeight = shouldClampHeight && _menuInlineHeight.isNotEmpty
+      ? '${maxViewportHeight.floor()}px'
+      : _menuInlineHeight;
+
+    var changed = false;
+    changed = _applyInlineStyleValue(menu.style.width, nextWidth, (value) {
+        menu.style.width = value;
+      }) ||
+      changed;
+    changed = _applyInlineStyleValue(menu.style.maxWidth, nextMaxWidth, (value) {
+          menu.style.maxWidth = value;
+        }) ||
+        changed;
+    changed = _applyInlineStyleValue(menu.style.overflowX, nextOverflowX, (value) {
+          menu.style.overflowX = value;
+        }) ||
+        changed;
+    changed = _applyInlineStyleValue(menu.style.height, nextHeight, (value) {
+        menu.style.height = value;
+      }) ||
+      changed;
+    changed = _applyInlineStyleValue(menu.style.maxHeight, nextMaxHeight, (value) {
+          menu.style.maxHeight = value;
+        }) ||
+        changed;
+    changed = _applyInlineStyleValue(menu.style.overflowY, nextOverflowY, (value) {
+          menu.style.overflowY = value;
+        }) ||
+        changed;
+
+    return changed;
+  }
+
+  bool _applyInlineStyleValue(
+    String currentValue,
+    String nextValue,
+    void Function(String value) writer,
+  ) {
+    if (currentValue == nextValue) {
+      return false;
+    }
+
+    writer(nextValue);
+    return true;
+  }
+
+  void _captureViewportAdaptationBaseline(html.Element menu) {
+    if (_menuViewportBaselineCaptured) {
+      return;
+    }
+
+    _menuViewportBaselineCaptured = true;
+    _menuInlineWidth = menu.style.width;
+    _menuInlineHeight = menu.style.height;
+    _menuInlineMaxWidth = menu.style.maxWidth;
+    _menuInlineMaxHeight = menu.style.maxHeight;
+    _menuInlineOverflowX = menu.style.overflowX;
+    _menuInlineOverflowY = menu.style.overflowY;
+  }
+
+  void _restoreViewportAdaptationStyles() {
+    if (!_menuViewportBaselineCaptured) {
+      return;
+    }
+
+    final menu = _menu?.nativeElement;
+    if (menu != null) {
+      menu.style.width = _menuInlineWidth;
+      menu.style.height = _menuInlineHeight;
+      menu.style.maxWidth = _menuInlineMaxWidth;
+      menu.style.maxHeight = _menuInlineMaxHeight;
+      menu.style.overflowX = _menuInlineOverflowX;
+      menu.style.overflowY = _menuInlineOverflowY;
+    }
+
+    _menuViewportBaselineCaptured = false;
+    _menuInlineWidth = '';
+    _menuInlineHeight = '';
+    _menuInlineMaxWidth = '';
+    _menuInlineMaxHeight = '';
+    _menuInlineOverflowX = '';
+    _menuInlineOverflowY = '';
+  }
+
+  void _clampFloatingElementToViewport() {
+    final floatingElement = _bodyContainer ?? _menu?.nativeElement;
+    final menu = _menu?.nativeElement;
+    if (floatingElement == null || menu == null) {
+      return;
+    }
+
+    final viewportWidth = html.window.innerWidth?.toDouble() ?? 0;
+    final viewportHeight = html.window.innerHeight?.toDouble() ?? 0;
+    if (viewportWidth <= 0 || viewportHeight <= 0) {
+      return;
+    }
+
+    const viewportInset = 8.0;
+    final menuRect = menu.getBoundingClientRect();
+    var deltaX = 0.0;
+    var deltaY = 0.0;
+
+    if (menuRect.left < viewportInset) {
+      deltaX += viewportInset - menuRect.left;
+    }
+    if (menuRect.right > viewportWidth - viewportInset) {
+      deltaX -= menuRect.right - (viewportWidth - viewportInset);
+    }
+    if (menuRect.top < viewportInset) {
+      deltaY += viewportInset - menuRect.top;
+    }
+    if (menuRect.bottom > viewportHeight - viewportInset) {
+      deltaY -= menuRect.bottom - (viewportHeight - viewportInset);
+    }
+
+    if (deltaX.abs() <= 0.5 && deltaY.abs() <= 0.5) {
+      return;
+    }
+
+    final transform = floatingElement.style.transform;
+    final match = RegExp(
+      r'translate\(\s*(-?[\d.]+)px,\s*(-?[\d.]+)px\)',
+    ).firstMatch(transform);
+    if (match == null) {
+      return;
+    }
+
+    final currentX = double.tryParse(match.group(1) ?? '');
+    final currentY = double.tryParse(match.group(2) ?? '');
+    if (currentX == null || currentY == null) {
+      return;
+    }
+
+    floatingElement.style.transform =
+        'translate(${(currentX + deltaX).toStringAsFixed(2)}px, ${(currentY + deltaY).toStringAsFixed(2)}px)';
   }
 
   void _applyCustomDropdownClass(String? newClass, String? oldClass) {

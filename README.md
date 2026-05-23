@@ -27,7 +27,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.14`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.22`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -48,7 +48,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.14
+  limitless_ui: ^1.0.0-dev.22
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -57,7 +57,7 @@ If the application will use `li-datatable`, `li-datatable-select`, `li-select`, 
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.14
+  limitless_ui: ^1.0.0-dev.22
   essential_core: ^1.2.0
 ```
 
@@ -86,6 +86,15 @@ Use `limitless_ui` for the widgets and `essential_core` for the shared data stru
 ```dart
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:essential_core/essential_core.dart';
+```
+
+### Narrow imports for isolated modules
+
+`li-pdf-viewer` and `li-quill-text-editor` are intentionally exported through separate barrels so host applications can opt into the heavier PDF.js and Quill integrations without depending on the main barrel for those surfaces.
+
+```dart
+import 'package:limitless_ui/pdf_viewer.dart';
+import 'package:limitless_ui/quill_text_editor.dart';
 ```
 
 ## Theme and icons
@@ -274,8 +283,9 @@ Practical rule:
 
 ## Included modules
 
-- Inputs: checkbox, radio, toggle, rating, file upload, currency input, token field, date picker, time picker, date range picker, color picker, select, multi-select, typeahead.
-- Data display: datatable, datatable select, tree view, highlight.
+- Inputs: checkbox, radio, toggle, rating, file upload, currency input, password input, token field, date picker, time picker, date range picker, color picker, select, multi-select, typeahead.
+- Data display: datatable, datatable select, tree view, highlight, PDF viewer.
+- Editors and authoring: Quill rich text editor.
 - Tagging workflows: tag filter, tag editor, tag manager.
 - Structure: accordion, collapse, buttons, carousel, modal, tabs, nav, wizard, breadcrumbs, pagination, offcanvas, floating action button.
 - Overlay and menus: dropdown, dropdown menu, tooltip, popover, sweet alert, notification toast.
@@ -603,7 +613,7 @@ final List<LiRule> compensationRules = <LiRule>[
 
 Use these groups as the practical adoption boundary:
 
-- Generic components: alerts, buttons, accordion, collapse, modal, tabs, nav, tooltip, popover, toast, scrollspy, checkbox, radio, toggle, rating, file upload, date picker, date range picker, currency helpers, `li-token-field`, `li-tag-editor`, and the base `li-input`.
+- Generic components: alerts, buttons, accordion, collapse, modal, tabs, nav, tooltip, popover, toast, scrollspy, checkbox, radio, toggle, rating, file upload, date picker, date range picker, currency helpers, `li-token-field`, `li-tag-editor`, the base `li-input`, `li-password-input`, `li-pdf-viewer`, and `li-quill-text-editor`.
 - `essential_core`-backed components: `li-datatable`, `li-datatable-select`, `li-select`, `li-multi-select`, `li-typeahead`, `li-treeview-select`, `li-tag-filter`, `li-tag-manager`, `LiTreeViewComponent` and related data/selection helpers.
 
 The second group reuses `Filters`, `DataFrame`, tree data structures, and related contracts from `essential_core`.
@@ -663,6 +673,9 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `liPageHeaderDirectives`.
 - Toast:
   `LiToastComponent`, `LiToastStackComponent`, `LiToastService`.
+- Input fields:
+  `LiInputComponent`, `LiPasswordInputComponent`,
+  `liPasswordInputDirectives`.
 - Color picker:
   `LiColorPickerComponent`, `LiColorPickerEvent`, plus palette inputs,
   selection-history inputs, and `pickerShow`, `pickerHide`, `pickerChange`,
@@ -692,6 +705,23 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiTreeViewComponent`, `LiTreeviewSelectComponent`,
   `LiTreeViewPageLoader`, `TreeViewLoadRequest`, `TreeViewLoadResult`,
   `LiTreeviewSelectNodeDirective`, `LiTreeviewSelectTriggerDirective`.
+- Separate barrels:
+  `package:limitless_ui/pdf_viewer.dart` exports `LiPdfViewerComponent`,
+  `LiPdfViewerLabels`, `LiPdfViewerToolbarAction`,
+  `LiPdfViewerPageText`, `LiPdfViewerPageInfo`, and
+  `liPdfViewerDirectives`.
+  `package:limitless_ui/quill_text_editor.dart` exports
+  `LiQuillTextEditorComponent`, `LiQuillTextEditorLabels`,
+  `LiQuillToolbarAction`, `LiQuillToolbarItem`,
+  `LiQuillToolbarOption`, and `liQuillTextEditorDirectives`.
+
+## Recent additions in `1.0.0-dev.22`
+
+- Expanded `li-pdf-viewer` with isolated `package:limitless_ui/pdf_viewer.dart` imports, localized labels/zoom presets, Dart/template toolbar and side-panel extensibility, document-text/page-info extraction APIs, and stronger browser coverage through dedicated PDF.js/browser bridges.
+- Added `li-quill-text-editor` through the isolated `package:limitless_ui/quill_text_editor.dart` barrel, with Quill `2.0.3` integration, configurable toolbar items/actions/templates, optional table support, bilingual labels, and the optional `updateModelOnBlur` performance mode.
+- Added `li-password-input` with Dart-controlled masking on top of a `type="text"` input, integrated reveal toggle, declarative validation support, and example coverage for autofill-resistant password flows.
+- Expanded declarative `liDropdown` overlays with default viewport adaptation for dynamic/body-mounted menus, post-show relayout for compact navbar triggers, optional `menuMaxWidth`/`menuMaxHeight` caps, and browser coverage for left/right preferred alignment plus long/tall menu clamping.
+- Added a dedicated workspace-shell demo route to the example app, simulating a dense operational navbar/sidebar layout with search, notification, organization switching, account submenu, and status-bar patterns without binding the docs to an external product name.
 
 ## Recent additions in `1.0.0-dev.17`
 
@@ -1504,6 +1534,87 @@ Most relevant inputs and features:
 </li-input>
 ```
 
+### Password Input
+
+`li-password-input` keeps the same `[(ngModel)]` and declarative-validation contract used by the other form fields, but masks the value in Dart while rendering a `type="text"` input. This is useful for Chrome autofill-resistant password flows where the host still wants an integrated reveal toggle and predictable form behavior.
+
+Most relevant inputs and features:
+
+- `showPasswordLabel`, `hidePasswordLabel`, `maskChar`, `autocomplete`, `dataLpignore`, `data1pIgnore`, and `dataBwignore` for browser/password-manager behavior;
+- `liType`, `liRules`, `liMessages`, `liValidationMode`, `invalid`, and `errorText` for the same declarative validation model used by `li-input`;
+- `inputBlur`, `inputFocus`, `inputClick`, `inputKeydown`, and `inputEnter` outputs for host-side reactions without dropping back to a native input.
+
+```html
+<li-password-input
+  label="Senha de assinatura"
+  helperText="Mascara controlada em Dart para reduzir autofill agressivo"
+  autocomplete="new-password"
+  [(ngModel)]="signaturePassword">
+</li-password-input>
+```
+
+### PDF Viewer
+
+`li-pdf-viewer` is intentionally shipped through the separate barrel [lib/pdf_viewer.dart](lib/pdf_viewer.dart). It uses PDF.js for rendering, keeps the component generic around reading and navigation flows, and exposes extensibility points for projected toolbar actions and side panels without coupling the viewer to a specific signature or backend implementation.
+
+Load the PDF.js bridge in the host page and render the component inside a container with explicit height:
+
+```dart
+import 'package:limitless_ui/pdf_viewer.dart';
+```
+
+```html
+<script src="assets/js/pdf.js/5.4.149/build/pdf.export.js" type="module"></script>
+
+<div style="height: 72vh;">
+  <li-pdf-viewer
+      [bytes]="documentBytes"
+      title="Release briefing"
+      pdfJsBasePath="/assets/js/pdf.js/5.4.149">
+  </li-pdf-viewer>
+</div>
+```
+
+Most relevant inputs and features:
+
+- `bytes` and `url` cover the common loading paths without locking the component to a single transport strategy;
+- `pdfJsBasePath`, `workerSource`, `standardFontDataUrl`, and `cMapUrl` decouple the component from the host application's asset layout;
+- `labels`, `LiPdfViewerLabels.portuguese`, `LiPdfViewerLabels.english`, `defaultLiPdfViewerZoomOptions`, and `defaultLiPdfViewerZoomOptionsPt` localize the toolbar and zoom menu;
+- `customToolbarActions`, `<template liPdfViewerToolbarActions>`, and `<template liPdfViewerSidePanel>` let hosts attach business actions and body-level side-panel content without forking the viewer;
+- `enableDownloadAction`, `enablePrintAction`, `enableRotateAction`, `enableFitWidthAction`, `enablePanModeAction`, `enableFullscreenAction`, and `enableGoToPageAction` allow action-level pruning without local CSS;
+- `extractPageText(...)`, `extractDocumentText(...)`, `getPageInfo(...)`, and `getAllPageInfo(...)` expose generic read APIs for inspection and metadata flows;
+- `documentLoaded`, `pageChange`, `scaleChange`, `loadError`, and `sidePanelOpenChange` surface viewer state back to the host.
+
+### Quill Text Editor
+
+`li-quill-text-editor` is exported through the separate barrel [lib/quill_text_editor.dart](lib/quill_text_editor.dart). It wraps Quill `2.0.3` as a generic rich-text editor, keeps `ngModel` integration through `ControlValueAccessor`, and exposes toolbar configuration as data plus projected templates so hosts can extend the editor without coupling it to proprietary flows.
+
+Load Quill in the host page before creating the component:
+
+```dart
+import 'package:limitless_ui/quill_text_editor.dart';
+```
+
+```html
+<script src="assets/js/quill/2.0.3/quill.js"></script>
+<script src="assets/js/quill_table_better/1.2.3/quill_table_better.js"></script>
+
+<li-quill-text-editor
+    [(ngModel)]="htmlValue"
+    [labels]="editorLabels"
+    [updateModelOnBlur]="true"
+    minHeight="20rem">
+</li-quill-text-editor>
+```
+
+Most relevant inputs and features:
+
+- `toolbarItems`, `toolbarActions`, and `<template liQuillTextEditorToolbarActions>` make the toolbar configurable through data and projected content;
+- `labels`, `LiQuillTextEditorLabels.portuguese`, `LiQuillTextEditorLabels.english`, `headerOptions`, and `fontSizeOptions` localize and customize the default toolbar contract;
+- `enableTableSupport`, `enableTableButton`, and `tableMenus` turn Quill Table Better support on only when the host wants that feature;
+- `updateModelOnBlur` lets the host defer `ngModel` propagation for performance-sensitive screens, while `commitPendingModelUpdate()` can flush pending edits explicitly;
+- `getHtml()`, `getPlainText()`, `getDeltaJson()`, `setDeltaJson(...)`, `format(...)`, and `insertTextAtSelection(...)` expose imperative editor APIs without reaching into JS interop directly.
+
 ### Datatable Select
 
 `li-datatable-select` is the right fit when a simple select is not enough because users need to search, paginate, and sort before choosing an item. It combines a `form-select`-style trigger with an internal `li-modal` that hosts a `li-datatable`.
@@ -2226,6 +2337,12 @@ Do not mix `liDropdownToggle` with Bootstrap's `data-bs-toggle="dropdown"` for t
 
 Use `container="body"` when the dropdown is declared inside a scrollable or clipped area such as a table, sidebar, card, modal body, `overflow: hidden`, or `overflow: auto` container. In this mode the menu is temporarily moved under `document.body` while open, so it escapes clipping and stacking-context bugs. The tradeoff is that component-scoped styles from the original parent may no longer reach the menu; use global classes, `dropdownClass`, or classes directly on `liDropdownMenu` for menu styling that must survive body mounting.
 
+`liDropdown` also supports `adaptToViewport` (default: `true`) for Popper-driven menus. In `display="dynamic"` mode the directive waits for the menu to become visible, recalculates after the real menu size is known, preserves the preferred placement whenever possible, and clamps the floating panel to the viewport when long or tall content would otherwise overflow.
+
+Use `menuMaxWidth` and `menuMaxHeight` when dense account menus or body-mounted navbar switchers need a predictable surface cap without relying only on external CSS. This is especially useful for avatar menus, organization switchers, and long explanatory blocks that can grow much wider or taller than the trigger.
+
+Placement strings may contain fallbacks separated by spaces, for example `bottom-start bottom-end top-start top-end`. The first placement remains the preferred alignment and the later values are only used when the preferred one would not fit the viewport. Prefer `bottom-start` when the menu should begin below the trigger left edge, and `bottom-end` when the menu should stay right-aligned to avatar/account triggers.
+
 Use inline rendering only when the menu should stay in the local DOM flow:
 
 ```html
@@ -2371,9 +2488,9 @@ dart pub publish --dry-run
 
 ## Demo application
 
-The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, currency input, datatable, datatable select, dropdown, fab, file upload, inputs, modal, nav, offcanvas, page header, pagination, person registration, popover, rating, scrollspy, select, multi-select, tabs, toast, treeview, typeahead, tooltip, wizard, work queue, and selection-control examples.
+The demo app under [example](example) now includes dedicated routes for accordion, breadcrumbs, color picker, currency input, datatable, datatable select, dropdown, fab, file upload, inputs, modal, nav, offcanvas, page header, pagination, PDF viewer, person registration, popover, quill text editor, rating, scrollspy, select, multi-select, tabs, toast, treeview, typeahead, tooltip, wizard, work queue, and selection-control examples.
 
-Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, overlay components that depend on browser geometry, and the new `person-registration` route that demonstrates an end-to-end form with declarative frontend rules plus fake backend validation.
+Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, overlay components that depend on browser geometry, the PDF.js and Quill integration pages, and the `person-registration` route that demonstrates an end-to-end form with declarative frontend rules plus fake backend validation.
 
 ## Release checklist
 

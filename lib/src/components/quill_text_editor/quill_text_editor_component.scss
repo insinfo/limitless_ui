@@ -1,0 +1,374 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.li-quill-text-editor {
+  --li-quill-surface-bg: var(--card-bg);
+  --li-quill-border-color: var(--border-color-translucent);
+  --li-quill-editor-bg: var(--card-bg);
+  --li-quill-editor-color: var(--body-color);
+  --li-quill-muted-color: rgba(var(--body-color-rgb), 0.68);
+  --li-quill-hover-bg: var(--dropdown-link-hover-bg, var(--gray-200));
+  --li-quill-active-color: var(--component-active-bg, var(--primary));
+  --li-quill-tooltip-bg: var(--card-bg);
+  --li-quill-tooltip-border: var(--border-color-translucent);
+
+  min-width: 0;
+}
+
+.li-quill-text-editor__surface {
+  overflow: hidden;
+  border: 1px solid var(--li-quill-border-color);
+  border-radius: 0;
+  background: var(--li-quill-surface-bg);
+}
+
+.li-quill-text-editor__toolbar {
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid color-mix(
+    in srgb,
+    var(--li-quill-border-color) 72%,
+    rgba(var(--body-color-rgb), 0.16) 28%
+  );
+  background: var(--li-quill-surface-bg);
+}
+
+.li-quill-text-editor__toolbar--hidden {
+  height: 0;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.li-quill-text-editor__toolbar-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.li-quill-text-editor__toolbar-item {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.li-quill-text-editor__toolbar-native-button,
+.li-quill-text-editor__toolbar-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 1.75rem;
+  min-width: 1.75rem;
+  padding: 0.125rem 0.3125rem;
+  border: 0;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  box-shadow: none;
+  color: var(--body-color);
+  font: inherit;
+}
+
+.li-quill-text-editor__toolbar-native-button:hover,
+.li-quill-text-editor__toolbar-native-button:focus-visible,
+.li-quill-text-editor__toolbar-action:hover,
+.li-quill-text-editor__toolbar-action:focus-visible {
+  color: var(--dropdown-link-hover-color, var(--body-color));
+  background: var(--li-quill-hover-bg);
+}
+
+.li-quill-text-editor__toolbar-native-button:focus-visible,
+.li-quill-text-editor__toolbar-action:focus-visible {
+  box-shadow: var(
+    --focus-ring-box-shadow,
+    0 0 0 0.25rem color-mix(in srgb, var(--component-active-bg, var(--primary, #0c83ff)) 20%, transparent)
+  );
+}
+
+.li-quill-text-editor__toolbar-picker {
+  color: var(--li-quill-editor-color);
+}
+
+.li-quill-text-editor__toolbar-template {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.li-quill-text-editor__editor {
+  min-height: var(--li-quill-editor-min-height, 16rem);
+  overflow: hidden;
+  background: var(--li-quill-editor-bg);
+}
+
+.li-quill-text-editor__surface--toolbar-hidden .li-quill-text-editor__editor {
+  border-top: 0;
+}
+
+.li-quill-text-editor__error {
+  margin-top: 0.5rem;
+  color: var(--danger);
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .li-quill-text-editor__editor .ql-container {
+  border: 0;
+  font-family: 'Inter', Helvetica, Arial, sans-serif;
+  background: var(--li-quill-editor-bg);
+  color: var(--li-quill-editor-color);
+}
+
+:host ::ng-deep .li-quill-text-editor__editor .ql-editor {
+  min-height: var(--li-quill-editor-min-height, 16rem);
+  font-family: 'Inter', Helvetica, Arial, sans-serif;
+  font-size: 12pt;
+  line-height: 1.5;
+  background: var(--li-quill-editor-bg);
+  color: var(--li-quill-editor-color);
+}
+
+:host ::ng-deep .li-quill-text-editor__editor .ql-editor table {
+  table-layout: auto;
+  width: auto;
+}
+
+:host ::ng-deep .li-quill-text-editor__editor .ql-editor table td {
+  border-color: var(--li-quill-border-color);
+}
+
+:host ::ng-deep .li-quill-text-editor__editor .ql-editor li[data-list='checked'] > .ql-ui,
+:host ::ng-deep .li-quill-text-editor__editor .ql-editor li[data-list='unchecked'] > .ql-ui {
+  color: var(--li-quill-muted-color);
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar.ql-toolbar.ql-snow {
+  border: 0;
+  border-bottom: 1px solid color-mix(
+    in srgb,
+    var(--li-quill-border-color) 72%,
+    rgba(var(--body-color-rgb), 0.16) 28%
+  );
+}
+
+:host ::ng-deep .li-quill-text-editor__editor.ql-container.ql-snow {
+  border: 0;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar.ql-toolbar:after {
+  content: none;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar button {
+  float: none;
+  width: auto;
+  height: auto;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar button svg {
+  float: none;
+  width: 1rem;
+  height: 1rem;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker {
+  float: none;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  height: 1.75rem;
+  color: var(--li-quill-editor-color);
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) {
+  min-width: 5.5rem;
+  background: transparent;
+  border: 1px solid var(--li-quill-border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--body-font-size-sm, 0.75rem);
+  line-height: 1.2;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) .ql-picker-label {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.125rem 1.5rem 0.125rem 0.5rem;
+  border: 0;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) .ql-picker-options {
+  min-width: 100%;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-color-picker,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-icon-picker {
+  width: 1.75rem;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  justify-content: center;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-color-picker .ql-picker-label,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-icon-picker .ql-picker-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-color-picker .ql-picker-label svg,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-icon-picker .ql-picker-label svg {
+  position: static;
+  margin: 0;
+  width: 1rem;
+  height: 1rem;
+  transform: none;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-stroke,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-stroke-miter {
+  stroke: currentColor;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-fill,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-stroke.ql-fill {
+  fill: currentColor;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar button:hover,
+:host ::ng-deep .li-quill-text-editor__toolbar button.ql-active,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker-label:hover,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker-label.ql-active,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker-item:hover,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker-item.ql-selected {
+  color: var(--li-quill-active-color);
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker-options,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-tooltip,
+:host ::ng-deep .li-quill-text-editor__editor .ql-tooltip {
+  background: var(--li-quill-tooltip-bg);
+  color: var(--li-quill-editor-color);
+  border-color: var(--li-quill-tooltip-border);
+  box-shadow: var(--box-shadow-lg);
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker-options .ql-picker-item,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-tooltip a,
+:host ::ng-deep .li-quill-text-editor__editor .ql-tooltip a {
+  color: inherit;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-tooltip input[type='text'],
+:host ::ng-deep .li-quill-text-editor__editor .ql-tooltip input[type='text'] {
+  background: var(--li-quill-editor-bg);
+  color: var(--li-quill-editor-color);
+  border-color: var(--li-quill-border-color);
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) {
+  position: relative;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) .ql-picker-label {
+  position: relative;
+  padding-right: 1.5rem;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) .ql-picker-label > svg {
+  position: absolute;
+  right: 0.4rem !important;
+  left: auto !important;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  pointer-events: none;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-picker.ql-expanded .ql-picker-options {
+  z-index: 1000;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-formats {
+  margin-right: 0.5rem;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .li-quill-text-editor__toolbar-action,
+:host ::ng-deep .li-quill-text-editor__toolbar-template button {
+  float: none;
+  width: auto;
+  height: auto;
+  min-width: 0;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar-template button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 1.75rem;
+  margin: 0;
+  padding: 0.125rem 0.3125rem;
+  border: 0;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  box-shadow: none;
+  color: var(--body-color);
+  font: inherit;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar-template button:hover,
+:host ::ng-deep .li-quill-text-editor__toolbar-template button:focus-visible {
+  color: var(--dropdown-link-hover-color, var(--body-color));
+  background: var(--li-quill-hover-bg);
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar-template button:focus-visible {
+  box-shadow: var(
+    --focus-ring-box-shadow,
+    0 0 0 0.25rem color-mix(in srgb, var(--component-active-bg, var(--primary, #0c83ff)) 20%, transparent)
+  );
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar-template button i {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+@media (max-width: 767.98px) {
+  .li-quill-text-editor__toolbar {
+    padding: 0.45rem;
+  }
+
+  .li-quill-text-editor__toolbar-main {
+    gap: 0.3rem 0.4rem;
+  }
+
+  .li-quill-text-editor__toolbar-native-button,
+  .li-quill-text-editor__toolbar-action {
+    min-width: 1.625rem;
+    min-height: 1.625rem;
+  }
+
+  :host ::ng-deep .li-quill-text-editor__toolbar .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) {
+    min-width: 4.75rem;
+  }
+}

@@ -14,6 +14,10 @@ import 'package:limitless_ui_example/src/pages/person_registration/person_regist
     as person_registration_page;
 import 'package:limitless_ui_example/src/pages/pagination/pagination_page.template.dart'
     as pagination_page;
+import 'package:limitless_ui_example/src/pages/pdf_viewer/pdf_viewer_page.template.dart'
+  as pdf_viewer_page;
+import 'package:limitless_ui_example/src/pages/quill_text_editor/quill_text_editor_page.template.dart'
+    as quill_text_editor_page;
 import 'package:limitless_ui_example/src/pages/selection_controls/selection_controls_page.template.dart'
     as selection_controls_page;
 import 'package:limitless_ui_example/src/pages/carousel/carousel_page.template.dart'
@@ -82,6 +86,8 @@ import 'package:limitless_ui_example/src/pages/wizard/wizard_page.template.dart'
     as wizard_page;
 import 'package:limitless_ui_example/src/pages/dropdown/dropdown_page.template.dart'
     as dropdown_page;
+import 'package:limitless_ui_example/src/pages/workspace_shell/workspace_shell_page.template.dart'
+  as workspace_shell_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
     as tabs_page;
 import 'package:limitless_ui_example/src/pages/toast/toast_page.template.dart'
@@ -241,6 +247,11 @@ class DemoRoutes {
     component: dropdown_page.DropdownPageComponentNgFactory,
   );
 
+  static final workspaceShell = RouteDefinition(
+    routePath: DemoRoutePaths.workspaceShell,
+    component: workspace_shell_page.WorkspaceShellPageComponentNgFactory,
+  );
+
   static final datatable = RouteDefinition(
     routePath: DemoRoutePaths.datatable,
     component: datatable_page.DatatablePageComponentNgFactory,
@@ -298,6 +309,16 @@ class DemoRoutes {
     component: helpers_page.HelpersPageComponentNgFactory,
   );
 
+  static final pdfViewer = RouteDefinition(
+    routePath: DemoRoutePaths.pdfViewer,
+    component: pdf_viewer_page.PdfViewerPageComponentNgFactory,
+  );
+
+  static final quillTextEditor = RouteDefinition(
+    routePath: DemoRoutePaths.quillTextEditor,
+    component: quill_text_editor_page.QuillTextEditorPageComponentNgFactory,
+  );
+
   static final sweetAlert = RouteDefinition(
     routePath: DemoRoutePaths.sweetAlert,
     component: sweet_alert_page.SweetAlertPageComponentNgFactory,
@@ -353,6 +374,7 @@ class DemoRoutes {
     popover,
     nav,
     dropdown,
+    workspaceShell,
     datatable,
     datatableProcessLookup,
     protocolWorkflow,
@@ -364,6 +386,8 @@ class DemoRoutes {
     personRegistration,
     treeview,
     helpers,
+    pdfViewer,
+    quillTextEditor,
     sweetAlert,
     highlight,
     button,

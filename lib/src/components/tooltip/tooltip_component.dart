@@ -13,6 +13,178 @@ const liTooltipDirectives = <Object>[
   LiTooltipDirective,
 ];
 
+typedef LiTooltipLifecycleCallback = void Function(html.Element tooltip);
+
+class LiTooltipController {
+  LiTooltipController._(
+    this._overlay,
+    this._detach, {
+    this.onOpen,
+    this.onClose,
+  }) {
+    _shownSubscription = _overlay.shownEvent.listen((_) {
+      _notifyOpen();
+    });
+    _hideSubscription = _overlay.hideEvent.listen((_) {
+      _notifyClose();
+    });
+    _hiddenSubscription = _overlay.hiddenEvent.listen((_) {
+      if (!_closedCompleter.isCompleted) {
+        _closedCompleter.complete();
+      }
+      Future<void>.microtask(dispose);
+    });
+  }
+
+  final _LiTooltipOverlay _overlay;
+  final void Function(LiTooltipController controller) _detach;
+  final LiTooltipLifecycleCallback? onOpen;
+  final LiTooltipLifecycleCallback? onClose;
+  final Completer<void> _closedCompleter = Completer<void>();
+  StreamSubscription<void>? _shownSubscription;
+  StreamSubscription<void>? _hideSubscription;
+  StreamSubscription<void>? _hiddenSubscription;
+  Timer? _closeTimer;
+  bool _disposed = false;
+  bool _openNotified = false;
+  bool _closeNotified = false;
+
+  Future<void> get closed => _closedCompleter.future;
+
+  bool isOpen() => !_disposed && _overlay.isOpen();
+
+  void close([bool? animation]) {
+    if (_disposed) {
+      return;
+    }
+    _closeTimer?.cancel();
+    _notifyClose();
+    _overlay.close(animation);
+  }
+
+  void dispose() {
+    if (_disposed) {
+      return;
+    }
+
+    _disposed = true;
+    _closeTimer?.cancel();
+    _shownSubscription?.cancel();
+    _shownSubscription = null;
+    _hideSubscription?.cancel();
+    _hideSubscription = null;
+    _hiddenSubscription?.cancel();
+    _hiddenSubscription = null;
+    _detach(this);
+    if (!_closedCompleter.isCompleted) {
+      _closedCompleter.complete();
+    }
+    _overlay.ngOnDestroy();
+  }
+
+  void scheduleClose(Duration? timer) {
+    _closeTimer?.cancel();
+    if (_disposed || timer == null) {
+      return;
+    }
+    _closeTimer = Timer(timer, close);
+  }
+
+  void _notifyOpen() {
+    if (_openNotified) {
+      return;
+    }
+
+    final tooltipElement = _overlay._tooltipElement;
+    if (tooltipElement == null) {
+      return;
+    }
+
+    _openNotified = true;
+    onOpen?.call(tooltipElement);
+  }
+
+  void _notifyClose() {
+    if (_closeNotified) {
+      return;
+    }
+
+    final tooltipElement = _overlay._tooltipElement;
+    if (tooltipElement == null) {
+      return;
+    }
+
+    _closeNotified = true;
+    onClose?.call(tooltipElement);
+  }
+}
+
+class LiTooltip {
+  static final Set<LiTooltipController> _activeControllers =
+      <LiTooltipController>{};
+
+  static LiTooltipController show({
+    required html.Element referenceElement,
+    required Object content,
+    String placement = 'top',
+    Object? positionTarget,
+    bool animation = true,
+    int delayMs = 0,
+    int? openDelay,
+    int? closeDelay,
+    String? tooltipClass,
+    String? container,
+    Object? autoClose = false,
+    bool allowHtml = false,
+    bool disabled = false,
+    Duration? timer,
+    LiTooltipConfig? config,
+    Object? context,
+    LiTooltipLifecycleCallback? onOpen,
+    LiTooltipLifecycleCallback? onClose,
+  }) {
+    if (content is String && content.trim().isEmpty) {
+      throw ArgumentError.value(
+        content,
+        'content',
+        'Tooltip content must not be empty.',
+      );
+    }
+
+    final overlay = _LiTooltipOverlay(referenceElement, null, config)
+      ..content = content
+      ..placement = placement
+      ..positionTarget = positionTarget
+      ..animation = animation
+      ..delayMs = delayMs
+      ..showDelayMs = openDelay
+      ..hideDelayMs = closeDelay
+      ..tooltipClass = tooltipClass
+      ..container = container
+      ..autoClose = autoClose
+      ..allowHtml = allowHtml
+      ..disabled = disabled;
+
+    final controller = LiTooltipController._(
+      overlay,
+      _activeControllers.remove,
+      onOpen: onOpen,
+      onClose: onClose,
+    );
+    _activeControllers.add(controller);
+    overlay.open(context: context);
+    controller._notifyOpen();
+    controller.scheduleClose(timer);
+    return controller;
+  }
+
+  static void dismissAll([bool? animation]) {
+    for (final controller in _activeControllers.toList()) {
+      controller.close(animation);
+    }
+  }
+}
+
 class _LiTooltipFloatingOverlay {
   _LiTooltipFloatingOverlay._(
     this._controller, {

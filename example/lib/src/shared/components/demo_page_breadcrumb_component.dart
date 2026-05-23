@@ -71,6 +71,7 @@ class DemoPageBreadcrumbComponent {
 
   static const Set<String> _utilityPaths = <String>{
     'helpers',
+    'pdf-viewer',
     'sweet-alert',
     'highlight',
     'button',

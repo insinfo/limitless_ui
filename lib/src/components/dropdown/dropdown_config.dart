@@ -8,10 +8,12 @@ class LiDropdownConfig {
     this.container,
     this.display,
     this.placement = 'bottom-start bottom-end top-start top-end',
+    this.adaptToViewport = true,
   });
 
   dynamic autoClose;
   String? container;
   String? display;
   dynamic placement;
+  bool adaptToViewport;
 }

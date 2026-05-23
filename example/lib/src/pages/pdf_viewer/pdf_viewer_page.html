@@ -1,0 +1,189 @@
+<div class="demo-page pdf-viewer-demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ intro }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ descriptionTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ flexibilityTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ flexibilityBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ requirementTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ requirementBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ extensibilityTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ extensibilityBody }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-body mb-3">
+              <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+                <div>
+                  <h6 class="mb-1">{{ controlsTitle }}</h6>
+                  <p class="text-muted mb-0">{{ controlsBody }}</p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-outline-primary" (click)="loadReleasePreview()">{{ releaseDocLabel }}</button>
+                  <button type="button" class="btn btn-outline-secondary" (click)="loadHandbookPreview()">{{ handbookDocLabel }}</button>
+                  <button type="button" class="btn btn-outline-primary" (click)="runQuickValidation()">{{ isPt ? 'Validação rápida' : 'Quick validation' }}</button>
+                  <button type="button" class="btn btn-outline-secondary" (click)="runAdvancedValidation()">{{ isPt ? 'Validação avançada' : 'Advanced validation' }}</button>
+                </div>
+              </div>
+
+              <div class="row g-3 pdf-viewer-demo-controls">
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="toolbarVisible">
+                  <span class="form-check-label">Toolbar</span>
+                </label>
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="showTitle">
+                  <span class="form-check-label">Title</span>
+                </label>
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enableDownloadAction">
+                  <span class="form-check-label">Download</span>
+                </label>
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enablePrintAction">
+                  <span class="form-check-label">Print</span>
+                </label>
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enableRotateAction">
+                  <span class="form-check-label">Rotate</span>
+                </label>
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enableFitWidthAction">
+                  <span class="form-check-label">Fit width</span>
+                </label>
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enablePanModeAction">
+                  <span class="form-check-label">Pan mode</span>
+                </label>
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enableFullscreenAction">
+                  <span class="form-check-label">Fullscreen</span>
+                </label>
+                <label class="col-sm-6 col-lg-4 form-check pdf-viewer-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enableGoToPageAction">
+                  <span class="form-check-label">Go to page</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="demo-summary-box mb-3">
+              <div><strong>{{ isPt ? 'Estado' : 'State' }}:</strong> {{ statusSummary }}</div>
+              <div><strong>{{ isPt ? 'Erro' : 'Error' }}:</strong> {{ errorSummary }}</div>
+            </div>
+
+            <div class="demo-pdf-viewer-shell">
+              <li-pdf-viewer
+                [bytes]="activePdfBytes"
+                [title]="activeDocumentTitle"
+                [labels]="viewerLabels"
+                [zoomOptions]="viewerZoomOptions"
+                [customToolbarActions]="viewerToolbarActions"
+                [sidePanelOpen]="sidePanelOpen"
+                [sidePanelTitle]="sidePanelTitle"
+                [toolbarVisible]="toolbarVisible"
+                [showTitle]="showTitle"
+                [enableDownloadAction]="enableDownloadAction"
+                [enablePrintAction]="enablePrintAction"
+                [enableRotateAction]="enableRotateAction"
+                [enableFitWidthAction]="enableFitWidthAction"
+                [enablePanModeAction]="enablePanModeAction"
+                [enableFullscreenAction]="enableFullscreenAction"
+                [enableGoToPageAction]="enableGoToPageAction"
+                downloadFileName="limitless-ui-demo.pdf"
+                pdfJsBasePath="/assets/js/pdf.js/5.4.149"
+                (documentLoaded)="onDocumentLoaded($event)"
+                (pageChange)="onPageChanged($event)"
+                (scaleChange)="onScaleChanged($event)"
+                (sidePanelOpenChange)="onViewerSidePanelOpenChange($event)"
+                (loadError)="onLoadError($event)">
+                <template liPdfViewerToolbarActions let-ctx>
+                  <button type="button" class="btn btn-sm btn-light border-transparent rounded-pill pdf-viewer-demo-template-button"
+                    (click)="runQuickValidation()">
+                    {{ isPt ? 'Validação rápida' : 'Quick validation' }}
+                  </button>
+                  <button type="button" class="btn btn-sm btn-flat-primary border-transparent rounded-pill pdf-viewer-demo-template-button"
+                    (click)="runAdvancedValidation()">
+                    {{ isPt ? 'Validação avançada' : 'Advanced validation' }}
+                  </button>
+                </template>
+
+                <template liPdfViewerSidePanel let-ctx>
+                  <pdf-viewer-signature-demo-panel
+                    [activeMode]="activeValidationMode"
+                    [documentIntact]="activeDocumentIntact"
+                    [signatureValidationSummary]="activeValidationSummary"
+                    [signatureValidationElapsedLabel]="activeValidationElapsedLabel"
+                    [signatureEntries]="activeSignatureEntries"
+                    (quickValidation)="runQuickValidation()"
+                    (advancedValidation)="runAdvancedValidation()"
+                    (entryOpen)="onSignatureEntryOpen(ctx, $event)">
+                  </pdf-viewer-signature-demo-panel>
+                </template>
+              </li-pdf-viewer>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
+            <ul class="mb-4 ps-3">
+              <li *ngFor="let item of apiItems">{{ item }}</li>
+            </ul>
+
+            <h6 class="mb-2">Import</h6>
+            <div class="mb-4">
+              <li-highlight [code]="importSnippet" language="dart"></li-highlight>
+            </div>
+
+            <h6 class="mb-2">PDF.js bridge</h6>
+            <div class="mb-4">
+              <li-highlight [code]="scriptSnippet" language="html"></li-highlight>
+            </div>
+
+            <h6 class="mb-2">Basic usage</h6>
+            <div class="mb-4">
+              <li-highlight [code]="basicSnippet" language="html"></li-highlight>
+            </div>
+
+            <h6 class="mb-2">Customization</h6>
+            <li-highlight [code]="customSnippet" language="html"></li-highlight>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

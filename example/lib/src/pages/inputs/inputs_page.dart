@@ -12,6 +12,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiTabsComponent,
     LiTabxDirective,
     LiInputComponent,
+    LiPasswordInputComponent,
     LiDateRangePickerComponent,
     LiMultiSelectComponent,
     LiSelectComponent,
@@ -40,6 +41,14 @@ class InputsPageComponent {
     (inputKeydown)="onFieldKeydown(\$event)"
     (inputEnter)="loadPersonByCode(\$event.target.value)">
 </li-input>''';
+
+    static const String passwordSnippet = '''
+<li-password-input
+        label="Senha de assinatura"
+        helperText="Mascara controlada em Dart para reduzir autofill agressivo"
+        autocomplete="new-password"
+        [(ngModel)]="signaturePassword">
+</li-password-input>''';
 
   static const String validationSnippet = '''
 <li-input
@@ -152,6 +161,7 @@ class InputsPageComponent {
   String seats = '25';
   String searchTerm = 'deploy canary';
   String adminPassword = 'Limitless@2026';
+    String signaturePassword = 'SIG-2048';
   String readonlyToken = 'REL-2026.03.31';
   String disabledOwner = 'Conta sincronizada';
   String disabledBatch = '314';
@@ -184,6 +194,8 @@ class InputsPageComponent {
   String get inputSnippetTitle => 'LiInput';
   String get inputEventsSnippetTitle =>
       isPt ? 'Eventos do LiInput' : 'LiInput events';
+  String get passwordSnippetTitle =>
+      isPt ? 'LiPasswordInput' : 'LiPasswordInput';
   String get selectSnippetTitle =>
       isPt ? 'Select e multi-select' : 'Select and multi-select';
   String get dateRangeSnippetTitle =>
@@ -230,6 +242,11 @@ class InputsPageComponent {
   String get passwordHelp => isPt
       ? 'Demonstra o modo overlay do olho dentro do campo, mais próximo do padrão usado em fluxos sensíveis como autenticação e assinatura.'
       : 'Demonstrates the overlay eye button inside the field, closer to the pattern used in sensitive flows like authentication and signing.';
+  String get signaturePasswordLabel =>
+      isPt ? 'Senha de assinatura' : 'Signature password';
+  String get signaturePasswordHelp => isPt
+      ? 'Campo dedicado com type="text", máscara controlada em Dart e autocomplete="new-password" para reduzir autofill agressivo do Chrome.'
+      : 'Dedicated field with type="text", Dart-controlled masking, and autocomplete="new-password" to reduce aggressive Chrome autofill.';
   String get tokenLabel => isPt ? 'Token da release' : 'Release token';
   String get tokenHelp => isPt
       ? 'Campo somente leitura para referências imutáveis.'

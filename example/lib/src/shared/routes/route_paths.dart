@@ -30,6 +30,7 @@ class DemoRoutePaths {
   static final popover = RoutePath(path: 'popover');
   static final nav = RoutePath(path: 'nav');
   static final dropdown = RoutePath(path: 'dropdown');
+  static final workspaceShell = RoutePath(path: 'workspace-shell');
   static final datatable = RoutePath(path: 'datatable');
   static final datatableProcessLookup =
       RoutePath(path: 'datatable-process-lookup');
@@ -42,6 +43,8 @@ class DemoRoutePaths {
   static final personRegistration = RoutePath(path: 'person-registration');
   static final treeview = RoutePath(path: 'treeview');
   static final helpers = RoutePath(path: 'helpers');
+  static final pdfViewer = RoutePath(path: 'pdf-viewer');
+  static final quillTextEditor = RoutePath(path: 'quill-text-editor');
   static final sweetAlert = RoutePath(path: 'sweet-alert');
   static final highlight = RoutePath(path: 'highlight');
   static final button = RoutePath(path: 'button');

@@ -70,6 +70,16 @@
   overscroll-behavior: contain;
 }
 
+:host .li-dropdown-menu__mobile-footer {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem 1rem;
+  border-top: 1px solid var(--border-color-translucent);
+  background: color-mix(in srgb, var(--card-bg) 92%, var(--body-bg) 8%);
+}
+
 :host .li-dropdown-menu__mobile-header {
   display: flex;
   align-items: center;

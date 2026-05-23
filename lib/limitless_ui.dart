@@ -63,6 +63,7 @@ export 'src/components/dropdown/dropdown_config.dart';
 export 'src/components/loading/loading.dart';
 export 'src/components/highlight_component/li_highlight_component.dart';
 export 'src/components/input/input_component.dart';
+export 'src/components/password_input/password_input_component.dart';
 export 'src/components/fab/fab_component.dart';
 export 'src/components/modal_component/modal_component.dart';
 export 'src/components/offcanvas/offcanvas_component.dart';

@@ -1,0 +1,217 @@
+<div id="outerContainer">
+  <div *ngIf="toolbarVisible" #toolbarContainer id="toolbarContainer" [class.toolbar-overflow-active]="useDesktopOverflowMenu">
+    <span class="pdf-mobile-page-indicator" *ngIf="totalPages > 0" [title]="pageCounterLabel">{{ currentPage }}/{{ totalPages }}</span>
+
+    <div id="toolbarViewerLeft" class="toolbarHorizontalGroup toolbar-page-navigation">
+      <span *ngIf="showTitle" class="li-pdf-viewer__title" [title]="title">{{ title }}</span>
+      <button *ngFor="let action of leadingCustomToolbarActions"
+        type="button"
+        [class]="resolveCustomToolbarActionButtonClass(action)"
+        [disabled]="isCustomToolbarActionDisabled(action)"
+        [title]="resolveCustomToolbarActionTitle(action)"
+        [attr.aria-label]="resolveCustomToolbarActionTitle(action)"
+        (click)="onCustomToolbarActionClick(action)">
+        <i [class]="resolveCustomToolbarActionIconClass(action)"></i>
+      </button>
+      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="previousPage()" type="button"
+        [disabled]="currentPage <= 1" [attr.aria-label]="labels.previousPage" [title]="labels.previousPage">
+        <i class="ph ph-arrow-left"></i>
+      </button>
+      <input (change)="onChangePageHandle($event)" type="text" [value]="currentPage"
+        [attr.size]="pageInputSizeAttr" [style.width]="pageInputWidth" class="toolbar-page-input"
+        [attr.aria-label]="labels.page" />
+      <span class="toolbar-page-total" [style.min-width]="totalPagesMinWidth" [title]="pageCounterLabel">/ {{ totalPages }}</span>
+      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="nextPage()" type="button"
+        [disabled]="currentPage >= totalPages" [attr.aria-label]="labels.nextPage" [title]="labels.nextPage">
+        <i class="ph ph-arrow-right"></i>
+      </button>
+    </div>
+
+    <div id="toolbarViewerMiddle" class="toolbarHorizontalGroup">
+      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button pdf-secondary-toolbar-action" (click)="zoomOutBtnClick()" type="button"
+        title="Zoom out" aria-label="Zoom out">
+        <i class="ph ph-minus"></i>
+      </button>
+      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button pdf-secondary-toolbar-action" (click)="zoomInBtnClick()" type="button"
+        title="Zoom in" aria-label="Zoom in">
+        <i class="ph ph-plus"></i>
+      </button>
+      <li-dropdown-menu class="pdf-zoom-menu"
+        [options]="zoomOptions"
+        [value]="currentScaleValueForSelect"
+        [triggerLabel]="currentScaleLabel"
+        triggerClass="btn btn-light btn-sm rounded-pill border-transparent pdf-zoom-trigger"
+        menuClass="dropdown-menu-end wmin-sm-200"
+        container="body"
+        menuMaxHeight="18rem"
+        mobilePresentation="modal"
+        mobileBreakpoint="767.98px"
+        [mobileMenuTitle]="labels.selectZoomTitle"
+        [adaptToViewport]="true"
+        [showCaret]="true"
+        (valueChange)="onScaleDropdownChange($event)">
+      </li-dropdown-menu>
+      <button *ngIf="enableFitWidthAction" class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button pdf-secondary-toolbar-action"
+        (click)="fitContent()" type="button" [title]="labels.fitWidth" [attr.aria-label]="labels.fitWidth">
+        <i class="ph ph-frame-corners"></i>
+      </button>
+      <button *ngIf="enableRotateAction" class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button pdf-secondary-toolbar-action"
+        (click)="rotate()" type="button" [title]="labels.rotate" [attr.aria-label]="labels.rotate">
+        <i class="ph ph-arrow-counter-clockwise"></i>
+      </button>
+      <li-dropdown-menu *ngIf="useDesktopOverflowMenu"
+        class="pdf-toolbar-overflow-menu"
+        [options]="pdfDesktopOverflowActionOptions"
+        triggerIconClass="ph ph-list"
+        triggerClass="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button"
+        menuClass="dropdown-menu-end wmin-sm-200"
+        container="body"
+        menuMaxHeight="18rem"
+        mobilePresentation="sheet"
+        mobileBreakpoint="767.98px"
+        [mobileMenuTitle]="labels.moreActions"
+        [adaptToViewport]="true"
+        [showCaret]="false"
+        [ariaLabel]="labels.moreActions"
+        (valueChange)="onActionMenuSelect($event)">
+      </li-dropdown-menu>
+    </div>
+
+    <div id="toolbarViewerRight" class="toolbarHorizontalGroup pdf-toolbar-actions-desktop">
+      <button *ngFor="let action of trailingCustomToolbarActions"
+        type="button"
+        [class]="resolveCustomToolbarActionButtonClass(action)"
+        [disabled]="isCustomToolbarActionDisabled(action)"
+        [title]="resolveCustomToolbarActionTitle(action)"
+        [attr.aria-label]="resolveCustomToolbarActionTitle(action)"
+        (click)="onCustomToolbarActionClick(action)">
+        <i [class]="resolveCustomToolbarActionIconClass(action)"></i>
+      </button>
+      <span *ngIf="!useDesktopOverflowMenu && hasToolbarActionsTemplate" class="toolbarHorizontalGroup li-pdf-viewer__toolbar-template-slot">
+        <template [ngTemplateOutlet]="resolvedToolbarActionsTemplate"
+          [ngTemplateOutletValue]="templateContext">
+        </template>
+      </span>
+      <button *ngIf="enableGoToPageAction" class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="openGoToPageModal()" type="button"
+        [title]="labels.goToPage" [attr.aria-label]="labels.goToPage">
+        <i class="ph ph-file-text"></i>
+      </button>
+      <button *ngIf="enablePanModeAction" class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button pdf-pan-mode-toggle"
+        [class.is-active]="isPanModeEnabled" (click)="togglePanMode()" type="button"
+        [title]="panModeButtonLabel" [attr.aria-label]="panModeButtonLabel">
+        <i [class]="panModeIconClass"></i>
+      </button>
+      <button *ngIf="enableFullscreenAction" class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="toggleFullscreen()" type="button"
+        [title]="fullscreenButtonLabel" [attr.aria-label]="fullscreenButtonLabel">
+        <i [class]="fullscreenIconClass"></i>
+      </button>
+      <button *ngIf="enableDownloadAction" class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="downloadDocument()" type="button"
+        [title]="labels.download" [attr.aria-label]="labels.download">
+        <i class="ph ph-download"></i>
+      </button>
+      <button *ngIf="enablePrintAction" class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="printDocument()" type="button"
+        [title]="labels.print" [attr.aria-label]="labels.print">
+        <i class="ph ph-printer"></i>
+      </button>
+    </div>
+
+    <div id="toolbarViewerMobileActions" class="toolbarHorizontalGroup pdf-toolbar-actions-mobile">
+      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="zoomOutBtnClick()" type="button" title="Zoom out" aria-label="Zoom out">
+        <i class="ph ph-minus"></i>
+      </button>
+      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="zoomInBtnClick()" type="button" title="Zoom in" aria-label="Zoom in">
+        <i class="ph ph-plus"></i>
+      </button>
+      <li-dropdown-menu class="pdf-mobile-actions-menu"
+        [options]="pdfMobileActionOptions"
+        [mobileFooterTemplate]="resolvedToolbarActionsTemplate"
+        [mobileFooterContext]="templateContext"
+        triggerIconClass="ph ph-list"
+        triggerClass="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button"
+        menuClass="dropdown-menu-end wmin-sm-200"
+        container="body"
+        menuMaxHeight="70vh"
+        mobilePresentation="sheet"
+        mobileBreakpoint="767.98px"
+        [mobileMenuTitle]="labels.mobileActions"
+        [adaptToViewport]="true"
+        [showCaret]="false"
+        [ariaLabel]="labels.moreActions"
+        (valueChange)="onActionMenuSelect($event)">
+      </li-dropdown-menu>
+    </div>
+  </div>
+
+  <div class="li-pdf-viewer__content-shell" [class.has-side-panel]="shouldShowInlineSidePanel">
+    <div class="li-pdf-viewer__stack">
+      <div #viewerContainer id="viewerContainer" tabindex="0" [class.pan-mode-enabled]="isPanModeEnabled">
+        <div #viewer id="viewer" class="pdfViewer"></div>
+      </div>
+
+      <div *ngIf="showEmptyState" class="li-pdf-viewer__overlay li-pdf-viewer__overlay--empty">
+        {{ labels.emptyState }}
+      </div>
+
+      <div *ngIf="isLoading" class="li-pdf-viewer__overlay">
+        {{ labels.loading }}
+      </div>
+
+      <div *ngIf="errorMessage != null" class="li-pdf-viewer__overlay li-pdf-viewer__overlay--error">
+        {{ labels.errorPrefix }} {{ errorMessage }}
+      </div>
+    </div>
+
+    <aside *ngIf="shouldShowInlineSidePanel"
+      class="li-pdf-viewer__side-panel"
+      [style.width]="resolvedSidePanelWidth"
+      [style.flex-basis]="resolvedSidePanelWidth">
+      <div *ngIf="hasSidePanelHeader" class="li-pdf-viewer__side-panel-header">
+        <span *ngIf="resolvedSidePanelTitle != null" class="li-pdf-viewer__side-panel-title">{{ resolvedSidePanelTitle }}</span>
+        <button *ngIf="enableSidePanelCloseButton"
+          type="button"
+          class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button li-pdf-viewer__side-panel-close"
+          [attr.aria-label]="labels.cancel"
+          [title]="labels.cancel"
+          (click)="closeSidePanel()">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+
+      <div class="li-pdf-viewer__side-panel-body">
+        <template [ngTemplateOutlet]="resolvedSidePanelTemplate"
+          [ngTemplateOutletValue]="templateContext">
+        </template>
+      </div>
+    </aside>
+  </div>
+
+  <li-modal #goToPageModal [title-text]="labels.goToPageTitle" size="modal-sm" headerColor="primary"
+    [lazyContent]="true" [verticalCenter]="true" [fullScreenOnMobile]="false"
+    (close)="onGoToPageModalClose()">
+    <label class="form-label" for="pdfGoToPageInput">{{ labels.page }}</label>
+    <input id="pdfGoToPageInput" class="form-control" type="number" min="1" [max]="totalPages"
+      [(ngModel)]="goToPageInputText" placeholder="1">
+    <div class="form-text">{{ labels.pageRangeHint(totalPages) }}</div>
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button type="button" class="btn btn-light" (click)="closeGoToPageModal()">{{ labels.cancel }}</button>
+      <button type="button" class="btn btn-primary" (click)="confirmGoToPage()">{{ labels.confirm }}</button>
+    </div>
+  </li-modal>
+
+  <template [ngIf]="hasSidePanelTemplate && sidePanelModalOnMobile">
+    <li-modal
+      #sidePanelModal
+      [title-text]="resolvedSidePanelTitle ?? title"
+      size="large"
+      headerColor="primary"
+      [enableModalBodyClass]="false"
+      [dialogScrollable]="true"
+      [fullScreenOnMobile]="true"
+      [lazyContent]="true"
+      [contentTemplate]="resolvedSidePanelTemplate"
+      [contentTemplateContext]="templateContext"
+      contentHostClass="li-pdf-viewer__side-panel li-pdf-viewer__side-panel--modal"
+      (close)="onSidePanelModalClose()">
+    </li-modal>
+  </template>
+</div>

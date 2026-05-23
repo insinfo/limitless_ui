@@ -87,13 +87,17 @@ await sweetAlertService.show(
   timer: const Duration(seconds: 4),
 );
 
-final prompt = await SweetAlert.prompt(
-  title: 'Prioridade da fila',
-  inputType: SweetAlertInputType.radio,
-  inputOptions: const {
-    'fast': 'Fast track',
-    'normal': 'Normal',
-    'safe': 'Safe mode',
+SweetAlert.confirm(
+  title: 'Publicar fila?',
+  message: 'Use callbacks se não quiser aguardar o Future.',
+  onConfirmAction: (_) {
+    logger.info('Confirmou publicação');
+  },
+  onCancelAction: (_) {
+    logger.info('Cancelou publicação');
+  },
+  onDismissAction: (_) {
+    logger.info('Fechou sem confirmar');
   },
 );''';
 

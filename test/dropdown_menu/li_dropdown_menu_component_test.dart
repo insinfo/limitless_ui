@@ -102,9 +102,17 @@ import 'li_dropdown_menu_component_test.template.dart' as ng;
           mobilePresentation="sheet"
           mobileBreakpoint="9999px"
           mobileMenuTitle="Escolha uma acao"
+          [mobileFooterTemplate]="mobileFooter"
+          [mobileFooterContext]="mobileFooterLabel"
           menuMaxHeight="10rem"
           (valueChange)="selectedValue = \$event">
       </li-dropdown-menu>
+
+      <template #mobileFooter let-data>
+        <button id="mobile-footer-action" type="button" class="btn btn-light btn-sm" (click)="mobileFooterClicks = mobileFooterClicks + 1">
+          {{ data }}
+        </button>
+      </template>
 
       <div style="position: fixed; left: 12px; bottom: 4px;">
         <li-dropdown-menu
@@ -164,6 +172,8 @@ class DropdownMenuTestHostComponent {
   LiDropdownMenuComponent? keepOpenMenu;
 
   String selectedValue = 'copy';
+  String mobileFooterLabel = 'Validação avançada';
+  int mobileFooterClicks = 0;
 
   final List<LiDropdownMenuOption> options = const <LiDropdownMenuOption>[
     LiDropdownMenuOption(value: 'copy', label: 'Copiar'),
@@ -363,6 +373,36 @@ void main() {
       fixture.rootElement.querySelector('.li-dropdown-menu__mobile-backdrop'),
       isNotNull,
     );
+  });
+
+  test('renders projected mobile footer content and closes the sheet on click',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final trigger =
+        fixture.rootElement.querySelector('[aria-label="mobile-sheet-actions"]')
+            as html.ButtonElement;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final footerButton = fixture.rootElement
+        .querySelector('#mobile-footer-action') as html.ButtonElement?;
+
+    expect(footerButton, isNotNull);
+    expect(footerButton!.text, contains('Validação avançada'));
+
+    await fixture.update((_) {
+      footerButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.mobileFooterClicks, 1);
+    expect(host.mobileSheetMenu!.isOpen, isFalse);
   });
 
   test('inline menu near viewport edge stays open with viewport adaptation',

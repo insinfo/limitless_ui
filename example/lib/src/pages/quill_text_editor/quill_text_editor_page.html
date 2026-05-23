@@ -1,0 +1,172 @@
+<div class="demo-page quill-text-editor-demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ intro }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ capabilityTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ capabilityBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ integrationTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ integrationBody }}</p>
+                </div>
+              </div>
+              <div class="col-xl-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ customizationTitle }}</h6>
+                  <p class="mb-0 text-muted">{{ customizationBody }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-body mb-3">
+              <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+                <div>
+                  <h6 class="mb-1">{{ controlsTitle }}</h6>
+                  <p class="text-muted mb-0">{{ controlsBody }}</p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-outline-primary" (click)="applyChecklistTemplate()">{{ checklistButtonLabel }}</button>
+                  <button type="button" class="btn btn-outline-secondary" (click)="captureEditorState()">{{ projectedSnapshotLabel }}</button>
+                </div>
+              </div>
+
+              <div class="row g-3 quill-demo-controls">
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="toolbarVisible">
+                  <span class="form-check-label">Toolbar</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="readOnly">
+                  <span class="form-check-label">{{ isPt ? 'Somente leitura' : 'Read only' }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="updateModelOnBlur">
+                  <span class="form-check-label">{{ isPt ? 'Atualizar ngModel no blur' : 'Update ngModel on blur' }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enableTableSupport">
+                  <span class="form-check-label">{{ isPt ? 'Suporte a tabela' : 'Table support' }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enableTableButton">
+                  <span class="form-check-label">{{ isPt ? 'Botão de tabela' : 'Table button' }}</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="demo-summary-box mb-3">
+              <strong>{{ statusLabel }}:</strong> {{ toolbarEvent.isEmpty ? defaultStatus : toolbarEvent }}
+            </div>
+
+            <div class="row g-3 align-items-stretch">
+              <div class="col-xl-7">
+                <div class="quill-demo-shell h-100">
+                  <div class="quill-demo-shell__header">
+                    <div>
+                      <h6 class="mb-1">{{ liveEditorTitle }}</h6>
+                      <p class="text-muted mb-0">{{ isPt ? 'A toolbar aceita ações Dart e botões projetados via template.' : 'The toolbar accepts Dart actions and projected template buttons.' }}</p>
+                    </div>
+                  </div>
+
+                  <li-quill-text-editor
+                      #editor
+                      [(ngModel)]="htmlValue"
+                      [labels]="editorLabels"
+                      [toolbarVisible]="toolbarVisible"
+                      [readOnly]="readOnly"
+                      [updateModelOnBlur]="updateModelOnBlur"
+                      [enableTableSupport]="enableTableSupport"
+                      [enableTableButton]="enableTableButton"
+                      [toolbarActions]="toolbarActions"
+                      minHeight="24rem">
+                    <template liQuillTextEditorToolbarActions let-ctx>
+                      <button type="button" class="quill-demo-template-button"
+                        (click)="insertStamp()">
+                        <i class="ph ph-stamp"></i>
+                        {{ projectedStampLabel }}
+                      </button>
+                      <button type="button" class="quill-demo-template-button"
+                        (click)="captureEditorState()">
+                        <i class="ph ph-arrows-clockwise"></i>
+                        {{ projectedSnapshotLabel }}
+                      </button>
+                    </template>
+                  </li-quill-text-editor>
+                </div>
+              </div>
+
+              <div class="col-xl-5">
+                <div class="card card-body h-100 quill-demo-preview">
+                  <h6 class="mb-3">{{ previewTitle }}</h6>
+
+                  <div class="quill-demo-preview__block">
+                    <span class="quill-demo-preview__label">{{ htmlPreviewLabel }}</span>
+                    <pre>{{ htmlValue }}</pre>
+                  </div>
+
+                  <div class="quill-demo-preview__block">
+                    <span class="quill-demo-preview__label">{{ plainTextPreviewLabel }}</span>
+                    <pre>{{ plainTextPreview }}</pre>
+                  </div>
+
+                  <div class="quill-demo-preview__block mb-0">
+                    <span class="quill-demo-preview__label">{{ deltaPreviewLabel }}</span>
+                    <pre>{{ deltaPreview }}</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ isPt ? 'A demo usa o export isolado do editor e reaproveita os assets do Quill já carregados pelo example.' : 'The demo uses the isolated editor export and reuses the Quill assets already loaded by the example.' }}</p>
+            <ul class="mb-4 ps-3">
+              <li *ngFor="let item of apiItems">{{ item }}</li>
+            </ul>
+
+            <h6 class="mb-2">Import</h6>
+            <div class="mb-4">
+              <li-highlight [code]="importSnippet" language="dart"></li-highlight>
+            </div>
+
+            <h6 class="mb-2">Assets</h6>
+            <div class="mb-4">
+              <li-highlight [code]="assetSnippet" language="html"></li-highlight>
+            </div>
+
+            <h6 class="mb-2">Basic usage</h6>
+            <div class="mb-4">
+              <li-highlight [code]="basicSnippet" language="html"></li-highlight>
+            </div>
+
+            <h6 class="mb-2">Custom actions and template</h6>
+            <li-highlight [code]="customSnippet" language="dart"></li-highlight>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+</div>

@@ -36,6 +36,8 @@ class SweetAlertService {
     String? confirmButtonClass,
     SweetAlertLifecycleCallback? onOpen,
     SweetAlertLifecycleCallback? onClose,
+    SweetAlertResultCallback<void>? onConfirmAction,
+    SweetAlertResultCallback<void>? onDismissAction,
   }) {
     return SweetAlert.show(
       title: title,
@@ -67,6 +69,8 @@ class SweetAlertService {
       confirmButtonClass: confirmButtonClass,
       onOpen: onOpen,
       onClose: onClose,
+      onConfirmAction: onConfirmAction,
+      onDismissAction: onDismissAction,
     );
   }
 
@@ -100,6 +104,9 @@ class SweetAlertService {
     String? cancelButtonClass,
     SweetAlertLifecycleCallback? onOpen,
     SweetAlertLifecycleCallback? onClose,
+    SweetAlertResultCallback<bool>? onConfirmAction,
+    SweetAlertResultCallback<bool>? onCancelAction,
+    SweetAlertResultCallback<bool>? onDismissAction,
   }) {
     return SweetAlert.confirm(
       title: title,
@@ -131,6 +138,9 @@ class SweetAlertService {
       cancelButtonClass: cancelButtonClass,
       onOpen: onOpen,
       onClose: onClose,
+      onConfirmAction: onConfirmAction,
+      onCancelAction: onCancelAction,
+      onDismissAction: onDismissAction,
     );
   }
 
@@ -174,6 +184,9 @@ class SweetAlertService {
     String? cancelButtonClass,
     SweetAlertLifecycleCallback? onOpen,
     SweetAlertLifecycleCallback? onClose,
+    SweetAlertResultCallback<String>? onConfirmAction,
+    SweetAlertResultCallback<String>? onCancelAction,
+    SweetAlertResultCallback<String>? onDismissAction,
   }) {
     return SweetAlert.prompt(
       title: title,
@@ -215,6 +228,9 @@ class SweetAlertService {
       cancelButtonClass: cancelButtonClass,
       onOpen: onOpen,
       onClose: onClose,
+      onConfirmAction: onConfirmAction,
+      onCancelAction: onCancelAction,
+      onDismissAction: onDismissAction,
     );
   }
 

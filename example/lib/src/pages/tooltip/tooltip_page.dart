@@ -1,3 +1,5 @@
+import 'dart:html' as html;
+
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 @Component(
@@ -106,6 +108,25 @@ class DemoTooltipDefaults {
   }
 }''';
 
+  static const String staticApiSnippet = '''final controller = LiTooltip.show(
+  referenceElement: button,
+  content: 'Fila sincronizada com sucesso.',
+  placement: 'right',
+  container: 'body',
+  autoClose: 'outside',
+  openDelay: 300,
+  closeDelay: 600,
+  onOpen: (tooltip) {
+    tooltip.classes.add('tooltip-aurora');
+  },
+  onClose: (_) {
+    logger.info('Tooltip fechado');
+  },
+  timer: const Duration(seconds: 4),
+);
+
+await controller.closed;''';
+
   static const String componentApiSnippet = '''
 <li-tooltip
   [text]="'Mostra dicas ao passar o mouse.'"
@@ -121,8 +142,13 @@ class DemoTooltipDefaults {
   @ViewChild('manualTooltip')
   LiTooltipDirective? manualTooltip;
 
+  @ViewChild('staticTooltipButton')
+  html.ButtonElement? staticTooltipButton;
+
   @ViewChild('targetedTooltip')
   LiTooltipDirective? targetedTooltip;
+
+  LiTooltipController? _staticTooltipController;
 
   String tooltipEventLog = '';
 
@@ -227,6 +253,15 @@ class DemoTooltipDefaults {
   String get globalConfigBody => _isPt
       ? 'Os defaults podem ser escopados por subtree usando LiTooltipConfig como provider local.'
       : 'Defaults can be scoped by subtree using LiTooltipConfig as a local provider.';
+    String get staticApiTitle => _isPt ? 'API estática' : 'Static API';
+    String get staticApiBody => _isPt
+        ? 'Para fluxos imperativos fora de uma diretiva, LiTooltip.show reutiliza o mesmo overlay, aceita callbacks onOpen/onClose, suporta openDelay/closeDelay e devolve um controller com closed e close().'
+        : 'For imperative flows outside a directive, LiTooltip.show reuses the same overlay, accepts onOpen/onClose callbacks, supports openDelay/closeDelay, and returns a controller with closed and close().';
+    String get staticApiButton =>
+      _isPt ? 'Abrir tooltip estático' : 'Open static tooltip';
+    String get staticApiTooltipText => _isPt
+      ? 'Fluxo imperativo concluído sem depender de DI.'
+      : 'Imperative flow completed without depending on DI.';
   String get apiIntro => _isPt
       ? 'O componente envolve qualquer gatilho visual e adiciona exibição contextual com configuração declarativa.'
       : 'The component wraps any visual trigger and adds contextual display with declarative configuration.';
@@ -243,6 +278,7 @@ class DemoTooltipDefaults {
           '[liTooltip] também aceita TemplateRef para conteúdo rico com bindings.',
           '[html] habilita renderização rica quando necessário.',
           '[showDelayMs], [hideDelayMs], [openDelay] e [closeDelay] refinam o timing.',
+          'LiTooltip.show abre um tooltip imperativo em qualquer elemento e retorna LiTooltipController.',
           'LiTooltipConfig fornece defaults injetáveis para uma subtree inteira.',
           '(show), (shown), (hide) e (hidden) expõem o ciclo de vida.',
         ]
@@ -258,6 +294,7 @@ class DemoTooltipDefaults {
           '[liTooltip] also accepts TemplateRef for rich content with bindings.',
           '[html] enables rich rendering when needed.',
           '[showDelayMs], [hideDelayMs], [openDelay], and [closeDelay] refine timing.',
+          'LiTooltip.show opens an imperative tooltip on any element and returns LiTooltipController.',
           'LiTooltipConfig provides injectable defaults for an entire subtree.',
           '(show), (shown), (hide), and (hidden) expose the lifecycle.',
         ];
@@ -279,6 +316,32 @@ class DemoTooltipDefaults {
 
   void toggleTargetedTooltip() {
     targetedTooltip?.toggle();
+  }
+
+  void showStaticTooltip() {
+    final trigger = staticTooltipButton;
+    if (trigger == null) {
+      return;
+    }
+
+    _staticTooltipController?.close(false);
+    final controller = LiTooltip.show(
+      referenceElement: trigger,
+      content: staticApiTooltipText,
+      placement: 'right',
+      container: 'body',
+      tooltipClass: 'tooltip-aurora',
+      autoClose: 'outside',
+      openDelay: 300,
+      closeDelay: 600,
+      timer: const Duration(seconds: 4),
+    );
+    _staticTooltipController = controller;
+    controller.closed.then((_) {
+      if (identical(_staticTooltipController, controller)) {
+        _staticTooltipController = null;
+      }
+    });
   }
 
   void onTooltipEvent(String label) {

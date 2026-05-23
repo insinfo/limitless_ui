@@ -362,6 +362,48 @@ void main() {
     expect(templateBody!.text, contains('Tooltip rendered from TemplateRef'));
   });
 
+  test('static API opens and closes tooltip imperatively', () async {
+    final fixture = await testBed.create();
+    await _settleTooltip(fixture);
+    final hoverTrigger = fixture.rootElement.querySelector('#hover-trigger');
+    var opened = false;
+    var closed = false;
+
+    expect(hoverTrigger, isNotNull);
+
+    final controller = LiTooltip.show(
+      referenceElement: hoverTrigger!,
+      content: 'Static tooltip body',
+      placement: 'right',
+      animation: false,
+      container: 'body',
+      tooltipClass: 'tooltip-static-demo',
+      autoClose: false,
+      onOpen: (_) {
+        opened = true;
+      },
+      onClose: (_) {
+        closed = true;
+      },
+    );
+    await _settleTooltip(fixture);
+
+    final tooltip = _tooltipElement();
+    expect(opened, isTrue);
+    expect(controller.isOpen(), isTrue);
+    expect(tooltip, isNotNull);
+    expect(tooltip!.classes.contains('tooltip-static-demo'), isTrue);
+    expect(tooltip.text, contains('Static tooltip body'));
+
+    controller.close(false);
+    await controller.closed;
+    await _settleTooltip(fixture);
+
+    expect(closed, isTrue);
+    expect(controller.isOpen(), isFalse);
+    expect(_tooltipElement(), isNull);
+  });
+
   test('tooltip em modal renderiza acima do z-index do modal', () async {
     final fixture = await testBed.create();
     await _settleTooltip(fixture);

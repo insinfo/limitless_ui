@@ -1,3 +1,13 @@
+## 1.0.0-dev.22
+
+- Added a generic `li-pdf-viewer` component backed by PDF.js for reusable document preview flows, with bytes/URL loading, zoom/page navigation, fit-width, rotation, pan mode, fullscreen, download, print, configurable labels/zoom menus, localized label presets, Dart/template toolbar and side-panel extensibility, document/page text and page-info extraction APIs, stronger browser-test coverage through dedicated PDF.js/browser bridges, a separate `package:limitless_ui/pdf_viewer.dart` barrel export, and a dedicated example page.
+- Added an isolated `li-quill-text-editor` component backed by Quill `2.0.3`, with configurable toolbar items/actions/templates, optional table support, `ngModel` integration, HTML/plain-text/delta APIs, localized label presets, optional deferred model propagation via `updateModelOnBlur`, a separate `package:limitless_ui/quill_text_editor.dart` barrel export, and dedicated example/browser coverage.
+- Added a dedicated `li-password-input` component with `ngModel`/validation support, Dart-controlled masking over a `type="text"` input, integrated reveal toggle, and an updated inputs demo/API section for Chrome autofill-resistant password flows.
+- Expanded declarative `liDropdown` overlays for dense navbar/account flows with post-show body-overlay relayout, default viewport adaptation in dynamic positioning, new `menuMaxWidth`/`menuMaxHeight` caps, and stronger browser regression coverage for `bottom-start`, `bottom-end`, tall menus, and long body-attached content near viewport edges.
+- Added richer dropdown example coverage with a dedicated operational workspace-shell demo route plus updated navbar edge-overlay demos documenting preferred `bottom-start` alignment, account-menu submenus, and body-attached organization switcher patterns.
+- Expanded the SweetAlert static/service APIs with callback hooks for popup lifecycle (`onOpen`, `onClose`), button actions without `await` (`onConfirmAction`, `onCancelAction`), and dismiss flows (`onDismissAction` for escape, backdrop, and close button), plus updated SweetAlert example snippets and demos.
+- Added an imperative `LiTooltip.show(...)` static API with `LiTooltipController`, `dismissAll()`, lifecycle callbacks (`onOpen`, `onClose`), and matching tooltip example-page coverage for static/manual usage.
+
 ## 1.0.0-dev.21
 
 - Fixed `li-modal` backdrop dismissal so interacting with the modal root scrollbar on short viewports no longer closes the dialog as an outside/backdrop click.

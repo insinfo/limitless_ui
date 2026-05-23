@@ -104,6 +104,13 @@
                       </div>
 
                       <div class="col-md-6">
+                        <li-password-input [label]="signaturePasswordLabel"
+                          [helperText]="signaturePasswordHelp"
+                          [(ngModel)]="signaturePassword">
+                        </li-password-input>
+                      </div>
+
+                      <div class="col-md-6">
                         <li-input [label]="tokenLabel" [readonly]="true" suffixIconClass="ph-lock-key"
                           [helperText]="tokenHelp" [(ngModel)]="readonlyToken">
                         </li-input>
@@ -270,6 +277,7 @@
                   <h6 class="mb-2">{{ t.common.sectionHowToUse }}</h6>
                   <ul class="mb-0 ps-3">
                     <li><code>li-input</code> cobre texto, email, password, textarea, máscaras, prefixos e sufixos.</li>
+                    <li><code>li-password-input</code> cobre o caso de senha com <code>type="text"</code>, máscara em Dart e botão de revelar integrado.</li>
                     <li><code>li-select</code> e <code>li-multi-select</code> usam <code>dataSource</code>, <code>labelKey</code> e <code>valueKey</code>.</li>
                     <li><code>li-date-range-picker</code> recebe início, fim, placeholder e eventos de alteração.</li>
                   </ul>
@@ -291,11 +299,18 @@
                   </p>
                   <li-highlight [code]="validationSnippet" language="html"></li-highlight>
 
+                  <h6 class="mb-3 mt-4">{{ passwordSnippetTitle }}</h6>
+                  <p class="text-muted mb-3">
+                    Use o componente dedicado quando o fluxo pedir mais resistência a autofill agressivo no Chrome sem depender de CSS proprietário para mascarar a senha.
+                  </p>
+                  <li-highlight [code]="passwordSnippet" language="html"></li-highlight>
+
                   <ul class="mb-0 ps-3 mt-3">
                     <li><code>liType</code> resolve presets como <code>cpf</code>, <code>email</code>, <code>phone</code> e <code>requiredText</code>.</li>
                     <li><code>liRules</code> compõe regras extras sem perder compatibilidade com <code>required</code>, <code>minLength</code>, <code>maxLength</code> e <code>validator</code>.</li>
                     <li><code>liMessages</code> troca a mensagem por código de regra como <code>required</code>, <code>cpf</code> ou <code>minLength</code>.</li>
                     <li><code>liValidationMode</code> aceita modos como <code>dirty</code>, <code>touchedOrDirty</code> e <code>submitted</code>.</li>
+                    <li><code>li-password-input</code> mantém <code>ngModel</code>, validação declarativa e toggle visual, mas controla a máscara no Dart.</li>
                   </ul>
 
                   <h6 class="mb-3 mt-4">{{ selectSnippetTitle }}</h6>

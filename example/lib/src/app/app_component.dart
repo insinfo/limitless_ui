@@ -224,6 +224,11 @@ class AppComponent implements OnDestroy {
       i18n.isPortuguese ? 'Checkbox e radios' : 'Checkboxes and radios';
   String get personRegistrationLabel =>
       i18n.isPortuguese ? 'Cadastro de pessoa' : 'Person registration';
+  String get pdfViewerLabel => 'PDF Viewer';
+  String get quillTextEditorLabel =>
+      i18n.isPortuguese ? 'Editor Quill' : 'Quill editor';
+  String get workspaceShellLabel =>
+      i18n.isPortuguese ? 'Shell de trabalho' : 'Workspace shell';
 
   List<DemoNavItem> _buildPrimaryItems() => <DemoNavItem>[
         DemoNavItem(
@@ -308,6 +313,11 @@ class AppComponent implements OnDestroy {
               label: 'Dropdown',
               iconClass: 'ph-caret-circle-down',
               url: DemoRoutePaths.dropdown.toUrl(),
+            ),
+            DemoNavItem(
+              label: workspaceShellLabel,
+              iconClass: 'ph-layout',
+              url: DemoRoutePaths.workspaceShell.toUrl(),
             ),
             DemoNavItem(
               label: 'Toast',
@@ -463,6 +473,16 @@ class AppComponent implements OnDestroy {
               url: DemoRoutePaths.helpers.toUrl(),
             ),
             DemoNavItem(
+              label: pdfViewerLabel,
+              iconClass: 'ph-file-pdf',
+              url: DemoRoutePaths.pdfViewer.toUrl(),
+            ),
+            DemoNavItem(
+              label: quillTextEditorLabel,
+              iconClass: 'ph-note-pencil',
+              url: DemoRoutePaths.quillTextEditor.toUrl(),
+            ),
+            DemoNavItem(
               label: 'SweetAlert',
               iconClass: 'ph-sparkle',
               url: DemoRoutePaths.sweetAlert.toUrl(),
@@ -503,6 +523,20 @@ class AppComponent implements OnDestroy {
       'formulario completo',
       'validation',
       'backend fake',
+    ],
+    '/pdf-viewer': <String>[
+      'pdf',
+      'viewer',
+      'documento',
+      'pdfjs',
+      'document viewer',
+    ],
+    '/quill-text-editor': <String>[
+      'quill',
+      'editor',
+      'texto rico',
+      'rich text',
+      'wysiwyg',
     ],
     '/color-picker': <String>['cor', 'palette', 'picker'],
     '/date-picker': <String>['data', 'calendario', 'date'],

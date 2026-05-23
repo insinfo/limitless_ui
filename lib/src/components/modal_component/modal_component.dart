@@ -141,6 +141,15 @@ class LiModalComponent implements OnInit, OnDestroy {
   @Input()
   bool lazyContent = false;
 
+  @Input()
+  TemplateRef? contentTemplate;
+
+  @Input()
+  dynamic contentTemplateContext;
+
+  @Input()
+  String contentHostClass = '';
+
   @ViewChild('modalRootElement')
   DivElement? modalRootElement;
 

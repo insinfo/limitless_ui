@@ -16,6 +16,12 @@ import 'package:test/test.dart';
 
 import 'li_modal_component_test.template.dart' as ng;
 
+class ModalTemplateContext {
+  const ModalTemplateContext(this.message);
+
+  final String message;
+}
+
 @Component(
   selector: 'modal-test-host',
   template: '''
@@ -59,9 +65,14 @@ import 'li_modal_component_test.template.dart' as ng;
       </li-modal>
 
       <button id="open-projected" type="button" (click)="projectedModal?.open()">Open projected</button>
+      <button id="open-template-content" type="button" (click)="templateContentModal?.open()">Open template content</button>
       <button id="open-no-escape" type="button" (click)="noEscapeModal?.open()">Open no escape</button>
       <button id="open-stack-a" type="button" (click)="stackModalA?.open()">Open stack A</button>
       <button id="open-stack-b" type="button" (click)="stackModalB?.open()">Open stack B</button>
+
+      <template #templateContent let-data>
+        <div id="template-content-body">{{ data.message }}</div>
+      </template>
 
       <li-modal #projectedModal
                 [customWidth]="'520px'"
@@ -76,6 +87,15 @@ import 'li_modal_component_test.template.dart' as ng;
         <div modal-footer>
           <button id="projected-footer-action" type="button" class="btn btn-primary" (click)="projectedModal?.close()">Apply</button>
         </div>
+      </li-modal>
+
+      <li-modal #templateContentModal
+                title-text="Template content"
+                [lazyContent]="true"
+                [contentTemplate]="templateContent"
+                [contentTemplateContext]="templateContentContext"
+                contentHostClass="template-content-host">
+        <div id="template-fallback-body">Fallback body</div>
       </li-modal>
 
       <li-modal #stackModalA title-text="Stack A">
@@ -108,6 +128,9 @@ class TestHostComponent {
   @ViewChild('projectedModal')
   LiModalComponent? projectedModal;
 
+  @ViewChild('templateContentModal')
+  LiModalComponent? templateContentModal;
+
   @ViewChild('noEscapeModal')
   LiModalComponent? noEscapeModal;
 
@@ -118,6 +141,9 @@ class TestHostComponent {
   LiModalComponent? stackModalB;
 
   int lazyCloseCount = 0;
+
+    final ModalTemplateContext templateContentContext =
+      const ModalTemplateContext('Template body from input');
 }
 
 @Component(
@@ -297,6 +323,34 @@ void main() {
     expect(projectedRoot!.getAttribute('role'), 'dialog');
     expect(projectedRoot.getAttribute('aria-modal'), 'true');
     expect(projectedRoot.getAttribute('aria-label'), 'Projected custom modal');
+  });
+
+  test('renders contentTemplate inside the modal body when provided', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    await fixture.update((host) {
+      host.startOpenModal?.close();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-template-content');
+    });
+    await _settle(fixture);
+
+    final templatedBody =
+        html.document.body!.querySelector('#template-content-body');
+    final fallbackBody =
+        html.document.body!.querySelector('#template-fallback-body');
+
+    expect(templatedBody, isNotNull);
+    expect(templatedBody!.text, 'Template body from input');
+    expect(fallbackBody, isNull);
+
+    final hostWrapper =
+        _closestAncestorWithClass(templatedBody, 'template-content-host');
+    expect(hostWrapper, isNotNull);
   });
 
   test('escape closes only the topmost modal in the stack', () async {

@@ -142,11 +142,57 @@
 
               <div class="col-xl-6">
                 <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ edgeNavbarTitle }}</h6>
+                  <p class="text-muted mb-3">{{ edgeNavbarBody }}</p>
+
+                  <nav class="navbar navbar-dark bg-dark rounded-3 px-3 py-2 justify-content-end overflow-visible">
+                    <div liDropdown
+                         placement="bottom-start bottom-end top-start top-end"
+                         display="dynamic"
+                         container="body"
+                         dropdownClass="org-switcher-dropdown-wrapper"
+                         (openChange)="onOrgDemoOpenChange($event)">
+                      <button type="button"
+                              class="navbar-nav-link rounded-pill cursor-pointer p-0 border-0 bg-transparent"
+                              liDropdownToggle
+                              liDropdownShowCaret="false"
+                              [attr.title]="edgeNavbarCurrentOrgName + ' - 1235'">
+                        <span class="badge bg-yellow text-black d-inline-flex align-items-center gap-1"
+                              style="max-width: 11.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          <span style="flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ edgeNavbarCurrentOrgName }}</span>
+                          <span style="flex: 0 0 auto;">-</span>
+                          <span style="flex: 0 0 auto;">1235</span>
+                        </span>
+                      </button>
+
+                            <div class="dropdown-menu" liDropdownMenu
+                           style="width: max-content; min-width: 18rem; max-width: min(34rem, calc(100vw - 1rem));">
+                        <button type="button"
+                                *ngFor="let org of orgDemoEntries"
+                                liDropdownItem
+                                class="cursor-pointer text-start"
+                                style="display: flex; align-items: baseline; gap: 0.25rem; max-width: 100%; white-space: normal; line-height: 1.25;">
+                          <span style="min-width: 0; overflow-wrap: anywhere;">{{ org.name }}</span>
+                          <span style="flex: 0 0 auto;">- {{ org.id }}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </nav>
+
+                  <div class="mt-3">
+                    <div class="fw-semibold mb-2">{{ edgeNavbarStateTitle }}</div>
+                    <div class="bg-light border rounded-3 p-3">{{ dropdownState.isEmpty ? edgeNavbarWaitingState : dropdownState }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card card-body h-100">
                   <h6 class="mb-2">{{ submenuTitle }}</h6>
                   <p class="text-muted mb-3">{{ submenuBody }}</p>
 
                   <div class="d-flex justify-content-end mb-3">
-                    <div liDropdown class="nav-item nav-item-dropdown-lg dropdown">
+                    <div liDropdown class="nav-item nav-item-dropdown-lg dropdown" menuMaxWidth="22rem">
                       <a class="navbar-nav-link align-items-center rounded-pill cursor-pointer p-0 d-inline-flex"
                          href=""
                          liDropdownToggle
@@ -357,6 +403,10 @@
 
             <div class="mb-3">
               <li-highlight [code]="navbarNoCaretApiSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mb-3">
+              <li-highlight [code]="edgeNavbarApiSnippet" language="html"></li-highlight>
             </div>
 
             <li-highlight [code]="manualApiSnippet" language="html"></li-highlight>

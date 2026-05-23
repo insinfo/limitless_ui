@@ -1,0 +1,68 @@
+<div class="pdf-viewer-signature-demo-panel">
+  <div class="pdf-viewer-signature-demo-panel__header">
+    <span class="pdf-viewer-signature-demo-panel__title">{{ title }}</span>
+  </div>
+
+  <div class="pdf-viewer-signature-demo-panel__tabs" role="tablist">
+    <button type="button"
+      class="pdf-viewer-signature-demo-panel__tab"
+      [class.active]="isQuickValidationActive"
+      (click)="emitQuickValidation()">
+      {{ quickValidationLabel }}
+    </button>
+    <button type="button"
+      class="pdf-viewer-signature-demo-panel__tab"
+      [class.active]="isAdvancedValidationActive"
+      [disabled]="!canRunAdvancedValidation"
+      (click)="emitAdvancedValidation()">
+      {{ advancedValidationLabel }}
+    </button>
+  </div>
+
+  <div class="pdf-viewer-signature-demo-panel__body">
+    <div *ngIf="documentIntact != null" class="pdf-viewer-signature-demo-panel__summary">
+      <span class="pdf-viewer-signature-demo-panel__status"
+        [class.is-ok]="documentIntact == true"
+        [class.is-fail]="documentIntact == false">
+        <i class="ph" [class.ph-check-circle]="documentIntact == true" [class.ph-x-circle]="documentIntact == false"></i>
+        {{ documentIntact == true ? integrityOkLabel : integrityFailLabel }}
+      </span>
+    </div>
+
+    <div *ngIf="signatureEntries.isEmpty" class="pdf-viewer-signature-demo-panel__empty">
+      {{ emptyStateLabel }}
+    </div>
+
+    <button type="button"
+      *ngFor="let entry of signatureEntries"
+      class="pdf-viewer-signature-demo-panel__entry"
+      (click)="emitEntryOpen(entry)">
+      <div class="pdf-viewer-signature-demo-panel__entry-title">{{ entry.label }}</div>
+      <div class="pdf-viewer-signature-demo-panel__entry-meta">{{ pageLabel }} {{ entry.pageNumber }}</div>
+      <div *ngIf="entry.valid != null" class="pdf-viewer-signature-demo-panel__entry-meta">
+        <span class="pdf-viewer-signature-demo-panel__status"
+          [class.is-ok]="entry.valid == true"
+          [class.is-fail]="entry.valid == false">
+          <i class="ph" [class.ph-check-circle]="entry.valid == true" [class.ph-x-circle]="entry.valid == false"></i>
+          {{ entry.valid == true ? approvedLabel : invalidLabel }}
+        </span>
+      </div>
+      <div *ngIf="entry.signerName != null" class="pdf-viewer-signature-demo-panel__entry-meta">
+        {{ signerLabel }}: {{ entry.signerName }}
+      </div>
+      <div *ngIf="entry.reason != null" class="pdf-viewer-signature-demo-panel__entry-meta">
+        {{ reasonLabel }}: {{ entry.reason }}
+      </div>
+      <div *ngIf="entry.policyDisplay != null" class="pdf-viewer-signature-demo-panel__entry-meta">
+        {{ policyLabel }}: {{ entry.policyDisplay }}
+      </div>
+    </button>
+
+    <div *ngIf="signatureValidationSummary != null" class="pdf-viewer-signature-demo-panel__footer">
+      {{ signatureValidationSummary }}
+    </div>
+    <div *ngIf="signatureValidationElapsedLabel != null" class="pdf-viewer-signature-demo-panel__footer">
+      {{ elapsedPrefix }} {{ signatureValidationElapsedLabel }}
+    </div>
+  </div>
+</div>

@@ -102,6 +102,12 @@ class LiDropdownMenuComponent implements OnDestroy {
   @Input()
   String mobileMenuTitle = '';
 
+  @Input()
+  TemplateRef? mobileFooterTemplate;
+
+  @Input()
+  dynamic mobileFooterContext;
+
   /// Rendering container: `inline` keeps the menu in normal DOM flow,
   /// `body` renders it in a portal anchored with Popper.
   @Input()

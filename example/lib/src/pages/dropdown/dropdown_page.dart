@@ -1,5 +1,12 @@
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
+class DropdownOrgDemoEntry {
+  const DropdownOrgDemoEntry(this.name, this.id);
+
+  final String name;
+  final String id;
+}
+
 @Component(
   selector: 'dropdown-page',
   templateUrl: 'dropdown_page.html',
@@ -127,6 +134,36 @@ class DropdownPageComponent {
   </div>
 </div>''';
 
+  static const String edgeNavbarApiSnippet = '''
+<div class="d-flex justify-content-end rounded-3 border px-3 py-2">
+  <div liDropdown
+       placement="bottom-start bottom-end top-start top-end"
+       display="dynamic"
+       container="body"
+       dropdownClass="org-switcher-dropdown-wrapper">
+    <button type="button"
+            class="navbar-nav-link rounded-pill cursor-pointer p-0 border-0 bg-transparent"
+            liDropdownToggle
+            liDropdownShowCaret="false">
+      <span class="badge bg-yellow text-black d-inline-flex align-items-center gap-1"
+            style="max-width: 11.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Gerência de Sistemas e Soluções Tecnológicas</span>
+        <span>-</span>
+        <span>1235</span>
+      </span>
+    </button>
+
+    <div class="dropdown-menu" liDropdownMenu
+         style="width: max-content; min-width: 18rem; max-width: min(34rem, calc(100vw - 1rem));">
+      <button type="button" liDropdownItem
+              style="display: flex; align-items: baseline; gap: 0.25rem; max-width: 100%; white-space: normal; line-height: 1.25;">
+        <span style="min-width: 0; overflow-wrap: anywhere;">Secretaria de Desenvolvimento e Assistência Social</span>
+        <span style="flex: 0 0 auto;">- 574</span>
+      </button>
+    </div>
+  </div>
+</div>''';
+
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;
 
@@ -238,6 +275,46 @@ class DropdownPageComponent {
     ),
   ];
 
+  static const List<DropdownOrgDemoEntry> _orgDemoEntriesPt =
+      <DropdownOrgDemoEntry>[
+    DropdownOrgDemoEntry(
+      'Secretaria de Desenvolvimento e Assistência Social',
+      '574',
+    ),
+    DropdownOrgDemoEntry(
+      'Departamento de Gerenciamento de Registros e Desenvolvimento de Pessoal',
+      '637',
+    ),
+    DropdownOrgDemoEntry(
+      'Núcleo de Baixas',
+      '1191',
+    ),
+    DropdownOrgDemoEntry(
+      'Gerência de Sistemas e Soluções Tecnológicas',
+      '1235',
+    ),
+  ];
+
+  static const List<DropdownOrgDemoEntry> _orgDemoEntriesEn =
+      <DropdownOrgDemoEntry>[
+    DropdownOrgDemoEntry(
+      'Department of Social Development and Assistance',
+      '574',
+    ),
+    DropdownOrgDemoEntry(
+      'Department of Records Management and Staff Development',
+      '637',
+    ),
+    DropdownOrgDemoEntry(
+      'Clearance Unit',
+      '1191',
+    ),
+    DropdownOrgDemoEntry(
+      'Systems and Technology Solutions Management',
+      '1235',
+    ),
+  ];
+
   String dropdownState = '';
   String compactMenuState = '';
   String submenuState = '';
@@ -306,6 +383,9 @@ class DropdownPageComponent {
 
   List<LiDropdownMenuOption> get longActionOptions =>
       _isPt ? _longActionOptionsPt : _longActionOptionsEn;
+
+  List<DropdownOrgDemoEntry> get orgDemoEntries =>
+      _isPt ? _orgDemoEntriesPt : _orgDemoEntriesEn;
 
   String get pageTitle => _isPt ? 'Componentes' : 'Components';
   String get pageSubtitle => 'Dropdown';
@@ -417,6 +497,27 @@ class DropdownPageComponent {
       _isPt ? 'Escolha uma ação' : 'Choose an action';
   String get navbarDropdownLabel =>
       _isPt ? 'Dropdown da navbar' : 'Navbar dropdown';
+    String get edgeNavbarTitle => _isPt
+      ? 'Overlay na borda da navbar'
+      : 'Navbar edge overlay';
+  String get edgeNavbarBody => _isPt
+      ? 'Este cenário replica um trigger compacto alinhado à direita, com badge truncado e menu longo anexado ao body. Neste demo, o dropdown prefere bottom-start para começar embaixo pela borda esquerda do trigger quando há espaço, mas ainda pode adaptar o placement para caber no viewport.'
+      : 'This scenario mirrors a compact right-aligned trigger with a truncated badge and a long body-attached menu. In this demo, the dropdown prefers bottom-start so it begins below the trigger left edge when there is enough space, while still adapting the placement to fit the viewport.';
+    String get edgeNavbarCurrentOrgName => _isPt
+      ? 'Gerência de Sistemas e Soluções Tecnológicas'
+      : 'Systems and Technology Solutions Management';
+    String get edgeNavbarStateTitle => _isPt
+      ? 'Estado do switcher de setor'
+      : 'Org switcher state';
+    String get edgeNavbarWaitingState => _isPt
+      ? 'Switcher: aguardando interação'
+      : 'Switcher: waiting for interaction';
+    String get edgeNavbarOpenedState => _isPt
+      ? 'Switcher: menu aberto em overlay body.'
+      : 'Switcher: menu open in body overlay.';
+    String get edgeNavbarClosedState => _isPt
+      ? 'Switcher: menu fechado.'
+      : 'Switcher: menu closed.';
   String get profileLabel => _isPt ? 'Perfil' : 'Profile';
   String get billingLabel => _isPt ? 'Cobrança' : 'Billing';
   String get submenuTitle =>
@@ -475,6 +576,7 @@ class DropdownPageComponent {
           'liDropdownMenu recebe classes de menu e delega a navegação por teclado.',
           'liDropdownItem marca itens focáveis e retira itens desabilitados da rotação.',
           'liDropdownSubmenu, liDropdownSubmenuToggle e liDropdownSubmenuMenu permitem submenus reaproveitáveis sem fechar o dropdown pai ao acionar o toggle do submenu.',
+          'Em overlays com container="body", o dropdown recalcula o posicionamento após o menu realmente ficar visível, evitando desalinhamento em gatilhos compactos da navbar com conteúdo longo.',
           'li-dropdown-menu usa listas de opções prontas, fecha outras instâncias por padrão, adapta a viewport por padrão, aceita menuMaxHeight e pode abrir como modal ou bottom sheet no mobile.',
         ]
       : const <String>[
@@ -485,6 +587,7 @@ class DropdownPageComponent {
           'liDropdownMenu receives menu classes and delegates keyboard navigation.',
           'liDropdownItem marks focusable items and removes disabled items from rotation.',
           'liDropdownSubmenu, liDropdownSubmenuToggle, and liDropdownSubmenuMenu provide reusable submenus without collapsing the parent dropdown when the submenu toggle is activated.',
+          'For body overlays, the dropdown recalculates positioning after the menu is actually visible, avoiding misalignment on compact navbar triggers with long content.',
           'li-dropdown-menu uses ready-made option lists, closes other instances by default, adapts to the viewport by default, accepts menuMaxHeight, and can open as a mobile modal or bottom sheet.',
         ];
   String get waitingState => _isPt
@@ -497,6 +600,10 @@ class DropdownPageComponent {
 
   void onOpenChange(bool open) {
     dropdownState = open ? openedState : closedState;
+  }
+
+  void onOrgDemoOpenChange(bool open) {
+    dropdownState = open ? edgeNavbarOpenedState : edgeNavbarClosedState;
   }
 
   void onCompactMenuAction(String value) {

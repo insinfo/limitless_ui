@@ -110,18 +110,16 @@
                       </div>
 
                       <div class="col-md-6" [attr.data-person-field]="'password'" liFormField="password" [liFormFieldOrder]="60">
-                        <li-input
+                        <li-password-input
                             [label]="passwordLabel"
-                            type="password"
-                            [passwordToggle]="true"
-                            [passwordToggleOverlay]="true"
                             autocomplete="new-password"
                             [helperText]="isPt ? 'Aqui a validação é local; o backend só recebe a string final.' : 'Validation is local here; the backend only receives the final string.'"
                             [liRules]="passwordRules"
                             liValidationMode="submittedOrTouchedOrDirty"
                             [locale]="validationLocale"
+                          [required]="true"
                             [(ngModel)]="draft.password">
-                        </li-input>
+                        </li-password-input>
                       </div>
 
                       <div class="col-md-3" [attr.data-person-field]="'birthDate'" liFormField="birthDate" [liFormFieldOrder]="70">
@@ -546,7 +544,7 @@
                 <div class="card card-body h-100">
                   <h6 class="mb-2">{{ isPt ? 'O que esta demo cobre' : 'What this demo covers' }}</h6>
                   <ul class="mb-0 ps-3">
-                    <li><code>li-input</code> com máscara, feedback inline e password toggle.</li>
+                    <li><code>li-input</code> com máscara, feedback inline e <code>li-password-input</code> para senha com máscara controlada em Dart.</li>
                     <li><code>li-select</code> e <code>li-multi-select</code> com retorno do modelo selecionado.</li>
                     <li><code>li-datatable-select</code> adicionado como campo extra em single e multiple para responsáveis, também participando do submit declarativo.</li>
                     <li><code>li-treeview-select</code> adicionado como campo extra em single e multiple para workflow hierárquico, com regra cruzada contra a etapa principal.</li>

@@ -5,7 +5,7 @@ This folder contains the AngularDart showcase application for the `limitless_ui`
 ## What is included
 
 - Component demo pages under `example/lib/src/pages`
-- Dedicated demos for inputs, select, multi-select, datatable-select, and page-header migration scenarios
+- Dedicated demos for inputs, select, multi-select, datatable-select, PDF viewer, Quill text editor, and page-header migration scenarios
 - Hash-based routing for static hosting via `routerProvidersHash`
 - Localized demo content in Portuguese and English
 - SCSS-based component styling compiled by `sass_builder`
@@ -92,6 +92,22 @@ The demo depends on the following external stylesheets declared in [`example/web
 ```
 
 Without them, icons, typography, and part of the base visual styling will not render as expected.
+
+For the PDF viewer and Quill demo pages, the host page also loads component-specific assets from the local `example/web/assets` tree:
+
+```html
+<!-- Quill editor -->
+<link href="assets/js/quill/2.0.3/quill.snow.css" rel="stylesheet" type="text/css">
+<script src="assets/js/quill/2.0.3/quill.js"></script>
+<link rel="stylesheet" href="assets/js/quill_table_better/1.2.3/quill_table_better.css">
+<script src="assets/js/quill_table_better/1.2.3/quill_table_better.js"></script>
+<script src="assets/js/quill_table_better/1.2.3/register_table_better.js"></script>
+
+<!-- PDF viewer -->
+<script src="assets/js/pdf.js/5.4.149/build/pdf.export.js" type="module"></script>
+```
+
+These assets are required only for the routes that exercise `li-quill-text-editor` and `li-pdf-viewer`, but the example app loads them globally because those demos are part of the same host shell.
 
 ## Project structure
 

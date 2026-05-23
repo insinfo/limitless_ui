@@ -6,6 +6,7 @@ library;
 
 import 'dart:async';
 import 'dart:html' as html;
+import 'dart:js';
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
@@ -62,6 +63,94 @@ void main() {
     expect(result.isConfirmed, isFalse);
     expect(result.isDismissed, isTrue);
     expect(result.dismissReason, SweetAlertDismissReason.cancel);
+  });
+
+  test('confirm and cancel callbacks run on button actions', () async {
+    var confirmCalled = false;
+    var cancelCalled = false;
+
+    final confirmFuture = SweetAlert.confirm(
+      title: 'Publish release',
+      message: 'Run callbacks inline.',
+      onConfirmAction: (result) {
+        confirmCalled = result.isConfirmed;
+      },
+    );
+
+    await _settle();
+    _click('.swal2-confirm');
+    await _settle();
+
+    final confirmResult = await confirmFuture;
+    expect(confirmCalled, isTrue);
+    expect(confirmResult.isConfirmed, isTrue);
+
+    final cancelFuture = SweetAlert.confirm(
+      title: 'Abort release',
+      message: 'Run cancel callback inline.',
+      onCancelAction: (result) {
+        cancelCalled =
+            result.dismissReason == SweetAlertDismissReason.cancel;
+      },
+    );
+
+    await _settle();
+    _click('.swal2-cancel');
+    await _settle();
+
+    final cancelResult = await cancelFuture;
+    expect(cancelCalled, isTrue);
+    expect(cancelResult.dismissReason, SweetAlertDismissReason.cancel);
+  });
+
+  test('dismiss callback runs for close button backdrop and escape', () async {
+    final dismissReasons = <SweetAlertDismissReason>[];
+
+    final closeButtonFuture = SweetAlert.show(
+      title: 'Dismiss me',
+      showCloseButton: true,
+      onDismissAction: (result) {
+        dismissReasons.add(result.dismissReason!);
+      },
+    );
+
+    await _settle();
+    _click('.swal2-close');
+    final closeButtonResult = await closeButtonFuture;
+    expect(closeButtonResult.dismissReason, SweetAlertDismissReason.closeButton);
+
+    final backdropFuture = SweetAlert.show(
+      title: 'Backdrop dismiss',
+      onDismissAction: (result) {
+        dismissReasons.add(result.dismissReason!);
+      },
+    );
+
+    await _settle();
+    _click('.swal2-container');
+    final backdropResult = await backdropFuture;
+    expect(backdropResult.dismissReason, SweetAlertDismissReason.backdrop);
+
+    final escapeFuture = SweetAlert.show(
+      title: 'Escape dismiss',
+      onDismissAction: (result) {
+        dismissReasons.add(result.dismissReason!);
+      },
+    );
+
+    await _settle();
+    html.document.dispatchEvent(_createKeyEvent('keydown', key: 'Escape'));
+    final escapeResult = await escapeFuture;
+    expect(escapeResult.dismissReason, SweetAlertDismissReason.escape);
+
+    expect(
+      dismissReasons,
+      equals(<SweetAlertDismissReason>[
+        SweetAlertDismissReason.closeButton,
+        SweetAlertDismissReason.backdrop,
+        SweetAlertDismissReason.escape,
+      ]),
+    );
   });
 
   test('prompt validates empty values and returns the confirmed input',
@@ -284,4 +373,33 @@ void _resetSweetAlertDom() {
 
 Future<void> _settle() async {
   await Future<void>.delayed(const Duration(milliseconds: 40));
+}
+
+const _createKeyEventName = '__dart_createSweetAlertKeyboardEvent';
+const _createKeyEventScript = '''
+window['$_createKeyEventName'] = function(type, key, code) {
+  return new KeyboardEvent(type, {
+    key: key,
+    code: code || key,
+    bubbles: true
+  });
+}
+''';
+
+html.Event _createKeyEvent(
+  String type, {
+  required String key,
+  String? code,
+}) {
+  if (!context.hasProperty(_createKeyEventName)) {
+    final script = html.document.createElement('script')
+      ..setAttribute('type', 'text/javascript')
+      ..text = _createKeyEventScript;
+    html.document.body!.append(script);
+  }
+
+  return context.callMethod(
+    _createKeyEventName,
+    <Object>[type, key, code ?? key],
+  ) as html.Event;
 }

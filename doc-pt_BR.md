@@ -120,6 +120,100 @@ Esse fluxo é o ponto de equilíbrio recomendado no projeto:
 - regras contextuais continuam na página ou no serviço;
 - erros de backend ainda podem sobrescrever a mensagem final do campo.
 
+## Componentes novos do `limitless_ui` em `1.0.0-dev.22`
+
+Além da camada de formulários declarativos, a versão `1.0.0-dev.22` expandiu o pacote com três superfícies importantes: um campo de senha com máscara controlada em Dart, um visualizador de PDF genérico com PDF.js e um editor rico isolado baseado em Quill `2.0.3`.
+
+### `li-password-input`
+
+`li-password-input` mantém o mesmo contrato de `[(ngModel)]`, validação declarativa e eventos de campo usados por `li-input`, mas renderiza sobre `type="text"` com máscara controlada em Dart. O objetivo é reduzir o impacto de autofill agressivo e de alguns password managers, sem perder o toggle integrado de revelar ou ocultar senha.
+
+Quando usar:
+
+- fluxos de assinatura, confirmação ou credencial temporária em que o host quer mais previsibilidade que um `<input type="password">` puro;
+- telas que já usam `liRules`, `liMessages` e `liValidationMode` e precisam da mesma ergonomia no campo de senha.
+
+Exemplo:
+
+```html
+<li-password-input
+  label="Senha de assinatura"
+  helperText="Mascara controlada em Dart para reduzir autofill agressivo"
+  autocomplete="new-password"
+  [(ngModel)]="signaturePassword">
+</li-password-input>
+```
+
+Inputs mais relevantes:
+
+- `showPasswordLabel`, `hidePasswordLabel` e `maskChar` para a experiência visual;
+- `autocomplete`, `dataLpignore`, `data1pIgnore` e `dataBwignore` para integração com navegadores e password managers;
+- `liType`, `liRules`, `liMessages`, `liValidationMode`, `invalid` e `errorText` para validação.
+
+### `li-pdf-viewer`
+
+`li-pdf-viewer` é um visualizador genérico de PDF baseado em PDF.js. Ele foi mantido fora do barrel principal para que aplicações possam importar só o slice de PDF quando quiserem uma dependência mais estreita:
+
+```dart
+import 'package:limitless_ui/pdf_viewer.dart';
+```
+
+O componente aceita `bytes` ou `url`, expõe ações padrão de navegação e arquivo, e também pontos de extensão para toolbar e painel lateral via API Dart ou template projetado.
+
+Exemplo básico:
+
+```html
+<script src="assets/js/pdf.js/5.4.149/build/pdf.export.js" type="module"></script>
+
+<div style="height: 72vh;">
+  <li-pdf-viewer
+    [bytes]="documentBytes"
+    title="Release briefing"
+    pdfJsBasePath="/assets/js/pdf.js/5.4.149">
+  </li-pdf-viewer>
+</div>
+```
+
+Capacidades principais:
+
+- carregamento por `bytes` ou `url`;
+- zoom, paginação, fit width, rotação, pan mode, fullscreen, download e print;
+- `LiPdfViewerLabels.portuguese` e `LiPdfViewerLabels.english`, além de `defaultLiPdfViewerZoomOptionsPt` e `defaultLiPdfViewerZoomOptions`;
+- `customToolbarActions`, `<template liPdfViewerToolbarActions>` e `<template liPdfViewerSidePanel>` para encaixar ações e conteúdo de negócio sem acoplar o componente;
+- APIs como `extractPageText(...)`, `extractDocumentText(...)`, `getPageInfo(...)` e `getAllPageInfo(...)` para inspeção e leitura estruturada do documento.
+
+### `li-quill-text-editor`
+
+`li-quill-text-editor` é um editor rico isolado baseado em Quill `2.0.3`, também publicado em barrel separado:
+
+```dart
+import 'package:limitless_ui/quill_text_editor.dart';
+```
+
+Ele mantém integração com `[(ngModel)]` via `ControlValueAccessor`, permite configurar toolbar por itens, ações Dart e template projetado, e adiciona uma opção de performance para adiar a propagação do modelo até blur quando o host preferir.
+
+Exemplo básico:
+
+```html
+<script src="assets/js/quill/2.0.3/quill.js"></script>
+<script src="assets/js/quill_table_better/1.2.3/quill_table_better.js"></script>
+
+<li-quill-text-editor
+  [(ngModel)]="htmlValue"
+  [labels]="editorLabels"
+  [updateModelOnBlur]="true"
+  minHeight="20rem">
+</li-quill-text-editor>
+```
+
+Capacidades principais:
+
+- toolbar configurável via `toolbarItems`, `toolbarActions` e `<template liQuillTextEditorToolbarActions>`;
+- presets localizados com `LiQuillTextEditorLabels.portuguese` e `LiQuillTextEditorLabels.english`;
+- suporte opcional a tabelas com `enableTableSupport`, `enableTableButton` e `tableMenus`;
+- APIs `getHtml()`, `getPlainText()`, `getDeltaJson()`, `setDeltaJson(...)`, `format(...)` e `insertTextAtSelection(...)`;
+- opção `updateModelOnBlur` para reduzir a frequência de atualização de `ngModel` em telas pesadas.
+
 ## 1. O que você está construindo
 
 O sistema alvo tem três pacotes:
