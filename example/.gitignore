@@ -1,8 +1,6 @@
 .dart_tool/
 .packages
 /build/
-/dist/
+dist/
 pubspec.lock
-coverage/
 
-referencias/
