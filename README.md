@@ -27,7 +27,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.22`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.23`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -48,7 +48,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.22
+  limitless_ui: ^1.0.0-dev.23
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -57,7 +57,7 @@ If the application will use `li-datatable`, `li-datatable-select`, `li-select`, 
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.22
+  limitless_ui: ^1.0.0-dev.23
   essential_core: ^1.2.0
 ```
 
@@ -714,6 +714,12 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiQuillTextEditorComponent`, `LiQuillTextEditorLabels`,
   `LiQuillToolbarAction`, `LiQuillToolbarItem`,
   `LiQuillToolbarOption`, and `liQuillTextEditorDirectives`.
+
+## Recent additions in `1.0.0-dev.23`
+
+- Fixed `liDropdown` body-attached overlays on narrow/mobile viewports so long organization switcher menus no longer enter a redraw/reposition loop while Popper and viewport adaptation settle the menu size.
+- Documented the overlay lesson learned: for body-mounted `liDropdown` menus, let Popper own wrapper `transform`, and do not write volatile `--popper-available-*` CSS variables from the dropdown writer because they can feed back into layout measurement.
+- Documented the recommended opt-out for dense body-mounted organization/account switchers: do not use `adaptToViewport` when app CSS already controls width with `width: max-content`, `max-width`, or viewport-based rules, because the intelligent adaptation can keep recalculating style/classes indefinitely. Use `adaptToViewport="false"` and CSS-owned width/overflow instead.
 
 ## Recent additions in `1.0.0-dev.22`
 
@@ -2378,7 +2384,76 @@ Use `container="body"` when the dropdown is declared inside a scrollable or clip
 
 `liDropdown` also supports `adaptToViewport` (default: `true`) for Popper-driven menus. In `display="dynamic"` mode the directive waits for the menu to become visible, recalculates after the real menu size is known, preserves the preferred placement whenever possible, and clamps the floating panel to the viewport when long or tall content would otherwise overflow.
 
+Do not use `adaptToViewport` for body-mounted dynamic organization/account switchers when the application already controls the menu surface with CSS such as `width: max-content`, `max-width: min(...)`, `calc(100vw - ...)`, horizontal overflow, or custom wrapping rules. That combination can make AngularDart, Popper, and the browser alternate between the unclamped and clamped measurements, causing an infinite class/style recalculation loop. Prefer `adaptToViewport="false"` and keep the width/overflow contract in CSS for that dropdown.
+
+For body-mounted dynamic dropdowns, treat Popper as the owner of the wrapper position. Do not add consumer-side scripts or local component code that rewrites the body wrapper `transform` after Popper has positioned it, and avoid CSS or JavaScript that depends on the internal `--popper-available-*` variables for these menus. In long organization/account switchers this can create a measurement feedback loop where available height/width changes on every frame and the dropdown appears to redraw indefinitely.
+
 Use `menuMaxWidth` and `menuMaxHeight` when dense account menus or body-mounted navbar switchers need a predictable surface cap without relying only on external CSS. This is especially useful for avatar menus, organization switchers, and long explanatory blocks that can grow much wider or taller than the trigger.
+
+#### Best practices for body-mounted dynamic dropdowns
+
+For navbar account/organization switchers and any other `liDropdown` rendered with `container="body"` + `display="dynamic"`, follow the rules below. They are the contract that prevents the infinite style/class recalculation loop documented in the `1.0.0-dev.23` notes.
+
+1. **Pick one owner of the menu width/overflow.** Either the application controls it via CSS (`width: max-content`, `max-width: min(...)`, `calc(100vw - ...)`, horizontal overflow rules), or the directive controls it via `menuMaxWidth`/`menuMaxHeight`. **Do not combine both.** When the CSS path is used, set `adaptToViewport="false"` on the `liDropdown` host.
+2. **Popper owns position; CSS owns size.** Never write inline `transform`, `top`, `left`, `right`, `bottom`, or `inset` on `.dropdown-menu`, on the `liDropdownMenu` host, or on the body wrapper created by `dropdownClass`. Do not add app-level scripts that mutate the wrapper `style` after open. The directive uses Popper as the single source of truth for those properties on body-mounted dynamic menus.
+3. **Do not depend on `--popper-available-*` CSS variables for body-mounted menus.** Reading those values in app CSS, observing them in JavaScript, or writing them back through host CSS can feed back into measurement and trigger repeated reposition/redraw cycles.
+4. **Scope inline-only overrides to inline submenus.** Patterns like `position: static; inset: auto; transform: none !important;` are safe for inline submenus that are *not* positioned by Popper (for example a responsive mobile collapse of a user menu submenu). Never apply those rules to selectors that match a body-mounted dynamic `.dropdown-menu` or to the wrapper created via `dropdownClass`.
+5. **Stylize through stable hooks.** The dropdown panel can lose the original component-scoped selectors when it is moved to `document.body`. Use a global class on `liDropdownMenu` or `dropdownClass="..."` on the host to target the body wrapper. Both selectors must live in a stylesheet that is not view-encapsulated to the original host.
+6. **Never put `width`/`max-width` on the body wrapper for trigger alignment.** The wrapper is positioned by Popper and is the floating element. Constrain the visual size of the menu via the `.dropdown-menu` selector (or `dropdownClass`'s descendant rules), not by resizing the wrapper itself. A `max-width: calc(100vw - .5rem)` on the wrapper is acceptable only as a defensive cap to prevent horizontal bleed.
+7. **Keep the menu content stable across change-detection.** Bind to fields, not getters that allocate new lists/objects on every pass (see the AngularDart performance rules). A menu whose `*ngFor` source identity changes on every cycle forces Popper to remeasure on every frame and can amplify any positioning instability into a visible flicker loop.
+
+##### Reference template (organization/account switcher)
+
+```html
+<li class="nav-item dropdown"
+    liDropdown
+    placement="bottom-end"
+    display="dynamic"
+    container="body"
+    dropdownClass="org-switcher-dropdown-wrapper"
+    adaptToViewport="false">
+  <button type="button"
+      class="navbar-nav-link rounded-pill p-0 border-0 bg-transparent"
+      [liDropdownShowCaret]="false"
+      liDropdownToggle>
+    <!-- avatar / badge content -->
+  </button>
+
+  <div class="dropdown-menu dropdown-menu-end org-switcher-dropdown" liDropdownMenu>
+    <button *ngFor="let org of organizations"
+        type="button"
+        class="org-switcher-dropdown__item"
+        liDropdownItem
+        (click)="selectOrganization(org)">
+      {{ org.fullName }} - {{ org.id }}
+    </button>
+  </div>
+</li>
+```
+
+```scss
+// Wrapper created by `liDropdown` under `document.body` when `container="body"`.
+// Defensive cap so the floating wrapper never bleeds horizontally.
+.org-switcher-dropdown-wrapper {
+  max-width: calc(100vw - 0.5rem);
+}
+
+// CSS owns the panel surface size. Because of this, the host has
+// `adaptToViewport="false"` and does NOT pass `menuMaxWidth`/`menuMaxHeight`.
+.org-switcher-dropdown {
+  width: max-content;
+  min-width: 18rem;
+  max-width: min(34rem, calc(100vw - 1rem));
+}
+```
+
+##### Common anti-patterns to avoid
+
+- Setting `transform: none !important` on `.dropdown-menu` globally to "fix" alignment of a body-mounted dropdown. This breaks Popper positioning and the directive cannot recover from it.
+- Listening to `(openChange)` and calling code that mutates the menu DOM, classes, or inline style on every emission. The directive already toggles `.show`, attributes, and Popper geometry — extra mutations on the same frame create a feedback loop.
+- Wrapping `liDropdownMenu` in an extra positioned container inside the host. The menu element itself must be the one with `liDropdownMenu`.
+- Mixing `liDropdownToggle` with Bootstrap's `data-bs-toggle="dropdown"` for the same menu.
+- Using `menuMaxWidth` together with `width: max-content` and a CSS `max-width: min(...)` on the same panel. Pick one path.
 
 Placement strings may contain fallbacks separated by spaces, for example `bottom-start bottom-end top-start top-end`. The first placement remains the preferred alignment and the later values are only used when the preferred one would not fit the viewport. Prefer `bottom-start` when the menu should begin below the trigger left edge, and `bottom-end` when the menu should stay right-aligned to avatar/account triggers.
 

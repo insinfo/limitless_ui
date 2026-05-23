@@ -74,6 +74,14 @@ responda sempre em portugues
 - The popover example page froze the browser because `palettePopovers` was implemented as a getter that recreated 11 objects on every change-detection cycle while being consumed by `*ngFor`.
 - For demo pages with many rich components, always prefer stable references and incremental updates over recomputing the whole collection in a getter.
 
+## Dropdown body-overlay lesson learned
+
+- `liDropdown` menus with `container="body"`, `display="dynamic"`, `placement="bottom-end"`, and long content such as organization switchers are sensitive to layout feedback loops on mobile/narrow viewports.
+- For Popper-managed body overlays, let Popper be the only source of truth for the wrapper `transform`. Do not add a second manual viewport clamp that rewrites the same transform after Popper positions the overlay.
+- Do not write volatile `--popper-available-width` or `--popper-available-height` CSS variables from the custom dropdown layout writer unless there is a real consumer. Those values can alternate as the menu is measured and cause repeated style mutations/redraws.
+- When fixing dropdown redraw issues, compare similar dropdowns in the real app: a normal account dropdown inside navbar flow may be fine while the organization switcher fails because it uses body mounting, dynamic Popper positioning, `menuMaxWidth`, and horizontally long content.
+- Protect fixes with browser tests that observe the body wrapper `style` after opening; the wrapper should stabilize after settling, not keep mutating every frame.
+
 ## Limitless theme token rules for datatable and shared surfaces
 
 - Neste repositório, não use variáveis Bootstrap `--bs-*` em SCSS de componentes customizados do pacote quando estiver estilizando superfícies, bordas, hover ou texto secundário. O tema real do example expõe tokens como `--body-bg`, `--card-bg`, `--body-color`, `--body-color-rgb` e `--border-color-translucent`.

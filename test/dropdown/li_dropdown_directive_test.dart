@@ -89,6 +89,37 @@ import 'li_dropdown_directive_test.template.dart' as ng;
         </div>
       </div>
 
+      <div id="adaptive-scroll-dropdown"
+          style="position: fixed; top: 160px; right: 8px;"
+          liDropdown
+          container="body"
+          placement="bottom-end">
+        <button id="adaptive-scroll-toggle" liDropdownToggle>Adaptive scroll</button>
+        <div id="adaptive-scroll-menu" class="dropdown-menu-end" liDropdownMenu style="width: 4000px; max-width: none; white-space: nowrap;">
+          <button id="adaptive-scroll-item" liDropdownItem style="white-space: nowrap;">
+            <span id="adaptive-scroll-label" style="display: inline-block; min-width: 4000px; white-space: nowrap;">
+              DepartamentoSuperExtraordinariamenteExtensoDeRegistrosEDesenvolvimentoDePessoalComNomeMuitoLongo-637
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div id="max-content-dropdown"
+          style="position: fixed; top: 208px; right: 8px;"
+          liDropdown
+          container="body"
+          placement="bottom-end"
+          adaptToViewport="false">
+        <button id="max-content-toggle" liDropdownToggle>Max content</button>
+        <div id="max-content-menu" class="dropdown-menu-end" liDropdownMenu style="width: max-content; max-width: min(22rem, calc(100vw - 1rem));">
+          <button id="max-content-item" liDropdownItem style="display: flex; max-width: 100%; white-space: normal;">
+            <span id="max-content-label" style="display: inline-block; min-width: 4000px; overflow-wrap: anywhere;">
+              SecretariaSuperExtraordinariamenteLongaDeDesenvolvimentoAdministrativoEGestaoDeProcessos-140050
+            </span>
+          </button>
+        </div>
+      </div>
+
       <div id="adaptive-bottom-dropdown"
           style="position: fixed; right: 8px; bottom: 8px;"
           liDropdown
@@ -321,16 +352,14 @@ void main() {
     });
     await _settle(fixture);
 
-    final wrapper = menu!.parent;
-    expect(wrapper, isNotNull);
+    final wrapper = menu!.parent!;
     expect(
-      wrapper!.getAttribute('data-popper-placement'),
+      wrapper.getAttribute('data-popper-placement'),
       'left-start',
     );
   });
 
-  test('container body keeps bottom-end menu aligned to the trigger',
-      () async {
+  test('container body keeps bottom-end menu aligned to the trigger', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final toggle = fixture.rootElement.querySelector('#body-end-toggle');
@@ -396,6 +425,123 @@ void main() {
     expect(menuRect.right, lessThanOrEqualTo(viewportWidth - 7));
   });
 
+  test(
+      'body overlay preserva texto longo com scroll horizontal sem recriar o wrapper',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#adaptive-scroll-toggle');
+    final menu = fixture.rootElement.querySelector('#adaptive-scroll-menu');
+    final item = fixture.rootElement.querySelector('#adaptive-scroll-item');
+    final label = fixture.rootElement.querySelector('#adaptive-scroll-label');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+    expect(item, isNotNull);
+    expect(label, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final initialWrapper = menu!.parent;
+    expect(initialWrapper, isNotNull);
+    expect(html.document.body!.contains(initialWrapper), isTrue);
+
+    final initialText = label!.text?.trim();
+    expect(
+      initialText,
+      'DepartamentoSuperExtraordinariamenteExtensoDeRegistrosEDesenvolvimentoDePessoalComNomeMuitoLongo-637',
+    );
+
+    await _settle(fixture);
+    await _settle(fixture);
+
+    expect(identical(menu.parent, initialWrapper), isTrue);
+    expect(menu.classes.contains('show'), isTrue);
+    expect(html.document.body!.contains(initialWrapper), isTrue);
+    expect(label.text?.trim(), initialText);
+    expect(menu.style.maxWidth, isNotEmpty);
+    expect(
+      label.getBoundingClientRect().width,
+      greaterThanOrEqualTo(menu.clientWidth.toDouble()),
+    );
+    expect(menu.style.whiteSpace, 'nowrap');
+    expect(item!.style.whiteSpace, 'nowrap');
+    expect(label.getAttribute('style'), contains('white-space: nowrap'));
+  });
+
+  test('body overlay estabiliza o style do wrapper apos a abertura', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#adaptive-scroll-toggle');
+    final menu = fixture.rootElement.querySelector('#adaptive-scroll-menu');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+    await _settle(fixture);
+    await _settle(fixture);
+
+    final wrapper = menu!.parent;
+    expect(wrapper, isNotNull);
+
+    var styleMutationCount = 0;
+    final observer = html.MutationObserver((records, _) {
+      for (final record in records) {
+        if (record.type == 'attributes' && record.attributeName == 'style') {
+          styleMutationCount++;
+        }
+      }
+    });
+
+    observer.observe(
+      wrapper!,
+      attributes: true,
+      attributeFilter: <String>['style'],
+    );
+
+    await _settle(fixture);
+    await _settle(fixture);
+
+    observer.disconnect();
+
+    expect(styleMutationCount, 0);
+  });
+
+  test('body overlay com adaptToViewport false nao reescreve menu max-content',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final toggle = fixture.rootElement.querySelector('#max-content-toggle');
+    final menu = fixture.rootElement.querySelector('#max-content-menu');
+    final label = fixture.rootElement.querySelector('#max-content-label');
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+    expect(label, isNotNull);
+
+    await fixture.update((_) {
+      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+    await _settle(fixture);
+
+    final viewportWidth = (html.window.innerWidth ?? 0).toDouble();
+    final menuRect = menu!.getBoundingClientRect();
+    expect(menu.style.width, 'max-content');
+    expect(menu.style.maxWidth, contains('min(22rem,'));
+    expect(menu.style.maxWidth, contains('100vw'));
+    expect(menuRect.left, greaterThanOrEqualTo(7));
+    expect(menuRect.right, lessThanOrEqualTo(viewportWidth - 7));
+    expect(label!.text?.trim(), contains('SecretariaSuperExtraordinariamente'));
+  });
+
   test('body overlay adapta menu alto para nao sair da viewport', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
@@ -448,8 +594,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final defaultToggle = fixture.rootElement.querySelector('#caret-toggle');
-    final noCaretToggle =
-        fixture.rootElement.querySelector('#no-caret-toggle');
+    final noCaretToggle = fixture.rootElement.querySelector('#no-caret-toggle');
 
     expect(defaultToggle, isNotNull);
     expect(noCaretToggle, isNotNull);

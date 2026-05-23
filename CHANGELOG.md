@@ -1,3 +1,14 @@
+## 1.0.0-dev.24
+
+- Fixed `liDropdown` body-mounted dynamic overlays so the intelligent viewport adaptation (`adaptToViewport="true"`, the default) no longer enters an infinite style/class recalculation loop when the consumer controls the menu surface with CSS such as `width: max-content`, `max-width: min(...)`, or `calc(100vw - ...)`. The adaptation now applies only `max-width`/`max-height`/`overflow-x`/`overflow-y` and preserves the author-provided `width`/`height` inline values, so the loop cannot start regardless of the `adaptToViewport` setting.
+- Added a new "Best practices for body-mounted dynamic dropdowns" section to the README covering the contract for `container="body"` + `display="dynamic"` overlays: one owner of width/overflow (CSS or `menuMaxWidth`/`menuMaxHeight`, never both), Popper as the single source of truth for `transform`/`top`/`left`/`right`/`bottom`/`inset`, the prohibition on consuming `--popper-available-*` from app CSS/JS, correct scoping of `transform: none !important` to inline submenus only, stylization through global classes or `dropdownClass`, and a reference template plus anti-pattern list for organization/account switchers.
+
+## 1.0.0-dev.23
+
+- Fixed `liDropdown` body-attached overlays on narrow/mobile viewports so long organization menus no longer enter a relayout loop that keeps recalculating the wrapper style; the menu now stays stable while preserving the full label text through horizontal overflow/clamping behavior, and browser regression coverage now protects that scenario.
+- Lesson learned: for Popper-managed `liDropdown` overlays rendered in `document.body`, the Popper controller must remain the only source of truth for wrapper `transform`; avoid a second manual viewport clamp and avoid writing volatile `--popper-available-*` CSS variables from the dropdown writer, because those values can feed back into measurement and cause repeated redraw/reposition cycles.
+- Documented that `adaptToViewport` should not be used for body-mounted dynamic organization/account switchers whose menu width is controlled by `width: max-content`, `max-width`, or other app CSS. In that scenario the intelligent viewport adaptation can enter an infinite style/class recalculation loop, so consumers should opt out with `adaptToViewport="false"` and let CSS own the menu width/overflow.
+
 ## 1.0.0-dev.22
 
 - Added a generic `li-pdf-viewer` component backed by PDF.js for reusable document preview flows, with bytes/URL loading, zoom/page navigation, fit-width, rotation, pan mode, fullscreen, download, print, configurable labels/zoom menus, localized label presets, Dart/template toolbar and side-panel extensibility, document/page text and page-info extraction APIs, stronger browser-test coverage through dedicated PDF.js/browser bridges, a separate `package:limitless_ui/pdf_viewer.dart` barrel export, and a dedicated example page.

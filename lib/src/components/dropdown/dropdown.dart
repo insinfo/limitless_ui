@@ -109,11 +109,16 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   bool _viewportAdaptationPending = false;
   bool _adaptToViewport = true;
   bool _menuViewportBaselineCaptured = false;
+  bool _viewportWidthClamped = false;
+  bool _viewportHeightClamped = false;
   String? _dropdownClass;
   String? _container;
   String? _display;
   String? _menuMaxWidth;
   String? _menuMaxHeight;
+  String? _lastPopperLayoutSignature;
+  String? _lastAppliedFloatingStyleSignature;
+  String? _lastViewportAdaptationSignature;
   String _menuInlineWidth = '';
   String _menuInlineHeight = '';
   String _menuInlineMaxWidth = '';
@@ -171,7 +176,8 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   @Input()
   set menuMaxWidth(String? value) {
     final normalized = value?.trim();
-    _menuMaxWidth = normalized == null || normalized.isEmpty ? null : normalized;
+    _menuMaxWidth =
+        normalized == null || normalized.isEmpty ? null : normalized;
     if (_open) {
       _scheduleViewportAdaptation();
     }
@@ -299,6 +305,11 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _resetContainer();
     _positioningRefreshPending = false;
     _viewportAdaptationPending = false;
+    _lastPopperLayoutSignature = null;
+    _lastAppliedFloatingStyleSignature = null;
+    _lastViewportAdaptationSignature = null;
+    _viewportWidthClamped = false;
+    _viewportHeightClamped = false;
     _openChangeController.add(false);
     _changeDetectorRef.markForCheck();
   }
@@ -563,6 +574,25 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _popperController = null;
   }
 
+  void _refreshExistingPositioning() {
+    if (!_open) {
+      return;
+    }
+
+    if (display == 'static') {
+      _applyPlacementClasses();
+      return;
+    }
+
+    if (_popperController == null) {
+      _updatePositioning();
+      return;
+    }
+
+    _popperController!.update();
+    _applyPlacementClasses();
+  }
+
   void _updatePositioning() {
     final anchor = _anchor?.nativeElement;
     final menu = _menu?.nativeElement;
@@ -586,8 +616,10 @@ class LiDropdownDirective implements OnInit, OnDestroy {
         strategy: PopperStrategy.fixed,
         offset: const PopperOffset(mainAxis: 2),
         padding: const PopperInsets.all(8),
-        onLayout: (_) {
-          if (_adaptToViewport) {
+        observeMutations: false,
+        layoutWriter: _writeStablePopperLayout,
+        onLayout: (layout) {
+          if (_adaptToViewport && _markPopperLayoutChanged(layout)) {
             _scheduleViewportAdaptation();
           }
         },
@@ -596,6 +628,130 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _popperController!.startAutoUpdate();
     _popperController!.update();
     _applyPlacementClasses();
+  }
+
+  bool _markPopperLayoutChanged(PopperLayout layout) {
+    final signature = <Object?>[
+      layout.placement,
+      layout.strategy.name,
+      layout.x.toStringAsFixed(2),
+      layout.y.toStringAsFixed(2),
+      layout.availableWidth.toStringAsFixed(2),
+      layout.availableHeight.toStringAsFixed(2),
+      layout.referenceRect.left.toStringAsFixed(2),
+      layout.referenceRect.top.toStringAsFixed(2),
+      layout.referenceRect.width.toStringAsFixed(2),
+      layout.referenceRect.height.toStringAsFixed(2),
+      layout.floatingRect.width.toStringAsFixed(2),
+      layout.floatingRect.height.toStringAsFixed(2),
+    ].join('|');
+
+    if (_lastPopperLayoutSignature == signature) {
+      return false;
+    }
+
+    _lastPopperLayoutSignature = signature;
+    return true;
+  }
+
+  void _writeStablePopperLayout(
+    PopperLayout layout,
+    html.Element floatingElement,
+    html.Element? arrowElement,
+  ) {
+    final styleSignature = <Object?>[
+      layout.strategy == PopperStrategy.fixed ? 'fixed' : 'absolute',
+      layout.x.round(),
+      layout.y.round(),
+      layout.placement,
+      'visible',
+    ].join('|');
+
+    if (_lastAppliedFloatingStyleSignature == styleSignature) {
+      return;
+    }
+
+    _lastAppliedFloatingStyleSignature = styleSignature;
+
+    final style = floatingElement.style;
+
+    _writeStyleValue(
+      style.position,
+      layout.strategy == PopperStrategy.fixed ? 'fixed' : 'absolute',
+      (value) => style.position = value,
+    );
+    _writeStyleValue(style.left, '0px', (value) => style.left = value);
+    _writeStyleValue(style.top, '0px', (value) => style.top = value);
+    _writeStyleValue(style.right, 'auto', (value) => style.right = value);
+    _writeStyleValue(style.bottom, 'auto', (value) => style.bottom = value);
+    _writeStyleValue(style.margin, '0px', (value) => style.margin = value);
+    _writeStyleValue(
+      style.transform,
+      'translate(${layout.x.toStringAsFixed(2)}px, ${layout.y.toStringAsFixed(2)}px)',
+      (value) => style.transform = value,
+    );
+    _writeStyleValue(style.width, '', (value) => style.width = value);
+    _writeStyleValue(style.minWidth, '', (value) => style.minWidth = value);
+    _writeAttributeValue(
+      floatingElement,
+      'data-popper-placement',
+      layout.placement,
+    );
+    _toggleAttribute(
+      floatingElement,
+      'data-popper-reference-hidden',
+      layout.referenceHidden,
+    );
+    _toggleAttribute(
+      floatingElement,
+      'data-popper-escaped',
+      layout.escaped,
+    );
+    _writeStyleValue(style.visibility, 'visible', (value) {
+      style.visibility = value;
+    });
+    if (style.pointerEvents == 'none') {
+      style.pointerEvents = '';
+    }
+  }
+
+  void _writeStyleValue(
+    String currentValue,
+    String nextValue,
+    void Function(String value) writer,
+  ) {
+    if (currentValue == nextValue) {
+      return;
+    }
+    writer(nextValue);
+  }
+
+  void _writeAttributeValue(
+    html.Element element,
+    String attributeName,
+    String nextValue,
+  ) {
+    if (element.getAttribute(attributeName) == nextValue) {
+      return;
+    }
+    element.setAttribute(attributeName, nextValue);
+  }
+
+  void _toggleAttribute(
+    html.Element element,
+    String attributeName,
+    bool enabled,
+  ) {
+    if (enabled) {
+      if (element.getAttribute(attributeName) != 'true') {
+        element.setAttribute(attributeName, 'true');
+      }
+      return;
+    }
+
+    if (element.attributes.containsKey(attributeName)) {
+      element.attributes.remove(attributeName);
+    }
   }
 
   void _schedulePostOpenPositioningRefresh() {
@@ -645,10 +801,8 @@ class LiDropdownDirective implements OnInit, OnDestroy {
 
       final changedStyles = _applyViewportAdaptationStyles(menu);
       if (changedStyles) {
-        _updatePositioning();
+        _refreshExistingPositioning();
       }
-
-      _clampFloatingElementToViewport();
     });
   }
 
@@ -662,60 +816,90 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     }
 
     const viewportInset = 8.0;
-    final maxViewportWidth = math.max(160.0, viewportWidth - (viewportInset * 2));
+    final maxViewportWidth =
+        math.max(160.0, viewportWidth - (viewportInset * 2));
     final maxViewportHeight =
         math.max(120.0, viewportHeight - (viewportInset * 2));
     final menuRect = menu.getBoundingClientRect();
 
-    final shouldClampWidth = menuRect.width > maxViewportWidth + 0.5;
-    final shouldClampHeight = menuRect.height > maxViewportHeight + 0.5;
+    final shouldClampWidth =
+        _viewportWidthClamped || menuRect.width > maxViewportWidth + 0.5;
+    final shouldClampHeight =
+        _viewportHeightClamped || menuRect.height > maxViewportHeight + 0.5;
 
     final configuredMaxWidth = _menuMaxWidth;
     final configuredMaxHeight = _menuMaxHeight;
     final nextMaxWidth = shouldClampWidth
-      ? configuredMaxWidth != null
-        ? 'min($configuredMaxWidth, ${maxViewportWidth.floor()}px)'
-        : '${maxViewportWidth.floor()}px'
-      : (configuredMaxWidth ?? _menuInlineMaxWidth);
+        ? configuredMaxWidth != null
+            ? 'min($configuredMaxWidth, ${maxViewportWidth.floor()}px)'
+            : '${maxViewportWidth.floor()}px'
+        : (configuredMaxWidth ?? _menuInlineMaxWidth);
     final nextOverflowX = shouldClampWidth ? 'auto' : _menuInlineOverflowX;
-    final nextWidth = shouldClampWidth && _menuInlineWidth.isNotEmpty
-      ? '${maxViewportWidth.floor()}px'
-      : _menuInlineWidth;
+    // Não sobrescreve `width` inline ao adaptar: o `max-width` aplicado acima já
+    // limita o tamanho visual do menu, e preservar o `width` definido pelo
+    // autor (por exemplo `width: max-content`) é o que evita o loop de
+    // recalculo de estilo quando o app controla largura/overflow via CSS.
+    final nextWidth = _menuInlineWidth;
     final nextMaxHeight = shouldClampHeight
-      ? configuredMaxHeight != null
-        ? 'min($configuredMaxHeight, ${maxViewportHeight.floor()}px)'
-        : '${maxViewportHeight.floor()}px'
-      : (configuredMaxHeight ?? _menuInlineMaxHeight);
+        ? configuredMaxHeight != null
+            ? 'min($configuredMaxHeight, ${maxViewportHeight.floor()}px)'
+            : '${maxViewportHeight.floor()}px'
+        : (configuredMaxHeight ?? _menuInlineMaxHeight);
     final nextOverflowY = shouldClampHeight ? 'auto' : _menuInlineOverflowY;
-    final nextHeight = shouldClampHeight && _menuInlineHeight.isNotEmpty
-      ? '${maxViewportHeight.floor()}px'
-      : _menuInlineHeight;
+    // Mesmo motivo de `nextWidth`: o `max-height` já contém o overflow vertical
+    // sem precisar fixar a altura inline, então preservamos o valor original
+    // do autor (frequentemente vazio).
+    final nextHeight = _menuInlineHeight;
+
+    final nextSignature = <Object?>[
+      nextWidth,
+      nextMaxWidth,
+      nextOverflowX,
+      nextHeight,
+      nextMaxHeight,
+      nextOverflowY,
+    ].join('|');
+
+    if (_lastViewportAdaptationSignature == nextSignature) {
+      return false;
+    }
 
     var changed = false;
     changed = _applyInlineStyleValue(menu.style.width, nextWidth, (value) {
-        menu.style.width = value;
-      }) ||
-      changed;
-    changed = _applyInlineStyleValue(menu.style.maxWidth, nextMaxWidth, (value) {
-          menu.style.maxWidth = value;
+          menu.style.width = value;
         }) ||
         changed;
-    changed = _applyInlineStyleValue(menu.style.overflowX, nextOverflowX, (value) {
-          menu.style.overflowX = value;
-        }) ||
-        changed;
+    changed =
+        _applyInlineStyleValue(menu.style.maxWidth, nextMaxWidth, (value) {
+              menu.style.maxWidth = value;
+            }) ||
+            changed;
+    changed =
+        _applyInlineStyleValue(menu.style.overflowX, nextOverflowX, (value) {
+              menu.style.overflowX = value;
+            }) ||
+            changed;
     changed = _applyInlineStyleValue(menu.style.height, nextHeight, (value) {
-        menu.style.height = value;
-      }) ||
-      changed;
-    changed = _applyInlineStyleValue(menu.style.maxHeight, nextMaxHeight, (value) {
-          menu.style.maxHeight = value;
+          menu.style.height = value;
         }) ||
         changed;
-    changed = _applyInlineStyleValue(menu.style.overflowY, nextOverflowY, (value) {
-          menu.style.overflowY = value;
-        }) ||
-        changed;
+    changed =
+        _applyInlineStyleValue(menu.style.maxHeight, nextMaxHeight, (value) {
+              menu.style.maxHeight = value;
+            }) ||
+            changed;
+    changed =
+        _applyInlineStyleValue(menu.style.overflowY, nextOverflowY, (value) {
+              menu.style.overflowY = value;
+            }) ||
+            changed;
+
+    if (changed) {
+      _lastViewportAdaptationSignature = nextSignature;
+    }
+
+    _viewportWidthClamped = shouldClampWidth;
+    _viewportHeightClamped = shouldClampHeight;
 
     return changed;
   }
@@ -769,59 +953,9 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _menuInlineMaxHeight = '';
     _menuInlineOverflowX = '';
     _menuInlineOverflowY = '';
-  }
-
-  void _clampFloatingElementToViewport() {
-    final floatingElement = _bodyContainer ?? _menu?.nativeElement;
-    final menu = _menu?.nativeElement;
-    if (floatingElement == null || menu == null) {
-      return;
-    }
-
-    final viewportWidth = html.window.innerWidth?.toDouble() ?? 0;
-    final viewportHeight = html.window.innerHeight?.toDouble() ?? 0;
-    if (viewportWidth <= 0 || viewportHeight <= 0) {
-      return;
-    }
-
-    const viewportInset = 8.0;
-    final menuRect = menu.getBoundingClientRect();
-    var deltaX = 0.0;
-    var deltaY = 0.0;
-
-    if (menuRect.left < viewportInset) {
-      deltaX += viewportInset - menuRect.left;
-    }
-    if (menuRect.right > viewportWidth - viewportInset) {
-      deltaX -= menuRect.right - (viewportWidth - viewportInset);
-    }
-    if (menuRect.top < viewportInset) {
-      deltaY += viewportInset - menuRect.top;
-    }
-    if (menuRect.bottom > viewportHeight - viewportInset) {
-      deltaY -= menuRect.bottom - (viewportHeight - viewportInset);
-    }
-
-    if (deltaX.abs() <= 0.5 && deltaY.abs() <= 0.5) {
-      return;
-    }
-
-    final transform = floatingElement.style.transform;
-    final match = RegExp(
-      r'translate\(\s*(-?[\d.]+)px,\s*(-?[\d.]+)px\)',
-    ).firstMatch(transform);
-    if (match == null) {
-      return;
-    }
-
-    final currentX = double.tryParse(match.group(1) ?? '');
-    final currentY = double.tryParse(match.group(2) ?? '');
-    if (currentX == null || currentY == null) {
-      return;
-    }
-
-    floatingElement.style.transform =
-        'translate(${(currentX + deltaX).toStringAsFixed(2)}px, ${(currentY + deltaY).toStringAsFixed(2)}px)';
+    _lastViewportAdaptationSignature = null;
+    _viewportWidthClamped = false;
+    _viewportHeightClamped = false;
   }
 
   void _applyCustomDropdownClass(String? newClass, String? oldClass) {
@@ -1154,9 +1288,8 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
 
   bool get _canUseHoverInteraction {
     try {
-      final supportsFineHover = html.window
-          .matchMedia('(hover: hover) and (pointer: fine)')
-          .matches;
+      final supportsFineHover =
+          html.window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       if (supportsFineHover) {
         return true;
       }
