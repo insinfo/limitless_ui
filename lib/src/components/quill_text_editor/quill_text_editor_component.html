@@ -6,9 +6,9 @@
         #toolbar
         [attr.aria-hidden]="toolbarVisible ? null : 'true'"
         [class]="(toolbarClass.isEmpty ? 'ql-toolbar ql-snow li-quill-text-editor__toolbar' : 'ql-toolbar ql-snow li-quill-text-editor__toolbar ' + toolbarClass) + (toolbarVisible ? '' : ' li-quill-text-editor__toolbar--hidden')">
-      <div class="li-quill-text-editor__toolbar-main">
+      <div *ngIf="toolbarStructureMounted" class="li-quill-text-editor__toolbar-main">
         <button
-            *ngFor="let action of leadingToolbarActions"
+          *ngFor="let action of leadingToolbarActions; trackBy: trackByActionId"
             type="button"
             [disabled]="action.disabled"
             [title]="action.title.isEmpty ? null : action.title"
@@ -18,10 +18,15 @@
           <span *ngIf="action.label.isNotEmpty">{{ action.label }}</span>
         </button>
 
-        <div *ngFor="let item of resolvedToolbarItems" class="li-quill-text-editor__toolbar-item">
+        <div
+            *ngFor="let item of resolvedToolbarItems; trackBy: trackByItemId"
+            class="li-quill-text-editor__toolbar-item"
+            [attr.hidden]="shouldApplyToolbarItemHiddenAttribute(item) ? '' : null"
+            [class.li-quill-text-editor__toolbar-item--disabled]="isToolbarItemDisabled(item)">
           <button
-              *ngIf="item.isButton"
+              *ngIf="item.isButton && shouldRenderToolbarItem(item)"
               type="button"
+              [disabled]="isToolbarItemDisabled(item)"
               [attr.value]="item.value.isEmpty ? null : item.value"
               [title]="item.title.isEmpty ? null : item.title"
               [class]="'li-quill-text-editor__toolbar-native-button ' + item.quillClass + (item.buttonClass.isEmpty ? '' : ' ' + item.buttonClass)">
@@ -30,7 +35,8 @@
           </button>
 
           <select
-              *ngIf="item.isSelect"
+              *ngIf="item.isSelect && shouldRenderToolbarItem(item)"
+              [disabled]="isToolbarItemDisabled(item)"
               [title]="item.title.isEmpty ? null : item.title"
               [class]="'li-quill-text-editor__toolbar-picker ' + item.quillClass + (item.selectClass.isEmpty ? '' : ' ' + item.selectClass)">
             <option
@@ -49,7 +55,7 @@
         </span>
 
         <button
-            *ngFor="let action of trailingToolbarActions"
+          *ngFor="let action of trailingToolbarActions; trackBy: trackByActionId"
             type="button"
             [disabled]="action.disabled"
             [title]="action.title.isEmpty ? null : action.title"

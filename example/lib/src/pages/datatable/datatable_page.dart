@@ -1299,7 +1299,7 @@ class ProductController {
   ];
 
   Future<void> load() async {
-    final loading = SimpleLoading();
+    final loading = LiSimpleLoading();
     try {
       loading.show(target: hostElement);
       items = await productService.list(filtro);

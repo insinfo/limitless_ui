@@ -1,3 +1,4 @@
+//C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_text_editor_component.scss
 :host {
   display: block;
   min-width: 0;
@@ -18,13 +19,15 @@
 }
 
 .li-quill-text-editor__surface {
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--li-quill-border-color);
   border-radius: 0;
   background: var(--li-quill-surface-bg);
 }
 
 .li-quill-text-editor__toolbar {
+  position: relative;
+  z-index: 2;
   padding: 0.5rem 0.625rem;
   border-bottom: 1px solid color-mix(
     in srgb,
@@ -58,6 +61,11 @@
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
+}
+
+.li-quill-text-editor__toolbar-item--disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .li-quill-text-editor__toolbar-native-button,
@@ -106,7 +114,8 @@
 
 .li-quill-text-editor__editor {
   min-height: var(--li-quill-editor-min-height, 16rem);
-  overflow: hidden;
+  position: relative;
+  overflow: visible;
   background: var(--li-quill-editor-bg);
 }
 
@@ -120,11 +129,12 @@
   font-size: 0.875rem;
 }
 
-:host ::ng-deep .li-quill-text-editor__editor .ql-container {
+:host ::ng-deep .li-quill-text-editor__editor.ql-container {
   border: 0;
   font-family: 'Inter', Helvetica, Arial, sans-serif;
   background: var(--li-quill-editor-bg);
   color: var(--li-quill-editor-color);
+  overflow: visible;
 }
 
 :host ::ng-deep .li-quill-text-editor__editor .ql-editor {
@@ -137,8 +147,12 @@
 }
 
 :host ::ng-deep .li-quill-text-editor__editor .ql-editor table {
-  table-layout: auto;
-  width: auto;
+  table-layout: unset;
+  width: unset;
+}
+
+:host ::ng-deep .li-quill-text-editor__editor .ql-table-menus-container {
+  z-index: 1010;
 }
 
 :host ::ng-deep .li-quill-text-editor__editor .ql-editor table td {
@@ -148,6 +162,14 @@
 :host ::ng-deep .li-quill-text-editor__editor .ql-editor li[data-list='checked'] > .ql-ui,
 :host ::ng-deep .li-quill-text-editor__editor .ql-editor li[data-list='unchecked'] > .ql-ui {
   color: var(--li-quill-muted-color);
+}
+
+/* Limitless all.min.css still embeds legacy Quill list markers on li::before. */
+:host ::ng-deep .li-quill-text-editor__editor .ql-editor li::before {
+  content: none !important;
+  display: none !important;
+  margin: 0 !important;
+  width: 0 !important;
 }
 
 :host ::ng-deep .li-quill-text-editor__toolbar.ql-toolbar.ql-snow {
@@ -303,6 +325,11 @@
 
 :host ::ng-deep .li-quill-text-editor__toolbar .ql-picker.ql-expanded .ql-picker-options {
   z-index: 1000;
+}
+
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-table-select-container,
+:host ::ng-deep .li-quill-text-editor__toolbar .ql-table-select-list {
+  z-index: 1010;
 }
 
 :host ::ng-deep .li-quill-text-editor__toolbar .ql-formats {

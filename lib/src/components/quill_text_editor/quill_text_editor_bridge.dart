@@ -1,3 +1,4 @@
+//C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_text_editor_bridge.dart
 import 'dart:html' as html;
 import 'dart:js_util' as js_util;
 
@@ -17,6 +18,8 @@ class LiQuillBridgeSelection {
 
 abstract class LiQuillTextEditorHandle {
   dynamic get rawInstance;
+
+  void dispose();
 
   void onTextChange(void Function(String source) callback);
 
@@ -139,6 +142,12 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
   quill.Quill get rawInstance => _editor;
 
   @override
+  void dispose() {
+    _editor.blur();
+    _editor.enable(false);
+  }
+
+  @override
   void onTextChange(void Function(String source) callback) {
     _editor.on(
       'text-change',
@@ -207,7 +216,11 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
 
   @override
   void insertText(int index, String text, [String source = 'user']) {
-    _editor.insertText(index, text, null, source);
+    js_util.callMethod<void>(_editor, 'insertText', <Object?>[
+      index,
+      text,
+      source,
+    ]);
   }
 
   @override

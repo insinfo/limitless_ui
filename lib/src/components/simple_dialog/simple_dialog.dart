@@ -6,6 +6,8 @@ import 'dart:html' as html;
 enum LiDialogColor { DANGER, PRIMARY, SUCCESS, WARNING, INFO, PINK }
 
 class LiSimpleDialogComponent {
+  static const int defaultZIndex = 2000;
+
   static String getColor(LiDialogColor dialogColor) {
     var headerColor = '';
     switch (dialogColor) {
@@ -31,10 +33,13 @@ class LiSimpleDialogComponent {
     return headerColor;
   }
 
-  static void showFullScreenDialog(String content) {
+  static int _backdropZIndex(int zIndex) => zIndex <= 0 ? 0 : zIndex - 1;
+
+  static void showFullScreenDialog(String content,
+      {int zIndex = defaultZIndex}) {
     var template = '''
     <div style="width: 100%;height: 100%;display: block; 
-    position: fixed;top: 0;left: 0;background: rgba(255, 255, 255, 0.5);">
+    position: fixed;top: 0;left: 0;z-index:$zIndex;background: rgba(255, 255, 255, 0.5);">
     $content
     </div>
      ''';
@@ -46,10 +51,10 @@ class LiSimpleDialogComponent {
   }
 
   static void showFullScreenAlert(String message,
-      {backgroundColor = '#de589d'}) {
+      {String backgroundColor = '#de589d', int zIndex = defaultZIndex}) {
     var template = '''
     <div style="width: 100%;height: 100%;display: block; 
-        position: fixed;top: 0;left: 0;background: rgba(255, 255, 255, 0.5);">
+        position: fixed;top: 0;left: 0;z-index:$zIndex;background: rgba(255, 255, 255, 0.5);">
         <div style="display:flex;align-items:center;justify-content:center;width: 100%;height: 100%;">
             <h1 style="width:50%;height:77px;text-align:center;background:$backgroundColor;color:#fff;padding:20px;">$message</h1>
         </div>
@@ -71,9 +76,11 @@ class LiSimpleDialogComponent {
     String detailLabel = 'Detalhe',
     LiDialogColor dialogColor = LiDialogColor.PRIMARY,
     Function? okAction,
+    int zIndex = defaultZIndex,
   }) {
+    final backdropZIndex = _backdropZIndex(zIndex);
     final template = '''
-      <div class="modal fade show" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;" aria-modal="true" role="dialog">
+      <div class="modal fade show li-simple-dialog__modal" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;z-index:$zIndex;" aria-modal="true" role="dialog" data-li-simple-dialog="true">
         <div class="modal-dialog">
             <div class="modal-content">                
                 <div class="modal-header bg-${getColor(dialogColor)} text-white border-0">
@@ -89,9 +96,10 @@ class LiSimpleDialogComponent {
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show"></div>
+        <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;"></div>
     ''';
     var root = html.DivElement();
+        root.classes.add('li-simple-dialog-root');
     html.document.querySelector('body')?.append(root);
     // ignore: unsafe_html
     root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
@@ -155,12 +163,14 @@ class LiSimpleDialogComponent {
       Function? cancelAction,
       String confirmButtonText = 'Sim',
       Function? confirmAction,
-      LiDialogColor dialogColor = LiDialogColor.DANGER}) {
+      LiDialogColor dialogColor = LiDialogColor.DANGER,
+      int zIndex = defaultZIndex}) {
     // var uuid = Uuid();
     // final idModal = uuid.v1();
     final comp = Completer<bool>();
+    final backdropZIndex = _backdropZIndex(zIndex);
     final template = '''
-      <div class="modal fade show" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;" aria-modal="true" role="dialog">
+      <div class="modal fade show li-simple-dialog__modal" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;z-index:$zIndex;" aria-modal="true" role="dialog" data-li-simple-dialog="true">
         <div class="modal-dialog">
             <div class="modal-content">                
                 <div class="modal-header bg-${getColor(dialogColor)} text-white border-0">
@@ -178,9 +188,10 @@ class LiSimpleDialogComponent {
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show"></div>
+        <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;"></div>
     ''';
     final root = html.DivElement();
+        root.classes.add('li-simple-dialog-root');
     html.document.querySelector('body')?.append(root);
     // ignore: unsafe_html
     root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);

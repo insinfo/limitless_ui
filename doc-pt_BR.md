@@ -122,7 +122,7 @@ Esse fluxo é o ponto de equilíbrio recomendado no projeto:
 
 ## Componentes novos do `limitless_ui` em `1.0.0-dev.22`
 
-Além da camada de formulários declarativos, a versão `1.0.0-dev.22` expandiu o pacote com três superfícies importantes: um campo de senha com máscara controlada em Dart, um visualizador de PDF genérico com PDF.js e um editor rico isolado baseado em Quill `2.0.3`.
+Além da camada de formulários declarativos, a versão `1.0.0-dev.22` expandiu o pacote com quatro superfícies importantes: um campo de senha com máscara controlada em Dart, um visualizador de PDF genérico com PDF.js, um editor rico isolado baseado em Quill `2.0.3` e um helper fullscreen imperativo para fluxos longos com mensagens narradas.
 
 ### `li-password-input`
 
@@ -213,6 +213,42 @@ Capacidades principais:
 - suporte opcional a tabelas com `enableTableSupport`, `enableTableButton` e `tableMenus`;
 - APIs `getHtml()`, `getPlainText()`, `getDeltaJson()`, `setDeltaJson(...)`, `format(...)` e `insertTextAtSelection(...)`;
 - opção `updateModelOnBlur` para reduzir a frequência de atualização de `ngModel` em telas pesadas.
+
+### `LiNarratedFullScreenLoading`
+
+`LiNarratedFullScreenLoading` é um helper imperativo para fluxos mais longos no navegador, quando a aplicação precisa de uma overlay fullscreen com mensagens rotativas de status. Ele é exportado pelo barrel principal `package:limitless_ui/limitless_ui.dart`, então pode ser usado ao lado de `LiSimpleLoading` e `LiSimpleDialogComponent` sem uma superfície extra de import.
+
+```dart
+import 'package:limitless_ui/limitless_ui.dart';
+
+final loading = LiNarratedFullScreenLoading.pdfGeneration(
+  title: 'Gerando PDF',
+  messages: const <String>[
+    'Preparando estrutura do documento...',
+    'Renderizando paginas...',
+    'Finalizando metadados...',
+  ],
+);
+
+loading.showOnBody();
+
+// ... execute a tarefa assincrona ...
+
+loading.updateMessage('Enviando arquivo final...', stopRotation: true);
+
+// ... finalize a tarefa ...
+
+loading.hide();
+```
+
+Comportamentos mais relevantes:
+
+- `showOnBody()` monta a overlay no `body` do documento e a mantem acima da pilha de `li-modal` por padrao;
+- `pdfGeneration()` oferece uma factory pronta para fluxos orientados a geracao de PDF;
+- `updateMessage(..., stopRotation: true)` fixa a mensagem atual e interrompe o timer de rotacao automatica;
+- `hide()` remove a overlay e libera o timer interno.
+
+A pagina de helpers no example inclui tanto uma demo standalone quanto uma demo acionada de dentro de `li-modal`, para validar visualmente o comportamento da pilha de overlays.
 
 ## 1. O que você está construindo
 

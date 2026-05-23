@@ -720,6 +720,7 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
 - Expanded `li-pdf-viewer` with isolated `package:limitless_ui/pdf_viewer.dart` imports, localized labels/zoom presets, Dart/template toolbar and side-panel extensibility, document-text/page-info extraction APIs, and stronger browser coverage through dedicated PDF.js/browser bridges.
 - Added `li-quill-text-editor` through the isolated `package:limitless_ui/quill_text_editor.dart` barrel, with Quill `2.0.3` integration, configurable toolbar items/actions/templates, optional table support, bilingual labels, and the optional `updateModelOnBlur` performance mode.
 - Added `li-password-input` with Dart-controlled masking on top of a `type="text"` input, integrated reveal toggle, declarative validation support, and example coverage for autofill-resistant password flows.
+- Added `LiNarratedFullScreenLoading` as an imperative fullscreen loading helper with rotating messages, a `pdfGeneration()` factory, `showOnBody()` overlay support above `li-modal`, and `updateMessage(..., stopRotation: true)` for pinning the final status.
 - Expanded declarative `liDropdown` overlays with default viewport adaptation for dynamic/body-mounted menus, post-show relayout for compact navbar triggers, optional `menuMaxWidth`/`menuMaxHeight` caps, and browser coverage for left/right preferred alignment plus long/tall menu clamping.
 - Added a dedicated workspace-shell demo route to the example app, simulating a dense operational navbar/sidebar layout with search, notification, organization switching, account submenu, and status-bar patterns without binding the docs to an external product name.
 
@@ -1614,6 +1615,44 @@ Most relevant inputs and features:
 - `enableTableSupport`, `enableTableButton`, and `tableMenus` turn Quill Table Better support on only when the host wants that feature;
 - `updateModelOnBlur` lets the host defer `ngModel` propagation for performance-sensitive screens, while `commitPendingModelUpdate()` can flush pending edits explicitly;
 - `getHtml()`, `getPlainText()`, `getDeltaJson()`, `setDeltaJson(...)`, `format(...)`, and `insertTextAtSelection(...)` expose imperative editor APIs without reaching into JS interop directly.
+
+When `enableTableSupport` is used, keep the editor in a container with enough horizontal room for the `quill-table-better` contextual table menu. The plugin positions `.ql-table-menus-container` from the Quill container geometry, and very narrow side-by-side layouts can make the menu clamp to the left edge instead of appearing visually centered above the selected table. Prefer a full-width editor area for table-heavy flows, or move previews/metadata below the editor on constrained pages. The component styles keep the Quill container overflow visible so the table menu can overlap the toolbar when it needs to; host page CSS should not put the editor inside clipping wrappers.
+
+### Narrated Full Screen Loading
+
+`LiNarratedFullScreenLoading` is an imperative helper for long-running browser flows that need a fullscreen overlay plus rotating status messages. It is exported from the main barrel [lib/limitless_ui.dart](lib/limitless_ui.dart), so it can be used alongside `LiSimpleLoading` and `LiSimpleDialogComponent` without an extra import surface.
+
+```dart
+import 'package:limitless_ui/limitless_ui.dart';
+
+final loading = LiNarratedFullScreenLoading.pdfGeneration(
+  title: 'Generating PDF',
+  messages: const <String>[
+    'Preparing document structure...',
+    'Rendering pages...',
+    'Finalizing metadata...',
+  ],
+);
+
+loading.showOnBody();
+
+// ... run the async task ...
+
+loading.updateMessage('Uploading the final file...', stopRotation: true);
+
+// ... finish the task ...
+
+loading.hide();
+```
+
+Most relevant behavior:
+
+- `showOnBody()` mounts the overlay at the document body and keeps it above `li-modal` stacks by default;
+- `pdfGeneration()` provides a ready-made factory for PDF-oriented messaging flows;
+- `updateMessage(..., stopRotation: true)` pins the latest message and stops the automatic rotation timer;
+- `hide()` removes the overlay and releases the internal timer.
+
+The example helper page includes both a standalone narrated-loading demo and a second demo triggered from inside `li-modal`, so modal stacking can be verified visually.
 
 ### Datatable Select
 

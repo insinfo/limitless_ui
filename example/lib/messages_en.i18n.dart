@@ -4520,9 +4520,9 @@ class HelpersPagesMessagesEn extends HelpersPagesMessages {
   String get breadcrumb => """Loading, dialogs, popovers, and toasts""";
 
   /// ```dart
-  /// "SimpleLoading"
+  /// "LiSimpleLoading"
   /// ```
-  String get loadingTitle => """SimpleLoading""";
+  String get loadingTitle => """LiSimpleLoading""";
 
   /// ```dart
   /// "Show overlay"
@@ -6606,7 +6606,7 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.helpers.subtitle""": """Helpers""",
       """pages.helpers.breadcrumb""":
           """Loading, dialogs, popovers, and toasts""",
-      """pages.helpers.loadingTitle""": """SimpleLoading""",
+      """pages.helpers.loadingTitle""": """LiSimpleLoading""",
       """pages.helpers.showOverlay""": """Show overlay""",
       """pages.helpers.loadingTarget""": """Loading target area""",
       """pages.helpers.loadingTargetHelp""":

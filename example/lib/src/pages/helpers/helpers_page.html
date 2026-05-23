@@ -26,14 +26,42 @@
                     <h5 class="mb-0">{{ t.pages.helpers.loadingTitle }}</h5>
                   </div>
                   <div class="card-body">
-                    <button class="btn btn-light mb-3" type="button" (click)="showLoadingOverlay()">
-                      {{ t.pages.helpers.showOverlay }}
-                    </button>
+                    <p class="demo-helper-note">{{ loadingCoverageIntro }}</p>
+
+                    <div class="demo-action-grid mb-3">
+                      <button class="btn btn-light" type="button" (click)="showLoadingOverlay()">
+                        {{ loadingTargetMethodLabel }}
+                      </button>
+                      <button class="btn btn-outline-dark" type="button" (click)="showBodyLoadingOverlay()">
+                        {{ loadingBodyMethodLabel }}
+                      </button>
+                      <button class="btn btn-outline-primary" type="button" (click)="showSimpleLoadingOverlay()">
+                        {{ loadingSimpleMethodLabel }}
+                      </button>
+                      <button class="btn btn-outline-info" type="button" (click)="showHorizontalLoadingOverlay()">
+                        {{ loadingHorizontalMethodLabel }}
+                      </button>
+                      <button class="btn btn-outline-secondary" type="button" (click)="showHorizontal2LoadingOverlay()">
+                        {{ loadingHorizontal2MethodLabel }}
+                      </button>
+                    </div>
 
                     <div #loadingHost class="demo-loading-host d-flex align-items-center justify-content-center">
                       <div class="text-center">
                         <div class="fw-semibold">{{ t.pages.helpers.loadingTarget }}</div>
                         <div class="text-muted">{{ t.pages.helpers.loadingTargetHelp }}</div>
+                      </div>
+                    </div>
+
+                    <p class="demo-helper-note mb-0 mt-3">{{ loadingCoverageNote }}</p>
+
+                    <div class="demo-helper-section">
+                      <div class="demo-helper-section-title">{{ narratedLoadingSectionTitle }}</div>
+                      <p class="demo-helper-note mb-3">{{ narratedLoadingCoverageIntro }}</p>
+                      <div class="demo-action-grid">
+                        <button class="btn btn-outline-primary" type="button" (click)="showNarratedLoadingDemo()">
+                          {{ narratedLoadingMethodLabel }}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -46,31 +74,51 @@
                     <h5 class="mb-0">{{ t.pages.helpers.actionTitle }}</h5>
                   </div>
                   <div class="card-body">
-                    <div class="demo-action-grid">
-                      <button class="btn btn-primary" type="button" (click)="showDialogAlert()">{{
-                        t.pages.helpers.dialogAlert }}</button>
-                      <button class="btn btn-outline-primary" type="button" (click)="showDialogConfirm()">{{
-                        t.pages.helpers.dialogConfirm }}</button>
-                      <button #simplePopoverButton class="btn btn-light" type="button"
-                        (click)="showSimplePopover(simplePopoverButton)">{{ t.pages.helpers.simplePopover }}</button>
-                      <button #sweetPopoverButton class="btn btn-light" type="button"
-                        (click)="showSweetPopover(sweetPopoverButton)">{{ t.pages.helpers.sweetPopover }}</button>
-                      <button class="btn btn-success" type="button" (click)="showSimpleSuccessToast()">{{
-                        t.pages.helpers.simpleSuccessToast }}</button>
-                      <button class="btn btn-warning" type="button" (click)="showSimpleWarningToast()">{{
-                        t.pages.helpers.simpleWarningToast }}</button>
-                      <button class="btn btn-outline-success" type="button" (click)="showSweetSuccessToast()">{{
-                        t.pages.helpers.sweetSuccessToast }}</button>
-                      <button class="btn btn-outline-warning" type="button" (click)="showSweetWarningToast()">{{
-                        t.pages.helpers.sweetWarningToast }}</button>
-                      <button class="btn btn-outline-info" type="button" (click)="showSweetModal()">{{
-                        t.pages.helpers.sweetModal }}</button>
-                      <button class="btn btn-outline-dark" type="button" (click)="showSweetConfirm()">{{
-                        t.pages.helpers.sweetConfirm }}</button>
-                      <button class="btn btn-info" type="button" (click)="showSweetPrompt()">{{
-                        t.pages.helpers.sweetPrompt }}</button>
-                      <button class="btn btn-outline-danger" type="button" (click)="showSweetErrorToast()">{{
-                        t.pages.helpers.sweetErrorToast }}</button>
+                    <p class="demo-helper-note">{{ dialogCoverageIntro }}</p>
+
+                    <div class="demo-helper-section">
+                      <div class="demo-helper-section-title">{{ dialogSectionTitle }}</div>
+                      <div class="demo-action-grid">
+                        <button class="btn btn-primary" type="button" (click)="showDialogAlert()">{{ dialogAlertMethodLabel }}</button>
+                        <button class="btn btn-outline-primary" type="button" (click)="showDialogConfirm()">{{ dialogConfirmMethodLabel }}</button>
+                        <button class="btn btn-outline-info" type="button" (click)="showFullScreenDialogDemo()">{{ dialogFullScreenMethodLabel }}</button>
+                        <button class="btn btn-outline-dark" type="button" (click)="showFullScreenAlertDemo()">{{ dialogFullScreenAlertMethodLabel }}</button>
+                      </div>
+                    </div>
+
+                    <div class="demo-helper-section">
+                      <div class="demo-helper-section-title">{{ otherHelpersSectionTitle }}</div>
+                      <div class="demo-action-grid">
+                        <button #simplePopoverButton class="btn btn-light" type="button"
+                          (click)="showSimplePopover(simplePopoverButton)">{{ t.pages.helpers.simplePopover }}</button>
+                        <button #sweetPopoverButton class="btn btn-light" type="button"
+                          (click)="showSweetPopover(sweetPopoverButton)">{{ t.pages.helpers.sweetPopover }}</button>
+                        <button class="btn btn-success" type="button" (click)="showSimpleSuccessToast()">{{
+                          t.pages.helpers.simpleSuccessToast }}</button>
+                        <button class="btn btn-warning" type="button" (click)="showSimpleWarningToast()">{{
+                          t.pages.helpers.simpleWarningToast }}</button>
+                        <button class="btn btn-outline-success" type="button" (click)="showSweetSuccessToast()">{{
+                          t.pages.helpers.sweetSuccessToast }}</button>
+                        <button class="btn btn-outline-warning" type="button" (click)="showSweetWarningToast()">{{
+                          t.pages.helpers.sweetWarningToast }}</button>
+                        <button class="btn btn-outline-info" type="button" (click)="showSweetModal()">{{
+                          t.pages.helpers.sweetModal }}</button>
+                        <button class="btn btn-outline-dark" type="button" (click)="showSweetConfirm()">{{
+                          t.pages.helpers.sweetConfirm }}</button>
+                        <button class="btn btn-info" type="button" (click)="showSweetPrompt()">{{
+                          t.pages.helpers.sweetPrompt }}</button>
+                        <button class="btn btn-outline-danger" type="button" (click)="showSweetErrorToast()">{{
+                          t.pages.helpers.sweetErrorToast }}</button>
+                      </div>
+                    </div>
+
+                    <div class="demo-helper-section">
+                      <div class="demo-helper-section-title">{{ modalStackSectionTitle }}</div>
+                      <p class="demo-helper-note mb-3">{{ modalStackIntro }}</p>
+                      <div class="demo-action-grid">
+                        <button class="btn btn-outline-primary" type="button" (click)="openHelperStackModal()">{{
+                          modalStackLaunchLabel }}</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -78,6 +126,42 @@
             </div>
 
             <div class="demo-summary-box">{{ helperState.isEmpty ? t.pages.helpers.idle : helperState }}</div>
+
+            <li-modal #stackDemoModal [title-text]="modalStackDialogTitle" [smallHeader]="true"
+              (close)="onHelperStackModalClose()">
+              <p class="demo-helper-note mb-3">{{ modalStackDialogIntro }}</p>
+
+              <div class="demo-helper-section">
+                <div class="demo-helper-section-title">{{ modalViewportSectionTitle }}</div>
+                <div class="demo-action-grid mb-3">
+                  <button class="btn btn-primary" type="button" (click)="showModalDialogAlert()">{{
+                    modalDialogAlertMethodLabel }}</button>
+                  <button class="btn btn-outline-dark" type="button" (click)="showModalBodyLoadingOverlay()">{{
+                    modalBodyLoadingMethodLabel }}</button>
+                  <button class="btn btn-outline-info" type="button" (click)="showModalNarratedLoadingOverlay()">{{
+                    modalNarratedLoadingMethodLabel }}</button>
+                </div>
+              </div>
+
+              <div class="demo-helper-section">
+                <div class="demo-helper-section-title">{{ modalAnchoredSectionTitle }}</div>
+                <div class="demo-action-grid mb-3">
+                  <button class="btn btn-outline-primary" type="button" (click)="showModalTargetLoadingOverlay()">{{
+                    loadingTargetMethodLabel }}</button>
+                </div>
+
+                <div #modalLoadingHost class="demo-loading-host demo-loading-host--modal d-flex align-items-center justify-content-center">
+                  <div class="text-center">
+                    <div class="fw-semibold">{{ modalTargetTitle }}</div>
+                    <div class="text-muted">{{ modalTargetHelp }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div modal-footer>
+                <button class="btn btn-light" type="button" (click)="stackDemoModal?.close()">{{ modalCloseLabel }}</button>
+              </div>
+            </li-modal>
           </div>
         </li-tabx>
       </li-tabsx>

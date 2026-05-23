@@ -72,7 +72,44 @@
                   <input class="form-check-input" type="checkbox" [(ngModel)]="enableTableButton">
                   <span class="form-check-label">{{ isPt ? 'Botão de tabela' : 'Table button' }}</span>
                 </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [(ngModel)]="enableDestructiveToolbarRebuild">
+                  <span class="form-check-label">{{ destructiveModeLabel }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [ngModel]="disableOrderedList"
+                    (ngModelChange)="onDisableOrderedListChange($event)">
+                  <span class="form-check-label">{{ disableOrderedListLabel }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [ngModel]="disableHeadings"
+                    (ngModelChange)="onDisableHeadingsChange($event)">
+                  <span class="form-check-label">{{ disableHeadingsLabel }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [ngModel]="disableFontSize"
+                    (ngModelChange)="onDisableFontSizeChange($event)">
+                  <span class="form-check-label">{{ disableFontSizeLabel }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [ngModel]="disableAlignment"
+                    (ngModelChange)="onDisableAlignmentChange($event)">
+                  <span class="form-check-label">{{ disableAlignmentLabel }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [ngModel]="disableTextColor"
+                    (ngModelChange)="onDisableTextColorChange($event)">
+                  <span class="form-check-label">{{ disableTextColorLabel }}</span>
+                </label>
+                <label class="col-sm-6 col-lg-3 form-check quill-demo-toggle">
+                  <input class="form-check-input" type="checkbox" [ngModel]="disableBackgroundColor"
+                    (ngModelChange)="onDisableBackgroundColorChange($event)">
+                  <span class="form-check-label">{{ disableBackgroundColorLabel }}</span>
+                </label>
               </div>
+
+              <p class="text-muted small mb-0 mt-3">{{ disabledToolbarNote }}</p>
+              <p class="text-muted small mb-0 mt-2">{{ destructiveModeNote }}</p>
             </div>
 
             <div class="demo-summary-box mb-3">
@@ -98,6 +135,8 @@
                       [updateModelOnBlur]="updateModelOnBlur"
                       [enableTableSupport]="enableTableSupport"
                       [enableTableButton]="enableTableButton"
+                      [enableDestructiveToolbarRebuild]="enableDestructiveToolbarRebuild"
+                      [disabledToolbarItemIds]="disabledToolbarItemIds"
                       [toolbarActions]="toolbarActions"
                       minHeight="24rem">
                     <template liQuillTextEditorToolbarActions let-ctx>
@@ -161,6 +200,20 @@
             <div class="mb-4">
               <li-highlight [code]="basicSnippet" language="html"></li-highlight>
             </div>
+
+            <h6 class="mb-2">{{ isPt ? 'Desativando controles padrão' : 'Disabling default controls' }}</h6>
+            <div class="mb-3">
+              <li-highlight [code]="disabledItemsSnippet" language="dart"></li-highlight>
+            </div>
+
+            <p class="text-muted mb-4">{{ disabledToolbarNote }}</p>
+
+            <h6 class="mb-2">{{ isPt ? 'Modo destrutivo' : 'Destructive mode' }}</h6>
+            <div class="mb-3">
+              <li-highlight [code]="destructiveModeSnippet" language="html"></li-highlight>
+            </div>
+
+            <p class="text-muted mb-4">{{ destructiveModeNote }}</p>
 
             <h6 class="mb-2">Custom actions and template</h6>
             <li-highlight [code]="customSnippet" language="dart"></li-highlight>

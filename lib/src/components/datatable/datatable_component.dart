@@ -143,7 +143,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   @ViewChild('gridScrollContainer')
   HtmlElement? gridScrollContainer;
 
-  final SimpleLoading _loading = SimpleLoading();
+  final LiSimpleLoading _loading = LiSimpleLoading();
   StreamSubscription<void>? _resizeSubscription;
   Timer? _resizeDebounce;
   int? _drawAnimationFrameId;

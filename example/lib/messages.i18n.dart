@@ -4513,9 +4513,9 @@ class HelpersPagesMessages {
   String get breadcrumb => """Loading, dialogs, popovers e toasts""";
 
   /// ```dart
-  /// "SimpleLoading"
+  /// "LiSimpleLoading"
   /// ```
-  String get loadingTitle => """SimpleLoading""";
+  String get loadingTitle => """LiSimpleLoading""";
 
   /// ```dart
   /// "Mostrar overlay"
@@ -6610,7 +6610,7 @@ selectedDate = DateTime(2026, 3, 20);
       """pages.helpers.title""": """Componentes""",
       """pages.helpers.subtitle""": """Utilitarios""",
       """pages.helpers.breadcrumb""": """Loading, dialogs, popovers e toasts""",
-      """pages.helpers.loadingTitle""": """SimpleLoading""",
+      """pages.helpers.loadingTitle""": """LiSimpleLoading""",
       """pages.helpers.showOverlay""": """Mostrar overlay""",
       """pages.helpers.loadingTarget""": """Area alvo do loading""",
       """pages.helpers.loadingTargetHelp""":

@@ -843,7 +843,7 @@ pages:
     title: Componentes
     subtitle: Utilitarios
     breadcrumb: Loading, dialogs, popovers e toasts
-    loadingTitle: SimpleLoading
+    loadingTitle: "LiSimpleLoading"
     showOverlay: Mostrar overlay
     loadingTarget: Area alvo do loading
     loadingTargetHelp: A overlay fica presa ao container.

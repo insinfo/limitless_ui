@@ -1,3 +1,4 @@
+//C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_text_editor_component.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
@@ -345,6 +346,18 @@ class LiQuillToolbarItems {
     iconClass: 'ph ph-text-align-justify',
   );
 
+  static const LiQuillToolbarItem header = LiQuillToolbarItem.select(
+    id: 'header',
+    quillClass: 'ql-header',
+    title: 'Block type',
+  );
+
+  static const LiQuillToolbarItem fontSize = LiQuillToolbarItem.select(
+    id: 'size',
+    quillClass: 'ql-size',
+    title: 'Font size',
+  );
+
   static const LiQuillToolbarItem link = LiQuillToolbarItem.button(
     id: 'link',
     quillClass: 'ql-link',
@@ -560,10 +573,9 @@ class LiQuillTextEditorComponent
         AfterChanges,
         AfterViewInit,
         OnDestroy {
-  LiQuillTextEditorComponent(this._changeDetectorRef, this._hostElement);
+  LiQuillTextEditorComponent(this._changeDetectorRef);
 
   final ChangeDetectorRef _changeDetectorRef;
-  final html.HtmlElement _hostElement;
   final StreamController<String> _valueController =
       StreamController<String>.broadcast();
   final StreamController<String> _textController =
@@ -585,13 +597,23 @@ class LiQuillTextEditorComponent
   String? _pendingHtmlValue;
   bool _initialized = false;
     bool _hasPendingUserChange = false;
+  bool _enableTableSupport = false;
+  bool _enableTableButton = false;
+  bool _enableDestructiveToolbarRebuild = false;
+  bool _destructiveToolbarRebuildScheduled = false;
+  int _appliedToolbarConfigurationSignature = 0;
+  int _pendingToolbarConfigurationSignature = 0;
   LiQuillTextEditorSelection? _lastSelection;
   List<LiQuillToolbarItem>? _toolbarItemsInput;
+  Set<String> _disabledToolbarItemIds = const <String>{};
+  Set<String> _hiddenToolbarItemIds = const <String>{};
     List<LiQuillToolbarOption>? _headerOptionsInput;
     List<LiQuillToolbarOption>? _fontSizeOptionsInput;
+  List<String> _tableMenus = defaultLiQuillTableMenus;
   List<LiQuillToolbarAction> _toolbarActions =
       const <LiQuillToolbarAction>[];
     LiQuillTextEditorLabels _labels = LiQuillTextEditorLabels.english;
+  bool toolbarStructureMounted = true;
 
   late final LiQuillTextEditorTemplateContext templateContext =
       LiQuillTextEditorTemplateContext(this);
@@ -612,10 +634,39 @@ class LiQuillTextEditorComponent
   bool updateModelOnBlur = false;
 
   @Input()
-  bool enableTableSupport = false;
+  set enableTableSupport(bool value) {
+    if (_enableTableSupport == value) {
+      return;
+    }
+    _enableTableSupport = value;
+    _handleToolbarConfigurationInputChanged(syncToolbarItems: false);
+  }
+
+  bool get enableTableSupport => _enableTableSupport;
 
   @Input()
-  bool enableTableButton = false;
+  set enableTableButton(bool value) {
+    if (_enableTableButton == value) {
+      return;
+    }
+    _enableTableButton = value;
+    _handleToolbarConfigurationInputChanged();
+  }
+
+  bool get enableTableButton => _enableTableButton;
+
+  @Input()
+  set enableDestructiveToolbarRebuild(bool value) {
+    final previousValue = _enableDestructiveToolbarRebuild;
+    _enableDestructiveToolbarRebuild = value;
+    if (!_initialized || !value || previousValue == value) {
+      return;
+    }
+    _handleToolbarConfigurationInputChanged();
+  }
+
+  bool get enableDestructiveToolbarRebuild =>
+      _enableDestructiveToolbarRebuild;
 
   @Input()
   String minHeight = '16rem';
@@ -632,7 +683,7 @@ class LiQuillTextEditorComponent
   @Input()
   set labels(LiQuillTextEditorLabels? value) {
     _labels = value ?? LiQuillTextEditorLabels.english;
-    _syncToolbarItems();
+    _handleToolbarConfigurationInputChanged();
   }
 
   LiQuillTextEditorLabels get labels => _labels;
@@ -642,7 +693,7 @@ class LiQuillTextEditorComponent
     _headerOptionsInput = value == null
         ? null
         : List<LiQuillToolbarOption>.unmodifiable(value);
-    _syncToolbarItems();
+    _handleToolbarConfigurationInputChanged();
   }
 
   @Input()
@@ -650,17 +701,58 @@ class LiQuillTextEditorComponent
     _fontSizeOptionsInput = value == null
         ? null
         : List<LiQuillToolbarOption>.unmodifiable(value);
-    _syncToolbarItems();
+    _handleToolbarConfigurationInputChanged();
   }
 
   @Input()
-  List<String> tableMenus = defaultLiQuillTableMenus;
+  set tableMenus(List<String> value) {
+    final normalizedValue = List<String>.unmodifiable(value);
+    if (_listEquals(_tableMenus, normalizedValue)) {
+      return;
+    }
+    _tableMenus = normalizedValue;
+    _handleToolbarConfigurationInputChanged(syncToolbarItems: false);
+  }
+
+  List<String> get tableMenus => _tableMenus;
 
   @Input()
   set toolbarItems(List<LiQuillToolbarItem>? value) {
     _toolbarItemsInput =
         value == null ? null : List<LiQuillToolbarItem>.unmodifiable(value);
-    _syncToolbarItems();
+    _handleToolbarConfigurationInputChanged();
+  }
+
+  @Input()
+  set disabledToolbarItemIds(List<String>? value) {
+    _disabledToolbarItemIds = Set<String>.unmodifiable(
+      (value ?? const <String>[])
+          .map((id) => id.trim())
+          .where((id) => id.isNotEmpty),
+    );
+    if (_initialized) {
+      _changeDetectorRef.markForCheck();
+    }
+  }
+
+  @Input()
+  set hiddenToolbarItemIds(List<String>? value) {
+    final normalizedValue = Set<String>.unmodifiable(
+      (value ?? const <String>[])
+          .map((id) => id.trim())
+          .where((id) => id.isNotEmpty),
+    );
+    if (_setEquals(_hiddenToolbarItemIds, normalizedValue)) {
+      return;
+    }
+    _hiddenToolbarItemIds = normalizedValue;
+    if (_initialized && enableDestructiveToolbarRebuild) {
+      _handleToolbarConfigurationInputChanged(syncToolbarItems: false);
+      return;
+    }
+    if (_initialized) {
+      _changeDetectorRef.markForCheck();
+    }
   }
 
   @Input()
@@ -729,6 +821,7 @@ class LiQuillTextEditorComponent
   @override
   void ngOnInit() {
     _syncToolbarItems();
+    _applyToolbarConfigurationSignature();
     _syncToolbarActions();
   }
 
@@ -736,13 +829,15 @@ class LiQuillTextEditorComponent
   void ngAfterChanges() {
     if (_initialized) {
       _quill?.enable(!readOnly);
-      _syncToolbarItems();
-      _syncToolbarActions();
       if (!updateModelOnBlur && _hasPendingUserChange) {
         _emitUserChange();
       }
       _changeDetectorRef.markForCheck();
+      return;
     }
+
+    _syncToolbarItems();
+    _syncToolbarActions();
   }
 
   @override
@@ -783,9 +878,10 @@ class LiQuillTextEditorComponent
     }
 
     try {
+      errorMessage = null;
       _quill = liQuillTextEditorBridge.createEditor(
         container: editorContainer!,
-        bounds: _hostElement,
+        bounds: editorContainer!,
         theme: theme.trim().isEmpty ? 'snow' : theme.trim(),
         modules: modules,
         placeholder: placeholder.trim().isEmpty ? null : placeholder.trim(),
@@ -794,6 +890,7 @@ class LiQuillTextEditorComponent
       _initialized = true;
       _wireEditorEvents();
       _applyPendingHtmlValue();
+      _applyToolbarConfigurationSignature();
       _readyController.add(this);
       _changeDetectorRef.markForCheck();
     } catch (error) {
@@ -883,7 +980,11 @@ class LiQuillTextEditorComponent
     editor.setContents(delta, 'silent');
   }
 
-  void _syncToolbarItems() {
+  void _syncToolbarItems({bool force = false}) {
+    if (_initialized && !force) {
+      return;
+    }
+
     resolvedHeaderOptions = _headerOptionsInput ??
         buildDefaultLiQuillHeaderOptions(labels);
     resolvedFontSizeOptions = _fontSizeOptionsInput ??
@@ -896,6 +997,196 @@ class LiQuillTextEditorComponent
           enableTableButton: enableTableButton,
         );
   }
+
+  void _handleToolbarConfigurationInputChanged({
+    bool syncToolbarItems = true,
+  }) {
+    if (_initialized && !enableDestructiveToolbarRebuild) {
+      return;
+    }
+
+    if (syncToolbarItems) {
+      _syncToolbarItems(force: _initialized);
+    }
+
+    if (!_initialized) {
+      _applyToolbarConfigurationSignature();
+      return;
+    }
+
+    _pendingToolbarConfigurationSignature = _buildToolbarConfigurationSignature();
+    if (_pendingToolbarConfigurationSignature ==
+            _appliedToolbarConfigurationSignature ||
+        _destructiveToolbarRebuildScheduled) {
+      return;
+    }
+
+    _scheduleDestructiveToolbarRebuild();
+  }
+
+  void _scheduleDestructiveToolbarRebuild() {
+    if (!_initialized || editorContainer == null) {
+      return;
+    }
+
+    _destructiveToolbarRebuildScheduled = true;
+    scheduleMicrotask(() {
+      _destructiveToolbarRebuildScheduled = false;
+      if (!_initialized || !enableDestructiveToolbarRebuild) {
+        return;
+      }
+      _rebuildEditorDestructively();
+    });
+  }
+
+  void _rebuildEditorDestructively() {
+    final editor = _quill;
+    if (editor == null) {
+      return;
+    }
+
+    final preservedDelta = editor.getContentsAsDart();
+    final preservedSelection = editor.getSelection(focus: false) ??
+        (_lastSelection == null
+            ? null
+            : LiQuillBridgeSelection(
+                index: _lastSelection!.index,
+                length: _lastSelection!.length,
+              ));
+
+    _flushPendingUserChange();
+    _disposeEditor();
+    toolbarStructureMounted = false;
+    _changeDetectorRef.markForCheck();
+
+    scheduleMicrotask(() {
+      toolbarStructureMounted = true;
+      _changeDetectorRef.markForCheck();
+
+      scheduleMicrotask(() {
+        _initializeQuill();
+
+        final rebuiltEditor = _quill;
+        if (rebuiltEditor == null || _pendingHtmlValue != null) {
+          return;
+        }
+
+        rebuiltEditor.setContentsDart(<String, dynamic>{
+          'ops': preservedDelta,
+        }, 'silent');
+
+        if (preservedSelection != null) {
+          rebuiltEditor.setSelection(
+            preservedSelection.index,
+            preservedSelection.length,
+            'silent',
+          );
+          _lastSelection = LiQuillTextEditorSelection(
+            index: preservedSelection.index,
+            length: preservedSelection.length,
+          );
+        }
+
+        _applyToolbarConfigurationSignature();
+        _changeDetectorRef.markForCheck();
+      });
+    });
+  }
+
+  void _disposeEditor() {
+    _quill?.dispose();
+    _quill = null;
+    _initialized = false;
+    _hasPendingUserChange = false;
+    _lastSelection = null;
+    editorContainer?.nodes.clear();
+  }
+
+  void _applyToolbarConfigurationSignature() {
+    final signature = _buildToolbarConfigurationSignature();
+    _appliedToolbarConfigurationSignature = signature;
+    _pendingToolbarConfigurationSignature = signature;
+  }
+
+  int _buildToolbarConfigurationSignature() {
+    return Object.hashAll(<Object?>[
+      enableTableSupport,
+      enableTableButton,
+      Object.hashAll(tableMenus),
+      Object.hashAll(_hiddenToolbarItemIds.toList()..sort()),
+      Object.hashAll(
+        resolvedToolbarItems.map(_buildToolbarItemSignature),
+      ),
+    ]);
+  }
+
+  int _buildToolbarItemSignature(LiQuillToolbarItem item) {
+    return Object.hashAll(<Object?>[
+      item.id,
+      item.isButton,
+      item.isSelect,
+      item.quillClass,
+      item.title,
+      item.label,
+      item.iconClass,
+      item.value,
+      item.buttonClass,
+      item.selectClass,
+      Object.hashAll(item.options.map(_buildToolbarOptionSignature)),
+    ]);
+  }
+
+  int _buildToolbarOptionSignature(LiQuillToolbarOption option) {
+    return Object.hash(option.label, option.value, option.selected);
+  }
+
+  bool _listEquals<T>(List<T> left, List<T> right) {
+    if (identical(left, right)) {
+      return true;
+    }
+    if (left.length != right.length) {
+      return false;
+    }
+    for (var index = 0; index < left.length; index++) {
+      if (left[index] != right[index]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool _setEquals<T>(Set<T> left, Set<T> right) {
+    if (identical(left, right)) {
+      return true;
+    }
+    if (left.length != right.length) {
+      return false;
+    }
+    for (final item in left) {
+      if (!right.contains(item)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+          Object? trackByItemId(int index, Object? item) =>
+            item is LiQuillToolbarItem ? item.id : index;
+
+          Object? trackByActionId(int index, Object? action) =>
+            action is LiQuillToolbarAction ? action.id : index;
+
+  bool isToolbarItemDisabled(LiQuillToolbarItem item) =>
+      _disabledToolbarItemIds.contains(item.id);
+
+    bool isToolbarItemHidden(LiQuillToolbarItem item) =>
+      _hiddenToolbarItemIds.contains(item.id);
+
+    bool shouldRenderToolbarItem(LiQuillToolbarItem item) =>
+      !enableDestructiveToolbarRebuild || !isToolbarItemHidden(item);
+
+    bool shouldApplyToolbarItemHiddenAttribute(LiQuillToolbarItem item) =>
+      !enableDestructiveToolbarRebuild && isToolbarItemHidden(item);
 
   void _syncToolbarActions() {
     final leading = <LiQuillToolbarAction>[];
@@ -1026,6 +1317,7 @@ class LiQuillTextEditorComponent
 
   @override
   void ngOnDestroy() {
+    _disposeEditor();
     _valueController.close();
     _textController.close();
     _deltaJsonController.close();

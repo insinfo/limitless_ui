@@ -36,6 +36,30 @@ class QuillTextEditorPageComponent {
     minHeight="20rem">
 </li-quill-text-editor>''';
 
+  static const String disabledItemsSnippet = '''final disabledToolbarItemIds = <String>[
+  LiQuillToolbarItems.orderedList.id,
+  LiQuillToolbarItems.header.id,
+  LiQuillToolbarItems.fontSize.id,
+  LiQuillToolbarItems.alignLeft.id,
+  LiQuillToolbarItems.alignCenter.id,
+  LiQuillToolbarItems.alignRight.id,
+  LiQuillToolbarItems.alignJustify.id,
+  LiQuillToolbarItems.color.id,
+  LiQuillToolbarItems.background.id,
+];
+
+<li-quill-text-editor
+    [(ngModel)]="htmlValue"
+    [disabledToolbarItemIds]="disabledToolbarItemIds">
+</li-quill-text-editor>''';
+
+  static const String destructiveModeSnippet = '''<li-quill-text-editor
+    [(ngModel)]="htmlValue"
+    [enableDestructiveToolbarRebuild]="true"
+    [enableTableButton]="showTableButton"
+    [toolbarItems]="customToolbarItems">
+</li-quill-text-editor>''';
+
   static const String customSnippet = '''final actions = <LiQuillToolbarAction>[
   LiQuillToolbarAction(
     id: 'append-signature',
@@ -60,7 +84,7 @@ class QuillTextEditorPageComponent {
 
   static final List<String> _apiItemsPt = List<String>.unmodifiable(
     const <String>[
-      'Toolbar configurável por itens, ações Dart e template projetado.',
+      'Toolbar configurável por itens, desativação seletiva, rebuild destrutivo opcional, ações Dart e template projetado.',
       'Integração com forms via ControlValueAccessor e ngModel.',
       'APIs públicas para HTML, texto simples, delta JSON, formatação e inserção de texto.',
       'Suporte opcional a tabelas com Quill Table Better.',
@@ -69,7 +93,7 @@ class QuillTextEditorPageComponent {
 
   static final List<String> _apiItemsEn = List<String>.unmodifiable(
     const <String>[
-      'Configurable toolbar through items, Dart actions, and a projected template.',
+      'Configurable toolbar through item ids, selective disabling, optional destructive rebuilds, custom actions, and a projected template.',
       'Forms integration through ControlValueAccessor and ngModel.',
       'Public APIs for HTML, plain text, delta JSON, formatting, and text insertion.',
       'Optional table support through Quill Table Better.',
@@ -119,6 +143,14 @@ class QuillTextEditorPageComponent {
   bool updateModelOnBlur = false;
   bool enableTableSupport = true;
   bool enableTableButton = true;
+  bool enableDestructiveToolbarRebuild = true;
+  bool disableOrderedList = false;
+  bool disableHeadings = false;
+  bool disableFontSize = false;
+  bool disableAlignment = false;
+  bool disableTextColor = false;
+  bool disableBackgroundColor = false;
+  List<String> disabledToolbarItemIds = const <String>[];
   String toolbarEvent = '';
 
   String _htmlValue = '<p><strong>Limitless UI</strong> editor pronto para notas, pareceres e orientações rápidas.</p>';
@@ -158,12 +190,12 @@ class QuillTextEditorPageComponent {
       : 'The editor implements ControlValueAccessor so it works with ngModel and form flows without additional wrappers.';
   String get customizationTitle => isPt ? 'Customização' : 'Customization';
   String get customizationBody => isPt
-      ? 'Você pode alternar modo leitura, toolbar, suporte a tabela, labels bilíngues e ações customizadas sem reescrever a shell do editor.'
-      : 'You can toggle read-only mode, the toolbar, table support, bilingual labels, and custom actions without rewriting the editor shell.';
+      ? 'Você pode alternar modo leitura, toolbar, suporte a tabela, labels bilíngues, desativar controles nativos da toolbar, ativar rebuild destrutivo quando a estrutura mudar e adicionar ações customizadas sem reescrever a shell do editor.'
+      : 'You can toggle read-only mode, the toolbar, table support, bilingual labels, disable native toolbar controls, enable destructive rebuilds when the structure changes, and add custom actions without rewriting the editor shell.';
   String get controlsTitle => isPt ? 'Controles da demo' : 'Demo controls';
   String get controlsBody => isPt
-      ? 'Use estes toggles para validar a toolbar dinâmica, o modo somente leitura e o suporte opcional a tabelas.'
-      : 'Use these toggles to validate the dynamic toolbar, read-only mode, and optional table support.';
+      ? 'Use estes toggles para validar a toolbar dinâmica, o modo somente leitura, o suporte opcional a tabelas, o rebuild destrutivo para mudanças estruturais e a desativação seletiva dos controles padrão.'
+      : 'Use these toggles to validate the dynamic toolbar, read-only mode, optional table support, destructive rebuilds for structural changes, and selective disabling of default controls.';
   String get liveEditorTitle => isPt ? 'Editor ao vivo' : 'Live editor';
   String get previewTitle => isPt ? 'Snapshot do conteúdo' : 'Content snapshot';
   String get htmlPreviewLabel => 'HTML';
@@ -173,9 +205,79 @@ class QuillTextEditorPageComponent {
   String get defaultStatus => isPt
       ? 'Toolbar pronta para receber ações e templates.'
       : 'Toolbar ready to receive actions and templates.';
+  String get destructiveModeLabel => isPt
+      ? 'Modo destrutivo da toolbar'
+      : 'Destructive toolbar mode';
+  String get disableOrderedListLabel =>
+      isPt ? 'Desativar lista ordenada' : 'Disable ordered list';
+  String get disableHeadingsLabel =>
+      isPt ? 'Desativar títulos' : 'Disable headings';
+  String get disableFontSizeLabel =>
+      isPt ? 'Desativar tamanho da fonte' : 'Disable font size';
+  String get disableAlignmentLabel =>
+      isPt ? 'Desativar alinhamento' : 'Disable alignment';
+  String get disableTextColorLabel =>
+      isPt ? 'Desativar cor do texto' : 'Disable text color';
+  String get disableBackgroundColorLabel =>
+      isPt ? 'Desativar cor de fundo' : 'Disable background color';
+  String get disabledToolbarNote => isPt
+      ? 'A toolbar padrão não inclui seletor de família de fonte. Se você fornecer um item customizado com id "font", o mesmo input disabledToolbarItemIds também consegue desativá-lo.'
+      : 'The default toolbar does not include a font-family picker. If you provide a custom item with id "font", the same disabledToolbarItemIds input can disable it as well.';
+  String get destructiveModeNote => isPt
+      ? 'Use o modo destrutivo só quando a estrutura real da toolbar precisar mudar em runtime. Ele recria a instância do Quill preservando o conteúdo atual.'
+      : 'Use destructive mode only when the real toolbar structure must change at runtime. It recreates the Quill instance while preserving the current content.';
   String get projectedStampLabel => isPt ? 'Carimbo' : 'Stamp';
   String get projectedSnapshotLabel => isPt ? 'Atualizar snapshot' : 'Refresh snapshot';
   String get checklistButtonLabel => isPt ? 'Aplicar checklist' : 'Apply checklist';
+
+  void syncDisabledToolbarItemIds() {
+    disabledToolbarItemIds = List<String>.unmodifiable(<String>[
+      if (disableOrderedList) LiQuillToolbarItems.orderedList.id,
+      if (disableHeadings) LiQuillToolbarItems.header.id,
+      if (disableFontSize) LiQuillToolbarItems.fontSize.id,
+      if (disableAlignment) ...<String>[
+        LiQuillToolbarItems.alignLeft.id,
+        LiQuillToolbarItems.alignCenter.id,
+        LiQuillToolbarItems.alignRight.id,
+        LiQuillToolbarItems.alignJustify.id,
+      ],
+      if (disableTextColor) LiQuillToolbarItems.color.id,
+      if (disableBackgroundColor) LiQuillToolbarItems.background.id,
+    ]);
+    toolbarEvent = isPt
+        ? 'Controles nativos da toolbar atualizados.'
+        : 'Native toolbar controls updated.';
+  }
+
+  void onDisableOrderedListChange(bool value) {
+    disableOrderedList = value;
+    syncDisabledToolbarItemIds();
+  }
+
+  void onDisableHeadingsChange(bool value) {
+    disableHeadings = value;
+    syncDisabledToolbarItemIds();
+  }
+
+  void onDisableFontSizeChange(bool value) {
+    disableFontSize = value;
+    syncDisabledToolbarItemIds();
+  }
+
+  void onDisableAlignmentChange(bool value) {
+    disableAlignment = value;
+    syncDisabledToolbarItemIds();
+  }
+
+  void onDisableTextColorChange(bool value) {
+    disableTextColor = value;
+    syncDisabledToolbarItemIds();
+  }
+
+  void onDisableBackgroundColorChange(bool value) {
+    disableBackgroundColor = value;
+    syncDisabledToolbarItemIds();
+  }
 
   void insertStamp() {
     final currentEditor = editor;
