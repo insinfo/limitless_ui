@@ -132,6 +132,44 @@ Recent picker/overlay updates in `limitless_ui` are focused on modal-safe behavi
 
 For modal demos in the example app, overlay field surfaces were simplified to remove decorative wrapper backgrounds, keeping focus on overlay behavior instead of container chrome.
 
+## Modal `contentTemplate` and OnPush change detection
+
+`LiModalComponent` moves its host element to `document.body` in `ngOnInit()`. This means the modal DOM lives outside the normal AngularDart component tree. When using `[contentTemplate]` with `ngTemplateOutlet`, the embedded view is instantiated inside the modal's view hierarchy, which is now orphaned from the declaring component's change detection path.
+
+### The problem
+
+If the declaring component and the projected content both use `ChangeDetectionStrategy.onPush`, calling `markForCheck()` on the declaring component will not reach the embedded view inside the body-mounted modal. The result is that async state updates (e.g., loading spinners, validation results) appear stuck until the modal is closed and reopened.
+
+### Recommended workaround
+
+Instead of passing a `TemplateRef` via `[contentTemplate]`, project the content directly inside the `<li-modal>` tags as `<ng-content>`. Projected content (`<ng-content>`) is checked as part of the **declaring** component's change detection cycle, regardless of where the host modal DOM is placed.
+
+When the same content needs to render in two modes (e.g., inline panel on desktop, modal on mobile), use separate instances guarded by `*ngIf` instead of sharing a single `TemplateRef`:
+
+```html
+<!-- Desktop: inline content -->
+<aside class="panel--desktop">
+  <my-panel-body *ngIf="!isMobileViewport" [data]="data"></my-panel-body>
+</aside>
+
+<!-- Mobile: projected content in modal -->
+<li-modal #mobileModal [title-text]="title" [lazyContent]="true">
+  <my-panel-body *ngIf="isMobileViewport" [data]="data"></my-panel-body>
+</li-modal>
+```
+
+This ensures that `markForCheck()` on the parent correctly propagates to the panel body component in both modes.
+
+### When `contentTemplate` is safe
+
+`contentTemplate` works correctly when:
+
+- the projected content does not use `onPush`, or
+- state updates are not expected while the modal is open, or
+- the content is purely static.
+
+For dynamic content with `onPush` that updates while the modal is open, prefer `<ng-content>` projection.
+
 ## Offcanvas DOM, Limitless CSS, and projected scroll areas
 
 `li-offcanvas` is not just a visual wrapper around projected content. It composes three layers:

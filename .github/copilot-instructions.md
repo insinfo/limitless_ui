@@ -89,3 +89,12 @@ responda sempre em portugues
 - Para headers sticky e colunas fixas do datatable, prefira fundos derivados de `--card-bg`/`--body-bg`, separadores com `--border-color-translucent` e texto secundário com `rgba(var(--body-color-rgb), alpha)`.
 - Quando precisar de hover em superfícies customizadas do datatable e não houver token direto, derive com `color-mix` a partir de `--card-bg`/`--body-bg` e `--body-color` em vez de usar cores claras hardcoded.
 - Lição aprendida: o sticky header do datatable que usava `--bs-tertiary-bg`, `--bs-body-bg` e `--bs-table-hover-bg` ficou branco no dark theme. Trate esse caso como regressão conhecida a evitar.
+
+## li-modal `contentTemplate` e OnPush: gotcha de change detection
+
+- `LiModalComponent` faz `document.body?.append(rootElement)` no `ngOnInit()`, movendo o modal para fora da árvore de change detection do Angular.
+- Quando um componente usa `[contentTemplate]` para projetar conteúdo `OnPush` dentro do `li-modal`, a embedded view criada pelo `ngTemplateOutlet` pertence à hierarquia do modal orphaned. `markForCheck()` no componente declarante não atinge essa embedded view.
+- Sintoma típico: estado assíncrono (loading spinners, resultados de validação) fica congelado no modal até fechar e reabrir.
+- Correção: não use `[contentTemplate]` para conteúdo dinâmico `OnPush` que atualiza enquanto o modal está aberto. Projete o conteúdo diretamente dentro das tags `<li-modal>` como `<ng-content>`, que é verificado pela change detection do componente declarante.
+- Para conteúdo que precisa renderizar em dois modos (inline desktop + modal mobile), use instâncias separadas com `*ngIf` em vez de compartilhar um `TemplateRef`.
+- `contentTemplate` é seguro quando o conteúdo projetado não usa `OnPush`, ou não espera atualizações de estado enquanto o modal está aberto.
