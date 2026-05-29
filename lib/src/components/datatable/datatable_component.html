@@ -81,7 +81,7 @@
                         <div class="dropdown-item border-bottom mb-1 pb-1">
                             <button type="button" class="btn btn-sm btn-light w-100"
                                 (click)="toggleAllColumnsVisibility()">
-                                {{allColumnsVisible ? 'Ocultar tudo' : 'Exibir tudo'}}
+                                {{allColumnsVisible ? hideAllColumnsLabel : showAllColumnsLabel}}
                             </button>
                         </div>
                         <label *ngFor="let col of settings.colsDefinitions" class="dropdown-item">
@@ -282,7 +282,7 @@
                     <span class="datatable-empty-state__line datatable-empty-state__line--top"></span>
                     <span class="datatable-empty-state__line datatable-empty-state__line--bottom"></span>
                 </div>
-                <div class="datatable-empty-state__label">Lista vazia</div>
+                <div class="datatable-empty-state__label">{{ resolvedEmptyStateLabel }}</div>
             </div>
 
             <div *ngIf="isGridVirtualScrollActive && virtualTopSpacerHeight > 0" class="grid-virtual-spacer"
@@ -360,8 +360,7 @@
 
         <template [ngIf]="!hasCustomFooter">
             <div class="dataTables_info" role="status" aria-live="polite">
-                Mostrando de {{dataTableFilter.offset}} a {{getCurrentTotalItems}} de {{totalRecords}} entradas,
-                {{numPages}} paginas
+                {{ paginationSummaryText }}
             </div>
             <div class="dataTables_paginate paging_simple_numbers datatable-pagination-scroll">
                 <li-pagination appearance="datatable" variant="flat" linkClass="rounded" [collectionSize]="totalRecords"

@@ -83,6 +83,10 @@ class LiAlertComponent implements OnDestroy {
   @Input()
   String role = 'alert';
 
+  /// Accessible label for the dismiss button.
+  @Input()
+  String closeButtonAriaLabel = 'Close';
+
   @Output()
   Stream<bool> get visibleChange => _visibleChangeController.stream;
 

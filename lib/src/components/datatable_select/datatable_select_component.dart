@@ -301,6 +301,9 @@ class LiDatatableSelectComponent
   String searchPlaceholder = '';
 
   @Input()
+  String emptyStateLabel = '';
+
+  @Input()
   String clearButtonLabel = '';
 
   @Input()

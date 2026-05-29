@@ -12,7 +12,7 @@
     class="page-header-content d-lg-flex border-top">
     <ng-content select="[liPgHeaderBottom]"></ng-content>
 
-    <nav *ngIf="!hasProjectedBottom && shouldRenderAutoBottom" class="li-breadcrumb" aria-label="Breadcrumb">
+    <nav *ngIf="!hasProjectedBottom && shouldRenderAutoBottom" class="li-breadcrumb" [attr.aria-label]="breadcrumbAriaLabel">
       <div [class]="shellClasses">
         <div class="li-breadcrumb-main">
           <div [class]="breadcrumbClasses">

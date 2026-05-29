@@ -11,7 +11,7 @@
     <button *ngIf="dismissible"
             type="button"
             [class]="resolvedCloseButtonClasses"
-            aria-label="Close"
+            [attr.aria-label]="closeButtonAriaLabel"
             (click)="hide()"></button>
   </div>
 

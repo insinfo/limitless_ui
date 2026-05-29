@@ -38,6 +38,9 @@ class LiNotificationOutletComponent implements OnDestroy {
 
   LiNotificationToastService? get service => _service;
 
+  @Input()
+  String closeButtonAriaLabel = 'Close';
+
   LiNotificationOutletComponent(this._router, this._changeDetectorRef);
 
   /// Produce a CSS style for the `top` property.

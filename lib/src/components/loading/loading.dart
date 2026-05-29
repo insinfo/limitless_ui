@@ -430,7 +430,7 @@ class LiNarratedFullScreenLoading {
     'Analisando conteudo...',
     'Construindo estrutura...',
     'Convertendo para PDF...',
-    'Gerando paginas...',
+    'Gerando páginas...',
     'Finalizando arquivo...',
   ];
 

@@ -27,7 +27,7 @@
     <li *ngIf="boundaryLinks" class="page-item" [class.disabled]="previousDisabled">
       <a class="{{ pageLinkClasses }}"
          href=""
-         aria-label="First"
+         [attr.aria-label]="firstAriaLabel"
          [attr.tabindex]="previousDisabled ? '-1' : null"
          [attr.aria-disabled]="previousDisabled ? 'true' : null"
          (click)="selectPage(1, $event)">
@@ -41,7 +41,7 @@
     <li *ngIf="directionLinks" class="page-item" [class.disabled]="previousDisabled">
       <a class="{{ pageLinkClasses }}"
          href=""
-         aria-label="Previous"
+         [attr.aria-label]="previousAriaLabel"
          [attr.tabindex]="previousDisabled ? '-1' : null"
          [attr.aria-disabled]="previousDisabled ? 'true' : null"
          (click)="selectPage(page - 1, $event)">
@@ -94,7 +94,7 @@
     <li *ngIf="directionLinks" class="page-item" [class.disabled]="nextDisabled">
       <a class="{{ pageLinkClasses }}"
          href=""
-         aria-label="Next"
+         [attr.aria-label]="nextAriaLabel"
          [attr.tabindex]="nextDisabled ? '-1' : null"
          [attr.aria-disabled]="nextDisabled ? 'true' : null"
          (click)="selectPage(page + 1, $event)">
@@ -108,7 +108,7 @@
     <li *ngIf="boundaryLinks" class="page-item" [class.disabled]="nextDisabled">
       <a class="{{ pageLinkClasses }}"
          href=""
-         aria-label="Last"
+         [attr.aria-label]="lastAriaLabel"
          [attr.tabindex]="nextDisabled ? '-1' : null"
          [attr.aria-disabled]="nextDisabled ? 'true' : null"
          (click)="selectPage(pageCount, $event)">

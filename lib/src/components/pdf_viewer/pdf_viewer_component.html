@@ -29,11 +29,11 @@
 
     <div id="toolbarViewerMiddle" class="toolbarHorizontalGroup">
       <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button pdf-secondary-toolbar-action" (click)="zoomOutBtnClick()" type="button"
-        title="Zoom out" aria-label="Zoom out">
+        [attr.title]="labels.zoomOut" [attr.aria-label]="labels.zoomOut">
         <i class="ph ph-minus"></i>
       </button>
       <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button pdf-secondary-toolbar-action" (click)="zoomInBtnClick()" type="button"
-        title="Zoom in" aria-label="Zoom in">
+        [attr.title]="labels.zoomIn" [attr.aria-label]="labels.zoomIn">
         <i class="ph ph-plus"></i>
       </button>
       <li-dropdown-menu class="pdf-zoom-menu"
@@ -116,10 +116,10 @@
     </div>
 
     <div id="toolbarViewerMobileActions" class="toolbarHorizontalGroup pdf-toolbar-actions-mobile">
-      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="zoomOutBtnClick()" type="button" title="Zoom out" aria-label="Zoom out">
+      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="zoomOutBtnClick()" type="button" [attr.title]="labels.zoomOut" [attr.aria-label]="labels.zoomOut">
         <i class="ph ph-minus"></i>
       </button>
-      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="zoomInBtnClick()" type="button" title="Zoom in" aria-label="Zoom in">
+      <button class="btn btn-light btn-icon btn-sm rounded-pill border-transparent li-pdf-viewer__toolbar-button" (click)="zoomInBtnClick()" type="button" [attr.title]="labels.zoomIn" [attr.aria-label]="labels.zoomIn">
         <i class="ph ph-plus"></i>
       </button>
       <li-dropdown-menu class="pdf-mobile-actions-menu"

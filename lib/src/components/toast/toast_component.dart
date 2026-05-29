@@ -55,6 +55,9 @@ class LiToastComponent implements OnInit, OnDestroy {
   String ariaLive = 'polite';
 
   @Input()
+  String closeButtonAriaLabel = 'Close';
+
+  @Input()
   int delay = 5000;
 
   @Input()

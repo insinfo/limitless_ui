@@ -26,7 +26,7 @@
       <button
           type="button"
           class="li-dropdown-menu__mobile-close"
-          aria-label="Fechar"
+          [attr.aria-label]="mobileCloseButtonAriaLabel"
           (click)="closeFromMobilePresentation()">
         <i class="ph ph-x"></i>
       </button>

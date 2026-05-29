@@ -595,7 +595,8 @@ class DatatableRowBuilder {
     if (colDefinition.minWidth?.trim().isNotEmpty == true) {
       declarations.add('min-width: ${colDefinition.minWidth!.trim()}');
     }
-    if (colDefinition.maxWidth?.trim().isNotEmpty == true) {
+    if (colDefinition is! DatatableActionColumn &&
+        colDefinition.maxWidth?.trim().isNotEmpty == true) {
       declarations.add('max-width: ${colDefinition.maxWidth!.trim()}');
     }
     if (colDefinition.textAlign?.trim().isNotEmpty == true) {
@@ -621,7 +622,8 @@ class DatatableRowBuilder {
     if (colDefinition.minWidth?.trim().isNotEmpty == true) {
       declarations.add('min-width: ${colDefinition.minWidth!.trim()}');
     }
-    if (colDefinition.maxWidth?.trim().isNotEmpty == true) {
+    if (colDefinition is! DatatableActionColumn &&
+        colDefinition.maxWidth?.trim().isNotEmpty == true) {
       declarations.add('max-width: ${colDefinition.maxWidth!.trim()}');
     }
 

@@ -70,7 +70,7 @@
                 *ngIf="item.isPdf && item.previewResourceUrl != null"
                 class="kv-preview-data li-file-upload__thumb-frame"
                 [src]="item.previewResourceUrl!"
-                title="PDF preview">
+                [attr.title]="resolvedPdfPreviewTitle">
             </iframe>
             <div *ngIf="!item.canPreview" class="file-preview-other li-file-upload__thumb-fallback">
               <span [class]="kindClass(item)">{{ item.kindLabel }}</span>
@@ -349,14 +349,14 @@
               *ngIf="activePreviewItem!.isPdf && activePreviewItem!.previewResourceUrl != null"
               class="file-zoom-detail li-file-upload__modal-frame"
               [src]="activePreviewItem!.previewResourceUrl!"
-              title="Document preview">
+              [attr.title]="resolvedDocumentPreviewTitle">
           </iframe>
         </div>
 
-        <button type="button" class="btn btn-default btn-outline-secondary btn-navigate btn-kv-prev" title="View previous file" style="display: none;">
+        <button type="button" class="btn btn-default btn-outline-secondary btn-navigate btn-kv-prev" [attr.title]="resolvedPreviousFileTitle" style="display: none;">
           <i class="ph-arrow-left"></i>
         </button>
-        <button type="button" class="btn btn-default btn-outline-secondary btn-navigate btn-kv-next" title="View next file" style="display: none;">
+        <button type="button" class="btn btn-default btn-outline-secondary btn-navigate btn-kv-next" [attr.title]="resolvedNextFileTitle" style="display: none;">
           <i class="ph-arrow-right"></i>
         </button>
         <div class="kv-zoom-description" style="display: none;"></div>

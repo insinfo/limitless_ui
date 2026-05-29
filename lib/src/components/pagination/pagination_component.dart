@@ -261,6 +261,18 @@ class LiPaginationComponent implements AfterChanges, AfterViewInit, OnDestroy {
   String ariaLabel = 'Pagination';
 
   @Input()
+  String firstAriaLabel = 'First';
+
+  @Input()
+  String previousAriaLabel = 'Previous';
+
+  @Input()
+  String nextAriaLabel = 'Next';
+
+  @Input()
+  String lastAriaLabel = 'Last';
+
+  @Input()
   bool boundaryLinks = false;
 
   @Input('collectionSize')

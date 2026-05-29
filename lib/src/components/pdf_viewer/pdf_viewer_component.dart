@@ -275,6 +275,8 @@ class LiPdfViewerLabels {
     this.previousPage = 'Previous page',
     this.nextPage = 'Next page',
     this.page = 'Page',
+    this.zoomOut = 'Zoom out',
+    this.zoomIn = 'Zoom in',
     this.cancel = 'Cancel',
     this.confirm = 'OK',
     this.errorPrefix = 'Unable to load PDF:',
@@ -303,6 +305,8 @@ class LiPdfViewerLabels {
     previousPage: 'Página anterior',
     nextPage: 'Próxima página',
     page: 'Página',
+    zoomOut: 'Reduzir zoom',
+    zoomIn: 'Ampliar zoom',
     cancel: 'Cancelar',
     confirm: 'OK',
     errorPrefix: 'Falha ao carregar o PDF:',
@@ -328,6 +332,8 @@ class LiPdfViewerLabels {
   final String previousPage;
   final String nextPage;
   final String page;
+  final String zoomOut;
+  final String zoomIn;
   final String cancel;
   final String confirm;
   final String errorPrefix;
@@ -381,7 +387,7 @@ class LiPdfViewerComponent
       PdfPageViewCache(liPdfViewerDefaultCacheSize);
   final PdfViewerVisibilityController visibilityController =
       PdfViewerVisibilityController();
-    late final LiPdfViewerTemplateContext templateContext =
+  late final LiPdfViewerTemplateContext templateContext =
       LiPdfViewerTemplateContext(this);
 
   late final PdfViewerDocumentController _documentController;
@@ -395,10 +401,10 @@ class LiPdfViewerComponent
       StreamController<int>.broadcast();
   final StreamController<String> _errorController =
       StreamController<String>.broadcast();
-    final StreamController<LiPdfViewerToolbarActionEvent>
+  final StreamController<LiPdfViewerToolbarActionEvent>
       _toolbarActionController =
       StreamController<LiPdfViewerToolbarActionEvent>.broadcast();
-    final StreamController<bool> _sidePanelOpenChangeController =
+  final StreamController<bool> _sidePanelOpenChangeController =
       StreamController<bool>.broadcast();
 
   @Input()
@@ -672,7 +678,9 @@ class LiPdfViewerComponent
       html.window.matchMedia('(max-width: 767.98px)').matches;
 
   bool get shouldShowInlineSidePanel =>
-      hasSidePanelTemplate && sidePanelOpen && (!sidePanelModalOnMobile || !isMobileViewport);
+      hasSidePanelTemplate &&
+      sidePanelOpen &&
+      (!sidePanelModalOnMobile || !isMobileViewport);
 
   String? get resolvedSidePanelTitle {
     final normalized = sidePanelTitle.trim();
@@ -689,7 +697,10 @@ class LiPdfViewerComponent
   }
 
   bool get showEmptyState =>
-      !isLoading && errorMessage == null && totalPages == 0 && _pdfSource == null;
+      !isLoading &&
+      errorMessage == null &&
+      totalPages == 0 &&
+      _pdfSource == null;
 
   bool get isFullscreenActive =>
       _isFallbackFullscreen || _nativeFullscreenElement == _hostElement;
@@ -779,13 +790,15 @@ class LiPdfViewerComponent
 
     _keyDownSub = _hostElement.onKeyDown.listen(_handleKeyDown);
     _lastScrollTop = viewerContainer?.scrollTop ?? 0;
-    _scrollSub = viewerContainer?.onScroll.listen((_) => _scheduleScrollUpdate());
+    _scrollSub =
+        viewerContainer?.onScroll.listen((_) => _scheduleScrollUpdate());
 
     _resizeObserver = html.ResizeObserver((entries, observer) {
       _updateToolbarResponsiveState();
       if (viewerContainer?.clientWidth != null &&
           viewerContainer!.clientWidth > 0 &&
-          <String>{'page-width', 'page-fit', 'auto'}.contains(_currentScaleValue)) {
+          <String>{'page-width', 'page-fit', 'auto'}
+              .contains(_currentScaleValue)) {
         _setScale(_currentScaleValue);
       }
     });
@@ -807,7 +820,8 @@ class LiPdfViewerComponent
       }
       event.preventDefault();
       final delta = event.deltaY < 0 ? 1.1 : 1 / 1.1;
-      final next = (_scale * delta).clamp(liPdfViewerMinScale, liPdfViewerMaxScale);
+      final next =
+          (_scale * delta).clamp(liPdfViewerMinScale, liPdfViewerMaxScale);
       _scheduleZoom(next, Point<num>(event.client.x, event.client.y));
     });
 
@@ -1013,14 +1027,17 @@ class LiPdfViewerComponent
   void previousPage() => scrollToPage(max(currentPage - 1, 1));
 
   void onChangePageHandle(html.Event event) {
-    final pageNum = int.tryParse((event.target as html.InputElement).value ?? '');
+    final pageNum =
+        int.tryParse((event.target as html.InputElement).value ?? '');
     if (pageNum != null) {
       scrollToPage(pageNum);
     }
   }
 
   void scrollToPage(int pageNum) {
-    if (pageNum <= 0 || pageNum > _pageViews.length || viewerContainer == null) {
+    if (pageNum <= 0 ||
+        pageNum > _pageViews.length ||
+        viewerContainer == null) {
       return;
     }
 
@@ -1224,7 +1241,8 @@ class LiPdfViewerComponent
     final viewport = page.getViewport(
       ViewportParams(scale: 1.0, rotation: 0),
     );
-    final pageView = pageNum <= _pageViews.length ? _pageViews[pageNum - 1] : null;
+    final pageView =
+        pageNum <= _pageViews.length ? _pageViews[pageNum - 1] : null;
 
     return LiPdfViewerPageInfo(
       pageNumber: pageNum,
@@ -1451,7 +1469,8 @@ class LiPdfViewerComponent
       final parsedPercent = double.tryParse(trimmed.replaceAll('%', ''));
       if (!<String>{'page-actual', 'page-width', 'page-fit', 'auto'}
           .contains(trimmed)) {
-        final parsedScale = parsedPercent != null ? parsedPercent / 100.0 : null;
+        final parsedScale =
+            parsedPercent != null ? parsedPercent / 100.0 : null;
         newScale = parsedScale ?? double.tryParse(trimmed);
       }
 
@@ -1585,8 +1604,8 @@ class LiPdfViewerComponent
         currentPage > 0 &&
         currentPage <= _pageViews.length) {
       final newPageDiv = _pageViews[currentPage - 1].div;
-      final newScrollTop =
-          newPageDiv.offsetTop + (relativePageOffsetRatio * newPageDiv.clientHeight);
+      final newScrollTop = newPageDiv.offsetTop +
+          (relativePageOffsetRatio * newPageDiv.clientHeight);
       container.scrollTop = newScrollTop.round();
 
       if (container.scrollWidth > container.clientWidth) {
@@ -1816,8 +1835,10 @@ class LiPdfViewerComponent
   }
 
   void _updateRenderedPageCache(List<Map<String, dynamic>> visibleElements) {
-    final visibleIds = visibleElements.map((entry) => entry['id'] as int).toSet();
-    final cacheSize = max(liPdfViewerDefaultCacheSize, (visibleElements.length * 2) + 1);
+    final visibleIds =
+        visibleElements.map((entry) => entry['id'] as int).toSet();
+    final cacheSize =
+        max(liPdfViewerDefaultCacheSize, (visibleElements.length * 2) + 1);
     _pageViewCache.resize(cacheSize, idsToKeep: visibleIds);
 
     for (final element in visibleElements) {
@@ -1836,7 +1857,8 @@ class LiPdfViewerComponent
       return;
     }
 
-    visibleElements ??= visibilityController.getVisibleElements(container, _pageViews);
+    visibleElements ??=
+        visibilityController.getVisibleElements(container, _pageViews);
 
     final margin = (container.clientHeight * 1.5).round();
     final top = container.scrollTop - margin;
@@ -2072,7 +2094,9 @@ class LiPdfViewerComponent
   }
 
   void _syncSidePanelPresentationState() {
-    if (sidePanelModal == null || !hasSidePanelTemplate || !sidePanelModalOnMobile) {
+    if (sidePanelModal == null ||
+        !hasSidePanelTemplate ||
+        !sidePanelModalOnMobile) {
       return;
     }
 
@@ -2096,7 +2120,8 @@ class LiPdfViewerComponent
     if (!allowKeyboardShortcuts) {
       return;
     }
-    if (event.target is html.InputElement || event.target is html.TextAreaElement) {
+    if (event.target is html.InputElement ||
+        event.target is html.TextAreaElement) {
       return;
     }
 
@@ -2401,7 +2426,8 @@ class LiPdfViewerComponent
     if (_activeTouchPointers.length < 2) {
       return null;
     }
-    final pointers = _activeTouchPointers.values.take(2).toList(growable: false);
+    final pointers =
+        _activeTouchPointers.values.take(2).toList(growable: false);
     return sqrt(
       pow(pointers[0].client.x - pointers[1].client.x, 2) +
           pow(pointers[0].client.y - pointers[1].client.y, 2),
@@ -2412,7 +2438,8 @@ class LiPdfViewerComponent
     if (_activeTouchPointers.length < 2) {
       return null;
     }
-    final pointers = _activeTouchPointers.values.take(2).toList(growable: false);
+    final pointers =
+        _activeTouchPointers.values.take(2).toList(growable: false);
     return Point<num>(
       (pointers[0].client.x + pointers[1].client.x) / 2,
       (pointers[0].client.y + pointers[1].client.y) / 2,

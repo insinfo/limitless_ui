@@ -1,3 +1,11 @@
+## 1.0.0-dev.25
+
+- Fixed the default `li-datatable` pagination summary in Portuguese by changing the hardcoded unaccented `paginas` text to a localized summary resolver. `li-datatable` now exposes `locale` and renders Portuguese/English summaries (`página(s)`/`page(s)`) through `paginationSummaryText`, with `li-datatable-select` forwarding the same locale to its inner modal datatable.
+- Fixed dense right-fixed `DatatableActionColumn` cells so an optional `maxWidth` configuration no longer writes an inline `max-width` on action headers/cells. Action columns still preserve configured `width` and `minWidth`, but the action buttons can use the available sticky-cell space instead of being visually cramped against the right table edge.
+- Expanded datatable localization/customization inputs with `emptyStateLabel`, `showAllColumnsLabel`, and `hideAllColumnsLabel`, including locale-aware defaults for the grid empty state and forwarding of `emptyStateLabel` through `li-datatable-select`.
+- Replaced remaining hardcoded component UI/accessibility labels with configurable inputs across alerts, toast, notification outlet, offcanvas, dropdown menu, pagination, treeview, page header, file upload, and PDF viewer. New inputs include close-button ARIA labels, pagination navigation ARIA labels, treeview select/expand titles, breadcrumb ARIA label, file-preview titles, and PDF viewer zoom labels while preserving the previous defaults.
+- Localized the narrated fullscreen PDF loading message from `Gerando paginas...` to `Gerando páginas...`, and added regression coverage for the new datatable locale/empty-state behavior plus focused browser coverage across the affected component templates.
+
 ## 1.0.0-dev.24
 
 - Fixed `liDropdown` body-mounted dynamic overlays so the intelligent viewport adaptation (`adaptToViewport="true"`, the default) no longer enters an infinite style/class recalculation loop when the consumer controls the menu surface with CSS such as `width: max-content`, `max-width: min(...)`, or `calc(100vw - ...)`. The adaptation now applies only `max-width`/`max-height`/`overflow-x`/`overflow-y` and preserves the author-provided `width`/`height` inline values, so the loop cannot start regardless of the `adaptToViewport` setting.

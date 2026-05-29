@@ -41,10 +41,13 @@ import 'li_datatable_component_test.template.dart' as ng;
         [searchInFields]="searchInFields"
         [allowSingleSelectionOnly]="allowSingleSelectionOnly"
         [enableGridMode]="enableGridMode"
+        [gridMode]="gridMode"
         [enableResponsiveFeatures]="enableResponsiveFeatures"
         [fixedTableLayout]="fixedTableLayout"
         [debugInstrumentation]="debugInstrumentation"
         [debugInstrumentationLabel]="debugInstrumentationLabel"
+        [locale]="locale"
+        [emptyStateLabel]="emptyStateLabel"
         (dataRequest)="onDataRequest(\$event)"
         (limitChange)="onLimitChange(\$event)"
         (searchRequest)="onSearchRequest(\$event)"
@@ -100,6 +103,7 @@ class TestHostComponent {
 
   bool allowSingleSelectionOnly = false;
   bool enableGridMode = true;
+  bool gridMode = false;
   bool enableResponsiveFeatures = true;
   bool fixedTableLayout = false;
   bool virtualScroll = false;
@@ -118,6 +122,8 @@ class TestHostComponent {
   bool requestDataOnItemsPerPageChange = false;
   bool debugInstrumentation = false;
   String debugInstrumentationLabel = 'datatable-test';
+  String locale = 'pt_BR';
+  String emptyStateLabel = '';
   String tableContainerStyle = '';
   Filters? lastDataRequest;
   Filters? lastLimitChange;
@@ -703,6 +709,29 @@ void main() {
     expect(host.lastDataRequest, isNotNull);
     expect(host.lastDataRequest!.offset, 10);
     expect(host.lastDataRequest!.limit, 10);
+  });
+
+  test('renderiza resumo de paginacao com pagina acentuada', () async {
+    final fixture = await testBed.create();
+    await _settleTable(fixture);
+
+    final info = fixture.rootElement.querySelector('.dataTables_info');
+
+    expect(info, isNotNull);
+    expect(info!.text, contains('página(s)'));
+    expect(info.text, isNot(contains('paginas')));
+  });
+
+  test('renderiza resumo de paginacao em ingles por locale', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.locale = 'en';
+    });
+    await _settleTable(fixture);
+
+    final info = fixture.rootElement.querySelector('.dataTables_info');
+
+    expect(info, isNotNull);
+    expect(info!.text, contains('Showing 0 to 10 of 25 entries, 3 page(s)'));
   });
 
   test('renderiza template de célula por chave da coluna e mantém clique',
@@ -1774,6 +1803,44 @@ void main() {
     expect(fixture.text, contains('Bruno'));
   });
 
+  test('renderiza estado vazio do grid com label customizado', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[],
+        totalRecords: 0,
+      );
+      component.gridMode = true;
+      component.emptyStateLabel = 'No records found';
+    });
+    await _settleTable(fixture);
+
+    final emptyState = fixture.rootElement.querySelector(
+      '.datatable-empty-state__label',
+    );
+
+    expect(emptyState, isNotNull);
+    expect(emptyState!.text, 'No records found');
+  });
+
+  test('renderiza estado vazio do grid em ingles por locale', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[],
+        totalRecords: 0,
+      );
+      component.gridMode = true;
+      component.locale = 'en';
+    });
+    await _settleTable(fixture);
+
+    final emptyState = fixture.rootElement.querySelector(
+      '.datatable-empty-state__label',
+    );
+
+    expect(emptyState, isNotNull);
+    expect(emptyState!.text, 'Empty list');
+  });
+
   test('desmonta a view inativa ao alternar entre tabela e grid', () async {
     final fixture = await testBed.create();
     await _settleTable(fixture);
@@ -2276,6 +2343,55 @@ void main() {
     });
 
     expect(triggered, 1);
+  });
+
+  test('DatatableActionColumn nao aplica max-width inline', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            width: '96px',
+            minWidth: '96px',
+            maxWidth: '96px',
+            actions: <DatatableAction>[
+              DatatableAction(
+                label: 'Visualizar',
+                iconClass: 'ph ph-eye',
+                iconOnly: true,
+                onTap: (_) {},
+              ),
+              DatatableAction(
+                label: 'Mais ações',
+                iconClass: 'ph ph-list',
+                iconOnly: true,
+                onTap: (_) {},
+              ),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final actionHeader = fixture.rootElement.querySelector(
+      'thead th[data-key="acoes"]',
+    ) as TableCellElement?;
+    final actionCell = fixture.rootElement.querySelector(
+      'tbody tr td[data-label="datatable_col_1"]',
+    ) as TableCellElement?;
+
+    expect(actionHeader, isNotNull);
+    expect(actionCell, isNotNull);
+    expect(actionHeader!.style.width, '96px');
+    expect(actionHeader.style.minWidth, '96px');
+    expect(actionHeader.style.maxWidth, isEmpty);
+    expect(actionCell!.style.width, '96px');
+    expect(actionCell.style.minWidth, '96px');
+    expect(actionCell.style.maxWidth, isEmpty);
   });
 
   test('instrumenta actions no perfil saliPaged sem depender do visual probe',

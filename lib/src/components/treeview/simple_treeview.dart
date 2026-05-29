@@ -44,6 +44,12 @@ class LiTreeViewComponent {
   @Input('searchPlaceholder')
   String searchPlaceholder = 'Digite e pressione enter para buscar';
 
+  @Input()
+  String selectAllTitle = 'Selecionar tudo';
+
+  @Input()
+  String expandCollapseAllTitle = 'Expandir ou Colapsar tudo';
+
   dynamic _sourceData;
   TreeViewSettings _settings = const TreeViewSettings();
 

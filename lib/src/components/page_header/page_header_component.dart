@@ -125,6 +125,9 @@ class LiPageHeaderComponent {
   String breadcrumbClass = 'py-2';
 
   @Input()
+  String breadcrumbAriaLabel = 'Breadcrumb';
+
+  @Input()
   String breadcrumbLineClass = 'w-100';
 
   @Input()

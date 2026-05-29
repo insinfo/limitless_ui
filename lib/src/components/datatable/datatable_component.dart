@@ -491,7 +491,19 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   String toggleColumnsButtonTitle = 'Clique para exibir ou ocultar uma coluna';
 
   @Input()
+  String showAllColumnsLabel = 'Exibir tudo';
+
+  @Input()
+  String hideAllColumnsLabel = 'Ocultar tudo';
+
+  @Input()
   String totalRecordsLabel = 'Total:';
+
+  @Input()
+  String locale = 'pt_BR';
+
+  @Input()
+  String emptyStateLabel = '';
 
   @Input('limitPerPageOptions')
   List<int> limitPerPageOptions = [1, 5, 10, 12, 20, 24, 25];
@@ -1580,6 +1592,28 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   int get numPages {
     return _paginationController.numPages(dataTableFilter, totalRecords);
+  }
+
+  bool get isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  String get resolvedEmptyStateLabel {
+    final customLabel = emptyStateLabel.trim();
+    if (customLabel.isNotEmpty) {
+      return customLabel;
+    }
+
+    return isEnglishLocale ? 'Empty list' : 'Lista vazia';
+  }
+
+  String get paginationSummaryText {
+    if (isEnglishLocale) {
+      final entryLabel = totalRecords == 1 ? 'entry' : 'entries';
+      return 'Showing ${dataTableFilter.offset} to $getCurrentTotalItems '
+          'of $totalRecords $entryLabel, $numPages page(s)';
+    }
+
+    return 'Mostrando de ${dataTableFilter.offset} a $getCurrentTotalItems '
+        'de $totalRecords entrada(s), $numPages página(s)';
   }
 
   @Input()

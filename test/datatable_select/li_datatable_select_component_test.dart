@@ -50,6 +50,7 @@ class SelectedPersonRef {
       [itemLabelBuilder]="personLabel"
       [itemValueBuilder]="personValue"
       [compareWith]="compareById"
+      [locale]="locale"
       [(ngModel)]="selectedPerson">
     </li-datatable-select>
 
@@ -143,6 +144,7 @@ class DatatableSelectTestHostComponent {
 
   dynamic selectedPerson = const SelectedPersonRef(2);
   List<dynamic> selectedPeople = <dynamic>[];
+  String locale = 'pt_BR';
 
   @ViewChild('selectWithBuilders')
   LiDatatableSelectComponent? selectWithBuilders;
@@ -209,6 +211,27 @@ void main() {
     expect(modalRows, isNotEmpty);
     expect(modalText, contains('Ana Souza'));
     expect(modalText, contains('Maria Silva'));
+  });
+
+  test('passes locale to inner datatable pagination summary', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.locale = 'en';
+    });
+    await _settle(fixture);
+
+    final triggers =
+        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final typedTrigger = triggers.first as html.ButtonElement;
+
+    await fixture.update((_) {
+      typedTrigger.click();
+    });
+    await _settle(fixture, milliseconds: 140);
+
+    final modalText =
+        html.document.querySelector('.modal.show .modal-content')?.text ?? '';
+
+    expect(modalText, contains('Showing 0 to 2 of 2 entries, 1 page(s)'));
   });
 
   test('allows arbitrary modal content to set label and value explicitly',

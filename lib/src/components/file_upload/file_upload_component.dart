@@ -122,6 +122,18 @@ class LiFileUploadComponent
   String browseLabel = '';
 
   @Input()
+  String pdfPreviewTitle = '';
+
+  @Input()
+  String documentPreviewTitle = '';
+
+  @Input()
+  String previousFileTitle = '';
+
+  @Input()
+  String nextFileTitle = '';
+
+  @Input()
   String helperText = '';
 
   @Input()
@@ -313,6 +325,26 @@ class LiFileUploadComponent
 
   String get closePreviewLabel =>
       isEnglishLocale ? 'Close preview' : 'Fechar visualizacao';
+
+  String get resolvedPdfPreviewTitle => pdfPreviewTitle.trim().isNotEmpty
+      ? pdfPreviewTitle
+      : (isEnglishLocale ? 'PDF preview' : 'Visualizacao do PDF');
+
+  String get resolvedDocumentPreviewTitle => documentPreviewTitle
+          .trim()
+          .isNotEmpty
+      ? documentPreviewTitle
+      : (isEnglishLocale ? 'Document preview' : 'Visualizacao do documento');
+
+  String get resolvedPreviousFileTitle => previousFileTitle.trim().isNotEmpty
+      ? previousFileTitle
+      : (isEnglishLocale
+          ? 'View previous file'
+          : 'Visualizar arquivo anterior');
+
+  String get resolvedNextFileTitle => nextFileTitle.trim().isNotEmpty
+      ? nextFileTitle
+      : (isEnglishLocale ? 'View next file' : 'Visualizar proximo arquivo');
 
   String get rotatePreviewLabel => isEnglishLocale
       ? 'Rotate 90 deg. clockwise'

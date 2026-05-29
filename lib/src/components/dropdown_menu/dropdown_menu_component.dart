@@ -103,6 +103,9 @@ class LiDropdownMenuComponent implements OnDestroy {
   String mobileMenuTitle = '';
 
   @Input()
+  String mobileCloseButtonAriaLabel = 'Fechar';
+
+  @Input()
   TemplateRef? mobileFooterTemplate;
 
   @Input()

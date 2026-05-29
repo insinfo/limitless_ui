@@ -9,7 +9,7 @@
 
     <div *ngIf="!hasCustomHeader && enableHeader" [class]="defaultHeaderClasses">
       <h5 class="offcanvas-title fw-semibold">{{ titleText }}</h5>
-      <button *ngIf="enableCloseBtn" type="button" class="btn-close" aria-label="Fechar" (click)="close()"></button>
+      <button *ngIf="enableCloseBtn" type="button" class="btn-close" [attr.aria-label]="closeButtonAriaLabel" (click)="close()"></button>
     </div>
 
     <div [class]="defaultBodyClasses" [class.li-offcanvas-contents]="!enableBodyWrapper">

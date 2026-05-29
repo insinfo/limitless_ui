@@ -14,7 +14,7 @@
         <!-- <ul class="nav flex-row justify-content-end order-1 order-lg-2">
             <btn btn-flat-primary border-transparent btn-icon--
             <a (click)="selectAllToogleAction()" class="navbar-nav-link navbar-nav-link-icon rounded-pill"
-                title="Selecionar tudo">
+                [attr.title]="selectAllTitle">
                 <i class="ph" [class.ph-check-circle]="!isSelectAll"></i>
                 <i class="ph" [class.ph-check-square-offset]="isSelectAll"></i>
             </a>
@@ -26,12 +26,12 @@
 <div class="tree-checkbox border rounded p-3" style="position: relative;">
     <div style="position: absolute;z-index: 10;top: 10px;right: 10px;">
         <a (click)="selectAllToogleAction()" class="btn btn-flat-primary border-transparent btn-icon"
-            title="Selecionar tudo">
+            [attr.title]="selectAllTitle">
             <i class="ph" [class.ph-check-circle]="!isSelectAll"></i>
             <i class="ph" [class.ph-check-square-offset]="isSelectAll"></i>
         </a>
         <a (click)="expandAllToogleAction()" class="btn btn-flat-primary border-transparent btn-icon"
-            title="Expandir ou Colapsar tudo">
+            [attr.title]="expandCollapseAllTitle">
             <i class="ph" [class.ph-arrows-out]="!isExpandAll"></i>
             <i class="ph" [class.ph-arrows-in]="isExpandAll"></i>
         </a>

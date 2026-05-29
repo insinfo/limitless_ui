@@ -188,6 +188,9 @@ class LiOffcanvasComponent
   String titleText = '';
 
   @Input()
+  String closeButtonAriaLabel = 'Fechar';
+
+  @Input()
   String? offcanvasId;
 
   @Input()

@@ -13,7 +13,7 @@
         <div class="toast-header bg-black bg-opacity-10 "
             [class.text-white]="toast.type != LiNotificationToastColor.none">
             <div class="fw-semibold me-auto">{{toast.title}}</div>
-            <button (click)="closeToast(toast, $event)" type="button" class="btn-close " aria-label="Close"
+            <button (click)="closeToast(toast, $event)" type="button" class="btn-close " [attr.aria-label]="closeButtonAriaLabel"
                 [class.btn-close-white]="toast.type != LiNotificationToastColor.none"></button>
         </div>
         <div class="toast-body" [class.text-white]="toast.type != LiNotificationToastColor.none"
