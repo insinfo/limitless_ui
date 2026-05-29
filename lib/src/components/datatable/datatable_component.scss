@@ -404,7 +404,7 @@
 
 .dtr-details {
     display: table;
-    table-layout: auto;
+    table-layout: fixed;
     width: 100%;
     list-style: none;
     margin: 0;
@@ -442,6 +442,12 @@
     text-align: left;
     white-space: normal;
     vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.dtr-data > * {
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .dataTable tr.child:hover {
