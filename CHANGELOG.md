@@ -1,3 +1,8 @@
+## 1.0.0-dev.26
+
+- Removed the default `li-datatable` fixed-column `box-shadow` layer, so sticky left/right cells no longer render the inset accent and edge shadow unless consumers add their own styling.
+- Overrode the Limitless responsive datatable `first-child::before` marker inside `li-datatable`, preventing Firefox from showing an unintended glyph in the first data cell while preserving the explicit `dtr-control` expander.
+
 ## 1.0.0-dev.25
 
 - Fixed the default `li-datatable` pagination summary in Portuguese by changing the hardcoded unaccented `paginas` text to a localized summary resolver. `li-datatable` now exposes `locale` and renders Portuguese/English summaries (`página(s)`/`page(s)`) through `paginationSummaryText`, with `li-datatable-select` forwarding the same locale to its inner modal datatable.

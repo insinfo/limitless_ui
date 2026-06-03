@@ -104,15 +104,6 @@
 
 .datatable-scroll .dataTable tbody td.datatable-fixed-col {
     z-index: 2;
-    box-shadow: inset 0 0 0 9999px var(--table-accent-bg, transparent), var(--datatable-fixed-col-edge-shadow, 0 0 0 transparent);
-}
-
-.datatable-scroll .dataTable .datatable-fixed-col--left {
-    --datatable-fixed-col-edge-shadow: 1px 0 0 var(--border-color-translucent, rgba(0, 0, 0, .12));
-}
-
-.datatable-scroll .dataTable .datatable-fixed-col--right {
-    --datatable-fixed-col-edge-shadow: -1px 0 0 var(--border-color-translucent, rgba(0, 0, 0, .12));
 }
 
 .datatable-header {
@@ -389,6 +380,8 @@
     display: none !important;
 }
 
+.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:not(.dtr-control)::before,
+.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:not(.dtr-control)::before,
 .dataTable.dtr-inline.collapsed > tbody > tr > td.datatable-first-col::before,
 .dataTable.dtr-inline.collapsed > tbody > tr > th.datatable-first-col::before {
     content: none !important;
