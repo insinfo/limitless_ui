@@ -67,6 +67,20 @@ await sweetAlertService.show(
   grow: SweetAlertGrowMode.row,
 );''';
 
+  final String inputConfigSnippet = '''final result = await SweetAlert.prompt(
+  title: 'Tachar despacho #4466170',
+  message: 'Informe o motivo obrigatório para registrar a marcação.',
+  inputType: SweetAlertInputType.textarea,
+  inputPlaceholder: 'Descreva o motivo da correção',
+  inputConfig: const SweetAlertInputConfig(
+    className: 'li-swalert-textarea',
+    rows: 6,
+    maxLength: 240,
+    attributes: {'aria-label': 'Motivo da correção'},
+    style: {'min-height': '10rem'},
+  ),
+);''';
+
   final String callbackSnippet = '''await sweetAlertService.show(
   title: 'Sincronizando widgets',
   message: 'Observe o callback enquanto o popup abre e fecha.',
@@ -114,10 +128,15 @@ class ReviewPageComponent {
   final String directiveSnippet = '''<button
     class="btn btn-outline-primary"
     type="button"
-    liSweetAlert="Atalho declarativo acionado."
-    liSweetAlertTitle="SweetAlert directive"
-    liSweetAlertType="info"
-    liSweetAlertWidth="34rem"
+    liSweetAlert="Descreva o motivo da correção."
+    liSweetAlertTitle="Prompt por diretiva"
+    liSweetAlertMode="prompt"
+    liSweetAlertInputType="textarea"
+    liSweetAlertInputClass="li-swalert-textarea"
+    [liSweetAlertInputRows]="5"
+    [liSweetAlertInputMaxLength]="240"
+    liSweetAlertInputAriaLabel="Motivo da correção"
+    liSweetAlertWidth="40rem"
     (liSweetAlertResult)="handleDirectiveResult(\$event)">
   Trigger declarativo
 </button>''';
@@ -870,6 +889,53 @@ class ReviewPageComponent {
       result.isConfirmed
           ? '${_inputLabel(normalized)} input confirmed with ${result.value}.'
           : '${_inputLabel(normalized)} input cancelled.',
+    );
+  }
+
+  Future<void> showConfiguredTextareaPrompt() async {
+    final result = await sweetAlertService.prompt(
+      title: _isPt ? 'Tachar despacho #4466170' : 'Mark dispatch #4466170',
+      message: _isPt
+          ? 'Informe o motivo obrigatório para registrar a marcação.'
+          : 'Enter the required reason to register the mark.',
+      type: SweetAlertType.warning,
+      inputType: SweetAlertInputType.textarea,
+      inputPlaceholder: _isPt
+          ? 'Descreva o motivo da correção'
+          : 'Describe the correction reason',
+      inputConfig: const SweetAlertInputConfig(
+        className: 'li-swalert-textarea',
+        rows: 6,
+        maxLength: 240,
+        attributes: <String, String>{
+          'aria-label': 'Correction reason',
+        },
+        style: <String, String>{
+          'min-height': '10rem',
+        },
+      ),
+      confirmButtonText: _isPt ? 'Confirmar' : 'Confirm',
+      cancelButtonText: _isPt ? 'Cancelar' : 'Cancel',
+      inputValidator: (value) {
+        if (value.trim().isEmpty) {
+          return _isPt ? 'O motivo é obrigatório.' : 'The reason is required.';
+        }
+        if (value.trim().length < 10) {
+          return _isPt
+              ? 'Descreva o motivo com pelo menos 10 caracteres.'
+              : 'Describe the reason with at least 10 characters.';
+        }
+        return null;
+      },
+    );
+
+    _setLastAction(
+      result.isConfirmed
+          ? 'Textarea customizado confirmou com ${result.value}.'
+          : 'Textarea customizado cancelado.',
+      result.isConfirmed
+          ? 'Configured textarea confirmed with ${result.value}.'
+          : 'Configured textarea cancelled.',
     );
   }
 

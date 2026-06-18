@@ -70,10 +70,12 @@
                   {{ isPt ? 'Confirmação por diretiva' : 'Directive confirm' }}
                 </button>
 
-                <button class="btn btn-outline-info" type="button" [liSweetAlert]="isPt ? 'Informe o nome da versão.' : 'Enter the version name.'"
+                <button class="btn btn-outline-info" type="button" [liSweetAlert]="isPt ? 'Descreva o motivo da correção.' : 'Describe the correction reason.'"
                   [liSweetAlertTitle]="isPt ? 'Prompt por diretiva' : 'Directive prompt'" liSweetAlertMode="prompt" liSweetAlertType="info"
-                  liSweetAlertPromptPlaceholder="release-2026.04" [liSweetAlertConfirmText]="isPt ? 'Salvar' : 'Save'"
-                  [liSweetAlertCancelText]="isPt ? 'Cancelar' : 'Cancel'" liSweetAlertWidth="36rem"
+                  liSweetAlertInputType="textarea" [liSweetAlertPromptPlaceholder]="isPt ? 'Motivo da correção' : 'Correction reason'"
+                  liSweetAlertInputClass="li-swalert-textarea" [liSweetAlertInputRows]="5" [liSweetAlertInputMaxLength]="240"
+                  [liSweetAlertInputAriaLabel]="isPt ? 'Motivo da correção' : 'Correction reason'" [liSweetAlertConfirmText]="isPt ? 'Salvar' : 'Save'"
+                  [liSweetAlertCancelText]="isPt ? 'Cancelar' : 'Cancel'" liSweetAlertWidth="40rem"
                   (liSweetAlertResult)="handleDirectiveResult($event)">
                   {{ isPt ? 'Prompt por diretiva' : 'Directive prompt' }}
                 </button>
@@ -167,6 +169,7 @@
                 <button class="btn btn-light" type="button" (click)="showInputExample('url')">{{ isPt ? 'URL' : 'URL input' }}</button>
                 <button class="btn btn-light" type="button" (click)="showInputExample('password')">{{ isPt ? 'Senha' : 'Password input' }}</button>
                 <button class="btn btn-light" type="button" (click)="showInputExample('textarea')">{{ isPt ? 'Textarea' : 'Textarea input' }}</button>
+                <button class="btn btn-outline-primary" type="button" (click)="showConfiguredTextareaPrompt()">{{ isPt ? 'Textarea customizado' : 'Configured textarea' }}</button>
                 <button class="btn btn-light" type="button" (click)="showInputExample('select')">{{ isPt ? 'Select' : 'Select input' }}</button>
                 <button class="btn btn-light" type="button" (click)="showInputExample('radio')">{{ isPt ? 'Radio' : 'Radio input' }}</button>
                 <button class="btn btn-light" type="button" (click)="showInputExample('checkbox')">{{ isPt ? 'Checkbox' : 'Checkbox input' }}</button>
@@ -233,6 +236,9 @@
             </div>
             <div class="mt-4">
               <li-highlight [code]="advancedServiceSnippet" language="dart"></li-highlight>
+            </div>
+            <div class="mt-4">
+              <li-highlight [code]="inputConfigSnippet" language="dart"></li-highlight>
             </div>
             <div class="mt-4">
               <li-highlight [code]="callbackSnippet" language="dart"></li-highlight>

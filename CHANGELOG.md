@@ -1,3 +1,8 @@
+## 1.0.0-dev.27
+
+- Expanded SweetAlert prompt input customization with `SweetAlertInputConfig` for classes, styles, attributes, row/column sizing, length constraints, and autocomplete, forwarded the configuration through `SweetAlertService`, and added directive inputs for common field customization. Textarea prompts now render with a fuller `form-control` default, 100% width, a usable minimum height, and vertical resizing instead of the tiny native field.
+- Added `LiSimpleDialogComponent.showPrompt(...)` with text/textarea input modes, optional validation, input customization through `LiSimpleDialogInputConfig`, and nullable string results for cancel flows. The example app now demonstrates the new SimpleDialog prompt APIs plus configured SweetAlert textareas and directive textarea customization.
+
 ## 1.0.0-dev.26
 
 - Removed the default `li-datatable` fixed-column `box-shadow` layer, so sticky left/right cells no longer render the inset accent and edge shadow unless consumers add their own styling.

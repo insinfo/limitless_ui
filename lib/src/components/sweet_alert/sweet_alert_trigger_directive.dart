@@ -47,6 +47,24 @@ class LiSweetAlertDirective implements OnDestroy {
   @Input('liSweetAlertPromptValue')
   String promptValue = '';
 
+  @Input('liSweetAlertInputClass')
+  String inputClass = '';
+
+  @Input('liSweetAlertInputRows')
+  int? inputRows;
+
+  @Input('liSweetAlertInputMinLength')
+  int? inputMinLength;
+
+  @Input('liSweetAlertInputMaxLength')
+  int? inputMaxLength;
+
+  @Input('liSweetAlertInputAutocomplete')
+  String inputAutocomplete = '';
+
+  @Input('liSweetAlertInputAriaLabel')
+  String inputAriaLabel = '';
+
   @Input('liSweetAlertConfirmText')
   String confirmText = 'OK';
 
@@ -147,6 +165,7 @@ class LiSweetAlertDirective implements OnDestroy {
             inputType: _resolvedInputType,
             inputPlaceholder: _normalizedText(promptPlaceholder),
             inputValue: _normalizedText(promptValue),
+            inputConfig: _resolvedInputConfig,
             confirmButtonText: confirmText,
             cancelButtonText: cancelText,
             position: _resolvedPosition,
@@ -321,6 +340,32 @@ class LiSweetAlertDirective implements OnDestroy {
       return null;
     }
     return normalized;
+  }
+
+  SweetAlertInputConfig? get _resolvedInputConfig {
+    final attributes = <String, String>{};
+    final ariaLabel = _normalizedText(inputAriaLabel);
+    if (ariaLabel != null) {
+      attributes['aria-label'] = ariaLabel;
+    }
+
+    if (_normalizedText(inputClass) == null &&
+        inputRows == null &&
+        inputMinLength == null &&
+        inputMaxLength == null &&
+        _normalizedText(inputAutocomplete) == null &&
+        attributes.isEmpty) {
+      return null;
+    }
+
+    return SweetAlertInputConfig(
+      className: _normalizedText(inputClass),
+      rows: inputRows,
+      minLength: inputMinLength,
+      maxLength: inputMaxLength,
+      autocomplete: _normalizedText(inputAutocomplete),
+      attributes: attributes.isEmpty ? null : attributes,
+    );
   }
 
   @override

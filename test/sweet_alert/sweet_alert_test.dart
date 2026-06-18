@@ -191,6 +191,73 @@ void main() {
     expect(result.value, 'batch-42');
   });
 
+  test('textarea prompt renders with usable default field chrome', () async {
+    final future = SweetAlert.prompt(
+      title: 'Correction reason',
+      inputType: SweetAlertInputType.textarea,
+      inputPlaceholder: 'Describe the reason',
+    );
+
+    await _settle();
+
+    final textarea = html.document.querySelector('.swal2-textarea')
+        as html.TextAreaElement?;
+    expect(textarea, isNotNull);
+    expect(textarea!.classes.contains('form-control'), isTrue);
+    expect(textarea.rows, 4);
+    expect(textarea.style.width, '100%');
+    expect(textarea.style.minHeight, '7rem');
+    expect(textarea.style.resize, 'vertical');
+
+    textarea.value = 'Wrong dispatch selected.';
+    _click('.swal2-confirm');
+    final result = await future;
+
+    expect(result.isConfirmed, isTrue);
+    expect(result.value, 'Wrong dispatch selected.');
+  });
+
+  test('prompt input config applies classes attributes and constraints',
+      () async {
+    final future = SweetAlert.prompt(
+      title: 'Correction reason',
+      inputType: SweetAlertInputType.textarea,
+      inputConfig: const SweetAlertInputConfig(
+        className: 'li-swalert-textarea form-control-lg',
+        rows: 6,
+        minLength: 10,
+        maxLength: 240,
+        attributes: <String, String>{
+          'aria-label': 'Correction reason',
+          'data-test-id': 'correction-reason',
+        },
+        style: <String, String>{
+          'min-height': '10rem',
+          'resize': 'none',
+        },
+      ),
+    );
+
+    await _settle();
+
+    final textarea = html.document.querySelector('.swal2-textarea')
+        as html.TextAreaElement?;
+    expect(textarea, isNotNull);
+    expect(textarea!.classes.contains('li-swalert-textarea'), isTrue);
+    expect(textarea.classes.contains('form-control-lg'), isTrue);
+    expect(textarea.rows, 6);
+    expect(textarea.minLength, 10);
+    expect(textarea.maxLength, 240);
+    expect(textarea.attributes['aria-label'], 'Correction reason');
+    expect(textarea.attributes['data-test-id'], 'correction-reason');
+    expect(textarea.style.minHeight, '10rem');
+    expect(textarea.style.resize, 'none');
+
+    textarea.value = 'Wrong dispatch selected.';
+    _click('.swal2-confirm');
+    await future;
+  });
+
   test('toast closes on timer and clears body state classes', () async {
     final controller = SweetAlert.toast(
       'Saved successfully',

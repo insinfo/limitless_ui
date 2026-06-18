@@ -45,6 +45,28 @@ typedef SweetAlertResultCallback<T> = FutureOr<void> Function(
   SweetAlertResult<T> result,
 );
 
+class SweetAlertInputConfig {
+  const SweetAlertInputConfig({
+    this.className,
+    this.style,
+    this.attributes,
+    this.rows,
+    this.cols,
+    this.minLength,
+    this.maxLength,
+    this.autocomplete,
+  });
+
+  final String? className;
+  final Map<String, String>? style;
+  final Map<String, String>? attributes;
+  final int? rows;
+  final int? cols;
+  final int? minLength;
+  final int? maxLength;
+  final String? autocomplete;
+}
+
 class SweetAlertResult<T> {
   const SweetAlertResult._({
     required this.isConfirmed,
@@ -247,6 +269,7 @@ class SweetAlert {
     num? inputMin,
     num? inputMax,
     num? inputStep,
+    SweetAlertInputConfig? inputConfig,
     SweetAlertInputValidator? inputValidator,
     String confirmButtonText = 'Confirm',
     String cancelButtonText = 'Cancel',
@@ -313,6 +336,7 @@ class SweetAlert {
       inputMin: inputMin,
       inputMax: inputMax,
       inputStep: inputStep,
+      inputConfig: inputConfig,
       inputValidator: inputValidator,
       onOpen: onOpen,
       onClose: onClose,
@@ -392,6 +416,7 @@ class SweetAlert {
     num? inputMin,
     num? inputMax,
     num? inputStep,
+    SweetAlertInputConfig? inputConfig,
     SweetAlertInputValidator? inputValidator,
     String? width,
     String? padding,
@@ -541,6 +566,7 @@ class SweetAlert {
         inputMin: inputMin,
         inputMax: inputMax,
         inputStep: inputStep,
+        inputConfig: inputConfig,
       );
       popup
         ..append(inputElement)
@@ -692,6 +718,7 @@ class SweetAlert {
     num? inputMin,
     num? inputMax,
     num? inputStep,
+    SweetAlertInputConfig? inputConfig,
   }) {
     switch (inputType) {
       case SweetAlertInputType.select:
@@ -717,6 +744,7 @@ class SweetAlert {
               ..selected = entry.key == (inputValue ?? ''),
           );
         }
+        _applyInputConfig(select, inputConfig);
         return select;
       case SweetAlertInputType.radio:
         final container = html.DivElement()
@@ -739,6 +767,7 @@ class SweetAlert {
             ..append(html.SpanElement()..text = entry.value);
           container.append(label);
         }
+        _applyInputConfig(container, inputConfig);
         return container;
       case SweetAlertInputType.checkbox:
         final checkbox = html.CheckboxInputElement()
@@ -753,6 +782,7 @@ class SweetAlert {
           ..append(checkbox)
           ..append(
               html.SpanElement()..text = inputLabel ?? inputPlaceholder ?? '');
+        _applyInputConfig(label, inputConfig);
         return label;
       case SweetAlertInputType.range:
         final range = html.InputElement()
@@ -770,25 +800,88 @@ class SweetAlert {
         if (inputStep != null) {
           range.step = '$inputStep';
         }
+        _applyInputConfig(range, inputConfig);
         return range;
       case SweetAlertInputType.textarea:
-        return html.TextAreaElement()
-          ..classes.add('swal2-textarea')
+        final textarea = html.TextAreaElement()
+          ..classes.addAll(<String>['swal2-textarea', 'form-control'])
           ..style.display = 'block'
+          ..style.width = '100%'
+          ..style.boxSizing = 'border-box'
+          ..style.minHeight = '7rem'
+          ..style.resize = 'vertical'
           ..placeholder = inputPlaceholder ?? ''
-          ..value = inputValue ?? '';
+          ..value = inputValue ?? ''
+          ..rows = inputConfig?.rows ?? 4;
+        _applyInputConfig(textarea, inputConfig);
+        return textarea;
       case SweetAlertInputType.text:
       case SweetAlertInputType.email:
       case SweetAlertInputType.url:
       case SweetAlertInputType.password:
       case SweetAlertInputType.number:
-        return html.InputElement()
+        final input = html.InputElement()
           ..classes.add('swal2-input')
           ..style.display = 'block'
           ..type = _inputTypeName(inputType)
           ..placeholder = inputPlaceholder ?? ''
           ..value = inputValue ?? ''
-          ..autocomplete = 'off';
+          ..autocomplete = inputConfig?.autocomplete ?? 'off';
+        _applyInputConfig(input, inputConfig);
+        return input;
+    }
+  }
+
+  static void _applyInputConfig(
+    html.Element input,
+    SweetAlertInputConfig? inputConfig,
+  ) {
+    if (inputConfig == null) {
+      return;
+    }
+
+    input.classes.addAll(_classNames(inputConfig.className));
+    for (final entry
+        in (inputConfig.style ?? const <String, String>{}).entries) {
+      final property = entry.key.trim();
+      if (property.isNotEmpty) {
+        input.style.setProperty(property, entry.value);
+      }
+    }
+    for (final entry
+        in (inputConfig.attributes ?? const <String, String>{}).entries) {
+      final attribute = entry.key.trim();
+      if (attribute.isNotEmpty) {
+        input.attributes[attribute] = entry.value;
+      }
+    }
+
+    if (input is html.TextAreaElement) {
+      if (inputConfig.rows != null) {
+        input.rows = inputConfig.rows!;
+      }
+      if (inputConfig.cols != null) {
+        input.cols = inputConfig.cols!;
+      }
+      if (inputConfig.minLength != null) {
+        input.minLength = inputConfig.minLength!;
+      }
+      if (inputConfig.maxLength != null) {
+        input.maxLength = inputConfig.maxLength!;
+      }
+      return;
+    }
+
+    if (input is html.InputElement) {
+      if (inputConfig.minLength != null) {
+        input.minLength = inputConfig.minLength!;
+      }
+      if (inputConfig.maxLength != null) {
+        input.maxLength = inputConfig.maxLength!;
+      }
+      if (inputConfig.autocomplete != null) {
+        input.autocomplete = inputConfig.autocomplete!;
+      }
     }
   }
 

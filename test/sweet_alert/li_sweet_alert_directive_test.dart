@@ -49,6 +49,22 @@ import 'li_sweet_alert_directive_test.template.dart' as ng;
         (liSweetAlertResult)="promptResult = \$event">
       Prompt
     </button>
+
+    <button
+        id="textarea-prompt-button"
+        type="button"
+        [liSweetAlert]="'Describe the required correction reason'"
+        liSweetAlertMode="prompt"
+        liSweetAlertTitle="Correction"
+        liSweetAlertInputType="textarea"
+        liSweetAlertPromptPlaceholder="Correction reason"
+        liSweetAlertInputClass="li-swalert-textarea"
+        [liSweetAlertInputRows]="6"
+        [liSweetAlertInputMaxLength]="240"
+        liSweetAlertInputAriaLabel="Correction reason"
+        (liSweetAlertResult)="promptResult = \$event">
+      Textarea prompt
+    </button>
   ''',
   directives: [coreDirectives, liSweetAlertDirectives],
   providers: [ClassProvider(SweetAlertService)],
@@ -135,6 +151,37 @@ void main() {
     final result = host.promptResult as SweetAlertResult<String>;
     expect(result.isConfirmed, isTrue);
     expect(result.value, 'batch-42');
+  });
+
+  test('passes prompt input customization through the directive', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final button = fixture.rootElement.querySelector('#textarea-prompt-button')
+        as html.ButtonElement;
+
+    await fixture.update((_) {
+      button.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final textarea = html.document.querySelector('.swal2-textarea')
+        as html.TextAreaElement;
+    expect(textarea.classes.contains('li-swalert-textarea'), isTrue);
+    expect(textarea.rows, 6);
+    expect(textarea.maxLength, 240);
+    expect(textarea.attributes['aria-label'], 'Correction reason');
+
+    await fixture.update((_) {
+      textarea.value = 'Wrong dispatch selected.';
+      textarea.dispatchEvent(html.Event('input', canBubble: true));
+      _click('.swal2-confirm');
+    });
+    await _settle(fixture);
+
+    final result = fixture.assertOnlyInstance.promptResult
+        as SweetAlertResult<String>;
+    expect(result.isConfirmed, isTrue);
+    expect(result.value, 'Wrong dispatch selected.');
   });
 }
 

@@ -43,13 +43,13 @@ class HelpersPageComponent implements OnDestroy {
       ? 'showOnBody() cobre a viewport inteira; os demais botões usam a área alvo abaixo para facilitar a comparação visual.'
       : 'showOnBody() covers the full viewport; the other buttons use the target area below for easier visual comparison.';
 
-    String get narratedLoadingSectionTitle => 'LiNarratedFullScreenLoading';
+  String get narratedLoadingSectionTitle => 'LiNarratedFullScreenLoading';
 
-    String get narratedLoadingCoverageIntro => _isPt
+  String get narratedLoadingCoverageIntro => _isPt
       ? 'Este helper cobre fluxos longos de viewport inteira, com rotação automática de mensagens e barra animada.'
       : 'This helper covers longer full-viewport flows with rotating messages and an animated progress bar.';
 
-    String get narratedLoadingMethodLabel => 'pdfGeneration().showOnBody()';
+  String get narratedLoadingMethodLabel => 'pdfGeneration().showOnBody()';
 
   String get dialogCoverageIntro => _isPt
       ? 'Aqui ficam os métodos públicos atuais de LiSimpleDialogComponent. O demo fullscreen fecha automaticamente após 2 segundos para não deixar overlay preso na página.'
@@ -74,6 +74,11 @@ class HelpersPageComponent implements OnDestroy {
 
   String get dialogConfirmMethodLabel => 'showConfirm()';
 
+  String get dialogPromptMethodLabel => 'showPrompt()';
+
+  String get dialogTextareaPromptMethodLabel =>
+      _isPt ? 'showPrompt() textarea' : 'showPrompt() textarea';
+
   String get dialogFullScreenMethodLabel => 'showFullScreenDialog()';
 
   String get dialogFullScreenAlertMethodLabel => 'showFullScreenAlert()';
@@ -88,8 +93,9 @@ class HelpersPageComponent implements OnDestroy {
       ? 'Os consumidores conectados receberão a nova configuração em até 5 minutos.'
       : 'Connected consumers will receive the new configuration within 5 minutes.';
 
-  String get _fullScreenDialogTitle =>
-      _isPt ? 'Demo fullscreen do helper simples' : 'Simple helper fullscreen demo';
+  String get _fullScreenDialogTitle => _isPt
+      ? 'Demo fullscreen do helper simples'
+      : 'Simple helper fullscreen demo';
 
   String get _fullScreenDialogBody => _isPt
       ? 'Este bloco usa showFullScreenDialog() com HTML arbitrário e encerra automaticamente após 2 segundos.'
@@ -108,95 +114,94 @@ class HelpersPageComponent implements OnDestroy {
   String get _fullScreenAlertApi =>
       'LiSimpleDialogComponent.showFullScreenAlert()';
 
-    String get modalStackSectionTitle =>
+  String get modalStackSectionTitle =>
       _isPt ? 'Stack visual em li-modal' : 'Visual stack in li-modal';
 
-    String get modalStackIntro => _isPt
+  String get modalStackIntro => _isPt
       ? 'Abra um li-modal de demonstração e acione helpers imperativos a partir dele para comparar overlays de viewport com overlays ancoradas no conteúdo do modal.'
       : 'Open a demo li-modal and trigger imperative helpers from inside it to compare viewport overlays with overlays anchored to the modal content.';
 
-    String get modalStackLaunchLabel =>
+  String get modalStackLaunchLabel =>
       _isPt ? 'Abrir demo em li-modal' : 'Open li-modal demo';
 
-    String get modalStackDialogTitle =>
-      _isPt ? 'Helpers imperativos sobre li-modal' : 'Imperative helpers above li-modal';
+  String get modalStackDialogTitle => _isPt
+      ? 'Helpers imperativos sobre li-modal'
+      : 'Imperative helpers above li-modal';
 
-    String get modalStackDialogIntro => _isPt
+  String get modalStackDialogIntro => _isPt
       ? 'Os botões abaixo partem do corpo do modal. Os overlays de viewport devem aparecer acima da janela, enquanto o loading de alvo permanece preso à área interna.'
       : 'The buttons below start from the modal body. Viewport overlays should appear above the dialog, while target loading stays attached to the inner area.';
 
-    String get modalViewportSectionTitle =>
+  String get modalViewportSectionTitle =>
       _isPt ? 'Acima do modal' : 'Above the modal';
 
-    String get modalAnchoredSectionTitle =>
+  String get modalAnchoredSectionTitle =>
       _isPt ? 'Ancorado dentro do modal' : 'Anchored inside the modal';
 
-    String get modalTargetTitle =>
+  String get modalTargetTitle =>
       _isPt ? 'Área alvo dentro do modal' : 'Target area inside the modal';
 
-    String get modalTargetHelp => _isPt
+  String get modalTargetHelp => _isPt
       ? 'Use show(target:) para comparar a overlay interna com os helpers que cobrem a viewport inteira.'
       : 'Use show(target:) to compare the inner overlay with helpers that cover the full viewport.';
 
-    String get modalDialogAlertMethodLabel => 'showAlert()';
+  String get modalDialogAlertMethodLabel => 'showAlert()';
 
-    String get modalBodyLoadingMethodLabel => 'showOnBody()';
+  String get modalBodyLoadingMethodLabel => 'showOnBody()';
 
-    String get modalNarratedLoadingMethodLabel => 'LiNarratedFullScreenLoading.showOnBody()';
+  String get modalNarratedLoadingMethodLabel =>
+      'LiNarratedFullScreenLoading.showOnBody()';
 
-    String get modalCloseLabel => _isPt ? 'Fechar modal' : 'Close modal';
+  String get modalCloseLabel => _isPt ? 'Fechar modal' : 'Close modal';
 
-    String get _narratedLoadingApi =>
+  String get _narratedLoadingApi =>
       'LiNarratedFullScreenLoading.pdfGeneration().showOnBody()';
 
-    String get _narratedModalApi =>
+  String get _narratedModalApi =>
       'LiNarratedFullScreenLoading.showOnBody() dentro de li-modal';
 
-    String get _narratedLoadingTitle =>
-      _isPt ? 'Gerando PDF' : 'Generating PDF';
+  String get _narratedLoadingTitle => _isPt ? 'Gerando PDF' : 'Generating PDF';
 
-    List<String> get _narratedLoadingMessages => _isPt
+  List<String> get _narratedLoadingMessages => _isPt
       ? const <String>[
-        'Preparando estrutura do documento...',
-        'Organizando seções e anexos...',
-        'Convertendo conteúdo para PDF...',
-        'Finalizando páginas e metadados...',
-      ]
+          'Preparando estrutura do documento...',
+          'Organizando seções e anexos...',
+          'Convertendo conteúdo para PDF...',
+          'Finalizando páginas e metadados...',
+        ]
       : const <String>[
-        'Preparing document structure...',
-        'Organizing sections and attachments...',
-        'Converting content to PDF...',
-        'Finalizing pages and metadata...',
-      ];
+          'Preparing document structure...',
+          'Organizing sections and attachments...',
+          'Converting content to PDF...',
+          'Finalizing pages and metadata...',
+        ];
 
-    String get _narratedModalTitle =>
+  String get _narratedModalTitle =>
       _isPt ? 'Sincronizando workspace' : 'Synchronizing workspace';
 
-    List<String> get _narratedModalMessages => _isPt
+  List<String> get _narratedModalMessages => _isPt
       ? const <String>[
-        'Conferindo permissões do operador...',
-        'Sincronizando atalhos da sessão...',
-        'Publicando estado do modal para o servidor...',
-      ]
+          'Conferindo permissões do operador...',
+          'Sincronizando atalhos da sessão...',
+          'Publicando estado do modal para o servidor...',
+        ]
       : const <String>[
-        'Checking operator permissions...',
-        'Synchronizing session shortcuts...',
-        'Publishing modal state to the server...',
-      ];
+          'Checking operator permissions...',
+          'Synchronizing session shortcuts...',
+          'Publishing modal state to the server...',
+        ];
 
-  String _methodShownForTwoSeconds(String api) => _isPt
-      ? '$api exibido por 2 segundos.'
-      : '$api shown for 2 seconds.';
+  String _methodShownForTwoSeconds(String api) =>
+      _isPt ? '$api exibido por 2 segundos.' : '$api shown for 2 seconds.';
 
-    String _methodPreviewing(String api) =>
+  String _methodPreviewing(String api) =>
       _isPt ? '$api em execução.' : '$api is running.';
 
   String _methodExecuted(String api) =>
       _isPt ? '$api executado.' : '$api executed.';
 
-  String _methodDismissed(String api) => _isPt
-      ? '$api encerrado automaticamente.'
-      : '$api auto-dismissed.';
+  String _methodDismissed(String api) =>
+      _isPt ? '$api encerrado automaticamente.' : '$api auto-dismissed.';
 
   String _methodConfirmed(String api) => _isPt
       ? '$api retornou confirmação positiva.'
@@ -223,8 +228,8 @@ class HelpersPageComponent implements OnDestroy {
   }
 
   void _removeFullScreenDialogDemo() {
-    final marker = html.document
-        .querySelector('[data-li-simple-fullscreen-demo="true"]');
+    final marker =
+        html.document.querySelector('[data-li-simple-fullscreen-demo="true"]');
     final overlay = marker?.parent;
     final root = overlay?.parent;
     root?.remove();
@@ -375,6 +380,82 @@ class HelpersPageComponent implements OnDestroy {
     helperState = confirmed
         ? _methodConfirmed('LiSimpleDialogComponent.showConfirm()')
         : _methodCancelled('LiSimpleDialogComponent.showConfirm()');
+  }
+
+  Future<void> showDialogPrompt() async {
+    _resetTransientPreviews();
+    final value = await LiSimpleDialogComponent.showPrompt(
+      _isPt
+          ? 'Informe o nome da fila que deve receber prioridade.'
+          : 'Enter the queue name that should receive priority.',
+      title: _isPt ? 'Priorizar fila' : 'Prioritize queue',
+      inputLabel: _isPt ? 'Nome da fila' : 'Queue name',
+      inputPlaceholder:
+          _isPt ? 'Ex.: protocolo-urgente' : 'e.g. urgent-protocol',
+      confirmButtonText: _isPt ? 'Salvar' : 'Save',
+      cancelButtonText: _isPt ? 'Cancelar' : 'Cancel',
+      dialogColor: LiDialogColor.PRIMARY,
+      inputValidator: (value) {
+        if (value.trim().isEmpty) {
+          return _isPt
+              ? 'Informe um nome antes de continuar.'
+              : 'Enter a name before continuing.';
+        }
+        return null;
+      },
+    );
+
+    helperState = value == null
+        ? _methodCancelled('LiSimpleDialogComponent.showPrompt()')
+        : (_isPt
+            ? 'LiSimpleDialogComponent.showPrompt() retornou: $value'
+            : 'LiSimpleDialogComponent.showPrompt() returned: $value');
+  }
+
+  Future<void> showDialogTextareaPrompt() async {
+    _resetTransientPreviews();
+    final value = await LiSimpleDialogComponent.showPrompt(
+      _isPt
+          ? 'Informe o motivo obrigatório para registrar a correção.'
+          : 'Enter the required reason to register the correction.',
+      title: _isPt ? 'Tachar despacho' : 'Mark dispatch',
+      inputType: LiSimpleDialogInputType.textarea,
+      inputLabel: _isPt ? 'Motivo' : 'Reason',
+      inputPlaceholder: _isPt
+          ? 'Descreva o motivo da correção'
+          : 'Describe the correction reason',
+      confirmButtonText: _isPt ? 'Confirmar' : 'Confirm',
+      cancelButtonText: _isPt ? 'Cancelar' : 'Cancel',
+      dialogColor: LiDialogColor.WARNING,
+      inputConfig: const LiSimpleDialogInputConfig(
+        className: 'li-simple-dialog-demo-textarea',
+        rows: 6,
+        maxLength: 240,
+        attributes: <String, String>{
+          'aria-label': 'Correction reason',
+        },
+        style: <String, String>{
+          'min-height': '10rem',
+        },
+      ),
+      inputValidator: (value) {
+        if (value.trim().isEmpty) {
+          return _isPt ? 'O motivo é obrigatório.' : 'The reason is required.';
+        }
+        if (value.trim().length < 10) {
+          return _isPt
+              ? 'Descreva o motivo com pelo menos 10 caracteres.'
+              : 'Describe the reason with at least 10 characters.';
+        }
+        return null;
+      },
+    );
+
+    helperState = value == null
+        ? _methodCancelled('LiSimpleDialogComponent.showPrompt() textarea')
+        : (_isPt
+            ? 'Textarea confirmado: $value'
+            : 'Textarea confirmed: $value');
   }
 
   void showFullScreenDialogDemo() {
