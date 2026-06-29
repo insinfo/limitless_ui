@@ -38,8 +38,8 @@ class OffcanvasPageComponent {
 
   static const String serviceSnippet = '''
 final ref = offcanvasService.open('service-demo');
-ref.shown.listen((_) => print('shown'));
-ref.hidden.listen((_) => print('hidden'));
+ref.shown.listen((_) => onServicePanelShown());
+ref.hidden.listen((_) => onServicePanelHidden());
 ref.close();''';
 
   static const String projectedSnippet = '''
@@ -268,24 +268,24 @@ ref.close();''';
   String get realWorldBody => _isPt
       ? 'Simula uma estrutura complexa com lista scrollable e barra de filtros fixa.'
       : 'Simulates a complex list with fixed filter bar and flex scrolling.';
-    String get scrollContractTitle =>
+  String get scrollContractTitle =>
       _isPt ? 'Contrato de rolagem interna' : 'Internal scroll contract';
-    String get scrollContractBody => _isPt
+  String get scrollContractBody => _isPt
       ? 'Quando o conteúdo projetado precisa ser o dono da rolagem, o offcanvas deve fornecer apenas a shell flex, e o componente projetado precisa receber altura válida no host e manter a cadeia `height: 100%` + `min-height: 0` até o nó scrollável.'
       : 'When projected content owns scrolling, the offcanvas should only provide the flex shell, and the projected component must receive valid host height while keeping a `height: 100%` + `min-height: 0` chain down to the scroll node.';
-    List<String> get scrollContractChecks => _isPt
+  List<String> get scrollContractChecks => _isPt
       ? const <String>[
-        'O `li-offcanvas` é anexado ao `body` em tempo de execução.',
-        'Desabilite `offcanvas-body` padrão quando a rolagem for do conteúdo projetado.',
-        'Passe `class="h-100"` no host projetado quando ele precisar ocupar toda a altura do painel.',
-        'Coloque a rolagem em um único nó `flex: 1 1 auto` com `min-height: 0`.',
-      ]
+          'O `li-offcanvas` é anexado ao `body` em tempo de execução.',
+          'Desabilite `offcanvas-body` padrão quando a rolagem for do conteúdo projetado.',
+          'Passe `class="h-100"` no host projetado quando ele precisar ocupar toda a altura do painel.',
+          'Coloque a rolagem em um único nó `flex: 1 1 auto` com `min-height: 0`.',
+        ]
       : const <String>[
-        '`li-offcanvas` is appended to `body` at runtime.',
-        'Disable the default `offcanvas-body` when projected content owns scrolling.',
-        'Pass `class="h-100"` to the projected host when it must fill the panel height.',
-        'Keep scrolling in a single `flex: 1 1 auto` node with `min-height: 0`.',
-      ];
+          '`li-offcanvas` is appended to `body` at runtime.',
+          'Disable the default `offcanvas-body` when projected content owns scrolling.',
+          'Pass `class="h-100"` to the projected host when it must fill the panel height.',
+          'Keep scrolling in a single `flex: 1 1 auto` node with `min-height: 0`.',
+        ];
   String get realWorldButton =>
       _isPt ? 'Abrir Cenário Complexo' : 'Open Complex Scenario';
   String get realWorldPanelTitle =>

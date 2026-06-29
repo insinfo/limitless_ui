@@ -109,6 +109,8 @@ class LiTreeviewSelectComponent
   final LiFormDirective? _formDirective;
   final StreamController<dynamic> _changeController =
       StreamController<dynamic>.broadcast();
+  final StreamController<dynamic> _userChangeController =
+      StreamController<dynamic>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
   StreamSubscription<html.Event>? _documentClickSubscription;
@@ -267,6 +269,9 @@ class LiTreeviewSelectComponent
 
   @Output('currentValueChange')
   Stream<dynamic> get currentValueChange => _changeController.stream;
+
+  @Output('userValueChange')
+  Stream<dynamic> get userValueChange => _userChangeController.stream;
 
   @ViewChild('triggerButton')
   html.ButtonElement? triggerButtonElement;
@@ -433,6 +438,8 @@ class LiTreeviewSelectComponent
   bool get hasSelection =>
       multiple ? selectedNodes.isNotEmpty : selectedNode != null;
 
+  String? get selectedDataValue => _pendingModelValue?.toString();
+
   LiTreeviewSelectTriggerContext get triggerContext =>
       LiTreeviewSelectTriggerContext(
         selectedNode: selectedNode,
@@ -522,6 +529,7 @@ class LiTreeviewSelectComponent
     _unbindDocumentListeners();
     _overlay?.dispose();
     _changeController.close();
+    _userChangeController.close();
   }
 
   @override
@@ -693,6 +701,7 @@ class LiTreeviewSelectComponent
       _pendingModelValue = _selectedValues();
       _dirty = true;
       _changeController.add(_pendingModelValue);
+      _userChangeController.add(_pendingModelValue);
       _ngModelValueChangeCallback?.call(_pendingModelValue);
       _markTouched();
       if (!closeOnSelect) {
@@ -702,10 +711,14 @@ class LiTreeviewSelectComponent
       return;
     }
 
+    final previousModelValue = _pendingModelValue;
     selectedNode = node;
     _pendingModelValue = _selectedValueFor(node);
     _dirty = true;
     _changeController.add(_pendingModelValue);
+    if (previousModelValue != _pendingModelValue) {
+      _userChangeController.add(_pendingModelValue);
+    }
     _ngModelValueChangeCallback?.call(_pendingModelValue);
     _markTouched();
     if (closeOnSelect) {
@@ -744,12 +757,16 @@ class LiTreeviewSelectComponent
       return;
     }
 
+    final hadSelection = hasSelection;
     _pendingModelValue = multiple ? <dynamic>[] : null;
     selectedNode = null;
     _clearSelectedState(rootNodes);
     selectedNodes = <TreeViewNode>[];
     _dirty = true;
     _changeController.add(_pendingModelValue);
+    if (hadSelection) {
+      _userChangeController.add(_pendingModelValue);
+    }
     _ngModelValueChangeCallback?.call(_pendingModelValue);
     _markTouched();
     _markForCheck();

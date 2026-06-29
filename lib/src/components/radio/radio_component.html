@@ -1,8 +1,13 @@
-<label [class]="resolvedContainerClass">
+<label [class]="resolvedContainerClass"
+    [attr.data-label]="'li_radio'"
+    [attr.data-value]="optionDataValue"
+    [attr.data-current-value]="currentDataValue">
   <input
       type="radio"
       #input
       [attr.data-li-form-focus-target]="'true'"
+      [attr.data-label]="'li_radio_input'"
+      [attr.data-value]="optionDataValue"
       [id]="resolvedId"
       [attr.name]="resolvedName"
       [attr.aria-label]="resolvedAriaLabel"
@@ -16,7 +21,7 @@
       (change)="handleChange(input.checked ?? false)"
       (click)="handleClick($event)"
       (blur)="handleBlur()">
-  <span [class]="resolvedLabelClass">{{ label }}</span>
+  <span [class]="resolvedLabelClass" [attr.data-label]="'li_radio_label'">{{ label }}</span>
 </label>
 <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
 <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>

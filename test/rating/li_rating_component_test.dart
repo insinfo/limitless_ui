@@ -21,6 +21,7 @@ import 'li_rating_component_test.template.dart' as ng;
   template: '''
     <li-rating
         [(ngModel)]="score"
+        (userValueChange)="userScore = \$event"
         [resettable]="true"
         [max]="5">
     </li-rating>
@@ -33,6 +34,7 @@ import 'li_rating_component_test.template.dart' as ng;
 )
 class RatingTestHostComponent {
   num score = 2;
+  num? userScore;
 }
 
 void main() {
@@ -49,12 +51,15 @@ void main() {
     final buttons = fixture.rootElement.querySelectorAll('li-rating button');
     final fourthStar = buttons[3] as html.ButtonElement;
 
+    expect(host.userScore, isNull);
+
     await fixture.update((_) {
       fourthStar.dispatchEvent(html.MouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     expect(host.score, 4);
+    expect(host.userScore, 4);
 
     await fixture.update((_) {
       fourthStar.dispatchEvent(html.MouseEvent('click', canBubble: true));
@@ -62,6 +67,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.score, 0);
+    expect(host.userScore, 0);
   });
 
   test('keyboard arrows update the rating value', () async {

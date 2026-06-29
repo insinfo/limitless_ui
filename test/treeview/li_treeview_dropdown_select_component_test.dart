@@ -26,6 +26,7 @@ import 'li_treeview_dropdown_select_component_test.template.dart' as ng;
           container="inline"
           [data]="staticNodes"
           [searchable]="false"
+          (userValueChange)="userSelectedStaticValue = \$event"
           [(ngModel)]="selectedStaticValue">
       </li-treeview-select>
 
@@ -119,6 +120,7 @@ class TreeviewDropdownTestHostComponent {
   );
 
   dynamic selectedStaticValue;
+  dynamic userSelectedStaticValue;
   dynamic selectedLazyValue;
   List<dynamic> selectedMultiValues = <dynamic>[];
   dynamic selectedFrameValue;
@@ -495,6 +497,8 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
+    expect(host.userSelectedStaticValue, isNull);
+
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[0].click();
     });
@@ -509,6 +513,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedStaticValue, 'approved');
+    expect(host.userSelectedStaticValue, 'approved');
     expect(host.staticTree!.selectedLabel, 'Aprovado');
     expect(host.staticTree!.isPopupOpen, isFalse);
   });

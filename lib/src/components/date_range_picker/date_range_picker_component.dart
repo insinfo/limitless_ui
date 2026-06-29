@@ -144,6 +144,8 @@ class LiDateRangePickerComponent
 
   final _inicioChangeController = StreamController<DateTime?>.broadcast();
   final _fimChangeController = StreamController<DateTime?>.broadcast();
+  final _userValueChangeController =
+      StreamController<LiDateRangeValue?>.broadcast();
 
   DateTime? _inicio;
   DateTime? _fim;
@@ -250,6 +252,10 @@ class LiDateRangePickerComponent
 
   @Output('endChange')
   Stream<DateTime?> get endChange => _fimChangeController.stream;
+
+  @Output('userValueChange')
+  Stream<LiDateRangeValue?> get userValueChange =>
+      _userValueChangeController.stream;
 
   @ViewChild('triggerElement')
   html.Element? triggerElement;
@@ -591,6 +597,8 @@ class LiDateRangePickerComponent
   }
 
   void apply() {
+    final previousInicio = inicio;
+    final previousFim = fim;
     var inicioAplicado = _normalize(draftInicio);
     var fimAplicado = _normalize(draftFim);
 
@@ -606,6 +614,9 @@ class LiDateRangePickerComponent
     fim = fimAplicado;
     _inicioChangeController.add(inicioAplicado);
     _fimChangeController.add(fimAplicado);
+    if (!_isSameRange(previousInicio, previousFim, inicio, fim)) {
+      _userValueChangeController.add(_currentRangeValue());
+    }
     _emitModelChange();
     _markTouched();
     close();
@@ -613,6 +624,7 @@ class LiDateRangePickerComponent
   }
 
   void clear() {
+    final hadValue = hasValue;
     draftInicio = null;
     draftFim = null;
     hoverDateValue = null;
@@ -621,6 +633,9 @@ class LiDateRangePickerComponent
     fim = null;
     _inicioChangeController.add(null);
     _fimChangeController.add(null);
+    if (hadValue) {
+      _userValueChangeController.add(null);
+    }
     _onChange(null);
     _markTouched();
     close();
@@ -846,6 +861,11 @@ class LiDateRangePickerComponent
     return '$label ${month.year}';
   }
 
+  String dateDataValue(DateTime date) {
+    final normalized = _normalize(date)!;
+    return '${normalized.year}-${_twoDigits(normalized.month)}-${_twoDigits(normalized.day)}';
+  }
+
   String _headerLabel(DateTime month, DateRangePickerViewMode viewMode) {
     if (viewMode == DateRangePickerViewMode.year) {
       final years = _buildYearRange(month.year);
@@ -915,10 +935,35 @@ class LiDateRangePickerComponent
       return;
     }
 
-    _onChange(LiDateRangeValue(
+    _onChange(_currentRangeValue());
+  }
+
+  LiDateRangeValue? _currentRangeValue() {
+    if (inicio == null && fim == null) {
+      return null;
+    }
+
+    return LiDateRangeValue(
       inicio: inicio,
       fim: fim,
-    ));
+    );
+  }
+
+  bool _isSameRange(
+    DateTime? leftInicio,
+    DateTime? leftFim,
+    DateTime? rightInicio,
+    DateTime? rightFim,
+  ) {
+    return _isSameNullableDate(leftInicio, rightInicio) &&
+        _isSameNullableDate(leftFim, rightFim);
+  }
+
+  bool _isSameNullableDate(DateTime? left, DateTime? right) {
+    if (left == null || right == null) {
+      return left == right;
+    }
+    return _isSameDate(left, right);
   }
 
   String _formatRange(DateTime? start, DateTime? end) {
@@ -1018,5 +1063,6 @@ class LiDateRangePickerComponent
     _overlay?.dispose();
     _inicioChangeController.close();
     _fimChangeController.close();
+    _userValueChangeController.close();
   }
 }

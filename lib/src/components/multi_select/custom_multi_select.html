@@ -1,6 +1,7 @@
-<div class="dropdown-collection">
+<div [attr.data-label]="'li_multi_select'" [attr.data-value]="selectedDataValue" class="dropdown-collection">
     <div *ngIf="usesAddonTriggerIcon" class="input-group">
-        <button type="button" #dropdownButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedButtonClass"
+        <button type="button" #dropdownButton [attr.data-label]="'li_multi_select_btn_toggle'" [attr.data-li-form-focus-target]="'true'" [class]="resolvedButtonClass"
+            [attr.data-value]="selectedDataValue"
             role="combobox"
             [attr.aria-expanded]="dropdownOpen.toString()"
             [attr.aria-controls]="listboxId"
@@ -32,7 +33,8 @@
         </span>
     </div>
 
-    <button *ngIf="!usesAddonTriggerIcon" type="button" #dropdownButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedButtonClass"
+    <button *ngIf="!usesAddonTriggerIcon" type="button" #dropdownButton [attr.data-label]="'li_multi_select_btn_toggle'" [attr.data-li-form-focus-target]="'true'" [class]="resolvedButtonClass"
+        [attr.data-value]="selectedDataValue"
         role="combobox"
         [attr.aria-expanded]="dropdownOpen.toString()"
         [attr.aria-controls]="listboxId"
@@ -70,21 +72,25 @@
             <div class="form-control-feedback form-control-feedback-start m-2">
                 <input #inputSearch type="text" class="form-control" [placeholder]="searchPlaceholder"
                     (input)="searchHandle($event.target.value)"
+                    [attr.data-label]="'li_multi_select_input_search'"
                     tabindex="-1" [attr.aria-label]="searchAriaLabel">
                 <div class="form-control-feedback-icon">
                     <i class="ph-magnifying-glass"></i>
                 </div>
             </div>
         </div>
-        <ul [attr.id]="listboxId" role="listbox" aria-multiselectable="true">
+        <ul [attr.id]="listboxId" role="listbox" aria-multiselectable="true" [attr.data-label]="'li_multi_select_options'">
             <!-- multiple -->
             <li class="dropdown-item" *ngFor="let o of options; let idx = index"
                 [class.active]="o.selected"
                 [attr.id]="optionId(idx)"
                 [attr.aria-selected]="o.selected.toString()"
                 tabindex="-1" (click)="onLiClickHandle($event,o)"
-                role="option" [hidden]="o.visible == false">
-                <input (click)="onCheckboxClickHandle($event,o)" [checked]="o.selected" class="form-check-input m-0 me-3" type="checkbox" tabindex="-1">
+                role="option" [hidden]="o.visible == false"
+                [attr.data-value]="optionDataValue(o)"
+                [attr.data-label]="'li_multi_select_item_' + idx.toString()">
+                <input (click)="onCheckboxClickHandle($event,o)" [checked]="o.selected" class="form-check-input m-0 me-3" type="checkbox" tabindex="-1"
+                    [attr.data-label]="'li_multi_select_checkbox_' + idx.toString()">
                 <span class="dropdown-item-label">{{o.text}}</span>
             </li>
         </ul>

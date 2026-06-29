@@ -27,6 +27,27 @@ class TimePickerPageComponent {
   liValidationMode="submitted">
 </li-time-picker>''';
 
+  static const String userValueChangeSnippet = '''
+<li-time-picker
+  [(ngModel)]="selectedTime"
+  (currentValueChange)="syncSelectedTime(\$event)"
+  (userValueChange)="reloadAfterUserTimeChange(\$event)">
+</li-time-picker>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="li_time_picker_trigger"]');
+await clickFirstVisible(
+  page,
+  '[data-label="li_time_picker_dial_label"][data-value="10"]',
+);
+await clickFirstVisible(page, '[data-label="li_time_picker_apply"]');
+await waitForAttributeMatching(
+  page,
+  '[data-label="li_time_picker"]',
+  'data-value',
+  (value) => value != null && value.isNotEmpty,
+);''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
 

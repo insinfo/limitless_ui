@@ -44,10 +44,6 @@ class DatatableInstrumentationController {
     if (!_controller.isClosed) {
       _controller.add(event);
     }
-
-    window.console.log(
-      '[li-datatable:${event.label}] ${event.formattedMessage}',
-    );
   }
 
   /// Closes the event stream.

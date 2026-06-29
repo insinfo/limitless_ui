@@ -1,6 +1,7 @@
-<div [attr.data-label]="'custom_select'" class="dropdown-collection">
+<div [attr.data-label]="'custom_select'" [attr.data-value]="selectedDataValue" class="dropdown-collection">
     <div *ngIf="usesAddonTriggerIcon" class="input-group">
         <button type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
+            [attr.data-value]="selectedDataValue"
             [attr.data-li-form-focus-target]="'true'"
             [class]="resolvedButtonClass"
             role="combobox"
@@ -27,6 +28,7 @@
     </div>
 
     <button *ngIf="!usesAddonTriggerIcon" type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
+        [attr.data-value]="selectedDataValue"
         [attr.data-li-form-focus-target]="'true'"
         [class]="resolvedButtonClass"
         role="combobox"
@@ -70,6 +72,7 @@
                 [attr.aria-selected]="(currentValue == o).toString()"
                 [attr.aria-disabled]="o.disabled ? 'true' : null"
                 tabindex="-1" (click)="select(o)" role="option" [hidden]="o.visible == false"
+                [attr.data-value]="optionDataValue(o)"
                 [attr.data-label]="'custom_select_item_'+ idx.toString()">{{o.text}}</li>
         </ul>
     </div>

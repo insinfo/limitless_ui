@@ -1,7 +1,8 @@
-<div class="li-typeahead" [class.open]="popupOpen">
+<div class="li-typeahead" [class.open]="popupOpen" [attr.data-label]="'li_typeahead'" [attr.data-value]="selectedDataValue">
   <input
       #inputElement
       [attr.data-li-form-focus-target]="'true'"
+      [attr.data-label]="'li_typeahead_input'"
       type="text"
       class="form-control"
       [disabled]="isDisabled"
@@ -21,6 +22,7 @@
       #popupElement
       [class]="popupClass == null || popupClass!.isEmpty ? (popupOpen ? 'dropdown-menu li-typeahead__popup show' : 'dropdown-menu li-typeahead__popup') : (popupOpen ? 'dropdown-menu li-typeahead__popup show ' + popupClass! : 'dropdown-menu li-typeahead__popup ' + popupClass!)"
       [attr.id]="popupId"
+      [attr.data-label]="'li_typeahead_popup'"
       role="listbox"
       (mousedown)="preventPopupBlur($event)">
     <div #resultsList class="li-typeahead__results">
@@ -35,6 +37,8 @@
           class="dropdown-item li-typeahead__item"
           role="option"
           [attr.id]="optionId(idx)"
+          [attr.data-label]="'li_typeahead_item_' + idx.toString()"
+          [attr.data-value]="itemDataValue(item)"
           [class.active]="idx == activeIndex"
           [attr.aria-selected]="(idx == activeIndex).toString()"
           (mouseenter)="markActive(idx)"

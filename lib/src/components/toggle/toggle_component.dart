@@ -114,6 +114,12 @@ class LiToggleComponent implements ControlValueAccessor<dynamic> {
 
   String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
 
+  String? get currentDataValue => _value?.toString();
+
+  String? get trueDataValue => trueValue?.toString();
+
+  String? get falseDataValue => falseValue?.toString();
+
   String get resolvedContainerClass => _joinClasses(<String>[
         'form-check',
         'form-switch',

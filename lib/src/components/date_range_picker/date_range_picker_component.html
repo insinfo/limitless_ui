@@ -1,14 +1,17 @@
-<div class="date-range-wrapper">
+<div class="date-range-wrapper" [attr.data-label]="'li_date_range_picker'" [attr.data-value]="displayValue">
     <div *ngIf="usesMobilePresentation" class="date-range-mobile-backdrop" (click)="close()"></div>
-    <div *ngIf="usesOverlayTriggerIcon" #triggerElement class="date-range-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()">
+    <div *ngIf="usesOverlayTriggerIcon" #triggerElement class="date-range-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()"
+        [attr.data-label]="'li_date_range_picker_trigger'"
+        [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedOverlayInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
+            [attr.data-label]="'li_date_range_picker_input'"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null">
         <div *ngIf="showsClearButton || showsTriggerIcon" class="date-range-overlay-actions">
             <button *ngIf="showsClearButton" type="button" class="btn date-range-overlay-button" [disabled]="isDisabled"
-                [attr.aria-label]="clearAriaLabel" (click)="clearFromTrigger($event)">
+                [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_date_range_picker_clear_trigger'" (click)="clearFromTrigger($event)">
                 <i class="ph ph-x"></i>
             </button>
             <button *ngIf="showsTriggerIcon" type="button" class="btn date-range-overlay-button" tabindex="-1" [disabled]="isDisabled">
@@ -16,14 +19,17 @@
             </button>
         </div>
     </div>
-    <div *ngIf="!usesOverlayTriggerIcon" #triggerElement class="input-group" [class.disabled]="isDisabled" (click)="toggleOpen()">
+    <div *ngIf="!usesOverlayTriggerIcon" #triggerElement class="input-group" [class.disabled]="isDisabled" (click)="toggleOpen()"
+        [attr.data-label]="'li_date_range_picker_trigger'"
+        [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
+            [attr.data-label]="'li_date_range_picker_input'"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null">
         <button *ngIf="showsClearButton" type="button" class="btn date-range-trigger-button" [disabled]="isDisabled"
-            [attr.aria-label]="clearAriaLabel" (click)="clearFromTrigger($event)">
+            [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_date_range_picker_clear_trigger'" (click)="clearFromTrigger($event)">
             <i class="ph ph-x"></i>
         </button>
         <button *ngIf="showsTriggerIcon" type="button" class="btn date-range-trigger-button" tabindex="-1" [disabled]="isDisabled">
@@ -35,6 +41,7 @@
 
     <div #panelElement class="daterangepicker date-range-open ltr show-calendar opensright"
         (click)="onPanelClick($event)"
+        [attr.data-label]="'li_date_range_picker_panel'"
         [class.date-range-open--mobile-modal]="usesMobileModal"
         [class.date-range-open--mobile-sheet]="usesMobileSheet"
         [class.is-open]="isOpen"
@@ -43,13 +50,13 @@
         <div class="drp-calendars">
             <div class="drp-calendar left">
                 <div class="date-range-panel-header">
-                    <button type="button" class="calendar-nav prev available" (click)="prevMonth()">
+                    <button type="button" class="calendar-nav prev available" [attr.data-label]="'li_date_range_picker_left_prev'" (click)="prevMonth()">
                         <span></span>
                     </button>
-                    <button type="button" class="date-range-view-switch" (click)="toggleLeftViewMode()">
+                    <button type="button" class="date-range-view-switch" [attr.data-label]="'li_date_range_picker_left_view_switch'" (click)="toggleLeftViewMode()">
                         {{ leftHeaderLabel }}
                     </button>
-                    <button type="button" class="calendar-nav next available" (click)="nextMonth()">
+                    <button type="button" class="calendar-nav next available" [attr.data-label]="'li_date_range_picker_left_next'" (click)="nextMonth()">
                         <span></span>
                     </button>
                 </div>
@@ -69,6 +76,9 @@
                                     [class.active]="isStartDate(cell.date) || isEndDate(cell.date)"
                                     [class.start-date]="isStartDate(cell.date)" [class.end-date]="isEndDate(cell.date)"
                                     [class.in-range]="isInRange(cell.date)" (mouseenter)="hoverDay(cell.date)"
+                                    [attr.data-label]="'li_date_range_picker_day'"
+                                    [attr.data-calendar]="'left'"
+                                    [attr.data-value]="dateDataValue(cell.date)"
                                     (click)="selectDay(cell.date)">
                                     {{ cell.date.day }}
                                 </td>
@@ -81,6 +91,9 @@
                     <button type="button" *ngFor="let option of monthOptions; trackBy: trackByMonthOption"
                         class="date-range-selection-item" [class.active]="option.month == leftMonth.month"
                         [class.disabled]="isMonthDisabled(leftMonth.year, option.month)"
+                        [attr.data-label]="'li_date_range_picker_month'"
+                        [attr.data-calendar]="'left'"
+                        [attr.data-value]="option.month.toString()"
                         (click)="selectLeftMonth(option.month)">
                         {{ option.label }}
                     </button>
@@ -89,7 +102,8 @@
                 <div *ngIf="isLeftYearView" class="date-range-selection-grid date-range-selection-grid-years">
                     <button type="button" *ngFor="let year of leftVisibleYears; trackBy: trackByYear"
                         class="date-range-selection-item" [class.active]="year == leftMonth.year"
-                        [class.disabled]="isYearDisabled(year)" (click)="selectLeftYear(year)">
+                        [class.disabled]="isYearDisabled(year)" [attr.data-label]="'li_date_range_picker_year'"
+                        [attr.data-calendar]="'left'" [attr.data-value]="year.toString()" (click)="selectLeftYear(year)">
                         {{ year }}
                     </button>
                 </div>
@@ -97,13 +111,13 @@
 
             <div class="drp-calendar right">
                 <div class="date-range-panel-header">
-                    <button type="button" class="calendar-nav prev available" (click)="prevMonth()">
+                    <button type="button" class="calendar-nav prev available" [attr.data-label]="'li_date_range_picker_right_prev'" (click)="prevMonth()">
                         <span></span>
                     </button>
-                    <button type="button" class="date-range-view-switch" (click)="toggleRightViewMode()">
+                    <button type="button" class="date-range-view-switch" [attr.data-label]="'li_date_range_picker_right_view_switch'" (click)="toggleRightViewMode()">
                         {{ rightHeaderLabel }}
                     </button>
-                    <button type="button" class="calendar-nav next available" (click)="nextMonth()">
+                    <button type="button" class="calendar-nav next available" [attr.data-label]="'li_date_range_picker_right_next'" (click)="nextMonth()">
                         <span></span>
                     </button>
                 </div>
@@ -123,6 +137,9 @@
                                     [class.active]="isStartDate(cell.date) || isEndDate(cell.date)"
                                     [class.start-date]="isStartDate(cell.date)" [class.end-date]="isEndDate(cell.date)"
                                     [class.in-range]="isInRange(cell.date)" (mouseenter)="hoverDay(cell.date)"
+                                    [attr.data-label]="'li_date_range_picker_day'"
+                                    [attr.data-calendar]="'right'"
+                                    [attr.data-value]="dateDataValue(cell.date)"
                                     (click)="selectDay(cell.date)">
                                     {{ cell.date.day }}
                                 </td>
@@ -135,6 +152,9 @@
                     <button type="button" *ngFor="let option of monthOptions; trackBy: trackByMonthOption"
                         class="date-range-selection-item" [class.active]="option.month == rightMonth.month"
                         [class.disabled]="isMonthDisabled(rightMonth.year, option.month)"
+                        [attr.data-label]="'li_date_range_picker_month'"
+                        [attr.data-calendar]="'right'"
+                        [attr.data-value]="option.month.toString()"
                         (click)="selectRightMonth(option.month)">
                         {{ option.label }}
                     </button>
@@ -143,7 +163,8 @@
                 <div *ngIf="isRightYearView" class="date-range-selection-grid date-range-selection-grid-years">
                     <button type="button" *ngFor="let year of rightVisibleYears; trackBy: trackByYear"
                         class="date-range-selection-item" [class.active]="year == rightMonth.year"
-                        [class.disabled]="isYearDisabled(year)" (click)="selectRightYear(year)">
+                        [class.disabled]="isYearDisabled(year)" [attr.data-label]="'li_date_range_picker_year'"
+                        [attr.data-calendar]="'right'" [attr.data-value]="year.toString()" (click)="selectRightYear(year)">
                         {{ year }}
                     </button>
                 </div>
@@ -154,13 +175,13 @@
             <span class="drp-selected">
                 {{ draftDisplayValue.isEmpty ? emptySelectionLabel : draftDisplayValue }}
             </span>
-            <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" (click)="clear()">
+            <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_date_range_picker_clear'" (click)="clear()">
                 {{ clearLabel }}
             </button>
-            <button type="button" class="btn btn-light btn-sm" (click)="close()">
+            <button type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_date_range_picker_cancel'" (click)="close()">
                 {{ cancelLabel }}
             </button>
-            <button type="button" class="btn btn-primary btn-sm" [disabled]="!canApply" (click)="apply()">
+            <button type="button" class="btn btn-primary btn-sm" [disabled]="!canApply" [attr.data-label]="'li_date_range_picker_apply'" (click)="apply()">
                 {{ applyLabel }}
             </button>
         </div>

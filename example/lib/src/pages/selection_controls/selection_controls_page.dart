@@ -77,6 +77,20 @@ class SelectionControlsPageComponent {
   ...
 </li-radio-group>''';
 
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(
+  page,
+  '[data-label="li_checkbox"][data-value="false"] [data-label="li_checkbox_input"]',
+);
+await clickFirstVisible(
+  page,
+  '[data-label="li_radio"][data-value="customers"] [data-label="li_radio_input"]',
+);
+await clickFirstVisible(
+  page,
+  '[data-label="li_toggle"][data-value="false"] [data-label="li_toggle_input"]',
+);''';
+
   bool auditTrailEnabled = true;
   bool publicPortalEnabled = false;
   bool reviewQueueEnabled = true;

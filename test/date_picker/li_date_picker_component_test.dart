@@ -20,6 +20,7 @@ import 'li_date_picker_component_test.template.dart' as ng;
     <li-date-picker
         #picker
         [value]="value"
+        (userValueChange)="userValue = \$event"
         (valueChange)="value = \$event">
     </li-date-picker>
   ''',
@@ -30,6 +31,7 @@ class DatePickerTestHostComponent {
   LiDatePickerComponent? picker;
 
   DateTime? value = DateTime(2026, 4, 6);
+  DateTime? userValue;
 }
 
 @Component(
@@ -81,6 +83,31 @@ void main() {
 
     expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
+  });
+
+  test('emits userValueChange only for user date selection', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(host.userValue, isNull);
+
+    await fixture.update((_) {
+      host.picker!.toggleOpen();
+      host.picker!.selectDay(DateTime(2026, 4, 9));
+    });
+    await _settle(fixture);
+
+    expect(host.value, DateTime(2026, 4, 9));
+    expect(host.userValue, DateTime(2026, 4, 9));
+
+    await fixture.update((component) {
+      component.value = DateTime(2026, 4, 11);
+    });
+    await _settle(fixture);
+
+    expect(host.value, DateTime(2026, 4, 11));
+    expect(host.userValue, DateTime(2026, 4, 9));
   });
 
   test('can present as a centered mobile modal', () async {

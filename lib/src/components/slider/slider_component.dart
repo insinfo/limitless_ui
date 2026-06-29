@@ -164,6 +164,10 @@ class LiSliderComponent
 
   bool get isRtl => effectiveDirection == 'rtl';
 
+  String get dataValue => range
+      ? '${rangeValues[0].toString()},${rangeValues[1].toString()}'
+      : value.toString();
+
   String get resolvedHostClass => _joinClasses(<String>[
         'li-slider',
         isVertical ? 'li-slider--vertical' : 'li-slider--horizontal',
@@ -920,6 +924,7 @@ class LiSliderComponent
         : 'left: ${positionPercent.toStringAsFixed(4)}%;';
 
     return LiSliderPipViewModel(id)
+      ..value = _toOutputNum(clampedValue).toString()
       ..label = label
       ..markerClass = markerClass
       ..valueClass = valueClass
@@ -974,6 +979,7 @@ class LiSliderPipViewModel {
   LiSliderPipViewModel(this.id);
 
   final int id;
+  String value = '';
   String label = '';
   String markerClass = '';
   String valueClass = '';

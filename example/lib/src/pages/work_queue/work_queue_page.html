@@ -152,6 +152,21 @@
         <p class="mb-0 text-muted">{{ tableCalloutBody }}</p>
       </div>
 
+      <div class="card-body border-top">
+        <div class="alert alert-secondary border mb-0">
+          <div class="fw-semibold mb-1">{{ automationHooksTitle }}</div>
+          <div class="text-muted">{{ automationHooksBody }}</div>
+          <div class="small mt-2">
+            <code>li_token_field_input</code>,
+            <code>li_token_field_token_*</code>,
+            <code>li_tag_filter_btn_toggle</code>,
+            <code>li_tag_filter_option_*</code>,
+            <code>datatable_row_*</code>,
+            <code>datatable_col_checkbox</code>
+          </div>
+        </div>
+      </div>
+
       <div class="work-queue-page__datatable">
         <li-datatable #queueTable [dataTableFilter]="tableFilters" [data]="workItems" [settings]="datatableSettings"
           [searchInFields]="searchFields" [disableRowClick]="true" [limitPerPageOptions]="limitPerPageOptions"

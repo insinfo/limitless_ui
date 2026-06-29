@@ -99,6 +99,14 @@
                 <p class="text-muted mb-3">Use quando o formulário persiste um identificador, mas a tela também precisa da instância completa para carregar dados dependentes.</p>
                 <li-highlight [code]="modelChangeSnippet" language="html"></li-highlight>
 
+                <h6 class="mb-2 mt-4">Sincronização programática</h6>
+                <p class="text-muted mb-3">Quando a tela carrega um registro antes das opções ou precisa limpar um select filho, use <code>setSelectedItemByValue()</code> e <code>clearSelectedItem()</code> com os flags de emissão desligados. Isso sincroniza a UI sem disparar <code>ngModel</code>, <code>currentValueChange</code> ou <code>userValueChange</code>.</p>
+                <li-highlight [code]="programmaticSyncSnippet" language="dart"></li-highlight>
+
+                <h6 class="mb-2 mt-4">currentValueChange x userValueChange</h6>
+                <p class="text-muted mb-3"><code>currentValueChange</code> acompanha também mudanças programáticas do model. Use <code>userValueChange</code> quando a ação deve rodar somente após uma seleção feita pelo usuário.</p>
+                <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+
                 <h6 class="mb-2 mt-4">Validação declarativa</h6>
                 <p class="text-muted mb-3">Para selects, a base declarativa fica em <code>liRules</code>, <code>liMessages</code> e <code>liValidationMode</code>. <code>liType</code> é exclusivo do <code>li-input</code>.</p>
                 <li-highlight [code]="validationSnippet" language="html"></li-highlight>
@@ -118,6 +126,10 @@
                 </ul>
 
                 <li-highlight [code]="notesSnippet" language="dart"></li-highlight>
+
+                <h6 class="mb-2 mt-4">Hooks para Puppeteer</h6>
+                <p class="text-muted mb-3">Prefira <code>data-label</code> e <code>data-value</code> para abrir o select e escolher uma opção sem depender de classes CSS ou texto traduzido.</p>
+                <li-highlight [code]="automationHooksSnippet" language="dart"></li-highlight>
               </div>
             </div>
           </div>

@@ -1,3 +1,10 @@
+## 1.0.0-dev.28
+
+- Added `userValueChange` outputs to user-selectable controls so consumers can distinguish real user selections from programmatic model updates. Covered select, multi-select, datatable select, date picker, date range picker, time picker, typeahead, treeview select, and rating.
+- Added stable `data-label`/`data-value` hooks across interactive selection controls to support browser automation with Puppeteer-style selectors without relying on CSS classes or translated text.
+- Added real Puppeteer E2E coverage for the `example` app, gated by `RUN_EXAMPLE_E2E=true` and wired into CI through `webdev serve`. The suite now clicks actual options, checkbox rows, clear/apply actions, calendar navigation, dropdown menu items, slider drag handles, and text inputs across select, multi-select, datatable select, date/time pickers, typeahead, treeview, rating, tag/token controls, and selection controls.
+- Expanded `li-select` compatibility with legacy custom-select flows: written model values are now reconciled when `dataSource`/projected options arrive later, and `clearSelectedItem(...)` supports silent programmatic clearing with the same event-suppression flags as `setSelectedItemByValue(...)`.
+
 ## 1.0.0-dev.27
 
 - Expanded SweetAlert prompt input customization with `SweetAlertInputConfig` for classes, styles, attributes, row/column sizing, length constraints, and autocomplete, forwarded the configuration through `SweetAlertService`, and added directive inputs for common field customization. Textarea prompts now render with a fuller `form-control` default, 100% width, a usable minimum height, and vertical resizing instead of the tiny native field.
@@ -185,7 +192,7 @@ dark-theme-safe presentation based on Limitless theme tokens, and explicit visua
 ## 1.0.0-dev.5
 
 - Expanded `li-datatable` with grouped and multi-column sorting demos, customizable grid container class/style hooks, responsive pagination sizing, safer grouped-row selection behavior, and new regression coverage for grouping and grid rendering.
-- Expanded the datatable example and documentation with richer AngularDart integration snippets, backend/frontend usage guidance, and updated localized README/docs instructions for `build_runner serve` and optional `webdev` usage.
+- Expanded the datatable example and documentation with richer AngularDart integration snippets, backend/frontend usage guidance, and updated localized README/docs instructions for the frontend serve workflow.
 - Expanded `li-accordion` with `bodyPadding`, `buttonClass`, and `buttonSemibold` so host apps can match dense Limitless-style accordion body density and header typography without forking the component.
 - Added a "Visualiza Processo" accordion demo to the example app, including underline tabs, flush accordion sections, neutral active tab text, and muted non-bold accordion headers.
 - Fixed `li-tabsx` nested tab/header projection so inner tabs no longer leak into outer tab headers, ensured active panes also receive the `show` class, and added configurable tab content padding and active-text body coloring.

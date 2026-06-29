@@ -167,9 +167,7 @@ class LiNotificationToastService {
     if (enableSound) {
       try {
         soundController?.playOnceSafely();
-      } catch (e) {
-        print('NotificationComponentService@notify $e');
-      }
+      } catch (_) {}
     }
 
     _enqueueToast(toast, emitNotify: true);

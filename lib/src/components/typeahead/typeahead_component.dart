@@ -93,6 +93,8 @@ class LiTypeaheadComponent
   final LiTypeaheadConfig _config;
   final StreamController<dynamic> _changeController =
       StreamController<dynamic>.broadcast();
+  final StreamController<dynamic> _userChangeController =
+      StreamController<dynamic>.broadcast();
   final StreamController<LiTypeaheadSelectItemEvent<dynamic>>
       _selectController =
       StreamController<LiTypeaheadSelectItemEvent<dynamic>>.broadcast();
@@ -192,6 +194,9 @@ class LiTypeaheadComponent
   @Output('currentValueChange')
   Stream<dynamic> get currentValueChange => _changeController.stream;
 
+  @Output('userValueChange')
+  Stream<dynamic> get userValueChange => _userChangeController.stream;
+
   @Output()
   Stream<LiTypeaheadSelectItemEvent<dynamic>> get selectItem =>
       _selectController.stream;
@@ -286,6 +291,7 @@ class LiTypeaheadComponent
     _unbindDocumentListeners();
     _overlay?.dispose();
     _changeController.close();
+    _userChangeController.close();
     _selectController.close();
   }
 
@@ -424,6 +430,8 @@ class LiTypeaheadComponent
 
   String get searchTerm => rawSearchTerm;
 
+  String? get selectedDataValue => _selectedItem?.value?.toString();
+
   String renderResultLabel(LiTypeaheadItem item) {
     return _formatItemForResult(item);
   }
@@ -432,6 +440,8 @@ class LiTypeaheadComponent
     return resultMarkupBuilder?.call(item.instanceObj, rawSearchTerm) ??
         renderResultLabel(item);
   }
+
+  String? itemDataValue(LiTypeaheadItem item) => item.value?.toString();
 
   bool get hasStatusRow => loading || _asyncErrorMessage != null;
 
@@ -661,12 +671,16 @@ class LiTypeaheadComponent
       return;
     }
 
+    final previousValue = _selectedItem?.value;
     _selectedItem = item;
     _committedInputValue = _formatItemForInput(item);
     rawSearchTerm = _committedInputValue;
     _writeInputValue(_committedInputValue);
     _emitModelValue(item.value);
     _changeController.add(item.value);
+    if (previousValue != item.value) {
+      _userChangeController.add(item.value);
+    }
     inputElement?.focus();
     _markForCheck();
   }

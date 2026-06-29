@@ -164,6 +164,18 @@
               <li-highlight [code]="validationSnippet" language="html"></li-highlight>
             </div>
 
+            <div class="mt-4">
+              <h6 class="mb-2">currentValueChange x userValueChange</h6>
+              <p class="text-muted mb-3"><code>currentValueChange</code> acompanha alterações do model e do calendário. <code>userValueChange</code> dispara apenas quando o usuário escolhe ou limpa uma data pela interface.</p>
+              <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mt-4">
+              <h6 class="mb-2">Hooks para Puppeteer</h6>
+              <p class="text-muted mb-3">Use os hooks do trigger, navegação e dia para simular a seleção real no calendário sem buscar por texto do mês ou classes traduzidas.</p>
+              <li-highlight [code]="automationHooksSnippet" language="dart"></li-highlight>
+            </div>
+
             <div class="mt-3">
               <li-highlight [code]="t.pages.datePicker.apiUsageExample" language="html"></li-highlight>
             </div>

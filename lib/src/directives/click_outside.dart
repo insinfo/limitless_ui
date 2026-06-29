@@ -20,18 +20,6 @@ class ClickOutsideDirective implements OnDestroy, OnInit {
   @Output('clickOutside')
   Stream<MouseEvent> get clickOutside => clickOutsideSC.stream;
 
-  /*@HostListener('document:click', ['\$event', '\$event.target'])
-  void onClick(MouseEvent event, HtmlElement targetElement) {
-    /*if (!targetElement) {
-            return;
-        }
-        const clickedInside = nativeElement.contains(targetElement);
-        if (!clickedInside) {
-            clickOutsideSC.add(event);
-        }*/
-    print('ClickOutsideDirective document:click ');
-  }*/
-
   void onClick(MouseEvent event) {
     final target = event.target;
     if (target is! Node) {

@@ -32,6 +32,8 @@ class LiRatingComponent
   final LiRatingConfig _config;
   final StreamController<num> _rateChangeController =
       StreamController<num>.broadcast();
+  final StreamController<num> _userValueChangeController =
+      StreamController<num>.broadcast();
   final StreamController<num> _hoverController =
       StreamController<num>.broadcast();
   final StreamController<num> _leaveController =
@@ -74,6 +76,9 @@ class LiRatingComponent
 
   @Output()
   Stream<num> get rateChange => _rateChangeController.stream;
+
+  @Output('userValueChange')
+  Stream<num> get userValueChange => _userValueChangeController.stream;
 
   @Output()
   Stream<num> get hover => _hoverController.stream;
@@ -165,20 +170,20 @@ class LiRatingComponent
     switch (event.key) {
       case 'ArrowLeft':
       case 'ArrowDown':
-        update(_rate - 1);
+        update(_rate - 1, emitUserValueChange: true);
         event.preventDefault();
         break;
       case 'ArrowRight':
       case 'ArrowUp':
-        update(_rate + 1);
+        update(_rate + 1, emitUserValueChange: true);
         event.preventDefault();
         break;
       case 'Home':
-        update(0);
+        update(0, emitUserValueChange: true);
         event.preventDefault();
         break;
       case 'End':
-        update(max);
+        update(max, emitUserValueChange: true);
         event.preventDefault();
         break;
     }
@@ -189,14 +194,21 @@ class LiRatingComponent
       return;
     }
     final nextValue = resettable && _rate == value ? 0 : value;
-    update(nextValue);
+    update(nextValue, emitUserValueChange: true);
   }
 
-  void update(num? value, {bool emitToForm = true}) {
+  void update(
+    num? value, {
+    bool emitToForm = true,
+    bool emitUserValueChange = false,
+  }) {
     final normalized = _normalizeRate(value);
     if (_rate != normalized) {
       _rate = normalized;
       _rateChangeController.add(_rate);
+      if (emitUserValueChange) {
+        _userValueChangeController.add(_rate);
+      }
     }
     if (emitToForm) {
       _onChange(_rate, rawValue: _rate.toString());
@@ -257,6 +269,7 @@ class LiRatingComponent
   @override
   void ngOnDestroy() {
     _rateChangeController.close();
+    _userValueChangeController.close();
     _hoverController.close();
     _leaveController.close();
   }

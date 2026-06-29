@@ -143,6 +143,8 @@ class LiDatePickerComponent
   final LiFormDirective? _formDirective;
   final StreamController<DateTime?> _valueChangeController =
       StreamController<DateTime?>.broadcast();
+  final StreamController<DateTime?> _userValueChangeController =
+      StreamController<DateTime?>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
   StreamSubscription<html.Event>? _documentClickSubscription;
@@ -238,6 +240,9 @@ class LiDatePickerComponent
 
   @Output()
   Stream<DateTime?> get valueChange => _valueChangeController.stream;
+
+  @Output('userValueChange')
+  Stream<DateTime?> get userValueChange => _userValueChangeController.stream;
 
   @ViewChild('triggerElement')
   html.Element? triggerElement;
@@ -530,10 +535,14 @@ class LiDatePickerComponent
       return;
     }
 
+    final previousValue = value;
     draftValue = normalized;
     value = _normalize(draftValue);
     _dirty = true;
     _valueChangeController.add(value);
+    if (!_isSameDate(previousValue, value)) {
+      _userValueChangeController.add(value);
+    }
     _onChange(value);
     _markTouched();
     _runAutoValidation();
@@ -542,10 +551,14 @@ class LiDatePickerComponent
   }
 
   void clear() {
+    final hadValue = value != null;
     draftValue = null;
     value = null;
     _dirty = true;
     _valueChangeController.add(null);
+    if (hadValue) {
+      _userValueChangeController.add(null);
+    }
     _onChange(null);
     _markTouched();
     _runAutoValidation();
@@ -738,6 +751,11 @@ class LiDatePickerComponent
     return '$label ${month.year}';
   }
 
+  String dateDataValue(DateTime date) {
+    final normalized = _normalize(date)!;
+    return '${normalized.year}-${_twoDigits(normalized.month)}-${_twoDigits(normalized.day)}';
+  }
+
   List<List<DatePickerCalendarCell>> _buildCalendar(DateTime month) {
     final firstDay = DateTime(month.year, month.month, 1);
     final startOffset = firstDay.weekday % 7;
@@ -872,5 +890,6 @@ class LiDatePickerComponent
     _overlay?.dispose();
     _formSubmissionSubscription?.cancel();
     _valueChangeController.close();
+    _userValueChangeController.close();
   }
 }

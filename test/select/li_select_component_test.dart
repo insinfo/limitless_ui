@@ -24,6 +24,7 @@ import 'li_select_component_test.template.dart' as ng;
         valueKey="id"
         disabledKey="disabled"
         (modelChange)="selectedStatusModel = \$event"
+        (userValueChange)="userSelectedStatus = \$event"
         [(ngModel)]="selectedStatus">
     </li-select>
   ''',
@@ -31,6 +32,7 @@ import 'li_select_component_test.template.dart' as ng;
 )
 class SelectTestHostComponent {
   String selectedStatus = 'review';
+  String? userSelectedStatus;
   Map<String, dynamic>? selectedStatusModel;
 
   final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
@@ -118,6 +120,66 @@ class SelectValidationTestHostComponent {
   ];
 }
 
+@Component(
+  selector: 'li-select-async-source-test-host',
+  template: '''
+    <li-select
+        [dataSource]="statusOptions"
+        labelKey="label"
+        valueKey="id"
+        (currentValueChange)="currentValueEvents.add(\$event)"
+        (modelChange)="modelEvents.add(\$event)"
+        [(ngModel)]="selectedStatus">
+    </li-select>
+  ''',
+  directives: [coreDirectives, formDirectives, LiSelectComponent],
+)
+class SelectAsyncSourceTestHostComponent {
+  String selectedStatus = 'approved';
+  List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[];
+  final List<dynamic> currentValueEvents = <dynamic>[];
+  final List<dynamic> modelEvents = <dynamic>[];
+
+  void loadOptions() {
+    statusOptions = <Map<String, dynamic>>[
+      <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
+      <String, dynamic>{'id': 'approved', 'label': 'Aprovado'},
+    ];
+  }
+}
+
+@Component(
+  selector: 'li-select-programmatic-api-test-host',
+  template: '''
+    <li-select
+        #select
+        [dataSource]="statusOptions"
+        labelKey="label"
+        valueKey="id"
+        (currentValueChange)="currentValueEvents.add(\$event)"
+        (modelChange)="modelEvents.add(\$event)"
+        (userValueChange)="userValueEvents.add(\$event)"
+        [(ngModel)]="selectedStatus">
+    </li-select>
+  ''',
+  directives: [coreDirectives, formDirectives, LiSelectComponent],
+)
+class SelectProgrammaticApiTestHostComponent {
+  @ViewChild('select')
+  LiSelectComponent? select;
+
+  String? selectedStatus = 'review';
+  final List<dynamic> currentValueEvents = <dynamic>[];
+  final List<dynamic> modelEvents = <dynamic>[];
+  final List<dynamic> userValueEvents = <dynamic>[];
+
+  final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
+    <String, dynamic>{'id': 'review', 'label': 'Em revisao'},
+    <String, dynamic>{'id': 'approved', 'label': 'Aprovado'},
+  ];
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
@@ -133,6 +195,13 @@ void main() {
   final validationTestBed = NgTestBed<SelectValidationTestHostComponent>(
     ng.SelectValidationTestHostComponentNgFactory,
   );
+  final asyncSourceTestBed = NgTestBed<SelectAsyncSourceTestHostComponent>(
+    ng.SelectAsyncSourceTestHostComponentNgFactory,
+  );
+  final programmaticApiTestBed =
+      NgTestBed<SelectProgrammaticApiTestHostComponent>(
+    ng.SelectProgrammaticApiTestHostComponentNgFactory,
+  );
 
   test('selects enabled options and updates ngModel', () async {
     final fixture = await testBed.create();
@@ -140,6 +209,8 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
         as html.ButtonElement;
+
+    expect(host.userSelectedStatus, isNull);
 
     await fixture.update((_) {
       trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
@@ -157,9 +228,19 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedStatus, 'approved');
+    expect(host.userSelectedStatus, 'approved');
     expect(host.selectedStatusModel?['id'], 'approved');
     expect(host.selectedStatusModel?['label'], 'Aprovado');
     expect(trigger.text, contains('Aprovado'));
+
+    await fixture.update((component) {
+      component.selectedStatus = 'draft';
+    });
+    await _settle(fixture);
+
+    expect(host.selectedStatus, 'draft');
+    expect(host.userSelectedStatus, 'approved');
+    expect(trigger.text, contains('Rascunho'));
   });
 
   test('ignores disabled options', () async {
@@ -241,6 +322,92 @@ void main() {
     expect(trigger.text, contains('Categoria B'));
   });
 
+  test('reconciles a written model value when dataSource arrives later',
+      () async {
+    final fixture = await asyncSourceTestBed.create();
+    await _settleAsyncSource(fixture);
+    final host = fixture.assertOnlyInstance;
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    expect(host.selectedStatus, 'approved');
+    expect(trigger.text, contains('Selecione'));
+
+    await fixture.update((component) {
+      component.loadOptions();
+    });
+    await _settleAsyncSource(fixture);
+
+    expect(host.selectedStatus, 'approved');
+    expect(trigger.text, contains('Aprovado'));
+    expect(host.currentValueEvents, isEmpty);
+    expect(host.modelEvents, isEmpty);
+  });
+
+  test('supports silent programmatic set and clear APIs', () async {
+    final fixture = await programmaticApiTestBed.create();
+    await _settleProgrammaticApi(fixture);
+    final host = fixture.assertOnlyInstance;
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    await fixture.update((component) {
+      component.select!.setSelectedItemByValue(
+        'approved',
+        isCallNgModelChange: false,
+        isCallCurrentValueChange: false,
+      );
+    });
+    await _settleProgrammaticApi(fixture);
+
+    expect(host.selectedStatus, 'review');
+    expect(trigger.text, contains('Aprovado'));
+    expect(host.currentValueEvents, isEmpty);
+    expect(host.modelEvents, isEmpty);
+    expect(host.userValueEvents, isEmpty);
+
+    await fixture.update((component) {
+      component.select!.clearSelectedItem(
+        isCallNgModelChange: false,
+        isCallCurrentValueChange: false,
+      );
+    });
+    await _settleProgrammaticApi(fixture);
+
+    expect(host.selectedStatus, 'review');
+    expect(trigger.text, contains('Selecione'));
+    expect(host.currentValueEvents, isEmpty);
+    expect(host.modelEvents, isEmpty);
+    expect(host.userValueEvents, isEmpty);
+
+    await fixture.update((component) {
+      component.select!.setSelectedItemByValue('draft');
+    });
+    await _settleProgrammaticApi(fixture);
+
+    expect(host.selectedStatus, 'draft');
+    expect(trigger.text, contains('Rascunho'));
+    expect(host.currentValueEvents, <dynamic>['draft']);
+    expect(
+      host.modelEvents
+          .map((dynamic item) => (item as Map<String, dynamic>)['id'])
+          .toList(),
+      <dynamic>['draft'],
+    );
+    expect(host.userValueEvents, isEmpty);
+
+    await fixture.update((component) {
+      component.select!.clearSelectedItem();
+    });
+    await _settleProgrammaticApi(fixture);
+
+    expect(host.selectedStatus, isNull);
+    expect(trigger.text, contains('Selecione'));
+    expect(host.currentValueEvents, <dynamic>['draft', null]);
+    expect(host.modelEvents.last, isNull);
+    expect(host.userValueEvents, isEmpty);
+  });
+
   test('applies declarative validation rules and messages', () async {
     final fixture = await validationTestBed.create();
     await _settleValidation(fixture);
@@ -293,6 +460,18 @@ Future<void> _settleCompare(
 
 Future<void> _settleValidation(
     NgTestFixture<SelectValidationTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleAsyncSource(
+    NgTestFixture<SelectAsyncSourceTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleProgrammaticApi(
+    NgTestFixture<SelectProgrammaticApiTestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});
 }

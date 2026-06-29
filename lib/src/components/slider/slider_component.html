@@ -1,8 +1,13 @@
-<div [class]="resolvedHostClass">
+<div [class]="resolvedHostClass"
+    [attr.data-label]="'li_slider'"
+    [attr.data-value]="dataValue"
+    [attr.data-range]="range.toString()">
   <div
       #surface
       [class]="resolvedSurfaceClass"
       [attr.style]="resolvedSurfaceStyle"
+      [attr.data-label]="'li_slider_surface'"
+      [attr.data-value]="dataValue"
       [attr.aria-label]="ariaLabel"
       [attr.aria-disabled]="disabled ? 'true' : null"
       [attr.disabled]="disabled ? '' : null"
@@ -11,7 +16,7 @@
       (touchstart)="onTrackTouchStart($event)">
     <div class="noUi-base">
       <div class="noUi-connects">
-        <div *ngIf="showConnect" class="noUi-connect" [attr.style]="connectStyle"></div>
+        <div *ngIf="showConnect" class="noUi-connect" [attr.style]="connectStyle" [attr.data-label]="'li_slider_connect'"></div>
       </div>
 
       <div
@@ -21,6 +26,8 @@
         <div
             [class]="handle.cssClass"
             [attr.data-handle]="handle.id.toString()"
+            [attr.data-label]="'li_slider_handle_' + handle.id.toString()"
+            [attr.data-value]="handle.tooltip"
             role="slider"
             [attr.aria-label]="handle.ariaLabel"
             [attr.aria-valuemin]="min.toString()"
@@ -42,10 +49,14 @@
       <div
           *ngFor="let pip of pips; trackBy: trackByPip"
           [class]="pip.markerClass"
+          [attr.data-label]="'li_slider_pip_marker'"
+          [attr.data-value]="pip.value"
           [attr.style]="pip.markerStyle"></div>
       <div
           *ngFor="let pip of pips; trackBy: trackByPip"
           [class]="pip.valueClass"
+          [attr.data-label]="'li_slider_pip_value'"
+          [attr.data-value]="pip.value"
           [attr.style]="pip.valueStyle">{{pip.label}}</div>
     </div>
   </div>

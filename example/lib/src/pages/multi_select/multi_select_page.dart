@@ -50,6 +50,29 @@ List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
   (modelChange)="onSelectedPeopleModelsChange(\$event)">
 </li-multi-select>''';
 
+  static const String userValueChangeSnippet = '''
+<li-multi-select
+  [dataSource]="channelOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="selectedChannels"
+  (currentValueChange)="syncSelectedChannels(\$event)"
+  (userValueChange)="reloadAfterUserChannelChange(\$event)">
+</li-multi-select>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="li_multi_select_btn_toggle"]');
+await clickFirstVisible(
+  page,
+  '[data-label^="li_multi_select_item_"][data-value="sms"]',
+);
+await waitForAttributeMatching(
+  page,
+  '[data-label="li_multi_select"]',
+  'data-value',
+  (value) => (value ?? '').split(',').contains('sms'),
+);''';
+
   static const String validationSnippet = '''
 <li-multi-select
   [dataSource]="channelOptions"

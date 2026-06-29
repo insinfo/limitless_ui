@@ -116,6 +116,10 @@ class LiRadioComponent implements ControlValueAccessor<dynamic> {
 
   String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
 
+  String? get optionDataValue => value?.toString();
+
+  String? get currentDataValue => _groupValue?.toString();
+
   String get resolvedContainerClass => _joinClasses(<String>[
         'form-check',
         inline ? 'form-check-inline' : '',

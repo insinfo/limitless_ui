@@ -607,6 +607,10 @@
                   <li>Para radio group, passe também o valor atual em <code>[value]</code> para a regra declarativa avaliar o grupo.</li>
                   <li>Use <code>submitted</code> quando o erro do bloco só deve aparecer após tentativa de envio.</li>
                 </ul>
+
+                <h6 class="mb-3 mt-4">Hooks para Puppeteer</h6>
+                <p class="text-muted mb-3">Checkbox, radio e toggle não expõem <code>userValueChange</code>; use <code>ngModel</code> ou o evento nativo apropriado. Para E2E, clique no input real por <code>data-label</code> e valide o <code>data-value</code> do host.</p>
+                <li-highlight [code]="automationHooksSnippet" language="dart"></li-highlight>
               </div>
             </div>
           </div>

@@ -167,6 +167,8 @@ class LiTagFilterComponent
 
   bool get hasSelection => selectedOptions.isNotEmpty;
 
+  String get selectedDataValue => _selectedValues.join(',');
+
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
   String get resolvedPlaceholder {
@@ -209,6 +211,9 @@ class LiTagFilterComponent
       ]);
 
   String optionId(int index) => '$_optionIdPrefix-$index';
+
+  String? optionDataValue(LiTagFilterOptionView option) =>
+      option.value?.toString();
 
   @override
   void writeValue(List<dynamic>? value) {

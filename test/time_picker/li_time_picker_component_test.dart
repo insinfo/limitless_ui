@@ -21,6 +21,7 @@ import 'li_time_picker_component_test.template.dart' as ng;
         #picker
         [value]="value"
         [use24Hour]="true"
+        (userValueChange)="userValue = \$event"
         (valueChange)="value = \$event">
     </li-time-picker>
   ''',
@@ -31,6 +32,7 @@ class TimePickerTestHostComponent {
   LiTimePickerComponent? picker;
 
   Duration? value = const Duration(hours: 18, minutes: 30);
+  Duration? userValue;
 }
 
 @Component(
@@ -84,6 +86,33 @@ void main() {
 
     expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
+  });
+
+  test('emits userValueChange when applying a changed time', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(host.userValue, isNull);
+
+    await fixture.update((_) {
+      host.picker!.toggleOpen();
+      host.picker!.draftHour24 = 9;
+      host.picker!.draftMinute = 45;
+      host.picker!.apply();
+    });
+    await _settle(fixture);
+
+    expect(host.value, const Duration(hours: 9, minutes: 45));
+    expect(host.userValue, const Duration(hours: 9, minutes: 45));
+
+    await fixture.update((component) {
+      component.value = const Duration(hours: 10, minutes: 15);
+    });
+    await _settle(fixture);
+
+    expect(host.value, const Duration(hours: 10, minutes: 15));
+    expect(host.userValue, const Duration(hours: 9, minutes: 45));
   });
 
   test('can present as a centered mobile modal', () async {

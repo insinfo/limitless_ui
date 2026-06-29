@@ -105,6 +105,35 @@ class DatatableSelectPageComponent implements OnInit {
   </template>
 </li-datatable-select>''';
 
+  static const String userValueChangeSnippet = '''
+<li-datatable-select
+  [settings]="dtSettings"
+  [dataTableFilter]="filtro"
+  [data]="items"
+  [searchInFields]="sInFields"
+  [labelKey]="'name'"
+  [valueKey]="'id'"
+  [(ngModel)]="selectedValue"
+  (currentValueChange)="syncSelectedValue(\$event)"
+  (userValueChange)="loadSelectionDependents(\$event)">
+</li-datatable-select>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="li_datatable_select_btn_toggle"]');
+await clickFirstVisible(page, '[data-label^="datatable_row_"]');
+await waitForAttributeMatching(
+  page,
+  '[data-label="li_datatable_select"]',
+  'data-value',
+  (value) => value != null && value.isNotEmpty,
+);''';
+
+  static const String multipleAutomationHooksSnippet = '''
+await clickVisibleAt(page, '[data-label="li_datatable_select_btn_toggle"]', 2);
+await clickVisibleAt(page, '[data-label="datatable_col_checkbox"]', 0);
+await clickFirstVisible(page, '[data-label="li_datatable_select_modal_apply"]');
+await clickFirstVisible(page, '[data-label="li_datatable_select_clear"]');''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
   bool get isPt => i18n.isPortuguese;

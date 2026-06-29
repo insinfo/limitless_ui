@@ -148,6 +148,18 @@
               <p class="text-muted mb-3">Time picker agora compõe <code>liRules</code>, <code>liMessages</code> e <code>liValidationMode</code> com a API existente, inclusive em fluxos orquestrados por <code>liForm</code>.</p>
               <li-highlight [code]="validationSnippet" language="html"></li-highlight>
             </div>
+
+            <div class="mt-4">
+              <h6 class="mb-2">currentValueChange x userValueChange</h6>
+              <p class="text-muted mb-3"><code>currentValueChange</code> pode refletir atualizações do model. <code>userValueChange</code> representa clique, digitação ou aplicação real feita pelo usuário no picker.</p>
+              <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mt-4">
+              <h6 class="mb-2">Hooks para Puppeteer</h6>
+              <p class="text-muted mb-3">O teste deve abrir o painel, clicar um valor do dial ou digitar hora/minuto e confirmar com o botão aplicar.</p>
+              <li-highlight [code]="automationHooksSnippet" language="dart"></li-highlight>
+            </div>
           </div>
         </li-tabx>
       </li-tabsx>

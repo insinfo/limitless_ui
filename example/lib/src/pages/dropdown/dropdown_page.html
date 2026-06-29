@@ -181,7 +181,9 @@
 
                   <div class="mt-3">
                     <div class="fw-semibold mb-2">{{ edgeNavbarStateTitle }}</div>
-                    <div class="bg-light border rounded-3 p-3">{{ dropdownState.isEmpty ? edgeNavbarWaitingState : dropdownState }}</div>
+                    <div class="bg-light border rounded-3 p-3"
+                         [attr.data-label]="'dropdown_org_state'"
+                         [attr.data-value]="dropdownState">{{ dropdownState.isEmpty ? edgeNavbarWaitingState : dropdownState }}</div>
                   </div>
                 </div>
               </div>
@@ -272,7 +274,9 @@
 
                   <div>
                     <div class="fw-semibold mb-2">{{ submenuStateTitle }}</div>
-                    <div class="bg-light border rounded-3 p-3">{{ submenuStateSummary }}</div>
+                    <div class="bg-light border rounded-3 p-3"
+                         [attr.data-label]="'dropdown_submenu_state'"
+                         [attr.data-value]="submenuState">{{ submenuStateSummary }}</div>
                   </div>
                 </div>
               </div>
@@ -317,7 +321,9 @@
 
                   <div>
                     <div class="fw-semibold mb-2">{{ compactMenuStateTitle }}</div>
-                    <div class="bg-light border rounded-3 p-3">{{ compactMenuState.isEmpty ? compactMenuWaitingState : compactMenuState }}</div>
+                    <div class="bg-light border rounded-3 p-3"
+                         [attr.data-label]="'dropdown_compact_menu_state'"
+                         [attr.data-value]="compactMenuState">{{ compactMenuState.isEmpty ? compactMenuWaitingState : compactMenuState }}</div>
                   </div>
                 </div>
               </div>
@@ -359,7 +365,9 @@
 
                   <div>
                     <div class="fw-semibold mb-2">{{ compactMenuStateTitle }}</div>
-                    <div class="bg-light border rounded-3 p-3">{{ compactMenuState.isEmpty ? compactMenuWaitingState : compactMenuState }}</div>
+                    <div class="bg-light border rounded-3 p-3"
+                         [attr.data-label]="'dropdown_compact_menu_state'"
+                         [attr.data-value]="compactMenuState">{{ compactMenuState.isEmpty ? compactMenuWaitingState : compactMenuState }}</div>
                   </div>
                 </div>
               </div>
@@ -367,7 +375,9 @@
               <div class="col-12">
                 <div class="card card-body">
                   <h6 class="mb-2">{{ currentStateTitle }}</h6>
-                  <div class="bg-light border rounded-3 p-3">{{ dropdownState }}</div>
+                  <div class="bg-light border rounded-3 p-3"
+                       [attr.data-label]="'dropdown_current_state'"
+                       [attr.data-value]="dropdownState">{{ dropdownState }}</div>
                 </div>
               </div>
             </div>
@@ -409,7 +419,13 @@
               <li-highlight [code]="edgeNavbarApiSnippet" language="html"></li-highlight>
             </div>
 
-            <li-highlight [code]="manualApiSnippet" language="html"></li-highlight>
+            <div class="mb-3">
+              <li-highlight [code]="manualApiSnippet" language="html"></li-highlight>
+            </div>
+
+            <h6 class="mb-2 mt-4">Hooks para Puppeteer</h6>
+            <p class="text-muted mb-3"><code>li-dropdown-menu</code> continua emitindo <code>valueChange</code>. Para testes E2E, use <code>data-label</code> e <code>data-value</code> para abrir o menu e clicar no item real.</p>
+            <li-highlight [code]="automationHooksSnippet" language="dart"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

@@ -223,6 +223,13 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
       ? 'Code and Actions are required. Classification, last movement, subject, requester, responsible, tags, and digital hide progressively before horizontal scroll appears.'
       : 'Codigo e Acoes sao obrigatorios. Classificacao, ultimo andamento, assunto, solicitante, responsavel, etiquetas e digital se escondem progressivamente antes de surgir rolagem horizontal.';
 
+  String get automationHooksTitle =>
+      _isEnglishLocale ? 'Automation hooks' : 'Hooks de automacao';
+
+  String get automationHooksBody => _isEnglishLocale
+      ? 'Token field, tag filter, tag manager, datatable rows, and selection checkboxes expose stable data-label/data-value attributes for Puppeteer E2E flows that click real UI controls.'
+      : 'Token field, filtro de etiquetas, gerenciador de etiquetas, linhas do datatable e checkboxes de selecao expõem atributos data-label/data-value estáveis para E2E com Puppeteer clicando controles reais.';
+
   String get tagModalTitle {
     final record = _findRecordById(activeRecordId);
     if (record == null) {

@@ -1,6 +1,8 @@
-<div class="datatable-select-wrapper">
+<div class="datatable-select-wrapper" [attr.data-label]="'li_datatable_select'" [attr.data-value]="selectedDataValue">
     <div *ngIf="usesAddonTriggerIcon" class="input-group">
         <button type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
+            [attr.data-label]="'li_datatable_select_btn_toggle'"
+            [attr.data-value]="selectedDataValue"
             [disabled]="isDisabled" (click)="openModal()" tabindex="0"
             role="combobox" aria-haspopup="dialog"
             [attr.aria-expanded]="modal?.isOpen == true ? 'true' : 'false'"
@@ -39,6 +41,7 @@
                 class="datatable-select-clear"
                 role="button"
                 tabindex="0"
+                [attr.data-label]="'li_datatable_select_clear'"
                 [attr.aria-label]="resolvedClearButtonLabel"
                 (click)="onClearClick($event)">
                 <i class="ph ph-x"></i>
@@ -50,6 +53,8 @@
     </div>
 
     <button *ngIf="!usesAddonTriggerIcon" type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
+        [attr.data-label]="'li_datatable_select_btn_toggle'"
+        [attr.data-value]="selectedDataValue"
         [disabled]="isDisabled" (click)="openModal()" tabindex="0"
         role="combobox" aria-haspopup="dialog"
         [attr.aria-expanded]="modal?.isOpen == true ? 'true' : 'false'"
@@ -87,6 +92,7 @@
             class="datatable-select-clear"
             role="button"
             tabindex="0"
+            [attr.data-label]="'li_datatable_select_clear'"
             [attr.aria-label]="resolvedClearButtonLabel"
             (click)="onClearClick($event)">
             <i class="ph ph-x"></i>
@@ -146,11 +152,13 @@
     <div *ngIf="modalContentTemplate == null && multiple" class="modal-footer border-top-0 px-3 py-2 gap-2">
         <button type="button"
             class="btn btn-light btn-sm"
+            [attr.data-label]="'li_datatable_select_modal_clear'"
             (click)="clearModalSelection()">
             {{ resolvedClearButtonLabel }}
         </button>
         <button type="button"
             class="btn btn-primary btn-sm"
+            [attr.data-label]="'li_datatable_select_modal_apply'"
             (click)="applyModalSelection()">
             {{ resolvedConfirmButtonLabel }}
         </button>

@@ -24,7 +24,8 @@ import 'li_date_range_picker_component_test.template.dart' as ng;
         [minDate]="minDate"
         [maxDate]="maxDate"
         (inicioChange)="onStartChange(\$event)"
-        (fimChange)="onEndChange(\$event)">
+        (fimChange)="onEndChange(\$event)"
+        (userValueChange)="userRange = \$event">
     </li-date-range-picker>
   ''',
   directives: [coreDirectives, LiDateRangePickerComponent],
@@ -35,6 +36,7 @@ class DateRangePickerTestHostComponent {
 
   DateTime? rangeStart = DateTime(2026, 4, 10);
   DateTime? rangeEnd = DateTime(2026, 4, 12);
+  LiDateRangeValue? userRange;
   final DateTime minDate = DateTime(2026, 4, 1);
   final DateTime maxDate = DateTime(2026, 4, 30);
 
@@ -146,6 +148,7 @@ void main() {
 
     expect(host.rangeStart, isNull);
     expect(host.rangeEnd, isNull);
+    expect(host.userRange, isNull);
   });
 
   test('selects and applies a new range', () async {
@@ -159,6 +162,8 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement
         .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    expect(host.userRange, isNull);
 
     await fixture.update((_) {
       trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
@@ -174,6 +179,8 @@ void main() {
 
     expect(host.rangeStart, DateTime(2026, 4, 14));
     expect(host.rangeEnd, DateTime(2026, 4, 18));
+    expect(host.userRange?.inicio, DateTime(2026, 4, 14));
+    expect(host.userRange?.fim, DateTime(2026, 4, 18));
 
     final input = fixture.rootElement.querySelector('.date-range-field')
         as html.InputElement;

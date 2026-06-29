@@ -74,10 +74,13 @@ class LiSelectComponent
       StreamController<dynamic>();
   final StreamController<dynamic> _modelChangeController =
       StreamController<dynamic>();
+  final StreamController<dynamic> _userChangeController =
+      StreamController<dynamic>();
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   StreamSubscription<bool>? _formSubmissionSubscription;
   bool _overlayRelayoutPending = false;
+  dynamic _lastWrittenValue;
 
   dynamic Function(dynamic, {String rawValue})? _ngModelValueChangeCallback;
   TouchFunction _onTouched = () {};
@@ -155,6 +158,9 @@ class LiSelectComponent
 
   @Output('modelChange')
   Stream<dynamic> get onModelChange => _modelChangeController.stream;
+
+  @Output('userValueChange')
+  Stream<dynamic> get onUserValueChange => _userChangeController.stream;
 
   @ContentChildren(LiOptionComponent)
   List<LiOptionComponent> childrenSelectOptions = [];
@@ -250,6 +256,10 @@ class LiSelectComponent
 
   bool get showsClearButton => showClearButton && hasSelection;
 
+  String? get selectedDataValue => currentValue?.value?.toString();
+
+  String? optionDataValue(CustomSelectItem option) => option.value?.toString();
+
   String get resolvedTriggerIconClass {
     final custom = triggerIconClass.trim();
     return custom.isNotEmpty ? custom : 'ph ph-caret-down';
@@ -312,6 +322,7 @@ class LiSelectComponent
 
   @override
   void writeValue(dynamic newVal) {
+    _lastWrittenValue = newVal;
     if (newVal == null) {
       currentValue = null;
       _runAutoValidation();
@@ -319,13 +330,7 @@ class LiSelectComponent
       return;
     }
 
-    currentValue = null;
-    for (final option in options) {
-      if (_areValuesEqual(option.value, newVal)) {
-        currentValue = option;
-        break;
-      }
-    }
+    _selectCurrentValue(newVal);
     _runAutoValidation();
     _markForCheck();
   }
@@ -398,7 +403,11 @@ class LiSelectComponent
       _markForCheck();
     });
     _rebuildValidationConfig();
-    currentValue = options.where((option) => !option.disabled).firstOrNull;
+    if (_lastWrittenValue != null) {
+      _selectCurrentValue(_lastWrittenValue);
+    } else {
+      currentValue = options.where((option) => !option.disabled).firstOrNull;
+    }
     _runAutoValidation();
     _markForCheck();
   }
@@ -493,6 +502,8 @@ class LiSelectComponent
     bool isCallNgModelChange = true,
     bool isCallCurrentValueChange = true,
   }) {
+    _lastWrittenValue = value;
+
     for (final option in options) {
       if (!_areValuesEqual(option.value, value) || option.disabled) {
         continue;
@@ -521,11 +532,16 @@ class LiSelectComponent
       return;
     }
 
+    final previousValue = currentValue?.value;
     _dirty = true;
     currentValue = selItem;
+    _lastWrittenValue = currentValue?.value;
     closeDropdown();
     _changeController.add(currentValue?.value);
     _modelChangeController.add(currentValue?.instanceObj);
+    if (!_areOptionalValuesEqual(previousValue, currentValue?.value)) {
+      _userChangeController.add(currentValue?.value);
+    }
     _ngModelValueChangeCallback?.call(currentValue?.value);
     _markTouched();
     _runAutoValidation();
@@ -538,16 +554,17 @@ class LiSelectComponent
       return;
     }
 
-    _dirty = true;
-    currentValue = null;
-    _changeController.add(null);
-    _modelChangeController.add(null);
-    if (_ngModelValueChangeCallback != null) {
-      _ngModelValueChangeCallback!(null);
-    }
-    _markTouched();
-    _runAutoValidation();
-    _markForCheck();
+    _clearSelectedItem(isUserInteraction: true);
+  }
+
+  void clearSelectedItem({
+    bool isCallNgModelChange = true,
+    bool isCallCurrentValueChange = true,
+  }) {
+    _clearSelectedItem(
+      isCallNgModelChange: isCallNgModelChange,
+      isCallCurrentValueChange: isCallCurrentValueChange,
+    );
   }
 
   void toggleDropdown() {
@@ -694,6 +711,7 @@ class LiSelectComponent
     _formSubmissionSubscription?.cancel();
     _changeController.close();
     _modelChangeController.close();
+    _userChangeController.close();
   }
 
   void _handleOverlayLayout(PopperLayout layout) {
@@ -803,11 +821,9 @@ class LiSelectComponent
       return;
     }
 
-    final currentSelectedValue = currentValue?.value;
+    final currentSelectedValue = _lastWrittenValue ?? currentValue?.value;
     options = nextOptions;
-    currentValue = options
-        .where((option) => _areValuesEqual(option.value, currentSelectedValue))
-        .firstOrNull;
+    _selectCurrentValue(currentSelectedValue);
     _runAutoValidation();
     _markForCheck();
   }
@@ -833,11 +849,9 @@ class LiSelectComponent
       return;
     }
 
-    final currentSelectedValue = currentValue?.value;
+    final currentSelectedValue = _lastWrittenValue ?? currentValue?.value;
     options = nextOptions;
-    currentValue = options
-        .where((option) => _areValuesEqual(option.value, currentSelectedValue))
-        .firstOrNull;
+    _selectCurrentValue(currentSelectedValue);
     _runAutoValidation();
 
     if (markForCheck) {
@@ -868,6 +882,50 @@ class LiSelectComponent
     }
 
     return true;
+  }
+
+  void _selectCurrentValue(dynamic value) {
+    currentValue = null;
+    if (value == null) {
+      return;
+    }
+
+    for (final option in options) {
+      if (_areValuesEqual(option.value, value)) {
+        currentValue = option;
+        return;
+      }
+    }
+  }
+
+  void _clearSelectedItem({
+    bool isCallNgModelChange = true,
+    bool isCallCurrentValueChange = true,
+    bool isUserInteraction = false,
+  }) {
+    final hadSelection = currentValue != null;
+    currentValue = null;
+    _lastWrittenValue = null;
+
+    if (isUserInteraction) {
+      _dirty = true;
+    }
+
+    if (isCallCurrentValueChange) {
+      _changeController.add(null);
+      _modelChangeController.add(null);
+    }
+    if (isUserInteraction && hadSelection) {
+      _userChangeController.add(null);
+    }
+    if (isCallNgModelChange && _ngModelValueChangeCallback != null) {
+      _ngModelValueChangeCallback!(null);
+    }
+    if (isUserInteraction) {
+      _markTouched();
+    }
+    _runAutoValidation();
+    _markForCheck();
   }
 
   void _markForCheck() {
@@ -931,5 +989,12 @@ class LiSelectComponent
       return customCompare(optionValue, modelValue);
     }
     return optionValue == modelValue;
+  }
+
+  bool _areOptionalValuesEqual(dynamic optionValue, dynamic modelValue) {
+    if (optionValue == null || modelValue == null) {
+      return optionValue == modelValue;
+    }
+    return _areValuesEqual(optionValue, modelValue);
   }
 }

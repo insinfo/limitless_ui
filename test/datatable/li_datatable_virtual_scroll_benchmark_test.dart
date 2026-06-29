@@ -188,11 +188,6 @@ void main() {
       scrollContainer: scrollContainer!,
     );
 
-    html.window.console.info(
-      '[li-datatable:virtual-scroll-benchmark] ${result.toString()}',
-    );
-    print('li_datatable_virtual_scroll_benchmark: $result');
-
     expect(result.frames, greaterThanOrEqualTo(90));
     expect(result.renderedRows, lessThanOrEqualTo(18));
     expect(result.visibleBodyRows, lessThanOrEqualTo(20));

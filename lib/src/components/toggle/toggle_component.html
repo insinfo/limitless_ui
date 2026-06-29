@@ -1,7 +1,12 @@
-<label [class]="resolvedContainerClass">
+<label [class]="resolvedContainerClass"
+    [attr.data-label]="'li_toggle'"
+    [attr.data-value]="currentDataValue">
   <input
       #inputElement
       [attr.data-li-form-focus-target]="'true'"
+      [attr.data-label]="'li_toggle_input'"
+      [attr.data-value]="trueDataValue"
+      [attr.data-false-value]="falseDataValue"
       type="checkbox"
       [id]="resolvedId"
       [attr.name]="resolvedName"
@@ -15,7 +20,7 @@
       [required]="required"
       (change)="handleChange(inputElement.checked)"
       (blur)="handleBlur()">
-  <span [class]="resolvedLabelClass">{{ label }}</span>
+  <span [class]="resolvedLabelClass" [attr.data-label]="'li_toggle_label'">{{ label }}</span>
 </label>
 <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ errorText }}</div>
 <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>

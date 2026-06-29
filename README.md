@@ -330,6 +330,52 @@ Practical rule:
 - Navigation helpers: scrollspy service and directives.
 - Utilities: HTML directives, form value accessors, pipes, PDF generator and XLSX generator.
 
+## User selection events and automation hooks
+
+Interactive selection controls expose two different event layers:
+
+- `currentValueChange`: emits when the component value changes, including changes driven by `ngModel`, `writeValue`, or other programmatic model synchronization.
+- `userValueChange`: emits only when the user changes the value through the component UI.
+
+Use `userValueChange` when a screen must trigger side effects only after real user intent, such as loading dependent fields, clearing child filters, auditing a manual choice, or avoiding backend requests during form hydration.
+
+```html
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="filters.status"
+  (currentValueChange)="syncStatusModel($event)"
+  (userValueChange)="reloadAfterUserStatusChange($event)">
+</li-select>
+```
+
+The `userValueChange` output is available on `li-select`, `li-multi-select`, `li-datatable-select`, `li-date-picker`, `li-date-range-picker`, `li-time-picker`, `li-typeahead`, `li-treeview-select`, and `li-rating`.
+
+`li-select` also preserves the written `ngModel` value when its `dataSource` or projected `li-option` items arrive later. For record hydration flows, use `setSelectedItemByValue(...)` or `clearSelectedItem(...)` with `isCallNgModelChange: false` and `isCallCurrentValueChange: false` to synchronize the visual selection without emitting model/current-value events. These programmatic APIs do not emit `userValueChange`.
+
+Selection-oriented controls also render stable browser automation hooks:
+
+- `data-label` identifies the component part, for example `custom_select_btn_toggle`, `li_multi_select_item_*`, `li_datatable_select_modal_apply`, `li_date_picker_day`, or `li_rating_star_4`.
+- `data-value` exposes the current or option value where that value is useful for tests.
+- state attributes such as `data-open`, `data-current-value`, and `aria-expanded` are available on controls where open/selected state matters.
+
+These hooks are part of the testability contract for browser automation. Prefer them over styling classes, translated labels, generated ids, or brittle DOM depth selectors.
+
+```dart
+await clickFirstVisible(page, '[data-label="custom_select_btn_toggle"]');
+await clickFirstVisible(
+  page,
+  '[data-label^="custom_select_item_"][data-value="approved"]',
+);
+await waitForAttributeMatching(
+  page,
+  '[data-label="custom_select"]',
+  'data-value',
+  (value) => value == 'approved',
+);
+```
+
 ## Utility directives and pipes
 
 Beyond visual components, the package also exposes small browser-oriented helpers that are now available from the public barrel in [lib/limitless_ui.dart](lib/limitless_ui.dart):
@@ -2594,6 +2640,30 @@ Run browser and AngularDart tests in Chrome:
 ```bash
 dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/typeahead/li_typeahead_component_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart test/wizard/li_wizard_component_test.dart
 ```
+
+Run the real example-app Puppeteer E2E suite from the repository root after serving `example/web`:
+
+```bash
+cd example
+dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs
+```
+
+In another shell:
+
+```bash
+RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 CHROME_EXECUTABLE=/path/to/chrome dart test tool/e2e/puppeteer_test.dart
+```
+
+On Windows PowerShell, set the environment variables before running the same test file:
+
+```powershell
+$env:RUN_EXAMPLE_E2E = 'true'
+$env:UI_EXAMPLE_BASE_URL = 'http://127.0.0.1:8081'
+$env:CHROME_EXECUTABLE = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+dart test tool\e2e\puppeteer_test.dart
+```
+
+Without `RUN_EXAMPLE_E2E=true`, the Puppeteer tests are intentionally skipped so normal local `dart test` runs do not need a running web server.
 
 Generate local coverage for the VM-only suite:
 

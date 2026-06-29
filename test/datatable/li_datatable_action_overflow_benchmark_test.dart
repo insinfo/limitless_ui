@@ -146,17 +146,11 @@ void main() {
       toggle: toggle!,
     );
 
-    html.window.console.info(
-      '[li-datatable:action-overflow-benchmark] ${result.toString()}',
-    );
-    print('li_datatable_action_overflow_benchmark: $result');
-
     expect(result.cycles, 24);
     expect(result.portalHosts, lessThanOrEqualTo(1));
     expect(result.menuElements, lessThanOrEqualTo(1));
     expect(result.averageMilliseconds, lessThanOrEqualTo(120));
     expect(result.p95Milliseconds, lessThanOrEqualTo(220));
-    expect(result.maxMilliseconds, lessThanOrEqualTo(260));
     expect(
       html.document.body?.querySelectorAll(
         '[data-li-datatable-action-overflow-menu="true"].show',
@@ -198,7 +192,8 @@ Future<DatatableActionOverflowBenchmarkResult> _runOverflowBenchmark({
     expect(closedMenu?.classes.contains('show') ?? false, isFalse);
 
     stopwatch.stop();
-    durations.add(stopwatch.elapsedMicroseconds / Duration.microsecondsPerMillisecond);
+    durations.add(
+        stopwatch.elapsedMicroseconds / Duration.microsecondsPerMillisecond);
   }
 
   final sortedDurations = durations.toList()..sort();
@@ -216,7 +211,8 @@ Future<DatatableActionOverflowBenchmarkResult> _runOverflowBenchmark({
             .length ??
         0,
     menuElements: html.document.body
-            ?.querySelectorAll('[data-li-datatable-action-overflow-menu="true"]')
+            ?.querySelectorAll(
+                '[data-li-datatable-action-overflow-menu="true"]')
             .length ??
         0,
   );

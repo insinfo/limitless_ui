@@ -51,6 +51,52 @@ late final List<Map<String, dynamic>> statusOptions;
   (modelChange)="onClassificacaoModelChange(\$event)">
 </li-select>''';
 
+  static const String programmaticSyncSnippet = '''
+@ViewChild('selectClassificacao')
+LiSelectComponent? selectClassificacao;
+
+@ViewChild('selectAssunto')
+LiSelectComponent? selectAssunto;
+
+void syncLoadedProcess(Processo processo) {
+  selectClassificacao?.setSelectedItemByValue(
+    processo.codClassificacao,
+    isCloseDropDown: false,
+    isCallNgModelChange: false,
+    isCallCurrentValueChange: false,
+  );
+}
+
+void clearDependentSubject() {
+  selectAssunto?.clearSelectedItem(
+    isCallNgModelChange: false,
+    isCallCurrentValueChange: false,
+  );
+}''';
+
+  static const String userValueChangeSnippet = '''
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="selectedStatus"
+  (currentValueChange)="syncSelectedStatus(\$event)"
+  (userValueChange)="reloadStatusDependents(\$event)">
+</li-select>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="custom_select_btn_toggle"]');
+await clickFirstVisible(
+  page,
+  '[data-label^="custom_select_item_"][data-value="approved"]',
+);
+await waitForAttributeMatching(
+  page,
+  '[data-label="custom_select"]',
+  'data-value',
+  (value) => value == 'approved',
+);''';
+
   static const String validationSnippet = '''
 <li-select
   [dataSource]="statusOptions"

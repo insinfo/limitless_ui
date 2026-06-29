@@ -26,6 +26,25 @@ class DateRangePageComponent {
   (endChange)="onRangeEndChange(\$event)">
 </li-date-range-picker>''';
 
+  static const String userValueChangeSnippet = '''
+<li-date-range-picker
+  [start]="rangeStart"
+  [end]="rangeEnd"
+  (startChange)="rangeStart = \$event"
+  (endChange)="rangeEnd = \$event"
+  (userValueChange)="reloadAfterUserRangeChange(\$event)">
+</li-date-range-picker>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="li_date_range_picker_trigger"]');
+await clickFirstVisible(page, '[data-label="li_date_range_picker_left_next"]');
+await clickVisibleAt(
+  page,
+  '[data-label="li_date_range_picker_day"][data-calendar="left"].available:not(.off)',
+  0,
+);
+await clickFirstVisible(page, '[data-label="li_date_range_picker_apply"]');''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
   bool get isPortuguese => i18n.isPortuguese;

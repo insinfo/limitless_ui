@@ -48,6 +48,24 @@ class TreeviewPageComponent {
   [(ngModel)]="selectedValues">
 </li-treeview-select>''';
 
+  static const String userValueChangeSnippet = '''
+<li-treeview-select
+  [data]="staticDropdownNodes"
+  [(ngModel)]="selectedNode"
+  (currentValueChange)="syncSelectedNode(\$event)"
+  (userValueChange)="reloadAfterUserNodeChange(\$event)">
+</li-treeview-select>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="li_treeview_select_btn_toggle"]');
+await clickFirstVisible(page, '[data-label="li_treeview_select_label"]');
+await waitForAttributeMatching(
+  page,
+  '[data-label="li_treeview_select"]',
+  'data-value',
+  (value) => value != null && value.isNotEmpty,
+);''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
   bool get isPt => i18n.isPortuguese;

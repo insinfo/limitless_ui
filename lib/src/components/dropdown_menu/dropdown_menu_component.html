@@ -1,8 +1,14 @@
-<div [class]="resolvedHostClasses">
+<div [class]="resolvedHostClasses"
+    [attr.data-label]="'li_dropdown_menu'"
+    [attr.data-open]="isOpen ? 'true' : 'false'"
+    [attr.data-value]="value">
   <button
   #triggerButton
       type="button"
       [class]="resolvedTriggerClasses"
+      [attr.data-label]="'li_dropdown_menu_btn_toggle'"
+      [attr.data-open]="isOpen ? 'true' : 'false'"
+      [attr.data-value]="value"
       [attr.aria-label]="ariaLabel.isNotEmpty ? ariaLabel : null"
       [attr.aria-expanded]="isOpen ? 'true' : 'false'"
       (click)="toggleDropdown($event)">
@@ -13,11 +19,15 @@
   <div
       *ngIf="usesMobilePresentation"
       class="li-dropdown-menu__mobile-backdrop"
+      [attr.data-label]="'li_dropdown_menu_mobile_backdrop'"
       (click)="closeDropdown()"></div>
 
   <div
       #menuElement
       [class]="resolvedMenuClasses"
+      [attr.data-label]="'li_dropdown_menu_panel'"
+      [attr.data-open]="isOpen ? 'true' : 'false'"
+      [attr.data-value]="value"
       [style.max-height]="resolvedMenuMaxHeight"
       [attr.role]="usesMobilePresentation ? 'dialog' : null"
       [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
@@ -26,6 +36,7 @@
       <button
           type="button"
           class="li-dropdown-menu__mobile-close"
+          [attr.data-label]="'li_dropdown_menu_mobile_close'"
           [attr.aria-label]="mobileCloseButtonAriaLabel"
           (click)="closeFromMobilePresentation()">
         <i class="ph ph-x"></i>
@@ -41,9 +52,11 @@
 
         <button
             *ngIf="!option.divider"
-            type="button"
-            [class]="resolvedItemClasses(option)"
-            [disabled]="option.disabled"
+          type="button"
+          [class]="resolvedItemClasses(option)"
+          [attr.data-label]="'li_dropdown_menu_item'"
+          [attr.data-value]="option.value"
+          [disabled]="option.disabled"
             (click)="selectOption(option, $event)">
           <i *ngIf="option.iconClass.trim().isNotEmpty" [class]="resolvedItemIconClasses(option)"></i>
 

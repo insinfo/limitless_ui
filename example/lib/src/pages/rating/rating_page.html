@@ -109,6 +109,7 @@
                   <li><code>[rate]</code> cobre exibição simples sem two-way binding.</li>
                   <li><code>readonly</code>, <code>disabled</code>, <code>resettable</code> e <code>size</code> controlam os estados.</li>
                   <li><code>(hover)</code> e <code>(leave)</code> ajudam no preview instantâneo.</li>
+                  <li><code>(userValueChange)</code> dispara apenas quando o usuário altera o rating por clique ou teclado.</li>
                 </ul>
               </div>
             </div>
@@ -120,6 +121,13 @@
 
                 <h6 class="mb-3 mt-4">{{ readonlySnippetTitle }}</h6>
                 <li-highlight [code]="readonlySnippet" language="html"></li-highlight>
+
+                <h6 class="mb-3 mt-4">currentValueChange x userValueChange</h6>
+                <p class="text-muted mb-3"><code>currentValueChange</code> também pode refletir alterações vindas do binding. Use <code>userValueChange</code> para enviar avaliação, auditoria ou analytics somente após ação real do usuário.</p>
+                <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-3 mt-4">Hooks para Puppeteer</h6>
+                <li-highlight [code]="automationHooksSnippet" language="dart"></li-highlight>
               </div>
             </div>
           </div>

@@ -48,6 +48,17 @@ class ColorPickerPageComponent {
     (pickerHide)="onPickerEvent('hide', \$event)">
 </li-color-picker>''';
 
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="li_color_picker_trigger"]');
+await clickVisibleAt(page, '[data-label="li_color_picker_palette_swatch"]', 4);
+await clickFirstVisible(page, '[data-label="li_color_picker_choose"]');
+await waitForAttributeMatching(
+  page,
+  '[data-label="li_color_picker"]',
+  'data-value',
+  (value) => value != null && value.isNotEmpty,
+);''';
+
   String? basicColor = '#20BF7E';
   String? customButtonsColor = '#20BF7E';
   String? emptyColor;

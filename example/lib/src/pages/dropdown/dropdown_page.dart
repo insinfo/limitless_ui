@@ -164,6 +164,19 @@ class DropdownPageComponent {
   </div>
 </div>''';
 
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[aria-label="compact-filters"]');
+await clickFirstVisible(
+  page,
+  '[data-label="li_dropdown_menu_item"][data-value="pending"]',
+);
+await waitForAttributeMatching(
+  page,
+  '[data-label="dropdown_compact_menu_state"]',
+  'data-value',
+  (value) => value != null && value.contains('pending'),
+);''';
+
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;
 
@@ -497,27 +510,24 @@ class DropdownPageComponent {
       _isPt ? 'Escolha uma ação' : 'Choose an action';
   String get navbarDropdownLabel =>
       _isPt ? 'Dropdown da navbar' : 'Navbar dropdown';
-    String get edgeNavbarTitle => _isPt
-      ? 'Overlay na borda da navbar'
-      : 'Navbar edge overlay';
+  String get edgeNavbarTitle =>
+      _isPt ? 'Overlay na borda da navbar' : 'Navbar edge overlay';
   String get edgeNavbarBody => _isPt
       ? 'Este cenário replica um trigger compacto alinhado à direita, com badge truncado e menu longo anexado ao body. Neste demo, o dropdown prefere bottom-start para começar embaixo pela borda esquerda do trigger quando há espaço, mas ainda pode adaptar o placement para caber no viewport.'
       : 'This scenario mirrors a compact right-aligned trigger with a truncated badge and a long body-attached menu. In this demo, the dropdown prefers bottom-start so it begins below the trigger left edge when there is enough space, while still adapting the placement to fit the viewport.';
-    String get edgeNavbarCurrentOrgName => _isPt
+  String get edgeNavbarCurrentOrgName => _isPt
       ? 'Gerência de Sistemas e Soluções Tecnológicas'
       : 'Systems and Technology Solutions Management';
-    String get edgeNavbarStateTitle => _isPt
-      ? 'Estado do switcher de setor'
-      : 'Org switcher state';
-    String get edgeNavbarWaitingState => _isPt
+  String get edgeNavbarStateTitle =>
+      _isPt ? 'Estado do switcher de setor' : 'Org switcher state';
+  String get edgeNavbarWaitingState => _isPt
       ? 'Switcher: aguardando interação'
       : 'Switcher: waiting for interaction';
-    String get edgeNavbarOpenedState => _isPt
+  String get edgeNavbarOpenedState => _isPt
       ? 'Switcher: menu aberto em overlay body.'
       : 'Switcher: menu open in body overlay.';
-    String get edgeNavbarClosedState => _isPt
-      ? 'Switcher: menu fechado.'
-      : 'Switcher: menu closed.';
+  String get edgeNavbarClosedState =>
+      _isPt ? 'Switcher: menu fechado.' : 'Switcher: menu closed.';
   String get profileLabel => _isPt ? 'Perfil' : 'Profile';
   String get billingLabel => _isPt ? 'Cobrança' : 'Billing';
   String get submenuTitle =>

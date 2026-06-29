@@ -27,7 +27,10 @@ jobs:
         uses: browser-actions/setup-chrome@v1
 
       - name: Install dependencies
-        run: dart pub get
+        run: |
+          dart pub get
+          cd example
+          dart pub get
 
       - name: Analyze
         run: dart analyze
@@ -88,6 +91,39 @@ jobs:
           printf '%s\n' "${VM_SAFE_TESTS[@]}" > /tmp/vm_safe_tests.txt
           mapfile -t BROWSER_TESTS < <(find test -name '*_test.dart' | sort | grep -vxF -f /tmp/vm_safe_tests.txt)
           CHROME_EXECUTABLE=/tmp/chrome-no-sandbox dart run build_runner test -- -p chrome -j 1 "${BROWSER_TESTS[@]}"
+
+      - name: Run example Puppeteer E2E tests
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: |
+          printf '#!/usr/bin/env bash\nexec "%s" --no-sandbox "$@"\n' "$CHROME_BIN" > /tmp/chrome-no-sandbox
+          chmod +x /tmp/chrome-no-sandbox
+
+          pushd example
+          dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs > /tmp/limitless-example-serve.log 2>&1 &
+          SERVER_PID=$!
+          popd
+
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          READY=0
+          for _ in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:8081 >/dev/null; then
+              READY=1
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "$READY" != "1" ]; then
+            cat /tmp/limitless-example-serve.log
+            exit 1
+          fi
+
+          RUN_EXAMPLE_E2E=true \
+          UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 \
+          CHROME_EXECUTABLE=/tmp/chrome-no-sandbox \
+          dart test tool/e2e/puppeteer_test.dart
 
       - name: Validate pub package
         run: dart pub publish --dry-run

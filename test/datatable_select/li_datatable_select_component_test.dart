@@ -51,13 +51,15 @@ class SelectedPersonRef {
       [itemValueBuilder]="personValue"
       [compareWith]="compareById"
       [locale]="locale"
+      (userValueChange)="userSelectedPerson = \$event"
       [(ngModel)]="selectedPerson">
     </li-datatable-select>
 
     <li-datatable-select
       #selectWithCustomContent
       [title]="'Selecionar pessoa'"
-      [placeholder]="'Abrir lista customizada'">
+      [placeholder]="'Abrir lista customizada'"
+      (userValueChange)="userSelectedCustomPerson = \$event">
       <template liDatatableSelectModalContent let-ctx>
         <div class="p-3">
           <button id="pick-custom-person" type="button"
@@ -78,6 +80,7 @@ class SelectedPersonRef {
       [itemValueBuilder]="personValue"
       [compareWith]="compareById"
       [multiple]="true"
+      (userValueChange)="userSelectedPeople = \$event"
       [(ngModel)]="selectedPeople">
     </li-datatable-select>
 
@@ -143,7 +146,10 @@ class DatatableSelectTestHostComponent {
   ];
 
   dynamic selectedPerson = const SelectedPersonRef(2);
+  dynamic userSelectedPerson;
+  dynamic userSelectedCustomPerson;
   List<dynamic> selectedPeople = <dynamic>[];
+  List<dynamic>? userSelectedPeople;
   String locale = 'pt_BR';
 
   @ViewChild('selectWithBuilders')
@@ -185,6 +191,7 @@ void main() {
     final triggers =
         fixture.rootElement.querySelectorAll('.datatable-select-trigger');
     expect(triggers.first.text, contains('Maria Silva'));
+    expect(fixture.assertOnlyInstance.userSelectedPerson, isNull);
   });
 
   test('opens the typed modal with the configured datatable structure and rows',
@@ -258,6 +265,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectWithCustomContent!.selectedValue, 99);
+    expect(host.userSelectedCustomPerson, 99);
     expect(host.selectWithCustomContent!.selectedLabel, 'Maria Silva');
     expect(customTrigger.text, contains('Maria Silva'));
   });
@@ -292,6 +300,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedPeople, hasLength(2));
+    expect(host.userSelectedPeople, hasLength(2));
     expect(
       host.selectedPeople
           .map((item) => (item as SelectedPersonRef).id)

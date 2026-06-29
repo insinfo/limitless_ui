@@ -359,6 +359,12 @@ class LiDatatableSelectComponent
   @Output('currentValueChange')
   Stream<dynamic> get onValueChange => _valueChangeCtrl.stream;
 
+  final _userValueChangeCtrl = StreamController<dynamic>();
+
+  /// Emitted when the user changes the selected value from the UI.
+  @Output('userValueChange')
+  Stream<dynamic> get onUserValueChange => _userValueChangeCtrl.stream;
+
   final _dataRequestCtrl = StreamController<Filters>();
 
   /// Forwards the datatable's `dataRequest` event so the parent can load data.
@@ -412,6 +418,8 @@ class LiDatatableSelectComponent
 
   /// The value of the currently selected item.
   dynamic get selectedValue => multiple ? selectedValues : _selectedValue;
+
+  String? get selectedDataValue => selectedValue?.toString();
 
   List<dynamic> get selectedValues {
     if (_selectedValue is List) {
@@ -617,7 +625,7 @@ class LiDatatableSelectComponent
 
   void onModalClosed() {
     if (multiple && _hasPendingSelectionChanged()) {
-      _commitPendingSelection();
+      _commitPendingSelection(emitUserValueChange: true);
     }
 
     _markTouched();
@@ -628,7 +636,7 @@ class LiDatatableSelectComponent
     if (multiple) {
       return;
     }
-    _selectInstance(instance);
+    _selectInstance(instance, emitUserValueChange: true);
     closeModal();
     triggerButtonElement?.focus();
     _changeDetectorRef.markForCheck();
@@ -690,7 +698,8 @@ class LiDatatableSelectComponent
   }
 
   /// Clears the current selection.
-  void clear() {
+  void clear({bool emitUserValueChange = false}) {
+    final hadSelection = hasSelection;
     _selectedValue = multiple ? <dynamic>[] : null;
     _selectedLabel = '';
     _selectedLabels = <String>[];
@@ -698,6 +707,9 @@ class LiDatatableSelectComponent
     _pendingSelectedLabels = <String>[];
     _dirty = true;
     _valueChangeCtrl.add(selectedValue);
+    if (emitUserValueChange && hadSelection) {
+      _userValueChangeCtrl.add(selectedValue);
+    }
     _onChange?.call(selectedValue);
     _markTouched();
     _changeDetectorRef.markForCheck();
@@ -705,7 +717,7 @@ class LiDatatableSelectComponent
 
   void clearModalSelection() {
     if (!multiple) {
-      clear();
+      clear(emitUserValueChange: true);
       return;
     }
 
@@ -721,7 +733,8 @@ class LiDatatableSelectComponent
       return;
     }
 
-    _commitPendingSelection();
+    final hasSelectionChanged = _hasPendingSelectionChanged();
+    _commitPendingSelection(emitUserValueChange: hasSelectionChanged);
     closeModal();
     triggerButtonElement?.focus();
     _changeDetectorRef.markForCheck();
@@ -731,7 +744,7 @@ class LiDatatableSelectComponent
   /// trigger button (which would re-open the modal).
   void onClearClick(html.MouseEvent event) {
     event.stopPropagation();
-    clear();
+    clear(emitUserValueChange: true);
   }
 
   /// Programmatically sets the selected value, updating the display label.
@@ -750,19 +763,32 @@ class LiDatatableSelectComponent
   }
 
   /// Programmatically sets both label and value without needing data loaded.
-  void setSelectedItem({required String label, required dynamic value}) {
+  void setSelectedItem({
+    required String label,
+    required dynamic value,
+    bool emitUserValueChange = false,
+  }) {
+    final previousSelectedValue = selectedValue;
     _selectedValue = multiple ? <dynamic>[value] : value;
     _selectedLabel = label;
     _selectedLabels = label.isEmpty ? <String>[] : <String>[label];
     _dirty = true;
     _valueChangeCtrl.add(selectedValue);
+    if (emitUserValueChange &&
+        !_areSelectionValuesEqual(previousSelectedValue, selectedValue)) {
+      _userValueChangeCtrl.add(selectedValue);
+    }
     _onChange?.call(selectedValue);
     _markTouched();
     _changeDetectorRef.markForCheck();
   }
 
   void setSelectedItemFromTemplate(String label, dynamic value) {
-    setSelectedItem(label: label, value: value);
+    setSelectedItem(
+      label: label,
+      value: value,
+      emitUserValueChange: true,
+    );
     closeModal();
     triggerButtonElement?.focus();
   }
@@ -771,9 +797,13 @@ class LiDatatableSelectComponent
   // Internal
   // ---------------------------------------------------------------------------
 
-  void _selectInstance(dynamic instance) {
+  void _selectInstance(
+    dynamic instance, {
+    bool emitUserValueChange = false,
+  }) {
     if (instance == null) return;
 
+    final previousSelectedValue = selectedValue;
     _selectedValue = _extractValue(instance);
     _selectedLabel = _extractLabel(instance);
     _selectedLabels =
@@ -781,6 +811,10 @@ class LiDatatableSelectComponent
 
     _dirty = true;
     _valueChangeCtrl.add(_selectedValue);
+    if (emitUserValueChange &&
+        !_areSelectionValuesEqual(previousSelectedValue, selectedValue)) {
+      _userValueChangeCtrl.add(_selectedValue);
+    }
     _onChange?.call(_selectedValue);
     _markTouched();
   }
@@ -842,6 +876,7 @@ class LiDatatableSelectComponent
   void ngOnDestroy() {
     _formSubmissionSubscription?.cancel();
     _valueChangeCtrl.close();
+    _userValueChangeCtrl.close();
     _dataRequestCtrl.close();
     _limitChangeCtrl.close();
     _searchRequestCtrl.close();
@@ -953,6 +988,50 @@ class LiDatatableSelectComponent
     return itemValue == selectedValue;
   }
 
+  bool _areSelectionValuesEqual(dynamic left, dynamic right) {
+    if (left is List || right is List) {
+      final leftValues = left is List
+          ? List<dynamic>.from(left)
+          : (left == null ? <dynamic>[] : <dynamic>[left]);
+      final rightValues = right is List
+          ? List<dynamic>.from(right)
+          : (right == null ? <dynamic>[] : <dynamic>[right]);
+
+      if (leftValues.length != rightValues.length) {
+        return false;
+      }
+
+      final matchedRightIndexes = <int>{};
+      for (final leftValue in leftValues) {
+        var matchedIndex = -1;
+        for (var index = 0; index < rightValues.length; index++) {
+          if (matchedRightIndexes.contains(index)) {
+            continue;
+          }
+          if (_areOptionalValuesEqual(leftValue, rightValues[index])) {
+            matchedIndex = index;
+            break;
+          }
+        }
+        if (matchedIndex < 0) {
+          return false;
+        }
+        matchedRightIndexes.add(matchedIndex);
+      }
+
+      return true;
+    }
+
+    return _areOptionalValuesEqual(left, right);
+  }
+
+  bool _areOptionalValuesEqual(dynamic left, dynamic right) {
+    if (left == null || right == null) {
+      return left == right;
+    }
+    return _areValuesEqual(left, right);
+  }
+
   bool _isValuePresentInCurrentPage(dynamic value) {
     for (final item in data.items) {
       final itemValue = _extractValue(item);
@@ -969,12 +1048,15 @@ class LiDatatableSelectComponent
     _pendingSelectedLabels = List<String>.from(selectedLabels);
   }
 
-  void _commitPendingSelection() {
+  void _commitPendingSelection({bool emitUserValueChange = false}) {
     _selectedValue = List<dynamic>.from(_pendingSelectedValues);
     _selectedLabels = List<String>.from(_pendingSelectedLabels);
     _selectedLabel = '';
     _dirty = true;
     _valueChangeCtrl.add(selectedValue);
+    if (emitUserValueChange) {
+      _userValueChangeCtrl.add(selectedValue);
+    }
     _onChange?.call(selectedValue);
   }
 

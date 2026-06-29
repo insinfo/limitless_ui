@@ -27,6 +27,7 @@ import 'li_typeahead_component_test.template.dart' as ng;
           [dataSource]="states"
           [debounceMs]="0"
           [minLength]="1"
+          (userValueChange)="userSelectedState = \$event"
           [(ngModel)]="selectedState">
       </li-typeahead>
 
@@ -88,6 +89,7 @@ class TypeaheadTestHostComponent {
   ];
 
   dynamic selectedState;
+  dynamic userSelectedState;
   dynamic selectedOnFocus;
   dynamic selectedExact;
   dynamic selectedStrict;
@@ -174,6 +176,8 @@ void main() {
     final inputs = fixture.rootElement.querySelectorAll('input');
     final basicInput = inputs[0] as html.InputElement;
 
+    expect(host.userSelectedState, isNull);
+
     await fixture.update((_) {
       basicInput.focus();
       basicInput.value = 'ala';
@@ -192,6 +196,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedState, 'Alaska');
+    expect(host.userSelectedState, 'Alaska');
     expect(basicInput.value, 'Alaska');
     expect(host.basicTypeahead!.isPopupOpen(), isFalse);
   });

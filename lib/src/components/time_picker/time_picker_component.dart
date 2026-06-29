@@ -57,6 +57,8 @@ class LiTimePickerComponent
   final LiFormDirective? _formDirective;
   final StreamController<Duration?> _valueChangeController =
       StreamController<Duration?>.broadcast();
+  final StreamController<Duration?> _userValueChangeController =
+      StreamController<Duration?>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
   StreamSubscription<html.Event>? _documentClickSubscription;
@@ -145,6 +147,9 @@ class LiTimePickerComponent
 
   @Output()
   Stream<Duration?> get valueChange => _valueChangeController.stream;
+
+  @Output('userValueChange')
+  Stream<Duration?> get userValueChange => _userValueChangeController.stream;
 
   @ViewChild('triggerElement')
   html.Element? triggerElement;
@@ -597,11 +602,15 @@ class LiTimePickerComponent
   }
 
   void apply() {
+    final previousValue = value;
     value = _normalizeDuration(
       Duration(hours: draftHour24, minutes: draftMinute),
     );
     _dirty = true;
     _valueChangeController.add(value);
+    if (previousValue != value) {
+      _userValueChangeController.add(value);
+    }
     _onChange(value);
     _markTouched();
     _runAutoValidation();
@@ -609,9 +618,13 @@ class LiTimePickerComponent
   }
 
   void clear() {
+    final hadValue = value != null;
     value = null;
     _dirty = true;
     _valueChangeController.add(null);
+    if (hadValue) {
+      _userValueChangeController.add(null);
+    }
     _onChange(null);
     _markTouched();
     _runAutoValidation();
@@ -1105,5 +1118,6 @@ class LiTimePickerComponent
     _overlay?.dispose();
     _formSubmissionSubscription?.cancel();
     _valueChangeController.close();
+    _userValueChangeController.close();
   }
 }

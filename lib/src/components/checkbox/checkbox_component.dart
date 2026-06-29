@@ -166,6 +166,12 @@ class LiCheckboxComponent
 
   String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
 
+  String? get currentDataValue => _value?.toString();
+
+  String? get trueDataValue => trueValue?.toString();
+
+  String? get falseDataValue => falseValue?.toString();
+
   String get resolvedContainerClass => _joinClasses(<String>[
         'form-check',
         inline ? 'form-check-inline' : '',

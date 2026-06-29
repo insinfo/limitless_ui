@@ -39,6 +39,22 @@ class DatePickerPageComponent {
   liValidationMode="submitted">
 </li-date-picker>''';
 
+  static const String userValueChangeSnippet = '''
+<li-date-picker
+  [(ngModel)]="selectedDate"
+  (currentValueChange)="syncSelectedDate(\$event)"
+  (userValueChange)="reloadAfterUserDateChange(\$event)">
+</li-date-picker>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="li_date_picker_trigger"]');
+await clickFirstVisible(page, '[data-label="li_date_picker_next"]');
+await clickFirstVisible(
+  page,
+  '[data-label="li_date_picker_day"].available:not(.off)',
+);
+await clickFirstVisible(page, '[data-label="li_date_picker_clear_trigger"]');''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
   bool get _isPt => i18n.isPortuguese;

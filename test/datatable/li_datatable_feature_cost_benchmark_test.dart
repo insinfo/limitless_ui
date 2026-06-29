@@ -281,21 +281,6 @@ void main() {
       await disposeAnyRunningTest();
     }
 
-    final ranked = results.toList(growable: false)
-      ..sort(
-        (left, right) => right.totalMeasuredMilliseconds.compareTo(
-          left.totalMeasuredMilliseconds,
-        ),
-      );
-
-    print('li_datatable_feature_cost_benchmark ranking:');
-    for (final result in ranked) {
-      print('  $result');
-      html.window.console.info(
-        '[li-datatable:feature-cost-benchmark] $result',
-      );
-    }
-
     expect(results, hasLength(scenarios.length));
     expect(results.map((result) => result.scenarioName),
         containsAll(scenarios.map((scenario) => scenario.name)));

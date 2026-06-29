@@ -206,6 +206,11 @@ class LiMultiSelectComponent
       normalizedTriggerIconMode == 'overlay' ||
       normalizedTriggerIconMode == 'addon';
 
+  String get selectedDataValue => selectedValues.join(',');
+
+  String? optionDataValue(CustomMultiSelectItem option) =>
+      option.value?.toString();
+
   String get resolvedTriggerIconClass {
     final custom = triggerIconClass.trim();
     return custom.isNotEmpty ? custom : 'ph ph-caret-down';
@@ -231,6 +236,8 @@ class LiMultiSelectComponent
       StreamController<dynamic>();
   final StreamController<List<dynamic>> _modelChangeController =
       StreamController<List<dynamic>>();
+  final StreamController<dynamic> _userChangeController =
+      StreamController<dynamic>();
   bool _overlayRelayoutPending = false;
 
   @Output('currentValueChange')
@@ -238,6 +245,9 @@ class LiMultiSelectComponent
 
   @Output('modelChange')
   Stream<List<dynamic>> get onModelChange => _modelChangeController.stream;
+
+  @Output('userValueChange')
+  Stream<dynamic> get onUserValueChange => _userChangeController.stream;
 
   @ContentChildren(LiMultiOptionComponent)
   List<LiMultiOptionComponent> childrenSelectOptions = [];
@@ -527,15 +537,19 @@ class LiMultiSelectComponent
     _formSubmissionSubscription?.cancel();
     _changeController.close();
     _modelChangeController.close();
+    _userChangeController.close();
   }
 
-  void reset() {
+  void reset({bool emitUserValueChange = false}) {
     _dirty = true;
     for (final element in options) {
       element.selected = false;
     }
     _changeController.add(selectedValues);
     _modelChangeController.add(selectedModels);
+    if (emitUserValueChange) {
+      _userChangeController.add(selectedValues);
+    }
     if (_callback != null) {
       _callback!(selectedValues);
     }
@@ -552,7 +566,7 @@ class LiMultiSelectComponent
 
     event.preventDefault();
     event.stopPropagation();
-    reset();
+    reset(emitUserValueChange: true);
     dropdownButtonElement?.focus();
   }
 
@@ -562,6 +576,7 @@ class LiMultiSelectComponent
 
     _changeController.add(selectedValues);
     _modelChangeController.add(selectedModels);
+    _userChangeController.add(selectedValues);
     if (_callback != null) {
       _callback!(selectedValues);
     }

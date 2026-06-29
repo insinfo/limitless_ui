@@ -25,6 +25,7 @@ import 'li_multi_select_component_test.template.dart' as ng;
         valueKey="id"
         triggerIconMode="overlay"
         (modelChange)="selectedChannelModels = \$event"
+        (userValueChange)="userSelectedChannels = \$event"
         [(ngModel)]="selectedChannels">
     </li-multi-select>
   ''',
@@ -35,6 +36,7 @@ class MultiSelectTestHostComponent {
   LiMultiSelectComponent? multi;
 
   List<dynamic> selectedChannels = <dynamic>['email'];
+  List<dynamic>? userSelectedChannels;
   List<dynamic> selectedChannelModels = <dynamic>[];
 
   final List<Map<String, dynamic>> channelOptions = <Map<String, dynamic>>[
@@ -146,6 +148,8 @@ void main() {
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
         as html.ButtonElement;
 
+    expect(host.userSelectedChannels, isNull);
+
     await fixture.update((_) {
       trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
     });
@@ -162,6 +166,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedChannels, containsAll(<String>['email', 'push']));
+    expect(host.userSelectedChannels, containsAll(<String>['email', 'push']));
     expect(
       host.selectedChannelModels
           .map((dynamic item) => (item as Map<String, dynamic>)['id']),
@@ -174,6 +179,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedChannels, <String>['email']);
+    expect(host.userSelectedChannels, <String>['email']);
     expect(
       host.selectedChannelModels
           .map((dynamic item) => (item as Map<String, dynamic>)['id']),
@@ -187,6 +193,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     expect(fixture.rootElement.querySelectorAll('.badge'), isNotEmpty);
+    expect(host.userSelectedChannels, isNull);
 
     await fixture.update((_) {
       host.multi!.reset();
@@ -194,6 +201,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.selectedChannels, isEmpty);
+    expect(host.userSelectedChannels, isNull);
     expect(host.selectedChannelModels, isEmpty);
     expect(fixture.rootElement.querySelectorAll('.badge'), isEmpty);
   });

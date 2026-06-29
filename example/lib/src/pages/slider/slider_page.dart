@@ -64,6 +64,20 @@ class SliderPageComponent {
     connect="none">
 </li-slider>''';
 
+  static const String automationHooksSnippet = '''
+final handle = await waitForSelector(page, '[data-label="li_slider_handle_0"]');
+final box = await handle.boundingBox;
+await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+await page.mouse.down();
+await page.mouse.move(box.x + 80, box.y + box.height / 2, steps: 8);
+await page.mouse.up();
+await waitForAttributeMatching(
+  page,
+  '[data-label="li_slider"]',
+  'data-value',
+  (value) => value != null && value.isNotEmpty,
+);''';
+
   num singleValue = 35;
   List<num> budgetRange = <num>[20, 75];
   num verticalValue = 60;

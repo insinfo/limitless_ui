@@ -178,7 +178,6 @@ class LiSimpleDialogComponent {
     });
 
     Future.delayed(Duration(milliseconds: 40), () {
-      // print('showAlert focus');
       root.querySelector('.modal')?.focus();
     });
   }

@@ -141,7 +141,6 @@ class SweetAlertPopover {
       });
 
       ssokd = document.onKeyDown.listen((event) {
-        // print('onKeyDown ${event.key} | ${event.code} | ${event.keyCode}');
         if (event.keyCode == 27) {
           close();
         }

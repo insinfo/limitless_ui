@@ -39,6 +39,22 @@ class RatingPageComponent {
     [disabled]="true">
 </li-rating>''';
 
+  static const String userValueChangeSnippet = '''
+<li-rating
+    [(ngModel)]="productRating"
+    (currentValueChange)="syncRating(\$event)"
+    (userValueChange)="submitUserRating(\$event)">
+</li-rating>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '[data-label="li_rating_star_4"]');
+await waitForAttributeMatching(
+  page,
+  '[data-label="li_rating"]',
+  'data-value',
+  (value) => value == '4',
+);''';
+
   num productRating = 4;
   num serviceRating = 2;
   num readonlyRating = 3.5;

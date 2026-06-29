@@ -101,6 +101,10 @@
                 <p class="text-muted mb-3">Útil quando a tela persiste só os ids, mas ainda precisa acessar os modelos completos para renderizar dependências ou preencher outros campos.</p>
                 <li-highlight [code]="modelChangeSnippet" language="html"></li-highlight>
 
+                <h6 class="mb-2 mt-4">currentValueChange x userValueChange</h6>
+                <p class="text-muted mb-3"><code>currentValueChange</code> reflete mudanças vindas do model e da UI. <code>userValueChange</code> dispara apenas quando o usuário marca, desmarca ou limpa uma opção no componente.</p>
+                <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+
                 <h6 class="mb-2 mt-4">Validação declarativa</h6>
                 <p class="text-muted mb-3">Multi-select segue a mesma base declarativa do select: regras em <code>liRules</code>, mensagens em <code>liMessages</code> e controle de exibição em <code>liValidationMode</code>.</p>
                 <li-highlight [code]="validationSnippet" language="html"></li-highlight>
@@ -120,6 +124,10 @@
                 </ul>
 
                 <li-highlight [code]="notesSnippet" language="dart"></li-highlight>
+
+                <h6 class="mb-2 mt-4">Hooks para Puppeteer</h6>
+                <p class="text-muted mb-3">Use os hooks estáveis para abrir o menu, clicar uma opção real e validar o <code>data-value</code> serializado do controle.</p>
+                <li-highlight [code]="automationHooksSnippet" language="dart"></li-highlight>
               </div>
             </div>
           </div>

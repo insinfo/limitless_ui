@@ -240,7 +240,17 @@
               <li-highlight [code]="apiSnippet" language="html"></li-highlight>
             </div>
 
-            <li-highlight [code]="selectApiSnippet" language="html"></li-highlight>
+            <div class="mb-3">
+              <li-highlight [code]="selectApiSnippet" language="html"></li-highlight>
+            </div>
+
+            <h6 class="mb-2 mt-4">currentValueChange x userValueChange</h6>
+            <p class="text-muted mb-3"><code>currentValueChange</code> segue o valor atual do select, incluindo atualizações programáticas. <code>userValueChange</code> é o evento para carregar dependências apenas depois que o usuário escolhe ou confirma nós no painel.</p>
+            <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+
+            <h6 class="mb-2 mt-4">Hooks para Puppeteer</h6>
+            <p class="text-muted mb-3">Os nós, labels, checkboxes, busca, limpar e confirmar têm hooks próprios para testes que expandem a árvore e clicam nos nós reais.</p>
+            <li-highlight [code]="automationHooksSnippet" language="dart"></li-highlight>
           </div>
         </li-tabx>
       </li-tabsx>

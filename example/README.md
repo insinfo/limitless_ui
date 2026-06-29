@@ -10,6 +10,7 @@ This folder contains the AngularDart showcase application for the `limitless_ui`
 - Localized demo content in Portuguese and English
 - SCSS-based component styling compiled by `sass_builder`
 - A production build flow used by the GitHub Pages workflow
+- Stable `data-label` and `data-value` hooks on interactive demos so browser automation can select real UI controls without depending on translated text or CSS classes
 
 ## Requirements
 
@@ -31,7 +32,7 @@ dart pub get
 From `example/`:
 
 ```bash
-dart run build_runner serve web:8081 --delete-conflicting-outputs
+dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs
 ```
 
 Then open:
@@ -42,20 +43,39 @@ http://localhost:8081
 
 Notes:
 
-- This project uses `build_runner` directly for local serving.
-- `--delete-conflicting-outputs` is recommended when generated outputs are stale.
+- This project uses `webdev` for local serving because it is the documented Dart web development server.
+- The trailing `-- --delete-conflicting-outputs` forwards cleanup to `build_runner` when generated outputs are stale.
 
-You can also run the demo with `webdev` if it is available in your environment:
+If you prefer using a globally activated `webdev`, this equivalent command also works:
 
 ```bash
-webdev serve web:8081 --auto refresh --hostname localhost -- --delete-conflicting-outputs
+webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs
 ```
 
-Additional notes for `webdev`:
+`build_runner` is still used for builds and tests, but it is not the command documented here for running the example server.
 
-- `webdev` is an alternative local workflow, not the primary documented one in this repository.
-- The trailing `-- --delete-conflicting-outputs` forwards the flag to `build_runner`.
-- `webdev` must be installed or otherwise available in your shell for this command to work.
+## Selection APIs shown by the example
+
+The select-like picker demos use the same API split expected in consuming apps:
+
+- `currentValueChange` follows the component model and may fire during programmatic synchronization.
+- `userValueChange` is reserved for a real user selection made through the UI.
+- stable `data-label`, `data-value`, and state attributes are rendered by selection controls for browser automation.
+
+Use `userValueChange` for side effects that should not run during form hydration:
+
+```html
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="selectedStatus"
+  (currentValueChange)="syncStatus($event)"
+  (userValueChange)="reloadDependentFields($event)">
+</li-select>
+```
+
+The example E2E tests exercise those hooks through real Puppeteer clicks, keyboard input, and mouse dragging across select, multi-select, datatable-select, date/time pickers, typeahead, treeview, rating, tag/token controls, checkbox/radio/toggle, slider, color picker, and dropdown menu demos.
 
 ## Build for production
 
@@ -138,3 +158,27 @@ dart run build_runner test -- -p chrome -j 1
 ```
 
 Run them from the repository root unless you intentionally want to target only the example app.
+
+To run the real Puppeteer E2E suite, keep the example server running on port `8081`:
+
+```bash
+cd example
+dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs
+```
+
+Then run from the repository root:
+
+```bash
+RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 CHROME_EXECUTABLE=/path/to/chrome dart test tool/e2e/puppeteer_test.dart
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:RUN_EXAMPLE_E2E = 'true'
+$env:UI_EXAMPLE_BASE_URL = 'http://127.0.0.1:8081'
+$env:CHROME_EXECUTABLE = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+dart test tool\e2e\puppeteer_test.dart
+```
+
+If `RUN_EXAMPLE_E2E` is not set to `true`, `tool/e2e/puppeteer_test.dart` is skipped by design.

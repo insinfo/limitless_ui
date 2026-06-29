@@ -2473,8 +2473,8 @@ class LiPdfViewerComponent
   }
 
   void _log(String message) {
-    if (debug) {
-      print('[LiPdfViewer] $message');
+    if (!debug) {
+      return;
     }
   }
 

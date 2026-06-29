@@ -1,5 +1,7 @@
 <div
     [class]="resolvedRootClass"
+    [attr.data-label]="'li_rating'"
+    [attr.data-value]="rate.toString()"
     role="slider"
     [attr.aria-label]="ariaLabel"
     aria-valuemin="0"
@@ -17,6 +19,8 @@
       [class]="starClass(index)"
       [disabled]="disabled"
       tabindex="-1"
+      [attr.data-label]="'li_rating_star_' + (index + 1).toString()"
+      [attr.data-value]="(index + 1).toString()"
       [attr.aria-label]="'Rate ' + (index + 1).toString()"
       (mouseenter)="preview(index + 1)"
       (click)="select(index + 1)">

@@ -121,6 +121,25 @@ Future<List<Map<String, dynamic>>> remoteCitySearch(String term) async {
   return cities.where((item) => item['name'].toLowerCase().contains(term.toLowerCase())).toList();
 }''';
 
+  static const String userValueChangeSnippet = '''
+<li-typeahead
+  [dataSource]="states"
+  [(ngModel)]="selectedState"
+  (currentValueChange)="syncSelectedState(\$event)"
+  (userValueChange)="searchRelatedData(\$event)">
+</li-typeahead>''';
+
+  static const String automationHooksSnippet = '''
+await clickFirstVisible(page, '.demo-page [data-label="li_typeahead_input"]');
+await page.keyboard.type('sa');
+final popupId = await waitForAttributeMatching(
+  page,
+  '.demo-page [data-label="li_typeahead_input"]',
+  'aria-controls',
+  (value) => value != null && value.isNotEmpty,
+);
+await clickFirstVisible(page, '#\$popupId [data-label^="li_typeahead_item_"]');''';
+
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;
 
@@ -247,6 +266,16 @@ Future<List<Map<String, dynamic>>> remoteCitySearch(String term) async {
           'minLength, maxResults, debounceMs, and LiTypeaheadConfig.',
         ];
   String get bestPracticesTitle => _isPt ? 'Boas práticas' : 'Best practices';
+  String get userSelectionTitle =>
+      _isPt ? 'Seleção feita pelo usuário' : 'User-driven selection';
+  String get userSelectionBody => _isPt
+      ? 'Use userValueChange quando a tela precisa reagir somente a clique, teclado ou confirmação real do usuário. currentValueChange continua refletindo também mudanças programáticas do modelo.'
+      : 'Use userValueChange when the screen must react only to click, keyboard, or another real user confirmation. currentValueChange still reflects programmatic model updates too.';
+  String get automationHooksTitle =>
+      _isPt ? 'Hooks para Puppeteer' : 'Puppeteer hooks';
+  String get automationHooksBody => _isPt
+      ? 'Os hooks data-label e data-value permitem abrir o popup, digitar e clicar em uma sugestão sem depender de classes CSS do tema ou do texto traduzido.'
+      : 'The data-label and data-value hooks let tests open the popup, type, and click a suggestion without depending on theme CSS classes or translated text.';
   List<String> get bestPractices => _isPt
       ? const <String>[
           'Mantenha o dataSource estável no pai.',
