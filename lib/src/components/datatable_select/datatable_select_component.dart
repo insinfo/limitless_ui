@@ -217,6 +217,9 @@ class LiDatatableSelectComponent
   String locale = 'pt_BR';
 
   @Input()
+  String size = '';
+
+  @Input()
   List<LiRule> liRules = const <LiRule>[];
 
   @Input()
@@ -538,6 +541,7 @@ class LiDatatableSelectComponent
 
   String get resolvedTriggerClass => _joinClasses(<String>[
         'form-select',
+        _formSelectSizeClass,
         'datatable-select-trigger',
         usesAddonTriggerIcon ? 'datatable-select-trigger--with-addon-icon' : '',
         usesOverlayTriggerIcon
@@ -546,6 +550,11 @@ class LiDatatableSelectComponent
         showsClearButton ? 'datatable-select-trigger--with-clear' : '',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedInputGroupClass => _joinClasses(<String>[
+        'input-group',
+        _inputGroupSizeClass,
       ]);
 
   String get resolvedFeedbackClass => _joinClasses(<String>[
@@ -926,6 +935,33 @@ class LiDatatableSelectComponent
         dirty: _dirty,
         submitted: _formSubmitted,
       );
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formSelectSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-select-sm';
+      case 'lg':
+        return 'form-select-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _inputGroupSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'input-group-sm';
+      case 'lg':
+        return 'input-group-lg';
+      default:
+        return '';
+    }
+  }
 
   String _joinClasses(List<String> values) {
     return values

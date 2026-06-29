@@ -1,5 +1,5 @@
 <div [attr.data-label]="'li_multi_select'" [attr.data-value]="selectedDataValue" class="dropdown-collection">
-    <div *ngIf="usesAddonTriggerIcon" class="input-group">
+    <div *ngIf="usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
         <button type="button" #dropdownButton [attr.data-label]="'li_multi_select_btn_toggle'" [attr.data-li-form-focus-target]="'true'" [class]="resolvedButtonClass"
             [attr.data-value]="selectedDataValue"
             role="combobox"
@@ -70,7 +70,7 @@
         [class.dropdown-open]="dropdownOpen">
         <div *ngIf="searchable" class="dropdown-search" (click)="$event.stopPropagation()">
             <div class="form-control-feedback form-control-feedback-start m-2">
-                <input #inputSearch type="text" class="form-control" [placeholder]="searchPlaceholder"
+                <input #inputSearch type="text" [class]="resolvedSearchInputClass" [placeholder]="searchPlaceholder"
                     (input)="searchHandle($event.target.value)"
                     [attr.data-label]="'li_multi_select_input_search'"
                     tabindex="-1" [attr.aria-label]="searchAriaLabel">

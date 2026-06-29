@@ -35,7 +35,7 @@
             </button>
 
             <div *ngIf="searchable" class="form-control-feedback form-control-feedback-start li-tag-filter__search">
-                <input #searchInput type="text" class="form-control" [placeholder]="resolvedSearchPlaceholder"
+                <input #searchInput type="text" [class]="resolvedSearchInputClass" [placeholder]="resolvedSearchPlaceholder"
                     [attr.data-label]="'li_tag_filter_input_search'"
                     (input)="onSearchInput($event.target.value)">
                 <div class="form-control-feedback-icon">

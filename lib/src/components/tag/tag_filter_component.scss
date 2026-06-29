@@ -12,8 +12,8 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  min-height: calc(1.5715em + 0.875rem + 2px);
-  padding: 0.4375rem 2.875rem 0.4375rem 0.875rem;
+  min-height: calc(calc(var(--form-select-line-height, var(--body-line-height, 1.5715)) * 1em) + calc(var(--form-select-padding-y, 0.4375rem) * 2) + calc(var(--form-select-border-width, 1px) * 2));
+  padding: var(--form-select-padding-y, 0.4375rem) 2.875rem var(--form-select-padding-y, 0.4375rem) var(--form-select-padding-x, 0.875rem);
   text-align: left;
 }
 

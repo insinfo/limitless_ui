@@ -96,6 +96,9 @@ class LiTagFilterComponent
   String locale = 'pt_BR';
 
   @Input()
+  String size = '';
+
+  @Input()
   String labelKey = 'label';
 
   @Input()
@@ -203,11 +206,17 @@ class LiTagFilterComponent
 
   String get resolvedButtonClass => _joinClasses(<String>[
         'form-select',
+        _formSelectSizeClass,
         'li-tag-filter__button',
         wrapSelectedBadges ? 'li-tag-filter__button--wrapped' : '',
         hasSelection && showClearButton
             ? 'li-tag-filter__button--with-clear'
             : '',
+      ]);
+
+  String get resolvedSearchInputClass => _joinClasses(<String>[
+        'form-control',
+        _formControlSizeClass,
       ]);
 
   String optionId(int index) => '$_optionIdPrefix-$index';
@@ -717,6 +726,33 @@ class LiTagFilterComponent
 
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
+  }
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formControlSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-control-sm';
+      case 'lg':
+        return 'form-control-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _formSelectSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-select-sm';
+      case 'lg':
+        return 'form-select-lg';
+      default:
+        return '';
+    }
   }
 
   String _joinClasses(List<String> classes) {

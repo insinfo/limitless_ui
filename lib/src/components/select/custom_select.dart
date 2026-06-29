@@ -129,6 +129,9 @@ class LiSelectComponent
   String locale = 'pt_BR';
 
   @Input()
+  String size = '';
+
+  @Input()
   List<LiRule> liRules = const <LiRule>[];
 
   @Input()
@@ -267,12 +270,23 @@ class LiSelectComponent
 
   String get resolvedButtonClass => _joinClasses(<String>[
         'form-select',
+        _formSelectSizeClass,
         'dropdown-button',
         hidesNativeIndicator ? 'dropdown-button--no-native-indicator' : '',
         usesOverlayTriggerIcon ? 'dropdown-button--with-overlay-icon' : '',
         showsClearButton ? 'dropdown-button--with-clear' : '',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedInputGroupClass => _joinClasses(<String>[
+        'input-group',
+        _inputGroupSizeClass,
+      ]);
+
+  String get resolvedSearchInputClass => _joinClasses(<String>[
+        'form-control',
+        _formControlSizeClass,
       ]);
 
   String get resolvedFeedbackClass => _joinClasses(<String>[
@@ -975,6 +989,44 @@ class LiSelectComponent
         dirty: _dirty,
         submitted: _formSubmitted,
       );
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formControlSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-control-sm';
+      case 'lg':
+        return 'form-control-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _formSelectSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-select-sm';
+      case 'lg':
+        return 'form-select-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _inputGroupSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'input-group-sm';
+      case 'lg':
+        return 'input-group-lg';
+      default:
+        return '';
+    }
+  }
 
   String _joinClasses(List<String> values) {
     return values

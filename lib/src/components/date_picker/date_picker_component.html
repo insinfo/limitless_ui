@@ -19,7 +19,7 @@
             </button>
         </div>
     </div>
-    <div *ngIf="!usesOverlayTriggerIcon" #triggerElement class="input-group" [class.disabled]="isDisabled" (click)="toggleOpen()"
+    <div *ngIf="!usesOverlayTriggerIcon" #triggerElement [class]="resolvedInputGroupClass" (click)="toggleOpen()"
         [attr.data-label]="'li_date_picker_trigger'"
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"

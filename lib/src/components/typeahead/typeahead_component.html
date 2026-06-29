@@ -4,7 +4,7 @@
       [attr.data-li-form-focus-target]="'true'"
       [attr.data-label]="'li_typeahead_input'"
       type="text"
-      class="form-control"
+      [class]="resolvedInputClass"
       [disabled]="isDisabled"
       [placeholder]="placeholder"
       [attr.autocomplete]="autocomplete"

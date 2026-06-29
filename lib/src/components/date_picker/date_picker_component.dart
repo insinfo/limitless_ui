@@ -170,6 +170,9 @@ class LiDatePickerComponent
   String locale = 'pt_BR';
 
   @Input()
+  String size = '';
+
+  @Input()
   bool invalid = false;
 
   @Input()
@@ -298,9 +301,16 @@ class LiDatePickerComponent
 
   String get resolvedInputClass => _joinClasses(<String>[
         'form-control',
+        _formControlSizeClass,
         'date-picker-field',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedInputGroupClass => _joinClasses(<String>[
+        'input-group',
+        _inputGroupSizeClass,
+        isDisabled ? 'disabled' : '',
       ]);
 
   String get resolvedFeedbackClass => _joinClasses(<String>[
@@ -407,6 +417,33 @@ class LiDatePickerComponent
         dirty: _dirty,
         submitted: _formSubmitted,
       );
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formControlSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-control-sm';
+      case 'lg':
+        return 'form-control-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _inputGroupSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'input-group-sm';
+      case 'lg':
+        return 'input-group-lg';
+      default:
+        return '';
+    }
+  }
 
   @override
   void ngAfterChanges() {

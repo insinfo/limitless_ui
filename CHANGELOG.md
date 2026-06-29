@@ -4,6 +4,7 @@
 - Added stable `data-label`/`data-value` hooks across interactive selection controls to support browser automation with Puppeteer-style selectors without relying on CSS classes or translated text.
 - Added real Puppeteer E2E coverage for the `example` app, gated by `RUN_EXAMPLE_E2E=true` and wired into CI through `webdev serve`. The suite now clicks actual options, checkbox rows, clear/apply actions, calendar navigation, dropdown menu items, slider drag handles, and text inputs across select, multi-select, datatable select, date/time pickers, typeahead, treeview, rating, tag/token controls, and selection controls.
 - Expanded `li-select` compatibility with legacy custom-select flows: written model values are now reconciled when `dataSource`/projected options arrive later, and `clearSelectedItem(...)` supports silent programmatic clearing with the same event-suppression flags as `setSelectedItemByValue(...)`.
+- Added Bootstrap/Limitless form control sizing via `size="sm"` and `size="lg"` to select-like and picker inputs, including select, multi-select, datatable select, date picker, date range picker, time picker, treeview select, typeahead, currency input, and tag filter.
 
 ## 1.0.0-dev.27
 

@@ -1,7 +1,7 @@
 <div class="treeview-dropdown-select"
     [attr.data-label]="'li_treeview_select'"
     [attr.data-value]="selectedDataValue">
-    <div *ngIf="usesAddonTriggerIcon" class="input-group">
+    <div *ngIf="usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
         <button type="button"
             #triggerButton
             [class]="resolvedTriggerClass"
@@ -130,7 +130,7 @@
                 <div class="form-control-feedback form-control-feedback-start treeview-dropdown-select__search-field">
                     <input #searchInput
                         type="text"
-                        class="form-control"
+                        [class]="resolvedSearchInputClass"
                         [value]="searchTerm"
                         [placeholder]="resolvedSearchPlaceholder"
                         [attr.aria-label]="searchAriaLabel"

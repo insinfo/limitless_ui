@@ -193,6 +193,9 @@ class LiDateRangePickerComponent
   String locale = 'pt_BR';
 
   @Input()
+  String size = '';
+
+  @Input()
   bool invalid = false;
 
   @Input()
@@ -304,9 +307,16 @@ class LiDateRangePickerComponent
 
   String get resolvedInputClass => _joinClasses(<String>[
         'form-control',
+        _formControlSizeClass,
         'date-range-field',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedInputGroupClass => _joinClasses(<String>[
+        'input-group',
+        _inputGroupSizeClass,
+        isDisabled ? 'disabled' : '',
       ]);
 
   String get resolvedFeedbackClass => _joinClasses(<String>[
@@ -1035,6 +1045,33 @@ class LiDateRangePickerComponent
     }
 
     return DateRangePickerViewMode.day;
+  }
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formControlSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-control-sm';
+      case 'lg':
+        return 'form-control-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _inputGroupSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'input-group-sm';
+      case 'lg':
+        return 'input-group-lg';
+      default:
+        return '';
+    }
   }
 
   String _joinClasses(List<String> values) {

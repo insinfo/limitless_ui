@@ -129,6 +129,9 @@ class LiTypeaheadComponent
   late String container;
 
   @Input()
+  String size = '';
+
+  @Input()
   String labelKey = 'label';
 
   @Input()
@@ -226,6 +229,11 @@ class LiTypeaheadComponent
     }
     return optionId(activeIndex);
   }
+
+  String get resolvedInputClass => _joinClasses(<String>[
+        'form-control',
+        _formControlSizeClass,
+      ]);
 
   @Input()
   set dataSource(dynamic value) {
@@ -883,5 +891,28 @@ class LiTypeaheadComponent
 
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
+  }
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formControlSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-control-sm';
+      case 'lg':
+        return 'form-control-lg';
+      default:
+        return '';
+    }
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
   }
 }

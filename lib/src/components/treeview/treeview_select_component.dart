@@ -163,6 +163,9 @@ class LiTreeviewSelectComponent
   String locale = 'pt_BR';
 
   @Input()
+  String size = '';
+
+  @Input()
   List<LiRule> liRules = const <LiRule>[];
 
   @Input()
@@ -418,6 +421,7 @@ class LiTreeviewSelectComponent
 
   String get resolvedTriggerClass => _joinClasses(<String>[
         'form-select',
+        _formSelectSizeClass,
         'treeview-dropdown-select__trigger',
         usesOverlayTriggerIcon
             ? 'treeview-dropdown-select__trigger--with-overlay-icon'
@@ -427,6 +431,16 @@ class LiTreeviewSelectComponent
             : '',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedInputGroupClass => _joinClasses(<String>[
+        'input-group',
+        _inputGroupSizeClass,
+      ]);
+
+  String get resolvedSearchInputClass => _joinClasses(<String>[
+        'form-control',
+        _formControlSizeClass,
       ]);
 
   String get resolvedFeedbackClass => _joinClasses(<String>[
@@ -1343,6 +1357,44 @@ class LiTreeviewSelectComponent
         dirty: _dirty,
         submitted: _formSubmitted,
       );
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formControlSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-control-sm';
+      case 'lg':
+        return 'form-control-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _formSelectSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-select-sm';
+      case 'lg':
+        return 'form-select-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _inputGroupSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'input-group-sm';
+      case 'lg':
+        return 'input-group-lg';
+      default:
+        return '';
+    }
+  }
 
   String _joinClasses(List<String> values) {
     return values

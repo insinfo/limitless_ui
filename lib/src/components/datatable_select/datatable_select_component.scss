@@ -33,7 +33,7 @@
     cursor: pointer;
     text-align: start;
     color: var(--body-color);
-    min-height: calc(1.5em + 0.75rem + 2px);
+    min-height: calc(calc(var(--form-select-line-height, var(--body-line-height, 1.5715)) * 1em) + calc(var(--form-select-padding-y, 0.5rem) * 2) + calc(var(--form-select-border-width, 1px) * 2));
     padding-right: 2.75rem;
 }
 
@@ -202,4 +202,3 @@
     border-bottom-left-radius: 0;
     margin-left: -1px;
 }
-

@@ -74,6 +74,9 @@ class LiCurrencyInputComponent
   String inputClass = 'form-control';
 
   @Input()
+  String size = '';
+
+  @Input()
   bool invalid = false;
 
   @Input()
@@ -156,6 +159,7 @@ class LiCurrencyInputComponent
 
   String get resolvedInputClass => _joinClasses(<String>[
         inputClass,
+        _formControlSizeClass,
         'br-currency-input__field',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
@@ -387,6 +391,22 @@ class LiCurrencyInputComponent
         .map((value) => value.trim())
         .where((value) => value.isNotEmpty)
         .join(' ');
+  }
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formControlSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-control-sm';
+      case 'lg':
+        return 'form-control-lg';
+      default:
+        return '';
+    }
   }
 
   bool get _hasHostInvalidState =>

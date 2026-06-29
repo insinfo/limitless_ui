@@ -82,6 +82,9 @@ class LiTimePickerComponent
   String locale = 'pt_BR';
 
   @Input()
+  String size = '';
+
+  @Input()
   bool use24Hour = false;
 
   @Input()
@@ -221,9 +224,16 @@ class LiTimePickerComponent
 
   String get resolvedInputClass => _joinClasses(<String>[
         'form-control',
+        _formControlSizeClass,
         'time-picker-field',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
+      ]);
+
+  String get resolvedInputGroupClass => _joinClasses(<String>[
+        'input-group',
+        _inputGroupSizeClass,
+        isDisabled ? 'disabled' : '',
       ]);
 
   String get resolvedFeedbackClass => _joinClasses(<String>[
@@ -1068,6 +1078,33 @@ class LiTimePickerComponent
       return '0$value';
     }
     return '$value';
+  }
+
+  String get _normalizedSize {
+    final normalized = size.trim().toLowerCase();
+    return normalized == 'sm' || normalized == 'lg' ? normalized : '';
+  }
+
+  String get _formControlSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'form-control-sm';
+      case 'lg':
+        return 'form-control-lg';
+      default:
+        return '';
+    }
+  }
+
+  String get _inputGroupSizeClass {
+    switch (_normalizedSize) {
+      case 'sm':
+        return 'input-group-sm';
+      case 'lg':
+        return 'input-group-lg';
+      default:
+        return '';
+    }
   }
 
   void _markForCheck() {

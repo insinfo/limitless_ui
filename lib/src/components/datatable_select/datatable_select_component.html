@@ -1,5 +1,5 @@
 <div class="datatable-select-wrapper" [attr.data-label]="'li_datatable_select'" [attr.data-value]="selectedDataValue">
-    <div *ngIf="usesAddonTriggerIcon" class="input-group">
+    <div *ngIf="usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
         <button type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
             [attr.data-label]="'li_datatable_select_btn_toggle'"
             [attr.data-value]="selectedDataValue"

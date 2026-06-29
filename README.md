@@ -330,6 +330,24 @@ Practical rule:
 - Navigation helpers: scrollspy service and directives.
 - Utilities: HTML directives, form value accessors, pipes, PDF generator and XLSX generator.
 
+## Form control sizing
+
+Input-like components follow Bootstrap/Limitless sizing classes through a `size` input. Use `size="sm"` for compact fields, `size="lg"` for large fields, or omit it for the default height.
+
+```html
+<li-select size="sm" [dataSource]="statusOptions"></li-select>
+<li-date-picker size="lg" [(ngModel)]="dueDate"></li-date-picker>
+<li-currency-input size="sm" [(ngModel)]="amount"></li-currency-input>
+```
+
+The sizing contract maps to the native theme classes:
+
+- `form-control-sm` / `form-control-lg` on text-like inputs.
+- `form-select-sm` / `form-select-lg` on select-like triggers.
+- `input-group-sm` / `input-group-lg` when the component renders an addon/trigger group.
+
+Supported components include `li-input`, `li-password-input`, `li-select`, `li-multi-select`, `li-datatable-select`, `li-date-picker`, `li-date-range-picker`, `li-time-picker`, `li-treeview-select`, `li-typeahead`, `li-currency-input`, and `li-tag-filter`.
+
 ## User selection events and automation hooks
 
 Interactive selection controls expose two different event layers:
