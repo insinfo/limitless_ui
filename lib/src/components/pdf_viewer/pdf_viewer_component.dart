@@ -447,7 +447,7 @@ class LiPdfViewerComponent
   bool debug = false;
 
   @Input()
-  String pdfJsBasePath = '/assets/js/pdf.js/5.4.149';
+  String pdfJsBasePath = 'assets/js/pdf.js/5.4.149';
 
   @Input()
   String workerSource = '';

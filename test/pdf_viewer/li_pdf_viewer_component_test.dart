@@ -106,7 +106,8 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final action = fixture.rootElement.querySelector('#projected-toolbar-action');
+    final action =
+        fixture.rootElement.querySelector('#projected-toolbar-action');
     expect(action, isNotNull);
     expect(action!.text, contains('Validacao rapida'));
   });
@@ -127,14 +128,20 @@ void main() {
     expect(host.viewer!.totalPages, 2);
     expect(host.documentLoadedEvents, <int>[2]);
     expect(host.loadErrors, isEmpty);
-    expect(fakeBridge.configuredWorkerSrc, contains('/build/pdf.worker.mjs'));
+    expect(
+      fakeBridge.configuredWorkerSrc,
+      'assets/js/pdf.js/5.4.149/build/pdf.worker.mjs',
+    );
     expect(fakeBridge.documentRequests, hasLength(1));
     expect(fakeBridge.documentRequests.single['data'], isA<Uint8List>());
     expect(
       fakeBridge.documentRequests.single['standardFontDataUrl'],
-      contains('/web/standard_fonts/'),
+      'assets/js/pdf.js/5.4.149/web/standard_fonts/',
     );
-    expect(fakeBridge.documentRequests.single['cMapUrl'], contains('/web/cmaps/'));
+    expect(
+      fakeBridge.documentRequests.single['cMapUrl'],
+      'assets/js/pdf.js/5.4.149/web/cmaps/',
+    );
     expect(fakeBridge.documentRequests.single['cMapPacked'], isTrue);
 
     final pages = fixture.rootElement.querySelectorAll('.page');
@@ -195,8 +202,8 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final trigger = fixture.rootElement
-        .querySelector('[title="Abrir painel"]') as html.ButtonElement?;
+    final trigger = fixture.rootElement.querySelector('[title="Abrir painel"]')
+        as html.ButtonElement?;
     expect(trigger, isNotNull);
 
     await fixture.update((_) {
@@ -204,7 +211,8 @@ void main() {
     });
     await _settle(fixture);
 
-    final sidePanel = fixture.rootElement.querySelector('#projected-side-panel');
+    final sidePanel =
+        fixture.rootElement.querySelector('#projected-side-panel');
     expect(sidePanel, isNotNull);
     expect(sidePanel!.text, contains('Painel fake'));
   });
@@ -241,11 +249,13 @@ void main() {
     expect(state.getDataCalls, 1);
     expect(browserBridge.createdUrls, hasLength(1));
     expect(browserBridge.clickedDownloads, <String>['document.pdf']);
-    expect(browserBridge.revokedUrls, contains(browserBridge.createdUrls.single));
+    expect(
+        browserBridge.revokedUrls, contains(browserBridge.createdUrls.single));
     expect(host.loadErrors, isEmpty);
   });
 
-  test('printDocument uses getData, prints the iframe and cleans up after afterprint',
+  test(
+      'printDocument uses getData, prints the iframe and cleans up after afterprint',
       () async {
     final state = FakePdfDocumentState();
     final browserBridge = FakePdfViewerBrowserBridge();
@@ -270,8 +280,8 @@ void main() {
     await _settle(fixture);
 
     final printFuture = host.viewer!.printDocument();
-    final printFrame = await _waitForElement('#liPdfViewerPrintFrame')
-        as html.IFrameElement;
+    final printFrame =
+        await _waitForElement('#liPdfViewerPrintFrame') as html.IFrameElement;
 
     printFrame.dispatchEvent(html.Event('load'));
     await printFuture;
@@ -280,13 +290,15 @@ void main() {
     expect(state.getDataCalls, 1);
     expect(browserBridge.createdUrls, hasLength(1));
     expect(browserBridge.printCalls, 1);
-    expect(html.document.body!.querySelector('#liPdfViewerPrintFrame'), isNotNull);
+    expect(
+        html.document.body!.querySelector('#liPdfViewerPrintFrame'), isNotNull);
 
     html.window.dispatchEvent(html.Event('afterprint'));
     await _settle(fixture);
 
     expect(html.document.body!.querySelector('#liPdfViewerPrintFrame'), isNull);
-    expect(browserBridge.revokedUrls, contains(browserBridge.createdUrls.single));
+    expect(
+        browserBridge.revokedUrls, contains(browserBridge.createdUrls.single));
     expect(host.loadErrors, isEmpty);
   });
 
@@ -315,7 +327,8 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final link = await _waitForElement('.annotationLayer a') as html.AnchorElement;
+    final link =
+        await _waitForElement('.annotationLayer a') as html.AnchorElement;
     expect(link.getAttribute('href'), '#');
 
     link.dispatchEvent(html.MouseEvent('click', canBubble: true));
@@ -327,7 +340,8 @@ void main() {
     expect(host.viewer!.currentPage, 2);
   });
 
-  test('surfaces bridge failures through loadError and error overlay', () async {
+  test('surfaces bridge failures through loadError and error overlay',
+      () async {
     setLiPdfViewerPdfJsBridgeForTesting(
       FakePdfJsBridge(
         documentFactory: (_) => createFakePdfDocument(numPages: 1),
@@ -372,7 +386,8 @@ Future<void> _nextAnimationFrame() {
   return completer.future;
 }
 
-Future<html.Element> _waitForElement(String selector, {int maxFrames = 20}) async {
+Future<html.Element> _waitForElement(String selector,
+    {int maxFrames = 20}) async {
   for (var attempt = 0; attempt < maxFrames; attempt++) {
     final element = html.document.body?.querySelector(selector);
     if (element != null) {
