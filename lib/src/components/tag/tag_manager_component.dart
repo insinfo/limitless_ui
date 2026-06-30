@@ -38,7 +38,7 @@ class LiTagManagerOptionView {
   styleUrls: ['tag_manager_component.css'],
   directives: [
     coreDirectives,
-    CssStyleDirective,
+    LiCssStyleDirective,
     LiTagEditorComponent,
   ],
   changeDetection: ChangeDetectionStrategy.onPush,

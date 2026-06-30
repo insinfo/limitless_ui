@@ -2,26 +2,26 @@ import 'dart:html';
 
 import 'package:ngdart/angular.dart';
 
-/// Clamps numeric input values to the configured `min` and `max` range.
+/// Clamps numeric input values to the configured `liMin` and `liMax` range.
 ///
 /// The directive listens to keyboard input and normalizes out-of-range values
 /// back into the allowed interval.
-@Directive(selector: '[min]')
-class MinMaxDirective {
+@Directive(selector: '[liMinMax]')
+class LiMinMaxDirective {
   late InputElement inputElement;
   final Element _el;
 
   /// Minimum allowed numeric value.
-  @Input('min')
-  double? min;
+  @Input('liMin')
+  double? liMin;
 
   /// Maximum allowed numeric value.
-  @Input('max')
-  double? max;
+  @Input('liMax')
+  double? liMax;
 
-  MinMaxDirective(this._el) {
+  LiMinMaxDirective(this._el) {
     if (_el is! InputElement) {
-      throw Exception('MinMaxDirective has to be applied to an InputElement');
+      throw Exception('LiMinMaxDirective has to be applied to an InputElement');
     }
     inputElement = _el;
 
@@ -30,11 +30,13 @@ class MinMaxDirective {
           double.tryParse((e.target as InputElement).value ?? '') ?? 0;
       if (e.keyCode >= 48 && e.keyCode <= 57 ||
           e.keyCode >= 96 && e.keyCode <= 105) {
-        if (valorAtual < min!) {
+        final min = liMin;
+        final max = liMax;
+        if (min != null && valorAtual < min) {
           //  e.preventDefault();
           inputElement.value = min.toString();
         }
-        if (valorAtual > max!) {
+        if (max != null && valorAtual > max) {
           // e.preventDefault();
           inputElement.value = max.toString();
         }

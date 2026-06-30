@@ -8,17 +8,18 @@ import 'package:ngdart/angular.dart';
 /// uma diretiva angular para detectar cliques fora de um objeto
 /// baseada em https://javascript.plainenglish.io/creating-an-angular-directive-to-detect-clicking-outside-an-object-afd6c07212ef
 ///
-@Directive(selector: '[clickOutside]')
-class ClickOutsideDirective implements OnDestroy, OnInit {
+@Directive(selector: '[liClickOutside]')
+class LiClickOutsideDirective implements OnDestroy, OnInit {
   Element nativeElement;
-  ClickOutsideDirective(this.nativeElement);
+  LiClickOutsideDirective(this.nativeElement);
 
   StreamSubscription? documentClickStreamSubscription;
 
-  StreamController<MouseEvent> clickOutsideSC = StreamController<MouseEvent>();
+  StreamController<MouseEvent> liClickOutsideSC =
+      StreamController<MouseEvent>();
 
-  @Output('clickOutside')
-  Stream<MouseEvent> get clickOutside => clickOutsideSC.stream;
+  @Output('liClickOutside')
+  Stream<MouseEvent> get liClickOutside => liClickOutsideSC.stream;
 
   void onClick(MouseEvent event) {
     final target = event.target;
@@ -28,7 +29,7 @@ class ClickOutsideDirective implements OnDestroy, OnInit {
 
     var clickedInside = nativeElement.contains(target);
     if (!clickedInside) {
-      clickOutsideSC.add(event);
+      liClickOutsideSC.add(event);
     }
   }
 

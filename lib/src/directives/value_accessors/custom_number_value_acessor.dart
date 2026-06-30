@@ -7,9 +7,9 @@ import 'dart:html';
 import 'package:ngforms/src/directives/control_value_accessor.dart'
     show ChangeHandler, ControlValueAccessor, ngValueAccessor, TouchHandler;
 
-const numberValueAccessor2 = ExistingProvider.forToken(
+const liNumberValueAccessor = ExistingProvider.forToken(
   ngValueAccessor,
-  CustomNumberValueAccessor,
+  LiNumberValueAccessor,
 );
 
 /// Writes `double` values to `<input type="number">` elements and listens to
@@ -23,14 +23,14 @@ const numberValueAccessor2 = ExistingProvider.forToken(
   selector: 'input[type=number][ngControl],'
       'input[type=number][ngFormControl],'
       'input[type=number][ngModel]',
-  providers: [numberValueAccessor2],
+  providers: [liNumberValueAccessor],
 )
-class CustomNumberValueAccessor extends Object
+class LiNumberValueAccessor extends Object
     with TouchHandler, ChangeHandler<double?>
     implements ControlValueAccessor<Object?> {
   final InputElement _element;
 
-  CustomNumberValueAccessor(HtmlElement element)
+  LiNumberValueAccessor(HtmlElement element)
       : _element = element as InputElement;
 
   @HostListener('change', ['\$event.target.value'])
@@ -42,8 +42,8 @@ class CustomNumberValueAccessor extends Object
   }
 
   /// Controls the significant digits used when [writeValue] renders doubles.
-  @Input('precision')
-  int? precision;
+  @Input('liPrecision')
+  int? liPrecision;
 
   @override
 
@@ -52,8 +52,8 @@ class CustomNumberValueAccessor extends Object
     if (value is double) {
       final val = value;
 
-      if (precision != null) {
-        _element.value = val.toStringAsPrecision(precision!);
+      if (liPrecision != null) {
+        _element.value = val.toStringAsPrecision(liPrecision!);
       } else {
         _element.value = '$value';
       }

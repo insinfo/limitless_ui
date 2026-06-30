@@ -9,7 +9,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  essential_core: ^1.2.0
+  essential_core: ^1.4.0
   popper: ^1.1.0
   ngdart: ^8.0.0-dev.4
   ngforms: ^5.0.0-dev.3

@@ -64,6 +64,63 @@
               </li-select>
             </div>
 
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ isPortuguese ? 'Trigger customizado' : 'Custom trigger' }}</label>
+              <div>
+                <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                  [(ngModel)]="badgeStatus">
+                  <template liSelectTrigger let-ctx>
+                    <span class="badge bg-primary d-inline-flex align-items-center gap-1"
+                        [attr.data-label]="'select_custom_trigger_badge'"
+                        [attr.data-value]="ctx.selectedValue">
+                      <i class="ph ph-tag"></i>
+                      <span>{{ ctx.hasSelection ? ctx.displayValue : ctx.placeholder }}</span>
+                    </span>
+                  </template>
+                </li-select>
+              </div>
+              <div class="demo-summary-box mt-3">
+                <div><strong>{{ t.common.status }}:</strong> {{ badgeStatusLabel }}</div>
+                <div class="text-muted">{{ isPortuguese ? 'O badge renderiza o TemplateRef e continua abrindo o overlay, preservando seleção, teclado e hooks de automação.' : 'The badge renders the TemplateRef and still opens the overlay, preserving selection, keyboard handling, and automation hooks.' }}</div>
+              </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+              <div class="col-lg-6">
+                <label class="form-label fw-semibold">{{ isPortuguese ? 'Busca desativada' : 'Search disabled' }}</label>
+                <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                  [searchable]="false"
+                  [(ngModel)]="noSearchStatus">
+                </li-select>
+                <div class="demo-summary-box mt-3">
+                  <div><strong>{{ t.common.status }}:</strong> {{ noSearchStatusLabel }}</div>
+                  <div class="text-muted">{{ isPortuguese ? 'Use quando a lista tem poucos itens e a busca só adicionaria ruído visual.' : 'Use when the list has few items and search would only add visual noise.' }}</div>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <label class="form-label fw-semibold">{{ isPortuguese ? 'Badge sem busca' : 'Badge without search' }}</label>
+                <div>
+                  <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                    [searchable]="false"
+                    [(ngModel)]="badgeNoSearchStatus">
+                    <template liSelectTrigger let-ctx>
+                      <span class="badge bg-success d-inline-flex align-items-center gap-1"
+                          [attr.data-label]="'select_no_search_custom_trigger_badge'"
+                          [attr.data-value]="ctx.selectedValue">
+                        <i class="ph ph-check-circle"></i>
+                        <span>{{ ctx.hasSelection ? ctx.displayValue : ctx.placeholder }}</span>
+                      </span>
+                    </template>
+                  </li-select>
+                </div>
+                <div class="demo-summary-box mt-3">
+                  <div><strong>{{ t.common.status }}:</strong> {{ badgeNoSearchStatusLabel }}</div>
+                  <div class="text-muted">{{ isPortuguese ? 'Combina o trigger compacto com um menu direto, sem campo de busca.' : 'Combines the compact trigger with a direct menu, without a search field.' }}</div>
+                </div>
+              </div>
+            </div>
+
             <div class="demo-summary-box">
               <div><strong>{{ t.common.status }}:</strong> {{ selectedStatusLabel }}</div>
               <div><strong>modelChange:</strong> {{ selectedStatusModelLabel }}</div>
@@ -106,6 +163,14 @@
                 <h6 class="mb-2 mt-4">currentValueChange x userValueChange</h6>
                 <p class="text-muted mb-3"><code>currentValueChange</code> acompanha também mudanças programáticas do model. Use <code>userValueChange</code> quando a ação deve rodar somente após uma seleção feita pelo usuário.</p>
                 <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">Template de trigger</h6>
+                <p class="text-muted mb-3"><code>liSelectTrigger</code> permite trocar o input visual por badge, chip ou botão compacto sem substituir a abertura do overlay, o foco, o estado disabled e os hooks de automação. Para controles internos como limpar seleção, chame <code>ctx.clear($event)</code> para evitar que o clique também alterne o overlay.</p>
+                <li-highlight [code]="customTriggerSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">Busca opcional</h6>
+                <p class="text-muted mb-3">A busca fica ligada por padrão porque o select costuma ser usado com listas longas. Quando a tela tem poucos itens e o programador controla esse tamanho, use <code>[searchable]="false"</code>; o overlay abre direto na lista de opções.</p>
+                <li-highlight [code]="searchDisabledSnippet" language="html"></li-highlight>
 
                 <h6 class="mb-2 mt-4">Validação declarativa</h6>
                 <p class="text-muted mb-3">Para selects, a base declarativa fica em <code>liRules</code>, <code>liMessages</code> e <code>liValidationMode</code>. <code>liType</code> é exclusivo do <code>li-input</code>.</p>

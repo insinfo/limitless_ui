@@ -11,10 +11,10 @@ import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('CpfMaskDirective', () {
+  group('LiCpfMaskDirective', () {
     test('applies the CPF mask while typing and ignores extra digits', () {
       final input = _attachInput();
-      CpfMaskDirective(input);
+      LiCpfMaskDirective(input);
 
       _typeSequentially(input, '12345678901');
       expect(input.value, '123.456.789-01');
@@ -27,29 +27,29 @@ void main() {
     });
   });
 
-  group('MinMaxDirective', () {
+  group('LiMinMaxDirective', () {
     test('clamps numeric values to the configured range', () {
       final input = _attachInput()..type = 'number';
-      final directive = MinMaxDirective(input)
-        ..min = 1.0
-        ..max = 10.0;
+      final directive = LiMinMaxDirective(input)
+        ..liMin = 1.0
+        ..liMax = 10.0;
 
       input.value = '0';
       input.dispatchEvent(createKeyboardEvent('keyup', 48));
-      expect(double.parse(input.value!), directive.min);
+      expect(double.parse(input.value!), directive.liMin);
 
       input.value = '42';
       input.dispatchEvent(createKeyboardEvent('keyup', 50));
-      expect(double.parse(input.value!), directive.max);
+      expect(double.parse(input.value!), directive.liMax);
 
       input.remove();
     });
   });
 
-  group('CnpjMaskDirective', () {
+  group('LiCnpjMaskDirective', () {
     test('applies the CNPJ mask while typing and ignores extra digits', () {
       final input = _attachInput();
-      CnpjMaskDirective(input);
+      LiCnpjMaskDirective(input);
 
       _typeSequentially(input, '12345678000199');
       expect(input.value, '12.345.678/0001-99');
@@ -62,10 +62,10 @@ void main() {
     });
   });
 
-  group('OnlyNumberDirective', () {
+  group('LiOnlyNumberDirective', () {
     test('prevents non-digit key presses', () {
       final input = _attachInput();
-      OnlyNumberDirective(input);
+      LiOnlyNumberDirective(input);
 
       final blocked = createKeyboardEvent('keypress', 65);
       final allowed = createKeyboardEvent('keypress', 52);

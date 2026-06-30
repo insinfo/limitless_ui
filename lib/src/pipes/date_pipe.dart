@@ -66,8 +66,8 @@ import '../exceptions/invalid_pipe_argument_exception.dart';
 ///     {{ $pipe.date(dateObj, 'medium') }}    // output is 'Jun 15, 2015, 9:43:11 PM'
 ///     {{ $pipe.date(dateObj, 'shortTime') }} // output is '9:43 PM'
 ///     {{ $pipe.date(dateObj, 'mmss') }}      // output is '43:11'
-@Pipe('cdate', pure: true)
-class CustomDatePipe {
+@Pipe('liDate', pure: true)
+class LiDatePipe {
   static final Map<String, String> _aliases = {
     'medium': 'yMMMdjms',
     'short': 'yMdjm',
@@ -81,13 +81,13 @@ class CustomDatePipe {
   String? transform(dynamic value, [String pattern = 'mediumDate']) {
     if (value == null) return null;
     if (!supports(value)) {
-      throw InvalidPipeArgumentException(CustomDatePipe, value);
+      throw InvalidPipeArgumentException(LiDatePipe, value);
     }
     if (value is num) {
       value = DateTime.fromMillisecondsSinceEpoch(value.toInt());
     }
-    if (CustomDatePipe._aliases.containsKey(pattern)) {
-      pattern = CustomDatePipe._aliases[pattern]!;
+    if (LiDatePipe._aliases.containsKey(pattern)) {
+      pattern = LiDatePipe._aliases[pattern]!;
     }
     return _formatDate(value as DateTime, Intl.defaultLocale, pattern);
   }
@@ -96,7 +96,7 @@ class CustomDatePipe {
     return obj is DateTime || obj is num;
   }
 
-  const CustomDatePipe();
+  const LiDatePipe();
 }
 
 final RegExp _multiPartRegExp = RegExp(r'^([yMdE]+)([Hjms]+)$');

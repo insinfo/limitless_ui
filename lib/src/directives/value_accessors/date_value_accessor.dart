@@ -16,13 +16,13 @@ import 'package:ngforms/ngforms.dart'
       'input[type=date][ngFormControl],'
       'input[type=date][ngModel]',
   providers: [
-    ExistingProvider.forToken(ngValueAccessor, DateValueAccessor),
+    ExistingProvider.forToken(ngValueAccessor, LiDateValueAccessor),
   ],
 )
-class DateValueAccessor implements ControlValueAccessor {
+class LiDateValueAccessor implements ControlValueAccessor {
   final InputElement _element;
 
-  DateValueAccessor(HtmlElement element) : _element = element as InputElement;
+  LiDateValueAccessor(HtmlElement element) : _element = element as InputElement;
 
   @HostListener('change', ['\$event.target.value'])
   @HostListener('input', ['\$event.target.value'])

@@ -4,9 +4,9 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 
-const customCheckboxValueAccessor = ExistingProvider.forToken(
+const liCheckboxValueAccessor = ExistingProvider.forToken(
   ngValueAccessor,
-  CustomCheckboxControlValueAccessor,
+  LiCheckboxControlValueAccessor,
 );
 
 /// Writes boolean values to checkbox inputs and listens to user changes.
@@ -14,13 +14,12 @@ const customCheckboxValueAccessor = ExistingProvider.forToken(
   selector: 'input[type=checkbox][ngControl],'
       'input[type=checkbox][ngFormControl],'
       'input[type=checkbox][ngModel]',
-  providers: [customCheckboxValueAccessor],
+  providers: [liCheckboxValueAccessor],
 )
-class CustomCheckboxControlValueAccessor
-    implements ControlValueAccessor<bool?> {
+class LiCheckboxControlValueAccessor implements ControlValueAccessor<bool?> {
   final InputElement _element;
 
-  CustomCheckboxControlValueAccessor(HtmlElement element)
+  LiCheckboxControlValueAccessor(HtmlElement element)
       : _element = element as InputElement;
 
   ChangeFunction<bool?> onChange = (bool? _, {String? rawValue}) {};

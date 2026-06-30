@@ -43,7 +43,7 @@
           [attr.aria-selected]="(idx == activeIndex).toString()"
           (mouseenter)="markActive(idx)"
           (click)="select(item)">
-        <span *ngIf="resultMarkupBuilder != null" [safeInnerHtml]="renderResultMarkup(item)"></span>
+        <span *ngIf="resultMarkupBuilder != null" [liSafeInnerHtml]="renderResultMarkup(item)"></span>
         <li-typeahead-highlight
             *ngIf="resultMarkupBuilder == null"
             [result]="renderResultLabel(item)"

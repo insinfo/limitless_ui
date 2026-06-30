@@ -19,7 +19,7 @@ class LiTagEditorPresetColorView {
   selector: 'li-tag-editor',
   templateUrl: 'tag_editor_component.html',
   styleUrls: ['tag_editor_component.css'],
-  directives: [coreDirectives, CssStyleDirective],
+  directives: [coreDirectives, LiCssStyleDirective],
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiTagEditorComponent implements OnDestroy {

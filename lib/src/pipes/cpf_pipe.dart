@@ -1,34 +1,41 @@
 // ignore_for_file: prefer_is_not_operator
 
+import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
 
-/// Masks CPF strings by keeping either the first or the last four characters
-/// visible.
+/// Masks CPF strings for public display.
 ///
-/// The pipe expects a full 11-character CPF string. Values that are `null`, not
-/// strings, or shorter than 11 characters return `null`.
-@Pipe('cpfHidden', pure: true)
-class CpfHiddenPipe {
+/// The pipe sanitizes the value with `essential_core` before applying one of
+/// the supported display patterns. Values that are `null`, not strings, or do
+/// not contain 11 digits return `null`.
+@Pipe('liCpfHidden', pure: true)
+class LiCpfHiddenPipe {
   /// Transforms [value] using one of the supported patterns.
   ///
   /// Supported patterns:
+  /// - `governoFederal` or `federal`: returns `***.456.789-**`.
   /// - `asteriskEnd`: keeps the first four characters visible.
   /// - `asteriskStart`: keeps the last four characters visible.
   String? transform(dynamic value, [String pattern = 'asteriskEnd']) {
     if (value == null) return null;
     if (!(value is String)) return null;
-    if (value.length < 11) return null;
+    final cpf = EssentialCoreUtils.sanitizarCpf(value);
+    if (cpf.length != 11) return null;
 
-    final cpf = value;
-
-    if (pattern == 'asteriskEnd') {
-      return cpf.substring(0, 4).padRight(11, '*');
-    } else if (pattern == 'asteriskStart') {
-      return value.toString().substring(cpf.length - 4).padLeft(11, '*');
-    } else {
-      return cpf.substring(0, 4).padRight(11, '*');
+    switch (pattern.trim()) {
+      case 'governoFederal':
+      case 'federal':
+        return EssentialCoreUtils.mascararCpfGovernoFederal(cpf);
+      case 'asteriskStart':
+        return cpf.substring(cpf.length - 4).padLeft(11, '*');
+      case 'asteriskEnd':
+      default:
+        return EssentialCoreUtils.hidePartsOfString(
+          cpf,
+          visibleCharacters: 4,
+        );
     }
   }
 
-  const CpfHiddenPipe();
+  const LiCpfHiddenPipe();
 }

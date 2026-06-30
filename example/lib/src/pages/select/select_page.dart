@@ -13,6 +13,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiTabxDirective,
     LiOptionComponent,
     LiSelectComponent,
+    LiSelectTriggerDirective,
   ],
 )
 class SelectPageComponent {
@@ -84,6 +85,43 @@ void clearDependentSubject() {
   (userValueChange)="reloadStatusDependents(\$event)">
 </li-select>''';
 
+  static const String customTriggerSnippet = '''
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="badgeStatus">
+  <template liSelectTrigger let-ctx>
+    <span class="badge bg-primary d-inline-flex align-items-center gap-1">
+      <i class="ph ph-tag"></i>
+      {{ ctx.hasSelection ? ctx.displayValue : ctx.placeholder }}
+    </span>
+  </template>
+</li-select>''';
+
+  static const String searchDisabledSnippet = '''
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [searchable]="false"
+  [(ngModel)]="noSearchStatus">
+</li-select>
+
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [searchable]="false"
+  [(ngModel)]="badgeNoSearchStatus">
+  <template liSelectTrigger let-ctx>
+    <span class="badge bg-success d-inline-flex align-items-center gap-1">
+      <i class="ph ph-check-circle"></i>
+      {{ ctx.displayValue }}
+    </span>
+  </template>
+</li-select>''';
+
   static const String automationHooksSnippet = '''
 await clickFirstVisible(page, '[data-label="custom_select_btn_toggle"]');
 await clickFirstVisible(
@@ -112,6 +150,7 @@ await waitForAttributeMatching(
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+  bool get isPortuguese => i18n.isPortuguese;
 
   List<Map<String, dynamic>>? _statusOptionsPt;
   List<Map<String, dynamic>>? _statusOptionsEn;
@@ -133,10 +172,20 @@ await waitForAttributeMatching(
   }
 
   String selectedStatus = 'review';
+  String badgeStatus = 'approved';
+  String noSearchStatus = 'draft';
+  String badgeNoSearchStatus = 'review';
   String projectedStatus = 'priority';
   Map<String, dynamic>? selectedStatusModel;
 
   String get selectedStatusLabel => _labelFor(selectedStatus, statusOptions);
+
+  String get badgeStatusLabel => _labelFor(badgeStatus, statusOptions);
+
+  String get noSearchStatusLabel => _labelFor(noSearchStatus, statusOptions);
+
+  String get badgeNoSearchStatusLabel =>
+      _labelFor(badgeNoSearchStatus, statusOptions);
 
   String get selectedStatusModelLabel =>
       (selectedStatusModel?['label'] as String?) ?? selectedStatusLabel;

@@ -2,23 +2,23 @@ import 'dart:html';
 
 import 'package:ngdart/angular.dart';
 
-@Directive(selector: '[indexedName]')
-class IndexedNameDirective {
+@Directive(selector: '[liIndexedName]')
+class LiIndexedNameDirective {
   final Element _element;
 
-  IndexedNameDirective(this._element);
+  LiIndexedNameDirective(this._element);
 
   String? _baseName;
   int? _index;
 
-  @Input('indexedName')
+  @Input('liIndexedName')
   set baseName(String? value) {
     _baseName = value;
     _updateName();
   }
 
   @Input()
-  set indexedNameIndex(int? value) {
+  set liIndexedNameIndex(int? value) {
     _index = value;
     _updateName();
   }

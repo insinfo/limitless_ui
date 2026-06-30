@@ -7,23 +7,23 @@ import 'package:ngdart/angular.dart';
 ///
 /// Example:
 /// ```html
-/// <input [isOnlyNumber]="true" name="phone" type="text">
+/// <input [liOnlyNumber]="true" name="phone" type="text">
 /// ```
-@Directive(selector: '[isOnlyNumber]')
-class OnlyNumberDirective {
+@Directive(selector: '[liOnlyNumber]')
+class LiOnlyNumberDirective {
   late InputElement inputElement;
   final Element _el;
 
-  @Input('isOnlyNumber')
-  bool isOnlyNumber = true;
+  @Input('liOnlyNumber')
+  bool liOnlyNumber = true;
 
-  OnlyNumberDirective(this._el) {
+  LiOnlyNumberDirective(this._el) {
     if (_el is! InputElement) {
       throw Exception(
-          'OnlyNumberDirective has to be applied to an InputElement');
+          'LiOnlyNumberDirective has to be applied to an InputElement');
     }
     inputElement = _el as InputElement;
-    if (isOnlyNumber) {
+    if (liOnlyNumber) {
       inputElement.onKeyPress.listen(onlyNumberKey);
     }
     inputElement.onPaste.listen((e) {

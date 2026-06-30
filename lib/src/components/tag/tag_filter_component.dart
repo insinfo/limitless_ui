@@ -40,7 +40,7 @@ class LiTagFilterOptionView {
   selector: 'li-tag-filter',
   templateUrl: 'tag_filter_component.html',
   styleUrls: ['tag_filter_component.css'],
-  directives: [coreDirectives, CssStyleDirective],
+  directives: [coreDirectives, LiCssStyleDirective],
   providers: [
     ExistingProvider.forToken(ngValueAccessor, LiTagFilterComponent),
   ],

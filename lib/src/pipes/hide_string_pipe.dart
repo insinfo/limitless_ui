@@ -5,11 +5,11 @@ import '../exceptions/invalid_pipe_argument_exception.dart';
 
 /// Masks part of a string while keeping a visible prefix.
 ///
-/// This pipe delegates the masking logic to `EssentialCoreUtils` so the same
-/// behavior can be reused outside AngularDart templates.
-@Pipe('hideString', pure: true)
-class HideStringPipe {
-  const HideStringPipe();
+/// This pipe delegates the masking logic to `EssentialCoreUtils`, the
+/// platform-agnostic helper added to the shared core package.
+@Pipe('liHideString', pure: true)
+class LiHideStringPipe {
+  const LiHideStringPipe();
 
   /// Returns [value] with only [visibleCharacters] left untouched and the
   /// remaining characters replaced by [trail].
@@ -23,7 +23,7 @@ class HideStringPipe {
       return EssentialCoreUtils.hidePartsOfString(value,
           visibleCharacters: visibleCharacters, trail: trail);
     } else {
-      throw InvalidPipeArgumentException(HideStringPipe, value);
+      throw InvalidPipeArgumentException(LiHideStringPipe, value);
     }
   }
 }

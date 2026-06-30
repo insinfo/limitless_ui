@@ -140,7 +140,7 @@ class LiMultiSelectTriggerDirective {
   directives: [
     coreDirectives,
     formDirectives,
-    ClickOutsideDirective,
+    LiClickOutsideDirective,
     LiMultiSelectTriggerDirective,
   ],
   changeDetection: ChangeDetectionStrategy.onPush,

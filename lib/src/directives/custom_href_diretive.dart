@@ -7,14 +7,14 @@ import 'package:ngdart/angular.dart';
 /// This is useful when the template wants to bind a destination through a
 /// directive while still allowing the host element to control navigation.
 @Directive(
-  selector: '[customHref]',
+  selector: '[liCustomHref]',
 )
-class CustomHrefDirective implements AfterChanges {
+class LiCustomHrefDirective implements AfterChanges {
   @Input()
-  String? customHref;
+  String? liCustomHref;
 
   final Element _element;
-  CustomHrefDirective(this._element) {
+  LiCustomHrefDirective(this._element) {
     init();
   }
 
@@ -23,11 +23,11 @@ class CustomHrefDirective implements AfterChanges {
   /// Reserved click hook for future custom navigation behavior.
   void onClick(MouseEvent event) {}
 
-  /// Synchronizes the host `href` attribute with [customHref].
+  /// Synchronizes the host `href` attribute with [liCustomHref].
   void init() {
-    if (customHref != null && customHref!.isNotEmpty) {
-      if (customHref != '#') {
-        _element.setAttribute('href', customHref!);
+    if (liCustomHref != null && liCustomHref!.isNotEmpty) {
+      if (liCustomHref != '#') {
+        _element.setAttribute('href', liCustomHref!);
       }
     }
   }

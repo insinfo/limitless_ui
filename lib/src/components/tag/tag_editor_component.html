@@ -10,20 +10,20 @@
 
         <div class="li-tag-editor__palette">
             <button type="button" *ngFor="let preset of presetColorViews" class="li-tag-editor__swatch"
-                [cssStyle]="preset.swatchStyle" [class.li-tag-editor__swatch--selected]="isSelectedPreset(preset.color)"
+                [liCssStyle]="preset.swatchStyle" [class.li-tag-editor__swatch--selected]="isSelectedPreset(preset.color)"
                 [disabled]="isDisabled" (click)="selectPresetColor(preset.color)">
                 <i *ngIf="isSelectedPreset(preset.color)" class="ph ph-check"></i>
             </button>
         </div>
 
         <div class="li-tag-editor__color-input-row">
-            <span class="li-tag-editor__swatch li-tag-editor__swatch--preview" [cssStyle]="previewSwatchStyle"></span>
+            <span class="li-tag-editor__swatch li-tag-editor__swatch--preview" [liCssStyle]="previewSwatchStyle"></span>
             <input type="text" class="form-control" [value]="draftColorInput" [placeholder]="resolvedColorPlaceholder"
                 [disabled]="isDisabled" (input)="onColorInput($event.target.value)">
         </div>
 
         <div class="li-tag-editor__preview">
-            <span class="badge rounded-pill li-tag-editor__preview-badge" [cssStyle]="previewBadgeStyle">
+            <span class="badge rounded-pill li-tag-editor__preview-badge" [liCssStyle]="previewBadgeStyle">
                 {{ resolvedPreviewText }}
             </span>
         </div>

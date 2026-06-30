@@ -18,7 +18,7 @@ import 'dropdown_menu_directive_test.template.dart' as ng;
   selector: 'dropdown-menu-directive-test-host',
   template: '''
     <div style="display:flex; gap:16px; align-items:flex-start;">
-      <div class="dropdown" dropdownmenu="bottom-end" dropdownmenuContainer="inline">
+      <div class="dropdown" liDropdownMenuPosition="bottom-end" liDropdownMenuPositionContainer="inline">
         <button type="button" class="btn btn-light li-dropdown-trigger" aria-label="inline-trigger">
           Inline
         </button>
@@ -32,7 +32,7 @@ import 'dropdown_menu_directive_test.template.dart' as ng;
       </div>
 
       <div style="height:40px; overflow:hidden; position:relative;">
-        <div class="dropdown" dropdownmenu="bottom-end">
+        <div class="dropdown" liDropdownMenuPosition="bottom-end">
           <button type="button" class="btn btn-light li-dropdown-trigger" aria-label="body-trigger">
             Body
           </button>
@@ -47,15 +47,15 @@ import 'dropdown_menu_directive_test.template.dart' as ng;
       </div>
     </div>
   ''',
-  directives: [coreDirectives, DropdownMenuDirective],
+  directives: [coreDirectives, LiDropdownMenuPositionDirective],
 )
-class DropdownMenuDirectiveTestHostComponent {}
+class LiDropdownMenuPositionDirectiveTestHostComponent {}
 
 void main() {
   tearDown(disposeAnyRunningTest);
 
-  final testBed = NgTestBed<DropdownMenuDirectiveTestHostComponent>(
-    ng.DropdownMenuDirectiveTestHostComponentNgFactory,
+  final testBed = NgTestBed<LiDropdownMenuPositionDirectiveTestHostComponent>(
+    ng.LiDropdownMenuPositionDirectiveTestHostComponentNgFactory,
   );
 
   test('keeps inline rendering when container is inline', () async {
@@ -73,7 +73,8 @@ void main() {
 
     expect(fixture.rootElement.querySelector('.dropdown-menu.show'), isNotNull);
     expect(
-      html.document.querySelector('.DropdownMenuDirective .dropdown-menu.show'),
+      html.document.querySelector(
+          '.LiDropdownMenuPositionDirective .dropdown-menu.show'),
       isNull,
     );
   });
@@ -92,7 +93,7 @@ void main() {
     await _settle(fixture);
 
     final menu = html.document.querySelector(
-      '.DropdownMenuDirective .dropdown-menu.show',
+      '.LiDropdownMenuPositionDirective .dropdown-menu.show',
     ) as html.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final menuRect = menu.getBoundingClientRect();
@@ -119,7 +120,7 @@ void main() {
     await _settle(fixture);
 
     final checkbox = html.document.querySelector(
-      '.DropdownMenuDirective .dropdown-menu.show input[type="checkbox"]',
+      '.LiDropdownMenuPositionDirective .dropdown-menu.show input[type="checkbox"]',
     ) as html.InputElement;
 
     await fixture.update((_) {
@@ -128,12 +129,13 @@ void main() {
     await _settle(fixture);
 
     expect(
-      html.document.querySelector('.DropdownMenuDirective .dropdown-menu.show'),
+      html.document.querySelector(
+          '.LiDropdownMenuPositionDirective .dropdown-menu.show'),
       isNotNull,
     );
 
     final closeButton = html.document.querySelector(
-      '.DropdownMenuDirective .dropdown-menu.show .li-dropdown-close',
+      '.LiDropdownMenuPositionDirective .dropdown-menu.show .li-dropdown-close',
     ) as html.ButtonElement;
 
     await fixture.update((_) {
@@ -142,14 +144,15 @@ void main() {
     await _settle(fixture);
 
     expect(
-      html.document.querySelector('.DropdownMenuDirective .dropdown-menu.show'),
+      html.document.querySelector(
+          '.LiDropdownMenuPositionDirective .dropdown-menu.show'),
       isNull,
     );
   });
 }
 
 Future<void> _settle(
-  NgTestFixture<DropdownMenuDirectiveTestHostComponent> fixture,
+  NgTestFixture<LiDropdownMenuPositionDirectiveTestHostComponent> fixture,
 ) async {
   await Future<void>.delayed(const Duration(milliseconds: 40));
   await fixture.update((_) {});

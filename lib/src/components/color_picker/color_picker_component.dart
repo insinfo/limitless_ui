@@ -108,7 +108,7 @@ class _LiColorPickerPaletteRowView {
   selector: 'li-color-picker',
   styleUrls: ['color_picker_component.css'],
   templateUrl: 'color_picker_component.html',
-  directives: [coreDirectives, CssStyleDirective],
+  directives: [coreDirectives, LiCssStyleDirective],
   providers: [
     ExistingProvider.forToken(ngValueAccessor, LiColorPickerComponent),
   ],

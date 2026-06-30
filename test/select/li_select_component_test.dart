@@ -23,6 +23,7 @@ import 'li_select_component_test.template.dart' as ng;
         labelKey="label"
         valueKey="id"
         disabledKey="disabled"
+        [searchable]="searchable"
         (modelChange)="selectedStatusModel = \$event"
         (userValueChange)="userSelectedStatus = \$event"
         [(ngModel)]="selectedStatus">
@@ -34,6 +35,7 @@ class SelectTestHostComponent {
   String selectedStatus = 'review';
   String? userSelectedStatus;
   Map<String, dynamic>? selectedStatusModel;
+  bool searchable = true;
 
   final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
     <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
@@ -288,6 +290,45 @@ void main() {
 
     expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
+  });
+
+  test('hides the search field when searchable is false and still selects',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    await fixture.update((component) {
+      component.searchable = false;
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(
+      html.document.querySelector(
+        '.dropdown-container.dropdown-open .dropdown-search',
+      ),
+      isNull,
+    );
+
+    final option = html.document
+        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .cast<html.Element>()
+        .firstWhere((element) => (element.text ?? '').contains('Aprovado'));
+
+    await fixture.update((_) {
+      option.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(host.selectedStatus, 'approved');
+    expect(trigger.text, contains('Aprovado'));
   });
 
   test('keeps dark theme styling delegated to dropdown-menu classes', () async {

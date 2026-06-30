@@ -1,107 +1,149 @@
 import 'dart:html';
 
+import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
 
-/// Immutable configuration object for [TextMaskDirective].
-class TextMaskConfig {
+/// Immutable configuration object for [LiTextMaskDirective].
+class LiTextMaskConfig {
+  /// Mask pattern consumed by [InteractiveTextMask].
   final String mask;
+
+  /// Kept for compatibility with previous configuration maps.
   final int maxLength;
-  TextMaskConfig({this.mask = 'xxx.xxx.xxx-xx', this.maxLength = 14});
+
+  /// Whether literals are inserted as soon as their preceding token group is
+  /// complete.
+  final bool eager;
+
+  /// Character used to escape editable token characters in [mask].
+  final String escapeCharacter;
+
+  LiTextMaskConfig({
+    this.mask = 'xxx.xxx.xxx-xx',
+    this.maxLength = 14,
+    this.eager = true,
+    this.escapeCharacter = r'\',
+  });
 }
 
 /// Applies an arbitrary character mask to a text input as the user types.
 ///
-/// The directive uses `x` as the editable placeholder character. Any other
-/// character in the mask is inserted automatically.
-@Directive(selector: '[textMask]')
-class TextMaskDirective {
-  Map<String, dynamic> _textMask = {};
+/// The directive delegates token filtering, literal insertion, and cursor
+/// handling to [InteractiveTextMask]. Default editable tokens are the
+/// `essential_core` tokens: `0` for digits, `A`/`x` for alphanumeric values,
+/// `S` for letters, and `*` for any single code-unit character.
+@Directive(selector: '[liTextMask]')
+class LiTextMaskDirective implements OnDestroy {
+  Map<String, dynamic> _liTextMask = const <String, dynamic>{};
+  late InteractiveTextMask _maskFormatter;
+  late final EventListener _inputListener;
+  var _lastValue = MaskedTextValue.collapsed('');
 
   @Input()
-  set textMask(Map<String, dynamic> val) {
-    _textMask = val;
-
-    mask = _textMask.containsKey('mask') ? _textMask['mask'] : 'xxx.xxx.xxx-xx';
-    maxLength = (_textMask.containsKey('maxLength')
-        ? int.parse(_textMask['maxLength'].toString())
-        : mask.length);
+  set liTextMask(dynamic val) {
+    _liTextMask = _normalizeConfig(val);
+    _configureMask();
+    _applyCurrentValue();
   }
 
   String mask = 'xxx.xxx.xxx-xx';
   int maxLength = 14;
-  String escapeCharacter = 'x';
+  bool eager = true;
+  String escapeCharacter = r'\';
   late InputElement inputElement;
   final Element _el;
-  var lastTextSize = 0;
-  var lastTextValue = '';
 
-  TextMaskDirective(this._el) {
+  LiTextMaskDirective(this._el) {
     if (_el is! InputElement) {
-      throw Exception('TextMaskDirective has to be applied to an InputElement');
+      throw Exception(
+          'LiTextMaskDirective has to be applied to an InputElement');
     }
-    mask = _textMask.containsKey('mask') ? _textMask['mask'] : 'xxx.xxx.xxx-xx';
-    maxLength = (_textMask.containsKey('maxLength')
-        ? int.parse(_textMask['maxLength'].toString())
-        : mask.length);
-
-    lastTextSize = 0;
     inputElement = _el;
-    inputElement.onInput.listen((e) {
-      _onChange();
-    });
+    _configureMask();
+    _lastValue = MaskedTextValue.collapsed(inputElement.value ?? '');
+    _inputListener = (event) => _onChange();
+    inputElement.addEventListener('input', _inputListener, true);
   }
 
-  /// Rebuilds the input value after each user change.
+  /// Applies the configured mask to the current input value.
   void _onChange() {
-    var text = inputElement.value!;
+    final result = _maskFormatter.applyEdit(
+      oldValue: _lastValue,
+      newValue: MaskedTextValue(
+        text: inputElement.value ?? '',
+        selectionStart: inputElement.selectionStart,
+        selectionEnd: inputElement.selectionEnd,
+      ),
+    );
 
-    if (text.length <= mask.length) {
-      // its deleting text
-      if (text.length < lastTextSize) {
-        if (mask[text.length] != escapeCharacter) {
-          //inputElement.focus();
-          inputElement.setSelectionRange(
-              inputElement.value!.length, inputElement.value!.length);
-          inputElement.select();
-        }
-      } else {
-        // its typing
-        if (text.length >= lastTextSize) {
-          var position = text.length;
-          position = position <= 0 ? 1 : position;
-          if (position < mask.length - 1) {
-            if ((mask[position - 1] != escapeCharacter) &&
-                (text[position - 1] != mask[position - 1])) {
-              inputElement.value = _buildText(text);
-            }
-            if (mask[position] != escapeCharacter) {
-              inputElement.value = '${inputElement.value}${mask[position]}';
-            }
-          }
-        }
-
-        if (inputElement.selectionStart! < inputElement.value!.length) {
-          inputElement.setSelectionRange(
-              inputElement.value!.length, inputElement.value!.length);
-          inputElement.select();
-        }
-      }
-      // update cursor position
-      lastTextSize = inputElement.value!.length;
-      lastTextValue = inputElement.value!;
-    } else {
-      inputElement.value = lastTextValue;
-    }
+    inputElement.value = result.text;
+    inputElement.setSelectionRange(result.selectionStart, result.selectionEnd);
+    _lastValue = result;
   }
 
-  /// Inserts the next literal mask character before the newly typed digit.
-  String _buildText(String text) {
-    var result = '';
-    for (var i = 0; i < text.length - 1; i++) {
-      result += text[i];
+  Map<String, dynamic> _normalizeConfig(dynamic val) {
+    if (val is LiTextMaskConfig) {
+      return <String, dynamic>{
+        'mask': val.mask,
+        'maxLength': val.maxLength,
+        'eager': val.eager,
+        'escapeCharacter': val.escapeCharacter,
+      };
     }
-    result += mask[text.length - 1];
-    result += text[text.length - 1];
-    return result;
+    if (val is Map) {
+      return Map<String, dynamic>.from(val);
+    }
+    return const <String, dynamic>{};
+  }
+
+  void _configureMask() {
+    final config = EssentialCoreUtils.mergeDefaults<String, dynamic>(
+      _liTextMask,
+      const <String, dynamic>{
+        'mask': 'xxx.xxx.xxx-xx',
+        'eager': true,
+        'escapeCharacter': r'\',
+      },
+    );
+
+    mask = EssentialCoreUtils.stringOrDefault(
+      config['mask'],
+      'xxx.xxx.xxx-xx',
+    );
+    maxLength =
+        EssentialCoreUtils.toNullableInt(config['maxLength']) ?? mask.length;
+    eager = EssentialCoreUtils.parseBoolLoose(config['eager']) ?? true;
+    escapeCharacter = EssentialCoreUtils.stringOrDefault(
+      config['escapeCharacter'],
+      r'\',
+    );
+
+    _maskFormatter = InteractiveTextMask(
+      pattern: mask,
+      eager: eager,
+      escapeCharacter: escapeCharacter,
+    );
+  }
+
+  void _applyCurrentValue() {
+    if (_el is! InputElement) {
+      return;
+    }
+
+    final result = _maskFormatter.apply(
+      MaskedTextValue(
+        text: inputElement.value ?? '',
+        selectionStart: inputElement.selectionStart,
+        selectionEnd: inputElement.selectionEnd,
+      ),
+    );
+    inputElement.value = result.text;
+    inputElement.setSelectionRange(result.selectionStart, result.selectionEnd);
+    _lastValue = result;
+  }
+
+  @override
+  void ngOnDestroy() {
+    inputElement.removeEventListener('input', _inputListener, true);
   }
 }

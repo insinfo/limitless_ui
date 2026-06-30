@@ -1,3 +1,4 @@
+import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
 
 import '../exceptions/invalid_pipe_argument_exception.dart';
@@ -6,9 +7,9 @@ import '../exceptions/invalid_pipe_argument_exception.dart';
 ///
 /// Non-digit characters are stripped before formatting. The pipe accepts
 /// `String` and `num` values.
-@Pipe('cpfFormatter', pure: true)
-class CpfFormatterPipe {
-  const CpfFormatterPipe();
+@Pipe('liCpfFormatter', pure: true)
+class LiCpfFormatterPipe {
+  const LiCpfFormatterPipe();
 
   /// Transforms [value] according to [pattern].
   ///
@@ -23,10 +24,10 @@ class CpfFormatterPipe {
     final source = switch (value) {
       String stringValue => stringValue,
       num numberValue => numberValue.toString(),
-      _ => throw InvalidPipeArgumentException(CpfFormatterPipe, value),
+      _ => throw InvalidPipeArgumentException(LiCpfFormatterPipe, value),
     };
 
-    final digits = source.replaceAll(RegExp(r'\D'), '');
+    final digits = EssentialCoreUtils.sanitizarCpf(source);
     if (digits.isEmpty) {
       return '';
     }
@@ -36,24 +37,19 @@ class CpfFormatterPipe {
         return digits;
       case 'cpfMask':
       default:
-        return _formatCpf(digits);
+        return _formatCpfDisplay(digits);
     }
   }
 
   /// Applies the standard CPF mask to up to 11 digits.
-  String _formatCpf(String digits) {
+  String _formatCpfDisplay(String digits) {
     final normalized = digits.length > 11 ? digits.substring(0, 11) : digits;
-    final buffer = StringBuffer();
-
-    for (var index = 0; index < normalized.length; index++) {
-      if (index == 3 || index == 6) {
-        buffer.write('.');
-      } else if (index == 9) {
-        buffer.write('-');
-      }
-      buffer.write(normalized[index]);
+    if (normalized.length == 11) {
+      return EssentialCoreUtils.formatarCpf(normalized);
     }
-
-    return buffer.toString();
+    return _partialCpfMask.format(normalized, eager: false);
   }
+
+  static final InteractiveTextMask _partialCpfMask =
+      InteractiveTextMask.cpf(eager: false);
 }

@@ -17,19 +17,19 @@ import 'custom_href_directive_test.template.dart' as ng;
 @Component(
   selector: 'custom-href-test-host',
   template: '''
-    <a id="link" [customHref]="href">Detalhes</a>
+    <a id="link" [liCustomHref]="href">Detalhes</a>
   ''',
-  directives: [coreDirectives, CustomHrefDirective],
+  directives: [coreDirectives, LiCustomHrefDirective],
 )
-class CustomHrefDirectiveTestHostComponent {
+class LiCustomHrefDirectiveTestHostComponent {
   String href = '/details/42';
 }
 
 void main() {
   tearDown(disposeAnyRunningTest);
 
-  final testBed = NgTestBed<CustomHrefDirectiveTestHostComponent>(
-    ng.CustomHrefDirectiveTestHostComponentNgFactory,
+  final testBed = NgTestBed<LiCustomHrefDirectiveTestHostComponent>(
+    ng.LiCustomHrefDirectiveTestHostComponentNgFactory,
   );
 
   test('aplica o href inicial vindo do binding', () async {

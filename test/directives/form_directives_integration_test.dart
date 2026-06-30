@@ -19,13 +19,13 @@ import 'form_directives_integration_test.template.dart' as ng;
   template: '''
     <input
       id="masked-input"
-      [textMask]="textMaskConfig"
+      [liTextMask]="liTextMaskConfig"
       [(ngModel)]="maskedValue">
 
     <input
       id="number-input"
       type="number"
-      [precision]="4"
+      [liPrecision]="4"
       [(ngModel)]="amount">
 
     <input
@@ -33,10 +33,10 @@ import 'form_directives_integration_test.template.dart' as ng;
       type="datetime-local"
       [(ngModel)]="scheduledAt">
   ''',
-  directives: [coreDirectives, limitlessFormDirectives, TextMaskDirective],
+  directives: [coreDirectives, limitlessFormDirectives, LiTextMaskDirective],
 )
 class FormDirectivesIntegrationTestHostComponent {
-  Map<String, dynamic> textMaskConfig = <String, dynamic>{
+  Map<String, dynamic> liTextMaskConfig = <String, dynamic>{
     'mask': 'xx/xx',
     'maxLength': 5,
   };
@@ -70,7 +70,7 @@ void main() {
     expect(host.maskedValue, '12/34');
 
     await fixture.update((component) {
-      component.textMaskConfig = <String, dynamic>{
+      component.liTextMaskConfig = <String, dynamic>{
         'mask': 'xxx-xx',
         'maxLength': 6,
       };

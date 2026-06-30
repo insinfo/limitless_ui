@@ -44,7 +44,7 @@
             <div class="dataTables_length d-flex align-items-center datatable-header-actions">
                 <div *ngIf="showExportMenu"
                     class="dropdown me-2"
-                    dropdownmenu="bottom-end"
+                    liDropdownMenuPosition="bottom-end"
                     [attr.data-label]="'datatable_export_menu'">
                     <button type="button" [attr.title]="exportMenuButtonTitle"
                         [attr.aria-label]="exportMenuButtonTitle"
@@ -93,7 +93,7 @@
                 </button>
 
                 <div class="dropdown me-2"
-                    dropdownmenu="bottom-end"
+                    liDropdownMenuPosition="bottom-end"
                     [attr.data-label]="'datatable_columns_menu'">
                     <button type="button" class="btn btn-flat-primary border-transparent btn-icon li-dropdown-trigger"
                         [attr.title]="toggleColumnsButtonTitle"
@@ -145,7 +145,7 @@
         [class.datatable-scroll--virtual]="isTableVirtualScrollActive"
         [class.datatable-scroll--sticky-header]="isStickyTableHeaderOnVirtualScrollActive"
         [attr.data-label]="'datatable_scroll'"
-        [cssStyle]="resolvedScrollContainerStyleCss" (scroll)="onVirtualViewportScroll()">
+        [liCssStyle]="resolvedScrollContainerStyleCss" (scroll)="onVirtualViewportScroll()">
         <table #table class="table datatable-basic dataTable no-footer dtr-inline"
             [class.datatable-fast-table]="isSaliPagedPerformanceProfile"
             [class.datatable-table-layout-fixed]="fixedTableLayout"
@@ -173,7 +173,7 @@
                         [attr.data-label]="'datatable_header_col_' + idxCol.toString()"
                         [attr.data-value]="colDef.key"
                         [attr.data-sort-key]="colDef.sortingBy ?? ''"
-                        [cssStyle]="resolvedHeaderStyleCss(colDef, idxCol)" (click)="onHeaderCellClick($event, colDef)"
+                        [liCssStyle]="resolvedHeaderStyleCss(colDef, idxCol)" (click)="onHeaderCellClick($event, colDef)"
                         tabindex="0">
                         <span class="datatable-header-title-shell">
                             <span *ngIf="useSimpleHeaderTitle(colDef)" class="datatable-header-title-content">
@@ -200,7 +200,7 @@
                                         </template>
                                     </template>
                                     <template [ngIf]="!hasHeaderCellTemplateFor(colDef) && titleHelp.hasRenderedTitleHtml(colDef)">
-                                        <span [safeHtml]="''" [safeHtmlNode]="colDef.titleHtmlElement"></span>
+                                        <span [liSafeHtml]="''" [liSafeHtmlNode]="colDef.titleHtmlElement"></span>
                                     </template>
                                     <template [ngIf]="!hasHeaderCellTemplateFor(colDef) && !titleHelp.hasRenderedTitleHtml(colDef)">
                                         {{titleHelp.resolveRenderedTitle(colDef)}}
@@ -262,7 +262,7 @@
                         [attr.data-index]="view.row.index.toString()"
                         [attr.data-label]="'datatable_row_' + idxR.toString()"
                         [attr.data-value]="view.row.index.toString()"
-                        [cssStyle]="view.row.styleCss"
+                        [liCssStyle]="view.row.styleCss"
                         (click)="rowClickHandler(view.row)">
                         <td *ngIf="showCheckboxToSelectRow && view.row.type == DatatableRowType.normal"
                             class="datatable-first-col" (click)="$event.stopPropagation()">
@@ -283,7 +283,7 @@
                             [class.dtr-control]="isResponsiveControlColumn(view, column)"
                             [class.datatable-group-title-cell]="view.row.type == DatatableRowType.groupTitle"
                             [attr.aria-expanded]="isResponsiveControlColumn(view, column) ? view.row.isExpanded.toString() : null"
-                            [attr.colspan]="column.colspan.toString()" [cssStyle]="resolvedCellStyleCss(column, idxC)"
+                            [attr.colspan]="column.colspan.toString()" [liCssStyle]="resolvedCellStyleCss(column, idxC)"
                             [attr.data-label]="'datatable_col_' + idxC.toString()"
                             [attr.data-value]="column.key"
                             (click)="isResponsiveControlColumn(view, column) ? onResponsiveControlClick($event, view) : null">
@@ -296,7 +296,7 @@
                                 {{column.value}}
                             </template>
                             <template [ngIf]="!usePlainTextCell(column) && !hasCellTemplateFor(column)">
-                                <span [safeHtml]="column.value" [safeHtmlNode]="column.htmlElement"></span>
+                                <span [liSafeHtml]="column.value" [liSafeHtmlNode]="column.htmlElement"></span>
                             </template>
                         </td>
                     </tr>
@@ -314,8 +314,8 @@
                                     [attr.data-label]="'datatable_child_item'"
                                     [attr.data-value]="column.key">
                                     <span class="dtr-title">{{column.title}}</span>
-                                    <span class="dtr-data" [safeHtml]="column.value"
-                                        [safeHtmlNode]="column.htmlElement"></span>
+                                    <span class="dtr-data" [liSafeHtml]="column.value"
+                                        [liSafeHtmlNode]="column.htmlElement"></span>
                                 </li>
                             </ul>
                         </td>
@@ -332,13 +332,13 @@
     <div *ngIf="showGridView" #gridScrollContainer class="datatable-grid-scroll"
         [class.datatable-scroll--virtual]="isGridVirtualScrollActive"
         [attr.data-label]="'datatable_grid_scroll'"
-        [cssStyle]="resolvedGridScrollContainerStyleCss" (scroll)="onVirtualViewportScroll()">
+        [liCssStyle]="resolvedGridScrollContainerStyleCss" (scroll)="onVirtualViewportScroll()">
         <div [class]="resolvedGridContainerClass"
             [attr.data-label]="'datatable_grid_container'"
-            [cssStyle]="resolvedGridContainerStyleCss">
+            [liCssStyle]="resolvedGridContainerStyleCss">
         <div class="grid-layout" [class.grid-layout--virtual]="isGridVirtualScrollActive"
             [attr.data-label]="'datatable_grid_layout'"
-            [cssStyle]="resolvedGridLayoutStyleCss">
+            [liCssStyle]="resolvedGridLayoutStyleCss">
             <div *ngIf="rows.isEmpty"
                 class="datatable-empty-state"
                 [attr.data-label]="'datatable_empty_state'">
@@ -361,15 +361,15 @@
                 [class.datatable-grid-item-template]="row.type == DatatableRowType.normal && row.customCardElement == null && hasCustomCardTemplate"
                 [attr.data-label]="'datatable_grid_item'"
                 [attr.data-value]="row.index.toString()"
-                [cssStyle]="row.styleCss">
+                [liCssStyle]="row.styleCss">
 
                 <span *ngIf="row.type == DatatableRowType.groupTitle" class="text-center text-muted p-2">
-                    <span *ngFor="let column of row.columns; trackBy: trackByColumnKey" [safeHtml]="column.value"
-                        [safeHtmlNode]="column.htmlElement"></span>
+                    <span *ngFor="let column of row.columns; trackBy: trackByColumnKey" [liSafeHtml]="column.value"
+                        [liSafeHtmlNode]="column.htmlElement"></span>
                 </span>
 
                 <div class="datatable-custom-card" *ngIf="row.customCardElement != null"
-                    [class.cursor-pointer]="disableRowClick == false" [safeHtmlNode]="row.customCardElement"
+                    [class.cursor-pointer]="disableRowClick == false" [liSafeHtmlNode]="row.customCardElement"
                     [attr.data-label]="'datatable_grid_custom_card'"
                     [attr.data-value]="row.index.toString()"
                     (click)="rowClickHandler(row)">
@@ -395,28 +395,28 @@
                     <div *ngFor="let column of row.columnsCardBody; trackBy: trackByColumnKey"
                         class="datatable-grid-default-card__field"
                         [class.hide]="column.visibility == false && column.visibilityOnCard == false"
-                        [cssStyle]="column.styleCss">
+                        [liCssStyle]="column.styleCss">
                         <span class="datatable-grid-default-card__label" *ngIf="column.showTitleOnCard">
                             {{column.title}}<span *ngIf="column.title.isNotEmpty">:</span>
                         </span>
                         <div class="datatable-grid-default-card__value" *ngIf="column.htmlElement != null"
-                            [safeHtmlNode]="column.htmlElement"></div>
+                            [liSafeHtmlNode]="column.htmlElement"></div>
                         <div class="datatable-grid-default-card__value" *ngIf="column.htmlElement == null"
-                            [safeHtml]="column.value"></div>
+                            [liSafeHtml]="column.value"></div>
                     </div>
 
                     <div *ngIf="row.columnsCardFooter.isNotEmpty" class="datatable-grid-default-card__footer">
                         <div *ngFor="let column of row.columnsCardFooter; trackBy: trackByColumnKey"
                             class="datatable-grid-default-card__field"
                             [class.hide]="column.visibility == false && column.visibilityOnCard == false"
-                            [cssStyle]="column.styleCss">
+                            [liCssStyle]="column.styleCss">
                             <span class="datatable-grid-default-card__label" *ngIf="column.showTitleOnCard">
                                 {{column.title}}<span *ngIf="column.title.isNotEmpty">:</span>
                             </span>
                             <div class="datatable-grid-default-card__value" *ngIf="column.htmlElement != null"
-                                [safeHtmlNode]="column.htmlElement"></div>
+                                [liSafeHtmlNode]="column.htmlElement"></div>
                             <div class="datatable-grid-default-card__value" *ngIf="column.htmlElement == null"
-                                [safeHtml]="column.value"></div>
+                                [liSafeHtml]="column.value"></div>
                         </div>
                     </div>
                 </div>

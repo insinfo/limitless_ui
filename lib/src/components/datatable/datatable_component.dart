@@ -51,9 +51,9 @@ export 'datatable_template_directives.dart';
   directives: [
     coreDirectives,
     limitlessFormDirectives,
-    DropdownMenuDirective,
-    SafeHtmlDirective,
-    CssStyleDirective,
+    LiDropdownMenuPositionDirective,
+    LiSafeHtmlDirective,
+    LiCssStyleDirective,
     ...liTooltipDirectives,
     ...liPopoverDirectives,
     ...liPaginationDirectives,

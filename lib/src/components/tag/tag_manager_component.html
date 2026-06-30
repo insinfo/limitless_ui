@@ -32,8 +32,8 @@
                 <div class="li-tag-manager__item-main" (click)="toggleSelection(option)">
                     <i *ngIf="allowSelection" class="ph ph-check li-tag-manager__check"
                         [class.opacity-0]="!option.selected"></i>
-                    <span class="li-tag-manager__swatch" [cssStyle]="option.swatchStyle"></span>
-                    <span class="badge rounded-pill li-tag-manager__badge" [cssStyle]="option.badgeStyle">
+                    <span class="li-tag-manager__swatch" [liCssStyle]="option.swatchStyle"></span>
+                    <span class="badge rounded-pill li-tag-manager__badge" [liCssStyle]="option.badgeStyle">
                         {{ option.label }}
                     </span>
                 </div>

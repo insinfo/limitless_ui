@@ -6,8 +6,8 @@ import 'package:popper/popper.dart';
 
 import '../core/overlay_positioning.dart';
 
-@Directive(selector: '[dropdownmenu]') //dropdownmenu
-class DropdownMenuDirective implements AfterContentInit, OnDestroy {
+@Directive(selector: '[liDropdownMenuPosition]')
+class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
   final Element rootElement;
   Element? _triggerElement;
   Element? _menuElement;
@@ -15,18 +15,18 @@ class DropdownMenuDirective implements AfterContentInit, OnDestroy {
   StreamSubscription<KeyboardEvent>? _documentKeyDownSS;
   bool _overlayRelayoutPending = false;
 
-  @Input('dropdownmenu')
+  @Input('liDropdownMenuPosition')
   String xPlacement = 'bottom-end';
 
   @Input()
-  String dropdownmenuContainer = 'body';
+  String liDropdownMenuPositionContainer = 'body';
 
   StreamSubscription? globalBodyClickSS;
 
-  DropdownMenuDirective(this.rootElement);
+  LiDropdownMenuPositionDirective(this.rootElement);
 
   bool get _usesBodyOverlay =>
-      dropdownmenuContainer.trim().toLowerCase() == 'body';
+      liDropdownMenuPositionContainer.trim().toLowerCase() == 'body';
 
   List<String> get _fallbackPlacements {
     switch (xPlacement.trim().toLowerCase()) {
@@ -161,7 +161,7 @@ class DropdownMenuDirective implements AfterContentInit, OnDestroy {
       referenceElement: reference,
       floatingElement: floating,
       portalOptions: const PopperPortalOptions(
-        hostClassName: 'DropdownMenuDirective',
+        hostClassName: 'LiDropdownMenuPositionDirective',
         hostZIndex: '10000',
         floatingZIndex: '1056',
       ),

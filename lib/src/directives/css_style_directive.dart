@@ -11,18 +11,18 @@ import 'package:ngdart/angular.dart';
 ///
 /// Usage:
 /// ```html
-/// <td [cssStyle]="column.styleCss">
-/// <tr [cssStyle]="row.styleCss">
+/// <td [liCssStyle]="column.styleCss">
+/// <tr [liCssStyle]="row.styleCss">
 /// ```
-@Directive(selector: '[cssStyle]')
-class CssStyleDirective {
+@Directive(selector: '[liCssStyle]')
+class LiCssStyleDirective {
   final Element _element;
   String _lastCss = '';
 
-  CssStyleDirective(this._element);
+  LiCssStyleDirective(this._element);
 
-  @Input('cssStyle')
-  set cssStyle(String? value) {
+  @Input('liCssStyle')
+  set liCssStyle(String? value) {
     final css = value ?? '';
     if (_lastCss != css) {
       _lastCss = css;

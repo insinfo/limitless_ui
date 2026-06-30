@@ -29,7 +29,7 @@ String _extractId(String valueString) => valueString.split(':')[0];
 
 const selectValueAccessorCustom = ExistingProvider.forToken(
   ngValueAccessor,
-  CustomSelectControlValueAccessor,
+  LiSelectControlValueAccessor,
 );
 
 /// The accessor for writing a value and listening to changes on a select
@@ -45,7 +45,7 @@ const selectValueAccessorCustom = ExistingProvider.forToken(
   // SelectControlValueAccessor must be visible to NgSelectOption.
   visibility: Visibility.all,
 )
-class CustomSelectControlValueAccessor extends Object
+class LiSelectControlValueAccessor extends Object
     with TouchHandler, ChangeHandler<dynamic>
     implements ControlValueAccessor<Object?> {
   final SelectElement _element;
@@ -53,7 +53,7 @@ class CustomSelectControlValueAccessor extends Object
   final Map<String, Object?> _optionMap = <String, Object?>{};
   num _idCounter = 0;
 
-  CustomSelectControlValueAccessor(HtmlElement element)
+  LiSelectControlValueAccessor(HtmlElement element)
       : _element = element as SelectElement;
 
   @HostListener('change', ['\$event.target.value'])
@@ -125,12 +125,12 @@ class CustomSelectControlValueAccessor extends Object
 @Directive(
   selector: 'option',
 )
-class CustomNgSelectOption implements OnDestroy {
+class LiNgSelectOption implements OnDestroy {
   final OptionElement _element;
-  final CustomSelectControlValueAccessor? _select;
+  final LiSelectControlValueAccessor? _select;
   late final String id;
 
-  CustomNgSelectOption(HtmlElement element, @Optional() @Host() this._select)
+  LiNgSelectOption(HtmlElement element, @Optional() @Host() this._select)
       : _element = element as OptionElement {
     if (_select != null) id = _select._registerOption();
   }

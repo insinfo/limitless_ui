@@ -9,7 +9,7 @@
             <span *ngFor="let option of selectedOptions" class="badge rounded-pill li-tag-filter__selection-badge"
                 [attr.data-label]="'li_tag_filter_selected_badge'"
                 [attr.data-value]="optionDataValue(option)"
-                [cssStyle]="option.badgeStyle">
+                [liCssStyle]="option.badgeStyle">
                 <span class="li-tag-filter__selection-label">{{ option.label }}</span>
                 <span *ngIf="showInlineRemove && !isDisabled" class="li-tag-filter__remove" role="button"
                     [attr.data-label]="'li_tag_filter_inline_remove'"
@@ -52,8 +52,8 @@
                 [attr.aria-selected]="option.selected.toString()" [disabled]="option.disabled"
                 (click)="toggleOptionFromUi(option, $event)">
                 <i class="ph ph-check li-tag-filter__check" [class.opacity-0]="!option.selected"></i>
-                <span class="li-tag-filter__swatch" [cssStyle]="option.swatchStyle"></span>
-                <span class="badge rounded-pill li-tag-filter__option-badge" [cssStyle]="option.badgeStyle">
+                <span class="li-tag-filter__swatch" [liCssStyle]="option.swatchStyle"></span>
+                <span class="badge rounded-pill li-tag-filter__option-badge" [liCssStyle]="option.badgeStyle">
                     {{ option.label }}
                 </span>
             </button>

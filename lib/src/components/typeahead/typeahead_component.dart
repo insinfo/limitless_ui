@@ -52,7 +52,7 @@ typedef LiTypeaheadResultMarkupBuilder = String Function(
   directives: [
     coreDirectives,
     formDirectives,
-    SafeInnerHtmlDirective,
+    LiSafeInnerHtmlDirective,
     LiTypeaheadHighlightComponent,
   ],
   providers: [

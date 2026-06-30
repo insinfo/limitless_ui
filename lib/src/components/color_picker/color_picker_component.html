@@ -8,7 +8,7 @@
             [attr.data-invalid]="effectiveInvalid ? 'true' : null" [attr.data-label]="'li_color_picker_trigger'" [attr.data-value]="value" (click)="toggleOpen()">
             <span class="sp-preview" [attr.data-label]="'li_color_picker_preview'">
                 <span class="sp-preview-inner" [class.sp-clear-display]="isCommittedEmpty"
-                    [cssStyle]="triggerSwatchStyle"></span>
+                    [liCssStyle]="triggerSwatchStyle"></span>
             </span>
             <span class="sp-dd"></span>
             <span class="visually-hidden">{{ triggerTitle }}</span>
@@ -36,7 +36,7 @@
                         [attr.data-label]="'li_color_picker_palette_swatch'"
                         [attr.data-value]="swatch.colorText"
                         (click)="onPaletteSelect(swatch.colorText)">
-                        <span class="sp-thumb-inner" [cssStyle]="swatch.swatchStyle"></span>
+                        <span class="sp-thumb-inner" [liCssStyle]="swatch.swatchStyle"></span>
                     </span>
                 </div>
 
@@ -46,7 +46,7 @@
                         [attr.data-label]="'li_color_picker_selection_swatch'"
                         [attr.data-value]="swatch.colorText"
                         (click)="onPaletteSelect(swatch.colorText)">
-                        <span class="sp-thumb-inner" [cssStyle]="swatch.swatchStyle"></span>
+                        <span class="sp-thumb-inner" [liCssStyle]="swatch.swatchStyle"></span>
                     </span>
                 </div>
             </div>
@@ -63,11 +63,11 @@
                 <div class="sp-fill"></div>
 
                 <div *ngIf="canShowEditor" class="sp-top-inner">
-                    <div #colorAreaElement class="sp-color" [cssStyle]="colorAreaStyle" [attr.data-label]="'li_color_picker_color_area'"
+                    <div #colorAreaElement class="sp-color" [liCssStyle]="colorAreaStyle" [attr.data-label]="'li_color_picker_color_area'"
                         (mousedown)="onColorMouseDown($event)" (touchstart)="onColorTouchStart($event)">
                         <div class="sp-sat">
                             <div class="sp-val">
-                                <div class="sp-dragger" [class.sp-hidden]="isDraftEmpty" [cssStyle]="draggerStyle" [attr.data-label]="'li_color_picker_dragger'"></div>
+                                <div class="sp-dragger" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="draggerStyle" [attr.data-label]="'li_color_picker_dragger'"></div>
                             </div>
                         </div>
                     </div>
@@ -77,15 +77,15 @@
                     <div #hueElement class="sp-hue" [attr.data-label]="'li_color_picker_hue'"
                         (mousedown)="onHueMouseDown($event)"
                         (touchstart)="onHueTouchStart($event)">
-                        <div class="sp-slider" [class.sp-hidden]="isDraftEmpty" [cssStyle]="hueSliderStyle" [attr.data-label]="'li_color_picker_hue_slider'"></div>
+                        <div class="sp-slider" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="hueSliderStyle" [attr.data-label]="'li_color_picker_hue_slider'"></div>
                     </div>
                 </div>
 
                 <div *ngIf="showAlpha && canShowEditor" #alphaElement class="sp-alpha"
                     [attr.data-label]="'li_color_picker_alpha'"
                     (mousedown)="onAlphaMouseDown($event)" (touchstart)="onAlphaTouchStart($event)">
-                    <div class="sp-alpha-inner" [cssStyle]="alphaGradientStyle">
-                        <div class="sp-alpha-handle" [class.sp-hidden]="isDraftEmpty" [cssStyle]="alphaHandleStyle" [attr.data-label]="'li_color_picker_alpha_handle'"></div>
+                    <div class="sp-alpha-inner" [liCssStyle]="alphaGradientStyle">
+                        <div class="sp-alpha-handle" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="alphaHandleStyle" [attr.data-label]="'li_color_picker_alpha_handle'"></div>
                     </div>
                 </div>
             </div>
@@ -100,13 +100,13 @@
             <div *ngIf="showInitial && hasInitialColor && canShowEditor" class="sp-initial sp-thumb sp-cf">
                 <div class="sp-palette-row sp-palette-row-initial">
                     <button type="button" [class]="currentThumbClass" [attr.title]="currentThumbTitle" [attr.data-label]="'li_color_picker_current_swatch'" [attr.data-value]="draftValueText">
-                        <span class="sp-thumb-inner" [cssStyle]="currentThumbStyle"></span>
+                        <span class="sp-thumb-inner" [liCssStyle]="currentThumbStyle"></span>
                     </button>
                     <button type="button" [class]="initialThumbClass" [attr.title]="initialThumbTitle"
                         [attr.data-label]="'li_color_picker_initial_swatch'"
                         [attr.data-value]="initialThumbTitle"
                         (click)="restoreInitial()">
-                        <span class="sp-thumb-inner" [cssStyle]="initialThumbStyle"></span>
+                        <span class="sp-thumb-inner" [liCssStyle]="initialThumbStyle"></span>
                     </button>
                 </div>
             </div>

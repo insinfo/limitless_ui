@@ -4,29 +4,29 @@ import 'package:ngdart/angular.dart';
 
 /// Unified directive that renders trusted HTML text and/or appends a trusted
 /// DOM [Node] into the host element in a single pass, avoiding the
-/// double-render / layout-thrashing caused by separate [safeInnerHtml] +
-/// [safeAppendHtml] directives fighting over the same element.
+/// double-render / layout-thrashing caused by separate [liSafeInnerHtml] +
+/// [liSafeAppendHtml] directives fighting over the same element.
 ///
 /// Usage:
 /// ```html
-/// <td [safeHtml]="column.value" [safeHtmlNode]="column.htmlElement"></td>
+/// <td [liSafeHtml]="column.value" [liSafeHtmlNode]="column.htmlElement"></td>
 /// ```
 ///
-/// Priority: if [safeHtmlNode] is non-null it wins (the element is cleared and
-/// the node is appended).  Otherwise, [safeHtml] is written via
+/// Priority: if [liSafeHtmlNode] is non-null it wins (the element is cleared and
+/// the node is appended).  Otherwise, [liSafeHtml] is written via
 /// `setInnerHtml`.  When both are null/empty the element is cleared.
-@Directive(selector: '[safeHtml],[safeHtmlNode]')
-class SafeHtmlDirective {
+@Directive(selector: '[liSafeHtml],[liSafeHtmlNode]')
+class LiSafeHtmlDirective {
   final Element _element;
 
   String? _html;
   Node? _node;
   bool _dirty = false;
 
-  SafeHtmlDirective(this._element);
+  LiSafeHtmlDirective(this._element);
 
-  @Input('safeHtml')
-  set safeHtml(String? html) {
+  @Input('liSafeHtml')
+  set liSafeHtml(String? html) {
     if (_html == html) {
       return;
     }
@@ -35,8 +35,8 @@ class SafeHtmlDirective {
     _rebuild();
   }
 
-  @Input('safeHtmlNode')
-  set safeHtmlNode(Node? node) {
+  @Input('liSafeHtmlNode')
+  set liSafeHtmlNode(Node? node) {
     if (identical(_node, node)) {
       return;
     }

@@ -496,7 +496,7 @@ class LiSelectComponent
         strategy: PopperStrategy.fixed,
         padding: const PopperInsets.all(8),
         offset: const PopperOffset(mainAxis: 8),
-        matchReferenceWidth: true,
+        matchReferenceWidth: triggerTemplate == null,
         onLayout: _handleOverlayLayout,
       ),
     );

@@ -1,3 +1,13 @@
+## 1.0.0-dev.29
+
+- bumb to essential_core 1.4.0
+- BREAKING CHANGE: renamed generic directive selectors, directive classes, and pipe names to the `Li` public API prefix. Examples: `[cpfMask]` -> `[liCpfMask]`, `[textMask]` -> `[liTextMask]`, `[cssStyle]` -> `[liCssStyle]`, `cpfFormatter` -> `liCpfFormatter`, `cpfHidden` -> `liCpfHidden`, `hideString` -> `liHideString`, and `cdate` -> `liDate`. The legacy `dropdownmenu` directive was renamed to `[liDropdownMenuPosition]` / `LiDropdownMenuPositionDirective` to avoid colliding with the existing `[liDropdownMenu]` dropdown directive.
+- BREAKING CHANGE: renamed form value accessor classes to the `Li` prefix and replaced generic form helper inputs with explicit `li` APIs. Examples: `CustomNumberValueAccessor` -> `LiNumberValueAccessor`, `CustomCheckboxControlValueAccessor` -> `LiCheckboxControlValueAccessor`, `CustomSelectControlValueAccessor` -> `LiSelectControlValueAccessor`, `DateValueAccessor` -> `LiDateValueAccessor`, `DateTimeValueAccessor` -> `LiDateTimeValueAccessor`, `[precision]` -> `[liPrecision]`, and the old `[min]`/`[max]` clamping directive -> `[liMinMax]` with `[liMin]`/`[liMax]`.
+- Added generic `Li` directives ported with explicit APIs: `[liAutoClickFileInput]`, `[liEditableText]`, `[liDisableBrowserAutocomplete]`, `[liRequired]`, and `[liDocumentValidator]`.
+- Added generic `[liTemplateOutlet]` with `liTemplateOutletContext` and `liTemplateOutletValue` inputs for rendering `TemplateRef` content with explicit `Li` APIs.
+- Added `Li` text transform pipes: `liPortugueseTitleCase`, `liTruncate`, and `liPascalCase`.
+- Documented `liSelectTrigger` in the Select example and kept custom trigger dropdowns from matching tiny badge widths.
+
 ## 1.0.0-dev.28
 
 - Added `userValueChange` outputs to user-selectable controls so consumers can distinguish real user selections from programmatic model updates. Covered select, multi-select, datatable select, date picker, date range picker, time picker, typeahead, treeview select, and rating.

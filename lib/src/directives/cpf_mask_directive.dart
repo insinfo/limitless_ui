@@ -1,83 +1,49 @@
 import 'dart:html';
 
+import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
 
 /// Applies a CPF mask to a text input as the user types.
 ///
-/// The directive expects to run on an [InputElement] and formats the value
-/// using the `xxx.xxx.xxx-xx` pattern.
-@Directive(selector: '[cpfMask]')
-class CpfMaskDirective {
-  String mask = 'xxx.xxx.xxx-xx';
-  int maxLength = 14;
-  String escapeCharacter = 'x';
+/// The directive expects to run on an [InputElement] and delegates the
+/// `000.000.000-00` mask and cursor handling to `essential_core`.
+@Directive(selector: '[liCpfMask]')
+class LiCpfMaskDirective implements OnDestroy {
+  final InteractiveTextMask _mask = InteractiveTextMask.cpf();
   late InputElement inputElement;
   final Element _el;
-  var lastTextSize = 0;
-  var lastTextValue = '';
+  late final EventListener _inputListener;
+  var _lastValue = MaskedTextValue.collapsed('');
 
-  CpfMaskDirective(this._el) {
-    lastTextSize = 0;
+  LiCpfMaskDirective(this._el) {
     if (_el is! InputElement) {
-      throw Exception('CpfMaskDirective has to be applied to an InputElement');
+      throw Exception(
+          'LiCpfMaskDirective has to be applied to an InputElement');
     }
     inputElement = _el;
-    inputElement.onInput.listen((e) {
-      _onChange();
-    });
+    _lastValue = MaskedTextValue.collapsed(inputElement.value ?? '');
+    _inputListener = (event) => _onChange();
+    inputElement.addEventListener('input', _inputListener, true);
   }
 
-  /// Rebuilds the input value after each user change.
+  /// Applies the CPF mask to the current input value.
   void _onChange() {
-    var text = inputElement.value!;
+    final result = _mask.applyEdit(
+      oldValue: _lastValue,
+      newValue: MaskedTextValue(
+        text: inputElement.value ?? '',
+        selectionStart: inputElement.selectionStart,
+        selectionEnd: inputElement.selectionEnd,
+      ),
+    );
 
-    if (text.length <= mask.length) {
-      // its deleting text
-      if (text.length < lastTextSize) {
-        if (mask[text.length] != escapeCharacter) {
-          //inputElement.focus();
-          inputElement.setSelectionRange(
-              inputElement.value!.length, inputElement.value!.length);
-          inputElement.select();
-        }
-      } else {
-        // its typing
-        if (text.length >= lastTextSize) {
-          var position = text.length;
-          position = position <= 0 ? 1 : position;
-          if (position < mask.length - 1) {
-            if ((mask[position - 1] != escapeCharacter) &&
-                (text[position - 1] != mask[position - 1])) {
-              inputElement.value = _buildText(text);
-            }
-            if (mask[position] != escapeCharacter) {
-              inputElement.value = '${inputElement.value}${mask[position]}';
-            }
-          }
-        }
-
-        if (inputElement.selectionStart! < inputElement.value!.length) {
-          inputElement.setSelectionRange(
-              inputElement.value!.length, inputElement.value!.length);
-          inputElement.select();
-        }
-      }
-      // update cursor position
-      lastTextSize = inputElement.value!.length;
-      lastTextValue = inputElement.value!;
-    } else {
-      inputElement.value = lastTextValue;
-    }
+    inputElement.value = result.text;
+    inputElement.setSelectionRange(result.selectionStart, result.selectionEnd);
+    _lastValue = result;
   }
 
-  /// Inserts the next literal mask character before the newly typed digit.
-  String _buildText(String text) {
-    var result = '';
-    for (var i = 0; i < text.length - 1; i++) {
-      result += text[i];
-    }
-    result += mask[text.length - 1];
-    result += text[text.length - 1];
-    return result;
+  @override
+  void ngOnDestroy() {
+    inputElement.removeEventListener('input', _inputListener, true);
   }
 }

@@ -183,6 +183,22 @@ void main() {
         contains('Aprovado'));
   });
 
+  test('select custom trigger keeps the dropdown wider than a small badge',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final trigger = fixture.rootElement.querySelector('#select-trigger')!;
+    await _click(fixture, trigger);
+    await _settle(fixture);
+
+    final dropdown = html.document
+        .querySelector('.LiSelectComponent .dropdown-container.dropdown-open');
+    expect(dropdown, isNotNull);
+    expect(dropdown!.getBoundingClientRect().width,
+        greaterThan(trigger.getBoundingClientRect().width));
+  });
+
   test('multi-select custom trigger opens and toggles an option', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
