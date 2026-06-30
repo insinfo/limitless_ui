@@ -6,3 +6,6 @@ scripts/
 site-angulardart/
 site_ngdart/
 example/
+test/
+ui_test/
+coverage/
