@@ -1,5 +1,6 @@
 .github/
 .dart_tool_tool/
+dist/
 referencias/
 scripts/
 site-angulardart/
