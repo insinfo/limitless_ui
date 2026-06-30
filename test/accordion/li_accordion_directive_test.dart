@@ -168,6 +168,21 @@ void main() {
     expect(host.firstItem!.collapsed, isFalse);
     expect(host.secondItem!.collapsed, isTrue);
 
+    final accordion =
+        fixture.rootElement.querySelector('[data-label="li_accordion"]');
+    final firstItem = fixture.rootElement
+        .querySelector('[data-label="li_accordion_item"][data-value="first"]');
+    final firstButton = fixture.rootElement.querySelector(
+        '[data-label="li_accordion_button"][data-value="first"]');
+
+    expect(accordion, isNotNull);
+    expect(accordion!.getAttribute('data-value'), 'first');
+    expect(accordion.getAttribute('data-open'), 'true');
+    expect(firstItem, isNotNull);
+    expect(firstItem!.getAttribute('data-open'), 'true');
+    expect(firstButton, isNotNull);
+    expect(firstButton!.getAttribute('data-open'), 'true');
+
     await fixture.update((component) {
       component.accordion!.expand('second');
     });
@@ -271,6 +286,30 @@ void main() {
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
+
+    final componentAccordion = fixture.rootElement
+        .querySelector('#component-accordion-host li-accordion');
+    expect(componentAccordion, isNotNull);
+    expect(componentAccordion!.getAttribute('data-label'), 'li_accordion');
+    expect(componentAccordion.getAttribute('data-open'), 'false');
+    expect(
+      fixture.rootElement.querySelector(
+        '#component-accordion-host [data-label="li_accordion_item"]',
+      ),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector(
+        '#component-accordion-host [data-label="li_accordion_button"]',
+      ),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector(
+        '#component-accordion-host [data-label="li_accordion_panel"]',
+      ),
+      isNotNull,
+    );
 
     html.Element? body = fixture.rootElement
         .querySelector('#component-accordion-host .accordion-body');

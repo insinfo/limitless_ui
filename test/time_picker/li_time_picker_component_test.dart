@@ -42,7 +42,6 @@ class TimePickerTestHostComponent {
         #picker
         [value]="value"
         [use24Hour]="true"
-        mobilePresentation="modal"
         mobileHeightBreakpoint="9999px"
         (valueChange)="value = \$event">
     </li-time-picker>
@@ -88,6 +87,32 @@ void main() {
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
   });
 
+  test('renders footer separator across the panel', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final trigger = fixture.rootElement
+        .querySelector('.time-picker-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settle(fixture);
+
+    final panel = html.document.querySelector(
+      '.time-picker-panel.is-open',
+    ) as html.Element;
+    final footer = panel.querySelector('.time-picker-footer') as html.Element;
+    final footerStyle = footer.getComputedStyle();
+    final panelRect = panel.getBoundingClientRect();
+    final footerRect = footer.getBoundingClientRect();
+
+    expect(footerStyle.borderTopStyle, 'solid');
+    expect(footerStyle.borderTopWidth, isNot('0px'));
+    expect((footerRect.left - panelRect.left).abs(), lessThanOrEqualTo(1.5));
+    expect((footerRect.width - panelRect.width).abs(), lessThanOrEqualTo(2));
+  });
+
   test('emits userValueChange when applying a changed time', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
@@ -115,7 +140,7 @@ void main() {
     expect(host.userValue, const Duration(hours: 9, minutes: 45));
   });
 
-  test('can present as a centered mobile modal', () async {
+  test('uses a fullscreen mobile modal by default', () async {
     final fixture = await mobileTestBed.create();
     await _settleMobile(fixture);
 
@@ -127,7 +152,7 @@ void main() {
     });
     await _settleMobile(fixture);
 
-    final panel = fixture.rootElement.querySelector(
+    final panel = html.document.querySelector(
       '.time-picker-panel--mobile-modal.is-open',
     );
     expect(panel, isNotNull);
@@ -137,6 +162,15 @@ void main() {
       fixture.rootElement.querySelector('.time-picker-mobile-backdrop'),
       isNotNull,
     );
+
+    final panelRect = panel.getBoundingClientRect();
+    final viewportWidth = html.window.innerWidth!;
+    final viewportHeight = html.window.innerHeight!;
+    expect(panelRect.top.abs(), lessThanOrEqualTo(1));
+    expect(panelRect.left.abs(), lessThanOrEqualTo(1));
+    expect(panelRect.width, greaterThanOrEqualTo(viewportWidth - 1));
+    expect(panelRect.height, greaterThanOrEqualTo(viewportHeight - 1));
+    expect(panel.getComputedStyle().overflow, 'hidden');
   });
 }
 

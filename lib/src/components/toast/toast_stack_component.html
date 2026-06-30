@@ -1,5 +1,12 @@
-<div [class]="resolvedContainerClasses" aria-live="polite" aria-atomic="true">
-  <div *ngFor="let toast of service?.toasts" class="li-toast-stack__item">
+<div [class]="resolvedContainerClasses"
+    aria-live="polite"
+    aria-atomic="true"
+    [attr.data-label]="'li_toast_stack'"
+    [attr.data-value]="placement">
+  <div *ngFor="let toast of service?.toasts"
+      class="li-toast-stack__item"
+      [attr.data-label]="'li_toast_stack_item'"
+      [attr.data-value]="toast.automationValue">
     <li-toast
         [header]="toast.header"
         [body]="toast.body"
@@ -9,6 +16,7 @@
         [toastClass]="toast.toastClass"
         [headerClass]="toast.headerClass"
         [bodyClass]="toast.bodyClass"
+        [automationValue]="toast.automationValue"
         [ariaLive]="toast.ariaLive"
         [delay]="toast.delay"
         [animation]="toast.animation"

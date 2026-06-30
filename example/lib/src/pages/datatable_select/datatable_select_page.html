@@ -67,7 +67,8 @@
                   <li-datatable-select #basicSelect [settings]="basicSettings" [dataTableFilter]="basicFilter"
                     [data]="basicData" [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
                     [title]="t.pages.datatableSelect.modalTitle" [placeholder]="t.pages.datatableSelect.placeholder"
-                    [searchPlaceholder]="t.pages.datatableSelect.searchPlaceholder" (dataRequest)="onBasicDataRequest($event)"
+                    [searchPlaceholder]="t.pages.datatableSelect.searchPlaceholder" [mobileResponsiveCollapse]="true"
+                    (dataRequest)="onBasicDataRequest($event)"
                     (currentValueChange)="onBasicValueChanged($event)">
                   </li-datatable-select>
                 </div>
@@ -103,7 +104,8 @@
                   <label class="form-label">{{ t.pages.datatableSelect.ngModelLabel }}</label>
                   <li-datatable-select #ngModelSelect [settings]="basicSettings" [dataTableFilter]="ngModelFilter"
                     [data]="ngModelData" [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
-                    [title]="t.pages.datatableSelect.modalTitle" [modalSize]="'xtra-large'" [ngModel]="ngModelValue"
+                    [title]="t.pages.datatableSelect.modalTitle" [modalSize]="'xtra-large'"
+                    [mobileResponsiveCollapse]="true" [ngModel]="ngModelValue"
                     (ngModelChange)="onNgModelValueChanged($event)" (dataRequest)="onNgModelDataRequest($event)">
                   </li-datatable-select>
                 </div>
@@ -125,7 +127,8 @@
                     [data]="multipleData" [searchInFields]="basicSearchFields" [labelKey]="'name'" [valueKey]="'id'"
                     [title]="multipleSelectModalTitle" [placeholder]="multipleSelectPlaceholder"
                     [searchPlaceholder]="t.pages.datatableSelect.searchPlaceholder" [multiple]="true"
-                    [clearButtonLabel]="multipleSelectClearButtonLabel" [triggerIconMode]="'addon'"
+                    [mobileResponsiveCollapse]="true" [clearButtonLabel]="multipleSelectClearButtonLabel"
+                    [triggerIconMode]="'addon'"
                     [triggerIconClass]="'ph ph-users-three'" [(ngModel)]="multipleSelectedIds"
                     (dataRequest)="onMultipleDataRequest($event)">
                   </li-datatable-select>
@@ -149,6 +152,7 @@
                     [searchInFields]="basicSearchFields" [itemLabelBuilder]="personLabel"
                     [itemValueBuilder]="personValue" [compareWith]="compareById"
                     [title]="builderDemoModalTitle" [placeholder]="builderDemoPlaceholder"
+                    [mobileResponsiveCollapse]="true"
                     [(ngModel)]="selectedTypedPerson">
                   </li-datatable-select>
                 </div>
@@ -198,7 +202,8 @@
                       <li-datatable [dataTableFilter]="ctx.dataTableFilter" [settings]="ctx.settings" [data]="ctx.data"
                         [searchInFields]="ctx.searchInFields" [limitPerPageOptions]="limitPerPageOptions"
                         [searchPlaceholder]="t.pages.datatableSelect.searchPlaceholder" [disableRowClick]="false"
-                        [showCheckboxToSelectRow]="false" [showExportMenu]="false"
+                        [showCheckboxToSelectRow]="false" [showExportMenu]="false" [responsiveCollapse]="true"
+                        [responsiveCollapseByContainer]="true" [responsiveCollapseContainerMaxWidth]="520"
                         (onRowClick)="ctx.select($event)" (dataRequest)="ctx.requestData($event)">
                       </li-datatable>
                     </template>

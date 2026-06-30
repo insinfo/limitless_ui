@@ -45,6 +45,7 @@ class DatatableSelectPageComponent implements OnInit {
   [searchInFields]="sInFields"
   [labelKey]="'name'"
   [valueKey]="'id'"
+  [mobileResponsiveCollapse]="true"
   [title]="'Selecionar pessoa'"
   [placeholder]="'Clique para selecionar...'"
   (dataRequest)="onDataRequest(\$event)"
@@ -59,6 +60,7 @@ class DatatableSelectPageComponent implements OnInit {
   [searchInFields]="sInFields"
   [labelKey]="'name'"
   [valueKey]="'id'"
+  [mobileResponsiveCollapse]="true"
   [(ngModel)]="selectedValue"
   (dataRequest)="onDataRequest(\$event)">
 </li-datatable-select>''';
@@ -72,6 +74,7 @@ class DatatableSelectPageComponent implements OnInit {
   [labelKey]="'name'"
   [valueKey]="'id'"
   [multiple]="true"
+  [mobileResponsiveCollapse]="true"
   [clearButtonLabel]="'Limpar'"
   [triggerIconMode]="'addon'"
   [triggerIconClass]="'ph ph-users-three'"
@@ -87,6 +90,7 @@ class DatatableSelectPageComponent implements OnInit {
   [itemLabelBuilder]="personLabel"
   [itemValueBuilder]="personId"
   [compareWith]="comparePersonById"
+  [mobileResponsiveCollapse]="true"
   [(ngModel)]="selectedPerson">
 </li-datatable-select>''';
 

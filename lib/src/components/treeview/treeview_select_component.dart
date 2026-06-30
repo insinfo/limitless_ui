@@ -231,6 +231,28 @@ class LiTreeviewSelectComponent
   @Input()
   bool closeOnSelect = true;
 
+  /// In multiple mode, selecting a parent also selects its loaded descendants.
+  ///
+  /// Lazy nodes are not loaded automatically; expand/load them first when they
+  /// must be included in the same user action.
+  @Input()
+  bool selectDescendantsOnParentSelect = false;
+
+  /// Mobile presentation for small viewports.
+  ///
+  /// `dropdown` keeps the normal anchored overlay. `modal` shows a fixed
+  /// fullscreen dialog with a backdrop, and `sheet` shows a bottom sheet.
+  @Input()
+  String mobilePresentation = 'modal';
+
+  /// CSS `max-width` media-query used by [mobilePresentation].
+  @Input()
+  String mobileBreakpoint = '767.98px';
+
+  /// Optional CSS `max-height` media-query used by [mobilePresentation].
+  @Input()
+  String mobileHeightBreakpoint = '';
+
   @Input()
   String clearButtonLabel = '';
 
@@ -514,6 +536,26 @@ class LiTreeviewSelectComponent
       showPanelActions &&
       (showFooterExpandToggle || hasSelection || multiple || !closeOnSelect);
 
+  bool get usesMobileModal =>
+      dropdownOpen &&
+      matchesResponsivePresentation(
+        configuredPresentation: mobilePresentation,
+        presentation: 'modal',
+        widthBreakpoint: mobileBreakpoint,
+        heightBreakpoint: mobileHeightBreakpoint,
+      );
+
+  bool get usesMobileSheet =>
+      dropdownOpen &&
+      matchesResponsivePresentation(
+        configuredPresentation: mobilePresentation,
+        presentation: 'sheet',
+        widthBreakpoint: mobileBreakpoint,
+        heightBreakpoint: mobileHeightBreakpoint,
+      );
+
+  bool get usesMobilePresentation => usesMobileModal || usesMobileSheet;
+
   bool _togglingAll = false;
 
   bool get togglingAll => _togglingAll;
@@ -703,15 +745,7 @@ class LiTreeviewSelectComponent
     }
 
     if (multiple) {
-      final isSelected = _isNodeSelected(node);
-      node.treeViewNodeIsSelected = !isSelected;
-      if (node.treeViewNodeIsSelected) {
-        selectedNodes = <TreeViewNode>[...selectedNodes, node];
-      } else {
-        selectedNodes = selectedNodes
-            .where((selected) => !identical(selected, node))
-            .toList(growable: false);
-      }
+      _toggleMultipleNodeSelection(node);
       _pendingModelValue = _selectedValues();
       _dirty = true;
       _changeController.add(_pendingModelValue);
@@ -1057,6 +1091,54 @@ class LiTreeviewSelectComponent
 
   bool _isNodeSelected(TreeViewNode node) {
     return selectedNodes.any((selected) => identical(selected, node));
+  }
+
+  void _toggleMultipleNodeSelection(TreeViewNode node) {
+    final isSelected = _isNodeSelected(node);
+    final affectedNodes = _affectedNodesForMultipleSelection(node);
+    if (affectedNodes.isEmpty) {
+      return;
+    }
+
+    if (isSelected) {
+      for (final affected in affectedNodes) {
+        affected.treeViewNodeIsSelected = false;
+      }
+      selectedNodes = selectedNodes
+          .where((selected) =>
+              !affectedNodes.any((affected) => identical(affected, selected)))
+          .toList(growable: false);
+      return;
+    }
+
+    final nextSelectedNodes = <TreeViewNode>[...selectedNodes];
+    for (final affected in affectedNodes) {
+      affected.treeViewNodeIsSelected = true;
+      if (!nextSelectedNodes.any((selected) => identical(selected, affected))) {
+        nextSelectedNodes.add(affected);
+      }
+    }
+    selectedNodes = List<TreeViewNode>.unmodifiable(nextSelectedNodes);
+  }
+
+  List<TreeViewNode> _affectedNodesForMultipleSelection(TreeViewNode node) {
+    if (!selectDescendantsOnParentSelect || node.treeViewNodes.isEmpty) {
+      return isSelectable(node) ? <TreeViewNode>[node] : <TreeViewNode>[];
+    }
+
+    final nodes = <TreeViewNode>[];
+
+    void walk(TreeViewNode current) {
+      if (isSelectable(current)) {
+        nodes.add(current);
+      }
+      for (final child in current.treeViewNodes) {
+        walk(child);
+      }
+    }
+
+    walk(node);
+    return nodes;
   }
 
   void _clearSelectedState(List<TreeViewNode> nodes) {

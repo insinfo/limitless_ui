@@ -35,6 +35,43 @@ class DatePickerCalendarCell {
   });
 }
 
+class LiDatePickerTriggerContext {
+  LiDatePickerTriggerContext._(this._component);
+
+  final LiDatePickerComponent _component;
+
+  DateTime? get value => _component.value;
+
+  DateTime? get draftValue => _component.draftValue;
+
+  String get displayValue => _component.displayValue;
+
+  String get draftDisplayValue => _component.draftDisplayValue;
+
+  String get placeholder => _component.effectivePlaceholder;
+
+  bool get hasValue => _component.hasValue;
+
+  bool get disabled => _component.isDisabled;
+
+  bool get isOpen => _component.isOpen;
+
+  void open() => _component.open();
+
+  void close() => _component.close();
+
+  void toggle() => _component.toggleOpen();
+
+  void clear([html.Event? event]) => _component.clearFromTriggerTemplate(event);
+}
+
+@Directive(selector: 'template[liDatePickerTrigger]')
+class LiDatePickerTriggerDirective {
+  LiDatePickerTriggerDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
 /// Single-date picker built from the same visual and behavioral foundation as
 /// `LiDateRangePickerComponent`.
 ///
@@ -44,7 +81,7 @@ class DatePickerCalendarCell {
   selector: 'li-date-picker',
   styleUrls: ['date_picker_component.css'],
   templateUrl: 'date_picker_component.html',
-  directives: [coreDirectives],
+  directives: [coreDirectives, LiDatePickerTriggerDirective],
   providers: [
     ExistingProvider.forToken(ngValueAccessor, LiDatePickerComponent),
   ],
@@ -228,10 +265,10 @@ class LiDatePickerComponent
 
   /// Mobile presentation for small viewports.
   ///
-  /// `dropdown` keeps the normal anchored overlay. `modal` shows a centered
-  /// fixed dialog with a backdrop, and `sheet` shows a bottom sheet.
+  /// `dropdown` keeps the normal anchored overlay. `modal` shows a fixed
+  /// dialog with a backdrop, and `sheet` shows a bottom sheet.
   @Input()
-  String mobilePresentation = 'dropdown';
+  String mobilePresentation = 'modal';
 
   /// CSS `max-width` media-query used by [mobilePresentation].
   @Input()
@@ -253,11 +290,16 @@ class LiDatePickerComponent
   @ViewChild('panelElement')
   html.Element? panelElement;
 
+  @ContentChild(LiDatePickerTriggerDirective)
+  LiDatePickerTriggerDirective? triggerTemplate;
+
   DateTime? draftValue;
   DateTime visibleMonth = _monthStart(DateTime.now());
   late List<List<DatePickerCalendarCell>> calendar;
   bool isOpen = false;
   DatePickerViewMode viewMode = DatePickerViewMode.day;
+  late final LiDatePickerTriggerContext triggerContext =
+      LiDatePickerTriggerContext._(this);
 
   ChangeFunction<DateTime?> _onChange = (DateTime? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
@@ -491,6 +533,28 @@ class LiDatePickerComponent
     _open();
   }
 
+  void open() {
+    if (isDisabled || isOpen) {
+      return;
+    }
+
+    _open();
+  }
+
+  void handleTriggerKeydown(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
+    if (event.code == 'Enter' ||
+        event.code == 'NumpadEnter' ||
+        event.code == 'Space' ||
+        event.key == ' ') {
+      event.preventDefault();
+      toggleOpen();
+    }
+  }
+
   void _open() {
     draftValue = _normalize(value);
     _syncVisibleMonth();
@@ -498,6 +562,7 @@ class LiDatePickerComponent
     isOpen = true;
     if (!usesMobilePresentation) {
       _ensureOverlay();
+      resetOverlayViewportConstraints(floatingElement: panelElement);
       _overlay?.startAutoUpdate();
       _overlay?.update();
     } else {
@@ -603,10 +668,17 @@ class LiDatePickerComponent
     _markForCheck();
   }
 
-  void clearFromTrigger(html.MouseEvent event) {
-    event.preventDefault();
-    event.stopPropagation();
+  void clearFromTriggerTemplate([html.Event? event]) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    if (isDisabled) {
+      return;
+    }
     clear();
+  }
+
+  void clearFromTrigger(html.MouseEvent event) {
+    clearFromTriggerTemplate(event);
   }
 
   void close() {

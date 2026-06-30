@@ -40,6 +40,17 @@ class LiModalComponent implements OnInit, OnDestroy {
   @Input()
   bool enableModalBodyClass = true;
 
+  /// Adds the internal body layout class without Bootstrap body padding.
+  ///
+  /// Enable this when [enableModalBodyClass] is false but projected
+  /// content still needs to participate in fullscreen modal flex/scroll layout.
+  @Input()
+  bool enableModalBodyLayout = false;
+
+  /// Extra classes applied to the modal body container.
+  @Input()
+  String bodyClass = '';
+
   @Input()
   bool lockBodyScroll = true;
 
@@ -264,6 +275,28 @@ class LiModalComponent implements OnInit, OnDestroy {
     return resolvedAriaLabelledBy == null && hasTitleText
         ? titleText.trim()
         : null;
+  }
+
+  String get resolvedBodyClass {
+    final useInternalBodyLayout =
+        !enableModalBodyClass && enableModalBodyLayout;
+    final hasExtraBodyClass = bodyClass.trim().isNotEmpty;
+    final usePositionContext =
+        enableModalBodyClass || useInternalBodyLayout || hasExtraBodyClass;
+
+    return _joinClasses(<String>[
+      enableModalBodyClass ? 'modal-body' : '',
+      useInternalBodyLayout ? 'li-modal-body' : '',
+      usePositionContext ? 'position-relative' : '',
+      bodyClass,
+    ]);
+  }
+
+  String _joinClasses(List<String> values) {
+    return values
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(' ');
   }
 
   bool _isEscapeKey(KeyboardEvent event) {

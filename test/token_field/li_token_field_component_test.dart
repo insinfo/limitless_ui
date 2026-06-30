@@ -19,12 +19,13 @@ import 'li_token_field_component_test.template.dart' as ng;
 @Component(
   selector: 'li-token-field-test-host',
   template: '''
-    <div style="width: 360px;">
+    <div [style.width.px]="wrapperWidth">
       <li-token-field
           #field
           [filterInput]="true"
           patternAllowed="[0-9/]"
           patternToken="\\d+/\\d+"
+          [wrapTokens]="wrapTokens"
           [(ngModel)]="tokens">
       </li-token-field>
     </div>
@@ -36,6 +37,8 @@ class TokenFieldTestHostComponent {
   LiTokenFieldComponent? field;
 
   List<String> tokens = <String>['35910/2011'];
+  int wrapperWidth = 360;
+  bool wrapTokens = false;
 }
 
 @Component(
@@ -121,6 +124,34 @@ void main() {
     expect(inputRect.top, lessThan(tokenRect.bottom - 2));
     expect(inputRect.left, greaterThan(tokenRect.left));
     expect(inputRect.width, greaterThan(120));
+  });
+
+  test('permite quebrar tokens em múltiplas linhas quando configurado',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.wrapperWidth = 180;
+      component.wrapTokens = true;
+      component.tokens = <String>[
+        '10/2026',
+        '10/2025',
+        '10/2024',
+        '10/2023',
+      ];
+    });
+    await _settle(fixture);
+
+    final field =
+        fixture.rootElement.querySelector('.li-token-field') as html.Element;
+    final input = fixture.rootElement.querySelector('.li-token-field__input')
+        as html.InputElement;
+    final tokens = fixture.rootElement.querySelectorAll('.tokenfield-set-item');
+    final tokenRows = tokens
+        .map((element) => element.getBoundingClientRect().top.round())
+        .toSet();
+
+    expect(field.classes.contains('li-token-field--wrap'), isTrue);
+    expect(input.style.width, isEmpty);
+    expect(tokenRows.length, greaterThan(1));
   });
 
   test('allows granular action visibility and emits clearAction', () async {

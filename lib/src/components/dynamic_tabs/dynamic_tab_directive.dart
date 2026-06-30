@@ -24,6 +24,21 @@ class LiTabxDirective {
   @HostBinding('class.tab-pane')
   bool tabPane = true;
 
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_tabs_panel';
+
+  @HostBinding('attr.data-value')
+  String get hostDataValue {
+    final index = tabsx?.tabs.indexOf(this) ?? -1;
+    return index < 0 ? '' : index.toString();
+  }
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen => active ? 'true' : 'false';
+
+  @HostBinding('attr.data-disabled')
+  String get hostDataDisabled => disabled ? 'true' : 'false';
+
   /// provides the injected parent tabset
   LiTabsComponent? tabsx;
 

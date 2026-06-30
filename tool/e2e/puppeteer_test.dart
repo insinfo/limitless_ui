@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:puppeteer/puppeteer.dart';
 import 'package:test/test.dart';
 
@@ -193,6 +195,70 @@ void main() {
         'data-value',
         (value) => value != null && value.contains('-'),
       );
+      final presetRangeBefore = await attributeValueAt(
+        page,
+        '[data-label="li_date_range_picker"]',
+        1,
+        'data-value',
+      );
+      await clickVisibleAt(
+        page,
+        '[data-label="li_date_range_picker_trigger"]',
+        1,
+      );
+      await clickFirstVisible(
+        page,
+        '[data-label="li_date_range_picker_preset"][data-value="last_7_days"]',
+      );
+      await waitForAttributeAtMatching(
+        page,
+        '[data-label="li_date_range_picker"]',
+        1,
+        'data-value',
+        (value) =>
+            value != null && value.contains('-') && value != presetRangeBefore,
+      );
+      await clickVisibleAt(
+        page,
+        '[data-label="li_date_range_picker_trigger"]',
+        1,
+      );
+      await clickFirstVisible(
+        page,
+        '[data-label="li_date_range_picker_custom_range"]',
+      );
+      await waitForSelectorCountAtLeast(
+        page,
+        '[data-label="li_date_range_picker_panel"].is-open .drp-calendar',
+        2,
+      );
+      final customRangeMetrics = await page.evaluate(
+        r'''() => {
+          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const custom = document.querySelector('[data-label="li_date_range_picker_custom_range"]');
+          const thisMonth = document.querySelector('[data-label="li_date_range_picker_preset"][data-value="this_month"]');
+          const calendar = document.querySelector('[data-label="li_date_range_picker_panel"].is-open .drp-calendar');
+          const panelRect = panel.getBoundingClientRect();
+          const calendarRect = calendar.getBoundingClientRect();
+          return {
+            customActive: custom.classList.contains('active'),
+            thisMonthActive: thisMonth.classList.contains('active'),
+            panelRight: panelRect.right,
+            viewportWidth: window.innerWidth,
+            overflowX: window.getComputedStyle(panel).overflowX,
+            calendarWidth: calendarRect.width
+          };
+        }''',
+      ) as Map;
+      expect(customRangeMetrics['customActive'], isTrue);
+      expect(customRangeMetrics['thisMonthActive'], isFalse);
+      expect(
+        (customRangeMetrics['panelRight'] as num) <=
+            (customRangeMetrics['viewportWidth'] as num) + 1,
+        isTrue,
+      );
+      expect(customRangeMetrics['overflowX'], isNot('visible'));
+      expect((customRangeMetrics['calendarWidth'] as num) >= 280, isTrue);
 
       await gotoExample(page, 'time-picker');
       await clickFirstVisible(page, '[data-label="li_time_picker_trigger"]');
@@ -206,6 +272,409 @@ void main() {
         '[data-label="li_time_picker"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
+      );
+    }, skip: skipExampleE2eReason());
+
+    test('mantem posicao desktop do date picker ao reabrir pelo mesmo trigger',
+        () async {
+      await page.setViewport(DeviceViewport(width: 1000, height: 650));
+      await gotoExample(page, 'date-picker');
+
+      Future<Map<dynamic, dynamic>> openDatePickerAt(num fraction) async {
+        final point = await page.evaluate(
+          r'''(fraction) => {
+            const triggers = [...document.querySelectorAll('[data-label="li_date_picker_trigger"]')]
+              .filter((item) => {
+                const rect = item.getBoundingClientRect();
+                const style = window.getComputedStyle(item);
+                return rect.width > 0 &&
+                  rect.height > 0 &&
+                  style.display !== 'none' &&
+                  style.visibility !== 'hidden' &&
+                  style.pointerEvents !== 'none';
+              });
+            const trigger = triggers[1] || triggers[0];
+            trigger.scrollIntoView({
+              block: 'center',
+              inline: 'nearest',
+              behavior: 'instant'
+            });
+            const rect = trigger.getBoundingClientRect();
+            return {
+              x: rect.left + rect.width * fraction,
+              y: rect.top + rect.height / 2
+            };
+          }''',
+          args: [fraction],
+        ) as Map;
+
+        await aguarde(100);
+        await page.mouse.move(
+          math.Point<num>(point['x'] as num, point['y'] as num),
+        );
+        await page.mouse.down();
+        await page.mouse.up();
+        await waitForSelectorMatching(
+          page,
+          '[data-label="li_date_picker_panel"].is-open',
+        );
+        await aguarde(250);
+
+        return await page.evaluate(
+          r'''() => {
+            const panel = document.querySelector('[data-label="li_date_picker_panel"].is-open');
+            const rect = panel.getBoundingClientRect();
+            return {
+              left: rect.left,
+              top: rect.top,
+              width: rect.width,
+              height: rect.height,
+              placement: panel.getAttribute('data-popper-placement'),
+              inlineMaxHeight: panel.style.maxHeight,
+              inlineOverflowY: panel.style.overflowY
+            };
+          }''',
+        ) as Map;
+      }
+
+      final firstOpen = await openDatePickerAt(0.15);
+      await page.keyboard.press(Key.escape);
+      await aguarde(200);
+
+      final secondOpen = await openDatePickerAt(0.85);
+      expect(
+        ((secondOpen['left'] as num) - (firstOpen['left'] as num)).abs(),
+        lessThanOrEqualTo(2),
+      );
+      expect(
+        ((secondOpen['top'] as num) - (firstOpen['top'] as num)).abs(),
+        lessThanOrEqualTo(2),
+      );
+      expect(secondOpen['placement'], firstOpen['placement']);
+    }, skip: skipExampleE2eReason());
+
+    test('mantem date range mobile fullscreen estavel ao selecionar datas',
+        () async {
+      await page.setViewport(DeviceViewport(width: 375, height: 667));
+      await gotoExample(page, 'date-range');
+      await clickFirstVisible(
+        page,
+        '[data-label="li_date_range_picker_trigger"]',
+      );
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_date_range_picker_panel"].date-range-open--mobile-modal.is-open',
+      );
+
+      final beforeMetrics = await page.evaluate(
+        r'''() => {
+          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const content = panel.querySelector('.date-range-panel-content');
+          const rect = panel.getBoundingClientRect();
+          const style = window.getComputedStyle(panel);
+          const contentStyle = window.getComputedStyle(content);
+          return {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight,
+            transform: style.transform,
+            overflow: style.overflow,
+            contentOverflowY: contentStyle.overflowY
+          };
+        }''',
+      ) as Map;
+
+      await clickFirstVisible(
+        page,
+        '[data-label="li_date_range_picker_day"][data-calendar="left"].available:not(.off)',
+      );
+
+      final afterMetrics = await page.evaluate(
+        r'''() => {
+          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const content = panel.querySelector('.date-range-panel-content');
+          const rect = panel.getBoundingClientRect();
+          const style = window.getComputedStyle(panel);
+          const contentStyle = window.getComputedStyle(content);
+          return {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight,
+            transform: style.transform,
+            overflow: style.overflow,
+            contentOverflowY: contentStyle.overflowY
+          };
+        }''',
+      ) as Map;
+
+      expect((beforeMetrics['top'] as num).abs() <= 1, isTrue);
+      expect((beforeMetrics['left'] as num).abs() <= 1, isTrue);
+      expect(
+        (beforeMetrics['width'] as num) >=
+            (beforeMetrics['viewportWidth'] as num) - 1,
+        isTrue,
+      );
+      expect(
+        (beforeMetrics['height'] as num) >=
+            (beforeMetrics['viewportHeight'] as num) - 1,
+        isTrue,
+      );
+      expect(beforeMetrics['transform'],
+          anyOf('none', 'matrix(1, 0, 0, 1, 0, 0)'));
+      expect(beforeMetrics['overflow'], 'hidden');
+      expect(beforeMetrics['contentOverflowY'], 'auto');
+      expect(
+        ((afterMetrics['top'] as num) - (beforeMetrics['top'] as num)).abs() <=
+            1,
+        isTrue,
+      );
+      expect(
+        ((afterMetrics['left'] as num) - (beforeMetrics['left'] as num))
+                .abs() <=
+            1,
+        isTrue,
+      );
+      expect(
+        ((afterMetrics['width'] as num) - (beforeMetrics['width'] as num))
+                .abs() <=
+            1,
+        isTrue,
+      );
+      expect(
+        ((afterMetrics['height'] as num) - (beforeMetrics['height'] as num))
+                .abs() <=
+            1,
+        isTrue,
+      );
+    }, skip: skipExampleE2eReason());
+
+    test('mostra presets mobile sem area vazia antes do calendario', () async {
+      await page.setViewport(DeviceViewport(width: 375, height: 667));
+      await gotoExample(page, 'date-range');
+      await clickVisibleAt(
+        page,
+        '[data-label="li_date_range_picker_trigger"]',
+        1,
+      );
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_date_range_picker_panel"].date-range-open--mobile-modal.is-open',
+      );
+
+      final presetsOnlyMetrics = await page.evaluate(
+        r'''() => {
+          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const content = panel.querySelector('.date-range-panel-content');
+          const presets = panel.querySelector('.date-range-presets');
+          const rect = panel.getBoundingClientRect();
+          const contentRect = content.getBoundingClientRect();
+          const presetsRect = presets.getBoundingClientRect();
+          return {
+            calendarCount: panel.querySelectorAll('.drp-calendar').length,
+            panelHeight: rect.height,
+            contentHeight: contentRect.height,
+            presetsHeight: presetsRect.height,
+            viewportHeight: window.innerHeight,
+            presetsBorderBottom: window.getComputedStyle(presets).borderBottomWidth
+          };
+        }''',
+      ) as Map;
+
+      expect(presetsOnlyMetrics['calendarCount'], 0);
+      expect(
+        (presetsOnlyMetrics['panelHeight'] as num) <
+            (presetsOnlyMetrics['viewportHeight'] as num) * 0.75,
+        isTrue,
+      );
+      expect(
+        ((presetsOnlyMetrics['contentHeight'] as num) -
+                    (presetsOnlyMetrics['presetsHeight'] as num))
+                .abs() <=
+            2,
+        isTrue,
+      );
+      expect(presetsOnlyMetrics['presetsBorderBottom'], '0px');
+
+      await clickFirstVisible(
+        page,
+        '[data-label="li_date_range_picker_custom_range"]',
+      );
+      await waitForSelectorCountAtLeast(
+        page,
+        '[data-label="li_date_range_picker_panel"].is-open .drp-calendar',
+        2,
+      );
+
+      final calendarMetrics = await page.evaluate(
+        r'''() => {
+          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const rect = panel.getBoundingClientRect();
+          return {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight
+          };
+        }''',
+      ) as Map;
+
+      expect((calendarMetrics['top'] as num).abs() <= 1, isTrue);
+      expect((calendarMetrics['left'] as num).abs() <= 1, isTrue);
+      expect(
+        (calendarMetrics['width'] as num) >=
+            (calendarMetrics['viewportWidth'] as num) - 1,
+        isTrue,
+      );
+      expect(
+        (calendarMetrics['height'] as num) >=
+            (calendarMetrics['viewportHeight'] as num) - 1,
+        isTrue,
+      );
+    }, skip: skipExampleE2eReason());
+
+    test('mantem date e time picker mobile fullscreen', () async {
+      await page.setViewport(DeviceViewport(width: 375, height: 667));
+
+      await gotoExample(page, 'date-picker');
+      await clickFirstVisible(page, '[data-label="li_date_picker_trigger"]');
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_date_picker_panel"].date-picker-open--mobile-modal.is-open',
+      );
+      final dateMetrics = await page.evaluate(
+        r'''() => {
+          const panel = document.querySelector('[data-label="li_date_picker_panel"].is-open');
+          const calendar = panel.querySelector('.single-calendar');
+          const rect = panel.getBoundingClientRect();
+          return {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight,
+            overflowX: window.getComputedStyle(panel).overflowX,
+            overflowY: window.getComputedStyle(panel).overflowY,
+            calendarClientHeight: calendar.clientHeight,
+            calendarScrollHeight: calendar.scrollHeight,
+            calendarTableHeight: window.getComputedStyle(
+              calendar.querySelector('.calendar-table')
+            ).height
+          };
+        }''',
+      ) as Map;
+      expect((dateMetrics['top'] as num).abs() <= 1, isTrue);
+      expect((dateMetrics['left'] as num).abs() <= 1, isTrue);
+      expect(
+        (dateMetrics['width'] as num) >=
+            (dateMetrics['viewportWidth'] as num) - 1,
+        isTrue,
+      );
+      expect(
+        (dateMetrics['height'] as num) >=
+            (dateMetrics['viewportHeight'] as num) - 1,
+        isTrue,
+      );
+      expect(dateMetrics['overflowX'], 'hidden');
+      expect(dateMetrics['overflowY'], 'auto');
+      expect(
+        (dateMetrics['calendarScrollHeight'] as num) <=
+            (dateMetrics['calendarClientHeight'] as num) + 1,
+        isTrue,
+      );
+
+      await gotoExample(page, 'time-picker');
+      await clickFirstVisible(page, '[data-label="li_time_picker_trigger"]');
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_time_picker_panel"].time-picker-panel--mobile-modal.is-open',
+      );
+      final timeBeforeMetrics = await page.evaluate(
+        r'''() => {
+          const panel = document.querySelector('[data-label="li_time_picker_panel"].is-open');
+          const shell = panel.querySelector('.time-picker-panel-shell');
+          const footer = panel.querySelector('.time-picker-footer');
+          const rect = panel.getBoundingClientRect();
+          return {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            viewportWidth: window.innerWidth,
+            viewportHeight: window.innerHeight,
+            overflow: window.getComputedStyle(panel).overflow,
+            shellOverflowY: window.getComputedStyle(shell).overflowY,
+            footerBorderTopStyle: window.getComputedStyle(footer).borderTopStyle,
+            footerBorderTopWidth: window.getComputedStyle(footer).borderTopWidth
+          };
+        }''',
+      ) as Map;
+      await clickFirstVisible(
+        page,
+        '[data-label="li_time_picker_dial_label"][data-value="10"]',
+      );
+      final timeAfterMetrics = await page.evaluate(
+        r'''() => {
+          const panel = document.querySelector('[data-label="li_time_picker_panel"].is-open');
+          const rect = panel.getBoundingClientRect();
+          return {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height
+          };
+        }''',
+      ) as Map;
+
+      expect((timeBeforeMetrics['top'] as num).abs() <= 1, isTrue);
+      expect((timeBeforeMetrics['left'] as num).abs() <= 1, isTrue);
+      expect(
+        (timeBeforeMetrics['width'] as num) >=
+            (timeBeforeMetrics['viewportWidth'] as num) - 1,
+        isTrue,
+      );
+      expect(
+        (timeBeforeMetrics['height'] as num) >=
+            (timeBeforeMetrics['viewportHeight'] as num) - 1,
+        isTrue,
+      );
+      expect(timeBeforeMetrics['overflow'], 'hidden');
+      expect(timeBeforeMetrics['shellOverflowY'], 'auto');
+      expect(timeBeforeMetrics['footerBorderTopStyle'], 'solid');
+      expect(timeBeforeMetrics['footerBorderTopWidth'], isNot('0px'));
+      expect(
+        ((timeAfterMetrics['top'] as num) - (timeBeforeMetrics['top'] as num))
+                .abs() <=
+            1,
+        isTrue,
+      );
+      expect(
+        ((timeAfterMetrics['left'] as num) - (timeBeforeMetrics['left'] as num))
+                .abs() <=
+            1,
+        isTrue,
+      );
+      expect(
+        ((timeAfterMetrics['width'] as num) -
+                    (timeBeforeMetrics['width'] as num))
+                .abs() <=
+            1,
+        isTrue,
+      );
+      expect(
+        ((timeAfterMetrics['height'] as num) -
+                    (timeBeforeMetrics['height'] as num))
+                .abs() <=
+            1,
+        isTrue,
       );
     }, skip: skipExampleE2eReason());
 
@@ -232,6 +701,26 @@ void main() {
         '[data-label="li_date_picker"]',
         'data-value',
         (value) => value == null || value.isEmpty,
+      );
+      final customTriggerBefore = await attributeValue(
+        page,
+        '[data-label="date_picker_custom_trigger_badge"]',
+        'data-value',
+      );
+      await clickFirstVisible(
+        page,
+        '[data-label="date_picker_custom_trigger_badge"]',
+      );
+      await clickFirstVisible(
+        page,
+        '[data-label="li_date_picker_day"].available:not(.off)',
+      );
+      await waitForAttributeMatching(
+        page,
+        '[data-label="date_picker_custom_trigger_badge"]',
+        'data-value',
+        (value) =>
+            value != null && value.isNotEmpty && value != customTriggerBefore,
       );
 
       await gotoExample(page, 'date-range');

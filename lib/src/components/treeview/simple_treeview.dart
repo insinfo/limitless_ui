@@ -257,6 +257,11 @@ class LiTreeViewComponent {
 
   bool isSelectable(TreeViewNode node) => node.enabled;
 
+  String nodeDataValue(TreeViewNode node) {
+    final value = node.value ?? node.id;
+    return value == null ? '' : value.toString();
+  }
+
   String resolvedNodeLabel(TreeViewNode node) =>
       labelBuilder?.call(node) ?? node.treeViewNodeLabel;
 

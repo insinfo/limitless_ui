@@ -34,6 +34,103 @@ class CustomMultiSelectItem {
       this.instanceObj});
 }
 
+class LiMultiSelectTriggerContext {
+  LiMultiSelectTriggerContext._(this._component);
+
+  final LiMultiSelectComponent _component;
+  int? _selectionSignature;
+  List<dynamic> _selectedValues = const <dynamic>[];
+  List<dynamic> _selectedModels = const <dynamic>[];
+  List<String> _selectedLabels = const <String>[];
+
+  List<dynamic> get selectedValues {
+    _ensureSelectionCache();
+    return _selectedValues;
+  }
+
+  List<dynamic> get selectedModels {
+    _ensureSelectionCache();
+    return _selectedModels;
+  }
+
+  List<String> get selectedLabels {
+    _ensureSelectionCache();
+    return _selectedLabels;
+  }
+
+  String get displayValue {
+    _ensureSelectionCache();
+    return _selectedLabels.isEmpty
+        ? _component.placeholder
+        : _selectedLabels.join(', ');
+  }
+
+  String get placeholder => _component.placeholder;
+
+  bool get hasSelection => _component.hasSelection;
+
+  bool get disabled => _component.isDisabled;
+
+  bool get isOpen => _component.dropdownOpen;
+
+  void open() => _component.openDropdown();
+
+  void close() => _component.closeDropdown(restoreFocus: true);
+
+  void toggle() => _component.toggleDropdown();
+
+  void clear([html.Event? event]) => _component.clearFromTriggerTemplate(event);
+
+  void _ensureSelectionCache() {
+    final signature = _currentSelectionSignature();
+    if (_selectionSignature == signature) {
+      return;
+    }
+
+    final values = <dynamic>[];
+    final models = <dynamic>[];
+    final labels = <String>[];
+    for (final option in _component.options) {
+      if (!option.selected) {
+        continue;
+      }
+      values.add(option.value);
+      models.add(option.instanceObj);
+      labels.add(option.text);
+    }
+
+    _selectionSignature = signature;
+    _selectedValues = List<dynamic>.unmodifiable(values);
+    _selectedModels = List<dynamic>.unmodifiable(models);
+    _selectedLabels = List<String>.unmodifiable(labels);
+  }
+
+  int _currentSelectionSignature() {
+    var hash = _component.options.length;
+    for (var index = 0; index < _component.options.length; index++) {
+      final option = _component.options[index];
+      if (!option.selected) {
+        continue;
+      }
+      hash = Object.hash(
+        hash,
+        index,
+        option.text,
+        identityHashCode(option.value),
+        identityHashCode(option.instanceObj),
+      );
+    }
+    return hash;
+  }
+}
+
+@Directive(selector: 'template[liMultiSelectTrigger]')
+class LiMultiSelectTriggerDirective {
+  LiMultiSelectTriggerDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
 /// Example:
 /// `<li-multi-select [dataSource]="dropdownOptions" [fields]="{'text': 'name', 'value': 'value'}" (currentValueChange)="dropdownValueChanged($event)"></li-multi-select>`
 @Component(
@@ -44,6 +141,7 @@ class CustomMultiSelectItem {
     coreDirectives,
     formDirectives,
     ClickOutsideDirective,
+    LiMultiSelectTriggerDirective,
   ],
   changeDetection: ChangeDetectionStrategy.onPush,
   providers: [
@@ -266,6 +364,9 @@ class LiMultiSelectComponent
   @ContentChildren(LiMultiOptionComponent)
   List<LiMultiOptionComponent> childrenSelectOptions = [];
 
+  @ContentChild(LiMultiSelectTriggerDirective)
+  LiMultiSelectTriggerDirective? triggerTemplate;
+
   @override
   void ngAfterContentInit() {
     for (final opt in childrenSelectOptions) {
@@ -343,6 +444,8 @@ class LiMultiSelectComponent
   bool get hasSelection => options.any((option) => option.selected);
 
   bool dropdownOpen = false;
+  late final LiMultiSelectTriggerContext triggerContext =
+      LiMultiSelectTriggerContext._(this);
 
   /// define de key used get label to diplay from data source options
   @Input('labelKey')
@@ -544,6 +647,20 @@ class LiMultiSelectComponent
     }
   }
 
+  void handleTriggerKeydown(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
+    if (event.code == 'Enter' ||
+        event.code == 'NumpadEnter' ||
+        event.code == 'Space' ||
+        event.key == ' ') {
+      event.preventDefault();
+      toggleDropdown();
+    }
+  }
+
   @override
   void ngOnDestroy() {
     closeDropdown(markForCheck: false);
@@ -573,15 +690,20 @@ class LiMultiSelectComponent
     _scheduleOverlayUpdate();
   }
 
-  void clearSelection(html.Event event) {
+  void clearFromTriggerTemplate([html.Event? event]) {
+    event?.preventDefault();
+    event?.stopPropagation();
+
     if (isDisabled || !hasSelection) {
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
     reset(emitUserValueChange: true);
     dropdownButtonElement?.focus();
+  }
+
+  void clearSelection(html.Event event) {
+    clearFromTriggerTemplate(event);
   }
 
   void _toggleOptionSelection(CustomMultiSelectItem option) {

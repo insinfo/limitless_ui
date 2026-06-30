@@ -96,6 +96,23 @@
     cursor: not-allowed;
 }
 
+.datatable-select-custom-trigger {
+    display: inline-block;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.datatable-select-custom-trigger.disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.datatable-select-custom-trigger:focus-visible {
+    outline: 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--focus-ring-box-shadow);
+}
+
 .datatable-select-value {
     flex: 1 1 auto;
     min-width: 0;
@@ -118,6 +135,10 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.datatable-select-chip--hidden {
+    display: none !important;
 }
 
 .datatable-select-chip--muted {

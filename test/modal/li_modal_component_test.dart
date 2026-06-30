@@ -66,6 +66,8 @@ class ModalTemplateContext {
 
       <button id="open-projected" type="button" (click)="projectedModal?.open()">Open projected</button>
       <button id="open-template-content" type="button" (click)="templateContentModal?.open()">Open template content</button>
+      <button id="open-flush-body" type="button" (click)="flushBodyModal?.open()">Open flush body</button>
+      <button id="open-raw-body" type="button" (click)="rawBodyModal?.open()">Open raw body</button>
       <button id="open-no-escape" type="button" (click)="noEscapeModal?.open()">Open no escape</button>
       <button id="open-stack-a" type="button" (click)="stackModalA?.open()">Open stack A</button>
       <button id="open-stack-b" type="button" (click)="stackModalB?.open()">Open stack B</button>
@@ -102,6 +104,21 @@ class ModalTemplateContext {
         <div id="stack-a-body">Stack A body</div>
       </li-modal>
 
+      <li-modal #flushBodyModal
+                title-text="Flush body"
+                [enableModalBodyClass]="false"
+                [enableModalBodyLayout]="true"
+                bodyClass="custom-flush-body">
+        <div id="flush-body-content">Flush body</div>
+      </li-modal>
+
+      <li-modal #rawBodyModal
+                title-text="Raw body"
+                [enableModalBodyClass]="false"
+                [enableModalBodyLayout]="false">
+        <div id="raw-body-content">Raw body</div>
+      </li-modal>
+
       <li-modal #noEscapeModal
                 title-text="No ESC"
                 size="modal-full"
@@ -131,6 +148,12 @@ class TestHostComponent {
   @ViewChild('templateContentModal')
   LiModalComponent? templateContentModal;
 
+  @ViewChild('flushBodyModal')
+  LiModalComponent? flushBodyModal;
+
+  @ViewChild('rawBodyModal')
+  LiModalComponent? rawBodyModal;
+
   @ViewChild('noEscapeModal')
   LiModalComponent? noEscapeModal;
 
@@ -142,7 +165,7 @@ class TestHostComponent {
 
   int lazyCloseCount = 0;
 
-    final ModalTemplateContext templateContentContext =
+  final ModalTemplateContext templateContentContext =
       const ModalTemplateContext('Template body from input');
 }
 
@@ -219,10 +242,15 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    expect(
-      html.document.body!.querySelector('#start-open-body'),
-      isNotNull,
+    final startOpenBody = html.document.body!.querySelector('#start-open-body');
+    expect(startOpenBody, isNotNull);
+
+    final bootstrapBody = _closestAncestorWithClass(
+      startOpenBody as html.Element,
+      'modal-body',
     );
+    expect(bootstrapBody, isNotNull);
+    expect(bootstrapBody!.classes.contains('li-modal-body'), isFalse);
 
     final openModal = html.document.body!
         .querySelectorAll('[data-status="open"]')
@@ -351,6 +379,62 @@ void main() {
     final hostWrapper =
         _closestAncestorWithClass(templatedBody, 'template-content-host');
     expect(hostWrapper, isNotNull);
+  });
+
+  test('body layout class keeps fullscreen layout without modal-body padding',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    await fixture.update((host) {
+      host.startOpenModal?.close();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-flush-body');
+    });
+    await _settle(fixture);
+
+    final content = html.document.body!.querySelector('#flush-body-content');
+    expect(content, isNotNull);
+
+    final layoutBody = _closestAncestorWithClass(
+      content as html.Element,
+      'li-modal-body',
+    );
+    expect(layoutBody, isNotNull);
+    expect(layoutBody!.classes.contains('modal-body'), isFalse);
+    expect(layoutBody.classes.contains('custom-flush-body'), isTrue);
+
+    final style = layoutBody.getComputedStyle();
+    expect(style.paddingTop, '0px');
+    expect(style.flexGrow, '1');
+    expect(style.minHeight, '0px');
+  });
+
+  test('body layout class can be disabled for raw body wrappers', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    await fixture.update((host) {
+      host.startOpenModal?.close();
+    });
+    await _settle(fixture);
+
+    await fixture.update((_) {
+      _clickById('open-raw-body');
+    });
+    await _settle(fixture);
+
+    final content = html.document.body!.querySelector('#raw-body-content');
+    expect(content, isNotNull);
+
+    final wrapper = (content as html.Element).parent;
+    expect(wrapper, isNotNull);
+    expect(wrapper!.classes.contains('li-modal-body'), isFalse);
+    expect(wrapper.classes.contains('modal-body'), isFalse);
+    expect(wrapper.classes.contains('position-relative'), isFalse);
   });
 
   test('escape closes only the topmost modal in the stack', () async {

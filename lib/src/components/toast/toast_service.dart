@@ -11,6 +11,7 @@ class LiToastMessage {
     this.toastClass = '',
     this.headerClass = '',
     this.bodyClass = '',
+    this.automationValue = '',
     this.ariaLive = 'polite',
     this.delay = 5000,
     this.animation = true,
@@ -28,6 +29,7 @@ class LiToastMessage {
   final String toastClass;
   final String headerClass;
   final String bodyClass;
+  final String automationValue;
   final String ariaLive;
   final int delay;
   final bool animation;
@@ -54,6 +56,7 @@ class LiToastService {
     String toastClass = '',
     String headerClass = '',
     String bodyClass = '',
+    String automationValue = '',
     String ariaLive = 'polite',
     int delay = 5000,
     bool animation = true,
@@ -71,6 +74,7 @@ class LiToastService {
       toastClass: toastClass,
       headerClass: headerClass,
       bodyClass: bodyClass,
+      automationValue: automationValue,
       ariaLive: ariaLive,
       delay: delay,
       animation: animation,

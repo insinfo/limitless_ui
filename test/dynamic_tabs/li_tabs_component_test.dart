@@ -47,6 +47,28 @@ void main() {
         fixture.rootElement.querySelector('.tab-content');
     expect(tabContent, isNotNull);
     expect(tabContent!.classes.contains('p-1'), isTrue);
+    final tabs = fixture.rootElement.querySelector('li-tabsx');
+    final navLink = fixture.rootElement.querySelector(
+      '[data-label="li_tabs_nav_link"][data-value="0"]',
+    );
+
+    expect(tabs, isNotNull);
+    expect(tabs!.getAttribute('data-label'), 'li_tabs');
+    expect(tabs.getAttribute('data-value'), '0');
+    expect(
+      fixture.rootElement.querySelector('[data-label="li_tabs_nav"]'),
+      isNotNull,
+    );
+    expect(navLink, isNotNull);
+    expect(navLink!.getAttribute('data-active'), 'true');
+    expect(
+      fixture.rootElement.querySelector('[data-label="li_tabs_content"]'),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector('[data-label="li_tabs_panel"]'),
+      isNotNull,
+    );
 
     await fixture.update((component) {
       component.contentPadding = false;

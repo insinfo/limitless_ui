@@ -1,6 +1,25 @@
 <div class="date-range-wrapper" [attr.data-label]="'li_date_range_picker'" [attr.data-value]="displayValue">
     <div *ngIf="usesMobilePresentation" class="date-range-mobile-backdrop" (click)="close()"></div>
-    <div *ngIf="usesOverlayTriggerIcon" #triggerElement class="date-range-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()"
+    <div *ngIf="triggerTemplate != null" #triggerElement
+        class="date-range-custom-trigger"
+        [class.disabled]="isDisabled"
+        [attr.data-li-form-focus-target]="'true'"
+        [attr.data-label]="'li_date_range_picker_trigger'"
+        [attr.data-value]="displayValue"
+        role="button"
+        [attr.aria-expanded]="isOpen.toString()"
+        [attr.aria-describedby]="resolvedDescribedBy"
+        [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+        [attr.data-invalid]="effectiveInvalid ? 'true' : null"
+        [attr.tabindex]="isDisabled ? null : '0'"
+        (click)="toggleOpen()"
+        (keydown)="handleTriggerKeydown($event)">
+        <template [ngTemplateOutlet]="triggerTemplate?.templateRef"
+            [ngTemplateOutletValue]="triggerContext">
+        </template>
+    </div>
+
+    <div *ngIf="triggerTemplate == null && usesOverlayTriggerIcon" #triggerElement class="date-range-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()"
         [attr.data-label]="'li_date_range_picker_trigger'"
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedOverlayInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
@@ -19,7 +38,7 @@
             </button>
         </div>
     </div>
-    <div *ngIf="!usesOverlayTriggerIcon" #triggerElement [class]="resolvedInputGroupClass" (click)="toggleOpen()"
+    <div *ngIf="triggerTemplate == null && !usesOverlayTriggerIcon" #triggerElement [class]="resolvedInputGroupClass" (click)="toggleOpen()"
         [attr.data-label]="'li_date_range_picker_trigger'"
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
@@ -44,134 +63,159 @@
         [attr.data-label]="'li_date_range_picker_panel'"
         [class.date-range-open--mobile-modal]="usesMobileModal"
         [class.date-range-open--mobile-sheet]="usesMobileSheet"
+        [class.date-range-open--with-presets]="showPresetList"
+        [class.date-range-open--with-preset-calendars]="showPresetList && showCalendars"
         [class.is-open]="isOpen"
         [attr.role]="usesMobilePresentation ? 'dialog' : null"
         [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
-        <div class="drp-calendars">
-            <div class="drp-calendar left">
-                <div class="date-range-panel-header">
-                    <button type="button" class="calendar-nav prev available" [attr.data-label]="'li_date_range_picker_left_prev'" (click)="prevMonth()">
-                        <span></span>
-                    </button>
-                    <button type="button" class="date-range-view-switch" [attr.data-label]="'li_date_range_picker_left_view_switch'" (click)="toggleLeftViewMode()">
-                        {{ leftHeaderLabel }}
-                    </button>
-                    <button type="button" class="calendar-nav next available" [attr.data-label]="'li_date_range_picker_left_next'" (click)="nextMonth()">
-                        <span></span>
-                    </button>
-                </div>
-
-                <div class="calendar-table" *ngIf="isLeftDayView">
-                    <table class="table-condensed date-range-calendar-table">
-                        <thead>
-                            <tr>
-                                <th *ngFor="let weekday of weekdayLabels; trackBy: trackByYear">{{ weekday }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let week of leftCalendar; trackBy: trackByWeek">
-                                <td *ngFor="let cell of week; trackBy: trackByCell" [class.off]="!cell.isCurrentMonth"
-                                    [class.disabled]="isDisabledDate(cell.date)" [class.available]="!isDisabledDate(cell.date)"
-                                    [class.today]="isToday(cell.date)"
-                                    [class.active]="isStartDate(cell.date) || isEndDate(cell.date)"
-                                    [class.start-date]="isStartDate(cell.date)" [class.end-date]="isEndDate(cell.date)"
-                                    [class.in-range]="isInRange(cell.date)" (mouseenter)="hoverDay(cell.date)"
-                                    [attr.data-label]="'li_date_range_picker_day'"
-                                    [attr.data-calendar]="'left'"
-                                    [attr.data-value]="dateDataValue(cell.date)"
-                                    (click)="selectDay(cell.date)">
-                                    {{ cell.date.day }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div *ngIf="isLeftMonthView" class="date-range-selection-grid">
-                    <button type="button" *ngFor="let option of monthOptions; trackBy: trackByMonthOption"
-                        class="date-range-selection-item" [class.active]="option.month == leftMonth.month"
-                        [class.disabled]="isMonthDisabled(leftMonth.year, option.month)"
-                        [attr.data-label]="'li_date_range_picker_month'"
-                        [attr.data-calendar]="'left'"
-                        [attr.data-value]="option.month.toString()"
-                        (click)="selectLeftMonth(option.month)">
-                        {{ option.label }}
-                    </button>
-                </div>
-
-                <div *ngIf="isLeftYearView" class="date-range-selection-grid date-range-selection-grid-years">
-                    <button type="button" *ngFor="let year of leftVisibleYears; trackBy: trackByYear"
-                        class="date-range-selection-item" [class.active]="year == leftMonth.year"
-                        [class.disabled]="isYearDisabled(year)" [attr.data-label]="'li_date_range_picker_year'"
-                        [attr.data-calendar]="'left'" [attr.data-value]="year.toString()" (click)="selectLeftYear(year)">
-                        {{ year }}
-                    </button>
-                </div>
+        <div class="date-range-panel-content" [class.date-range-panel-content--presets-only]="showPresetList && !showCalendars">
+            <div *ngIf="showPresetList" class="date-range-presets">
+                <button type="button" *ngFor="let preset of presets; let idx = index; trackBy: trackByPreset"
+                    class="date-range-preset"
+                    [class.active]="isPresetActive(preset)"
+                    [class.disabled]="isPresetDisabled(preset)"
+                    [disabled]="isPresetDisabled(preset)"
+                    [attr.data-label]="'li_date_range_picker_preset'"
+                    [attr.data-value]="presetDataValue(preset, idx)"
+                    (click)="selectPreset(preset)">
+                    {{ preset.label }}
+                </button>
+                <button *ngIf="showCustomRangePreset" type="button"
+                    class="date-range-preset"
+                    [class.active]="isCustomRangePresetActive()"
+                    [attr.data-label]="'li_date_range_picker_custom_range'"
+                    [attr.data-value]="'custom'"
+                    (click)="showCustomRange()">
+                    {{ resolvedCustomRangePresetLabel }}
+                </button>
             </div>
 
-            <div class="drp-calendar right">
-                <div class="date-range-panel-header">
-                    <button type="button" class="calendar-nav prev available" [attr.data-label]="'li_date_range_picker_right_prev'" (click)="prevMonth()">
-                        <span></span>
-                    </button>
-                    <button type="button" class="date-range-view-switch" [attr.data-label]="'li_date_range_picker_right_view_switch'" (click)="toggleRightViewMode()">
-                        {{ rightHeaderLabel }}
-                    </button>
-                    <button type="button" class="calendar-nav next available" [attr.data-label]="'li_date_range_picker_right_next'" (click)="nextMonth()">
-                        <span></span>
-                    </button>
+            <div *ngIf="showCalendars" class="drp-calendars">
+                <div class="drp-calendar left">
+                    <div class="date-range-panel-header">
+                        <button type="button" class="calendar-nav prev available" [attr.data-label]="'li_date_range_picker_left_prev'" (click)="prevMonth()">
+                            <span></span>
+                        </button>
+                        <button type="button" class="date-range-view-switch" [attr.data-label]="'li_date_range_picker_left_view_switch'" (click)="toggleLeftViewMode()">
+                            {{ leftHeaderLabel }}
+                        </button>
+                        <button type="button" class="calendar-nav next available" [attr.data-label]="'li_date_range_picker_left_next'" (click)="nextMonth()">
+                            <span></span>
+                        </button>
+                    </div>
+
+                    <div class="calendar-table" *ngIf="isLeftDayView">
+                        <table class="table-condensed date-range-calendar-table">
+                            <thead>
+                                <tr>
+                                    <th *ngFor="let weekday of weekdayLabels; trackBy: trackByYear">{{ weekday }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let week of leftCalendar; trackBy: trackByWeek">
+                                    <td *ngFor="let cell of week; trackBy: trackByCell" [class.off]="!cell.isCurrentMonth"
+                                        [class.disabled]="isDisabledDate(cell.date)" [class.available]="!isDisabledDate(cell.date)"
+                                        [class.today]="isToday(cell.date)"
+                                        [class.active]="isStartDate(cell.date) || isEndDate(cell.date)"
+                                        [class.start-date]="isStartDate(cell.date)" [class.end-date]="isEndDate(cell.date)"
+                                        [class.in-range]="isInRange(cell.date)" (mouseenter)="hoverDay(cell.date)"
+                                        [attr.data-label]="'li_date_range_picker_day'"
+                                        [attr.data-calendar]="'left'"
+                                        [attr.data-value]="dateDataValue(cell.date)"
+                                        (click)="selectDay(cell.date)">
+                                        {{ cell.date.day }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div *ngIf="isLeftMonthView" class="date-range-selection-grid">
+                        <button type="button" *ngFor="let option of monthOptions; trackBy: trackByMonthOption"
+                            class="date-range-selection-item" [class.active]="option.month == leftMonth.month"
+                            [class.disabled]="isMonthDisabled(leftMonth.year, option.month)"
+                            [attr.data-label]="'li_date_range_picker_month'"
+                            [attr.data-calendar]="'left'"
+                            [attr.data-value]="option.month.toString()"
+                            (click)="selectLeftMonth(option.month)">
+                            {{ option.label }}
+                        </button>
+                    </div>
+
+                    <div *ngIf="isLeftYearView" class="date-range-selection-grid date-range-selection-grid-years">
+                        <button type="button" *ngFor="let year of leftVisibleYears; trackBy: trackByYear"
+                            class="date-range-selection-item" [class.active]="year == leftMonth.year"
+                            [class.disabled]="isYearDisabled(year)" [attr.data-label]="'li_date_range_picker_year'"
+                            [attr.data-calendar]="'left'" [attr.data-value]="year.toString()" (click)="selectLeftYear(year)">
+                            {{ year }}
+                        </button>
+                    </div>
                 </div>
 
-                <div class="calendar-table" *ngIf="isRightDayView">
-                    <table class="table-condensed date-range-calendar-table">
-                        <thead>
-                            <tr>
-                                <th *ngFor="let weekday of weekdayLabels; trackBy: trackByYear">{{ weekday }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let week of rightCalendar; trackBy: trackByWeek">
-                                <td *ngFor="let cell of week; trackBy: trackByCell" [class.off]="!cell.isCurrentMonth"
-                                    [class.disabled]="isDisabledDate(cell.date)" [class.available]="!isDisabledDate(cell.date)"
-                                    [class.today]="isToday(cell.date)"
-                                    [class.active]="isStartDate(cell.date) || isEndDate(cell.date)"
-                                    [class.start-date]="isStartDate(cell.date)" [class.end-date]="isEndDate(cell.date)"
-                                    [class.in-range]="isInRange(cell.date)" (mouseenter)="hoverDay(cell.date)"
-                                    [attr.data-label]="'li_date_range_picker_day'"
-                                    [attr.data-calendar]="'right'"
-                                    [attr.data-value]="dateDataValue(cell.date)"
-                                    (click)="selectDay(cell.date)">
-                                    {{ cell.date.day }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <div class="drp-calendar right">
+                    <div class="date-range-panel-header">
+                        <button type="button" class="calendar-nav prev available" [attr.data-label]="'li_date_range_picker_right_prev'" (click)="prevMonth()">
+                            <span></span>
+                        </button>
+                        <button type="button" class="date-range-view-switch" [attr.data-label]="'li_date_range_picker_right_view_switch'" (click)="toggleRightViewMode()">
+                            {{ rightHeaderLabel }}
+                        </button>
+                        <button type="button" class="calendar-nav next available" [attr.data-label]="'li_date_range_picker_right_next'" (click)="nextMonth()">
+                            <span></span>
+                        </button>
+                    </div>
 
-                <div *ngIf="isRightMonthView" class="date-range-selection-grid">
-                    <button type="button" *ngFor="let option of monthOptions; trackBy: trackByMonthOption"
-                        class="date-range-selection-item" [class.active]="option.month == rightMonth.month"
-                        [class.disabled]="isMonthDisabled(rightMonth.year, option.month)"
-                        [attr.data-label]="'li_date_range_picker_month'"
-                        [attr.data-calendar]="'right'"
-                        [attr.data-value]="option.month.toString()"
-                        (click)="selectRightMonth(option.month)">
-                        {{ option.label }}
-                    </button>
-                </div>
+                    <div class="calendar-table" *ngIf="isRightDayView">
+                        <table class="table-condensed date-range-calendar-table">
+                            <thead>
+                                <tr>
+                                    <th *ngFor="let weekday of weekdayLabels; trackBy: trackByYear">{{ weekday }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let week of rightCalendar; trackBy: trackByWeek">
+                                    <td *ngFor="let cell of week; trackBy: trackByCell" [class.off]="!cell.isCurrentMonth"
+                                        [class.disabled]="isDisabledDate(cell.date)" [class.available]="!isDisabledDate(cell.date)"
+                                        [class.today]="isToday(cell.date)"
+                                        [class.active]="isStartDate(cell.date) || isEndDate(cell.date)"
+                                        [class.start-date]="isStartDate(cell.date)" [class.end-date]="isEndDate(cell.date)"
+                                        [class.in-range]="isInRange(cell.date)" (mouseenter)="hoverDay(cell.date)"
+                                        [attr.data-label]="'li_date_range_picker_day'"
+                                        [attr.data-calendar]="'right'"
+                                        [attr.data-value]="dateDataValue(cell.date)"
+                                        (click)="selectDay(cell.date)">
+                                        {{ cell.date.day }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div *ngIf="isRightYearView" class="date-range-selection-grid date-range-selection-grid-years">
-                    <button type="button" *ngFor="let year of rightVisibleYears; trackBy: trackByYear"
-                        class="date-range-selection-item" [class.active]="year == rightMonth.year"
-                        [class.disabled]="isYearDisabled(year)" [attr.data-label]="'li_date_range_picker_year'"
-                        [attr.data-calendar]="'right'" [attr.data-value]="year.toString()" (click)="selectRightYear(year)">
-                        {{ year }}
-                    </button>
+                    <div *ngIf="isRightMonthView" class="date-range-selection-grid">
+                        <button type="button" *ngFor="let option of monthOptions; trackBy: trackByMonthOption"
+                            class="date-range-selection-item" [class.active]="option.month == rightMonth.month"
+                            [class.disabled]="isMonthDisabled(rightMonth.year, option.month)"
+                            [attr.data-label]="'li_date_range_picker_month'"
+                            [attr.data-calendar]="'right'"
+                            [attr.data-value]="option.month.toString()"
+                            (click)="selectRightMonth(option.month)">
+                            {{ option.label }}
+                        </button>
+                    </div>
+
+                    <div *ngIf="isRightYearView" class="date-range-selection-grid date-range-selection-grid-years">
+                        <button type="button" *ngFor="let year of rightVisibleYears; trackBy: trackByYear"
+                            class="date-range-selection-item" [class.active]="year == rightMonth.year"
+                            [class.disabled]="isYearDisabled(year)" [attr.data-label]="'li_date_range_picker_year'"
+                            [attr.data-calendar]="'right'" [attr.data-value]="year.toString()" (click)="selectRightYear(year)">
+                            {{ year }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="drp-buttons">
+        <div *ngIf="showCalendars" class="drp-buttons">
             <span class="drp-selected">
                 {{ draftDisplayValue.isEmpty ? emptySelectionLabel : draftDisplayValue }}
             </span>

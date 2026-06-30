@@ -719,15 +719,20 @@ class _LiTooltipOverlay implements OnDestroy {
       ..id = _tooltipId
       ..classes.add('tooltip')
       ..setAttribute('role', 'tooltip')
+      ..setAttribute('data-label', 'li_tooltip_panel')
+      ..setAttribute('data-open', 'true')
       ..style.pointerEvents = 'auto';
 
     if (animation) {
       tooltipElement.classes.add('fade');
     }
 
-    final tooltipArrowElement = html.DivElement()..classes.add('tooltip-arrow');
+    final tooltipArrowElement = html.DivElement()
+      ..classes.add('tooltip-arrow')
+      ..setAttribute('data-label', 'li_tooltip_arrow');
     final tooltipInnerElement = html.DivElement()
       ..classes.add('tooltip-inner')
+      ..setAttribute('data-label', 'li_tooltip_body')
       ..style.whiteSpace = 'pre-line';
 
     tooltipElement
@@ -1262,6 +1267,12 @@ class LiTooltipComponent implements OnDestroy {
   @HostBinding('class.li-tooltip-host')
   bool hostTooltipClass = true;
 
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_tooltip_trigger';
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen => isVisible ? 'true' : 'false';
+
   bool get isVisible => _overlay.isOpen();
 
   @HostListener('mouseenter')
@@ -1385,6 +1396,12 @@ class LiTooltipDirective implements OnDestroy {
 
   @Output('hidden')
   Stream<void> get hidden => _overlay.hiddenEvent;
+
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_tooltip_trigger';
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen => isOpen() ? 'true' : 'false';
 
   @HostListener('mouseenter')
   void onMouseEnter() {

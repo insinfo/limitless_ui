@@ -12,6 +12,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiTabsComponent,
     LiTabxDirective,
     LiTimePickerComponent,
+    LiTimePickerTriggerDirective,
   ],
 )
 class TimePickerPageComponent {
@@ -34,6 +35,16 @@ class TimePickerPageComponent {
   (userValueChange)="reloadAfterUserTimeChange(\$event)">
 </li-time-picker>''';
 
+  static const String customTriggerSnippet = '''
+<li-time-picker [(ngModel)]="badgeTime" [use24Hour]="true">
+  <template liTimePickerTrigger let-ctx>
+    <span class="badge bg-teal d-inline-flex align-items-center gap-1">
+      <i class="ph ph-clock"></i>
+      {{ ctx.hasValue ? ctx.displayValue : ctx.placeholder }}
+    </span>
+  </template>
+</li-time-picker>''';
+
   static const String automationHooksSnippet = '''
 await clickFirstVisible(page, '[data-label="li_time_picker_trigger"]');
 await clickFirstVisible(
@@ -50,11 +61,13 @@ await waitForAttributeMatching(
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;
+  bool get isPortuguese => i18n.isPortuguese;
 
   Duration? selectedTime = const Duration(hours: 10, minutes: 48);
   Duration? selectedTime24h = const Duration(hours: 18, minutes: 30);
   Duration? reviewTime = const Duration(hours: 12, minutes: 0);
   Duration? disabledTime = const Duration(hours: 21, minutes: 15);
+  Duration? badgeTime = const Duration(hours: 14, minutes: 15);
 
   String get selectedTimeLabel => _formatTime(selectedTime);
   String get selectedTime24hLabel => _formatTime24(selectedTime24h);
@@ -62,6 +75,8 @@ await waitForAttributeMatching(
   String get reviewTimeLabel => _formatTime(reviewTime);
 
   String get disabledTimeLabel => _formatTime(disabledTime);
+
+  String get badgeTimeLabel => _formatTime24(badgeTime);
 
   String _formatTime(Duration? value) {
     if (value == null) {

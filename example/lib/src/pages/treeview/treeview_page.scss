@@ -38,6 +38,10 @@
   text-overflow: ellipsis;
 }
 
+.treeview-trigger-chip--hidden {
+  display: none !important;
+}
+
 .treeview-trigger-chip--muted {
   background: var(--gray-100);
   border-color: var(--gray-200);

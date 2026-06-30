@@ -35,6 +35,18 @@ class LiAccordionButtonDirective {
   @HostBinding('attr.disabled')
   String? get disabledAttribute => item.disabled ? '' : null;
 
+  @HostBinding('attr.data-label')
+  String get dataLabel => 'li_accordion_button';
+
+  @HostBinding('attr.data-value')
+  String get dataValue => item.id;
+
+  @HostBinding('attr.data-open')
+  String get dataOpen => item.collapsed ? 'false' : 'true';
+
+  @HostBinding('attr.data-disabled')
+  String get dataDisabled => item.disabled ? 'true' : 'false';
+
   @HostListener('click', ['\$event'])
   void onClick(html.Event event) {
     if (item.disabled) {

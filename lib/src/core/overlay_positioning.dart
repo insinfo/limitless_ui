@@ -81,15 +81,12 @@ bool matchesResponsivePresentation({
 
   final normalizedWidthBreakpoint = widthBreakpoint.trim();
   final normalizedHeightBreakpoint = heightBreakpoint.trim();
-  if (normalizedWidthBreakpoint.isEmpty &&
-      normalizedHeightBreakpoint.isEmpty) {
+  if (normalizedWidthBreakpoint.isEmpty && normalizedHeightBreakpoint.isEmpty) {
     return false;
   }
 
   final widthMatches = normalizedWidthBreakpoint.isNotEmpty &&
-      html.window
-          .matchMedia('(max-width: $normalizedWidthBreakpoint)')
-          .matches;
+      html.window.matchMedia('(max-width: $normalizedWidthBreakpoint)').matches;
   final heightMatches = normalizedHeightBreakpoint.isNotEmpty &&
       html.window
           .matchMedia('(max-height: $normalizedHeightBreakpoint)')
@@ -106,6 +103,20 @@ double resolveViewportHeight() {
     return windowHeight <= documentHeight ? windowHeight : documentHeight;
   }
   return windowHeight >= documentHeight ? windowHeight : documentHeight;
+}
+
+void resetOverlayViewportConstraints({
+  required html.Element? floatingElement,
+}) {
+  final floating = floatingElement;
+  if (floating == null) {
+    return;
+  }
+
+  floating.style.maxHeight = '';
+  floating.style.overflowY = '';
+  floating.style.overflowX = '';
+  floating.style.removeProperty('overscroll-behavior');
 }
 
 void normalizeOverlayVerticalPosition({

@@ -369,6 +369,41 @@ void main() {
     expect(fixture.text, contains('Idade'));
     expect(fixture.text, contains('Ana'));
     expect(fixture.text, contains('Bruno'));
+    expect(
+      fixture.rootElement.querySelector('[data-label="datatable"]'),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector('[data-label="datatable_header"]'),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement
+          .querySelector('[data-label="datatable_input_search"]'),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector(
+        '[data-label="datatable_header_col_0"][data-value="nome"]',
+      ),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector(
+        '[data-label="datatable_row_0"][data-value="0"]',
+      ),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector(
+        '[data-label="datatable_col_0"][data-value="nome"]',
+      ),
+      isNotNull,
+    );
+    expect(
+      fixture.rootElement.querySelector('[data-label="datatable_footer"]'),
+      isNotNull,
+    );
   });
 
   test('customiza titulos com alinhamento, render Dart e TemplateRef',

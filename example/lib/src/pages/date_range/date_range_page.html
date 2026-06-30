@@ -58,6 +58,37 @@
               <div class="text-muted">{{ isPortuguese ? 'Este exemplo usa os aliases start/end. O próximo mantém inicio/fim para compatibilidade.' : 'This example uses the start/end aliases. The next one keeps inicio/fim for compatibility.' }}</div>
             </div>
 
+            <div class="mt-4">
+              <h6 class="mb-2">{{ isPortuguese ? 'Intervalos predefinidos' : 'Predefined ranges' }}</h6>
+              <li-date-range-picker [presets]="presetRanges" [start]="presetRangeStart" [end]="presetRangeEnd"
+                (startChange)="onPresetRangeStartChange($event)" (endChange)="onPresetRangeEndChange($event)">
+              </li-date-range-picker>
+
+              <div class="demo-summary-box mt-3">
+                <div><strong>{{ t.common.currentPeriod }}:</strong> {{ presetRangeLabel }}</div>
+                <div class="text-muted">{{ isPortuguese ? 'Os atalhos aplicam o periodo imediatamente; Intervalo personalizado abre os calendarios.' : 'Preset shortcuts apply immediately; Custom Range opens the calendars.' }}</div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <h6 class="mb-2">{{ isPortuguese ? 'Trigger customizado' : 'Custom trigger' }}</h6>
+              <li-date-range-picker [start]="badgeRangeStart" [end]="badgeRangeEnd"
+                [placeholder]="t.pages.dateRange.sprintPlaceholder" (startChange)="onBadgeRangeStartChange($event)"
+                (endChange)="onBadgeRangeEndChange($event)">
+                <template liDateRangePickerTrigger let-ctx>
+                  <span class="badge bg-primary d-inline-flex align-items-center gap-1">
+                    <i class="ph ph-calendar-blank"></i>
+                    <span>{{ ctx.hasValue ? ctx.displayValue : ctx.placeholder }}</span>
+                  </span>
+                </template>
+              </li-date-range-picker>
+
+              <div class="demo-summary-box mt-3">
+                <div><strong>{{ t.common.currentPeriod }}:</strong> {{ badgeRangeLabel }}</div>
+                <div class="text-muted">{{ isPortuguese ? 'O badge é o trigger; clicar nele abre o calendário e a seleção aplicada volta para o badge.' : 'The badge is the trigger; clicking it opens the calendar and the applied selection returns to the badge.' }}</div>
+              </div>
+            </div>
+
             <hr class="my-4">
 
             <li-date-range-picker [inicio]="constrainedStart" [fim]="constrainedEnd" [minDate]="minDate"
@@ -89,6 +120,14 @@
             <h6 class="mb-2 mt-4">currentValueChange x userValueChange</h6>
             <p class="text-muted mb-3"><code>userValueChange</code> indica que o período foi alterado por interação real no calendário, enquanto <code>startChange</code>, <code>endChange</code> e mudanças do model também podem vir do componente pai.</p>
             <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+
+            <h6 class="mb-2 mt-4">Template de trigger</h6>
+            <p class="text-muted mb-3"><code>liDateRangePickerTrigger</code> substitui o input visual por um template, mas o componente mantém o wrapper que abre e posiciona o calendário.</p>
+            <li-highlight [code]="customTriggerSnippet" language="html"></li-highlight>
+
+            <h6 class="mb-2 mt-4">Intervalos predefinidos</h6>
+            <p class="text-muted mb-3"><code>presets</code> adiciona atalhos como Hoje, Ultimos 7 dias e Este mes. Use <code>alwaysShowCalendars</code> para mostrar atalhos e calendarios juntos, ou <code>showCalendarsForCustomRange</code> para abrir os calendarios automaticamente quando o valor atual nao bater com nenhum preset.</p>
+            <li-highlight [code]="presetsSnippet" language="html"></li-highlight>
 
             <h6 class="mb-2 mt-4">Hooks para Puppeteer</h6>
             <p class="text-muted mb-3">Os dias expõem <code>data-calendar</code> e <code>data-value</code>, então o teste pode escolher lado esquerdo ou direito e confirmar pelo botão aplicar.</p>

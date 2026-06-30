@@ -1,6 +1,9 @@
 <div class="treeview-dropdown-select"
     [attr.data-label]="'li_treeview_select'"
     [attr.data-value]="selectedDataValue">
+    <div *ngIf="usesMobilePresentation"
+        class="treeview-dropdown-select__mobile-backdrop"
+        (click)="closeDropdown()"></div>
     <div *ngIf="usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
         <button type="button"
             #triggerButton
@@ -36,7 +39,7 @@
                     <span *ngIf="multiple && selectedNodes.isNotEmpty" class="treeview-dropdown-select__chips d-flex align-items-center flex-nowrap gap-1">
                         <span *ngFor="let node of selectedNodes; let i = index"
                             class="badge rounded-pill d-inline-flex align-items-center treeview-dropdown-select__chip"
-                            [hidden]="i > 1">
+                            [class.treeview-dropdown-select__chip--hidden]="i > 1">
                             {{ resolvedNodeLabel(node) }}
                         </span>
                         <span *ngIf="selectedNodes.length > 2" class="badge rounded-pill d-inline-flex align-items-center treeview-dropdown-select__chip treeview-dropdown-select__chip--muted">
@@ -94,7 +97,7 @@
                 <span *ngIf="multiple && selectedNodes.isNotEmpty" class="treeview-dropdown-select__chips d-flex align-items-center flex-nowrap gap-1">
                     <span *ngFor="let node of selectedNodes; let i = index"
                         class="badge rounded-pill d-inline-flex align-items-center treeview-dropdown-select__chip"
-                        [hidden]="i > 1">
+                        [class.treeview-dropdown-select__chip--hidden]="i > 1">
                         {{ resolvedNodeLabel(node) }}
                     </span>
                     <span *ngIf="selectedNodes.length > 2" class="badge rounded-pill d-inline-flex align-items-center treeview-dropdown-select__chip treeview-dropdown-select__chip--muted">
@@ -124,6 +127,10 @@
         class="treeview-dropdown-select__panel dropdown-menu"
         [attr.data-label]="'li_treeview_select_panel'"
         (click)="onPanelClick($event)"
+        [class.treeview-dropdown-select__panel--mobile-modal]="usesMobileModal"
+        [class.treeview-dropdown-select__panel--mobile-sheet]="usesMobileSheet"
+        [attr.role]="usesMobilePresentation ? 'dialog' : null"
+        [attr.aria-modal]="usesMobilePresentation ? 'true' : null"
         [class.show]="dropdownOpen">
         <div class="treeview-dropdown-select__search" *ngIf="searchable">
             <div class="treeview-dropdown-select__search-row">

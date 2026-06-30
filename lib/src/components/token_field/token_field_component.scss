@@ -15,6 +15,36 @@
   padding-right: 2.75rem;
 }
 
+.li-token-field--wrap {
+  min-height: calc(calc(var(--tf-input-line-height, var(--body-line-height, 1.5715)) * 1em) + calc(var(--tf-input-padding-y, 0.5rem) * 2) + calc(var(--tf-border-width, 1px) * 2));
+}
+
+.li-token-field--wrap .tokenfield-set,
+.li-token-field--wrap .tokenfield-input {
+  float: none;
+}
+
+.li-token-field--wrap .tokenfield-set {
+  display: contents;
+}
+
+.li-token-field--wrap .tokenfield-set > ul {
+  display: inline;
+}
+
+.li-token-field--wrap .tokenfield-set-item {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  vertical-align: top;
+  float: none;
+}
+
+.li-token-field--wrap .li-token-field__input {
+  width: auto;
+  min-width: min(10rem, 100%);
+}
+
 .li-token-field__input {
   width: 20px;
   max-width: 100%;

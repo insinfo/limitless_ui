@@ -52,6 +52,9 @@ class LiToastComponent implements OnInit, OnDestroy {
   String bodyClass = '';
 
   @Input()
+  String automationValue = '';
+
+  @Input()
   String ariaLive = 'polite';
 
   @Input()

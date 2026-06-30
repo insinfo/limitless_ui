@@ -29,6 +29,9 @@ class SweetAlertPopover {
     final rootPopover = DivElement();
     rootPopover.attributes['id'] = id;
     rootPopover.classes.addAll(['popover', 'bs-popover-auto', 'fade', 'show']);
+    rootPopover.attributes['data-label'] = 'li_sweet_alert_popover';
+    rootPopover.attributes['data-value'] = id;
+    rootPopover.attributes['data-open'] = 'true';
     final popoverClassNames = _classNames(popoverClass);
     if (popoverClassNames.isNotEmpty) {
       rootPopover.classes.addAll(popoverClassNames);
@@ -40,6 +43,7 @@ class SweetAlertPopover {
 
     final popoverArrow = DivElement();
     popoverArrow.classes.add('popover-arrow');
+    popoverArrow.attributes['data-label'] = 'li_sweet_alert_popover_arrow';
     popoverArrow.classes.addAll(
       popoverClassNames.where((className) => className.startsWith('border-')),
     );
@@ -49,6 +53,7 @@ class SweetAlertPopover {
 
     final popoverHeader = HeadingElement.h3();
     popoverHeader.classes.add('popover-header');
+    popoverHeader.attributes['data-label'] = 'li_sweet_alert_popover_header';
     popoverHeader.text = title;
     _applyCustomTheme(
       header: popoverHeader,
@@ -59,6 +64,7 @@ class SweetAlertPopover {
 
     final popoverBody = DivElement();
     popoverBody.classes.add('popover-body');
+    popoverBody.attributes['data-label'] = 'li_sweet_alert_popover_body';
     popoverBody.innerHtml = message;
     popoverBody.style.whiteSpace = 'pre-line';
     _applyCustomTheme(

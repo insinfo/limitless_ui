@@ -29,6 +29,19 @@ void main() {
     final popup = html.document.querySelector('.swal2-popup.swal2-modal');
     expect(popup, isNotNull);
     final resolvedPopup = popup!;
+    final root =
+        html.document.querySelector('[data-label="li_sweet_alert_root"]');
+    expect(root, isNotNull);
+    expect(resolvedPopup.getAttribute('data-label'), 'li_sweet_alert_popup');
+    expect(resolvedPopup.getAttribute('data-type'), 'success');
+    expect(
+      resolvedPopup.querySelector('[data-label="li_sweet_alert_title"]'),
+      isNotNull,
+    );
+    expect(
+      resolvedPopup.querySelector('[data-label="li_sweet_alert_body"]'),
+      isNotNull,
+    );
     expect(resolvedPopup.getComputedStyle().display, 'grid');
     expect(resolvedPopup.classes.contains('swal2-icon-success'), isTrue);
     expect(resolvedPopup.text, contains('Deployment ready'));
@@ -36,7 +49,8 @@ void main() {
     final confirmButton =
         resolvedPopup.querySelector('.swal2-confirm') as html.ButtonElement?;
     expect(confirmButton, isNotNull);
-    expect(confirmButton!.classes.contains('btn'), isTrue);
+    expect(confirmButton!.getAttribute('data-label'), 'li_sweet_alert_confirm');
+    expect(confirmButton.classes.contains('btn'), isTrue);
     expect(confirmButton.classes.contains('btn-primary'), isTrue);
 
     _click('.swal2-confirm');
@@ -89,8 +103,7 @@ void main() {
       title: 'Abort release',
       message: 'Run cancel callback inline.',
       onCancelAction: (result) {
-        cancelCalled =
-            result.dismissReason == SweetAlertDismissReason.cancel;
+        cancelCalled = result.dismissReason == SweetAlertDismissReason.cancel;
       },
     );
 
@@ -117,7 +130,8 @@ void main() {
     await _settle();
     _click('.swal2-close');
     final closeButtonResult = await closeButtonFuture;
-    expect(closeButtonResult.dismissReason, SweetAlertDismissReason.closeButton);
+    expect(
+        closeButtonResult.dismissReason, SweetAlertDismissReason.closeButton);
 
     final backdropFuture = SweetAlert.show(
       title: 'Backdrop dismiss',
@@ -200,8 +214,8 @@ void main() {
 
     await _settle();
 
-    final textarea = html.document.querySelector('.swal2-textarea')
-        as html.TextAreaElement?;
+    final textarea =
+        html.document.querySelector('.swal2-textarea') as html.TextAreaElement?;
     expect(textarea, isNotNull);
     expect(textarea!.classes.contains('form-control'), isTrue);
     expect(textarea.rows, 4);
@@ -240,8 +254,8 @@ void main() {
 
     await _settle();
 
-    final textarea = html.document.querySelector('.swal2-textarea')
-        as html.TextAreaElement?;
+    final textarea =
+        html.document.querySelector('.swal2-textarea') as html.TextAreaElement?;
     expect(textarea, isNotNull);
     expect(textarea!.classes.contains('li-swalert-textarea'), isTrue);
     expect(textarea.classes.contains('form-control-lg'), isTrue);
@@ -358,7 +372,15 @@ void main() {
     final select =
         html.document.querySelector('.swal2-select') as html.SelectElement?;
     expect(select, isNotNull);
-    expect(select!.value, 'staging');
+    expect(select!.getAttribute('data-label'), 'li_sweet_alert_input');
+    expect(select.getAttribute('data-value'), 'select');
+    expect(
+      select.querySelector(
+        '[data-label="li_sweet_alert_input_option"][data-value="prod"]',
+      ),
+      isNotNull,
+    );
+    expect(select.value, 'staging');
     select.value = 'prod';
 
     _click('.swal2-confirm');

@@ -1,6 +1,6 @@
 // Run this browser test from the package root with:
 // dart run build_runner test -- -p chrome -j 1 test/date_range_picker/li_date_range_picker_component_test.dart
-// ignore_for_file: uri_has_not_been_generated
+// ignore_for_file: uri_has_not_been_generated, undefined_prefixed_name
 
 @TestOn('browser')
 library;
@@ -113,6 +113,67 @@ class DateRangePickerMobileTestHostComponent {
   }
 }
 
+@Component(
+  selector: 'li-date-range-picker-presets-test-host',
+  template: '''
+    <li-date-range-picker
+        #picker
+        [start]="rangeStart"
+        [end]="rangeEnd"
+        [presets]="presets"
+        [presetAutoApply]="presetAutoApply"
+        [alwaysShowCalendars]="alwaysShowCalendars"
+        [showCalendarsForCustomRange]="showCalendarsForCustomRange"
+        [showCustomRangePreset]="showCustomRangePreset"
+        (startChange)="onStartChange(\$event)"
+        (endChange)="onEndChange(\$event)"
+        (userValueChange)="userRange = \$event">
+    </li-date-range-picker>
+  ''',
+  directives: [coreDirectives, LiDateRangePickerComponent],
+)
+class DateRangePickerPresetsTestHostComponent {
+  @ViewChild('picker')
+  LiDateRangePickerComponent? picker;
+
+  DateTime? rangeStart = DateTime(2026, 6, 1);
+  DateTime? rangeEnd = DateTime(2026, 6, 30);
+  LiDateRangeValue? userRange;
+  bool presetAutoApply = true;
+  bool alwaysShowCalendars = false;
+  bool showCalendarsForCustomRange = false;
+  bool showCustomRangePreset = true;
+
+  final List<LiDateRangePreset> presets = <LiDateRangePreset>[
+    LiDateRangePreset(
+      label: 'Today',
+      value: 'today',
+      start: DateTime(2026, 6, 29),
+      end: DateTime(2026, 6, 29),
+    ),
+    LiDateRangePreset(
+      label: 'Last 7 Days',
+      value: 'last_7_days',
+      start: DateTime(2026, 6, 23),
+      end: DateTime(2026, 6, 29),
+    ),
+    LiDateRangePreset(
+      label: 'This Month',
+      value: 'this_month',
+      start: DateTime(2026, 6, 1),
+      end: DateTime(2026, 6, 30),
+    ),
+  ];
+
+  void onStartChange(DateTime? value) {
+    rangeStart = value;
+  }
+
+  void onEndChange(DateTime? value) {
+    rangeEnd = value;
+  }
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
 
@@ -124,6 +185,9 @@ void main() {
   );
   final mobileTestBed = NgTestBed<DateRangePickerMobileTestHostComponent>(
     ng.DateRangePickerMobileTestHostComponentNgFactory,
+  );
+  final presetsTestBed = NgTestBed<DateRangePickerPresetsTestHostComponent>(
+    ng.DateRangePickerPresetsTestHostComponentNgFactory,
   );
 
   test('clear button resets the selected range', () async {
@@ -392,6 +456,233 @@ void main() {
       isNotNull,
     );
   });
+
+  test('applies predefined ranges by clicking a preset', () async {
+    final fixture = await presetsTestBed.create();
+    await _settlePresets(fixture);
+    final host = fixture.assertOnlyInstance;
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(
+      html.document.querySelectorAll('.date-range-open.is-open .drp-calendar'),
+      isEmpty,
+    );
+
+    final preset = html.document.querySelector(
+      '[data-label="li_date_range_picker_preset"][data-value="last_7_days"]',
+    ) as html.ButtonElement;
+
+    await fixture.update((_) {
+      preset.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(host.rangeStart, DateTime(2026, 6, 23));
+    expect(host.rangeEnd, DateTime(2026, 6, 29));
+    expect(host.userRange?.inicio, DateTime(2026, 6, 23));
+    expect(host.userRange?.fim, DateTime(2026, 6, 29));
+    expect(host.picker!.isOpen, isFalse);
+  });
+
+  test('custom range preset reveals calendars', () async {
+    final fixture = await presetsTestBed.create();
+    await _settlePresets(fixture);
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(
+      html.document.querySelectorAll('.date-range-open.is-open .drp-calendar'),
+      isEmpty,
+    );
+
+    final customRangeButton = html.document.querySelector(
+      '[data-label="li_date_range_picker_custom_range"]',
+    ) as html.ButtonElement;
+
+    await fixture.update((_) {
+      customRangeButton
+          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(
+      html.document.querySelectorAll('.date-range-open.is-open .drp-calendar'),
+      hasLength(2),
+    );
+    expect(customRangeButton.classes.contains('active'), isTrue);
+    expect(
+      html.document
+          .querySelector(
+            '[data-label="li_date_range_picker_preset"][data-value="this_month"]',
+          )!
+          .classes
+          .contains('active'),
+      isFalse,
+    );
+
+    final panel = html.document.querySelector(
+      '.date-range-open.is-open',
+    ) as html.Element;
+    expect(
+      panel.classes.contains('date-range-open--with-preset-calendars'),
+      isTrue,
+    );
+    expect(
+      panel.getBoundingClientRect().right <= html.window.innerWidth! + 1,
+      isTrue,
+      reason: 'Preset calendar panel should stay inside the viewport.',
+    );
+    expect(
+      panel.getComputedStyle().overflowX,
+      isNot('visible'),
+      reason:
+          'Preset calendars should be clipped or scrolled inside the panel.',
+    );
+  });
+
+  test('custom values keep calendars hidden by default on open', () async {
+    final fixture = await presetsTestBed.create();
+    await fixture.update((host) {
+      host.rangeStart = DateTime(2026, 6, 1);
+      host.rangeEnd = DateTime(2026, 6, 29);
+    });
+    await _settlePresets(fixture);
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(
+      html.document.querySelectorAll('.date-range-open.is-open .drp-calendar'),
+      isEmpty,
+    );
+    expect(
+      html.document
+          .querySelector('[data-label="li_date_range_picker_custom_range"]')!
+          .classes
+          .contains('active'),
+      isTrue,
+    );
+  });
+
+  test('custom values can open calendars when configured', () async {
+    final fixture = await presetsTestBed.create();
+    await fixture.update((host) {
+      host.rangeStart = DateTime(2026, 6, 1);
+      host.rangeEnd = DateTime(2026, 6, 29);
+      host.showCalendarsForCustomRange = true;
+    });
+    await _settlePresets(fixture);
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(
+      html.document.querySelectorAll('.date-range-open.is-open .drp-calendar'),
+      hasLength(2),
+    );
+    expect(
+      html.document
+          .querySelector('[data-label="li_date_range_picker_custom_range"]')!
+          .classes
+          .contains('active'),
+      isTrue,
+    );
+  });
+
+  test('alwaysShowCalendars keeps calendars visible beside presets', () async {
+    final fixture = await presetsTestBed.create();
+    await fixture.update((host) {
+      host.alwaysShowCalendars = true;
+    });
+    await _settlePresets(fixture);
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(
+      html.document.querySelectorAll('.date-range-open.is-open .drp-calendar'),
+      hasLength(2),
+    );
+    expect(
+      html.document.querySelectorAll(
+        '.date-range-open.is-open [data-label="li_date_range_picker_preset"]',
+      ),
+      hasLength(3),
+    );
+  });
+
+  test('preset can wait for Apply before changing the model', () async {
+    final fixture = await presetsTestBed.create();
+    await fixture.update((host) {
+      host.presetAutoApply = false;
+    });
+    await _settlePresets(fixture);
+    final host = fixture.assertOnlyInstance;
+    final trigger = fixture.rootElement
+        .querySelector('.date-range-wrapper .input-group') as html.Element;
+
+    await fixture.update((_) {
+      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    final preset = html.document.querySelector(
+      '[data-label="li_date_range_picker_preset"][data-value="last_7_days"]',
+    ) as html.ButtonElement;
+
+    await fixture.update((_) {
+      preset.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(host.rangeStart, DateTime(2026, 6, 1));
+    expect(host.rangeEnd, DateTime(2026, 6, 30));
+    expect(host.picker!.draftInicio, DateTime(2026, 6, 23));
+    expect(host.picker!.draftFim, DateTime(2026, 6, 29));
+    expect(host.picker!.isOpen, isTrue);
+    expect(
+      html.document.querySelectorAll('.date-range-open.is-open .drp-calendar'),
+      hasLength(2),
+    );
+
+    final applyButton = html.document.querySelector(
+      '[data-label="li_date_range_picker_apply"]',
+    ) as html.ButtonElement;
+
+    await fixture.update((_) {
+      applyButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    });
+    await _settlePresets(fixture);
+
+    expect(host.rangeStart, DateTime(2026, 6, 23));
+    expect(host.rangeEnd, DateTime(2026, 6, 29));
+    expect(host.userRange?.inicio, DateTime(2026, 6, 23));
+    expect(host.userRange?.fim, DateTime(2026, 6, 29));
+    expect(host.picker!.isOpen, isFalse);
+  });
 }
 
 Future<void> _settle(
@@ -410,6 +701,13 @@ Future<void> _settleAlias(
 
 Future<void> _settleMobile(
   NgTestFixture<DateRangePickerMobileTestHostComponent> fixture,
+) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settlePresets(
+  NgTestFixture<DateRangePickerPresetsTestHostComponent> fixture,
 ) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});

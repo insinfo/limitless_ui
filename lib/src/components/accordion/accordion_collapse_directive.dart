@@ -29,6 +29,15 @@ class LiAccordionCollapseDirective implements OnInit, OnDestroy {
   @HostBinding('attr.aria-labelledby')
   String get ariaLabelledBy => item.toggleId;
 
+  @HostBinding('attr.data-label')
+  String get dataLabel => 'li_accordion_panel';
+
+  @HostBinding('attr.data-value')
+  String get dataValue => item.id;
+
+  @HostBinding('attr.data-open')
+  String get dataOpen => item.collapsed ? 'false' : 'true';
+
   Stream<void> get shown => _controller.shown;
 
   Stream<void> get hidden => _controller.hidden;

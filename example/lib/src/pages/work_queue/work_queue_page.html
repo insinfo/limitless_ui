@@ -94,6 +94,7 @@
               <label class="form-label">{{ multiCodeLabel }}</label>
               <li-token-field [(ngModel)]="selectedCodes" [filterInput]="true" [patternAllowed]="processTokenAllowed"
                 [patternToken]="processTokenPattern" [placeholder]="multiCodePlaceholder" [locale]="localeCode"
+                [wrapTokens]="true"
                 (currentValueChange)="onSelectedCodesChange($event)">
               </li-token-field>
             </div>
@@ -114,7 +115,7 @@
               <label class="form-label">{{ tagFilterLabel }}</label>
               <li-tag-filter [dataSource]="tagCatalog" labelKey="name" valueKey="id" colorKey="color"
                 [showReloadButton]="true" [locale]="localeCode" [showInlineRemove]="false"
-                [wrapSelectedBadges]="false" [(ngModel)]="selectedTagFilterIds"
+                [wrapSelectedBadges]="true" [(ngModel)]="selectedTagFilterIds"
                 (currentValueChange)="onSelectedTagFilterChange($event)" (reloadRequest)="onTagFilterReloadRequest()">
               </li-tag-filter>
             </div>

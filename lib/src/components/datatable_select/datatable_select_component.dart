@@ -17,28 +17,148 @@ import '../modal_component/modal_component.dart';
 
 class LiDatatableSelectTriggerContext {
   LiDatatableSelectTriggerContext({
-    required this.selectedValue,
-    required this.selectedValues,
-    required this.selectedLabel,
-    required this.selectedLabels,
-    required this.multiple,
-    required this.placeholder,
-    required this.hasSelection,
-    required this.disabled,
-    required this.open,
-    required this.clear,
-  });
+    required dynamic selectedValue,
+    required List<dynamic> selectedValues,
+    required String selectedLabel,
+    required List<String> selectedLabels,
+    required bool multiple,
+    required String placeholder,
+    required bool hasSelection,
+    required bool disabled,
+    required void Function() open,
+    required void Function() clear,
+    bool isOpen = false,
+    void Function()? close,
+    void Function()? toggle,
+  })  : _component = null,
+        _selectedValue = selectedValue,
+        _selectedValues = selectedValues,
+        _selectedLabel = selectedLabel,
+        _selectedLabels = selectedLabels,
+        _multiple = multiple,
+        _placeholder = placeholder,
+        _hasSelection = hasSelection,
+        _disabled = disabled,
+        _open = open,
+        _clear = clear,
+        _isOpen = isOpen,
+        _close = close,
+        _toggle = toggle;
 
-  final dynamic selectedValue;
-  final List<dynamic> selectedValues;
-  final String selectedLabel;
-  final List<String> selectedLabels;
-  final bool multiple;
-  final String placeholder;
-  final bool hasSelection;
-  final bool disabled;
-  final void Function() open;
-  final void Function() clear;
+  LiDatatableSelectTriggerContext._(this._component)
+      : _selectedValue = null,
+        _selectedValues = const <dynamic>[],
+        _selectedLabel = '',
+        _selectedLabels = const <String>[],
+        _multiple = false,
+        _placeholder = '',
+        _hasSelection = false,
+        _disabled = false,
+        _open = null,
+        _clear = null,
+        _isOpen = false,
+        _close = null,
+        _toggle = null;
+
+  final LiDatatableSelectComponent? _component;
+  final dynamic _selectedValue;
+  final List<dynamic> _selectedValues;
+  final String _selectedLabel;
+  final List<String> _selectedLabels;
+  final bool _multiple;
+  final String _placeholder;
+  final bool _hasSelection;
+  final bool _disabled;
+  final void Function()? _open;
+  final void Function()? _clear;
+  final bool _isOpen;
+  final void Function()? _close;
+  final void Function()? _toggle;
+  dynamic _singleSelectedValue;
+  List<dynamic> _singleSelectedValues = const <dynamic>[];
+
+  dynamic get selectedValue => _component?.selectedValue ?? _selectedValue;
+
+  List<dynamic> get selectedValues {
+    final component = _component;
+    if (component == null) {
+      return _selectedValues;
+    }
+
+    final value = component._selectedValue;
+    if (value is List<dynamic>) {
+      return value;
+    }
+    if (value == null) {
+      return const <dynamic>[];
+    }
+    if (!identical(_singleSelectedValue, value)) {
+      _singleSelectedValue = value;
+      _singleSelectedValues = List<dynamic>.unmodifiable(<dynamic>[value]);
+    }
+    return _singleSelectedValues;
+  }
+
+  String get selectedLabel => _component?.selectedLabel ?? _selectedLabel;
+
+  List<String> get selectedLabels =>
+      _component?._selectedLabels ?? _selectedLabels;
+
+  bool get multiple => _component?.multiple ?? _multiple;
+
+  String get placeholder => _component?.resolvedPlaceholder ?? _placeholder;
+
+  bool get hasSelection => _component?.hasSelection ?? _hasSelection;
+
+  bool get disabled => _component?.isDisabled ?? _disabled;
+
+  bool get isOpen => _component?.isModalOpen ?? _isOpen;
+
+  String get displayValue {
+    final label = selectedLabel;
+    return label.isEmpty ? placeholder : label;
+  }
+
+  void open() {
+    final component = _component;
+    if (component != null) {
+      component.openModal();
+      return;
+    }
+    _open?.call();
+  }
+
+  void close() {
+    final component = _component;
+    if (component != null) {
+      component.closeModal();
+      return;
+    }
+    _close?.call();
+  }
+
+  void toggle() {
+    final component = _component;
+    if (component != null) {
+      component.toggleModal();
+      return;
+    }
+    _toggle?.call();
+  }
+
+  void clear([html.Event? event]) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    final component = _component;
+    if (component != null) {
+      if (component.isDisabled) {
+        return;
+      }
+      component.clear(emitUserValueChange: true);
+      return;
+    }
+    _clear?.call();
+  }
 }
 
 class LiDatatableSelectModalContext {
@@ -84,6 +204,13 @@ class LiDatatableSelectTriggerDirective {
   final TemplateRef templateRef;
 }
 
+@Directive(selector: 'template[liDatatableSelectCustomTrigger]')
+class LiDatatableSelectCustomTriggerDirective {
+  LiDatatableSelectCustomTriggerDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
 @Directive(selector: 'template[liDatatableSelectModalContent]')
 class LiDatatableSelectModalContentDirective {
   LiDatatableSelectModalContentDirective(this.templateRef);
@@ -122,6 +249,7 @@ class LiDatatableSelectModalContentDirective {
     LiDataTableComponent,
     LiModalComponent,
     LiDatatableSelectTriggerDirective,
+    LiDatatableSelectCustomTriggerDirective,
     LiDatatableSelectModalContentDirective,
   ],
   providers: [
@@ -347,6 +475,25 @@ class LiDatatableSelectComponent
   @Input()
   bool responsiveCollapse = false;
 
+  @Input()
+  int responsiveCollapseMaxWidth = 767;
+
+  @Input()
+  bool responsiveCollapseByContainer = false;
+
+  @Input()
+  int responsiveCollapseContainerMaxWidth = 767;
+
+  /// Enables responsive collapse for the inner datatable on mobile viewports.
+  ///
+  /// This is a cheaper mobile-first alternative to responsive auto-hide
+  /// because it only uses columns marked with `hideOnMobile`.
+  @Input()
+  bool mobileResponsiveCollapse = false;
+
+  @Input()
+  int mobileResponsiveCollapseMaxWidth = 767;
+
   /// When `true`, changing items per page reloads data through
   /// the inner datatable `dataRequest` output.
   @Input()
@@ -400,6 +547,9 @@ class LiDatatableSelectComponent
   @ContentChild(LiDatatableSelectTriggerDirective)
   LiDatatableSelectTriggerDirective? triggerTemplate;
 
+  @ContentChild(LiDatatableSelectCustomTriggerDirective)
+  LiDatatableSelectCustomTriggerDirective? customTriggerTemplate;
+
   @ContentChild(LiDatatableSelectModalContentDirective)
   LiDatatableSelectModalContentDirective? modalContentTemplate;
 
@@ -418,6 +568,8 @@ class LiDatatableSelectComponent
   List<String> _selectedLabels = <String>[];
   List<dynamic> _pendingSelectedValues = <dynamic>[];
   List<String> _pendingSelectedLabels = <String>[];
+  late final LiDatatableSelectTriggerContext triggerContext =
+      LiDatatableSelectTriggerContext._(this);
 
   /// The value of the currently selected item.
   dynamic get selectedValue => multiple ? selectedValues : _selectedValue;
@@ -462,6 +614,8 @@ class LiDatatableSelectComponent
 
     return _selectedValue != null;
   }
+
+  bool get isModalOpen => modal?.isOpen == true;
 
   bool get effectiveAutoInvalid =>
       _shouldShowValidation && _autoValidationIssue != null;
@@ -563,20 +717,6 @@ class LiDatatableSelectComponent
         feedbackClass,
       ]);
 
-  LiDatatableSelectTriggerContext get triggerContext =>
-      LiDatatableSelectTriggerContext(
-        selectedValue: selectedValue,
-        selectedValues: selectedValues,
-        selectedLabel: selectedLabel,
-        selectedLabels: selectedLabels,
-        multiple: multiple,
-        placeholder: resolvedPlaceholder,
-        hasSelection: hasSelection,
-        disabled: isDisabled,
-        open: openModal,
-        clear: clear,
-      );
-
   LiDatatableSelectModalContext get modalContext =>
       LiDatatableSelectModalContext(
         data: data,
@@ -599,6 +739,14 @@ class LiDatatableSelectComponent
   bool get hasPendingSelection => _pendingSelectedValues.isNotEmpty;
 
   bool get useCheckboxSelection => multiple || showCheckboxToSelectRow;
+
+  bool get effectiveResponsiveCollapse =>
+      responsiveCollapse || mobileResponsiveCollapse;
+
+  int get effectiveResponsiveCollapseMaxWidth =>
+      mobileResponsiveCollapse && !responsiveCollapse
+          ? mobileResponsiveCollapseMaxWidth
+          : responsiveCollapseMaxWidth;
 
   @override
   void ngAfterChanges() {
@@ -623,6 +771,29 @@ class LiDatatableSelectComponent
     _changeDetectorRef.markForCheck();
     if (multiple) {
       _scheduleDatatableSelectionSync();
+    }
+  }
+
+  void toggleModal() {
+    if (isModalOpen) {
+      closeModal();
+      return;
+    }
+
+    openModal();
+  }
+
+  void handleTriggerKeydown(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
+    if (event.code == 'Enter' ||
+        event.code == 'NumpadEnter' ||
+        event.code == 'Space' ||
+        event.key == ' ') {
+      event.preventDefault();
+      openModal();
     }
   }
 

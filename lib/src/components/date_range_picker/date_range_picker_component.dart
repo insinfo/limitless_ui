@@ -43,12 +43,96 @@ class CalendarCell {
   });
 }
 
+class LiDateRangePreset {
+  final String label;
+  final DateTime? inicio;
+  final DateTime? fim;
+  final String value;
+  final bool disabled;
+
+  const LiDateRangePreset({
+    required this.label,
+    DateTime? inicio,
+    DateTime? fim,
+    DateTime? start,
+    DateTime? end,
+    this.value = '',
+    this.disabled = false,
+  })  : inicio = inicio ?? start,
+        fim = fim ?? end;
+
+  DateTime? get start => inicio;
+
+  DateTime? get end => fim;
+}
+
+class LiDateRangePickerTriggerContext {
+  LiDateRangePickerTriggerContext._(this._component);
+
+  final LiDateRangePickerComponent _component;
+  DateTime? _cachedInicio;
+  DateTime? _cachedFim;
+  LiDateRangeValue _cachedValue = const LiDateRangeValue();
+
+  LiDateRangeValue get value {
+    if (_cachedInicio != _component.inicio || _cachedFim != _component.fim) {
+      _cachedInicio = _component.inicio;
+      _cachedFim = _component.fim;
+      _cachedValue = LiDateRangeValue(
+        inicio: _cachedInicio,
+        fim: _cachedFim,
+      );
+    }
+    return _cachedValue;
+  }
+
+  DateTime? get inicio => _component.inicio;
+
+  DateTime? get fim => _component.fim;
+
+  DateTime? get start => _component.start;
+
+  DateTime? get end => _component.end;
+
+  DateTime? get draftInicio => _component.draftInicio;
+
+  DateTime? get draftFim => _component.draftFim;
+
+  String get displayValue => _component.displayValue;
+
+  String get draftDisplayValue => _component.draftDisplayValue;
+
+  String get placeholder => _component.effectivePlaceholder;
+
+  bool get hasValue => _component.hasValue;
+
+  bool get disabled => _component.isDisabled;
+
+  bool get isOpen => _component.isOpen;
+
+  void open() => _component.open();
+
+  void close() => _component.close();
+
+  void toggle() => _component.toggleOpen();
+
+  void clear([html.Event? event]) => _component.clearFromTriggerTemplate(event);
+}
+
+@Directive(selector: 'template[liDateRangePickerTrigger]')
+class LiDateRangePickerTriggerDirective {
+  LiDateRangePickerTriggerDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
 @Component(
   selector: 'li-date-range-picker',
   styleUrls: ['date_range_picker_component.css'],
   templateUrl: 'date_range_picker_component.html',
   directives: [
     coreDirectives,
+    LiDateRangePickerTriggerDirective,
   ],
   providers: [
     ExistingProvider.forToken(ngValueAccessor, LiDateRangePickerComponent),
@@ -229,12 +313,30 @@ class LiDateRangePickerComponent
   @Input()
   bool showClearButton = true;
 
+  @Input()
+  List<LiDateRangePreset> presets = const <LiDateRangePreset>[];
+
+  @Input()
+  bool showCustomRangePreset = true;
+
+  @Input()
+  bool alwaysShowCalendars = false;
+
+  @Input()
+  bool showCalendarsForCustomRange = false;
+
+  @Input()
+  bool presetAutoApply = true;
+
+  @Input()
+  String customRangePresetLabel = '';
+
   /// Mobile presentation for small viewports.
   ///
-  /// `dropdown` keeps the normal anchored overlay. `modal` shows a centered
-  /// fixed dialog with a backdrop, and `sheet` shows a bottom sheet.
+  /// `dropdown` keeps the normal anchored overlay. `modal` shows a fixed
+  /// dialog with a backdrop, and `sheet` shows a bottom sheet.
   @Input()
-  String mobilePresentation = 'dropdown';
+  String mobilePresentation = 'modal';
 
   /// CSS `max-width` media-query used by [mobilePresentation].
   @Input()
@@ -266,6 +368,9 @@ class LiDateRangePickerComponent
   @ViewChild('panelElement')
   html.Element? panelElement;
 
+  @ContentChild(LiDateRangePickerTriggerDirective)
+  LiDateRangePickerTriggerDirective? triggerTemplate;
+
   DateTime? draftInicio;
   DateTime? draftFim;
   DateTime? hoverDateValue;
@@ -275,8 +380,12 @@ class LiDateRangePickerComponent
   late List<List<CalendarCell>> rightCalendar;
   bool isOpen = false;
   bool isSelectingEnd = false;
+  bool _customRangeActive = false;
+  bool _presetCalendarReviewActive = false;
   DateRangePickerViewMode leftViewMode = DateRangePickerViewMode.day;
   DateRangePickerViewMode rightViewMode = DateRangePickerViewMode.day;
+  late final LiDateRangePickerTriggerContext triggerContext =
+      LiDateRangePickerTriggerContext._(this);
 
   ChangeFunction<LiDateRangeValue?> _onChange =
       (LiDateRangeValue? _, {String? rawValue}) {};
@@ -357,6 +466,16 @@ class LiDateRangePickerComponent
 
   bool get canApply => draftInicio != null || draftFim != null;
 
+  bool get hasPresets => presets.isNotEmpty;
+
+  bool get showCalendars =>
+      !hasPresets ||
+      alwaysShowCalendars ||
+      _customRangeActive ||
+      _presetCalendarReviewActive;
+
+  bool get showPresetList => hasPresets;
+
   String get displayValue => _formatRange(inicio, fim);
 
   String get draftDisplayValue => _formatRange(draftInicio, draftFim);
@@ -376,6 +495,14 @@ class LiDateRangePickerComponent
   String get cancelLabel => _isEnglishLocale ? 'Cancel' : 'Cancelar';
 
   String get applyLabel => _isEnglishLocale ? 'Apply' : 'Aplicar';
+
+  String get resolvedCustomRangePresetLabel {
+    final custom = customRangePresetLabel.trim();
+    if (custom.isNotEmpty) {
+      return custom;
+    }
+    return _isEnglishLocale ? 'Custom Range' : 'Intervalo personalizado';
+  }
 
   bool get hasValue => inicio != null || fim != null;
 
@@ -446,17 +573,45 @@ class LiDateRangePickerComponent
     _open();
   }
 
+  void open() {
+    if (isDisabled || isOpen) {
+      return;
+    }
+
+    _open();
+  }
+
+  void handleTriggerKeydown(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
+    if (event.code == 'Enter' ||
+        event.code == 'NumpadEnter' ||
+        event.code == 'Space' ||
+        event.key == ' ') {
+      event.preventDefault();
+      toggleOpen();
+    }
+  }
+
   void _open() {
     draftInicio = _normalize(inicio);
     draftFim = _normalize(fim);
     hoverDateValue = null;
     isSelectingEnd = draftInicio != null && draftFim == null;
+    _customRangeActive = !alwaysShowCalendars &&
+        showCalendarsForCustomRange &&
+        hasPresets &&
+        !_matchesAnyPreset(inicio, fim);
+    _presetCalendarReviewActive = false;
     _syncVisibleMonths();
     leftViewMode = DateRangePickerViewMode.day;
     rightViewMode = DateRangePickerViewMode.day;
     isOpen = true;
     if (!usesMobilePresentation) {
       _ensureOverlay();
+      resetOverlayViewportConstraints(floatingElement: panelElement);
       _overlay?.startAutoUpdate();
       _overlay?.update();
     } else {
@@ -464,6 +619,93 @@ class LiDateRangePickerComponent
     }
     _bindDocumentListeners();
     _markForCheck();
+  }
+
+  void selectPreset(LiDateRangePreset preset) {
+    if (isDisabled || isPresetDisabled(preset)) {
+      return;
+    }
+
+    final nextInicio = _normalize(preset.inicio);
+    final nextFim = _normalize(preset.fim);
+    draftInicio = nextInicio;
+    draftFim = nextFim;
+    hoverDateValue = null;
+    isSelectingEnd = false;
+    _customRangeActive = false;
+    _presetCalendarReviewActive = false;
+    _syncVisibleMonths();
+
+    if (presetAutoApply) {
+      apply();
+      return;
+    }
+
+    _presetCalendarReviewActive = true;
+    _scheduleOverlayUpdate();
+    _markForCheck();
+  }
+
+  void showCustomRange() {
+    if (isDisabled) {
+      return;
+    }
+
+    _customRangeActive = true;
+    _presetCalendarReviewActive = false;
+    _syncVisibleMonths();
+    _scheduleOverlayUpdate();
+    _markForCheck();
+  }
+
+  bool isPresetActive(LiDateRangePreset preset) {
+    if (_customRangeActive) {
+      return false;
+    }
+
+    return _isSameRange(
+      draftInicio,
+      draftFim,
+      _normalize(preset.inicio),
+      _normalize(preset.fim),
+    );
+  }
+
+  bool isCustomRangePresetActive() {
+    if (!hasPresets) {
+      return false;
+    }
+    return _customRangeActive || !_matchesAnyPreset(draftInicio, draftFim);
+  }
+
+  bool isPresetDisabled(LiDateRangePreset preset) {
+    if (preset.disabled) {
+      return true;
+    }
+
+    final presetInicio = _normalize(preset.inicio);
+    final presetFim = _normalize(preset.fim);
+    if (presetInicio == null && presetFim == null) {
+      return true;
+    }
+
+    if (presetInicio != null && isDisabledDate(presetInicio)) {
+      return true;
+    }
+
+    if (presetFim != null && isDisabledDate(presetFim)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  String presetDataValue(LiDateRangePreset preset, int index) {
+    final value = preset.value.trim();
+    if (value.isNotEmpty) {
+      return value;
+    }
+    return index.toString();
   }
 
   void prevMonth() {
@@ -639,6 +881,8 @@ class LiDateRangePickerComponent
     draftFim = null;
     hoverDateValue = null;
     isSelectingEnd = false;
+    _customRangeActive = false;
+    _presetCalendarReviewActive = false;
     inicio = null;
     fim = null;
     _inicioChangeController.add(null);
@@ -652,10 +896,17 @@ class LiDateRangePickerComponent
     _markForCheck();
   }
 
-  void clearFromTrigger(html.MouseEvent event) {
-    event.preventDefault();
-    event.stopPropagation();
+  void clearFromTriggerTemplate([html.Event? event]) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    if (isDisabled) {
+      return;
+    }
     clear();
+  }
+
+  void clearFromTrigger(html.MouseEvent event) {
+    clearFromTriggerTemplate(event);
   }
 
   void onPanelClick(html.Event event) {
@@ -671,6 +922,8 @@ class LiDateRangePickerComponent
     isOpen = false;
     hoverDateValue = null;
     isSelectingEnd = false;
+    _customRangeActive = false;
+    _presetCalendarReviewActive = false;
     leftViewMode = DateRangePickerViewMode.day;
     rightViewMode = DateRangePickerViewMode.day;
     _markTouched();
@@ -685,6 +938,11 @@ class LiDateRangePickerComponent
     draftFim = fim;
     hoverDateValue = null;
     isSelectingEnd = draftInicio != null && draftFim == null;
+    _customRangeActive = !alwaysShowCalendars &&
+        showCalendarsForCustomRange &&
+        hasPresets &&
+        !_matchesAnyPreset(inicio, fim);
+    _presetCalendarReviewActive = false;
     _syncVisibleMonths();
     _markForCheck();
   }
@@ -926,6 +1184,14 @@ class LiDateRangePickerComponent
     rightCalendar = _buildCalendar(rightMonth);
   }
 
+  void _scheduleOverlayUpdate() {
+    Future<void>.microtask(() {
+      if (isOpen && !usesMobilePresentation) {
+        _overlay?.update();
+      }
+    });
+  }
+
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
   }
@@ -974,6 +1240,20 @@ class LiDateRangePickerComponent
       return left == right;
     }
     return _isSameDate(left, right);
+  }
+
+  bool _matchesAnyPreset(DateTime? rangeInicio, DateTime? rangeFim) {
+    for (final preset in presets) {
+      if (_isSameRange(
+        rangeInicio,
+        rangeFim,
+        _normalize(preset.inicio),
+        _normalize(preset.fim),
+      )) {
+        return true;
+      }
+    }
+    return false;
   }
 
   String _formatRange(DateTime? start, DateTime? end) {
@@ -1083,6 +1363,15 @@ class LiDateRangePickerComponent
 
   Object? trackByMonthOption(int index, dynamic option) =>
       (option as DateRangePickerMonthOption).month;
+
+  Object? trackByPreset(int index, dynamic preset) {
+    final typedPreset = preset as LiDateRangePreset;
+    final value = typedPreset.value.trim();
+    if (value.isNotEmpty) {
+      return value;
+    }
+    return '${typedPreset.label}-$index';
+  }
 
   Object? trackByYear(int index, dynamic year) => year;
 

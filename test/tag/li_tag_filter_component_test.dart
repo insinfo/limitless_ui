@@ -18,17 +18,20 @@ import 'li_tag_filter_component_test.template.dart' as ng;
 @Component(
   selector: 'li-tag-filter-test-host',
   template: '''
-    <li-tag-filter
-        #filter
-        [dataSource]="tags"
-        labelKey="nome"
-        valueKey="id"
-        colorKey="cor"
-        [showReloadButton]="true"
-        (modelChange)="selectedModels = \$event"
-        (reloadRequest)="reloadCount = reloadCount + 1"
-        [(ngModel)]="selectedIds">
-    </li-tag-filter>
+    <div [style.width.px]="wrapperWidth">
+      <li-tag-filter
+          #filter
+          [dataSource]="tags"
+          labelKey="nome"
+          valueKey="id"
+          colorKey="cor"
+          [showReloadButton]="true"
+          [wrapSelectedBadges]="wrapSelectedBadges"
+          (modelChange)="selectedModels = \$event"
+          (reloadRequest)="reloadCount = reloadCount + 1"
+          [(ngModel)]="selectedIds">
+      </li-tag-filter>
+    </div>
   ''',
   directives: [coreDirectives, formDirectives, LiTagFilterComponent],
 )
@@ -38,6 +41,8 @@ class TagFilterTestHostComponent {
 
   List<dynamic> selectedIds = <dynamic>[2];
   List<dynamic> selectedModels = <dynamic>[];
+  int wrapperWidth = 360;
+  bool wrapSelectedBadges = true;
   int reloadCount = 0;
 
   final List<Map<String, dynamic>> tags = <Map<String, dynamic>>[
@@ -107,6 +112,32 @@ void main() {
 
     expect(host.selectedIds, isEmpty);
     expect(fixture.rootElement.querySelector('.dropdown-clear'), isNull);
+  });
+
+  test('permite quebrar badges selecionados quando configurado', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.wrapperWidth = 180;
+      component.wrapSelectedBadges = true;
+      component.selectedIds = <dynamic>[1, 2, 3];
+    });
+    await _settle(fixture);
+
+    final trigger = fixture.rootElement.querySelector('.li-tag-filter__button')
+        as html.ButtonElement;
+    final selection = fixture.rootElement
+        .querySelector('.li-tag-filter__selection') as html.Element;
+    final badges =
+        fixture.rootElement.querySelectorAll('.li-tag-filter__selection-badge');
+    final badgeRows = badges
+        .map((element) => element.getBoundingClientRect().top.round())
+        .toSet();
+
+    expect(trigger.classes.contains('li-tag-filter__button--wrapped'), isTrue);
+    expect(
+      selection.classes.contains('li-tag-filter__selection--wrapped'),
+      isTrue,
+    );
+    expect(badgeRows.length, greaterThan(1));
   });
 
   test('opens overlay aligned below the trigger and emits reload requests',

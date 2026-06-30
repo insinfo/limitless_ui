@@ -73,6 +73,18 @@ class LiAccordionComponent implements AfterContentInit {
   @HostBinding('class.open')
   bool get hostOpenClass => items.any((item) => item.isExpanded);
 
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_accordion';
+
+  @HostBinding('attr.data-value')
+  String get hostDataValue => items
+      .where((item) => item.isExpanded)
+      .map((item) => item.contentId)
+      .join(',');
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen => hostOpenClass ? 'true' : 'false';
+
   @override
   void ngAfterContentInit() {
     for (final item in items) {

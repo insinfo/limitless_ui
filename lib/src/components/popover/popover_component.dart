@@ -315,6 +315,12 @@ class LiPopoverComponent implements OnDestroy {
   @HostBinding('class.li-popover-host')
   bool hostPopoverClass = true;
 
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_popover_trigger';
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen => isOpen() ? 'true' : 'false';
+
   bool isOpen() => _visible;
 
   bool get _hasRenderableContent =>
@@ -679,6 +685,8 @@ class LiPopoverComponent implements OnDestroy {
       ..id = _popoverId
       ..classes.addAll(const <String>['popover', 'bs-popover-auto'])
       ..setAttribute('role', 'tooltip')
+      ..setAttribute('data-label', 'li_popover_panel')
+      ..setAttribute('data-open', 'true')
       ..style.pointerEvents = 'auto';
 
     if (animation) {
@@ -690,7 +698,9 @@ class LiPopoverComponent implements OnDestroy {
       popoverElement.classes.addAll(popoverClassNames);
     }
 
-    final popoverArrowElement = html.DivElement()..classes.add('popover-arrow');
+    final popoverArrowElement = html.DivElement()
+      ..classes.add('popover-arrow')
+      ..setAttribute('data-label', 'li_popover_arrow');
     if (popoverClassNames.isNotEmpty) {
       popoverArrowElement.classes.addAll(
         popoverClassNames.where((className) => className.startsWith('border-')),
@@ -698,9 +708,11 @@ class LiPopoverComponent implements OnDestroy {
     }
 
     final popoverHeaderElement = html.HeadingElement.h3()
-      ..classes.add('popover-header');
+      ..classes.add('popover-header')
+      ..setAttribute('data-label', 'li_popover_header');
     final popoverBodyElement = html.DivElement()
       ..classes.add('popover-body')
+      ..setAttribute('data-label', 'li_popover_body')
       ..style.whiteSpace = 'pre-line';
 
     popoverElement
@@ -1357,6 +1369,12 @@ class LiPopoverDirective implements OnDestroy {
 
   @HostBinding('class.li-popover-host')
   bool hostPopoverClass = true;
+
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_popover_trigger';
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen => isOpen() ? 'true' : 'false';
 
   bool isOpen() => _popover.isOpen();
 

@@ -44,6 +44,12 @@ class LiTabsComponent implements OnInit, AfterContentInit {
   @HostBinding('class.li-tabsx-active-text-body-color')
   bool get usesBodyColorOnActiveTab => activeTextBodyColor;
 
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_tabs';
+
+  @HostBinding('attr.data-value')
+  String get hostDataValue => activeTabValue;
+
   @Input()
   @HostBinding('attr.placement')
   String? placement;
@@ -96,6 +102,13 @@ class LiTabsComponent implements OnInit, AfterContentInit {
   /// emits the selected element change
   @Output()
   Stream<LiTabxDirective> get select => _selectCtrl.stream;
+
+  int get activeTabIndex => tabs.indexWhere((tab) => tab.active);
+
+  String get activeTabValue {
+    final index = activeTabIndex;
+    return index < 0 ? '' : index.toString();
+  }
 
   @override
   void ngAfterContentInit() {

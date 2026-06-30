@@ -23,6 +23,7 @@ import 'li_toast_component_test.template.dart' as ng;
           #basicToast
           header="Basic header"
           body="Basic body"
+          automationValue="basic-toast"
           [autohide]="false"
           [animation]="false"
           (shown)="basicShown = basicShown + 1"
@@ -42,6 +43,7 @@ import 'li_toast_component_test.template.dart' as ng;
       <li-toast
           header="Warning header"
           body="Warning body"
+          automationValue="warning-toast"
           toastClass="bg-warning text-white border-0"
           [autohide]="false"
           [animation]="false">
@@ -83,6 +85,14 @@ void main() {
     expect(fixture.rootElement.text, contains('Basic header'));
     expect(fixture.rootElement.text, contains('Basic body'));
     expect(host.basicShown, 1);
+    final toast = fixture.rootElement
+        .querySelector('[data-label="li_toast"][data-value="basic-toast"]');
+    expect(toast, isNotNull);
+    expect(toast!.getAttribute('data-open'), 'true');
+    expect(toast.querySelector('[data-label="li_toast_header"]'), isNotNull);
+    expect(toast.querySelector('[data-label="li_toast_title"]'), isNotNull);
+    expect(toast.querySelector('[data-label="li_toast_body"]'), isNotNull);
+    expect(toast.querySelector('[data-label="li_toast_close"]'), isNotNull);
 
     await fixture.update((component) {
       component.basicToast!.hide();
@@ -128,6 +138,7 @@ void main() {
       component.toastService.show(
         header: 'Stack header',
         body: 'Stack body',
+        automationValue: 'stack-toast',
         animation: false,
         autohide: false,
       );
@@ -135,10 +146,24 @@ void main() {
     await _settle(fixture);
 
     expect(host.toastService.toasts, hasLength(1));
+    expect(
+      html.document.querySelector(
+        '[data-label="li_toast_stack"][data-value="top-end"]',
+      ),
+      isNotNull,
+    );
+    expect(
+      html.document.querySelector(
+        '[data-label="li_toast_stack_item"][data-value="stack-toast"]',
+      ),
+      isNotNull,
+    );
     expect(html.document.querySelector('.li-toast-stack .toast'), isNotNull);
 
-    final closeButton =
-        html.document.querySelector('.li-toast-stack .btn-close');
+    final closeButton = html.document.querySelector(
+      '[data-label="li_toast_stack_item"][data-value="stack-toast"] '
+      '[data-label="li_toast_close"]',
+    );
     expect(closeButton, isNotNull);
 
     await fixture.update((_) {

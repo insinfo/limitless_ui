@@ -44,6 +44,15 @@ class LiBreadcrumbItemDirective {
 
   @HostBinding('attr.aria-label')
   String? get hostAriaLabel => ariaLabel;
+
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_breadcrumb_item';
+
+  @HostBinding('attr.data-active')
+  String get hostDataActive => active ? 'true' : 'false';
+
+  @HostBinding('attr.data-disabled')
+  String get hostDataDisabled => disabled ? 'true' : 'false';
 }
 
 @Component(

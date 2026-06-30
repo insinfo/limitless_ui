@@ -284,9 +284,13 @@ void main() {
     expect(outsideTarget, isNotNull);
     expect(host.clickPopover, isNotNull);
     expect(host.clickPopover!.isOpen(), isFalse);
+    final popoverHost = clickTrigger!.closest('li-popover');
+    expect(popoverHost, isNotNull);
+    expect(popoverHost!.getAttribute('data-label'), 'li_popover_trigger');
+    expect(popoverHost.getAttribute('data-open'), 'false');
 
     await fixture.update((_) {
-      _click(clickTrigger!);
+      _click(clickTrigger);
     });
     await _settlePopover(fixture);
 
@@ -294,7 +298,13 @@ void main() {
 
     expect(host.clickPopover!.isOpen(), isTrue);
     expect(popover, isNotNull);
-    expect(popover!.text, contains('Click title'));
+    expect(popoverHost.getAttribute('data-open'), 'true');
+    expect(popover!.getAttribute('data-label'), 'li_popover_panel');
+    expect(popover.getAttribute('data-open'), 'true');
+    expect(
+        popover.querySelector('[data-label="li_popover_header"]'), isNotNull);
+    expect(popover.querySelector('[data-label="li_popover_body"]'), isNotNull);
+    expect(popover.text, contains('Click title'));
     expect(popover.text, contains('Click body'));
 
     await fixture.update((_) {

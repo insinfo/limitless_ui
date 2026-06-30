@@ -1,4 +1,6 @@
 <ul class="nav"
+    [attr.data-label]="'li_tabs_nav'"
+    [attr.data-value]="activeTabValue"
     [class.flex-column]="vertical"
     [class.nav-justified]="justified"
     [class.nav-tabs]="usesTabNavigation"
@@ -11,13 +13,31 @@
     [class.border]="type == 'solid'"
     (click)="$event.preventDefault()">
   
-    <li *ngFor="let tab of tabs" class="nav-item" [class.active]="tab.active" [class.disabled]="tab.disabled">
-        <a href class="nav-link" [class.active]="tab.active" [class.disabled]="tab.disabled" (click)="activateTab(tab)">
+    <li *ngFor="let tab of tabs; let idx = index"
+        class="nav-item"
+        [class.active]="tab.active"
+        [class.disabled]="tab.disabled"
+        [attr.data-label]="'li_tabs_nav_item'"
+        [attr.data-value]="idx.toString()"
+        [attr.data-active]="tab.active ? 'true' : 'false'"
+        [attr.data-disabled]="tab.disabled ? 'true' : 'false'">
+        <a href
+            class="nav-link"
+            [class.active]="tab.active"
+            [class.disabled]="tab.disabled"
+            [attr.data-label]="'li_tabs_nav_link'"
+            [attr.data-value]="idx.toString()"
+            [attr.data-active]="tab.active ? 'true' : 'false'"
+            [attr.data-disabled]="tab.disabled ? 'true' : 'false'"
+            (click)="activateTab(tab)">
             {{tab.header}}
             <template [ngTemplateOutlet]="tab.headerTemplate?.templateRef"></template>
         </a>
     </li>
 </ul>
-<div class="tab-content flex-grow-1" [class.p-1]="contentPadding">
+<div class="tab-content flex-grow-1"
+    [class.p-1]="contentPadding"
+    [attr.data-label]="'li_tabs_content'"
+    [attr.data-value]="activeTabValue">
     <ng-content></ng-content>
 </div>

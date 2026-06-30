@@ -1,8 +1,15 @@
-<h2 class="accordion-header" [attr.id]="headerId">
+<h2 class="accordion-header"
+    [attr.id]="headerId"
+    [attr.data-label]="'li_accordion_header'"
+    [attr.data-value]="contentId"
+    [attr.data-open]="isExpanded ? 'true' : 'false'">
   <button
       [attr.aria-controls]="contentId"
       [attr.aria-expanded]="isExpanded.toString()"
       [attr.disabled]="disabled ? '' : null"
+      [attr.data-label]="'li_accordion_button'"
+      [attr.data-value]="contentId"
+      [attr.data-open]="isExpanded ? 'true' : 'false'"
       [class]="buttonClassName"
       type="button"
       (click)="toggle()">
@@ -23,9 +30,15 @@
 <div
     [attr.aria-labelledby]="headerId"
     [attr.id]="contentId"
+    [attr.data-label]="'li_accordion_panel'"
+    [attr.data-value]="contentId"
+    [attr.data-open]="isExpanded ? 'true' : 'false'"
     class="accordion-collapse collapse"
     [class.show]="isExpanded">
-  <div class="accordion-body" [class.p-0]="!resolvedBodyPadding">
+  <div class="accordion-body"
+      [class.p-0]="!resolvedBodyPadding"
+      [attr.data-label]="'li_accordion_body'"
+      [attr.data-value]="contentId">
     <template [ngTemplateOutlet]="shouldRenderLazyTemplate ? bodyTemplate?.templateRef : null"></template>
     <div *ngIf="shouldRenderProjectedBody && !hasLazyBodyTemplate">
       <ng-content></ng-content>

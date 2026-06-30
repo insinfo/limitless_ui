@@ -40,7 +40,6 @@ class DatePickerTestHostComponent {
     <li-date-picker
         #picker
         [value]="value"
-        mobilePresentation="modal"
         mobileHeightBreakpoint="9999px"
         (valueChange)="value = \$event">
     </li-date-picker>
@@ -110,7 +109,7 @@ void main() {
     expect(host.userValue, DateTime(2026, 4, 9));
   });
 
-  test('can present as a centered mobile modal', () async {
+  test('uses a fullscreen mobile modal by default', () async {
     final fixture = await mobileTestBed.create();
     await _settleMobile(fixture);
 
@@ -122,7 +121,7 @@ void main() {
     });
     await _settleMobile(fixture);
 
-    final panel = fixture.rootElement.querySelector(
+    final panel = html.document.querySelector(
       '.date-picker-open--mobile-modal.is-open',
     );
     expect(panel, isNotNull);
@@ -132,6 +131,17 @@ void main() {
       fixture.rootElement.querySelector('.date-picker-mobile-backdrop'),
       isNotNull,
     );
+
+    final panelRect = panel.getBoundingClientRect();
+    final viewportWidth = html.window.innerWidth!;
+    final viewportHeight = html.window.innerHeight!;
+    expect(panelRect.top.abs(), lessThanOrEqualTo(1));
+    expect(panelRect.left.abs(), lessThanOrEqualTo(1));
+    expect(panelRect.width, greaterThanOrEqualTo(viewportWidth - 1));
+    expect(panelRect.height, greaterThanOrEqualTo(viewportHeight - 1));
+    final panelStyle = panel.getComputedStyle();
+    expect(panelStyle.overflowX, 'hidden');
+    expect(panelStyle.overflowY, 'auto');
   });
 }
 

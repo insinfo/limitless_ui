@@ -32,6 +32,41 @@ class TimePickerDialLabel {
   });
 }
 
+class LiTimePickerTriggerContext {
+  LiTimePickerTriggerContext._(this._component);
+
+  final LiTimePickerComponent _component;
+
+  Duration? get value => _component.value;
+
+  String get displayValue => _component.displayValue;
+
+  String get placeholder => _component.effectivePlaceholder;
+
+  bool get hasValue => _component.hasValue;
+
+  bool get disabled => _component.isDisabled;
+
+  bool get isOpen => _component.isOpen;
+
+  bool get use24Hour => _component.use24Hour;
+
+  void open() => _component.open();
+
+  void close() => _component.close();
+
+  void toggle() => _component.toggleOpen();
+
+  void clear([html.Event? event]) => _component.clearFromTriggerTemplate(event);
+}
+
+@Directive(selector: 'template[liTimePickerTrigger]')
+class LiTimePickerTriggerDirective {
+  LiTimePickerTriggerDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
 /// Limitless-inspired time picker with a clock dial overlay.
 ///
 /// The component exposes `Duration?` through both `[value]`/`(valueChange)` and
@@ -40,7 +75,7 @@ class TimePickerDialLabel {
   selector: 'li-time-picker',
   styleUrls: ['time_picker_component.css'],
   templateUrl: 'time_picker_component.html',
-  directives: [coreDirectives],
+  directives: [coreDirectives, LiTimePickerTriggerDirective],
   providers: [
     ExistingProvider.forToken(ngValueAccessor, LiTimePickerComponent),
   ],
@@ -135,10 +170,10 @@ class LiTimePickerComponent
 
   /// Mobile presentation for small viewports.
   ///
-  /// `dropdown` keeps the normal anchored overlay. `modal` shows a centered
-  /// fixed dialog with a backdrop, and `sheet` shows a bottom sheet.
+  /// `dropdown` keeps the normal anchored overlay. `modal` shows a fixed
+  /// dialog with a backdrop, and `sheet` shows a bottom sheet.
   @Input()
-  String mobilePresentation = 'dropdown';
+  String mobilePresentation = 'modal';
 
   /// CSS `max-width` media-query used by [mobilePresentation].
   @Input()
@@ -163,6 +198,9 @@ class LiTimePickerComponent
   @ViewChild('clockFaceElement')
   html.Element? clockFaceElement;
 
+  @ContentChild(LiTimePickerTriggerDirective)
+  LiTimePickerTriggerDirective? triggerTemplate;
+
   @ViewChild('hourInput')
   html.InputElement? hourInputElement;
 
@@ -181,6 +219,8 @@ class LiTimePickerComponent
   int? _dragAnimationFrameId;
   double? _pendingPointerX;
   double? _pendingPointerY;
+  late final LiTimePickerTriggerContext triggerContext =
+      LiTimePickerTriggerContext._(this);
 
   ChangeFunction<Duration?> _onChange = (Duration? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
@@ -444,6 +484,28 @@ class LiTimePickerComponent
     _open();
   }
 
+  void open() {
+    if (isDisabled || isOpen) {
+      return;
+    }
+
+    _open();
+  }
+
+  void handleTriggerKeydown(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
+    if (event.code == 'Enter' ||
+        event.code == 'NumpadEnter' ||
+        event.code == 'Space' ||
+        event.key == ' ') {
+      event.preventDefault();
+      toggleOpen();
+    }
+  }
+
   void _open() {
     _syncDraftFromValue();
     _syncInputTexts();
@@ -451,6 +513,7 @@ class LiTimePickerComponent
     isOpen = true;
     if (!usesMobilePresentation) {
       _ensureOverlay();
+      resetOverlayViewportConstraints(floatingElement: panelElement);
       _overlay?.startAutoUpdate();
       _overlay?.update();
     } else {
@@ -641,10 +704,17 @@ class LiTimePickerComponent
     close();
   }
 
-  void clearFromTrigger(html.MouseEvent event) {
-    event.preventDefault();
-    event.stopPropagation();
+  void clearFromTriggerTemplate([html.Event? event]) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    if (isDisabled) {
+      return;
+    }
     clear();
+  }
+
+  void clearFromTrigger(html.MouseEvent event) {
+    clearFromTriggerTemplate(event);
   }
 
   void close() {

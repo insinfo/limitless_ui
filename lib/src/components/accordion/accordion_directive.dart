@@ -52,6 +52,17 @@ class LiAccordionDirective implements AfterContentInit {
   @HostBinding('class.accordion-flush')
   bool get hostFlushClass => flush;
 
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_accordion';
+
+  @HostBinding('attr.data-value')
+  String get hostDataValue =>
+      items.where((item) => !item.collapsed).map((item) => item.id).join(',');
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen =>
+      items.any((item) => !item.collapsed) ? 'true' : 'false';
+
   @override
   void ngAfterContentInit() {
     for (final item in items) {

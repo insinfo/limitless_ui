@@ -2,20 +2,36 @@
      [class]="resolvedToastClasses"
      role="alert"
      [attr.aria-live]="ariaLive"
-     aria-atomic="true">
-  <div *ngIf="hasHeader" [class]="resolvedHeaderClasses">
-    <i *ngIf="hasIcon" [class]="resolvedIconClasses"></i>
-    <div *ngIf="header.trim().isNotEmpty" class="fw-semibold me-auto">{{ header }}</div>
-    <span *ngIf="hasBadge" [class]="resolvedBadgeClasses">{{ badgeText }}</span>
-    <small *ngIf="hasHelperText" [class]="resolvedHelperTextClasses">{{ helperText }}</small>
+     aria-atomic="true"
+     [attr.data-label]="'li_toast'"
+     [attr.data-value]="automationValue.trim().isNotEmpty ? automationValue : null"
+     [attr.data-open]="isOpen ? 'true' : 'false'">
+  <div *ngIf="hasHeader"
+      [class]="resolvedHeaderClasses"
+      [attr.data-label]="'li_toast_header'">
+    <i *ngIf="hasIcon"
+        [class]="resolvedIconClasses"
+        [attr.data-label]="'li_toast_icon'"></i>
+    <div *ngIf="header.trim().isNotEmpty"
+        class="fw-semibold me-auto"
+        [attr.data-label]="'li_toast_title'">{{ header }}</div>
+    <span *ngIf="hasBadge"
+        [class]="resolvedBadgeClasses"
+        [attr.data-label]="'li_toast_badge'">{{ badgeText }}</span>
+    <small *ngIf="hasHelperText"
+        [class]="resolvedHelperTextClasses"
+        [attr.data-label]="'li_toast_helper'">{{ helperText }}</small>
     <button *ngIf="dismissible"
             type="button"
             [class]="resolvedCloseButtonClasses"
             [attr.aria-label]="closeButtonAriaLabel"
+            [attr.data-label]="'li_toast_close'"
             (click)="hide()"></button>
   </div>
 
-  <div *ngIf="hasBody" [class]="resolvedBodyClasses">
+  <div *ngIf="hasBody"
+      [class]="resolvedBodyClasses"
+      [attr.data-label]="'li_toast_body'">
     {{ body }}
   </div>
 

@@ -127,7 +127,7 @@ The demo fixes that with a global override in [example/web/style.scss](example/w
 Recent picker/overlay updates in `limitless_ui` are focused on modal-safe behavior:
 
 - `li-tooltip` and `li-popover` now keep body-mounted overlays above modal/backdrop stacks.
-- `li-date-picker`, `li-date-range-picker`, `li-time-picker`, and `li-color-picker` support adaptive mobile presentation via `mobilePresentation` and `mobileHeightBreakpoint`.
+- `li-date-picker`, `li-date-range-picker`, `li-time-picker`, and `li-color-picker` support adaptive mobile presentation via `mobilePresentation` and `mobileHeightBreakpoint`. Date, date-range, and time pickers default to fullscreen mobile modals so picker panels keep a stable size while the user selects values.
 - The example modal page includes dedicated overlay labs (fields, pickers, and stacked modal-on-modal scenarios) to visually validate z-index and viewport clamping.
 
 For modal demos in the example app, overlay field surfaces were simplified to remove decorative wrapper backgrounds, keeping focus on overlay behavior instead of container chrome.
@@ -371,6 +371,36 @@ Use `userValueChange` when a screen must trigger side effects only after real us
 The `userValueChange` output is available on `li-select`, `li-multi-select`, `li-datatable-select`, `li-date-picker`, `li-date-range-picker`, `li-time-picker`, `li-typeahead`, `li-treeview-select`, and `li-rating`.
 
 `li-select` also preserves the written `ngModel` value when its `dataSource` or projected `li-option` items arrive later. For record hydration flows, use `setSelectedItemByValue(...)` or `clearSelectedItem(...)` with `isCallNgModelChange: false` and `isCallCurrentValueChange: false` to synchronize the visual selection without emitting model/current-value events. These programmatic APIs do not emit `userValueChange`.
+
+### Custom trigger templates
+
+Select-like controls can render a custom trigger template while keeping the component-owned wrapper responsible for click, keyboard focus, disabled state, data hooks, and Popper positioning. This is useful when the trigger should look like a Limitless badge, toolbar button, chip, or compact filter pill instead of a full input.
+
+Supported projected trigger directives:
+
+- `liSelectTrigger` on `li-select`.
+- `liMultiSelectTrigger` on `li-multi-select`.
+- `liDatatableSelectCustomTrigger` on `li-datatable-select` for replacing the whole trigger. The older `liDatatableSelectTrigger` still customizes only the inner content of the default trigger.
+- `liDatePickerTrigger` on `li-date-picker`.
+- `liDateRangePickerTrigger` on `li-date-range-picker`.
+- `liTimePickerTrigger` on `li-time-picker`.
+
+The trigger context is stable per component instance and exposes the current display state plus actions such as `open()`, `close()`, `toggle()`, and `clear($event)`. Prefer `ctx.clear($event)` for clear buttons inside the custom trigger so the click does not bubble back to the wrapper.
+
+```html
+<li-date-range-picker
+  [start]="periodStart"
+  [end]="periodEnd"
+  (startChange)="periodStart = $event"
+  (endChange)="periodEnd = $event">
+  <template liDateRangePickerTrigger let-ctx>
+    <span class="badge bg-primary d-inline-flex align-items-center gap-1">
+      <i class="ph ph-calendar-blank"></i>
+      {{ ctx.hasValue ? ctx.displayValue : ctx.placeholder }}
+    </span>
+  </template>
+</li-date-range-picker>
+```
 
 Selection-oriented controls also render stable browser automation hooks:
 
@@ -945,12 +975,15 @@ Preview-related inputs:
 
 For selection-oriented flows, `li-tag-manager` also accepts `compareWith` when the selected values are objects or when item identity is recreated after reloads.
 
+Use `[wrapSelectedBadges]="true"` on `li-tag-filter` when the selected badges should wrap and increase the input height instead of truncating into a single horizontal row. This is useful for dense filter bars with several selected labels.
+
 ```html
 <li-tag-filter
   [dataSource]="tagCatalog"
   labelKey="name"
   valueKey="id"
   colorKey="color"
+  [wrapSelectedBadges]="true"
   [(ngModel)]="selectedTagIds">
 </li-tag-filter>
 
@@ -976,6 +1009,7 @@ Useful customization knobs:
 - `showActionMenu` to remove the overflow menu entirely.
 - `showCopyAction`, `showPasteAction`, and `showClearAction` to expose only the actions the screen actually needs.
 - `showRemoveButton` to keep tokens read-only at the chip level while still allowing programmatic updates.
+- `wrapTokens` to let tokens wrap onto additional lines and grow the input height when horizontal space runs out.
 - `actionMenuTriggerClass` and `actionMenuTriggerIconClass` to retheme the overflow trigger without forking the component.
 - `copyAction`, `pasteAction`, and `clearAction` outputs when the host wants to react to those actions explicitly.
 
@@ -986,6 +1020,7 @@ Useful customization knobs:
   patternAllowed="[0-9/]"
   patternToken="\\d+/\\d+"
   [showCopyAction]="false"
+  [wrapTokens]="true"
   placeholder="Digite um código/ano e pressione enter.">
 </li-token-field>
 ```
@@ -1786,6 +1821,8 @@ Most relevant inputs and features:
 - `showClearButton`, `clearButtonLabel`, `triggerIconMode`, and `triggerIconClass` for trigger and multi-selection UX tuning;
 - projected `template liDatatableSelectModalContent` for replacing the internal modal body with arbitrary content;
 - modal context helpers `ctx.select(item)`, `ctx.selectItem(label, value)`, `ctx.clear()`, `ctx.apply()`, and `ctx.close()`;
+- `mobileResponsiveCollapse` and `mobileResponsiveCollapseMaxWidth` to enable the inner table's mobile details-row layout when columns are marked with `hideOnMobile`;
+- `responsiveCollapseByContainer` and `responsiveCollapseContainerMaxWidth` when the modal/table container width, not only the viewport, should trigger collapsed details rows;
 - `modalSize`, `title`, `placeholder`, `disabled`, and `fullScreenOnMobile`;
 - public methods such as `clear()`, `setSelectedItem(...)`, and `selectedLabel`.
 
@@ -1797,6 +1834,7 @@ In multiple mode, the component keeps the modal open while the user marks rows, 
   [dataTableFilter]="personFilter"
   [data]="personFrame"
   [searchInFields]="personSearchFields"
+  [mobileResponsiveCollapse]="true"
   [modalCompactHeader]="true"
   [modalSmallHeader]="true"
   [requestDataOnItemsPerPageChange]="true"
@@ -1821,6 +1859,7 @@ When the built-in modal toolbar is not enough, the same datatable template direc
   [searchInFields]="personSearchFields"
   [modalCompactHeader]="true"
   [modalSmallHeader]="true"
+  [mobileResponsiveCollapse]="true"
   (dataRequest)="loadPeople($event)">
   <template li-datatable-header let-ctx>
     <div class="d-flex align-items-center justify-content-between gap-2">
@@ -1899,6 +1938,7 @@ Best practices:
 
 - keep `Filters`, `DatatableSettings`, and `searchInFields` stable;
 - handle data loading in the parent, just as you would for a regular datatable;
+- mark secondary columns with `hideOnMobile` before enabling `mobileResponsiveCollapse`;
 - use `valueKey` to persist only IDs instead of the full map when the field belongs to a form;
 - use `itemLabelBuilder` and `itemValueBuilder` for strongly typed entities;
 - use `ctx.selectItem(label, value)` when the modal content already knows the final pair and does not need to emit a full row object;
@@ -2098,6 +2138,8 @@ Main features:
 - `canSelectNode` to enforce per-item selection rules
 - `template[liTreeviewSelectNode]` and `template[liTreeviewSelectTrigger]` for custom rendering
 - `closeOnSelect`, `showClearButton`, `searchable`, and `openOnFocus`
+- `selectDescendantsOnParentSelect` in multiple mode to select/deselect a loaded parent branch in one user action
+- `mobilePresentation`, `mobileBreakpoint`, and `mobileHeightBreakpoint` to switch the dropdown to a fullscreen modal or sheet on small screens
 - `showPanelActions` to toggle the footer action bar with confirm, clear, and expand-or-collapse-all actions
 - `expandTogglePlacement` to move the expand/collapse-all toggle between the footer, the search row, or hide it
 - `expandAllButtonLabel`, `collapseAllButtonLabel`, and `confirmButtonLabel` to localize the action labels
@@ -2108,6 +2150,8 @@ Main features:
   [pageSize]="20"
   [multiple]="true"
   [closeOnSelect]="false"
+  [selectDescendantsOnParentSelect]="true"
+  mobilePresentation="modal"
   [labelBuilder]="buildNodeLabel"
   [canSelectNode]="canSelectLeafNode"
   [(ngModel)]="selectedValues">
@@ -2130,6 +2174,8 @@ Best practices:
 
 - use `[data]` when the tree is already loaded in memory
 - use `[pageLoader]` for large catalogs or deep hierarchies
+- expand/load lazy branches before selecting a parent when `selectDescendantsOnParentSelect` must include those descendants
+- keep the default `mobilePresentation="modal"` for touch-heavy forms; use `"dropdown"` only when an anchored overlay is explicitly required
 - keep remote search on the backend through `request.searchTerm`
 - use `canSelectNode` for rules such as leaf-only selection
 - use `showPanelActions="false"` plus `expandTogglePlacement="search"` when the footer would be redundant and the user still needs a fast expand/collapse control
@@ -2277,6 +2323,39 @@ The demo covers four useful scenarios: default usage, restricted date ranges, En
 
 Use `inicio`/`fim` when you need backward compatibility with existing code, or `start`/`end` when the host API is already standardized in English. Both forms map to the same internal state and can be used interchangeably at the component boundary.
 
+The picker also supports predefined ranges through `presets`, following the same interaction model popularized by date-range-picker libraries: a shortcut applies a known start/end range, and the optional custom-range action reveals the calendars for manual selection.
+
+```dart
+final reportRanges = <LiDateRangePreset>[
+  LiDateRangePreset(
+    label: 'Today',
+    value: 'today',
+    start: DateTime(2026, 6, 29),
+    end: DateTime(2026, 6, 29),
+  ),
+  LiDateRangePreset(
+    label: 'Last 7 Days',
+    value: 'last_7_days',
+    start: DateTime(2026, 6, 23),
+    end: DateTime(2026, 6, 29),
+  ),
+];
+```
+
+```html
+<li-date-range-picker
+  [presets]="reportRanges"
+  [start]="rangeStart"
+  [end]="rangeEnd"
+  (startChange)="rangeStart = $event"
+  (endChange)="rangeEnd = $event">
+</li-date-range-picker>
+```
+
+Use `[presetAutoApply]="false"` when the user should confirm a preset with the Apply button, `[alwaysShowCalendars]="true"` when shortcuts and calendars should stay visible together, `[showCalendarsForCustomRange]="true"` when a non-preset current value should open directly with calendars visible, and `[showCustomRangePreset]="false"` when the list should contain only fixed shortcuts.
+
+On mobile widths, date, date range, and time pickers use `mobilePresentation="modal"` by default and render as fullscreen modals with internal scrolling. Set `mobilePresentation="dropdown"` only when an anchored overlay is explicitly preferred.
+
 References:
 
 - [example/lib/src/pages/date_range/date_range_page.dart](example/lib/src/pages/date_range/date_range_page.dart)
@@ -2307,6 +2386,8 @@ Additional sizing and chrome inputs include `compactHeader` and `smallHeader` wh
 
 If you want `size="modal-full"` to behave like a true full-screen shell with straight edges, opt in with `fullScreenShell="true"`. Without that input, `modal-full` keeps the viewport-sized body but preserves the regular rounded modal look.
 
+When you need a flush body with no Bootstrap `modal-body` padding, set `[enableModalBodyClass]="false"`. In that mode the body wrapper is intentionally raw by default. If custom fullscreen content still needs a no-padding flex/min-height wrapper, opt in with `[enableModalBodyLayout]="true"` and add any extra classes through `bodyClass`.
+
 For locked flows, combine `closeOnEscape="false"`, `closeOnBackdropClick="false"`, and `enableCloseBtn="false"` so the user can leave only through your explicit action buttons.
 
 ```html
@@ -2316,6 +2397,29 @@ For locked flows, combine `closeOnEscape="false"`, `closeOnBackdropClick="false"
   [smallHeader]="true"
   [lazyContent]="true">
   <div class="p-3">Compact modal content</div>
+</li-modal>
+```
+
+```html
+<li-modal
+  title-text="Fullscreen table"
+  [fullScreenOnMobile]="true"
+  [enableModalBodyClass]="false">
+  <li-datatable
+    [data]="frame"
+    [settings]="settings"
+    [dataTableFilter]="filters">
+  </li-datatable>
+</li-modal>
+```
+
+```html
+<li-modal
+  title-text="Custom flex body"
+  [enableModalBodyClass]="false"
+  [enableModalBodyLayout]="true"
+  bodyClass="p-0">
+  <my-flex-panel></my-flex-panel>
 </li-modal>
 ```
 

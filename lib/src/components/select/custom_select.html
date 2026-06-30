@@ -1,5 +1,27 @@
 <div [attr.data-label]="'custom_select'" [attr.data-value]="selectedDataValue" class="dropdown-collection">
-    <div *ngIf="usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
+    <div *ngIf="triggerTemplate != null" #dropdownButton
+        class="li-select-custom-trigger"
+        [class.disabled]="isDisabled"
+        [attr.data-label]="'custom_select_btn_toggle'"
+        [attr.data-value]="selectedDataValue"
+        [attr.data-li-form-focus-target]="'true'"
+        role="combobox"
+        aria-haspopup="listbox"
+        [attr.aria-expanded]="dropdownOpen.toString()"
+        [attr.aria-controls]="listboxId"
+        [attr.aria-activedescendant]="activeDescendantId"
+        [attr.aria-describedby]="resolvedDescribedBy"
+        [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+        [attr.data-invalid]="effectiveInvalid ? 'true' : null"
+        [attr.tabindex]="isDisabled ? null : '0'"
+        (click)="toggleDropdown()"
+        (keydown)="handleTriggerKeydown($event)">
+        <template [ngTemplateOutlet]="triggerTemplate?.templateRef"
+            [ngTemplateOutletValue]="triggerContext">
+        </template>
+    </div>
+
+    <div *ngIf="triggerTemplate == null && usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
         <button type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
             [attr.data-value]="selectedDataValue"
             [attr.data-li-form-focus-target]="'true'"
@@ -27,7 +49,7 @@
         </span>
     </div>
 
-    <button *ngIf="!usesAddonTriggerIcon" type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
+    <button *ngIf="triggerTemplate == null && !usesAddonTriggerIcon" type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
         [attr.data-value]="selectedDataValue"
         [attr.data-li-form-focus-target]="'true'"
         [class]="resolvedButtonClass"

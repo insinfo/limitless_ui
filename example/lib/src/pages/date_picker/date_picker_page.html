@@ -116,6 +116,31 @@
               </div>
             </div>
 
+            <div class="row g-4 mt-1">
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ isPortuguese ? 'Trigger customizado' : 'Custom trigger' }}</h6>
+                  <li-date-picker
+                      [(ngModel)]="badgeDate"
+                      [placeholder]="isPortuguese ? 'Selecionar data' : 'Select date'">
+                    <template liDatePickerTrigger let-ctx>
+                      <span class="badge bg-primary d-inline-flex align-items-center gap-1"
+                          [attr.data-label]="'date_picker_custom_trigger_badge'"
+                          [attr.data-value]="ctx.displayValue">
+                        <i class="ph ph-calendar-blank"></i>
+                        <span>{{ ctx.hasValue ? ctx.displayValue : ctx.placeholder }}</span>
+                      </span>
+                    </template>
+                  </li-date-picker>
+
+                  <div class="demo-summary-box mt-3">
+                    <div><strong>{{ t.pages.datePicker.currentDateLabel }}:</strong> {{ badgeDateLabel }}</div>
+                    <div class="text-muted">{{ isPortuguese ? 'O badge é o trigger; clicar nele abre o calendário e a data selecionada volta para o badge.' : 'The badge is the trigger; clicking it opens the calendar and the selected date returns to the badge.' }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="alert alert-primary border-primary-subtle mt-4 mb-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
               <div>
                 <div class="fw-semibold">{{ dateRangeCtaTitle }}</div>
@@ -168,6 +193,12 @@
               <h6 class="mb-2">currentValueChange x userValueChange</h6>
               <p class="text-muted mb-3"><code>currentValueChange</code> acompanha alterações do model e do calendário. <code>userValueChange</code> dispara apenas quando o usuário escolhe ou limpa uma data pela interface.</p>
               <li-highlight [code]="userValueChangeSnippet" language="html"></li-highlight>
+            </div>
+
+            <div class="mt-4">
+              <h6 class="mb-2">Template de trigger</h6>
+              <p class="text-muted mb-3"><code>liDatePickerTrigger</code> permite trocar o input visual por um badge, chip ou botão compacto sem perder foco, estado disabled, hooks de automação e posicionamento do calendário.</p>
+              <li-highlight [code]="customTriggerSnippet" language="html"></li-highlight>
             </div>
 
             <div class="mt-4">

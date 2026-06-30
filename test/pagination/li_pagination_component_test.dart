@@ -88,6 +88,19 @@ void main() {
     expect(wrapper, isNotNull);
     expect(wrapper!.text, contains('...'));
     expect(wrapper.text, contains('10'));
+    final pagination = wrapper.querySelector('[data-label="li_pagination"]');
+    expect(pagination, isNotNull);
+    expect(pagination!.getAttribute('data-value'), '1');
+    expect(pagination.getAttribute('data-page-count'), '10');
+    expect(
+      wrapper
+          .querySelector('[data-label="li_pagination_page"][data-value="1"]'),
+      isNotNull,
+    );
+    expect(
+        wrapper.querySelector('[data-label="li_pagination_next"]'), isNotNull);
+    expect(
+        wrapper.querySelector('[data-label="li_pagination_last"]'), isNotNull);
 
     final fourthPageLink = _findLinkByText(wrapper, '4');
     expect(fourthPageLink, isNotNull);
@@ -102,6 +115,12 @@ void main() {
     final activeItem = wrapper.querySelector('.page-item.active');
     expect(activeItem, isNotNull);
     expect(activeItem!.text, contains('4'));
+    expect(
+      wrapper
+          .querySelector('[data-label="li_pagination"]')!
+          .getAttribute('data-value'),
+      '4',
+    );
   });
 
   test('renders the custom number template with current page context',

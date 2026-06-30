@@ -77,6 +77,15 @@ class LiAccordionItemComponent implements AfterContentInit, OnDestroy {
   @HostBinding('class.accordion-item')
   bool hostAccordionItemClass = true;
 
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_accordion_item';
+
+  @HostBinding('attr.data-value')
+  String get hostDataValue => contentId;
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen => isExpanded ? 'true' : 'false';
+
   late final String headerId;
   late final String contentId;
 

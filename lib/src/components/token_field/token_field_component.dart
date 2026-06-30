@@ -101,6 +101,9 @@ class LiTokenFieldComponent
   bool showRemoveButton = true;
 
   @Input()
+  bool wrapTokens = false;
+
+  @Input()
   String copyButtonLabel = '';
 
   @Input()
@@ -195,6 +198,7 @@ class LiTokenFieldComponent
         showActionMenu && hasActionMenuOptions
             ? 'li-token-field--with-menu'
             : '',
+        wrapTokens ? 'li-token-field--wrap' : '',
         isFocused ? 'focused' : '',
         isDisabled ? 'li-token-field--disabled' : '',
       ]);
@@ -603,6 +607,11 @@ class LiTokenFieldComponent
     final input = inputToken;
     final container = _rootElement.querySelector('.li-token-field');
     if (input == null || container == null) {
+      return;
+    }
+
+    if (wrapTokens) {
+      input.style.width = '';
       return;
     }
 

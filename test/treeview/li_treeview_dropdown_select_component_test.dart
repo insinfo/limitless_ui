@@ -82,6 +82,25 @@ import 'li_treeview_dropdown_select_component_test.template.dart' as ng;
           expandTogglePlacement="search"
           [(ngModel)]="selectedSearchToggleValues">
       </li-treeview-select>
+
+      <li-treeview-select
+          #descendantTree
+          container="inline"
+          [data]="staticNodes"
+          [multiple]="true"
+          [closeOnSelect]="false"
+          [selectDescendantsOnParentSelect]="true"
+          [(ngModel)]="selectedDescendantValues">
+      </li-treeview-select>
+
+      <li-treeview-select
+          #mobileTree
+          container="inline"
+          [data]="staticNodes"
+          [searchable]="false"
+          mobileBreakpoint="99999px"
+          [(ngModel)]="selectedMobileValue">
+      </li-treeview-select>
     </div>
   ''',
   directives: [
@@ -127,6 +146,8 @@ class TreeviewDropdownTestHostComponent {
   dynamic selectedLazyRawValue;
   dynamic selectedOverlayValue;
   List<dynamic> selectedSearchToggleValues = <dynamic>[];
+  List<dynamic> selectedDescendantValues = <dynamic>[];
+  dynamic selectedMobileValue;
 
   @ViewChild('staticTree')
   LiTreeviewSelectComponent? staticTree;
@@ -148,6 +169,12 @@ class TreeviewDropdownTestHostComponent {
 
   @ViewChild('searchToggleTree')
   LiTreeviewSelectComponent? searchToggleTree;
+
+  @ViewChild('descendantTree')
+  LiTreeviewSelectComponent? descendantTree;
+
+  @ViewChild('mobileTree')
+  LiTreeviewSelectComponent? mobileTree;
 
   Future<TreeViewLoadResult> loadChunk(TreeViewLoadRequest request) async {
     requests.add(request);
@@ -602,16 +629,81 @@ void main() {
 
     final triageLabel = _findLabelButton(multiHost, 'Triagem');
     final approvedLabel = _findLabelButton(multiHost, 'Aprovado');
+    final benefitsLabel = _findLabelButton(multiHost, 'Benefícios');
 
     await fixture.update((_) {
       triageLabel!.click();
       approvedLabel!.click();
+      benefitsLabel!.click();
     });
     await _settle(fixture);
 
     expect(
-        host.selectedMultiValues, containsAll(<String>['triage', 'approved']));
+      host.selectedMultiValues,
+      containsAll(<String>['triage', 'approved', 'benefits']),
+    );
     expect(host.multiTree!.isPopupOpen, isTrue);
+
+    final chips = multiHost
+        .querySelectorAll('.treeview-dropdown-select__chip')
+        .whereType<html.Element>()
+        .toList(growable: false);
+    final visibleValueChips = chips
+        .where((chip) =>
+            !chip.classes.contains('treeview-dropdown-select__chip--hidden') &&
+            !chip.classes.contains('treeview-dropdown-select__chip--muted'))
+        .toList(growable: false);
+    final hiddenValueChips = chips
+        .where((chip) =>
+            chip.classes.contains('treeview-dropdown-select__chip--hidden'))
+        .toList(growable: false);
+    final summaryChips = chips
+        .where((chip) =>
+            chip.classes.contains('treeview-dropdown-select__chip--muted'))
+        .toList(growable: false);
+
+    expect(visibleValueChips, hasLength(2));
+    expect(hiddenValueChips, hasLength(1));
+    expect(summaryChips, hasLength(1));
+    expect(summaryChips.single.text?.trim(), '+1 itens');
+  });
+
+  test('selects loaded descendants when parent cascade option is enabled',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final descendantHost =
+        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(7);
+
+    await fixture.update((_) {
+      _triggerButtons(fixture.rootElement)[7].click();
+    });
+    await _settle(fixture);
+
+    final benefitsLabel = _findLabelButton(descendantHost, 'Benefícios');
+    expect(benefitsLabel, isNotNull);
+    final benefitsButton = benefitsLabel!;
+
+    await fixture.update((_) {
+      benefitsButton.click();
+    });
+    await _settle(fixture);
+
+    expect(
+      host.selectedDescendantValues,
+      containsAll(<String>['benefits', 'basket', 'review', 'approved']),
+    );
+    expect(host.descendantTree!.selectedNodes, hasLength(4));
+    expect(host.descendantTree!.isPopupOpen, isTrue);
+
+    await fixture.update((_) {
+      benefitsButton.click();
+    });
+    await _settle(fixture);
+
+    expect(host.selectedDescendantValues, isEmpty);
+    expect(host.descendantTree!.selectedNodes, isEmpty);
   });
 
   test('maps DataFrame<Map> with settings and blocks disabled nodes', () async {
@@ -879,6 +971,38 @@ void main() {
 
     expect(benefits.treeViewNodeIsCollapse, isFalse);
     expect(basket.treeViewNodeIsCollapse, isFalse);
+  });
+
+  test('renders fullscreen mobile modal presentation when breakpoint matches',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((_) {
+      _triggerButtons(fixture.rootElement)[8].click();
+    });
+    await _settle(fixture);
+
+    final panel = fixture.rootElement.querySelector(
+      '.treeview-dropdown-select__panel--mobile-modal.show',
+    );
+    expect(panel, isNotNull);
+    expect(panel!.getAttribute('role'), 'dialog');
+    expect(panel.getAttribute('aria-modal'), 'true');
+    expect(panel.getComputedStyle().position, 'fixed');
+
+    final backdrop = fixture.rootElement.querySelector(
+      '.treeview-dropdown-select__mobile-backdrop',
+    );
+    expect(backdrop, isNotNull);
+
+    await fixture.update((_) {
+      backdrop!.click();
+    });
+    await _settle(fixture);
+
+    expect(host.mobileTree!.isPopupOpen, isFalse);
   });
 }
 

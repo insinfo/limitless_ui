@@ -42,6 +42,8 @@ class TreeviewPageComponent {
   [data]="staticDropdownNodes"
   [multiple]="true"
   [closeOnSelect]="false"
+  [selectDescendantsOnParentSelect]="true"
+  mobilePresentation="modal"
   [showPanelActions]="true"
   [expandTogglePlacement]="'search'"
   [confirmButtonLabel]="'Aplicar seleção'"
@@ -288,7 +290,9 @@ await waitForAttributeMatching(
           'O componente é indicado para navegação técnica, permissões e catálogos.',
           'li-treeview-select oferece seleção única em dropdown com ngModel.',
           '[multiple] troca o modelo para List<dynamic> e mantém o dropdown aberto se [closeOnSelect]="false".',
+          '[selectDescendantsOnParentSelect] faz a seleção múltipla de um pai incluir os filhos já carregados.',
           '[showPanelActions] controla a barra de ações com confirmar, limpar e expandir ou recolher tudo.',
+          'mobilePresentation="modal" é o padrão em telas pequenas para usar painel fullscreen.',
           '[expandTogglePlacement] move o toggle entre o rodapé, a linha de busca ou o oculta.',
           '[expandAllButtonLabel], [collapseAllButtonLabel] e [confirmButtonLabel] personalizam os textos das ações.',
           '[pageLoader] permite carregar páginas da raiz e dos filhos sob demanda.',
@@ -305,7 +309,9 @@ await waitForAttributeMatching(
           'The component fits technical navigation, permissions, and catalogs.',
           'li-treeview-select offers single selection in a dropdown with ngModel.',
           '[multiple] switches the model to List<dynamic> and keeps the dropdown open when [closeOnSelect]="false".',
+          '[selectDescendantsOnParentSelect] makes multiple parent selection include loaded children.',
           '[showPanelActions] controls the action bar with confirm, clear, and expand-or-collapse-all actions.',
+          'mobilePresentation="modal" is the small-screen default for fullscreen panels.',
           '[expandTogglePlacement] moves the toggle between the footer, the search row, or hides it.',
           '[expandAllButtonLabel], [collapseAllButtonLabel], and [confirmButtonLabel] customize action labels.',
           '[pageLoader] allows loading root and child pages on demand.',

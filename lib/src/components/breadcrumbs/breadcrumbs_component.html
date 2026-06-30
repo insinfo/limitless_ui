@@ -1,17 +1,26 @@
-<nav class="li-breadcrumb" [attr.aria-label]="ariaLabel">
-  <div [class]="shellClasses">
-    <div *ngIf="hasStart" class="li-breadcrumb-slot li-breadcrumb-start">
+<nav class="li-breadcrumb"
+    [attr.aria-label]="ariaLabel"
+    [attr.data-label]="'li_breadcrumb'"
+    [attr.data-value]="divider">
+  <div [class]="shellClasses" [attr.data-label]="'li_breadcrumb_shell'">
+    <div *ngIf="hasStart"
+        class="li-breadcrumb-slot li-breadcrumb-start"
+        [attr.data-label]="'li_breadcrumb_start'">
       <ng-content select="[liBreadcrumbStart]"></ng-content>
     </div>
 
-    <div class="li-breadcrumb-main">
-      <div [class]="breadcrumbClasses">
-        <span *ngIf="helperText.isNotEmpty" [class]="helperTextClass">{{ helperText }}</span>
+    <div class="li-breadcrumb-main" [attr.data-label]="'li_breadcrumb_main'">
+      <div [class]="breadcrumbClasses" [attr.data-label]="'li_breadcrumb_list'">
+        <span *ngIf="helperText.isNotEmpty"
+            [class]="helperTextClass"
+            [attr.data-label]="'li_breadcrumb_helper'">{{ helperText }}</span>
         <ng-content select="[liBreadcrumbItem]"></ng-content>
       </div>
     </div>
 
-    <div *ngIf="hasEnd" class="li-breadcrumb-slot li-breadcrumb-end">
+    <div *ngIf="hasEnd"
+        class="li-breadcrumb-slot li-breadcrumb-end"
+        [attr.data-label]="'li_breadcrumb_end'">
       <ng-content select="[liBreadcrumbEnd]"></ng-content>
     </div>
   </div>

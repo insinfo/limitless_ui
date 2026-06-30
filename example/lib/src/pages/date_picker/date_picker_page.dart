@@ -14,6 +14,7 @@ import 'package:ngrouter/ngrouter.dart';
     LiTabsComponent,
     LiTabxDirective,
     LiDatePickerComponent,
+    LiDatePickerTriggerDirective,
   ],
   exports: [DemoRoutePaths],
 )
@@ -55,14 +56,26 @@ await clickFirstVisible(
 );
 await clickFirstVisible(page, '[data-label="li_date_picker_clear_trigger"]');''';
 
+  static const String customTriggerSnippet = '''
+<li-date-picker [(ngModel)]="badgeDate">
+  <template liDatePickerTrigger let-ctx>
+    <span class="badge bg-primary d-inline-flex align-items-center gap-1">
+      <i class="ph ph-calendar-blank"></i>
+      {{ ctx.hasValue ? ctx.displayValue : ctx.placeholder }}
+    </span>
+  </template>
+</li-date-picker>''';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
   bool get _isPt => i18n.isPortuguese;
+  bool get isPortuguese => i18n.isPortuguese;
 
   DateTime? selectedDate = DateTime(2026, 3, 20);
   DateTime? restrictedDate = DateTime(2026, 3, 18);
   DateTime? englishDate = DateTime(2026, 11, 4);
   DateTime? disabledDate = DateTime(2026, 3, 12);
+  DateTime? badgeDate = DateTime(2026, 4, 17);
   final DateTime minDate = DateTime(2026, 3, 5);
   final DateTime maxDate = DateTime(2026, 3, 25);
 
@@ -103,6 +116,15 @@ await clickFirstVisible(page, '[data-label="li_date_picker_clear_trigger"]');'''
 
   String get disabledDateLabel {
     final value = disabledDate;
+    if (value == null) {
+      return t.pages.datePicker.noneSelected;
+    }
+
+    return _formatDate(value);
+  }
+
+  String get badgeDateLabel {
+    final value = badgeDate;
     if (value == null) {
       return t.pages.datePicker.noneSelected;
     }

@@ -579,6 +579,7 @@ class LiColorPickerComponent
     isOpen = true;
     if (!usesMobilePresentation) {
       _ensureOverlay();
+      resetOverlayViewportConstraints(floatingElement: panelElement);
       _overlay?.startAutoUpdate();
       _overlay?.update();
     } else {

@@ -167,21 +167,27 @@ void main() {
     final hoverTrigger = fixture.rootElement.querySelector('#hover-trigger');
 
     expect(hoverTrigger, isNotNull);
+    expect(hoverTrigger!.getAttribute('data-label'), 'li_tooltip_trigger');
+    expect(hoverTrigger.getAttribute('data-open'), 'false');
 
     await fixture.update((_) {
-      hoverTrigger!
+      hoverTrigger
           .dispatchEvent(html.MouseEvent('mouseenter', canBubble: true));
     });
     await _settleTooltip(fixture);
 
     final tooltip = _tooltipElement();
     expect(tooltip, isNotNull);
-    expect(tooltip!.text, contains('Hover tooltip body'));
+    expect(hoverTrigger.getAttribute('data-open'), 'true');
+    expect(tooltip!.getAttribute('data-label'), 'li_tooltip_panel');
+    expect(tooltip.getAttribute('data-open'), 'true');
+    expect(tooltip.querySelector('[data-label="li_tooltip_body"]'), isNotNull);
+    expect(tooltip.text, contains('Hover tooltip body'));
     expect(host.showCount, 1);
     expect(host.shownCount, 1);
 
     await fixture.update((_) {
-      hoverTrigger!
+      hoverTrigger
           .dispatchEvent(html.MouseEvent('mouseleave', canBubble: true));
     });
     await _settleTooltip(fixture);

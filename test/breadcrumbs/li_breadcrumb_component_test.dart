@@ -48,16 +48,25 @@ void main() {
 
     final shell = root.querySelector('.li-breadcrumb-line');
     final breadcrumb = root.querySelector('.li-breadcrumb .breadcrumb');
+    final nav = root.querySelector('[data-label="li_breadcrumb"]');
 
+    expect(nav, isNotNull);
+    expect(nav!.getAttribute('data-value'), 'dash');
     expect(shell, isNotNull);
     expect(shell!.classes.contains('li-breadcrumb-nowrap'), isTrue);
     expect(shell.classes.contains('line-demo'), isTrue);
+    expect(shell.getAttribute('data-label'), 'li_breadcrumb_shell');
 
     expect(breadcrumb, isNotNull);
     expect(breadcrumb!.classes.contains('breadcrumb-dash'), isTrue);
     expect(breadcrumb.classes.contains('crumb-demo'), isTrue);
     expect(breadcrumb.text, contains('Library'));
+    expect(breadcrumb.getAttribute('data-label'), 'li_breadcrumb_list');
 
+    expect(
+        root.querySelector('[data-label="li_breadcrumb_helper"]'), isNotNull);
+    expect(root.querySelector('[data-label="li_breadcrumb_start"]'), isNotNull);
+    expect(root.querySelector('[data-label="li_breadcrumb_end"]'), isNotNull);
     expect(root.querySelector('#crumb-start'), isNotNull);
     expect(root.querySelector('#crumb-end'), isNotNull);
   });
@@ -73,11 +82,17 @@ void main() {
     expect(current!.classes.contains('breadcrumb-item'), isTrue);
     expect(current.classes.contains('active'), isTrue);
     expect(current.getAttribute('aria-current'), 'page');
+    expect(current.getAttribute('data-label'), 'li_breadcrumb_item');
+    expect(current.getAttribute('data-active'), 'true');
+    expect(current.getAttribute('data-disabled'), 'false');
 
     expect(disabled, isNotNull);
     expect(disabled!.classes.contains('breadcrumb-item'), isTrue);
     expect(disabled.classes.contains('disabled'), isTrue);
     expect(disabled.getAttribute('aria-disabled'), 'true');
     expect(disabled.getAttribute('tabindex'), '-1');
+    expect(disabled.getAttribute('data-label'), 'li_breadcrumb_item');
+    expect(disabled.getAttribute('data-active'), 'false');
+    expect(disabled.getAttribute('data-disabled'), 'true');
   });
 }

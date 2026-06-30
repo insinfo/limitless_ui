@@ -33,6 +33,44 @@ class CustomSelectItem {
   });
 }
 
+class LiSelectTriggerContext {
+  LiSelectTriggerContext._(this._component);
+
+  final LiSelectComponent _component;
+
+  CustomSelectItem? get selectedItem => _component.currentValue;
+
+  dynamic get selectedValue => _component.currentValue?.value;
+
+  String get selectedLabel => _component.currentValue?.text ?? '';
+
+  String get displayValue =>
+      _component.currentValue?.text ?? _component.placeholder;
+
+  String get placeholder => _component.placeholder;
+
+  bool get hasSelection => _component.hasSelection;
+
+  bool get disabled => _component.isDisabled;
+
+  bool get isOpen => _component.dropdownOpen;
+
+  void open() => _component.openDropdown();
+
+  void close() => _component.closeDropdown();
+
+  void toggle() => _component.toggleDropdown();
+
+  void clear([html.Event? event]) => _component.clearSelection(event);
+}
+
+@Directive(selector: 'template[liSelectTrigger]')
+class LiSelectTriggerDirective {
+  LiSelectTriggerDirective(this.templateRef);
+
+  final TemplateRef templateRef;
+}
+
 @Component(
   selector: 'li-select',
   changeDetection: ChangeDetectionStrategy.onPush,
@@ -41,6 +79,7 @@ class CustomSelectItem {
   directives: [
     coreDirectives,
     formDirectives,
+    LiSelectTriggerDirective,
   ],
   providers: [
     ExistingProvider.forToken(ngValueAccessor, LiSelectComponent),
@@ -168,6 +207,9 @@ class LiSelectComponent
   @ContentChildren(LiOptionComponent)
   List<LiOptionComponent> childrenSelectOptions = [];
 
+  @ContentChild(LiSelectTriggerDirective)
+  LiSelectTriggerDirective? triggerTemplate;
+
   @ViewChild('dropdownContainer')
   html.Element? dropdownContainerEle;
 
@@ -180,6 +222,8 @@ class LiSelectComponent
   int currentIndex = -1;
   CustomSelectItem? currentValue;
   bool dropdownOpen = false;
+  late final LiSelectTriggerContext triggerContext =
+      LiSelectTriggerContext._(this);
 
   late final String listboxId;
   late final String _idPrefix;
@@ -590,6 +634,20 @@ class LiSelectComponent
       closeDropdown();
     } else {
       openDropdown();
+    }
+  }
+
+  void handleTriggerKeydown(html.Event event) {
+    if (event is! html.KeyboardEvent) {
+      return;
+    }
+
+    if (event.code == 'Enter' ||
+        event.code == 'NumpadEnter' ||
+        event.code == 'Space' ||
+        event.key == ' ') {
+      event.preventDefault();
+      toggleDropdown();
     }
   }
 

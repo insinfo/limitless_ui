@@ -103,6 +103,18 @@ class LiAccordionItemDirective implements AfterContentInit, OnDestroy {
   @HostBinding('attr.id')
   String get hostId => id;
 
+  @HostBinding('attr.data-label')
+  String get hostDataLabel => 'li_accordion_item';
+
+  @HostBinding('attr.data-value')
+  String get hostDataValue => id;
+
+  @HostBinding('attr.data-open')
+  String get hostDataOpen => collapsed ? 'false' : 'true';
+
+  @HostBinding('attr.data-disabled')
+  String get hostDataDisabled => disabled ? 'true' : 'false';
+
   @override
   void ngAfterContentInit() {
     _bindCollapseDirective();

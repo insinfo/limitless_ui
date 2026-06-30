@@ -45,7 +45,7 @@
                 <button *ngIf="enableCloseBtn" (click)="close()" type="button" class="btn-close btn-close-white">
                 </button>
             </div>
-            <div #modalBody class="modal-body position-relative"  [class.modal-body]="enableModalBodyClass==true">
+            <div #modalBody [class]="resolvedBodyClass">
                 <div *ngIf="showError" class="alert alert-info alert-icon-start alert-dismissible">
                     <span class="alert-icon bg-info text-white">
                         <i class="ph-info"></i>

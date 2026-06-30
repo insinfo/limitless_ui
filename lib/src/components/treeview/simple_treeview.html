@@ -4,7 +4,8 @@
             <div class="navbar-search flex-fill position-relative mt-2 mt-lg-0 mx-lg-3">
                 <div class="form-control-feedback form-control-feedback-start flex-grow-1">
                     <input #inputsearch (input)="searchKeydownEnter(inputsearch)" type="text"
-                        class="form-control" placeholder="{{searchPlaceholder}}" aria-expanded="false">
+                        class="form-control" placeholder="{{searchPlaceholder}}" aria-expanded="false"
+                        [attr.data-label]="'li_treeview_input_search'">
                     <div class="form-control-feedback-icon">
                         <i class="ph-magnifying-glass"></i>
                     </div>
@@ -23,24 +24,37 @@
 </div>
 
 
-<div class="tree-checkbox border rounded p-3" style="position: relative;">
+<div class="tree-checkbox border rounded p-3"
+    style="position: relative;"
+    [attr.data-label]="'li_treeview'">
     <div style="position: absolute;z-index: 10;top: 10px;right: 10px;">
         <a (click)="selectAllToogleAction()" class="btn btn-flat-primary border-transparent btn-icon"
-            [attr.title]="selectAllTitle">
+            [attr.title]="selectAllTitle"
+            [attr.data-label]="'li_treeview_btn_select_all'"
+            [attr.data-value]="isSelectAll ? 'true' : 'false'">
             <i class="ph" [class.ph-check-circle]="!isSelectAll"></i>
             <i class="ph" [class.ph-check-square-offset]="isSelectAll"></i>
         </a>
         <a (click)="expandAllToogleAction()" class="btn btn-flat-primary border-transparent btn-icon"
-            [attr.title]="expandCollapseAllTitle">
+            [attr.title]="expandCollapseAllTitle"
+            [attr.data-label]="'li_treeview_btn_expand_all'"
+            [attr.data-value]="isExpandAll ? 'true' : 'false'">
             <i class="ph" [class.ph-arrows-out]="!isExpandAll"></i>
             <i class="ph" [class.ph-arrows-in]="isExpandAll"></i>
         </a>
     </div>
 
     <ul id="ft-id-8" class="ui-fancytree fancytree-container fancytree-plain" tabindex="0" role="tree"
-        aria-multiselectable="true">
+        aria-multiselectable="true"
+        [attr.data-label]="'li_treeview_tree'">
         <template #recursiveList let-list>
-            <li *ngFor="let item of list; let i = index" role="treeitem" aria-expanded="true" aria-selected="false">
+            <li *ngFor="let item of list; let i = index"
+                role="treeitem"
+                aria-expanded="true"
+                aria-selected="false"
+                [attr.data-label]="'li_treeview_node_item'"
+                [attr.data-value]="nodeDataValue(item)"
+                [attr.data-level]="item.treeViewNodeLevel.toString()">
                 <!-- fancytree-active 
                    [class.fancytree-selected]="item.treeViewNodeIsSelected"
                     -->
@@ -55,15 +69,27 @@
                     [class.fancytree-exp-n]="item.treeViewNodes.isEmpty == true"
                     [class.fancytree-ico-c]="item.treeViewNodes.isEmpty == true"
                     [class.fancytree-selected]="item.isAllChildrenSelected == true"
-                    [class.li-treeview__node--disabled]="!isSelectable(item)">
+                    [class.li-treeview__node--disabled]="!isSelectable(item)"
+                    [attr.data-label]="'li_treeview_node'"
+                    [attr.data-value]="nodeDataValue(item)"
+                    [attr.data-selected]="item.treeViewNodeIsSelected ? 'true' : 'false'"
+                    [attr.data-expanded]="item.treeViewNodeIsCollapse ? 'false' : 'true'"
+                    [attr.data-disabled]="!isSelectable(item) ? 'true' : 'false'">
 
                     <span (click)="item.treeViewNodeIsCollapse=!item.treeViewNodeIsCollapse" role="button"
-                        class="fancytree-expander"> </span>
+                        class="fancytree-expander"
+                        [attr.data-label]="'li_treeview_node_expander'"
+                        [attr.data-value]="nodeDataValue(item)"> </span>
 
-                    <span (click)="selectItem(item)" role="checkbox" class="fancytree-checkbox"></span>
+                    <span (click)="selectItem(item)" role="checkbox" class="fancytree-checkbox"
+                        [attr.data-label]="'li_treeview_node_checkbox'"
+                        [attr.data-value]="nodeDataValue(item)"
+                        [attr.data-selected]="item.treeViewNodeIsSelected ? 'true' : 'false'"></span>
 
                     <span class="fancytree-title"
-                        [class.li-treeview__title--disabled]="!isSelectable(item)">
+                        [class.li-treeview__title--disabled]="!isSelectable(item)"
+                        [attr.data-label]="'li_treeview_node_label'"
+                        [attr.data-value]="nodeDataValue(item)">
                         <span *ngIf="nodeTemplate != null">
                             <template [ngTemplateOutlet]="nodeTemplate?.templateRef"
                                 [ngTemplateOutletValue]="nodeContext(item)">
@@ -77,7 +103,9 @@
                     </span>
                 </span>
                 <ul [hidden]="item.treeViewNodeIsCollapse == true" *ngIf="item.treeViewNodes.isNotEmpty == true"
-                    role="group">
+                    role="group"
+                    [attr.data-label]="'li_treeview_node_children'"
+                    [attr.data-value]="nodeDataValue(item)">
                     <template [ngTemplateOutlet]="recursiveList" [ngTemplateOutletValue]="item.treeViewNodes">
                     </template>
                 </ul>

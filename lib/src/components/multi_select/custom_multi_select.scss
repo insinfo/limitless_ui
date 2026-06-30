@@ -44,6 +44,23 @@ $background-color: white;
     cursor: not-allowed;
 }
 
+.li-multi-select-custom-trigger {
+    display: inline-block;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.li-multi-select-custom-trigger.disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.li-multi-select-custom-trigger:focus-visible {
+    outline: 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--focus-ring-box-shadow);
+}
+
 /*.dropdown-button {
     color: #1f2937;
     background-color: #fff; 
