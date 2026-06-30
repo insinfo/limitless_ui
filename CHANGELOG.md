@@ -1,3 +1,8 @@
+## 1.0.0-dev.30
+
+- Added string and scalar-input support to `[liTextMask]`, so legacy mask templates can migrate without declaring per-screen maps. Examples: `liTextMask="xxxxx-xxx"`, `[liTextMask]="'xxxxx-xxx'"`, and `liTextMask liTextMaskMask="(xx) xxxx-xxxx"`.
+- Added automatic Limitless/Bootstrap visual feedback for native controls using `[liRequired]` or `[liDocumentValidator]`. Native fields now get `is-invalid`/`is-valid`, `aria-invalid`, and an `.invalid-feedback` element/message without each screen reimplementing validation DOM.
+
 ## 1.0.0-dev.29
 
 - bumb to essential_core 1.4.0

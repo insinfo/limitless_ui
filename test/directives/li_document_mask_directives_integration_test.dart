@@ -76,6 +76,12 @@ void main() {
             ?['type'],
         equals('cpf'),
       );
+      expect(input.classes.contains('is-invalid'), isTrue);
+      expect(input.getAttribute('aria-invalid'), equals('true'));
+      expect(
+        input.parent?.querySelector('.invalid-feedback')?.text,
+        equals('Documento invalido.'),
+      );
     });
   });
 
@@ -136,6 +142,11 @@ void main() {
             ?['type'],
         equals('cnpj'),
       );
+      expect(input.classes.contains('is-invalid'), isTrue);
+      expect(
+        input.parent?.querySelector('.invalid-feedback')?.text,
+        equals('Documento invalido.'),
+      );
     });
 
     test('marca CNPJ alfanumerico valido como valido', () async {
@@ -149,6 +160,10 @@ void main() {
 
       expect(input.value, equals('12.ABC.345/01DE-35'));
       expect(fixture.assertOnlyInstance.model?.control.errors, isNull);
+      expect(input.classes.contains('is-invalid'), isFalse);
+      expect(input.classes.contains('is-valid'), isTrue);
+      expect(input.getAttribute('aria-invalid'), equals('false'));
+      expect(input.parent?.querySelector('.invalid-feedback')?.text, isEmpty);
     });
   });
 }

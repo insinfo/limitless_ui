@@ -32,6 +32,7 @@ const List<Type> limitlessFormDirectives = [
   PatternValidator,
   LiRequiredValidator,
   LiDocumentValidator,
+  LiNativeValidationFeedbackDirective,
   LiNgSelectOption,
   LiSelectControlValueAccessor,
   LiDateValueAccessor,

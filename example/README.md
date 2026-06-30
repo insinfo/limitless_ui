@@ -169,7 +169,7 @@ dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-con
 Then run from the repository root:
 
 ```bash
-RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 CHROME_EXECUTABLE=/path/to/chrome dart test tool/e2e/puppeteer_test.dart
+RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 CHROME_EXECUTABLE=/path/to/chrome dart test ui_test/e2e/puppeteer_test.dart
 ```
 
 On Windows PowerShell:
@@ -178,7 +178,7 @@ On Windows PowerShell:
 $env:RUN_EXAMPLE_E2E = 'true'
 $env:UI_EXAMPLE_BASE_URL = 'http://127.0.0.1:8081'
 $env:CHROME_EXECUTABLE = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
-dart test tool\e2e\puppeteer_test.dart
+dart test ui_test\e2e\puppeteer_test.dart
 ```
 
-If `RUN_EXAMPLE_E2E` is not set to `true`, `tool/e2e/puppeteer_test.dart` is skipped by design.
+If `RUN_EXAMPLE_E2E` is not set to `true`, `ui_test/e2e/puppeteer_test.dart` is skipped by design.

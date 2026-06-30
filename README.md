@@ -428,13 +428,13 @@ await waitForAttributeMatching(
 
 Beyond visual components, the package also exposes small browser-oriented helpers that are now available from the public barrel in [lib/limitless_ui.dart](lib/limitless_ui.dart):
 
-- `CpfMaskDirective`: applies the `xxx.xxx.xxx-xx` mask while the user types.
-- `CnpjMaskDirective`: applies the `xx.xxx.xxx/xxxx-xx` mask while the user types.
-- `CpfFormatterPipe`: formats CPF values as `XXX.XXX.XXX-XX` or returns digits only.
-- `CpfHiddenPipe`: keeps only the first or last four CPF characters visible.
-- `HideStringPipe`: preserves a visible prefix and masks the rest of a string.
-- `TextMaskDirective`, `OnlyNumberDirective` and `CustomHrefDirective`: helpers for generic masked inputs, digit-only fields and attribute-driven href synchronization.
-- `CustomNumberValueAccessor`, `DateTimeValueAccessor` and `MinMaxDirective`: form helpers for `<input type="number">`, `<input type="datetime-local">` and constrained numeric inputs.
+- `LiCpfMaskDirective`: applies the `xxx.xxx.xxx-xx` mask while the user types.
+- `LiCnpjMaskDirective`: applies the `xx.xxx.xxx/xxxx-xx` mask while the user types.
+- `LiCpfFormatterPipe`: formats CPF values as `XXX.XXX.XXX-XX` or returns digits only.
+- `LiCpfHiddenPipe`: keeps only the first or last four CPF characters visible.
+- `LiHideStringPipe`: preserves a visible prefix and masks the rest of a string.
+- `LiTextMaskDirective`, `LiOnlyNumberDirective` and `LiCustomHrefDirective`: helpers for generic masked inputs, digit-only fields and attribute-driven href synchronization.
+- `LiNumberValueAccessor`, `LiDateTimeValueAccessor` and `LiMinMaxDirective`: form helpers for `<input type="number">`, `<input type="datetime-local">` and constrained numeric inputs.
 
 In `ngdart` 8, template pipes are invoked through `$pipe` instead of the legacy `value | pipeName` syntax. That applies both to built-in pipes such as `date` and to custom pipes registered in the component.
 
@@ -447,17 +447,17 @@ import 'package:ngdart/angular.dart';
 @Component(
   selector: 'demo-form-helpers',
   template: '''
-    <input cpfMask [(ngModel)]="cpf">
-    <input type="number" min="1" max="10" [(ngModel)]="quantity">
+    <input liCpfMask [(ngModel)]="cpf">
+    <input type="number" liMinMax [liMin]="1" [liMax]="10" [(ngModel)]="quantity">
     <input type="datetime-local" [(ngModel)]="scheduledAt">
 
-    <p>{{ $pipe.date(scheduledAt, 'medium') }}</p>
-    <p>{{ $pipe.cpfFormatter(cpf) }}</p>
-    <p>{{ $pipe.cpfHidden(cpf, 'asteriskStart') }}</p>
-    <p>{{ $pipe.hideString(note, 3, '#') }}</p>
+    <p>{{ $pipe.liDate(scheduledAt, 'medium') }}</p>
+    <p>{{ $pipe.liCpfFormatter(cpf) }}</p>
+    <p>{{ $pipe.liCpfHidden(cpf, 'asteriskStart') }}</p>
+    <p>{{ $pipe.liHideString(note, 3, '#') }}</p>
   ''',
-  directives: [coreDirectives, formDirectives, CpfMaskDirective],
-  pipes: [commonPipes, CpfFormatterPipe, CpfHiddenPipe, HideStringPipe],
+  directives: [coreDirectives, formDirectives, limitlessFormDirectives, LiCpfMaskDirective],
+  pipes: [commonPipes, LiCpfFormatterPipe, LiCpfHiddenPipe, LiHideStringPipe],
 )
 class DemoFormHelpersComponent {
   String cpf = '';
@@ -466,6 +466,32 @@ class DemoFormHelpersComponent {
   String note = 'abcdef';
 }
 ```
+
+### Generic text masks
+
+`liTextMask` accepts the same simple string shape used by legacy mask directives, so consumers do not need a `Map` in AngularDart templates for common CEP, phone, and document masks.
+
+```html
+<input
+  class="form-control"
+  liTextMask="xxxxx-xxx"
+  liOnlyNumber
+  [(ngModel)]="address.zipCode">
+
+<input
+  class="form-control"
+  liTextMask
+  liTextMaskMask="(xx) xxxx-xxxx"
+  liOnlyNumber
+  [(ngModel)]="person.phone">
+
+<input
+  class="form-control"
+  [liTextMask]="'xxx-xx'"
+  [(ngModel)]="code">
+```
+
+For advanced cases the directive still accepts `LiTextMaskConfig` or a Dart-side config object. Template-only options can use scalar inputs: `liTextMaskMask`, `liTextMaskMaxLength`, `liTextMaskEager`, and `liTextMaskEscapeCharacter`.
 
 ## Declarative form validation
 
@@ -681,6 +707,47 @@ Future<void> save(LiFormDirective form) async {
 ```
 
 This is the recommended path for robust forms because it keeps field validation local to each component and submit orchestration local to the form container.
+
+### Native input validation feedback
+
+Native `input`, `select`, and `textarea` controls that use `liRequired` or `liDocumentValidator` receive the same Limitless/Bootstrap visual feedback automatically. The directive applies `is-invalid`, `is-valid`, `aria-invalid`, and creates or reuses a sibling `.invalid-feedback` element.
+
+```html
+<div liForm #personForm="liForm">
+  <input
+    class="form-control"
+    liRequired
+    liRequiredMessage="Campo requerido!"
+    [(ngModel)]="person.name">
+
+  <input
+    class="form-control"
+    liCpfMask
+    liDocumentValidator="cpf"
+    liDocumentMessage="CPF invalido!"
+    [(ngModel)]="person.cpf">
+
+  <button type="button" (click)="save(personForm)">Salvar</button>
+</div>
+```
+
+The field can still provide its own feedback element when markup needs a fixed location:
+
+```html
+<input
+  class="form-control"
+  liRequired
+  liRequiredMessage="Informe o nome."
+  [(ngModel)]="person.name">
+<div class="invalid-feedback"></div>
+```
+
+Useful options for native validation feedback:
+
+- `liValidationMode`: `submittedOrTouchedOrDirty` by default.
+- `liValidationShowValid`: controls whether valid filled fields receive `is-valid`.
+- `liValidationFeedback="false"`: disables the automatic visual layer for one field.
+- `liValidationFeedbackSelector`: changes how an existing feedback element is found.
 
 When the page mixes native inputs, projected buttons, and composite components, pair `liForm` with `liFormField` so focus order stays explicit where needed and still falls back to DOM order when `[liFormFieldOrder]` is omitted.
 
@@ -2773,7 +2840,7 @@ dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-con
 In another shell:
 
 ```bash
-RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 CHROME_EXECUTABLE=/path/to/chrome dart test tool/e2e/puppeteer_test.dart
+RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 CHROME_EXECUTABLE=/path/to/chrome dart test ui_test/e2e/puppeteer_test.dart
 ```
 
 On Windows PowerShell, set the environment variables before running the same test file:
@@ -2782,7 +2849,7 @@ On Windows PowerShell, set the environment variables before running the same tes
 $env:RUN_EXAMPLE_E2E = 'true'
 $env:UI_EXAMPLE_BASE_URL = 'http://127.0.0.1:8081'
 $env:CHROME_EXECUTABLE = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
-dart test tool\e2e\puppeteer_test.dart
+dart test ui_test\e2e\puppeteer_test.dart
 ```
 
 Without `RUN_EXAMPLE_E2E=true`, the Puppeteer tests are intentionally skipped so normal local `dart test` runs do not need a running web server.

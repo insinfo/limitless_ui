@@ -23,6 +23,38 @@ import 'form_directives_integration_test.template.dart' as ng;
       [(ngModel)]="maskedValue">
 
     <input
+      id="string-mask-input"
+      [liTextMask]="'xxxxx-xxx'"
+      [(ngModel)]="stringMaskedValue">
+
+    <input
+      id="attribute-mask-input"
+      liTextMask="xxxxx-xxx"
+      [(ngModel)]="attributeMaskedValue">
+
+    <input
+      id="scalar-mask-input"
+      liTextMask
+      liTextMaskMask="(xx) xxxx-xxxx"
+      [(ngModel)]="scalarMaskedValue">
+
+    <div liForm #validationForm="liForm">
+      <input
+        id="required-native-input"
+        type="text"
+        class="form-control"
+        liRequired
+        liRequiredMessage="Campo requerido!"
+        [(ngModel)]="requiredNativeValue">
+      <button
+        id="validate-native-input"
+        type="button"
+        (click)="validateNativeInput(validationForm)">
+        Validar
+      </button>
+    </div>
+
+    <input
       id="number-input"
       type="number"
       [liPrecision]="4"
@@ -42,8 +74,17 @@ class FormDirectivesIntegrationTestHostComponent {
   };
 
   String maskedValue = '';
+  String stringMaskedValue = '';
+  String attributeMaskedValue = '';
+  String scalarMaskedValue = '';
+  String requiredNativeValue = '';
+  bool? requiredNativeValid;
   double? amount = 12.34567;
   DateTime? scheduledAt = DateTime(2024, 6, 5, 13, 45);
+
+  Future<void> validateNativeInput(LiFormDirective form) async {
+    requiredNativeValid = await form.validateAndFocusFirstInvalid();
+  }
 }
 
 void main() {
@@ -86,6 +127,91 @@ void main() {
 
     expect(input.value, '123-45');
     expect(host.maskedValue, '123-45');
+  });
+
+  test('aceita mascara de texto diretamente como string', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement.querySelector('#string-mask-input')
+        as html.InputElement;
+
+    await fixture.update((_) {
+      _typeSequentially(input, '12345678');
+    });
+    await _settle(fixture);
+
+    expect(input.value, '12345-678');
+    expect(host.stringMaskedValue, '12345-678');
+  });
+
+  test('aceita mascara via atributo estatico do template', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement.querySelector('#attribute-mask-input')
+        as html.InputElement;
+
+    await fixture.update((_) {
+      _typeSequentially(input, '12345678');
+    });
+    await _settle(fixture);
+
+    expect(input.value, '12345-678');
+    expect(host.attributeMaskedValue, '12345-678');
+  });
+
+  test('aceita configuracao por inputs escalares', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement.querySelector('#scalar-mask-input')
+        as html.InputElement;
+
+    await fixture.update((_) {
+      _typeSequentially(input, '4133334444');
+    });
+    await _settle(fixture);
+
+    expect(input.value, '(41) 3333-4444');
+    expect(host.scalarMaskedValue, '(41) 3333-4444');
+  });
+
+  test('aplica feedback visual Limitless em input nativo com liRequired',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+    final input = fixture.rootElement.querySelector('#required-native-input')
+        as html.InputElement;
+    final validateButton = fixture.rootElement
+        .querySelector('#validate-native-input') as html.ButtonElement;
+
+    await fixture.update((_) {
+      validateButton.click();
+    });
+    await _settle(fixture);
+
+    final feedback = input.parent?.querySelector('.invalid-feedback');
+
+    expect(host.requiredNativeValid, isFalse);
+    expect(html.document.activeElement, same(input));
+    expect(input.classes.contains('is-invalid'), isTrue);
+    expect(input.getAttribute('aria-invalid'), 'true');
+    expect(feedback, isNotNull);
+    expect(feedback?.text, 'Campo requerido!');
+
+    await fixture.update((_) {
+      input.value = 'ok';
+      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.Event('blur', canBubble: true));
+    });
+    await _settle(fixture);
+
+    expect(input.classes.contains('is-invalid'), isFalse);
+    expect(input.classes.contains('is-valid'), isTrue);
+    expect(input.getAttribute('aria-invalid'), 'false');
+    expect(feedback?.text, isEmpty);
   });
 
   test('integra o accessor numerico via limitlessFormDirectives', () async {

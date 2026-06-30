@@ -24,6 +24,18 @@ class LiTextMaskConfig {
     this.eager = true,
     this.escapeCharacter = r'\',
   });
+
+  /// Creates a configuration from the legacy string-only mask API.
+  LiTextMaskConfig.fromMask(
+    String mask, {
+    bool eager = true,
+    String escapeCharacter = r'\',
+  }) : this(
+          mask: mask,
+          maxLength: mask.length,
+          eager: eager,
+          escapeCharacter: escapeCharacter,
+        );
 }
 
 /// Applies an arbitrary character mask to a text input as the user types.
@@ -32,9 +44,18 @@ class LiTextMaskConfig {
 /// handling to [InteractiveTextMask]. Default editable tokens are the
 /// `essential_core` tokens: `0` for digits, `A`/`x` for alphanumeric values,
 /// `S` for letters, and `*` for any single code-unit character.
+///
+/// For simple migrations from the legacy `[mask]` directive, the binding may
+/// also be a mask string directly, for example `[liTextMask]="'xxxxx-xxx'"`.
+/// Template-only configuration can use scalar inputs such as
+/// `liTextMaskMask`, `liTextMaskEager`, and `liTextMaskEscapeCharacter`.
 @Directive(selector: '[liTextMask]')
 class LiTextMaskDirective implements OnDestroy {
   Map<String, dynamic> _liTextMask = const <String, dynamic>{};
+  String? _maskInput;
+  int? _maxLengthInput;
+  bool? _eagerInput;
+  String? _escapeCharacterInput;
   late InteractiveTextMask _maskFormatter;
   late final EventListener _inputListener;
   var _lastValue = MaskedTextValue.collapsed('');
@@ -42,8 +63,31 @@ class LiTextMaskDirective implements OnDestroy {
   @Input()
   set liTextMask(dynamic val) {
     _liTextMask = _normalizeConfig(val);
-    _configureMask();
-    _applyCurrentValue();
+    _configureAndApply();
+  }
+
+  @Input()
+  set liTextMaskMask(String? val) {
+    _maskInput = val;
+    _configureAndApply();
+  }
+
+  @Input()
+  set liTextMaskMaxLength(dynamic val) {
+    _maxLengthInput = EssentialCoreUtils.toNullableInt(val);
+    _configureAndApply();
+  }
+
+  @Input()
+  set liTextMaskEager(dynamic val) {
+    _eagerInput = EssentialCoreUtils.parseBoolLoose(val);
+    _configureAndApply();
+  }
+
+  @Input()
+  set liTextMaskEscapeCharacter(String? val) {
+    _escapeCharacterInput = val;
+    _configureAndApply();
   }
 
   String mask = 'xxx.xxx.xxx-xx';
@@ -90,10 +134,21 @@ class LiTextMaskDirective implements OnDestroy {
         'escapeCharacter': val.escapeCharacter,
       };
     }
+    if (val is String) {
+      return <String, dynamic>{
+        'mask': val,
+        'maxLength': val.length,
+      };
+    }
     if (val is Map) {
       return Map<String, dynamic>.from(val);
     }
     return const <String, dynamic>{};
+  }
+
+  void _configureAndApply() {
+    _configureMask();
+    _applyCurrentValue();
   }
 
   void _configureMask() {
@@ -105,6 +160,18 @@ class LiTextMaskDirective implements OnDestroy {
         'escapeCharacter': r'\',
       },
     );
+    if (_maskInput != null) {
+      config['mask'] = _maskInput;
+    }
+    if (_maxLengthInput != null) {
+      config['maxLength'] = _maxLengthInput;
+    }
+    if (_eagerInput != null) {
+      config['eager'] = _eagerInput;
+    }
+    if (_escapeCharacterInput != null) {
+      config['escapeCharacter'] = _escapeCharacterInput;
+    }
 
     mask = EssentialCoreUtils.stringOrDefault(
       config['mask'],
