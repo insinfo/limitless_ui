@@ -1,7 +1,7 @@
-import * as pdfjsLib from './pdf.mjs';
-//import { TextLayer }  from './pdf.mjs';
+import * as pdfjsLib from '/assets/js/pdf.js/5.4.149/build/pdf.mjs';
+//import { TextLayer }  from '/assets/js/pdf.js/5.4.149/build/pdf.mjs';
 
 window.pdfjsLib = pdfjsLib;
 // window.pdfjsViewer = pdfjsViewer;
 // pdfjsLib.GlobalWorkerOptions.workerSrc =
-//   './pdf.worker.mjs';
+//   '/assets/js/pdf.js/5.4.149/build/pdf.worker.mjs';
