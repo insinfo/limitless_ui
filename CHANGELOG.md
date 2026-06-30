@@ -6,7 +6,7 @@
 - Added generic `Li` directives ported with explicit APIs: `[liAutoClickFileInput]`, `[liEditableText]`, `[liDisableBrowserAutocomplete]`, `[liRequired]`, and `[liDocumentValidator]`.
 - Added generic `[liTemplateOutlet]` with `liTemplateOutletContext` and `liTemplateOutletValue` inputs for rendering `TemplateRef` content with explicit `Li` APIs.
 - Added `Li` text transform pipes: `liPortugueseTitleCase`, `liTruncate`, and `liPascalCase`.
-- Documented `liSelectTrigger` in the Select example and kept custom trigger dropdowns from matching tiny badge widths.
+- Documented `liSelectTrigger` and `[searchable]="false"` in the Select example, and kept custom trigger dropdowns from matching tiny badge widths.
 
 ## 1.0.0-dev.28
 
