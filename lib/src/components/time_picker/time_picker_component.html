@@ -3,6 +3,7 @@
     <div *ngIf="triggerTemplate != null" #triggerElement
         class="time-picker-custom-trigger"
         [class.disabled]="isDisabled"
+        [attr.name]="resolvedName"
         [attr.data-li-form-focus-target]="'true'"
         [attr.data-label]="'li_time_picker_trigger'"
         [attr.data-value]="displayValue"
@@ -24,6 +25,7 @@
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedOverlayInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
+            [attr.name]="resolvedName"
             [attr.data-label]="'li_time_picker_input'"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
@@ -43,6 +45,7 @@
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
+            [attr.name]="resolvedName"
             [attr.data-label]="'li_time_picker_input'"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"

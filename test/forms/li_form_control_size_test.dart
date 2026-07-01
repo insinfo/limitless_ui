@@ -21,6 +21,7 @@ import 'li_form_control_size_test.template.dart' as ng;
       <div id="select-sm">
         <li-select
             size="sm"
+            name="status"
             triggerIconMode="addon"
             [dataSource]="options"
             labelKey="label"
@@ -31,6 +32,7 @@ import 'li_form_control_size_test.template.dart' as ng;
       <div id="multi-lg">
         <li-multi-select
             size="lg"
+            name="channels"
             [dataSource]="options"
             labelKey="label"
             valueKey="id">
@@ -40,6 +42,7 @@ import 'li_form_control_size_test.template.dart' as ng;
       <div id="datatable-sm">
         <li-datatable-select
             size="sm"
+            name="person"
             triggerIconMode="addon"
             [settings]="settings"
             [dataTableFilter]="filter"
@@ -51,20 +54,21 @@ import 'li_form_control_size_test.template.dart' as ng;
       </div>
 
       <div id="date-lg">
-        <li-date-picker size="lg" [value]="dateValue"></li-date-picker>
+        <li-date-picker size="lg" name="start_date" [value]="dateValue"></li-date-picker>
       </div>
 
       <div id="date-range-sm">
-        <li-date-range-picker size="sm" [inicio]="startDate" [fim]="endDate"></li-date-range-picker>
+        <li-date-range-picker size="sm" name="period" [inicio]="startDate" [fim]="endDate"></li-date-range-picker>
       </div>
 
       <div id="time-lg">
-        <li-time-picker size="lg" [value]="timeValue"></li-time-picker>
+        <li-time-picker size="lg" name="hour" [value]="timeValue"></li-time-picker>
       </div>
 
       <div id="tree-sm">
         <li-treeview-select
             size="sm"
+            name="tree_node"
             triggerIconMode="addon"
             container="inline"
             [data]="treeNodes">
@@ -74,6 +78,7 @@ import 'li_form_control_size_test.template.dart' as ng;
       <div id="typeahead-lg">
         <li-typeahead
             size="lg"
+            name="state"
             container="inline"
             [dataSource]="typeaheadOptions"
             [debounceMs]="0"
@@ -82,11 +87,11 @@ import 'li_form_control_size_test.template.dart' as ng;
       </div>
 
       <div id="currency-sm">
-        <li-currency-input size="sm"></li-currency-input>
+        <li-currency-input size="sm" name="amount"></li-currency-input>
       </div>
 
       <div id="tag-lg">
-        <li-tag-filter size="lg" [dataSource]="tagOptions"></li-tag-filter>
+        <li-tag-filter size="lg" name="tags" [dataSource]="tagOptions"></li-tag-filter>
       </div>
     </div>
   ''',
@@ -235,6 +240,31 @@ void main() {
       contains('form-select-lg'),
     );
   });
+
+  test('reflects name on interactive form control elements', () async {
+    final fixture = await testBed.create();
+    await fixture.update((_) {});
+
+    expect(_attr(fixture, '#select-sm .dropdown-button', 'name'), 'status');
+    expect(_attr(fixture, '#multi-lg .dropdown-button', 'name'), 'channels');
+    expect(
+      _attr(fixture, '#datatable-sm .datatable-select-trigger', 'name'),
+      'person',
+    );
+    expect(_attr(fixture, '#date-lg input.form-control', 'name'), 'start_date');
+    expect(
+      _attr(fixture, '#date-range-sm input.form-control', 'name'),
+      'period',
+    );
+    expect(_attr(fixture, '#time-lg input.form-control', 'name'), 'hour');
+    expect(
+      _attr(fixture, '#tree-sm .treeview-dropdown-select__trigger', 'name'),
+      'tree_node',
+    );
+    expect(_attr(fixture, '#typeahead-lg input.form-control', 'name'), 'state');
+    expect(_attr(fixture, '#currency-sm input.form-control', 'name'), 'amount');
+    expect(_attr(fixture, '#tag-lg .li-tag-filter__button', 'name'), 'tags');
+  });
 }
 
 Set<String> _classes(
@@ -244,4 +274,14 @@ Set<String> _classes(
   final element = fixture.rootElement.querySelector(selector);
   expect(element, isNotNull, reason: 'Missing element: $selector');
   return element!.classes.toSet();
+}
+
+String? _attr(
+  NgTestFixture<FormControlSizeHostComponent> fixture,
+  String selector,
+  String name,
+) {
+  final element = fixture.rootElement.querySelector(selector);
+  expect(element, isNotNull, reason: 'Missing element: $selector');
+  return element!.getAttribute(name);
 }

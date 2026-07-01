@@ -348,6 +348,9 @@ class LiDatatableSelectComponent
   String size = '';
 
   @Input()
+  String? name;
+
+  @Input()
   List<LiRule> liRules = const <LiRule>[];
 
   @Input()
@@ -645,6 +648,8 @@ class LiDatatableSelectComponent
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String? get resolvedName => name;
 
   String get resolvedPlaceholder => placeholder.trim().isNotEmpty
       ? placeholder

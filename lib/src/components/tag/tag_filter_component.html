@@ -1,6 +1,7 @@
 <div class="li-tag-filter" [attr.data-label]="'li_tag_filter'" [attr.data-value]="selectedDataValue">
     <button #dropdownButton type="button" [class]="resolvedButtonClass" role="combobox"
         aria-haspopup="listbox" [attr.aria-expanded]="dropdownOpen.toString()" [attr.aria-controls]="listboxId"
+        [attr.name]="resolvedName"
         [attr.data-label]="'li_tag_filter_btn_toggle'"
         [disabled]="isDisabled" (click)="toggleDropdown()">
         <span *ngIf="!hasSelection" class="li-tag-filter__placeholder">{{ resolvedPlaceholder }}</span>

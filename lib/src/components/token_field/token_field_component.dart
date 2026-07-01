@@ -65,6 +65,9 @@ class LiTokenFieldComponent
   String placeholder = '';
 
   @Input()
+  String? name;
+
+  @Input()
   String locale = 'pt_BR';
 
   @Input()
@@ -156,6 +159,8 @@ class LiTokenFieldComponent
   bool get hasActionMenuOptions => actionMenuOptions.isNotEmpty;
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
+
+  String? get resolvedName => name;
 
   String get resolvedPlaceholder {
     final value = placeholder.trim();

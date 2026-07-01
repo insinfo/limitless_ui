@@ -410,6 +410,23 @@ Selection-oriented controls also render stable browser automation hooks:
 
 These hooks are part of the testability contract for browser automation. Prefer them over styling classes, translated labels, generated ids, or brittle DOM depth selectors.
 
+Form controls also accept an optional `name` input and reflect it on the
+interactive DOM element, such as the inner input, combobox trigger, slider, or
+file upload input. The value is passed through as provided by the host
+application. Use `ngControl`/`ngModel` for AngularDart form registration and
+`name` for browser metadata, accessibility tooling, and stable E2E selectors.
+
+```html
+<li-select
+  name="status"
+  ngControl="status"
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [(ngModel)]="filters.status">
+</li-select>
+```
+
 ```dart
 await clickFirstVisible(page, '[data-label="custom_select_btn_toggle"]');
 await clickFirstVisible(

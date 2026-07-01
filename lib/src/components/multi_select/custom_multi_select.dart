@@ -275,6 +275,8 @@ class LiMultiSelectComponent
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
 
+  String? get resolvedName => name;
+
   String get searchPlaceholder => _isEnglishLocale ? 'Search' : 'Buscar';
 
   String get searchAriaLabel =>
@@ -446,6 +448,9 @@ class LiMultiSelectComponent
   bool dropdownOpen = false;
   late final LiMultiSelectTriggerContext triggerContext =
       LiMultiSelectTriggerContext._(this);
+
+  @Input()
+  String? name;
 
   /// define de key used get label to diplay from data source options
   @Input('labelKey')

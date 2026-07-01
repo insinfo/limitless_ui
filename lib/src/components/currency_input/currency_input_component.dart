@@ -74,6 +74,9 @@ class LiCurrencyInputComponent
   String inputClass = 'form-control';
 
   @Input()
+  String? name;
+
+  @Input()
   String size = '';
 
   @Input()
@@ -156,6 +159,8 @@ class LiCurrencyInputComponent
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String? get resolvedName => name;
 
   String get resolvedInputClass => _joinClasses(<String>[
         inputClass,

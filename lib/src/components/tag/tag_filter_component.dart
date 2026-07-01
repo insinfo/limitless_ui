@@ -99,6 +99,9 @@ class LiTagFilterComponent
   String size = '';
 
   @Input()
+  String? name;
+
+  @Input()
   String labelKey = 'label';
 
   @Input()
@@ -197,6 +200,8 @@ class LiTagFilterComponent
     }
     return _isEnglishLocale ? 'No tags found.' : 'Nenhuma etiqueta encontrada.';
   }
+
+  String? get resolvedName => name;
 
   String get resolvedClearButtonLabel =>
       _isEnglishLocale ? 'Clear selection' : 'Limpar seleção';

@@ -99,6 +99,9 @@ class LiSliderComponent
   String ariaLabel = 'Slider';
 
   @Input()
+  String? name;
+
+  @Input()
   String inputClass = '';
 
   @Input()
@@ -198,6 +201,8 @@ class LiSliderComponent
         'noUi-pips',
         isVertical ? 'noUi-pips-vertical' : 'noUi-pips-horizontal',
       ]);
+
+  String? get resolvedName => name;
 
   String get _effectiveConnectMode {
     final normalized = connect.trim().toLowerCase();

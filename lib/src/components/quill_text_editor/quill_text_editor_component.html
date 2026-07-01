@@ -69,6 +69,7 @@
 
     <div
         #editorContainer
+        [attr.name]="resolvedName"
         [class]="editorClass.isEmpty ? 'li-quill-text-editor__editor' : 'li-quill-text-editor__editor ' + editorClass"></div>
   </div>
 

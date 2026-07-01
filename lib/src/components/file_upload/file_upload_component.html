@@ -181,6 +181,7 @@
       <input
           readonly
           class="file-caption-name form-control kv-fileinput-caption"
+          [attr.name]="resolvedName"
           [placeholder]="captionPlaceholder"
           [value]="captionValue"
           [attr.title]="captionValue">
@@ -222,6 +223,7 @@
             class="file-input"
             [disabled]="disabled"
             [multiple]="multiple"
+            [attr.name]="resolvedName"
             [attr.accept]="resolvedAccept.isEmpty ? null : resolvedAccept"
             (filesChange)="onFilesSelected($event)">
       </label>

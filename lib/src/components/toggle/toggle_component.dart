@@ -32,7 +32,7 @@ class LiToggleComponent implements ControlValueAccessor<dynamic> {
   String id = '';
 
   @Input()
-  String name = '';
+  String? name;
 
   @Input()
   String label = '';
@@ -90,7 +90,7 @@ class LiToggleComponent implements ControlValueAccessor<dynamic> {
 
   String get resolvedId => id.trim().isEmpty ? _generatedId : id.trim();
 
-  String? get resolvedName => name.trim().isEmpty ? null : name.trim();
+  String? get resolvedName => name;
 
   String? get resolvedAriaLabel =>
       ariaLabel.trim().isNotEmpty ? ariaLabel.trim() : null;

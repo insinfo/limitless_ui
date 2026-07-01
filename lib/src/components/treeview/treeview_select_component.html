@@ -9,6 +9,7 @@
             #triggerButton
             [class]="resolvedTriggerClass"
             [disabled]="isDisabled"
+            [attr.name]="resolvedName"
             [attr.aria-expanded]="dropdownOpen.toString()"
             [attr.aria-controls]="listboxId"
             [attr.aria-describedby]="resolvedDescribedBy"
@@ -67,6 +68,7 @@
         #triggerButton
         [class]="resolvedTriggerClass"
         [disabled]="isDisabled"
+        [attr.name]="resolvedName"
         [attr.aria-expanded]="dropdownOpen.toString()"
         [attr.aria-controls]="listboxId"
         [attr.aria-describedby]="resolvedDescribedBy"

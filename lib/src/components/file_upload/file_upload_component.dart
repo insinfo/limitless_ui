@@ -113,6 +113,9 @@ class LiFileUploadComponent
   String accept = '';
 
   @Input()
+  String? name;
+
+  @Input()
   String title = '';
 
   @Input()
@@ -259,6 +262,8 @@ class LiFileUploadComponent
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String? get resolvedName => name;
 
   String get resolvedAccept => accept.trim();
 

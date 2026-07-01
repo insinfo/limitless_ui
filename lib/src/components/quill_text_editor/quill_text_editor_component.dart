@@ -165,8 +165,7 @@ class LiQuillTextEditorLabels {
     this.heading3 = 'Heading 3',
     this.defaultFontSize = 'Default',
     this.quillUnavailable = 'Quill 2.0.3 is not available on window.Quill.',
-    this.initializationErrorPrefix =
-        'Unable to initialize the Quill editor:',
+    this.initializationErrorPrefix = 'Unable to initialize the Quill editor:',
     this.editorNotReady = 'The Quill editor is not initialized yet.',
     this.invalidDelta = 'Invalid delta: the "ops" key is required.',
   });
@@ -593,10 +592,10 @@ class LiQuillTextEditorComponent
 
   void Function(String?)? _onChange;
   TouchFunction? _onTouched;
-    LiQuillTextEditorHandle? _quill;
+  LiQuillTextEditorHandle? _quill;
   String? _pendingHtmlValue;
   bool _initialized = false;
-    bool _hasPendingUserChange = false;
+  bool _hasPendingUserChange = false;
   bool _enableTableSupport = false;
   bool _enableTableButton = false;
   bool _enableDestructiveToolbarRebuild = false;
@@ -607,12 +606,11 @@ class LiQuillTextEditorComponent
   List<LiQuillToolbarItem>? _toolbarItemsInput;
   Set<String> _disabledToolbarItemIds = const <String>{};
   Set<String> _hiddenToolbarItemIds = const <String>{};
-    List<LiQuillToolbarOption>? _headerOptionsInput;
-    List<LiQuillToolbarOption>? _fontSizeOptionsInput;
+  List<LiQuillToolbarOption>? _headerOptionsInput;
+  List<LiQuillToolbarOption>? _fontSizeOptionsInput;
   List<String> _tableMenus = defaultLiQuillTableMenus;
-  List<LiQuillToolbarAction> _toolbarActions =
-      const <LiQuillToolbarAction>[];
-    LiQuillTextEditorLabels _labels = LiQuillTextEditorLabels.english;
+  List<LiQuillToolbarAction> _toolbarActions = const <LiQuillToolbarAction>[];
+  LiQuillTextEditorLabels _labels = LiQuillTextEditorLabels.english;
   bool toolbarStructureMounted = true;
 
   late final LiQuillTextEditorTemplateContext templateContext =
@@ -623,6 +621,9 @@ class LiQuillTextEditorComponent
 
   @Input()
   String placeholder = '';
+
+  @Input()
+  String? name;
 
   @Input()
   bool readOnly = false;
@@ -665,8 +666,7 @@ class LiQuillTextEditorComponent
     _handleToolbarConfigurationInputChanged();
   }
 
-  bool get enableDestructiveToolbarRebuild =>
-      _enableDestructiveToolbarRebuild;
+  bool get enableDestructiveToolbarRebuild => _enableDestructiveToolbarRebuild;
 
   @Input()
   String minHeight = '16rem';
@@ -690,17 +690,15 @@ class LiQuillTextEditorComponent
 
   @Input()
   set headerOptions(List<LiQuillToolbarOption>? value) {
-    _headerOptionsInput = value == null
-        ? null
-        : List<LiQuillToolbarOption>.unmodifiable(value);
+    _headerOptionsInput =
+        value == null ? null : List<LiQuillToolbarOption>.unmodifiable(value);
     _handleToolbarConfigurationInputChanged();
   }
 
   @Input()
   set fontSizeOptions(List<LiQuillToolbarOption>? value) {
-    _fontSizeOptionsInput = value == null
-        ? null
-        : List<LiQuillToolbarOption>.unmodifiable(value);
+    _fontSizeOptionsInput =
+        value == null ? null : List<LiQuillToolbarOption>.unmodifiable(value);
     _handleToolbarConfigurationInputChanged();
   }
 
@@ -777,11 +775,10 @@ class LiQuillTextEditorComponent
   @ContentChild(LiQuillTextEditorToolbarActionsDirective)
   LiQuillTextEditorToolbarActionsDirective? projectedToolbarActionsTemplate;
 
-  List<LiQuillToolbarItem> resolvedToolbarItems =
-      const <LiQuillToolbarItem>[];
-    List<LiQuillToolbarOption> resolvedHeaderOptions =
+  List<LiQuillToolbarItem> resolvedToolbarItems = const <LiQuillToolbarItem>[];
+  List<LiQuillToolbarOption> resolvedHeaderOptions =
       defaultLiQuillHeaderOptions;
-    List<LiQuillToolbarOption> resolvedFontSizeOptions =
+  List<LiQuillToolbarOption> resolvedFontSizeOptions =
       defaultLiQuillFontSizeOptions;
   List<LiQuillToolbarAction> leadingToolbarActions =
       const <LiQuillToolbarAction>[];
@@ -801,6 +798,8 @@ class LiQuillTextEditorComponent
       toolbarActionsTemplate ?? projectedToolbarActionsTemplate?.templateRef;
 
   bool get hasToolbarActionsTemplate => resolvedToolbarActionsTemplate != null;
+
+  String? get resolvedName => name;
 
   Stream<String> get valueChange => _valueController.stream;
 
@@ -827,6 +826,7 @@ class LiQuillTextEditorComponent
 
   @override
   void ngAfterChanges() {
+    _syncEditorNameAttribute();
     if (_initialized) {
       _quill?.enable(!readOnly);
       if (!updateModelOnBlur && _hasPendingUserChange) {
@@ -888,6 +888,7 @@ class LiQuillTextEditorComponent
         readOnly: readOnly,
       );
       _initialized = true;
+      _syncEditorNameAttribute();
       _wireEditorEvents();
       _applyPendingHtmlValue();
       _applyToolbarConfigurationSignature();
@@ -926,6 +927,19 @@ class LiQuillTextEditorComponent
       _lastSelection = selection;
       _selectionController.add(selection);
     });
+  }
+
+  void _syncEditorNameAttribute() {
+    final editor = editorContainer?.querySelector('.ql-editor');
+    final resolved = resolvedName;
+    if (resolved == null) {
+      editorContainer?.attributes.remove('name');
+      editor?.attributes.remove('name');
+      return;
+    }
+
+    editorContainer?.setAttribute('name', resolved);
+    editor?.setAttribute('name', resolved);
   }
 
   void _registerSizeWhitelist() {
@@ -985,10 +999,10 @@ class LiQuillTextEditorComponent
       return;
     }
 
-    resolvedHeaderOptions = _headerOptionsInput ??
-        buildDefaultLiQuillHeaderOptions(labels);
-    resolvedFontSizeOptions = _fontSizeOptionsInput ??
-        buildDefaultLiQuillFontSizeOptions(labels);
+    resolvedHeaderOptions =
+        _headerOptionsInput ?? buildDefaultLiQuillHeaderOptions(labels);
+    resolvedFontSizeOptions =
+        _fontSizeOptionsInput ?? buildDefaultLiQuillFontSizeOptions(labels);
     resolvedToolbarItems = _toolbarItemsInput ??
         LiQuillToolbarItems.defaultItems(
           labels: labels,
@@ -1014,7 +1028,8 @@ class LiQuillTextEditorComponent
       return;
     }
 
-    _pendingToolbarConfigurationSignature = _buildToolbarConfigurationSignature();
+    _pendingToolbarConfigurationSignature =
+        _buildToolbarConfigurationSignature();
     if (_pendingToolbarConfigurationSignature ==
             _appliedToolbarConfigurationSignature ||
         _destructiveToolbarRebuildScheduled) {
@@ -1170,22 +1185,22 @@ class LiQuillTextEditorComponent
     return true;
   }
 
-          Object? trackByItemId(int index, Object? item) =>
-            item is LiQuillToolbarItem ? item.id : index;
+  Object? trackByItemId(int index, Object? item) =>
+      item is LiQuillToolbarItem ? item.id : index;
 
-          Object? trackByActionId(int index, Object? action) =>
-            action is LiQuillToolbarAction ? action.id : index;
+  Object? trackByActionId(int index, Object? action) =>
+      action is LiQuillToolbarAction ? action.id : index;
 
   bool isToolbarItemDisabled(LiQuillToolbarItem item) =>
       _disabledToolbarItemIds.contains(item.id);
 
-    bool isToolbarItemHidden(LiQuillToolbarItem item) =>
+  bool isToolbarItemHidden(LiQuillToolbarItem item) =>
       _hiddenToolbarItemIds.contains(item.id);
 
-    bool shouldRenderToolbarItem(LiQuillToolbarItem item) =>
+  bool shouldRenderToolbarItem(LiQuillToolbarItem item) =>
       !enableDestructiveToolbarRebuild || !isToolbarItemHidden(item);
 
-    bool shouldApplyToolbarItemHiddenAttribute(LiQuillToolbarItem item) =>
+  bool shouldApplyToolbarItemHiddenAttribute(LiQuillToolbarItem item) =>
       !enableDestructiveToolbarRebuild && isToolbarItemHidden(item);
 
   void _syncToolbarActions() {

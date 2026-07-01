@@ -126,6 +126,9 @@ class LiTypeaheadComponent
   late String placeholder;
 
   @Input()
+  String? name;
+
+  @Input()
   late String container;
 
   @Input()
@@ -229,6 +232,8 @@ class LiTypeaheadComponent
     }
     return optionId(activeIndex);
   }
+
+  String? get resolvedName => name;
 
   String get resolvedInputClass => _joinClasses(<String>[
         'form-control',

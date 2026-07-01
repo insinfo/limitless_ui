@@ -58,6 +58,9 @@ class LiRatingComponent
   String ariaLabel = 'Rating';
 
   @Input()
+  String? name;
+
+  @Input()
   String size = 'lg';
 
   @Input()
@@ -112,6 +115,8 @@ class LiRatingComponent
         disabled ? 'is-disabled' : '',
         readonly ? 'is-readonly' : '',
       ]);
+
+  String? get resolvedName => name;
 
   @HostBinding('class.d-inline-block')
   bool get hostClass => true;

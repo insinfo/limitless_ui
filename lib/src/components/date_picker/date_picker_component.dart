@@ -204,6 +204,9 @@ class LiDatePickerComponent
   String? placeholder;
 
   @Input()
+  String? name;
+
+  @Input()
   String locale = 'pt_BR';
 
   @Input()
@@ -340,6 +343,8 @@ class LiDatePickerComponent
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
+
+  String? get resolvedName => name;
 
   String get resolvedInputClass => _joinClasses(<String>[
         'form-control',

@@ -2,6 +2,7 @@
     <div *ngIf="customTriggerTemplate != null" #triggerButton
         class="datatable-select-custom-trigger"
         [class.disabled]="isDisabled"
+        [attr.name]="resolvedName"
         [attr.data-li-form-focus-target]="'true'"
         [attr.data-label]="'li_datatable_select_btn_toggle'"
         [attr.data-value]="selectedDataValue"
@@ -21,6 +22,7 @@
 
     <div *ngIf="customTriggerTemplate == null && usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
         <button type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
+            [attr.name]="resolvedName"
             [attr.data-label]="'li_datatable_select_btn_toggle'"
             [attr.data-value]="selectedDataValue"
             [disabled]="isDisabled" (click)="openModal()" tabindex="0"
@@ -73,6 +75,7 @@
     </div>
 
     <button *ngIf="customTriggerTemplate == null && !usesAddonTriggerIcon" type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
+        [attr.name]="resolvedName"
         [attr.data-label]="'li_datatable_select_btn_toggle'"
         [attr.data-value]="selectedDataValue"
         [disabled]="isDisabled" (click)="openModal()" tabindex="0"

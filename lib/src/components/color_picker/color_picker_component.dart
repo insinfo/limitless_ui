@@ -275,6 +275,9 @@ class LiColorPickerComponent
   String? placeholder;
 
   @Input()
+  String? name;
+
+  @Input()
   String locale = 'pt_BR';
 
   @Input()
@@ -459,6 +462,8 @@ class LiColorPickerComponent
       !effectiveInvalid && (valid || (required && _touched && value != null));
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
+
+  String? get resolvedName => name;
 
   bool get showErrorFeedback => errorText.trim().isNotEmpty && effectiveInvalid;
 

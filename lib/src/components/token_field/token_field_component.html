@@ -15,6 +15,7 @@
 
     <input #inputToken class="tokenfield-input li-token-field__input" type="text" [placeholder]="resolvedPlaceholder"
         [attr.data-label]="'li_token_field_input'"
+        [attr.name]="resolvedName"
         [disabled]="isDisabled" (focus)="onInputFocus()" (blur)="onInputBlur()"
         (keydown)="inputKeydownHandle($event)" (keyup)="inputKeyupHandle($event)"
         (keypress)="inputKeypressHandle($event)" (paste)="onPasteHandle($event)">

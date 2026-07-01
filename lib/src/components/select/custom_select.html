@@ -2,6 +2,7 @@
     <div *ngIf="triggerTemplate != null" #dropdownButton
         class="li-select-custom-trigger"
         [class.disabled]="isDisabled"
+        [attr.name]="resolvedName"
         [attr.data-label]="'custom_select_btn_toggle'"
         [attr.data-value]="selectedDataValue"
         [attr.data-li-form-focus-target]="'true'"
@@ -23,6 +24,7 @@
 
     <div *ngIf="triggerTemplate == null && usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
         <button type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
+            [attr.name]="resolvedName"
             [attr.data-value]="selectedDataValue"
             [attr.data-li-form-focus-target]="'true'"
             [class]="resolvedButtonClass"
@@ -50,6 +52,7 @@
     </div>
 
     <button *ngIf="triggerTemplate == null && !usesAddonTriggerIcon" type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
+        [attr.name]="resolvedName"
         [attr.data-value]="selectedDataValue"
         [attr.data-li-form-focus-target]="'true'"
         [class]="resolvedButtonClass"

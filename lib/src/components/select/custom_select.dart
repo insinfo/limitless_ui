@@ -275,6 +275,8 @@ class LiSelectComponent
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
 
+  String? get resolvedName => name;
+
   String get searchPlaceholder => _isEnglishLocale ? 'Search' : 'Buscar';
 
   String get searchAriaLabel =>
@@ -348,6 +350,9 @@ class LiSelectComponent
 
   @Input('id')
   String id = 'custom_select_1';
+
+  @Input()
+  String? name;
 
   @Input('labelKey')
   String labelKey = 'label';

@@ -4,6 +4,7 @@
         <button #triggerElement type="button" class="btn btn-light sp-replacer" [class.sp-active]="isOpen"
             [class.sp-disabled]="isDisabled" [class.is-invalid]="effectiveInvalid" [class.is-valid]="effectiveValid"
             [disabled]="isDisabled" [attr.title]="triggerTitle" [attr.aria-label]="resolvedTitleText"
+            [attr.name]="resolvedName"
             [attr.aria-describedby]="resolvedDescribedBy" [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null" [attr.data-label]="'li_color_picker_trigger'" [attr.data-value]="value" (click)="toggleOpen()">
             <span class="sp-preview" [attr.data-label]="'li_color_picker_preview'">
@@ -93,6 +94,7 @@
             <div *ngIf="showInput && canShowEditor" class="sp-input-container sp-cf">
                 <input type="text" [class]="resolvedInputClass" [value]="manualInputValue"
                     [attr.data-label]="'li_color_picker_input'"
+                    [attr.name]="resolvedName"
                     [placeholder]="effectivePlaceholder" (input)="onTextInput($event.target.value)"
                     (keydown)="onTextInputKeyDown($event)">
             </div>

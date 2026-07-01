@@ -22,6 +22,7 @@ import 'li_select_component_test.template.dart' as ng;
         [dataSource]="statusOptions"
         labelKey="label"
         valueKey="id"
+        name="status"
         disabledKey="disabled"
         [searchable]="searchable"
         (modelChange)="selectedStatusModel = \$event"
@@ -319,6 +320,16 @@ void main() {
     expect(host.selectedStatus, 'draft');
     expect(host.userSelectedStatus, 'approved');
     expect(trigger.text, contains('Rascunho'));
+  });
+
+  test('reflects name on the interactive trigger for browser automation',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    expect(trigger.getAttribute('name'), 'status');
   });
 
   test('ignores disabled options', () async {

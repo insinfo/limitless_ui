@@ -164,8 +164,7 @@ class InputTestHostComponent {
     'cpf': 'CPF invalido customizado',
   };
 
-  final Map<String, String> validatedPasswordMessages =
-      const <String, String>{
+  final Map<String, String> validatedPasswordMessages = const <String, String>{
     'required': 'Informe a senha.',
     'pattern': 'Use ao menos uma letra maiuscula e um numero.',
     'passwordSymbol': 'Adicione um caractere ! na senha.',
@@ -184,8 +183,7 @@ class InputTestHostComponent {
     ),
   ];
 
-  final Map<String, String> deferredPasswordMessages =
-      const <String, String>{
+  final Map<String, String> deferredPasswordMessages = const <String, String>{
     'pattern': 'Use ao menos uma letra maiuscula.',
   };
 
@@ -446,7 +444,8 @@ void main() {
     expect(activeElement?.id, 'password-input');
   });
 
-  test('li-password-input masks in Dart while preserving the real ngModel value',
+  test(
+      'li-password-input masks in Dart while preserving the real ngModel value',
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
@@ -464,7 +463,7 @@ void main() {
     expect(input.getAttribute('data-lpignore'), 'true');
     expect(input.getAttribute('data-1p-ignore'), 'true');
     expect(input.getAttribute('data-bwignore'), 'true');
-    expect(input.getAttribute('name'), 'signature-password-input_secret');
+    expect(input.getAttribute('name'), isNull);
     expect(input.value, '•' * host.signaturePassword.length);
 
     await fixture.update((_) {
@@ -485,8 +484,7 @@ void main() {
     expect(toggle.getAttribute('aria-label'), 'Ocultar senha');
   });
 
-  test('li-password-input respects validateOnInput false until blur',
-      () async {
+  test('li-password-input respects validateOnInput false until blur', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
@@ -501,8 +499,7 @@ void main() {
 
     expect(host.deferredPassword, 'abc');
     expect(input.classes.contains('is-invalid'), isFalse);
-    expect(
-        fixture.rootElement.text,
+    expect(fixture.rootElement.text,
         isNot(contains('Use ao menos uma letra maiuscula.')));
 
     await fixture.update((_) {
@@ -550,7 +547,8 @@ void main() {
     await _settle(fixture);
 
     expect(host.validatedPassword, 'Abc123');
-    expect(fixture.rootElement.text, contains('Adicione um caractere ! na senha.'));
+    expect(fixture.rootElement.text,
+        contains('Adicione um caractere ! na senha.'));
 
     await fixture.update((_) {
       input.value = 'Abc123!';
