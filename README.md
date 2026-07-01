@@ -410,7 +410,7 @@ Selection-oriented controls also render stable browser automation hooks:
 
 These hooks are part of the testability contract for browser automation. Prefer them over styling classes, translated labels, generated ids, or brittle DOM depth selectors.
 
-For a complete Puppeteer guide using `puppeteer: ^3.16.0`, including reusable test helpers and the hook reference table, see [docs/browser_automation_puppeteer.md](docs/browser_automation_puppeteer.md).
+For a complete Puppeteer guide using `puppeteer: ^3.16.0`, including reusable test helpers and the hook reference table, see [doc/browser_automation_puppeteer.md](doc/browser_automation_puppeteer.md).
 
 Form controls also accept an optional `name` input and reflect it on the
 interactive DOM element, such as the inner input, combobox trigger, slider, or
