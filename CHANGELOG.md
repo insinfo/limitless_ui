@@ -1,3 +1,7 @@
+## 1.0.0-dev.31
+
+- Changed `li-select` so a `null` model stays empty by default instead of visually selecting the first available option. The empty trigger uses the configurable `placeholder`, including `[placeholder]="''"` for a blank trigger, and consumers that intentionally need the old first-option behavior can opt in with `[autoSelectFirstOption]="true"`.
+
 ## 1.0.0-dev.30
 
 - Added string and scalar-input support to `[liTextMask]`, so legacy mask templates can migrate without declaring per-screen maps. Examples: `liTextMask="xxxxx-xxx"`, `[liTextMask]="'xxxxx-xxx'"`, and `liTextMask liTextMaskMask="(xx) xxxx-xxxx"`.

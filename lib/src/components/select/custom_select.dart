@@ -192,6 +192,13 @@ class LiSelectComponent
   @Input()
   bool searchable = true;
 
+  /// Selects the first enabled option when the written model value is `null`.
+  ///
+  /// The default is `false` so optional fields can keep an explicit empty
+  /// state instead of visually selecting the first business option.
+  @Input()
+  bool autoSelectFirstOption = false;
+
   @Input()
   bool Function(dynamic optionValue, dynamic modelValue)? compareWith;
 
@@ -383,6 +390,9 @@ class LiSelectComponent
     _lastWrittenValue = newVal;
     if (newVal == null) {
       currentValue = null;
+      if (autoSelectFirstOption) {
+        currentValue = options.where((option) => !option.disabled).firstOrNull;
+      }
       _runAutoValidation();
       _markForCheck();
       return;
@@ -448,6 +458,10 @@ class LiSelectComponent
     throw InvalidArgumentException(LiSelectComponent, ops);
   }
 
+  /// Text rendered in the trigger while no option is selected.
+  ///
+  /// Set it to an empty string, for example `[placeholder]="''"`, when the
+  /// empty state should be visually blank.
   @Input()
   String placeholder = 'Selecione';
 
@@ -463,8 +477,10 @@ class LiSelectComponent
     _rebuildValidationConfig();
     if (_lastWrittenValue != null) {
       _selectCurrentValue(_lastWrittenValue);
-    } else {
+    } else if (autoSelectFirstOption) {
       currentValue = options.where((option) => !option.disabled).firstOrNull;
+    } else {
+      currentValue = null;
     }
     _runAutoValidation();
     _markForCheck();
@@ -895,7 +911,7 @@ class LiSelectComponent
 
     final currentSelectedValue = _lastWrittenValue ?? currentValue?.value;
     options = nextOptions;
-    _selectCurrentValue(currentSelectedValue);
+    _selectCurrentValueOrFirstOption(currentSelectedValue);
     _runAutoValidation();
     _markForCheck();
   }
@@ -923,7 +939,7 @@ class LiSelectComponent
 
     final currentSelectedValue = _lastWrittenValue ?? currentValue?.value;
     options = nextOptions;
-    _selectCurrentValue(currentSelectedValue);
+    _selectCurrentValueOrFirstOption(currentSelectedValue);
     _runAutoValidation();
 
     if (markForCheck) {
@@ -967,6 +983,13 @@ class LiSelectComponent
         currentValue = option;
         return;
       }
+    }
+  }
+
+  void _selectCurrentValueOrFirstOption(dynamic value) {
+    _selectCurrentValue(value);
+    if (currentValue == null && value == null && autoSelectFirstOption) {
+      currentValue = options.where((option) => !option.disabled).firstOrNull;
     }
   }
 

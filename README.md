@@ -2022,6 +2022,12 @@ The reference demo is in [example/lib/src/pages/datatable_select/datatable_selec
 
 `li-select` accepts `List<Map<String, dynamic>>` or `DataFrame` through `[dataSource]`, and it also supports manual projection with `li-option`. The main keys are `labelKey`, `valueKey`, and `disabledKey`. The component is searchable by default, uses a Popper-based overlay, and already avoids loops by ignoring semantically identical `dataSource` updates.
 
+When the bound model is `null`, `li-select` keeps the selection empty and
+renders the configured `placeholder`. Use `placeholder="Selecione"` to show an
+empty-state label, `[placeholder]="''"` for a visually blank trigger, or
+`[autoSelectFirstOption]="true"` only when the first enabled option should be
+selected intentionally.
+
 ```html
 <li-select
   [dataSource]="users"

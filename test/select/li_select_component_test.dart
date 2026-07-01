@@ -151,6 +151,72 @@ class SelectAsyncSourceTestHostComponent {
 }
 
 @Component(
+  selector: 'li-select-null-model-test-host',
+  template: '''
+    <li-select
+        [dataSource]="statusOptions"
+        labelKey="label"
+        valueKey="id"
+        [(ngModel)]="selectedStatus">
+    </li-select>
+  ''',
+  directives: [coreDirectives, formDirectives, LiSelectComponent],
+)
+class SelectNullModelTestHostComponent {
+  String? selectedStatus;
+
+  final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
+    <String, dynamic>{'id': 'approved', 'label': 'Aprovado'},
+  ];
+}
+
+@Component(
+  selector: 'li-select-empty-placeholder-test-host',
+  template: '''
+    <li-select
+        [dataSource]="statusOptions"
+        labelKey="label"
+        valueKey="id"
+        [placeholder]="emptyPlaceholder"
+        [(ngModel)]="selectedStatus">
+    </li-select>
+  ''',
+  directives: [coreDirectives, formDirectives, LiSelectComponent],
+)
+class SelectEmptyPlaceholderTestHostComponent {
+  String emptyPlaceholder = '';
+  String? selectedStatus;
+
+  final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
+    <String, dynamic>{'id': 'approved', 'label': 'Aprovado'},
+  ];
+}
+
+@Component(
+  selector: 'li-select-auto-first-test-host',
+  template: '''
+    <li-select
+        [dataSource]="statusOptions"
+        labelKey="label"
+        valueKey="id"
+        [autoSelectFirstOption]="true"
+        [(ngModel)]="selectedStatus">
+    </li-select>
+  ''',
+  directives: [coreDirectives, formDirectives, LiSelectComponent],
+)
+class SelectAutoFirstTestHostComponent {
+  String? selectedStatus;
+
+  final List<Map<String, dynamic>> statusOptions = <Map<String, dynamic>>[
+    <String, dynamic>{'id': 'draft', 'label': 'Rascunho'},
+    <String, dynamic>{'id': 'approved', 'label': 'Aprovado'},
+  ];
+}
+
+@Component(
   selector: 'li-select-programmatic-api-test-host',
   template: '''
     <li-select
@@ -199,6 +265,16 @@ void main() {
   );
   final asyncSourceTestBed = NgTestBed<SelectAsyncSourceTestHostComponent>(
     ng.SelectAsyncSourceTestHostComponentNgFactory,
+  );
+  final nullModelTestBed = NgTestBed<SelectNullModelTestHostComponent>(
+    ng.SelectNullModelTestHostComponentNgFactory,
+  );
+  final emptyPlaceholderTestBed =
+      NgTestBed<SelectEmptyPlaceholderTestHostComponent>(
+    ng.SelectEmptyPlaceholderTestHostComponentNgFactory,
+  );
+  final autoFirstTestBed = NgTestBed<SelectAutoFirstTestHostComponent>(
+    ng.SelectAutoFirstTestHostComponentNgFactory,
   );
   final programmaticApiTestBed =
       NgTestBed<SelectProgrammaticApiTestHostComponent>(
@@ -385,6 +461,42 @@ void main() {
     expect(host.modelEvents, isEmpty);
   });
 
+  test('keeps null model empty instead of selecting the first option',
+      () async {
+    final fixture = await nullModelTestBed.create();
+    await _settleNullModel(fixture);
+    final host = fixture.assertOnlyInstance;
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    expect(host.selectedStatus, isNull);
+    expect(trigger.text, contains('Selecione'));
+    expect(trigger.text, isNot(contains('Rascunho')));
+  });
+
+  test('allows a blank placeholder for null model values', () async {
+    final fixture = await emptyPlaceholderTestBed.create();
+    await _settleEmptyPlaceholder(fixture);
+    final host = fixture.assertOnlyInstance;
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    expect(host.selectedStatus, isNull);
+    expect(trigger.text?.trim(), isEmpty);
+    expect(trigger.text, isNot(contains('Rascunho')));
+  });
+
+  test('autoSelectFirstOption keeps the old first-option behavior', () async {
+    final fixture = await autoFirstTestBed.create();
+    await _settleAutoFirst(fixture);
+    final host = fixture.assertOnlyInstance;
+    final trigger = fixture.rootElement.querySelector('.dropdown-button')
+        as html.ButtonElement;
+
+    expect(host.selectedStatus, isNull);
+    expect(trigger.text, contains('Rascunho'));
+  });
+
   test('supports silent programmatic set and clear APIs', () async {
     final fixture = await programmaticApiTestBed.create();
     await _settleProgrammaticApi(fixture);
@@ -507,6 +619,24 @@ Future<void> _settleValidation(
 
 Future<void> _settleAsyncSource(
     NgTestFixture<SelectAsyncSourceTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleNullModel(
+    NgTestFixture<SelectNullModelTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleEmptyPlaceholder(
+    NgTestFixture<SelectEmptyPlaceholderTestHostComponent> fixture) async {
+  await Future<void>.delayed(const Duration(milliseconds: 30));
+  await fixture.update((_) {});
+}
+
+Future<void> _settleAutoFirst(
+    NgTestFixture<SelectAutoFirstTestHostComponent> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
   await fixture.update((_) {});
 }
