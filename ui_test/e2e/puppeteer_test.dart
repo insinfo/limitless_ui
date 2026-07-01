@@ -933,5 +933,66 @@ void main() {
         (value) => value != null && value.isNotEmpty,
       );
     }, skip: skipExampleE2eReason());
+
+    test('interage com SweetAlert por hooks de automacao', () async {
+      await gotoExample(page, 'sweet-alert');
+
+      await clickFirstVisible(
+          page, '[data-label="sweet_alert_service_confirm"]');
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_sweet_alert_root"][data-open="true"]',
+      );
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_sweet_alert_popup"][data-type="question"][data-open="true"]',
+      );
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_sweet_alert_icon"][data-value="question"]',
+      );
+      await clickFirstVisible(page, '[data-label="li_sweet_alert_cancel"]');
+      await waitForSelectorGone(page, '[data-label="li_sweet_alert_root"]');
+
+      await clickFirstVisible(
+          page, '[data-label="sweet_alert_service_prompt"]');
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_sweet_alert_input"][data-value="text"]',
+      );
+      await clickFirstVisible(page, '[data-label="li_sweet_alert_confirm"]');
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_sweet_alert_validation"]',
+      );
+      await page.type(
+        '[data-label="li_sweet_alert_input"][data-value="text"]',
+        'batch-42',
+      );
+      await clickFirstVisible(page, '[data-label="li_sweet_alert_confirm"]');
+      await waitForSelectorGone(page, '[data-label="li_sweet_alert_root"]');
+
+      await clickFirstVisible(
+        page,
+        '[data-label="li_tabs_nav_link"][data-value="2"]',
+      );
+      await waitForAttributeMatching(
+        page,
+        '[data-label="li_tabs_nav"]',
+        'data-value',
+        (value) => value == '2',
+      );
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_tabs_panel"][data-value="2"][data-open="true"]',
+      );
+      await clickFirstVisible(page, '[data-label="sweet_alert_input_select"]');
+      await waitForSelectorMatching(
+        page,
+        '[data-label="li_sweet_alert_input_option"][data-value="prod"]',
+      );
+      await clickFirstVisible(page, '[data-label="li_sweet_alert_cancel"]');
+      await waitForSelectorGone(page, '[data-label="li_sweet_alert_root"]');
+    }, skip: skipExampleE2eReason());
   });
 }

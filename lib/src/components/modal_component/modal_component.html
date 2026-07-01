@@ -3,11 +3,17 @@
     role="dialog"
     aria-modal="true"
     [attr.aria-labelledby]="resolvedAriaLabelledBy"
-    [attr.aria-label]="resolvedAriaLabel">
+    [attr.aria-label]="resolvedAriaLabel"
+    [attr.data-label]="'li_modal'"
+    [attr.data-value]="modalAutomationValue"
+    [attr.data-open]="isOpen ? 'true' : 'false'"
+    [attr.data-status]="isOpen ? 'open' : 'close'">
     <!--(mouseup)="mouseEvent($event)" (click)="mouseEvent($event)"
     
     -->
     <div (mousedown)="stopPropagation($event)" class="modal-dialog"
+    [attr.data-label]="'li_modal_dialog'"
+    [attr.data-value]="modalAutomationValue"
     [style.max-width]="resolvedCustomWidth"
     [style.width]="hasCustomWidth ? '100%' : null"
     [style.height]="resolvedCustomHeight"
@@ -21,8 +27,13 @@
         [class.modal-dialog-centered]="verticalCenter" 
         [class.modal-dialog-scrollable]="dialogScrollable">
 
-        <div #modalContent class="modal-content" [class.modal-content-custom-height]="hasCustomHeight">
+        <div #modalContent class="modal-content"
+            [class.modal-content-custom-height]="hasCustomHeight"
+            [attr.data-label]="'li_modal_content'"
+            [attr.data-value]="modalAutomationValue">
                 <div #modalHeader *ngIf="enableHeader" class="modal-header  border-0"
+                 [attr.data-label]="'li_modal_header'"
+                 [attr.data-value]="modalAutomationValue"
 
                  [class.bg-primary]="headerColor == null || headerColor == 'primary' || headerColor == 'default' || headerColor == ''"
                      [class.bg-warning]="headerColor == 'warning'"
@@ -41,12 +52,26 @@
 
                      [class.custom-modal-header-round]="enableRoundedCorners == true && !usesFullScreenShell">
              <ng-content select="[modal-header]"></ng-content>
-             <h5 #modalTitleElement *ngIf="hasTitleText" class="modal-title" [id]="modalTitleId">{{titleText}}</h5>
-                <button *ngIf="enableCloseBtn" (click)="close()" type="button" class="btn-close btn-close-white">
+             <h5 #modalTitleElement *ngIf="hasTitleText"
+                 class="modal-title"
+                 [id]="modalTitleId"
+                 [attr.data-label]="'li_modal_title'"
+                 [attr.data-value]="modalAutomationValue">{{titleText}}</h5>
+                <button *ngIf="enableCloseBtn"
+                    (click)="close()"
+                    type="button"
+                    class="btn-close btn-close-white"
+                    [attr.data-label]="'li_modal_close'"
+                    [attr.data-value]="modalAutomationValue">
                 </button>
             </div>
-            <div #modalBody [class]="resolvedBodyClass">
-                <div *ngIf="showError" class="alert alert-info alert-icon-start alert-dismissible">
+            <div #modalBody [class]="resolvedBodyClass"
+                [attr.data-label]="'li_modal_body'"
+                [attr.data-value]="modalAutomationValue">
+                <div *ngIf="showError"
+                    class="alert alert-info alert-icon-start alert-dismissible"
+                    [attr.data-label]="'li_modal_error'"
+                    [attr.data-value]="modalAutomationValue">
                     <span class="alert-icon bg-info text-white">
                         <i class="ph-info"></i>
                     </span> {{errorMessage}}                   
@@ -64,7 +89,9 @@
                     </template>
                 </ng-container>
             </div>
-            <div class="modal-footer"><ng-content select="[modal-footer]"></ng-content></div>
+            <div class="modal-footer"
+                [attr.data-label]="'li_modal_footer'"
+                [attr.data-value]="modalAutomationValue"><ng-content select="[modal-footer]"></ng-content></div>
         </div>
 
     </div>

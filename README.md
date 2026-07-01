@@ -441,6 +441,33 @@ await waitForAttributeMatching(
 );
 ```
 
+Dialog overlays expose the same contract for browser automation:
+
+- SweetAlert: wait for `li_sweet_alert_root`/`li_sweet_alert_popup` with
+  `data-open="true"`, then target `li_sweet_alert_confirm`,
+  `li_sweet_alert_cancel`, `li_sweet_alert_close`, `li_sweet_alert_input`,
+  `li_sweet_alert_validation`, and `li_sweet_alert_input_option`.
+- `li-modal`: wait for `[data-label="li_modal"][data-open="true"]`, then
+  target parts such as `li_modal_dialog`, `li_modal_content`,
+  `li_modal_header`, `li_modal_body`, `li_modal_footer`, `li_modal_close`,
+  and `li_modal_backdrop`.
+- SimpleDialog helpers: wait for `li_simple_dialog_root` or
+  `li_simple_dialog_modal`, then target `li_simple_dialog_confirm`,
+  `li_simple_dialog_cancel`, `li_simple_dialog_input`, and
+  `li_simple_dialog_validation`.
+
+```dart
+await clickFirstVisible(page, '[data-label="li_sweet_alert_confirm"]');
+await waitForSelectorMatching(
+  page,
+  '[data-label="li_sweet_alert_popup"][data-type="question"][data-open="true"]',
+);
+await page.type(
+  '[data-label="li_sweet_alert_input"][data-value="text"]',
+  'batch-42',
+);
+```
+
 ## Utility directives and pipes
 
 Beyond visual components, the package also exposes small browser-oriented helpers that are now available from the public barrel in [lib/limitless_ui.dart](lib/limitless_ui.dart):

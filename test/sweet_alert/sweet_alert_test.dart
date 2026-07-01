@@ -32,8 +32,10 @@ void main() {
     final root =
         html.document.querySelector('[data-label="li_sweet_alert_root"]');
     expect(root, isNotNull);
+    expect(root!.getAttribute('data-open'), 'true');
     expect(resolvedPopup.getAttribute('data-label'), 'li_sweet_alert_popup');
     expect(resolvedPopup.getAttribute('data-type'), 'success');
+    expect(resolvedPopup.getAttribute('data-open'), 'true');
     expect(
       resolvedPopup.querySelector('[data-label="li_sweet_alert_title"]'),
       isNotNull,
@@ -44,8 +46,22 @@ void main() {
     );
     expect(resolvedPopup.getComputedStyle().display, 'grid');
     expect(resolvedPopup.classes.contains('swal2-icon-success'), isTrue);
+    expect(
+      resolvedPopup
+          .querySelector('[data-label="li_sweet_alert_icon"]')
+          ?.getAttribute('data-value'),
+      'success',
+    );
     expect(resolvedPopup.text, contains('Deployment ready'));
     expect(resolvedPopup.text, contains('The release summary is available.'));
+    expect(
+      resolvedPopup.querySelector('[data-label="li_sweet_alert_actions"]'),
+      isNotNull,
+    );
+    expect(
+      resolvedPopup.querySelector('[data-label="li_sweet_alert_close"]'),
+      isNotNull,
+    );
     final confirmButton =
         resolvedPopup.querySelector('.swal2-confirm') as html.ButtonElement?;
     expect(confirmButton, isNotNull);
@@ -71,6 +87,10 @@ void main() {
     );
 
     await _settle();
+    final cancelButton =
+        html.document.querySelector('.swal2-cancel') as html.ButtonElement?;
+    expect(cancelButton, isNotNull);
+    expect(cancelButton!.getAttribute('data-label'), 'li_sweet_alert_cancel');
     _click('.swal2-cancel');
     final result = await future;
 
@@ -185,10 +205,11 @@ void main() {
     _click('.swal2-confirm');
     await _settle();
 
-    final validationMessage =
-        html.document.querySelector('.swal2-validation-message');
-    expect(validationMessage, isNotNull);
-    expect(validationMessage!.text, contains('Identifier is required'));
+    final validationMessage = html.document
+        .querySelector('.swal2-validation-message') as html.Element;
+    expect(validationMessage.getAttribute('data-label'),
+        'li_sweet_alert_validation');
+    expect(validationMessage.text, contains('Identifier is required'));
     expect(validationMessage.getComputedStyle().display, isNot('none'));
 
     final input =
@@ -406,7 +427,9 @@ void main() {
         html.document.querySelector('input[type="radio"][value="fast"]')
             as html.RadioButtonInputElement?;
     expect(radio, isNotNull);
-    radio!.checked = true;
+    expect(radio!.getAttribute('data-label'), 'li_sweet_alert_input_radio');
+    expect(radio.getAttribute('data-value'), 'fast');
+    radio.checked = true;
     _click('.swal2-confirm');
     final radioResult = await radioFuture;
     expect(radioResult.value, 'fast');
@@ -422,7 +445,9 @@ void main() {
     final checkbox = html.document.querySelector('input[type="checkbox"]')
         as html.CheckboxInputElement?;
     expect(checkbox, isNotNull);
-    checkbox!.checked = false;
+    expect(
+        checkbox!.getAttribute('data-label'), 'li_sweet_alert_input_checkbox');
+    checkbox.checked = false;
     _click('.swal2-confirm');
     final checkboxResult = await checkboxFuture;
     expect(checkboxResult.value, 'false');
@@ -440,7 +465,9 @@ void main() {
     final range = html.document.querySelector('input[type="range"]')
         as html.InputElement?;
     expect(range, isNotNull);
-    range!.value = '70';
+    expect(range!.getAttribute('data-label'), 'li_sweet_alert_input');
+    expect(range.getAttribute('data-value'), 'range');
+    range.value = '70';
     _click('.swal2-confirm');
     final rangeResult = await rangeFuture;
     expect(rangeResult.value, '70');

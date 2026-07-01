@@ -226,6 +226,27 @@ void main() {
     expect(html.document.body!.querySelector('#lazy-body'), isNotNull);
     expect(host.lazyModal!.isOpen, isTrue);
     expect(html.document.body!.classes.contains('modal-open'), isTrue);
+    final lazyDialog = _modalDialogByTitle('Lazy');
+    expect(lazyDialog, isNotNull);
+    final lazyModal = _closestAncestorWithClass(lazyDialog!, 'modal');
+    expect(lazyModal, isNotNull);
+    expect(lazyModal!.getAttribute('data-label'), 'li_modal');
+    expect(lazyModal.getAttribute('data-open'), 'true');
+    expect(
+        lazyModal.querySelector('[data-label="li_modal_dialog"]'), isNotNull);
+    expect(
+        lazyModal.querySelector('[data-label="li_modal_content"]'), isNotNull);
+    expect(
+        lazyModal.querySelector('[data-label="li_modal_header"]'), isNotNull);
+    expect(lazyModal.querySelector('[data-label="li_modal_title"]'), isNotNull);
+    expect(lazyModal.querySelector('[data-label="li_modal_close"]'), isNotNull);
+    expect(lazyModal.querySelector('[data-label="li_modal_body"]'), isNotNull);
+    expect(
+        lazyModal.querySelector('[data-label="li_modal_footer"]'), isNotNull);
+    expect(
+      html.document.body!.querySelector('[data-label="li_modal_backdrop"]'),
+      isNotNull,
+    );
 
     await fixture.update((_) {
       _clickById('close-lazy');
@@ -236,6 +257,7 @@ void main() {
     expect(host.lazyModal!.isOpen, isFalse);
     expect(host.lazyCloseCount, 1);
     expect(html.document.body!.classes.contains('modal-open'), isFalse);
+    expect(lazyModal.getAttribute('data-open'), 'false');
   });
 
   test('startOpen renders content immediately after init', () async {
@@ -257,6 +279,8 @@ void main() {
         .where((element) => element.querySelector('#start-open-body') != null);
 
     expect(openModal, isNotEmpty);
+    expect(openModal.first.getAttribute('data-label'), 'li_modal');
+    expect(openModal.first.getAttribute('data-open'), 'true');
     expect(html.document.body!.classes.contains('modal-open'), isTrue);
   });
 

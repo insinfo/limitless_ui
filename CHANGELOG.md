@@ -1,6 +1,8 @@
 ## 1.0.0-dev.32
 
 - Added optional `name` input support across AngularDart form components, preserving the provided value and reflecting it on their interactive DOM elements to improve screen reader metadata and browser automation selectors.
+- Added `data-open` automation state to SweetAlert overlays and expanded README/Puppeteer coverage for stable SweetAlert modal selectors.
+- Added stable automation hooks to `li-modal` and `LiSimpleDialogComponent` overlays, including root/body/footer/button/input/validation selectors for browser automation.
 
 ## 1.0.0-dev.31
 

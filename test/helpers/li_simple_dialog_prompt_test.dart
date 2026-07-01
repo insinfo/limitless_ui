@@ -25,7 +25,37 @@ void main() {
     final input = html.document.querySelector('.li-simple-dialog__input')
         as html.InputElement?;
     expect(input, isNotNull);
-    expect(input!.placeholder, 'release-2026');
+    expect(
+      html.document
+          .querySelector('[data-label="li_simple_dialog_root"]')
+          ?.getAttribute('data-open'),
+      'true',
+    );
+    expect(
+      html.document
+          .querySelector('[data-label="li_simple_dialog_modal"]')
+          ?.getAttribute('data-value'),
+      'prompt',
+    );
+    expect(
+      html.document.querySelector('[data-label="li_simple_dialog_body"]'),
+      isNotNull,
+    );
+    expect(input!.getAttribute('data-label'), 'li_simple_dialog_input');
+    expect(input.getAttribute('data-value'), 'text');
+    expect(
+      html.document.querySelector('[data-label="li_simple_dialog_confirm"]'),
+      isNotNull,
+    );
+    expect(
+      html.document.querySelector('[data-label="li_simple_dialog_cancel"]'),
+      isNotNull,
+    );
+    expect(
+      html.document.querySelector('[data-label="li_simple_dialog_backdrop"]'),
+      isNotNull,
+    );
+    expect(input.placeholder, 'release-2026');
     input.value = 'release-2026';
 
     _click('.BtnOk');
@@ -77,6 +107,8 @@ void main() {
         as html.TextAreaElement?;
     expect(textarea, isNotNull);
     expect(textarea!.classes.contains('correction-reason'), isTrue);
+    expect(textarea.getAttribute('data-label'), 'li_simple_dialog_input');
+    expect(textarea.getAttribute('data-value'), 'textarea');
     expect(textarea.rows, 6);
     expect(textarea.maxLength, 240);
     expect(textarea.attributes['aria-label'], 'Correction reason');
@@ -86,7 +118,9 @@ void main() {
     await _settle();
     expect(textarea.classes.contains('is-invalid'), isTrue);
     expect(
-      html.document.querySelector('.li-simple-dialog__validation')!.text,
+      html.document
+          .querySelector('[data-label="li_simple_dialog_validation"]')!
+          .text,
       contains('Reason is required'),
     );
 
@@ -95,6 +129,50 @@ void main() {
     final result = await future;
 
     expect(result, 'Wrong dispatch selected.');
+    expect(html.document.querySelector('.li-simple-dialog-root'), isNull);
+  });
+
+  test('showConfirm exposes stable automation hooks', () async {
+    final future = LiSimpleDialogComponent.showConfirm(
+      'Publish changes?',
+      title: 'Publish',
+      cancelButtonText: 'Review',
+      confirmButtonText: 'Publish',
+    );
+
+    await _settle();
+
+    expect(
+      html.document
+          .querySelector('[data-label="li_simple_dialog_root"]')
+          ?.getAttribute('data-value'),
+      'confirm',
+    );
+    expect(
+      html.document
+          .querySelector('[data-label="li_simple_dialog_modal"]')
+          ?.getAttribute('data-open'),
+      'true',
+    );
+    expect(
+      html.document.querySelector('[data-label="li_simple_dialog_title"]'),
+      isNotNull,
+    );
+    expect(
+      html.document.querySelector(
+          '[data-label="li_simple_dialog_cancel"][data-value="confirm"]'),
+      isNotNull,
+    );
+    expect(
+      html.document.querySelector(
+          '[data-label="li_simple_dialog_confirm"][data-value="confirm"]'),
+      isNotNull,
+    );
+
+    _click('[data-label="li_simple_dialog_confirm"]');
+    final result = await future;
+
+    expect(result, isTrue);
     expect(html.document.querySelector('.li-simple-dialog-root'), isNull);
   });
 }

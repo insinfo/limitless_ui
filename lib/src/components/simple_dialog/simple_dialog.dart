@@ -107,31 +107,38 @@ class LiSimpleDialogComponent {
   }) {
     final backdropZIndex = _backdropZIndex(zIndex);
     final template = '''
-      <div class="modal fade show li-simple-dialog__modal" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;z-index:$zIndex;" aria-modal="true" role="dialog" data-li-simple-dialog="true">
-        <div class="modal-dialog">
-            <div class="modal-content">                
-                <div class="modal-header bg-${getColor(dialogColor)} text-white border-0">
-                  <h6 class="modal-title">$title</h6>
+      <div class="modal fade show li-simple-dialog__modal" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;z-index:$zIndex;" aria-modal="true" role="dialog" data-li-simple-dialog="true" data-label="li_simple_dialog_modal" data-value="alert" data-open="true">
+        <div class="modal-dialog" data-label="li_simple_dialog_dialog" data-value="alert">
+            <div class="modal-content" data-label="li_simple_dialog_content" data-value="alert">
+                <div class="modal-header bg-${getColor(dialogColor)} text-white border-0" data-label="li_simple_dialog_header" data-value="alert">
+                  <h6 class="modal-title" data-label="li_simple_dialog_title" data-value="alert">$title</h6>
                   <!--<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>-->
 							  </div>
-                <div class="modal-body">
+                <div class="modal-body" data-label="li_simple_dialog_body" data-value="alert">
                     $message                   
                 </div>
-                <div class="modal-footer">                    
-                    <button type="button" class="BtnOk btn btn-primary" data-bs-dismiss="modal">OK</button>
+                <div class="modal-footer" data-label="li_simple_dialog_footer" data-value="alert">
+                    <button type="button" class="BtnOk btn btn-primary" data-bs-dismiss="modal" data-label="li_simple_dialog_confirm" data-value="alert">OK</button>
                 </div>
             </div>
         </div>
     </div>
-        <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;"></div>
+        <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_simple_dialog_backdrop" data-value="alert" data-open="true"></div>
     ''';
     var root = html.DivElement();
     root.classes.add('li-simple-dialog-root');
+    root
+      ..setAttribute('data-label', 'li_simple_dialog_root')
+      ..setAttribute('data-value', 'alert')
+      ..setAttribute('data-open', 'true');
     html.document.querySelector('body')?.append(root);
     // ignore: unsafe_html
     root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
     if (subMessage != null) {
       var btnEle = html.DivElement();
+      btnEle
+        ..setAttribute('data-label', 'li_simple_dialog_detail_toggle')
+        ..setAttribute('data-value', 'alert');
       btnEle.attributes['style'] =
           'padding-top:15px;padding-bottom:5px;cursor: pointer;';
       var t =
@@ -142,6 +149,9 @@ class LiSimpleDialogComponent {
 
       var container = html.DivElement();
       container.classes.add('modal-detail');
+      container
+        ..setAttribute('data-label', 'li_simple_dialog_detail')
+        ..setAttribute('data-value', 'alert');
       root.querySelector('.modal-body')?.append(container);
 
       btnEle.onClick.listen((e) {
@@ -196,28 +206,32 @@ class LiSimpleDialogComponent {
     final comp = Completer<bool>();
     final backdropZIndex = _backdropZIndex(zIndex);
     final template = '''
-      <div class="modal fade show li-simple-dialog__modal" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;z-index:$zIndex;" aria-modal="true" role="dialog" data-li-simple-dialog="true">
-        <div class="modal-dialog">
-            <div class="modal-content">                
-                <div class="modal-header bg-${getColor(dialogColor)} text-white border-0">
-                  <h6 class="modal-title">$title</h6>
+      <div class="modal fade show li-simple-dialog__modal" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;z-index:$zIndex;" aria-modal="true" role="dialog" data-li-simple-dialog="true" data-label="li_simple_dialog_modal" data-value="confirm" data-open="true">
+        <div class="modal-dialog" data-label="li_simple_dialog_dialog" data-value="confirm">
+            <div class="modal-content" data-label="li_simple_dialog_content" data-value="confirm">
+                <div class="modal-header bg-${getColor(dialogColor)} text-white border-0" data-label="li_simple_dialog_header" data-value="confirm">
+                  <h6 class="modal-title" data-label="li_simple_dialog_title" data-value="confirm">$title</h6>
                   <!--<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>-->
 							  </div>
-                <div class="modal-body">
+                <div class="modal-body" data-label="li_simple_dialog_body" data-value="confirm">
                     $message
                     ${subMessage != null ? '<div class="mt-2 text-muted">$subMessage</div>' : ''}                   
                 </div>
-                <div class="modal-footer"> 
-                  <button data-bb-handler="cancel" type="button" class="BtnCancel btn btn-primary">$cancelButtonText</button>
-                  <button data-bb-handler="confirm" type="button" class="BtnOk btn btn-danger">$confirmButtonText</button>
+                <div class="modal-footer" data-label="li_simple_dialog_footer" data-value="confirm">
+                  <button data-bb-handler="cancel" type="button" class="BtnCancel btn btn-primary" data-label="li_simple_dialog_cancel" data-value="confirm">$cancelButtonText</button>
+                  <button data-bb-handler="confirm" type="button" class="BtnOk btn btn-danger" data-label="li_simple_dialog_confirm" data-value="confirm">$confirmButtonText</button>
                </div>
             </div>
         </div>
     </div>
-        <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;"></div>
+        <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_simple_dialog_backdrop" data-value="confirm" data-open="true"></div>
     ''';
     final root = html.DivElement();
     root.classes.add('li-simple-dialog-root');
+    root
+      ..setAttribute('data-label', 'li_simple_dialog_root')
+      ..setAttribute('data-value', 'confirm')
+      ..setAttribute('data-open', 'true');
     html.document.querySelector('body')?.append(root);
     // ignore: unsafe_html
     root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
@@ -273,30 +287,34 @@ class LiSimpleDialogComponent {
     final escapedCancelButtonText = _escapeHtml(cancelButtonText);
     final escapedConfirmButtonText = _escapeHtml(confirmButtonText);
     final template = '''
-      <div class="modal fade show li-simple-dialog__modal" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;z-index:$zIndex;" aria-modal="true" role="dialog" data-li-simple-dialog="true">
-        <div class="modal-dialog">
-            <div class="modal-content">                
-                <div class="modal-header bg-${getColor(dialogColor)} text-white border-0">
-                  <h6 class="modal-title">$escapedTitle</h6>
+      <div class="modal fade show li-simple-dialog__modal" tabindex="-1" role="dialog" style="padding-left: 0px; display: block;overflow: auto;z-index:$zIndex;" aria-modal="true" role="dialog" data-li-simple-dialog="true" data-label="li_simple_dialog_modal" data-value="prompt" data-open="true">
+        <div class="modal-dialog" data-label="li_simple_dialog_dialog" data-value="prompt">
+            <div class="modal-content" data-label="li_simple_dialog_content" data-value="prompt">
+                <div class="modal-header bg-${getColor(dialogColor)} text-white border-0" data-label="li_simple_dialog_header" data-value="prompt">
+                  <h6 class="modal-title" data-label="li_simple_dialog_title" data-value="prompt">$escapedTitle</h6>
 							  </div>
-                <div class="modal-body">
+                <div class="modal-body" data-label="li_simple_dialog_body" data-value="prompt">
                     <div class="mb-3">$escapedMessage</div>
                     ${escapedSubMessage != null ? '<div class="mb-3 text-muted">$escapedSubMessage</div>' : ''}
-                    ${escapedInputLabel != null && escapedInputLabel.trim().isNotEmpty ? '<label class="form-label" for="$inputId">$escapedInputLabel</label>' : ''}
+                    ${escapedInputLabel != null && escapedInputLabel.trim().isNotEmpty ? '<label class="form-label" for="$inputId" data-label="li_simple_dialog_input_label" data-value="prompt">$escapedInputLabel</label>' : ''}
                     ${_promptInputTemplate(inputType, inputId)}
-                    <div class="invalid-feedback li-simple-dialog__validation" style="display:none;"></div>
+                    <div class="invalid-feedback li-simple-dialog__validation" style="display:none;" data-label="li_simple_dialog_validation" data-value="prompt"></div>
                 </div>
-                <div class="modal-footer"> 
-                  <button data-bb-handler="cancel" type="button" class="BtnCancel btn btn-light">$escapedCancelButtonText</button>
-                  <button data-bb-handler="confirm" type="button" class="BtnOk btn btn-primary">$escapedConfirmButtonText</button>
+                <div class="modal-footer" data-label="li_simple_dialog_footer" data-value="prompt">
+                  <button data-bb-handler="cancel" type="button" class="BtnCancel btn btn-light" data-label="li_simple_dialog_cancel" data-value="prompt">$escapedCancelButtonText</button>
+                  <button data-bb-handler="confirm" type="button" class="BtnOk btn btn-primary" data-label="li_simple_dialog_confirm" data-value="prompt">$escapedConfirmButtonText</button>
                </div>
             </div>
         </div>
     </div>
-        <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;"></div>
+        <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_simple_dialog_backdrop" data-value="prompt" data-open="true"></div>
     ''';
     final root = html.DivElement();
     root.classes.add('li-simple-dialog-root');
+    root
+      ..setAttribute('data-label', 'li_simple_dialog_root')
+      ..setAttribute('data-value', 'prompt')
+      ..setAttribute('data-open', 'true');
     html.document.querySelector('body')?.append(root);
     // ignore: unsafe_html
     root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
@@ -383,9 +401,9 @@ class LiSimpleDialogComponent {
   ) {
     switch (inputType) {
       case LiSimpleDialogInputType.textarea:
-        return '<textarea id="$inputId" class="form-control li-simple-dialog__input li-simple-dialog__textarea" style="min-height:7rem;resize:vertical;"></textarea>';
+        return '<textarea id="$inputId" class="form-control li-simple-dialog__input li-simple-dialog__textarea" style="min-height:7rem;resize:vertical;" data-label="li_simple_dialog_input" data-value="textarea"></textarea>';
       case LiSimpleDialogInputType.text:
-        return '<input id="$inputId" type="text" class="form-control li-simple-dialog__input">';
+        return '<input id="$inputId" type="text" class="form-control li-simple-dialog__input" data-label="li_simple_dialog_input" data-value="text">';
     }
   }
 

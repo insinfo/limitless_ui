@@ -444,6 +444,7 @@ class SweetAlert {
       ..classes.addAll(<String>['swal2-container', _positionClass(position)])
       ..setAttribute('data-label', 'li_sweet_alert_root')
       ..setAttribute('data-value', alertId.toString())
+      ..setAttribute('data-open', 'true')
       ..setAttribute('data-toast', toast ? 'true' : 'false');
     root.classes.addAll(_classNames(containerClass));
     root.style.zIndex = '3000';
@@ -467,6 +468,7 @@ class SweetAlert {
       ..attributes['aria-live'] = toast ? 'polite' : 'assertive'
       ..setAttribute('data-label', 'li_sweet_alert_popup')
       ..setAttribute('data-value', alertId.toString())
+      ..setAttribute('data-open', 'true')
       ..setAttribute('data-toast', toast ? 'true' : 'false');
     if (!toast) {
       popup.attributes['aria-modal'] = 'true';

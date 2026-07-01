@@ -112,6 +112,24 @@ Future<void> waitForSelectorCountAtLeast(
   );
 }
 
+Future<void> waitForSelectorGone(
+  Page page,
+  String selector, {
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  final stopwatch = Stopwatch()..start();
+  while (stopwatch.elapsed < timeout) {
+    if (!await hasSelector(page, selector, tolerateNavigation: true)) {
+      return;
+    }
+    await aguarde(100);
+  }
+
+  throw TimeoutException(
+    'Seletor ainda presente apos ${timeout.inSeconds}s: $selector. URL atual: ${page.url}',
+  );
+}
+
 Future<bool> hasSelector(
   Page page,
   String selector, {

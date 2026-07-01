@@ -92,7 +92,7 @@ void main() {
 
     final modalRoot = _modalRootByTitle('Helper modal');
     final modalBackdrop =
-      html.document.body!.querySelector('.li-modal-backdrop');
+        html.document.body!.querySelector('.li-modal-backdrop');
     expect(modalRoot, isNotNull);
     expect(modalBackdrop, isNotNull);
 
@@ -102,19 +102,24 @@ void main() {
     await _settle(fixture);
 
     final helperDialog =
-      html.document.body!.querySelector('.li-simple-dialog__modal');
+        html.document.body!.querySelector('.li-simple-dialog__modal');
     final helperBackdrop =
-      html.document.body!.querySelector('.li-simple-dialog__backdrop');
+        html.document.body!.querySelector('.li-simple-dialog__backdrop');
 
     expect(helperDialog, isNotNull);
     expect(helperBackdrop, isNotNull);
-    expect(helperDialog!.style.zIndex, '${LiSimpleDialogComponent.defaultZIndex}');
+    expect(helperDialog!.getAttribute('data-label'), 'li_simple_dialog_modal');
+    expect(helperDialog.getAttribute('data-open'), 'true');
+    expect(helperBackdrop!.getAttribute('data-label'),
+        'li_simple_dialog_backdrop');
+    expect(
+        helperDialog.style.zIndex, '${LiSimpleDialogComponent.defaultZIndex}');
     expect(
       int.parse(helperDialog.style.zIndex),
       greaterThan(int.parse(modalRoot!.style.zIndex)),
     );
     expect(
-      int.parse(helperBackdrop!.style.zIndex),
+      int.parse(helperBackdrop.style.zIndex),
       greaterThan(int.parse(modalBackdrop!.style.zIndex)),
     );
 
@@ -123,7 +128,8 @@ void main() {
     okButton!.dispatchEvent(html.MouseEvent('click', canBubble: true));
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('.li-simple-dialog__modal'), isNull);
+    expect(
+        html.document.body!.querySelector('.li-simple-dialog__modal'), isNull);
   });
 
   test('LiSimpleLoading showOnBody fica acima de li-modal', () async {
@@ -185,7 +191,8 @@ void main() {
     );
 
     expect(overlay, isNotNull);
-    expect(overlay!.style.zIndex, '${LiNarratedFullScreenLoading.defaultZIndex}');
+    expect(
+        overlay!.style.zIndex, '${LiNarratedFullScreenLoading.defaultZIndex}');
     expect(
       int.parse(overlay.style.zIndex),
       greaterThan(int.parse(modalRoot!.style.zIndex)),
@@ -203,7 +210,8 @@ void main() {
     );
   });
 
-  test('LiNarratedFullScreenLoading updateMessage com stopRotation congela a mensagem',
+  test(
+      'LiNarratedFullScreenLoading updateMessage com stopRotation congela a mensagem',
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
@@ -247,7 +255,8 @@ void main() {
     );
   });
 
-  test('LiSimpleLoading show(target:) ancora overlay dentro do modal', () async {
+  test('LiSimpleLoading show(target:) ancora overlay dentro do modal',
+      () async {
     final fixture = await testBed.create();
     await _settle(fixture);
 

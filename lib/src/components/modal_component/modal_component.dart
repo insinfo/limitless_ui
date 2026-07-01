@@ -254,6 +254,8 @@ class LiModalComponent implements OnInit, OnDestroy {
 
   String get modalTitleId => _modalTitleId;
 
+  String get modalAutomationValue => _modalTitleId;
+
   bool get _isTopmostModal =>
       _openModalStack.isNotEmpty && identical(_openModalStack.last, this);
 
@@ -395,6 +397,9 @@ class LiModalComponent implements OnInit, OnDestroy {
     backdropDiv.remove();
     backdropDiv = DivElement()
       ..classes.add('li-modal-backdrop')
+      ..setAttribute('data-label', 'li_modal_backdrop')
+      ..setAttribute('data-value', modalAutomationValue)
+      ..setAttribute('data-open', 'true')
       ..style.position = 'fixed'
       ..style.top = '0'
       ..style.left = '0'
@@ -411,6 +416,7 @@ class LiModalComponent implements OnInit, OnDestroy {
 
     modalRootElement?.style.display = 'block';
     modalRootElement?.attributes['data-status'] = 'open';
+    modalRootElement?.attributes['data-open'] = 'true';
     _syncBodyScrollLock();
     _bindEscapeListener();
     _focusModal();
@@ -435,6 +441,7 @@ class LiModalComponent implements OnInit, OnDestroy {
     backdropDiv.remove();
     modalRootElement?.style.display = 'none';
     modalRootElement?.attributes['data-status'] = 'close';
+    modalRootElement?.attributes['data-open'] = 'false';
     showError = false;
     _changeDetectorRef.markForCheck();
     _restoreFocus();
