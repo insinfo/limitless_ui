@@ -61,14 +61,14 @@ List<dynamic> selectedChannels = <dynamic>['email', 'push'];''';
 </li-multi-select>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="li_multi_select_btn_toggle"]');
+await clickFirstVisible(page, '[data-label="li_ms_toggle"]');
 await clickFirstVisible(
   page,
-  '[data-label^="li_multi_select_item_"][data-value="sms"]',
+  '[data-label^="li_ms_item_"][data-value="sms"]',
 );
 await waitForAttributeMatching(
   page,
-  '[data-label="li_multi_select"]',
+  '[data-label="li_ms"]',
   'data-value',
   (value) => (value ?? '').split(',').contains('sms'),
 );''';

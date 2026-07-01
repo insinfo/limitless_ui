@@ -442,7 +442,7 @@ class SweetAlert {
     final root = html.DivElement()
       ..id = 'swal2-container-$alertId'
       ..classes.addAll(<String>['swal2-container', _positionClass(position)])
-      ..setAttribute('data-label', 'li_sweet_alert_root')
+      ..setAttribute('data-label', 'li_sa_root')
       ..setAttribute('data-value', alertId.toString())
       ..setAttribute('data-open', 'true')
       ..setAttribute('data-toast', toast ? 'true' : 'false');
@@ -466,7 +466,7 @@ class SweetAlert {
       ..style.display = 'grid'
       ..attributes['role'] = toast ? 'alert' : 'dialog'
       ..attributes['aria-live'] = toast ? 'polite' : 'assertive'
-      ..setAttribute('data-label', 'li_sweet_alert_popup')
+      ..setAttribute('data-label', 'li_sa_popup')
       ..setAttribute('data-value', alertId.toString())
       ..setAttribute('data-open', 'true')
       ..setAttribute('data-toast', toast ? 'true' : 'false');
@@ -506,7 +506,7 @@ class SweetAlert {
         ..type = 'button'
         ..classes.add('swal2-close')
         ..attributes['aria-label'] = 'Close'
-        ..setAttribute('data-label', 'li_sweet_alert_close')
+        ..setAttribute('data-label', 'li_sa_close')
         ..setAttribute('data-value', alertId.toString())
         ..text = '×';
       popup.append(closeButton);
@@ -536,7 +536,7 @@ class SweetAlert {
       final titleElement = html.HeadingElement.h2()
         ..classes.add('swal2-title')
         ..id = titleId
-        ..setAttribute('data-label', 'li_sweet_alert_title')
+        ..setAttribute('data-label', 'li_sa_title')
         ..setAttribute('data-value', alertId.toString())
         ..text = title;
       popup.append(titleElement);
@@ -545,7 +545,7 @@ class SweetAlert {
     final htmlContainer = html.DivElement()
       ..classes.add('swal2-html-container')
       ..id = htmlContainerId
-      ..setAttribute('data-label', 'li_sweet_alert_body')
+      ..setAttribute('data-label', 'li_sa_body')
       ..setAttribute('data-value', alertId.toString());
     if (message != null && message.trim().isNotEmpty) {
       final bodyText = html.DivElement()
@@ -569,7 +569,7 @@ class SweetAlert {
     html.Element? inputElement;
     final validationMessage = html.DivElement()
       ..classes.add('swal2-validation-message')
-      ..setAttribute('data-label', 'li_sweet_alert_validation')
+      ..setAttribute('data-label', 'li_sa_validation')
       ..setAttribute('data-value', alertId.toString())
       ..style.display = 'none';
     if (inputType != null) {
@@ -593,7 +593,7 @@ class SweetAlert {
     if (footer != null && footer.trim().isNotEmpty) {
       final footerElement = html.DivElement()
         ..classes.add('swal2-footer')
-        ..setAttribute('data-label', 'li_sweet_alert_footer')
+        ..setAttribute('data-label', 'li_sa_footer')
         ..setAttribute('data-value', alertId.toString())
         ..text = footer;
       popup.append(footerElement);
@@ -604,10 +604,10 @@ class SweetAlert {
     if (timer != null && timerProgressBar) {
       progressContainer = html.DivElement()
         ..classes.add('swal2-timer-progress-bar-container')
-        ..setAttribute('data-label', 'li_sweet_alert_progress');
+        ..setAttribute('data-label', 'li_sa_progress');
       progressBar = html.DivElement()
         ..classes.add('swal2-timer-progress-bar')
-        ..setAttribute('data-label', 'li_sweet_alert_progress_bar');
+        ..setAttribute('data-label', 'li_sa_progress_bar');
       progressBar.style.width = '100%';
       progressContainer.append(progressBar);
       popup.append(progressContainer);
@@ -616,11 +616,11 @@ class SweetAlert {
     if (showConfirmButton || showCancelButton) {
       final actions = html.DivElement()
         ..classes.add('swal2-actions')
-        ..setAttribute('data-label', 'li_sweet_alert_actions')
+        ..setAttribute('data-label', 'li_sa_actions')
         ..setAttribute('data-value', alertId.toString());
       actions.append(html.DivElement()
         ..classes.add('swal2-loader')
-        ..setAttribute('data-label', 'li_sweet_alert_loader')
+        ..setAttribute('data-label', 'li_sa_loader')
         ..setAttribute('data-value', alertId.toString()));
       final buttons = <html.Element>[];
       if (showConfirmButton) {
@@ -636,7 +636,7 @@ class SweetAlert {
                 ..._classNames(confirmButtonClass),
               ],
             )
-            ..setAttribute('data-label', 'li_sweet_alert_confirm')
+            ..setAttribute('data-label', 'li_sa_confirm')
             ..setAttribute('data-value', alertId.toString())
             ..text = confirmButtonText,
         );
@@ -654,7 +654,7 @@ class SweetAlert {
                 ..._classNames(cancelButtonClass),
               ],
             )
-            ..setAttribute('data-label', 'li_sweet_alert_cancel')
+            ..setAttribute('data-label', 'li_sa_cancel')
             ..setAttribute('data-value', alertId.toString())
             ..text = cancelButtonText,
         );
@@ -697,7 +697,7 @@ class SweetAlert {
     final icon = html.DivElement()
       ..classes.addAll(
           <String>['swal2-icon', 'swal2-${_iconName(type)}', 'swal2-icon-show'])
-      ..setAttribute('data-label', 'li_sweet_alert_icon')
+      ..setAttribute('data-label', 'li_sa_icon')
       ..setAttribute('data-value', _iconName(type))
       ..style.display = 'flex';
 
@@ -758,7 +758,7 @@ class SweetAlert {
       case SweetAlertInputType.select:
         final select = html.SelectElement()
           ..classes.add('swal2-select')
-          ..setAttribute('data-label', 'li_sweet_alert_input')
+          ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
           ..style.display = 'block';
         final placeholder = inputPlaceholder?.trim();
@@ -766,7 +766,7 @@ class SweetAlert {
           select.append(
             html.OptionElement()
               ..value = ''
-              ..setAttribute('data-label', 'li_sweet_alert_input_option')
+              ..setAttribute('data-label', 'li_sa_input_option')
               ..setAttribute('data-value', '')
               ..text = placeholder
               ..disabled = true
@@ -778,7 +778,7 @@ class SweetAlert {
           select.append(
             html.OptionElement()
               ..value = entry.key
-              ..setAttribute('data-label', 'li_sweet_alert_input_option')
+              ..setAttribute('data-label', 'li_sa_input_option')
               ..setAttribute('data-value', entry.key)
               ..text = entry.value
               ..selected = entry.key == (inputValue ?? ''),
@@ -789,7 +789,7 @@ class SweetAlert {
       case SweetAlertInputType.radio:
         final container = html.DivElement()
           ..classes.add('swal2-radio')
-          ..setAttribute('data-label', 'li_sweet_alert_input')
+          ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
           ..style.display = 'flex'
           ..style.flexDirection = 'column';
@@ -801,12 +801,12 @@ class SweetAlert {
             in (inputOptions ?? const <String, String>{}).entries) {
           final label = html.LabelElement()
             ..classes.add('swal2-radio-label')
-            ..setAttribute('data-label', 'li_sweet_alert_input_radio_label')
+            ..setAttribute('data-label', 'li_sa_input_radio_label')
             ..setAttribute('data-value', entry.key);
           final input = html.RadioButtonInputElement()
             ..name = 'swal2-radio'
             ..value = entry.key
-            ..setAttribute('data-label', 'li_sweet_alert_input_radio')
+            ..setAttribute('data-label', 'li_sa_input_radio')
             ..setAttribute('data-value', entry.key)
             ..checked = entry.key == resolvedValue;
           label
@@ -818,13 +818,13 @@ class SweetAlert {
         return container;
       case SweetAlertInputType.checkbox:
         final checkbox = html.CheckboxInputElement()
-          ..setAttribute('data-label', 'li_sweet_alert_input_checkbox')
+          ..setAttribute('data-label', 'li_sa_input_checkbox')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
           ..checked =
               inputChecked || (inputValue ?? '').toLowerCase() == 'true';
         final label = html.LabelElement()
           ..classes.add('swal2-checkbox')
-          ..setAttribute('data-label', 'li_sweet_alert_input')
+          ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
           ..style.display = 'flex'
           ..style.alignItems = 'center'
@@ -838,7 +838,7 @@ class SweetAlert {
       case SweetAlertInputType.range:
         final range = html.InputElement()
           ..classes.add('swal2-range')
-          ..setAttribute('data-label', 'li_sweet_alert_input')
+          ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
           ..style.display = 'block'
           ..type = 'range'
@@ -858,7 +858,7 @@ class SweetAlert {
       case SweetAlertInputType.textarea:
         final textarea = html.TextAreaElement()
           ..classes.addAll(<String>['swal2-textarea', 'form-control'])
-          ..setAttribute('data-label', 'li_sweet_alert_input')
+          ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
           ..style.display = 'block'
           ..style.width = '100%'
@@ -877,7 +877,7 @@ class SweetAlert {
       case SweetAlertInputType.number:
         final input = html.InputElement()
           ..classes.add('swal2-input')
-          ..setAttribute('data-label', 'li_sweet_alert_input')
+          ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
           ..style.display = 'block'
           ..type = _inputTypeName(inputType)
@@ -1030,7 +1030,7 @@ class SweetAlert {
   }) {
     return html.ImageElement(src: imageUrl)
       ..classes.add('swal2-image')
-      ..setAttribute('data-label', 'li_sweet_alert_image')
+      ..setAttribute('data-label', 'li_sa_image')
       ..setAttribute('data-value', imageUrl)
       ..alt = alt
       ..style.display = 'block'

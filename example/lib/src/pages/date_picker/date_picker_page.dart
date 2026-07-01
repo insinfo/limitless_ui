@@ -48,13 +48,13 @@ class DatePickerPageComponent {
 </li-date-picker>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="li_date_picker_trigger"]');
-await clickFirstVisible(page, '[data-label="li_date_picker_next"]');
+await clickFirstVisible(page, '[data-label="li_dp_trigger"]');
+await clickFirstVisible(page, '[data-label="li_dp_next"]');
 await clickFirstVisible(
   page,
-  '[data-label="li_date_picker_day"].available:not(.off)',
+  '[data-label="li_dp_day"].available:not(.off)',
 );
-await clickFirstVisible(page, '[data-label="li_date_picker_clear_trigger"]');''';
+await clickFirstVisible(page, '[data-label="li_dp_clear_trigger"]');''';
 
   static const String customTriggerSnippet = '''
 <li-date-picker [(ngModel)]="badgeDate">

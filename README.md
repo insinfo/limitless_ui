@@ -404,7 +404,7 @@ The trigger context is stable per component instance and exposes the current dis
 
 Selection-oriented controls also render stable browser automation hooks:
 
-- `data-label` identifies the component part, for example `custom_select_btn_toggle`, `li_multi_select_item_*`, `li_datatable_select_modal_apply`, `li_date_picker_day`, or `li_rating_star_4`.
+- `data-label` identifies the component part, for example `li_select_toggle`, `li_ms_item_*`, `li_dts_apply`, `li_dp_day`, or `li_rate_star_4`.
 - `data-value` exposes the current or option value where that value is useful for tests.
 - state attributes such as `data-open`, `data-current-value`, and `aria-expanded` are available on controls where open/selected state matters.
 
@@ -428,14 +428,14 @@ application. Use `ngControl`/`ngModel` for AngularDart form registration and
 ```
 
 ```dart
-await clickFirstVisible(page, '[data-label="custom_select_btn_toggle"]');
+await clickFirstVisible(page, '[data-label="li_select_toggle"]');
 await clickFirstVisible(
   page,
-  '[data-label^="custom_select_item_"][data-value="approved"]',
+  '[data-label^="li_select_item_"][data-value="approved"]',
 );
 await waitForAttributeMatching(
   page,
-  '[data-label="custom_select"]',
+  '[data-label="li_select"]',
   'data-value',
   (value) => value == 'approved',
 );
@@ -443,27 +443,27 @@ await waitForAttributeMatching(
 
 Dialog overlays expose the same contract for browser automation:
 
-- SweetAlert: wait for `li_sweet_alert_root`/`li_sweet_alert_popup` with
-  `data-open="true"`, then target `li_sweet_alert_confirm`,
-  `li_sweet_alert_cancel`, `li_sweet_alert_close`, `li_sweet_alert_input`,
-  `li_sweet_alert_validation`, and `li_sweet_alert_input_option`.
-- `li-modal`: wait for `[data-label="li_modal"][data-open="true"]`, then
-  target parts such as `li_modal_dialog`, `li_modal_content`,
-  `li_modal_header`, `li_modal_body`, `li_modal_footer`, `li_modal_close`,
-  and `li_modal_backdrop`.
-- SimpleDialog helpers: wait for `li_simple_dialog_root` or
-  `li_simple_dialog_modal`, then target `li_simple_dialog_confirm`,
-  `li_simple_dialog_cancel`, `li_simple_dialog_input`, and
-  `li_simple_dialog_validation`.
+- SweetAlert: wait for `li_sa_root`/`li_sa_popup` with
+  `data-open="true"`, then target `li_sa_confirm`,
+  `li_sa_cancel`, `li_sa_close`, `li_sa_input`,
+  `li_sa_validation`, and `li_sa_input_option`.
+- `li-modal`: wait for `[data-label="li_mdl"][data-open="true"]`, then
+  target parts such as `li_mdl_dialog`, `li_mdl_content`,
+  `li_mdl_header`, `li_mdl_body`, `li_mdl_footer`, `li_mdl_close`,
+  and `li_mdl_backdrop`.
+- SimpleDialog helpers: wait for `li_sd_root` or
+  `li_sd_modal`, then target `li_sd_confirm`,
+  `li_sd_cancel`, `li_sd_input`, and
+  `li_sd_validation`.
 
 ```dart
-await clickFirstVisible(page, '[data-label="li_sweet_alert_confirm"]');
+await clickFirstVisible(page, '[data-label="li_sa_confirm"]');
 await waitForSelectorMatching(
   page,
-  '[data-label="li_sweet_alert_popup"][data-type="question"][data-open="true"]',
+  '[data-label="li_sa_popup"][data-type="question"][data-open="true"]',
 );
 await page.type(
-  '[data-label="li_sweet_alert_input"][data-value="text"]',
+  '[data-label="li_sa_input"][data-value="text"]',
   'batch-42',
 );
 ```

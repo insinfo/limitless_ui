@@ -1,3 +1,8 @@
+## 1.0.0-dev.33
+
+- BREAKING CHANGE: shortened browser automation `data-label` hooks and standardized them with `li_` prefixes, removing the old names without aliases. Examples: `custom_select_*` -> `li_select_*`, `datatable_*` -> `li_dt_*`, `li_datatable_select_*` -> `li_dts_*`, `li_sweet_alert_*` -> `li_sa_*`, `li_simple_dialog_*` -> `li_sd_*`, and `li_modal_*` -> `li_mdl_*`.
+- Shortened additional high-use automation hooks for selection controls and pickers, including `li_multi_select_*` -> `li_ms_*`, `li_date_picker_*` -> `li_dp_*`, `li_date_range_picker_*` -> `li_drp_*`, `li_time_picker_*` -> `li_tp_*`, `li_treeview_select_*` -> `li_ts_*`, `li_dropdown_menu_*` -> `li_dm_*`, `li_color_picker_*` -> `li_cp_*`, `li_typeahead_*` -> `li_ta_*`, `li_tag_filter_*` -> `li_tf_*`, `li_token_field_*` -> `li_token_*`, `li_rating_*` -> `li_rate_*`, and `li_tabs_*` -> `li_tab_*`.
+
 ## 1.0.0-dev.32
 
 - Added optional `name` input support across AngularDart form components, preserving the provided value and reflecting it on their interactive DOM elements to improve screen reader metadata and browser automation selectors.

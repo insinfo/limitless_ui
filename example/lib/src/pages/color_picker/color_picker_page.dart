@@ -49,12 +49,12 @@ class ColorPickerPageComponent {
 </li-color-picker>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="li_color_picker_trigger"]');
-await clickVisibleAt(page, '[data-label="li_color_picker_palette_swatch"]', 4);
-await clickFirstVisible(page, '[data-label="li_color_picker_choose"]');
+await clickFirstVisible(page, '[data-label="li_cp_trigger"]');
+await clickVisibleAt(page, '[data-label="li_cp_swatch"]', 4);
+await clickFirstVisible(page, '[data-label="li_cp_choose"]');
 await waitForAttributeMatching(
   page,
-  '[data-label="li_color_picker"]',
+  '[data-label="li_cp"]',
   'data-value',
   (value) => value != null && value.isNotEmpty,
 );''';

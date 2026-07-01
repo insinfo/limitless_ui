@@ -370,38 +370,37 @@ void main() {
     expect(fixture.text, contains('Ana'));
     expect(fixture.text, contains('Bruno'));
     expect(
-      fixture.rootElement.querySelector('[data-label="datatable"]'),
+      fixture.rootElement.querySelector('[data-label="li_dt"]'),
       isNotNull,
     );
     expect(
-      fixture.rootElement.querySelector('[data-label="datatable_header"]'),
+      fixture.rootElement.querySelector('[data-label="li_dt_head"]'),
       isNotNull,
     );
     expect(
-      fixture.rootElement
-          .querySelector('[data-label="datatable_input_search"]'),
+      fixture.rootElement.querySelector('[data-label="li_dt_search"]'),
       isNotNull,
     );
     expect(
       fixture.rootElement.querySelector(
-        '[data-label="datatable_header_col_0"][data-value="nome"]',
+        '[data-label="li_dt_hcol_0"][data-value="nome"]',
       ),
       isNotNull,
     );
     expect(
       fixture.rootElement.querySelector(
-        '[data-label="datatable_row_0"][data-value="0"]',
+        '[data-label="li_dt_row_0"][data-value="0"]',
       ),
       isNotNull,
     );
     expect(
       fixture.rootElement.querySelector(
-        '[data-label="datatable_col_0"][data-value="nome"]',
+        '[data-label="li_dt_col_0"][data-value="nome"]',
       ),
       isNotNull,
     );
     expect(
-      fixture.rootElement.querySelector('[data-label="datatable_footer"]'),
+      fixture.rootElement.querySelector('[data-label="li_dt_foot"]'),
       isNotNull,
     );
   });
@@ -1340,7 +1339,7 @@ void main() {
     ) as TableCellElement?;
 
     expect(toggleCell, isNotNull);
-    expect(toggleCell!.getAttribute('data-label'), 'datatable_col_0');
+    expect(toggleCell!.getAttribute('data-label'), 'li_dt_col_0');
     expect(host.table!.renderedRows.first.responsiveControlColumnKey, 'nome');
   });
 
@@ -2007,7 +2006,7 @@ void main() {
       'thead th[data-key="nome"]',
     ) as TableCellElement?;
     final dataCell = fixture.rootElement.querySelector(
-      'tbody tr td[data-label="datatable_col_0"]',
+      'tbody tr td[data-label="li_dt_col_0"]',
     ) as TableCellElement?;
 
     expect(headerCell, isNotNull);
@@ -2304,7 +2303,7 @@ void main() {
       'thead th[data-key="acoes"]',
     ) as TableCellElement?;
     final dataCell = fixture.rootElement.querySelector(
-      'tbody tr td[data-label="datatable_col_4"]',
+      'tbody tr td[data-label="li_dt_col_4"]',
     ) as TableCellElement?;
 
     expect(headerCell, isNotNull);
@@ -2416,7 +2415,7 @@ void main() {
       'thead th[data-key="acoes"]',
     ) as TableCellElement?;
     final actionCell = fixture.rootElement.querySelector(
-      'tbody tr td[data-label="datatable_col_1"]',
+      'tbody tr td[data-label="li_dt_col_1"]',
     ) as TableCellElement?;
 
     expect(actionHeader, isNotNull);
@@ -2516,10 +2515,10 @@ void main() {
 
     final host = fixture.assertOnlyInstance;
     final trueCell = fixture.rootElement.querySelector(
-      'tbody tr[data-index="0"] td[data-label="datatable_col_1"]',
+      'tbody tr[data-index="0"] td[data-label="li_dt_col_1"]',
     ) as TableCellElement?;
     final falseCell = fixture.rootElement.querySelector(
-      'tbody tr[data-index="1"] td[data-label="datatable_col_1"]',
+      'tbody tr[data-index="1"] td[data-label="li_dt_col_1"]',
     ) as TableCellElement?;
 
     expect(host.table!.isSaliPagedPerformanceProfile, isTrue);

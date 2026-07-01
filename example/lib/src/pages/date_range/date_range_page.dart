@@ -66,14 +66,14 @@ class DateRangePageComponent {
 </li-date-range-picker>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="li_date_range_picker_trigger"]');
-await clickFirstVisible(page, '[data-label="li_date_range_picker_left_next"]');
+await clickFirstVisible(page, '[data-label="li_drp_trigger"]');
+await clickFirstVisible(page, '[data-label="li_drp_left_next"]');
 await clickVisibleAt(
   page,
-  '[data-label="li_date_range_picker_day"][data-calendar="left"].available:not(.off)',
+  '[data-label="li_drp_day"][data-calendar="left"].available:not(.off)',
   0,
 );
-await clickFirstVisible(page, '[data-label="li_date_range_picker_apply"]');''';
+await clickFirstVisible(page, '[data-label="li_drp_apply"]');''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

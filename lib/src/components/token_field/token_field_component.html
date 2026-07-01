@@ -1,12 +1,12 @@
-<div [class]="resolvedContainerClass" [attr.data-label]="'li_token_field'" [attr.data-value]="tokens.join(',')" (click)="containerClickHandle()">
-    <div class="tokenfield-set" [attr.data-label]="'li_token_field_set'">
-        <ul [attr.data-label]="'li_token_field_tokens'">
+<div [class]="resolvedContainerClass" [attr.data-label]="'li_token'" [attr.data-value]="tokens.join(',')" (click)="containerClickHandle()">
+    <div class="tokenfield-set" [attr.data-label]="'li_token_set'">
+        <ul [attr.data-label]="'li_token_tokens'">
             <li class="tokenfield-set-item" *ngFor="let item of items; let idx = index" [class.selected]="item.selected"
-                [attr.data-label]="'li_token_field_token_' + idx.toString()"
+                [attr.data-label]="'li_token_item_' + idx.toString()"
                 [attr.data-value]="item.value"
                 (click)="toggleItemSelection(item, $event)">
                 <span class="item-label">{{ item.value }}</span>
-                <button *ngIf="showRemoveButton" type="button" class="item-remove" [attr.data-label]="'li_token_field_remove_' + idx.toString()" [disabled]="isDisabled" (click)="removeToken(item, $event)">
+                <button *ngIf="showRemoveButton" type="button" class="item-remove" [attr.data-label]="'li_token_remove_' + idx.toString()" [disabled]="isDisabled" (click)="removeToken(item, $event)">
                     ×
                 </button>
             </li>
@@ -14,13 +14,13 @@
     </div>
 
     <input #inputToken class="tokenfield-input li-token-field__input" type="text" [placeholder]="resolvedPlaceholder"
-        [attr.data-label]="'li_token_field_input'"
+        [attr.data-label]="'li_token_input'"
         [attr.name]="resolvedName"
         [disabled]="isDisabled" (focus)="onInputFocus()" (blur)="onInputBlur()"
         (keydown)="inputKeydownHandle($event)" (keyup)="inputKeyupHandle($event)"
         (keypress)="inputKeypressHandle($event)" (paste)="onPasteHandle($event)">
 
-    <div *ngIf="showActionMenu && hasActionMenuOptions" class="li-token-field__menu" [attr.data-label]="'li_token_field_menu'" (click)="$event.stopPropagation()">
+    <div *ngIf="showActionMenu && hasActionMenuOptions" class="li-token-field__menu" [attr.data-label]="'li_token_menu'" (click)="$event.stopPropagation()">
         <li-dropdown-menu [options]="actionMenuOptions" [showCaret]="false"
             [triggerClass]="actionMenuTriggerClass" [triggerIconClass]="actionMenuTriggerIconClass"
             menuClass="" (valueChange)="onActionSelected($event)">

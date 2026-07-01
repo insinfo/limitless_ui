@@ -1011,7 +1011,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
             .length;
     final legacyActionButtons = rootElement
         .querySelectorAll(
-            '.datatable-action-cell button, [data-label="datatable"] .btn-icon')
+            '.datatable-action-cell button, [data-label="li_dt"] .btn-icon')
         .length;
     final actionCells = rootElement
         .querySelectorAll(

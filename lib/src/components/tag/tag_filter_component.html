@@ -1,19 +1,19 @@
-<div class="li-tag-filter" [attr.data-label]="'li_tag_filter'" [attr.data-value]="selectedDataValue">
+<div class="li-tag-filter" [attr.data-label]="'li_tf'" [attr.data-value]="selectedDataValue">
     <button #dropdownButton type="button" [class]="resolvedButtonClass" role="combobox"
         aria-haspopup="listbox" [attr.aria-expanded]="dropdownOpen.toString()" [attr.aria-controls]="listboxId"
         [attr.name]="resolvedName"
-        [attr.data-label]="'li_tag_filter_btn_toggle'"
+        [attr.data-label]="'li_tf_toggle'"
         [disabled]="isDisabled" (click)="toggleDropdown()">
         <span *ngIf="!hasSelection" class="li-tag-filter__placeholder">{{ resolvedPlaceholder }}</span>
 
         <span *ngIf="hasSelection" class="li-tag-filter__selection" [class.li-tag-filter__selection--wrapped]="wrapSelectedBadges">
             <span *ngFor="let option of selectedOptions" class="badge rounded-pill li-tag-filter__selection-badge"
-                [attr.data-label]="'li_tag_filter_selected_badge'"
+                [attr.data-label]="'li_tf_selected_badge'"
                 [attr.data-value]="optionDataValue(option)"
                 [liCssStyle]="option.badgeStyle">
                 <span class="li-tag-filter__selection-label">{{ option.label }}</span>
                 <span *ngIf="showInlineRemove && !isDisabled" class="li-tag-filter__remove" role="button"
-                    [attr.data-label]="'li_tag_filter_inline_remove'"
+                    [attr.data-label]="'li_tf_inline_remove'"
                     [attr.aria-label]="resolvedClearButtonLabel" (click)="removeSelection(option, $event)">
                     <i class="ph ph-x"></i>
                 </span>
@@ -21,23 +21,23 @@
         </span>
 
         <span *ngIf="showClearButton && hasSelection && !isDisabled" class="dropdown-clear"
-            [attr.data-label]="'li_tag_filter_clear'"
+            [attr.data-label]="'li_tf_clear'"
             [attr.aria-label]="resolvedClearButtonLabel" role="button" (click)="clearSelectionFromUi($event)">
             <i class="ph ph-x"></i>
         </span>
     </button>
 
-    <div #dropdownContainer class="dropdown-menu li-tag-filter__panel" [class.li-tag-filter__panel--open]="dropdownOpen" [attr.data-label]="'li_tag_filter_panel'">
+    <div #dropdownContainer class="dropdown-menu li-tag-filter__panel" [class.li-tag-filter__panel--open]="dropdownOpen" [attr.data-label]="'li_tf_panel'">
         <div class="li-tag-filter__toolbar" *ngIf="searchable || showReloadButton">
             <button *ngIf="showReloadButton" type="button" class="btn btn-light btn-sm btn-icon rounded-pill"
-                [attr.data-label]="'li_tag_filter_reload'"
+                [attr.data-label]="'li_tf_reload'"
                 [attr.title]="resolvedReloadButtonLabel" (click)="requestReload($event)">
                 <i class="ph ph-arrows-clockwise"></i>
             </button>
 
             <div *ngIf="searchable" class="form-control-feedback form-control-feedback-start li-tag-filter__search">
                 <input #searchInput type="text" [class]="resolvedSearchInputClass" [placeholder]="resolvedSearchPlaceholder"
-                    [attr.data-label]="'li_tag_filter_input_search'"
+                    [attr.data-label]="'li_tf_input_search'"
                     (input)="onSearchInput($event.target.value)">
                 <div class="form-control-feedback-icon">
                     <i class="ph ph-magnifying-glass"></i>
@@ -45,10 +45,10 @@
             </div>
         </div>
 
-        <div class="li-tag-filter__list" [attr.id]="listboxId" [attr.data-label]="'li_tag_filter_options'" role="listbox" aria-multiselectable="true">
+        <div class="li-tag-filter__list" [attr.id]="listboxId" [attr.data-label]="'li_tf_options'" role="listbox" aria-multiselectable="true">
             <button type="button" *ngFor="let option of options; let index = index" class="dropdown-item li-tag-filter__option"
                 [attr.id]="optionId(index)" role="option" [hidden]="!option.visible"
-                [attr.data-label]="'li_tag_filter_option_' + index.toString()"
+                [attr.data-label]="'li_tf_option_' + index.toString()"
                 [attr.data-value]="optionDataValue(option)"
                 [attr.aria-selected]="option.selected.toString()" [disabled]="option.disabled"
                 (click)="toggleOptionFromUi(option, $event)">
@@ -59,13 +59,13 @@
                 </span>
             </button>
 
-            <div *ngIf="visibleOptionCount == 0" class="dropdown-item-text text-muted li-tag-filter__empty" [attr.data-label]="'li_tag_filter_empty'">
+            <div *ngIf="visibleOptionCount == 0" class="dropdown-item-text text-muted li-tag-filter__empty" [attr.data-label]="'li_tf_empty'">
                 {{ resolvedEmptyText }}
             </div>
         </div>
 
         <div *ngIf="showFooterClearAction && hasSelection" class="li-tag-filter__footer">
-            <button type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_tag_filter_footer_clear'" (click)="clearSelectionFromUi($event)">
+            <button type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_tf_footer_clear'" (click)="clearSelectionFromUi($event)">
                 <i class="ph ph-broom me-2"></i>{{ resolvedClearButtonLabel }}
             </button>
         </div>

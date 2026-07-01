@@ -123,14 +123,14 @@ void clearDependentSubject() {
 </li-select>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="custom_select_btn_toggle"]');
+await clickFirstVisible(page, '[data-label="li_select_toggle"]');
 await clickFirstVisible(
   page,
-  '[data-label^="custom_select_item_"][data-value="approved"]',
+  '[data-label^="li_select_item_"][data-value="approved"]',
 );
 await waitForAttributeMatching(
   page,
-  '[data-label="custom_select"]',
+  '[data-label="li_select"]',
   'data-value',
   (value) => value == 'approved',
 );''';

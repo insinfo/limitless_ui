@@ -1,5 +1,5 @@
 <div class="treeview-dropdown-select"
-    [attr.data-label]="'li_treeview_select'"
+    [attr.data-label]="'li_ts'"
     [attr.data-value]="selectedDataValue">
     <div *ngIf="usesMobilePresentation"
         class="treeview-dropdown-select__mobile-backdrop"
@@ -15,7 +15,7 @@
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null"
-            [attr.data-label]="'li_treeview_select_btn_toggle'"
+            [attr.data-label]="'li_ts_toggle'"
             role="combobox"
             aria-haspopup="tree"
             (click)="toggleDropdown()"
@@ -55,7 +55,7 @@
                 role="button"
                 tabindex="0"
                 [attr.aria-label]="resolvedClearButtonLabel"
-                [attr.data-label]="'li_treeview_select_clear'"
+                [attr.data-label]="'li_ts_clear'"
                 (click)="clearSelection($event)">
                 <i class="ph ph-x"></i>
             </span>
@@ -74,7 +74,7 @@
         [attr.aria-describedby]="resolvedDescribedBy"
         [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
         [attr.data-invalid]="effectiveInvalid ? 'true' : null"
-        [attr.data-label]="'li_treeview_select_btn_toggle'"
+        [attr.data-label]="'li_ts_toggle'"
         role="combobox"
         aria-haspopup="tree"
         (click)="toggleDropdown()"
@@ -114,7 +114,7 @@
             role="button"
             tabindex="0"
             [attr.aria-label]="resolvedClearButtonLabel"
-            [attr.data-label]="'li_treeview_select_clear'"
+            [attr.data-label]="'li_ts_clear'"
             (click)="clearSelection($event)">
             <i class="ph ph-x"></i>
         </span>
@@ -127,7 +127,7 @@
 
     <div #dropdownPanel
         class="treeview-dropdown-select__panel dropdown-menu"
-        [attr.data-label]="'li_treeview_select_panel'"
+        [attr.data-label]="'li_ts_panel'"
         (click)="onPanelClick($event)"
         [class.treeview-dropdown-select__panel--mobile-modal]="usesMobileModal"
         [class.treeview-dropdown-select__panel--mobile-sheet]="usesMobileSheet"
@@ -143,7 +143,7 @@
                         [value]="searchTerm"
                         [placeholder]="resolvedSearchPlaceholder"
                         [attr.aria-label]="searchAriaLabel"
-                        [attr.data-label]="'li_treeview_select_input_search'"
+                        [attr.data-label]="'li_ts_search'"
                         (input)="handleSearchInput(searchInput.value)">
                     <div class="form-control-feedback-icon">
                         <i class="ph-magnifying-glass"></i>
@@ -154,7 +154,7 @@
                     class="btn btn-light btn-sm btn-icon border-transparent treeview-dropdown-select__search-action"
                     [attr.title]="resolvedExpandToggleLabel"
                     [attr.aria-label]="resolvedExpandToggleLabel"
-                    [attr.data-label]="'li_treeview_select_toggle_all'"
+                    [attr.data-label]="'li_ts_all'"
                     [disabled]="togglingAll"
                     (click)="toggleAllNodes()">
                     <i [class]="resolvedExpandToggleIconClass"></i>
@@ -177,7 +177,7 @@
                         [hidden]="!node.treeViewNodeFilter"
                         class="treeview-dropdown-select__node"
                         role="treeitem"
-                        [attr.data-label]="'li_treeview_select_node'"
+                        [attr.data-label]="'li_ts_node'"
                         [attr.aria-expanded]="node.canExpand ? (!node.treeViewNodeIsCollapse).toString() : null">
                         <div class="treeview-dropdown-select__row"
                             [class.is-selected]="isNodeSelected(node) || selectedNode == node"
@@ -186,7 +186,7 @@
                             <button type="button"
                                 class="treeview-dropdown-select__expander"
                                 [class.is-placeholder]="!node.canExpand"
-                                [attr.data-label]="'li_treeview_select_expander'"
+                                [attr.data-label]="'li_ts_expander'"
                                 (click)="toggleNode(node)">
                                 <i *ngIf="node.treeViewNodeIsLoadingChildren" class="ph-spinner spinner"></i>
                                 <i *ngIf="!node.treeViewNodeIsLoadingChildren && node.canExpand"
@@ -198,7 +198,7 @@
                                 type="button"
                                 class="treeview-dropdown-select__checkbox"
                                 [class.is-selected]="isNodeSelected(node)"
-                                [attr.data-label]="'li_treeview_select_checkbox'"
+                                [attr.data-label]="'li_ts_checkbox'"
                                 [disabled]="!isSelectable(node)"
                                 (click)="selectNode(node)">
                                 <i class="ph"
@@ -208,7 +208,7 @@
                             <button type="button"
                                 class="treeview-dropdown-select__label"
                                 [class.is-selected]="isNodeSelected(node) || selectedNode == node"
-                                [attr.data-label]="'li_treeview_select_label'"
+                                [attr.data-label]="'li_ts_label'"
                                 [disabled]="!isSelectable(node)"
                                 (click)="selectNode(node)">
                                 <span *ngIf="nodeTemplate != null">
@@ -230,7 +230,7 @@
                             <li *ngIf="showLoadMoreForNode(node)" class="treeview-dropdown-select__more">
                                 <button type="button"
                                     class="btn btn-link btn-sm treeview-dropdown-select__load-more"
-                                    [attr.data-label]="'li_treeview_select_load_more_children'"
+                                    [attr.data-label]="'li_ts_more_children'"
                                     (click)="loadMoreChildren(node)">
                                     {{ resolvedLoadMoreLabel }}
                                 </button>
@@ -245,7 +245,7 @@
             <div *ngIf="hasMoreRootNodes && !loadingRootNodes" class="treeview-dropdown-select__footer">
                 <button type="button"
                     class="btn btn-link btn-sm treeview-dropdown-select__load-more"
-                    [attr.data-label]="'li_treeview_select_load_more'"
+                    [attr.data-label]="'li_ts_more'"
                     (click)="loadMoreRootNodes()">
                     {{ resolvedLoadMoreLabel }}
                 </button>
@@ -255,7 +255,7 @@
         <div *ngIf="showActionBar" class="treeview-dropdown-select__actions">
             <button *ngIf="showFooterExpandToggle" type="button"
                 class="btn btn-sm btn-light treeview-dropdown-select__action-expand"
-                [attr.data-label]="'li_treeview_select_toggle_all'"
+                [attr.data-label]="'li_ts_all'"
                 [disabled]="togglingAll"
                 (click)="toggleAllNodes()">
                 {{ resolvedExpandToggleLabel }}
@@ -264,13 +264,13 @@
             <div class="treeview-dropdown-select__actions-end">
                 <button *ngIf="hasSelection" type="button"
                     class="btn btn-sm btn-light treeview-dropdown-select__action-clear"
-                    [attr.data-label]="'li_treeview_select_action_clear'"
+                    [attr.data-label]="'li_ts_clear_action'"
                     (click)="clearSelection($event)">
                     {{ resolvedClearButtonLabel }}
                 </button>
                 <button type="button"
                     class="btn btn-sm btn-primary treeview-dropdown-select__action-confirm"
-                    [attr.data-label]="'li_treeview_select_action_confirm'"
+                    [attr.data-label]="'li_ts_confirm_action'"
                     (click)="confirmSelection()">
                     {{ resolvedConfirmButtonLabel }}
                 </button>

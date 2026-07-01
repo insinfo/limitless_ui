@@ -1,9 +1,9 @@
-<div [attr.data-label]="'custom_select'" [attr.data-value]="selectedDataValue" class="dropdown-collection">
+<div [attr.data-label]="'li_select'" [attr.data-value]="selectedDataValue" class="dropdown-collection">
     <div *ngIf="triggerTemplate != null" #dropdownButton
         class="li-select-custom-trigger"
         [class.disabled]="isDisabled"
         [attr.name]="resolvedName"
-        [attr.data-label]="'custom_select_btn_toggle'"
+        [attr.data-label]="'li_select_toggle'"
         [attr.data-value]="selectedDataValue"
         [attr.data-li-form-focus-target]="'true'"
         role="combobox"
@@ -23,7 +23,7 @@
     </div>
 
     <div *ngIf="triggerTemplate == null && usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
-        <button type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
+        <button type="button" [attr.data-label]="'li_select_toggle'" #dropdownButton
             [attr.name]="resolvedName"
             [attr.data-value]="selectedDataValue"
             [attr.data-li-form-focus-target]="'true'"
@@ -51,7 +51,7 @@
         </span>
     </div>
 
-    <button *ngIf="triggerTemplate == null && !usesAddonTriggerIcon" type="button" [attr.data-label]="'custom_select_btn_toggle'" #dropdownButton
+    <button *ngIf="triggerTemplate == null && !usesAddonTriggerIcon" type="button" [attr.data-label]="'li_select_toggle'" #dropdownButton
         [attr.name]="resolvedName"
         [attr.data-value]="selectedDataValue"
         [attr.data-li-form-focus-target]="'true'"
@@ -83,14 +83,14 @@
             <div class="form-control-feedback form-control-feedback-start m-2">
                 <input #inputSearch type="text" [class]="resolvedSearchInputClass" [placeholder]="searchPlaceholder"
                     (input)="searchHandle($event.target.value)"
-                    [attr.data-label]="'custom_select_input_search'"
+                    [attr.data-label]="'li_select_search'"
                     tabindex="-1" [attr.aria-label]="searchAriaLabel">
                 <div class="form-control-feedback-icon">
                     <i class="ph-magnifying-glass"></i>
                 </div>
             </div>
         </div>
-        <ul [attr.id]="listboxId" role="listbox" [attr.data-label]="'custom_select_options'">
+        <ul [attr.id]="listboxId" role="listbox" [attr.data-label]="'li_select_opts'">
             <li class="dropdown-item" *ngFor="let o of options; let idx = index" [class.active]="currentValue == o"
                 [class.dropdown-item-disabled]="o.disabled"
                 [attr.id]="optionId(idx)"
@@ -98,7 +98,7 @@
                 [attr.aria-disabled]="o.disabled ? 'true' : null"
                 tabindex="-1" (click)="select(o)" role="option" [hidden]="o.visible == false"
                 [attr.data-value]="optionDataValue(o)"
-                [attr.data-label]="'custom_select_item_'+ idx.toString()">{{o.text}}</li>
+                [attr.data-label]="'li_select_item_'+ idx.toString()">{{o.text}}</li>
         </ul>
     </div>
     <div *ngIf="showErrorFeedback" [class]="resolvedFeedbackClass">{{ effectiveErrorText }}</div>

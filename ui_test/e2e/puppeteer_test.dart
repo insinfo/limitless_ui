@@ -19,15 +19,15 @@ void main() {
 
     test('seleciona valores em select e multi-select', () async {
       await gotoExample(page, 'select');
-      await clickFirstVisible(page, '[data-label="custom_select_btn_toggle"]');
+      await clickFirstVisible(page, '[data-label="li_select_toggle"]');
       await clickFirstVisible(
         page,
-        '[data-label^="custom_select_item_"][data-value="approved"]',
+        '[data-label^="li_select_item_"][data-value="approved"]',
       );
       expect(
         await waitForAttributeMatching(
           page,
-          '[data-label="custom_select"]',
+          '[data-label="li_select"]',
           'data-value',
           (value) => value == 'approved',
         ),
@@ -37,16 +37,16 @@ void main() {
       await gotoExample(page, 'multi-select');
       await clickFirstVisible(
         page,
-        '[data-label="li_multi_select_btn_toggle"]',
+        '[data-label="li_ms_toggle"]',
       );
       await clickFirstVisible(
         page,
-        '[data-label^="li_multi_select_item_"][data-value="sms"]',
+        '[data-label^="li_ms_item_"][data-value="sms"]',
       );
       expect(
         await waitForAttributeMatching(
           page,
-          '[data-label="li_multi_select"]',
+          '[data-label="li_ms"]',
           'data-value',
           (value) => (value ?? '').split(',').contains('sms'),
         ),
@@ -56,15 +56,15 @@ void main() {
 
     test('seleciona opcoes projetadas em select e multi-select', () async {
       await gotoExample(page, 'select');
-      await clickVisibleAt(page, '[data-label="custom_select_btn_toggle"]', 1);
+      await clickVisibleAt(page, '[data-label="li_select_toggle"]', 1);
       await clickFirstVisible(
         page,
-        '[data-label^="custom_select_item_"][data-value="backlog"]',
+        '[data-label^="li_select_item_"][data-value="backlog"]',
       );
       expect(
         await waitForAttributeAtMatching(
           page,
-          '[data-label="custom_select"]',
+          '[data-label="li_select"]',
           1,
           'data-value',
           (value) => value == 'backlog',
@@ -75,16 +75,16 @@ void main() {
       await gotoExample(page, 'multi-select');
       await clickVisibleAt(
         page,
-        '[data-label="li_multi_select_btn_toggle"]',
+        '[data-label="li_ms_toggle"]',
         1,
       );
       await clickFirstVisible(
         page,
-        '[data-label^="li_multi_select_item_"][data-value="batch"]',
+        '[data-label^="li_ms_item_"][data-value="batch"]',
       );
       await waitForAttributeAtMatching(
         page,
-        '[data-label="li_multi_select"]',
+        '[data-label="li_ms"]',
         1,
         'data-value',
         (value) => (value ?? '').split(',').contains('batch'),
@@ -96,30 +96,30 @@ void main() {
       await gotoExample(page, 'datatable-select');
       await clickFirstVisible(
         page,
-        '[data-label="li_datatable_select_btn_toggle"]',
+        '[data-label="li_dts_toggle"]',
       );
-      await clickFirstVisible(page, '[data-label="datatable_row_0"]');
+      await clickFirstVisible(page, '[data-label="li_dt_row_0"]');
       await waitForAttributeMatching(
         page,
-        '[data-label="li_datatable_select"]',
+        '[data-label="li_dts"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
       );
 
       await gotoExample(page, 'work-queue');
-      await clickFirstVisible(page, '[data-label="li_token_field_input"]');
+      await clickFirstVisible(page, '[data-label="li_token_input"]');
       await page.keyboard.type('123/2026');
       await page.keyboard.press(Key.enter);
       await waitForSelectorMatching(
         page,
-        '[data-label="li_token_field_token_0"][data-value="123/2026"]',
+        '[data-label="li_token_item_0"][data-value="123/2026"]',
       );
 
-      await clickFirstVisible(page, '[data-label="li_tag_filter_btn_toggle"]');
-      await clickFirstVisible(page, '[data-label="li_tag_filter_option_0"]');
+      await clickFirstVisible(page, '[data-label="li_tf_toggle"]');
+      await clickFirstVisible(page, '[data-label="li_tf_option_0"]');
       await waitForAttributeMatching(
         page,
-        '[data-label="li_tag_filter"]',
+        '[data-label="li_tf"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
       );
@@ -129,33 +129,33 @@ void main() {
       await gotoExample(page, 'datatable-select');
       await clickVisibleAt(
         page,
-        '[data-label="li_datatable_select_btn_toggle"]',
+        '[data-label="li_dts_toggle"]',
         2,
       );
       await waitForSelectorCountAtLeast(
         page,
-        '[data-label="datatable_col_checkbox"]',
+        '[data-label="li_dt_check"]',
         2,
       );
-      await clickVisibleAt(page, '[data-label="datatable_col_checkbox"]', 0);
-      await clickVisibleAt(page, '[data-label="datatable_col_checkbox"]', 1);
+      await clickVisibleAt(page, '[data-label="li_dt_check"]', 0);
+      await clickVisibleAt(page, '[data-label="li_dt_check"]', 1);
       await clickFirstVisible(
         page,
-        '[data-label="li_datatable_select_modal_apply"]',
+        '[data-label="li_dts_apply"]',
       );
       await waitForAttributeAtMatching(
         page,
-        '[data-label="li_datatable_select"]',
+        '[data-label="li_dts"]',
         3,
         'data-value',
         (value) => value != null && value != '[]' && value.contains(','),
       );
 
-      await clickFirstVisible(page, '[data-label="li_datatable_select_clear"]');
+      await clickFirstVisible(page, '[data-label="li_dts_clear"]');
       expect(
         await waitForAttributeAtMatching(
           page,
-          '[data-label="li_datatable_select"]',
+          '[data-label="li_dts"]',
           3,
           'data-value',
           (value) => value == '[]',
@@ -166,14 +166,14 @@ void main() {
 
     test('seleciona datas e horario nos pickers', () async {
       await gotoExample(page, 'date-picker');
-      await clickFirstVisible(page, '[data-label="li_date_picker_trigger"]');
+      await clickFirstVisible(page, '[data-label="li_dp_trigger"]');
       await clickFirstVisible(
         page,
-        '[data-label="li_date_picker_day"].available:not(.off)',
+        '[data-label="li_dp_day"].available:not(.off)',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="li_date_picker"]',
+        '[data-label="li_dp"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
       );
@@ -181,38 +181,37 @@ void main() {
       await gotoExample(page, 'date-range');
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_trigger"]',
+        '[data-label="li_drp_trigger"]',
       );
       final daySelector =
-          '[data-label="li_date_range_picker_day"][data-calendar="left"].available:not(.off)';
+          '[data-label="li_drp_day"][data-calendar="left"].available:not(.off)';
       await clickVisibleAt(page, daySelector, 0);
       await clickVisibleAt(page, daySelector, 1);
-      await clickFirstVisible(
-          page, '[data-label="li_date_range_picker_apply"]');
+      await clickFirstVisible(page, '[data-label="li_drp_apply"]');
       await waitForAttributeMatching(
         page,
-        '[data-label="li_date_range_picker"]',
+        '[data-label="li_drp"]',
         'data-value',
         (value) => value != null && value.contains('-'),
       );
       final presetRangeBefore = await attributeValueAt(
         page,
-        '[data-label="li_date_range_picker"]',
+        '[data-label="li_drp"]',
         1,
         'data-value',
       );
       await clickVisibleAt(
         page,
-        '[data-label="li_date_range_picker_trigger"]',
+        '[data-label="li_drp_trigger"]',
         1,
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_preset"][data-value="last_7_days"]',
+        '[data-label="li_drp_preset"][data-value="last_7_days"]',
       );
       await waitForAttributeAtMatching(
         page,
-        '[data-label="li_date_range_picker"]',
+        '[data-label="li_drp"]',
         1,
         'data-value',
         (value) =>
@@ -220,24 +219,24 @@ void main() {
       );
       await clickVisibleAt(
         page,
-        '[data-label="li_date_range_picker_trigger"]',
+        '[data-label="li_drp_trigger"]',
         1,
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_custom_range"]',
+        '[data-label="li_drp_custom_range"]',
       );
       await waitForSelectorCountAtLeast(
         page,
-        '[data-label="li_date_range_picker_panel"].is-open .drp-calendar',
+        '[data-label="li_drp_panel"].is-open .drp-calendar',
         2,
       );
       final customRangeMetrics = await page.evaluate(
         r'''() => {
-          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
-          const custom = document.querySelector('[data-label="li_date_range_picker_custom_range"]');
-          const thisMonth = document.querySelector('[data-label="li_date_range_picker_preset"][data-value="this_month"]');
-          const calendar = document.querySelector('[data-label="li_date_range_picker_panel"].is-open .drp-calendar');
+          const panel = document.querySelector('[data-label="li_drp_panel"].is-open');
+          const custom = document.querySelector('[data-label="li_drp_custom_range"]');
+          const thisMonth = document.querySelector('[data-label="li_drp_preset"][data-value="this_month"]');
+          const calendar = document.querySelector('[data-label="li_drp_panel"].is-open .drp-calendar');
           const panelRect = panel.getBoundingClientRect();
           const calendarRect = calendar.getBoundingClientRect();
           return {
@@ -261,15 +260,15 @@ void main() {
       expect((customRangeMetrics['calendarWidth'] as num) >= 280, isTrue);
 
       await gotoExample(page, 'time-picker');
-      await clickFirstVisible(page, '[data-label="li_time_picker_trigger"]');
+      await clickFirstVisible(page, '[data-label="li_tp_trigger"]');
       await clickFirstVisible(
         page,
-        '[data-label="li_time_picker_dial_label"][data-value="10"]',
+        '[data-label="li_tp_dial_label"][data-value="10"]',
       );
-      await clickFirstVisible(page, '[data-label="li_time_picker_apply"]');
+      await clickFirstVisible(page, '[data-label="li_tp_apply"]');
       await waitForAttributeMatching(
         page,
-        '[data-label="li_time_picker"]',
+        '[data-label="li_tp"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
       );
@@ -283,7 +282,7 @@ void main() {
       Future<Map<dynamic, dynamic>> openDatePickerAt(num fraction) async {
         final point = await page.evaluate(
           r'''(fraction) => {
-            const triggers = [...document.querySelectorAll('[data-label="li_date_picker_trigger"]')]
+            const triggers = [...document.querySelectorAll('[data-label="li_dp_trigger"]')]
               .filter((item) => {
                 const rect = item.getBoundingClientRect();
                 const style = window.getComputedStyle(item);
@@ -316,13 +315,13 @@ void main() {
         await page.mouse.up();
         await waitForSelectorMatching(
           page,
-          '[data-label="li_date_picker_panel"].is-open',
+          '[data-label="li_dp_panel"].is-open',
         );
         await aguarde(250);
 
         return await page.evaluate(
           r'''() => {
-            const panel = document.querySelector('[data-label="li_date_picker_panel"].is-open');
+            const panel = document.querySelector('[data-label="li_dp_panel"].is-open');
             const rect = panel.getBoundingClientRect();
             return {
               left: rect.left,
@@ -359,16 +358,16 @@ void main() {
       await gotoExample(page, 'date-range');
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_trigger"]',
+        '[data-label="li_drp_trigger"]',
       );
       await waitForSelectorMatching(
         page,
-        '[data-label="li_date_range_picker_panel"].date-range-open--mobile-modal.is-open',
+        '[data-label="li_drp_panel"].date-range-open--mobile-modal.is-open',
       );
 
       final beforeMetrics = await page.evaluate(
         r'''() => {
-          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const panel = document.querySelector('[data-label="li_drp_panel"].is-open');
           const content = panel.querySelector('.date-range-panel-content');
           const rect = panel.getBoundingClientRect();
           const style = window.getComputedStyle(panel);
@@ -389,12 +388,12 @@ void main() {
 
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_day"][data-calendar="left"].available:not(.off)',
+        '[data-label="li_drp_day"][data-calendar="left"].available:not(.off)',
       );
 
       final afterMetrics = await page.evaluate(
         r'''() => {
-          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const panel = document.querySelector('[data-label="li_drp_panel"].is-open');
           const content = panel.querySelector('.date-range-panel-content');
           const rect = panel.getBoundingClientRect();
           const style = window.getComputedStyle(panel);
@@ -459,17 +458,17 @@ void main() {
       await gotoExample(page, 'date-range');
       await clickVisibleAt(
         page,
-        '[data-label="li_date_range_picker_trigger"]',
+        '[data-label="li_drp_trigger"]',
         1,
       );
       await waitForSelectorMatching(
         page,
-        '[data-label="li_date_range_picker_panel"].date-range-open--mobile-modal.is-open',
+        '[data-label="li_drp_panel"].date-range-open--mobile-modal.is-open',
       );
 
       final presetsOnlyMetrics = await page.evaluate(
         r'''() => {
-          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const panel = document.querySelector('[data-label="li_drp_panel"].is-open');
           const content = panel.querySelector('.date-range-panel-content');
           const presets = panel.querySelector('.date-range-presets');
           const rect = panel.getBoundingClientRect();
@@ -503,17 +502,17 @@ void main() {
 
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_custom_range"]',
+        '[data-label="li_drp_custom_range"]',
       );
       await waitForSelectorCountAtLeast(
         page,
-        '[data-label="li_date_range_picker_panel"].is-open .drp-calendar',
+        '[data-label="li_drp_panel"].is-open .drp-calendar',
         2,
       );
 
       final calendarMetrics = await page.evaluate(
         r'''() => {
-          const panel = document.querySelector('[data-label="li_date_range_picker_panel"].is-open');
+          const panel = document.querySelector('[data-label="li_drp_panel"].is-open');
           const rect = panel.getBoundingClientRect();
           return {
             top: rect.top,
@@ -544,14 +543,14 @@ void main() {
       await page.setViewport(DeviceViewport(width: 375, height: 667));
 
       await gotoExample(page, 'date-picker');
-      await clickFirstVisible(page, '[data-label="li_date_picker_trigger"]');
+      await clickFirstVisible(page, '[data-label="li_dp_trigger"]');
       await waitForSelectorMatching(
         page,
-        '[data-label="li_date_picker_panel"].date-picker-open--mobile-modal.is-open',
+        '[data-label="li_dp_panel"].date-picker-open--mobile-modal.is-open',
       );
       final dateMetrics = await page.evaluate(
         r'''() => {
-          const panel = document.querySelector('[data-label="li_date_picker_panel"].is-open');
+          const panel = document.querySelector('[data-label="li_dp_panel"].is-open');
           const calendar = panel.querySelector('.single-calendar');
           const rect = panel.getBoundingClientRect();
           return {
@@ -592,14 +591,14 @@ void main() {
       );
 
       await gotoExample(page, 'time-picker');
-      await clickFirstVisible(page, '[data-label="li_time_picker_trigger"]');
+      await clickFirstVisible(page, '[data-label="li_tp_trigger"]');
       await waitForSelectorMatching(
         page,
-        '[data-label="li_time_picker_panel"].time-picker-panel--mobile-modal.is-open',
+        '[data-label="li_tp_panel"].time-picker-panel--mobile-modal.is-open',
       );
       final timeBeforeMetrics = await page.evaluate(
         r'''() => {
-          const panel = document.querySelector('[data-label="li_time_picker_panel"].is-open');
+          const panel = document.querySelector('[data-label="li_tp_panel"].is-open');
           const shell = panel.querySelector('.time-picker-panel-shell');
           const footer = panel.querySelector('.time-picker-footer');
           const rect = panel.getBoundingClientRect();
@@ -619,11 +618,11 @@ void main() {
       ) as Map;
       await clickFirstVisible(
         page,
-        '[data-label="li_time_picker_dial_label"][data-value="10"]',
+        '[data-label="li_tp_dial_label"][data-value="10"]',
       );
       final timeAfterMetrics = await page.evaluate(
         r'''() => {
-          const panel = document.querySelector('[data-label="li_time_picker_panel"].is-open');
+          const panel = document.querySelector('[data-label="li_tp_panel"].is-open');
           const rect = panel.getBoundingClientRect();
           return {
             top: rect.top,
@@ -680,44 +679,44 @@ void main() {
 
     test('navega e limpa selecoes nos pickers de data', () async {
       await gotoExample(page, 'date-picker');
-      await clickFirstVisible(page, '[data-label="li_date_picker_trigger"]');
-      await clickFirstVisible(page, '[data-label="li_date_picker_next"]');
+      await clickFirstVisible(page, '[data-label="li_dp_trigger"]');
+      await clickFirstVisible(page, '[data-label="li_dp_next"]');
       await clickFirstVisible(
         page,
-        '[data-label="li_date_picker_day"].available:not(.off)',
+        '[data-label="li_dp_day"].available:not(.off)',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="li_date_picker"]',
+        '[data-label="li_dp"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_date_picker_clear_trigger"]',
+        '[data-label="li_dp_clear_trigger"]',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="li_date_picker"]',
+        '[data-label="li_dp"]',
         'data-value',
         (value) => value == null || value.isEmpty,
       );
       final customTriggerBefore = await attributeValue(
         page,
-        '[data-label="date_picker_custom_trigger_badge"]',
+        '[data-label="li_dp_badge"]',
         'data-value',
       );
       await clickFirstVisible(
         page,
-        '[data-label="date_picker_custom_trigger_badge"]',
+        '[data-label="li_dp_badge"]',
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_date_picker_day"].available:not(.off)',
+        '[data-label="li_dp_day"].available:not(.off)',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="date_picker_custom_trigger_badge"]',
+        '[data-label="li_dp_badge"]',
         'data-value',
         (value) =>
             value != null && value.isNotEmpty && value != customTriggerBefore,
@@ -726,33 +725,33 @@ void main() {
       await gotoExample(page, 'date-range');
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_trigger"]',
+        '[data-label="li_drp_trigger"]',
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_left_next"]',
+        '[data-label="li_drp_left_next"]',
       );
       final nextMonthDaySelector =
-          '[data-label="li_date_range_picker_day"][data-calendar="left"].available:not(.off)';
+          '[data-label="li_drp_day"][data-calendar="left"].available:not(.off)';
       await clickVisibleAt(page, nextMonthDaySelector, 0);
       await clickVisibleAt(page, nextMonthDaySelector, 1);
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_apply"]',
+        '[data-label="li_drp_apply"]',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="li_date_range_picker"]',
+        '[data-label="li_drp"]',
         'data-value',
         (value) => value != null && value.contains('-'),
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_date_range_picker_clear_trigger"]',
+        '[data-label="li_drp_clear_trigger"]',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="li_date_range_picker"]',
+        '[data-label="li_drp"]',
         'data-value',
         (value) => value == null || value.isEmpty,
       );
@@ -762,22 +761,22 @@ void main() {
       await gotoExample(page, 'typeahead');
       await clickFirstVisible(
         page,
-        '.demo-page [data-label="li_typeahead_input"]',
+        '.demo-page [data-label="li_ta_input"]',
       );
       await page.keyboard.type('sa');
       final typeaheadPopupId = await waitForAttributeMatching(
         page,
-        '.demo-page [data-label="li_typeahead_input"]',
+        '.demo-page [data-label="li_ta_input"]',
         'aria-controls',
         (value) => value != null && value.isNotEmpty,
       );
       await clickFirstVisible(
         page,
-        '#$typeaheadPopupId [data-label^="li_typeahead_item_"]',
+        '#$typeaheadPopupId [data-label^="li_ta_item_"]',
       );
       await waitForAttributeMatching(
         page,
-        '.demo-page [data-label="li_typeahead"]',
+        '.demo-page [data-label="li_ta"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
       );
@@ -785,22 +784,22 @@ void main() {
       await gotoExample(page, 'treeview');
       await clickFirstVisible(
         page,
-        '[data-label="li_treeview_select_btn_toggle"]',
+        '[data-label="li_ts_toggle"]',
       );
-      await clickFirstVisible(page, '[data-label="li_treeview_select_label"]');
+      await clickFirstVisible(page, '[data-label="li_ts_label"]');
       await waitForAttributeMatching(
         page,
-        '[data-label="li_treeview_select"]',
+        '[data-label="li_ts"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
       );
 
       await gotoExample(page, 'rating');
-      await clickFirstVisible(page, '[data-label="li_rating_star_4"]');
+      await clickFirstVisible(page, '[data-label="li_rate_star_4"]');
       expect(
         await waitForAttributeMatching(
           page,
-          '[data-label="li_rating"]',
+          '[data-label="li_rate"]',
           'data-value',
           (value) => value == '4',
         ),
@@ -822,11 +821,11 @@ void main() {
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_dropdown_menu_item"][data-value="pending"]',
+        '[data-label="li_dm_item"][data-value="pending"]',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="dropdown_compact_menu_state"]',
+        '[data-label="li_dd_compact_state"]',
         'data-value',
         (value) => value != null && value.contains('pending'),
       );
@@ -834,11 +833,11 @@ void main() {
       await clickFirstVisible(page, '[aria-label="compact-columns"]');
       await clickFirstVisible(
         page,
-        '[data-label="li_dropdown_menu_item"][data-value="deadline"]',
+        '[data-label="li_dm_item"][data-value="deadline"]',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="dropdown_compact_menu_state"]',
+        '[data-label="li_dd_compact_state"]',
         'data-value',
         (value) => value != null && value.contains('deadline'),
       );
@@ -847,15 +846,15 @@ void main() {
       await clickFirstVisible(page, '[aria-label="mobile-modal-menu"]');
       await waitForSelectorMatching(
         page,
-        '[data-label="li_dropdown_menu_panel"][role="dialog"][data-open="true"]',
+        '[data-label="li_dm_panel"][role="dialog"][data-open="true"]',
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_dropdown_menu_item"][data-value="download"]',
+        '[data-label="li_dm_item"][data-value="download"]',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="dropdown_compact_menu_state"]',
+        '[data-label="li_dd_compact_state"]',
         'data-value',
         (value) => value != null && value.contains('download'),
       );
@@ -922,13 +921,12 @@ void main() {
       );
 
       await gotoExample(page, 'color-picker');
-      await clickFirstVisible(page, '[data-label="li_color_picker_trigger"]');
-      await clickFirstVisible(
-          page, '[data-label="li_color_picker_color_area"]');
-      await clickFirstVisible(page, '[data-label="li_color_picker_choose"]');
+      await clickFirstVisible(page, '[data-label="li_cp_trigger"]');
+      await clickFirstVisible(page, '[data-label="li_cp_area"]');
+      await clickFirstVisible(page, '[data-label="li_cp_choose"]');
       await waitForAttributeMatching(
         page,
-        '[data-label="li_color_picker"]',
+        '[data-label="li_cp"]',
         'data-value',
         (value) => value != null && value.isNotEmpty,
       );
@@ -937,62 +935,60 @@ void main() {
     test('interage com SweetAlert por hooks de automacao', () async {
       await gotoExample(page, 'sweet-alert');
 
-      await clickFirstVisible(
-          page, '[data-label="sweet_alert_service_confirm"]');
+      await clickFirstVisible(page, '[data-label="li_sa_demo_confirm"]');
       await waitForSelectorMatching(
         page,
-        '[data-label="li_sweet_alert_root"][data-open="true"]',
+        '[data-label="li_sa_root"][data-open="true"]',
       );
       await waitForSelectorMatching(
         page,
-        '[data-label="li_sweet_alert_popup"][data-type="question"][data-open="true"]',
+        '[data-label="li_sa_popup"][data-type="question"][data-open="true"]',
       );
       await waitForSelectorMatching(
         page,
-        '[data-label="li_sweet_alert_icon"][data-value="question"]',
+        '[data-label="li_sa_icon"][data-value="question"]',
       );
-      await clickFirstVisible(page, '[data-label="li_sweet_alert_cancel"]');
-      await waitForSelectorGone(page, '[data-label="li_sweet_alert_root"]');
+      await clickFirstVisible(page, '[data-label="li_sa_cancel"]');
+      await waitForSelectorGone(page, '[data-label="li_sa_root"]');
 
-      await clickFirstVisible(
-          page, '[data-label="sweet_alert_service_prompt"]');
+      await clickFirstVisible(page, '[data-label="li_sa_demo_prompt"]');
       await waitForSelectorMatching(
         page,
-        '[data-label="li_sweet_alert_input"][data-value="text"]',
+        '[data-label="li_sa_input"][data-value="text"]',
       );
-      await clickFirstVisible(page, '[data-label="li_sweet_alert_confirm"]');
+      await clickFirstVisible(page, '[data-label="li_sa_confirm"]');
       await waitForSelectorMatching(
         page,
-        '[data-label="li_sweet_alert_validation"]',
+        '[data-label="li_sa_validation"]',
       );
       await page.type(
-        '[data-label="li_sweet_alert_input"][data-value="text"]',
+        '[data-label="li_sa_input"][data-value="text"]',
         'batch-42',
       );
-      await clickFirstVisible(page, '[data-label="li_sweet_alert_confirm"]');
-      await waitForSelectorGone(page, '[data-label="li_sweet_alert_root"]');
+      await clickFirstVisible(page, '[data-label="li_sa_confirm"]');
+      await waitForSelectorGone(page, '[data-label="li_sa_root"]');
 
       await clickFirstVisible(
         page,
-        '[data-label="li_tabs_nav_link"][data-value="2"]',
+        '[data-label="li_tab_link"][data-value="2"]',
       );
       await waitForAttributeMatching(
         page,
-        '[data-label="li_tabs_nav"]',
+        '[data-label="li_tab_nav"]',
         'data-value',
         (value) => value == '2',
       );
       await waitForSelectorMatching(
         page,
-        '[data-label="li_tabs_panel"][data-value="2"][data-open="true"]',
+        '[data-label="li_tab_panel"][data-value="2"][data-open="true"]',
       );
-      await clickFirstVisible(page, '[data-label="sweet_alert_input_select"]');
+      await clickFirstVisible(page, '[data-label="li_sa_demo_select"]');
       await waitForSelectorMatching(
         page,
-        '[data-label="li_sweet_alert_input_option"][data-value="prod"]',
+        '[data-label="li_sa_input_option"][data-value="prod"]',
       );
-      await clickFirstVisible(page, '[data-label="li_sweet_alert_cancel"]');
-      await waitForSelectorGone(page, '[data-label="li_sweet_alert_root"]');
+      await clickFirstVisible(page, '[data-label="li_sa_cancel"]');
+      await waitForSelectorGone(page, '[data-label="li_sa_root"]');
     }, skip: skipExampleE2eReason());
   });
 }

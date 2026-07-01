@@ -1,10 +1,10 @@
-<div class="datatable-select-wrapper" [attr.data-label]="'li_datatable_select'" [attr.data-value]="selectedDataValue">
+<div class="datatable-select-wrapper" [attr.data-label]="'li_dts'" [attr.data-value]="selectedDataValue">
     <div *ngIf="customTriggerTemplate != null" #triggerButton
         class="datatable-select-custom-trigger"
         [class.disabled]="isDisabled"
         [attr.name]="resolvedName"
         [attr.data-li-form-focus-target]="'true'"
-        [attr.data-label]="'li_datatable_select_btn_toggle'"
+        [attr.data-label]="'li_dts_toggle'"
         [attr.data-value]="selectedDataValue"
         role="combobox"
         aria-haspopup="dialog"
@@ -23,7 +23,7 @@
     <div *ngIf="customTriggerTemplate == null && usesAddonTriggerIcon" [class]="resolvedInputGroupClass">
         <button type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
             [attr.name]="resolvedName"
-            [attr.data-label]="'li_datatable_select_btn_toggle'"
+            [attr.data-label]="'li_dts_toggle'"
             [attr.data-value]="selectedDataValue"
             [disabled]="isDisabled" (click)="openModal()" tabindex="0"
             role="combobox" aria-haspopup="dialog"
@@ -63,7 +63,7 @@
                 class="datatable-select-clear"
                 role="button"
                 tabindex="0"
-                [attr.data-label]="'li_datatable_select_clear'"
+                [attr.data-label]="'li_dts_clear'"
                 [attr.aria-label]="resolvedClearButtonLabel"
                 (click)="onClearClick($event)">
                 <i class="ph ph-x"></i>
@@ -76,7 +76,7 @@
 
     <button *ngIf="customTriggerTemplate == null && !usesAddonTriggerIcon" type="button" #triggerButton [attr.data-li-form-focus-target]="'true'" [class]="resolvedTriggerClass"
         [attr.name]="resolvedName"
-        [attr.data-label]="'li_datatable_select_btn_toggle'"
+        [attr.data-label]="'li_dts_toggle'"
         [attr.data-value]="selectedDataValue"
         [disabled]="isDisabled" (click)="openModal()" tabindex="0"
         role="combobox" aria-haspopup="dialog"
@@ -115,7 +115,7 @@
             class="datatable-select-clear"
             role="button"
             tabindex="0"
-            [attr.data-label]="'li_datatable_select_clear'"
+            [attr.data-label]="'li_dts_clear'"
             [attr.aria-label]="resolvedClearButtonLabel"
             (click)="onClearClick($event)">
             <i class="ph ph-x"></i>
@@ -178,13 +178,13 @@
     <div *ngIf="modalContentTemplate == null && multiple" class="modal-footer border-top-0 px-3 py-2 gap-2">
         <button type="button"
             class="btn btn-light btn-sm"
-            [attr.data-label]="'li_datatable_select_modal_clear'"
+            [attr.data-label]="'li_dts_modal_clear'"
             (click)="clearModalSelection()">
             {{ resolvedClearButtonLabel }}
         </button>
         <button type="button"
             class="btn btn-primary btn-sm"
-            [attr.data-label]="'li_datatable_select_modal_apply'"
+            [attr.data-label]="'li_dts_apply'"
             (click)="applyModalSelection()">
             {{ resolvedConfirmButtonLabel }}
         </button>

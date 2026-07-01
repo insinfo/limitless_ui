@@ -125,7 +125,7 @@
                       [placeholder]="isPortuguese ? 'Selecionar data' : 'Select date'">
                     <template liDatePickerTrigger let-ctx>
                       <span class="badge bg-primary d-inline-flex align-items-center gap-1"
-                          [attr.data-label]="'date_picker_custom_trigger_badge'"
+                          [attr.data-label]="'li_dp_badge'"
                           [attr.data-value]="ctx.displayValue">
                         <i class="ph ph-calendar-blank"></i>
                         <span>{{ ctx.hasValue ? ctx.displayValue : ctx.placeholder }}</span>

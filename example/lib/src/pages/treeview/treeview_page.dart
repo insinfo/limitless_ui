@@ -59,11 +59,11 @@ class TreeviewPageComponent {
 </li-treeview-select>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="li_treeview_select_btn_toggle"]');
-await clickFirstVisible(page, '[data-label="li_treeview_select_label"]');
+await clickFirstVisible(page, '[data-label="li_ts_toggle"]');
+await clickFirstVisible(page, '[data-label="li_ts_label"]');
 await waitForAttributeMatching(
   page,
-  '[data-label="li_treeview_select"]',
+  '[data-label="li_ts"]',
   'data-value',
   (value) => value != null && value.isNotEmpty,
 );''';

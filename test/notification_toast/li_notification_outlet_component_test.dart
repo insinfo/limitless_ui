@@ -134,12 +134,12 @@ void main() {
     expect(fixture.text, contains('Sucesso'));
     expect(fixture.text, contains('Alteracoes salvas.'));
 
-    final items = fixture.rootElement
-        .querySelectorAll('[data-label="notification_item"]');
+    final items =
+        fixture.rootElement.querySelectorAll('[data-label="li_ntf_item"]');
     expect(items, hasLength(1));
 
     final body = fixture.rootElement.querySelector(
-      '[data-label="notification_item_body"]',
+      '[data-label="li_ntf_body"]',
     );
     expect(body, isNotNull);
     expect(body!.text, contains('Alteracoes salvas.'));
@@ -153,8 +153,8 @@ void main() {
 
     await _settle(fixture);
 
-    final items = fixture.rootElement
-        .querySelectorAll('[data-label="notification_item"]');
+    final items =
+        fixture.rootElement.querySelectorAll('[data-label="li_ntf_item"]');
 
     expect(items, hasLength(2));
     expect(fixture.text, contains('Primeiro'));
@@ -201,7 +201,7 @@ void main() {
     await _settle(fixture);
 
     final toastElement =
-        fixture.rootElement.querySelector('[data-label="notification_item"]');
+        fixture.rootElement.querySelector('[data-label="li_ntf_item"]');
 
     expect(toastElement, isNotNull);
 
@@ -231,7 +231,7 @@ void main() {
     await _settle(fixture);
 
     final toastElement =
-        fixture.rootElement.querySelector('[data-label="notification_item"]');
+        fixture.rootElement.querySelector('[data-label="li_ntf_item"]');
 
     expect(toastElement, isNotNull);
 
@@ -263,7 +263,7 @@ void main() {
     await _settle(fixture);
 
     final toastElement =
-        fixture.rootElement.querySelector('[data-label="notification_item"]');
+        fixture.rootElement.querySelector('[data-label="li_ntf_item"]');
 
     expect(toastElement, isNotNull);
 

@@ -123,20 +123,20 @@ class DatatableSelectPageComponent implements OnInit {
 </li-datatable-select>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="li_datatable_select_btn_toggle"]');
-await clickFirstVisible(page, '[data-label^="datatable_row_"]');
+await clickFirstVisible(page, '[data-label="li_dts_toggle"]');
+await clickFirstVisible(page, '[data-label^="li_dt_row_"]');
 await waitForAttributeMatching(
   page,
-  '[data-label="li_datatable_select"]',
+  '[data-label="li_dts"]',
   'data-value',
   (value) => value != null && value.isNotEmpty,
 );''';
 
   static const String multipleAutomationHooksSnippet = '''
-await clickVisibleAt(page, '[data-label="li_datatable_select_btn_toggle"]', 2);
-await clickVisibleAt(page, '[data-label="datatable_col_checkbox"]', 0);
-await clickFirstVisible(page, '[data-label="li_datatable_select_modal_apply"]');
-await clickFirstVisible(page, '[data-label="li_datatable_select_clear"]');''';
+await clickVisibleAt(page, '[data-label="li_dts_toggle"]', 2);
+await clickVisibleAt(page, '[data-label="li_dt_check"]', 0);
+await clickFirstVisible(page, '[data-label="li_dts_apply"]');
+await clickFirstVisible(page, '[data-label="li_dts_clear"]');''';
 
   final DemoI18nService i18n;
   Messages get t => i18n.t;

@@ -1,11 +1,11 @@
-<div class="date-picker-wrapper" [attr.data-label]="'li_date_picker'" [attr.data-value]="displayValue">
+<div class="date-picker-wrapper" [attr.data-label]="'li_dp'" [attr.data-value]="displayValue">
     <div *ngIf="usesMobilePresentation" class="date-picker-mobile-backdrop" (click)="close()"></div>
     <div *ngIf="triggerTemplate != null" #triggerElement
         class="date-picker-custom-trigger"
         [class.disabled]="isDisabled"
         [attr.name]="resolvedName"
         [attr.data-li-form-focus-target]="'true'"
-        [attr.data-label]="'li_date_picker_trigger'"
+        [attr.data-label]="'li_dp_trigger'"
         [attr.data-value]="displayValue"
         role="button"
         [attr.aria-expanded]="isOpen.toString()"
@@ -21,18 +21,18 @@
     </div>
 
     <div *ngIf="triggerTemplate == null && usesOverlayTriggerIcon" #triggerElement class="date-picker-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()"
-        [attr.data-label]="'li_date_picker_trigger'"
+        [attr.data-label]="'li_dp_trigger'"
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedOverlayInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
             [attr.name]="resolvedName"
-            [attr.data-label]="'li_date_picker_input'"
+            [attr.data-label]="'li_dp_input'"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null">
         <div *ngIf="showsClearButton || showsTriggerIcon" class="date-picker-overlay-actions">
             <button *ngIf="showsClearButton" type="button" class="btn date-picker-overlay-button" [disabled]="isDisabled"
-                [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_date_picker_clear_trigger'" (click)="clearFromTrigger($event)">
+                [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_dp_clear_trigger'" (click)="clearFromTrigger($event)">
                 <i class="ph ph-x"></i>
             </button>
             <button *ngIf="showsTriggerIcon" type="button" class="btn date-picker-overlay-button" tabindex="-1" [disabled]="isDisabled">
@@ -41,17 +41,17 @@
         </div>
     </div>
     <div *ngIf="triggerTemplate == null && !usesOverlayTriggerIcon" #triggerElement [class]="resolvedInputGroupClass" (click)="toggleOpen()"
-        [attr.data-label]="'li_date_picker_trigger'"
+        [attr.data-label]="'li_dp_trigger'"
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
             [attr.name]="resolvedName"
-            [attr.data-label]="'li_date_picker_input'"
+            [attr.data-label]="'li_dp_input'"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null">
         <button *ngIf="showsClearButton" type="button" class="btn date-picker-trigger-button" [disabled]="isDisabled"
-            [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_date_picker_clear_trigger'" (click)="clearFromTrigger($event)">
+            [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_dp_clear_trigger'" (click)="clearFromTrigger($event)">
             <i class="ph ph-x"></i>
         </button>
         <button *ngIf="showsTriggerIcon" type="button" class="btn date-picker-trigger-button" tabindex="-1" [disabled]="isDisabled">
@@ -63,7 +63,7 @@
 
     <div #panelElement class="daterangepicker date-picker-open single ltr show-calendar opensright"
         (click)="onPanelClick($event)"
-        [attr.data-label]="'li_date_picker_panel'"
+        [attr.data-label]="'li_dp_panel'"
         [class.date-picker-open--mobile-modal]="usesMobileModal"
         [class.date-picker-open--mobile-sheet]="usesMobileSheet"
         [class.is-open]="isOpen"
@@ -71,13 +71,13 @@
         [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
         <div class="drp-calendar left single-calendar">
             <div class="date-picker-panel-header">
-                <button type="button" class="calendar-nav prev available" [attr.data-label]="'li_date_picker_prev'" (click)="navigateBackward()">
+                <button type="button" class="calendar-nav prev available" [attr.data-label]="'li_dp_prev'" (click)="navigateBackward()">
                     <span></span>
                 </button>
-                <button type="button" class="date-picker-view-switch" [attr.data-label]="'li_date_picker_view_switch'" (click)="toggleViewMode()">
+                <button type="button" class="date-picker-view-switch" [attr.data-label]="'li_dp_view_switch'" (click)="toggleViewMode()">
                     {{ currentHeaderLabel }}
                 </button>
-                <button type="button" class="calendar-nav next available" [attr.data-label]="'li_date_picker_next'" (click)="navigateForward()">
+                <button type="button" class="calendar-nav next available" [attr.data-label]="'li_dp_next'" (click)="navigateForward()">
                     <span></span>
                 </button>
             </div>
@@ -94,7 +94,7 @@
                             <td *ngFor="let cell of week; trackBy: trackByCell" [class.off]="!cell.isCurrentMonth"
                                 [class.disabled]="isDisabledDate(cell.date)" [class.available]="!isDisabledDate(cell.date)"
                                 [class.today]="isToday(cell.date)" [class.active]="isSelectedDate(cell.date)"
-                                [attr.data-label]="'li_date_picker_day'"
+                                [attr.data-label]="'li_dp_day'"
                                 [attr.data-value]="dateDataValue(cell.date)"
                                 (click)="selectDay(cell.date)">
                                 {{ cell.date.day }}
@@ -108,7 +108,7 @@
                 <button type="button" *ngFor="let option of monthOptions; trackBy: trackByMonthOption"
                     class="date-picker-selection-item" [class.active]="option.month == visibleMonth.month"
                     [class.disabled]="isMonthDisabled(visibleMonth.year, option.month)"
-                    [attr.data-label]="'li_date_picker_month'"
+                    [attr.data-label]="'li_dp_month'"
                     [attr.data-value]="option.month.toString()"
                     (click)="selectMonth(option.month)">
                     {{ option.label }}
@@ -118,7 +118,7 @@
             <div *ngIf="isYearView" class="date-picker-selection-grid date-picker-selection-grid-years">
                 <button type="button" *ngFor="let year of visibleYearRange; trackBy: trackByYear"
                     class="date-picker-selection-item" [class.active]="year == visibleMonth.year"
-                    [class.disabled]="isYearDisabled(year)" [attr.data-label]="'li_date_picker_year'"
+                    [class.disabled]="isYearDisabled(year)" [attr.data-label]="'li_dp_year'"
                     [attr.data-value]="year.toString()" (click)="selectYear(year)">
                     {{ year }}
                 </button>
@@ -129,10 +129,10 @@
             <span class="drp-selected">
                 {{ draftDisplayValue.isEmpty ? emptySelectionLabel : draftDisplayValue }}
             </span>
-            <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_date_picker_clear'" (click)="clear()">
+            <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_dp_clear'" (click)="clear()">
                 {{ clearLabel }}
             </button>
-            <button type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_date_picker_cancel'" (click)="close()">
+            <button type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_dp_cancel'" (click)="close()">
                 {{ cancelLabel }}
             </button>
         </div>

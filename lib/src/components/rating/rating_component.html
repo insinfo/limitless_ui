@@ -1,6 +1,6 @@
 <div
     [class]="resolvedRootClass"
-    [attr.data-label]="'li_rating'"
+    [attr.data-label]="'li_rate'"
     [attr.data-value]="rate.toString()"
     role="slider"
     [attr.name]="resolvedName"
@@ -20,7 +20,7 @@
       [class]="starClass(index)"
       [disabled]="disabled"
       tabindex="-1"
-      [attr.data-label]="'li_rating_star_' + (index + 1).toString()"
+      [attr.data-label]="'li_rate_star_' + (index + 1).toString()"
       [attr.data-value]="(index + 1).toString()"
       [attr.aria-label]="'Rate ' + (index + 1).toString()"
       (mouseenter)="preview(index + 1)"

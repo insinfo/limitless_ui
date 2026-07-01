@@ -47,10 +47,10 @@ class RatingPageComponent {
 </li-rating>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="li_rating_star_4"]');
+await clickFirstVisible(page, '[data-label="li_rate_star_4"]');
 await waitForAttributeMatching(
   page,
-  '[data-label="li_rating"]',
+  '[data-label="li_rate"]',
   'data-value',
   (value) => value == '4',
 );''';

@@ -397,7 +397,7 @@ class LiModalComponent implements OnInit, OnDestroy {
     backdropDiv.remove();
     backdropDiv = DivElement()
       ..classes.add('li-modal-backdrop')
-      ..setAttribute('data-label', 'li_modal_backdrop')
+      ..setAttribute('data-label', 'li_mdl_backdrop')
       ..setAttribute('data-value', modalAutomationValue)
       ..setAttribute('data-open', 'true')
       ..style.position = 'fixed'

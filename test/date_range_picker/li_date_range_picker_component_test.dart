@@ -475,7 +475,7 @@ void main() {
     );
 
     final preset = html.document.querySelector(
-      '[data-label="li_date_range_picker_preset"][data-value="last_7_days"]',
+      '[data-label="li_drp_preset"][data-value="last_7_days"]',
     ) as html.ButtonElement;
 
     await fixture.update((_) {
@@ -507,7 +507,7 @@ void main() {
     );
 
     final customRangeButton = html.document.querySelector(
-      '[data-label="li_date_range_picker_custom_range"]',
+      '[data-label="li_drp_custom_range"]',
     ) as html.ButtonElement;
 
     await fixture.update((_) {
@@ -524,7 +524,7 @@ void main() {
     expect(
       html.document
           .querySelector(
-            '[data-label="li_date_range_picker_preset"][data-value="this_month"]',
+            '[data-label="li_drp_preset"][data-value="this_month"]',
           )!
           .classes
           .contains('active'),
@@ -572,7 +572,7 @@ void main() {
     );
     expect(
       html.document
-          .querySelector('[data-label="li_date_range_picker_custom_range"]')!
+          .querySelector('[data-label="li_drp_custom_range"]')!
           .classes
           .contains('active'),
       isTrue,
@@ -601,7 +601,7 @@ void main() {
     );
     expect(
       html.document
-          .querySelector('[data-label="li_date_range_picker_custom_range"]')!
+          .querySelector('[data-label="li_drp_custom_range"]')!
           .classes
           .contains('active'),
       isTrue,
@@ -628,7 +628,7 @@ void main() {
     );
     expect(
       html.document.querySelectorAll(
-        '.date-range-open.is-open [data-label="li_date_range_picker_preset"]',
+        '.date-range-open.is-open [data-label="li_drp_preset"]',
       ),
       hasLength(3),
     );
@@ -650,7 +650,7 @@ void main() {
     await _settlePresets(fixture);
 
     final preset = html.document.querySelector(
-      '[data-label="li_date_range_picker_preset"][data-value="last_7_days"]',
+      '[data-label="li_drp_preset"][data-value="last_7_days"]',
     ) as html.ButtonElement;
 
     await fixture.update((_) {
@@ -669,7 +669,7 @@ void main() {
     );
 
     final applyButton = html.document.querySelector(
-      '[data-label="li_date_range_picker_apply"]',
+      '[data-label="li_drp_apply"]',
     ) as html.ButtonElement;
 
     await fixture.update((_) {

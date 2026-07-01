@@ -1,11 +1,11 @@
 <!--datatable_component.html-->
-<div [attr.data-label]="'datatable'"
+<div [attr.data-label]="'li_dt'"
     [attr.data-value]="getCurrentPage.toString()"
     [attr.data-view]="gridMode ? 'grid' : 'table'"
     #card class="dataTables_wrapper dt-bootstrap5 no-footer">
     <div class="datatable-header" [class.p-0]="disableHeaderPadding == true"
         [class.datatable-header--custom]="hasCustomHeader"
-        [attr.data-label]="'datatable_header'">
+        [attr.data-label]="'li_dt_head'">
         <template [ngIf]="hasCustomHeader">
             <template [ngTemplateOutlet]="resolvedHeaderTemplate" [ngTemplateOutletValue]="headerTemplateContext">
             </template>
@@ -15,7 +15,7 @@
             <div class="dataTables_filter" *ngIf="searchInFields.isNotEmpty">
                 <div class="datatable-search-toolbar">
                     <input [(ngModel)]="dataTableFilter.searchString" #inputSearchElement
-                        (keypress)="handleSearchInputKeypress($event)" [attr.data-label]="'datatable_input_search'"
+                        (keypress)="handleSearchInputKeypress($event)" [attr.data-label]="'li_dt_search'"
                         [attr.data-value]="dataTableFilter.searchString"
                         type="search" class="form-control data-table-search-field datatable-search-input"
                         placeholder="{{searchPlaceholder}}" />
@@ -23,9 +23,9 @@
                         <select #selectSearchField
                             (change)="handleSearchFieldSelectChange($event, selectSearchField.value)"
                             class="form-select datatable-search-field-select"
-                            [attr.data-label]="'datatable_select_search_field'">
+                            [attr.data-label]="'li_dt_search_field'">
                             <option *ngFor="let field of searchInFields; let i = index" value="{{i}}"
-                                [attr.data-label]="'datatable_select_search_option'"
+                                [attr.data-label]="'li_dt_search_opt'"
                                 [attr.data-value]="i.toString()"
                                 [selected]="field.selected">
                                 {{field.label}}
@@ -35,7 +35,7 @@
                             [attr.title]="searchButtonTitle"
                             [attr.aria-label]="searchButtonTitle"
                             type="button" (click)="onSearch()"
-                            [attr.data-label]="'datatable_btn_search'">
+                            [attr.data-label]="'li_dt_search_btn'">
                             <i class="ph-magnifying-glass"></i>
                         </button>
                     </div>
@@ -45,25 +45,25 @@
                 <div *ngIf="showExportMenu"
                     class="dropdown me-2"
                     liDropdownMenuPosition="bottom-end"
-                    [attr.data-label]="'datatable_export_menu'">
+                    [attr.data-label]="'li_dt_export'">
                     <button type="button" [attr.title]="exportMenuButtonTitle"
                         [attr.aria-label]="exportMenuButtonTitle"
-                        [attr.data-label]="'datatable_btn_export'"
+                        [attr.data-label]="'li_dt_export_btn'"
                         class="btn btn-flat-primary border-transparent btn-icon li-dropdown-trigger"
                         aria-expanded="false">
                         <i class="ph ph-file-arrow-down"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end"
-                        [attr.data-label]="'datatable_export_menu_panel'">
+                        [attr.data-label]="'li_dt_export_panel'">
                         <button type="button" (click)="exportPdf()"
-                            [attr.data-label]="'datatable_export_item'"
+                            [attr.data-label]="'li_dt_export_item'"
                             [attr.data-value]="'pdf'"
                             class="dropdown-item cursor-pointer li-dropdown-close">
                             <i class="ph-file-pdf me-2"></i>
                             {{exportPdfLabel}}
                         </button>
                         <button type="button" (click)="exportXlsx()"
-                            [attr.data-label]="'datatable_export_item'"
+                            [attr.data-label]="'li_dt_export_item'"
                             [attr.data-value]="'xlsx'"
                             class="dropdown-item cursor-pointer li-dropdown-close">
                             <i class="ph-file-xls me-2"></i>
@@ -72,7 +72,7 @@
                         <button *ngFor="let menuAction of exportMenuActions; let actionIndex = index"
                             type="button"
                             (click)="menuAction.action()"
-                            [attr.data-label]="'datatable_export_item'"
+                            [attr.data-label]="'li_dt_export_item'"
                             [attr.data-value]="'custom-' + actionIndex.toString()"
                             class="dropdown-item cursor-pointer li-dropdown-close">
                             <i *ngIf="menuAction.iconClass != null" [class]="menuAction.iconClass ?? ''"
@@ -86,7 +86,7 @@
                     (click)="changeViewMode()"
                     [attr.title]="toggleViewModeButtonTitle"
                     [attr.aria-label]="toggleViewModeButtonTitle"
-                    [attr.data-label]="'datatable_btn_toggle_view'"
+                    [attr.data-label]="'li_dt_view_btn'"
                     [attr.data-value]="gridMode ? 'grid' : 'table'"
                     class="btn btn-flat-primary border-transparent btn-icon me-2" type="button">
                     <i [class.ph-squares-four]="!gridMode" [class.ph-list-bullets]="gridMode"></i>
@@ -94,19 +94,19 @@
 
                 <div class="dropdown me-2"
                     liDropdownMenuPosition="bottom-end"
-                    [attr.data-label]="'datatable_columns_menu'">
+                    [attr.data-label]="'li_dt_cols'">
                     <button type="button" class="btn btn-flat-primary border-transparent btn-icon li-dropdown-trigger"
                         [attr.title]="toggleColumnsButtonTitle"
                         [attr.aria-label]="toggleColumnsButtonTitle"
-                        [attr.data-label]="'datatable_btn_toggle_columns'"
+                        [attr.data-label]="'li_dt_cols_btn'"
                         aria-expanded="false">
                         <i class="ph-eye"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end"
-                        [attr.data-label]="'datatable_columns_menu_panel'">
+                        [attr.data-label]="'li_dt_cols_panel'">
                         <div class="dropdown-item border-bottom mb-1 pb-1">
                             <button type="button" class="btn btn-sm btn-light w-100"
-                                [attr.data-label]="'datatable_btn_toggle_all_columns'"
+                                [attr.data-label]="'li_dt_cols_all'"
                                 [attr.data-value]="allColumnsVisible ? 'visible' : 'hidden'"
                                 (click)="toggleAllColumnsVisibility()">
                                 {{allColumnsVisible ? hideAllColumnsLabel : showAllColumnsLabel}}
@@ -114,11 +114,11 @@
                         </div>
                         <label *ngFor="let col of settings.colsDefinitions"
                             class="dropdown-item"
-                            [attr.data-label]="'datatable_column_visibility_item'"
+                            [attr.data-label]="'li_dt_col_vis_item'"
                             [attr.data-value]="col.key">
                             <input (click)="changeVisibilityOfCol(col)" type="checkbox"
                                 class="form-check-input cursor-pointer m-0 me-3"
-                                [attr.data-label]="'datatable_col_visibility_checkbox'"
+                                [attr.data-label]="'li_dt_col_vis_check'"
                                 [attr.data-value]="col.key"
                                 [checked]="isColumnEffectivelyVisible(col)" />
                             {{col.title}}
@@ -128,10 +128,10 @@
 
                 <select #selectItemsPerPage (change)="changeItemsPerPageHandler(selectItemsPerPage)"
                     name="DataTables_length" class="form-select datatable-items-per-page-select"
-                    [attr.data-label]="'datatable_select_items_per_page'"
+                    [attr.data-label]="'li_dt_page_size'"
                     [attr.data-value]="(dataTableFilter.limit ?? 0).toString()">
                     <option *ngFor="let ipp of limitPerPageOptions" value="{{ipp}}"
-                        [attr.data-label]="'datatable_items_per_page_option'"
+                        [attr.data-label]="'li_dt_page_size_opt'"
                         [attr.data-value]="ipp.toString()"
                         [selected]="ipp == dataTableFilter.limit">
                         {{ipp}}
@@ -144,21 +144,21 @@
     <div *ngIf="showTableView" #scrollContainer class="datatable-scroll"
         [class.datatable-scroll--virtual]="isTableVirtualScrollActive"
         [class.datatable-scroll--sticky-header]="isStickyTableHeaderOnVirtualScrollActive"
-        [attr.data-label]="'datatable_scroll'"
+        [attr.data-label]="'li_dt_scroll'"
         [liCssStyle]="resolvedScrollContainerStyleCss" (scroll)="onVirtualViewportScroll()">
         <table #table class="table datatable-basic dataTable no-footer dtr-inline"
             [class.datatable-fast-table]="isSaliPagedPerformanceProfile"
             [class.datatable-table-layout-fixed]="fixedTableLayout"
             [class.table-hover]="disableRowClick == false" [class.collapsed]="hasResponsiveCollapsedColumns"
-            [attr.data-label]="'datatable_table'">
+            [attr.data-label]="'li_dt_table'">
             <thead>
                 <tr role="row">
                     <th *ngIf="showCheckboxToSelectRow"
                         class="datatable-first-col"
-                        [attr.data-label]="'datatable_header_checkbox_col'">
+                        [attr.data-label]="'li_dt_hcheck'">
                         <input *ngIf="!allowSingleSelectionOnly" class="form-check-input m-0 me-3"
                             [checked]="isSelectAll" (click)="onSelectAll($event)" type="checkbox" autocomplete="off"
-                            [attr.data-label]="'datatable_col_checkbox_all'"
+                            [attr.data-label]="'li_dt_check_all'"
                             [attr.data-value]="isSelectAll ? 'true' : 'false'"
                             tabindex="-1" />
                     </th>
@@ -170,7 +170,7 @@
                         [class.datatable-fixed-col--right]="isRightFixedColumn(colDef)"
                         [class.datatable-mobile-hidden]="isRuntimeResponsiveHidden(colDef)"
                         [class.dtr-hidden]="isRuntimeResponsiveHidden(colDef)" [attr.data-key]="colDef.key"
-                        [attr.data-label]="'datatable_header_col_' + idxCol.toString()"
+                        [attr.data-label]="'li_dt_hcol_' + idxCol.toString()"
                         [attr.data-value]="colDef.key"
                         [attr.data-sort-key]="colDef.sortingBy ?? ''"
                         [liCssStyle]="resolvedHeaderStyleCss(colDef, idxCol)" (click)="onHeaderCellClick($event, colDef)"
@@ -220,7 +220,7 @@
                                     [closeDelay]="titleHelp.resolveTitleTooltipCloseDelay(colDef)"
                                     [attr.title]="titleHelp.resolveNativeTitleTooltipText(colDef)"
                                     [attr.aria-label]="titleHelp.resolveTitleTooltipAriaLabel(colDef)"
-                                    [attr.data-label]="'datatable_header_tooltip'"
+                                    [attr.data-label]="'li_dt_htip'"
                                     [attr.data-value]="colDef.key"
                                     [attr.data-header-help]="'tooltip'">
                                     <i [class]="titleHelp.resolveTitleTooltipIconClass(colDef)"></i>
@@ -239,7 +239,7 @@
                                     [openDelay]="titleHelp.resolveTitlePopoverOpenDelay(colDef)"
                                     [closeDelay]="titleHelp.resolveTitlePopoverCloseDelay(colDef)"
                                     [attr.aria-label]="titleHelp.resolveTitlePopoverAriaLabel(colDef)"
-                                    [attr.data-label]="'datatable_header_popover'"
+                                    [attr.data-label]="'li_dt_hpop'"
                                     [attr.data-value]="colDef.key"
                                     [attr.data-header-help]="'popover'">
                                     <i [class]="titleHelp.resolveTitlePopoverIconClass(colDef)"></i>
@@ -260,7 +260,7 @@
                         [class.dtr-expanded]="view.row.isExpanded && view.hasResponsiveHiddenColumns"
                         [class.datatable-group-title-row]="view.row.type == DatatableRowType.groupTitle"
                         [attr.data-index]="view.row.index.toString()"
-                        [attr.data-label]="'datatable_row_' + idxR.toString()"
+                        [attr.data-label]="'li_dt_row_' + idxR.toString()"
                         [attr.data-value]="view.row.index.toString()"
                         [liCssStyle]="view.row.styleCss"
                         (click)="rowClickHandler(view.row)">
@@ -268,7 +268,7 @@
                             class="datatable-first-col" (click)="$event.stopPropagation()">
                             <input class="cursor-pointer form-check-input m-0 me-3" (click)="onSelect($event, view.row)"
                                 type="checkbox" [checked]="view.row.selected" autocomplete="off" tabindex="-1"
-                                [attr.data-label]="'datatable_col_checkbox'"
+                                [attr.data-label]="'li_dt_check'"
                                 [attr.data-value]="view.row.index.toString()" />
                         </td>
 
@@ -284,7 +284,7 @@
                             [class.datatable-group-title-cell]="view.row.type == DatatableRowType.groupTitle"
                             [attr.aria-expanded]="isResponsiveControlColumn(view, column) ? view.row.isExpanded.toString() : null"
                             [attr.colspan]="column.colspan.toString()" [liCssStyle]="resolvedCellStyleCss(column, idxC)"
-                            [attr.data-label]="'datatable_col_' + idxC.toString()"
+                            [attr.data-label]="'li_dt_col_' + idxC.toString()"
                             [attr.data-value]="column.key"
                             (click)="isResponsiveControlColumn(view, column) ? onResponsiveControlClick($event, view) : null">
                             <template [ngIf]="hasCellTemplateFor(column)">
@@ -302,16 +302,16 @@
                     </tr>
                     <tr *ngIf="view.row.isExpanded && view.hasResponsiveHiddenColumns"
                         class="child"
-                        [attr.data-label]="'datatable_child_row'"
+                        [attr.data-label]="'li_dt_child_row'"
                         [attr.data-value]="view.row.index.toString()">
                         <td class="child"
-                            [attr.data-label]="'datatable_child_cell'"
+                            [attr.data-label]="'li_dt_child_cell'"
                             [attr.data-value]="view.row.index.toString()"
                             [attr.colspan]="(view.row.columns.length + (showCheckboxToSelectRow ? 1 : 0)).toString()">
                             <ul class="dtr-details">
                                 <li *ngFor="let column of view.responsiveHiddenColumns; let idxHidden = index; trackBy: trackByColumnKey"
                                     [attr.data-dtr-index]="idxHidden.toString()"
-                                    [attr.data-label]="'datatable_child_item'"
+                                    [attr.data-label]="'li_dt_child_item'"
                                     [attr.data-value]="column.key">
                                     <span class="dtr-title">{{column.title}}</span>
                                     <span class="dtr-data" [liSafeHtml]="column.value"
@@ -331,17 +331,17 @@
 
     <div *ngIf="showGridView" #gridScrollContainer class="datatable-grid-scroll"
         [class.datatable-scroll--virtual]="isGridVirtualScrollActive"
-        [attr.data-label]="'datatable_grid_scroll'"
+        [attr.data-label]="'li_dt_grid_scroll'"
         [liCssStyle]="resolvedGridScrollContainerStyleCss" (scroll)="onVirtualViewportScroll()">
         <div [class]="resolvedGridContainerClass"
-            [attr.data-label]="'datatable_grid_container'"
+            [attr.data-label]="'li_dt_grid'"
             [liCssStyle]="resolvedGridContainerStyleCss">
         <div class="grid-layout" [class.grid-layout--virtual]="isGridVirtualScrollActive"
-            [attr.data-label]="'datatable_grid_layout'"
+            [attr.data-label]="'li_dt_grid_layout'"
             [liCssStyle]="resolvedGridLayoutStyleCss">
             <div *ngIf="rows.isEmpty"
                 class="datatable-empty-state"
-                [attr.data-label]="'datatable_empty_state'">
+                [attr.data-label]="'li_dt_empty'">
                 <div class="datatable-empty-state__illustration" aria-hidden="true">
                     <span class="datatable-empty-state__circle"></span>
                     <span class="datatable-empty-state__handle"></span>
@@ -359,7 +359,7 @@
                 [class.datatable-grid-item-custom]="row.customCardElement != null"
                 [class.datatable-grid-item-default]="row.type == DatatableRowType.normal && row.customCardElement == null && !hasCustomCardTemplate"
                 [class.datatable-grid-item-template]="row.type == DatatableRowType.normal && row.customCardElement == null && hasCustomCardTemplate"
-                [attr.data-label]="'datatable_grid_item'"
+                [attr.data-label]="'li_dt_grid_item'"
                 [attr.data-value]="row.index.toString()"
                 [liCssStyle]="row.styleCss">
 
@@ -370,7 +370,7 @@
 
                 <div class="datatable-custom-card" *ngIf="row.customCardElement != null"
                     [class.cursor-pointer]="disableRowClick == false" [liSafeHtmlNode]="row.customCardElement"
-                    [attr.data-label]="'datatable_grid_custom_card'"
+                    [attr.data-label]="'li_dt_card_custom'"
                     [attr.data-value]="row.index.toString()"
                     (click)="rowClickHandler(row)">
                 </div>
@@ -378,7 +378,7 @@
                 <div class="datatable-template-card"
                     *ngIf="row.type == DatatableRowType.normal && row.customCardElement == null && hasCustomCardTemplate"
                     [class.cursor-pointer]="disableRowClick == false"
-                    [attr.data-label]="'datatable_grid_template_card'"
+                    [attr.data-label]="'li_dt_card_tpl'"
                     [attr.data-value]="row.index.toString()"
                     (click)="rowClickHandler(row)">
                     <template [ngTemplateOutlet]="resolvedCardTemplate"
@@ -389,7 +389,7 @@
                 <div class="datatable-grid-default-card"
                     *ngIf="row.customCardElement == null && !hasCustomCardTemplate && row.columnsCardBody.isNotEmpty"
                     [class.cursor-pointer]="disableRowClick == false"
-                    [attr.data-label]="'datatable_grid_default_card'"
+                    [attr.data-label]="'li_dt_card_default'"
                     [attr.data-value]="row.index.toString()"
                     (click)="rowClickHandler(row)">
                     <div *ngFor="let column of row.columnsCardBody; trackBy: trackByColumnKey"
@@ -430,7 +430,7 @@
 
     <div class="datatable-footer"
         [class.datatable-footer--custom]="hasCustomFooter"
-        [attr.data-label]="'datatable_footer'">
+        [attr.data-label]="'li_dt_foot'">
         <template [ngIf]="hasCustomFooter">
             <template [ngTemplateOutlet]="resolvedFooterTemplate" [ngTemplateOutletValue]="footerTemplateContext">
             </template>
@@ -440,11 +440,11 @@
             <div class="dataTables_info"
                 role="status"
                 aria-live="polite"
-                [attr.data-label]="'datatable_pagination_summary'">
+                [attr.data-label]="'li_dt_page_summary'">
                 {{ paginationSummaryText }}
             </div>
             <div class="dataTables_paginate paging_simple_numbers datatable-pagination-scroll"
-                [attr.data-label]="'datatable_pagination'">
+                [attr.data-label]="'li_dt_page'">
                 <li-pagination appearance="datatable" variant="flat" linkClass="rounded" [collectionSize]="totalRecords"
                     [pageSize]="dataTableFilter.limit ?? 0" [page]="getCurrentPage"
                     [maxSize]="resolvedPaginationButtonQuantity" [rotate]="true" [ellipses]="false"

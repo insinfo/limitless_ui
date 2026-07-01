@@ -173,7 +173,7 @@ void main() {
     await _click(
       fixture,
       html.document.querySelector(
-        '[data-label^="custom_select_item_"][data-value="approved"]',
+        '[data-label^="li_select_item_"][data-value="approved"]',
       )!,
     );
     await _settle(fixture);
@@ -209,7 +209,7 @@ void main() {
     await _click(
       fixture,
       html.document.querySelector(
-        '[data-label^="li_multi_select_item_"][data-value="approved"]',
+        '[data-label^="li_ms_item_"][data-value="approved"]',
       )!,
     );
     await _settle(fixture);
@@ -243,7 +243,7 @@ void main() {
     await _click(
       fixture,
       html.document.querySelector(
-        '[data-label="li_date_picker_day"][data-value="2026-06-15"]',
+        '[data-label="li_dp_day"][data-value="2026-06-15"]',
       )!,
     );
     await _settle(fixture);
@@ -263,18 +263,18 @@ void main() {
     await _click(
       fixture,
       html.document.querySelector(
-        '[data-label="li_date_range_picker_day"][data-calendar="left"][data-value="2026-06-03"]',
+        '[data-label="li_drp_day"][data-calendar="left"][data-value="2026-06-03"]',
       )!,
     );
     await _click(
       fixture,
       html.document.querySelector(
-        '[data-label="li_date_range_picker_day"][data-calendar="left"][data-value="2026-06-07"]',
+        '[data-label="li_drp_day"][data-calendar="left"][data-value="2026-06-07"]',
       )!,
     );
     await _click(
       fixture,
-      html.document.querySelector('[data-label="li_date_range_picker_apply"]')!,
+      html.document.querySelector('[data-label="li_drp_apply"]')!,
     );
     await _settle(fixture);
 
@@ -294,12 +294,12 @@ void main() {
     await _click(
       fixture,
       html.document.querySelector(
-        '[data-label="li_time_picker_dial_label"][data-value="10"]',
+        '[data-label="li_tp_dial_label"][data-value="10"]',
       )!,
     );
     await _click(
       fixture,
-      html.document.querySelector('[data-label="li_time_picker_apply"]')!,
+      html.document.querySelector('[data-label="li_tp_apply"]')!,
     );
     await _settle(fixture);
 

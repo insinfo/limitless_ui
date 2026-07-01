@@ -43,12 +43,12 @@
               <p class="text-muted mb-3">{{ serviceActionsBody }}</p>
 
               <div class="demo-action-grid">
-                <button class="btn btn-success" type="button" [attr.data-label]="'sweet_alert_service_modal'" (click)="showServiceModal()">Service modal</button>
-                <button class="btn btn-outline-dark" type="button" [attr.data-label]="'sweet_alert_service_confirm'" (click)="showServiceConfirm()">Service confirm</button>
-                <button class="btn btn-info" type="button" [attr.data-label]="'sweet_alert_service_prompt'" (click)="showServicePrompt()">Service prompt</button>
-                <button class="btn btn-outline-success" type="button" [attr.data-label]="'sweet_alert_service_toast'" (click)="showServiceToast()">Service toast</button>
-                <button class="btn btn-outline-warning" type="button" [attr.data-label]="'sweet_alert_static_toast'" (click)="showStaticToast()">Static toast</button>
-                <button class="btn btn-light" type="button" [attr.data-label]="'sweet_alert_dismiss_all'" (click)="dismissAll()">Dismiss all</button>
+                <button class="btn btn-success" type="button" [attr.data-label]="'li_sa_demo_modal'" (click)="showServiceModal()">Service modal</button>
+                <button class="btn btn-outline-dark" type="button" [attr.data-label]="'li_sa_demo_confirm'" (click)="showServiceConfirm()">Service confirm</button>
+                <button class="btn btn-info" type="button" [attr.data-label]="'li_sa_demo_prompt'" (click)="showServicePrompt()">Service prompt</button>
+                <button class="btn btn-outline-success" type="button" [attr.data-label]="'li_sa_demo_toast'" (click)="showServiceToast()">Service toast</button>
+                <button class="btn btn-outline-warning" type="button" [attr.data-label]="'li_sa_demo_static_toast'" (click)="showStaticToast()">Static toast</button>
+                <button class="btn btn-light" type="button" [attr.data-label]="'li_sa_demo_dismiss'" (click)="dismissAll()">Dismiss all</button>
               </div>
             </div>
 
@@ -170,10 +170,10 @@
                 <button class="btn btn-light" type="button" (click)="showInputExample('password')">{{ isPt ? 'Senha' : 'Password input' }}</button>
                 <button class="btn btn-light" type="button" (click)="showInputExample('textarea')">{{ isPt ? 'Textarea' : 'Textarea input' }}</button>
                 <button class="btn btn-outline-primary" type="button" (click)="showConfiguredTextareaPrompt()">{{ isPt ? 'Textarea customizado' : 'Configured textarea' }}</button>
-                <button class="btn btn-light" type="button" [attr.data-label]="'sweet_alert_input_select'" (click)="showInputExample('select')">{{ isPt ? 'Select' : 'Select input' }}</button>
-                <button class="btn btn-light" type="button" [attr.data-label]="'sweet_alert_input_radio'" (click)="showInputExample('radio')">{{ isPt ? 'Radio' : 'Radio input' }}</button>
-                <button class="btn btn-light" type="button" [attr.data-label]="'sweet_alert_input_checkbox'" (click)="showInputExample('checkbox')">{{ isPt ? 'Checkbox' : 'Checkbox input' }}</button>
-                <button class="btn btn-light" type="button" [attr.data-label]="'sweet_alert_input_range'" (click)="showInputExample('range')">{{ isPt ? 'Range' : 'Range input' }}</button>
+                <button class="btn btn-light" type="button" [attr.data-label]="'li_sa_demo_select'" (click)="showInputExample('select')">{{ isPt ? 'Select' : 'Select input' }}</button>
+                <button class="btn btn-light" type="button" [attr.data-label]="'li_sa_demo_radio'" (click)="showInputExample('radio')">{{ isPt ? 'Radio' : 'Radio input' }}</button>
+                <button class="btn btn-light" type="button" [attr.data-label]="'li_sa_demo_checkbox'" (click)="showInputExample('checkbox')">{{ isPt ? 'Checkbox' : 'Checkbox input' }}</button>
+                <button class="btn btn-light" type="button" [attr.data-label]="'li_sa_demo_range'" (click)="showInputExample('range')">{{ isPt ? 'Range' : 'Range input' }}</button>
               </div>
             </div>
 

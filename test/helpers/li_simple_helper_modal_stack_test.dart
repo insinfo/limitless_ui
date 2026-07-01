@@ -108,10 +108,9 @@ void main() {
 
     expect(helperDialog, isNotNull);
     expect(helperBackdrop, isNotNull);
-    expect(helperDialog!.getAttribute('data-label'), 'li_simple_dialog_modal');
+    expect(helperDialog!.getAttribute('data-label'), 'li_sd_modal');
     expect(helperDialog.getAttribute('data-open'), 'true');
-    expect(helperBackdrop!.getAttribute('data-label'),
-        'li_simple_dialog_backdrop');
+    expect(helperBackdrop!.getAttribute('data-label'), 'li_sd_backdrop');
     expect(
         helperDialog.style.zIndex, '${LiSimpleDialogComponent.defaultZIndex}');
     expect(

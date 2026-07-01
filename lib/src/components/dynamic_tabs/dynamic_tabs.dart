@@ -45,7 +45,7 @@ class LiTabsComponent implements OnInit, AfterContentInit {
   bool get usesBodyColorOnActiveTab => activeTextBodyColor;
 
   @HostBinding('attr.data-label')
-  String get hostDataLabel => 'li_tabs';
+  String get hostDataLabel => 'li_tab';
 
   @HostBinding('attr.data-value')
   String get hostDataValue => activeTabValue;

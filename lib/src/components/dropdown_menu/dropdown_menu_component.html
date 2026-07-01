@@ -1,12 +1,12 @@
 <div [class]="resolvedHostClasses"
-    [attr.data-label]="'li_dropdown_menu'"
+    [attr.data-label]="'li_dm'"
     [attr.data-open]="isOpen ? 'true' : 'false'"
     [attr.data-value]="value">
   <button
   #triggerButton
       type="button"
       [class]="resolvedTriggerClasses"
-      [attr.data-label]="'li_dropdown_menu_btn_toggle'"
+      [attr.data-label]="'li_dm_btn_toggle'"
       [attr.data-open]="isOpen ? 'true' : 'false'"
       [attr.data-value]="value"
       [attr.aria-label]="ariaLabel.isNotEmpty ? ariaLabel : null"
@@ -19,13 +19,13 @@
   <div
       *ngIf="usesMobilePresentation"
       class="li-dropdown-menu__mobile-backdrop"
-      [attr.data-label]="'li_dropdown_menu_mobile_backdrop'"
+      [attr.data-label]="'li_dm_mobile_backdrop'"
       (click)="closeDropdown()"></div>
 
   <div
       #menuElement
       [class]="resolvedMenuClasses"
-      [attr.data-label]="'li_dropdown_menu_panel'"
+      [attr.data-label]="'li_dm_panel'"
       [attr.data-open]="isOpen ? 'true' : 'false'"
       [attr.data-value]="value"
       [style.max-height]="resolvedMenuMaxHeight"
@@ -36,7 +36,7 @@
       <button
           type="button"
           class="li-dropdown-menu__mobile-close"
-          [attr.data-label]="'li_dropdown_menu_mobile_close'"
+          [attr.data-label]="'li_dm_mobile_close'"
           [attr.aria-label]="mobileCloseButtonAriaLabel"
           (click)="closeFromMobilePresentation()">
         <i class="ph ph-x"></i>
@@ -54,7 +54,7 @@
             *ngIf="!option.divider"
           type="button"
           [class]="resolvedItemClasses(option)"
-          [attr.data-label]="'li_dropdown_menu_item'"
+          [attr.data-label]="'li_dm_item'"
           [attr.data-value]="option.value"
           [disabled]="option.disabled"
             (click)="selectOption(option, $event)">

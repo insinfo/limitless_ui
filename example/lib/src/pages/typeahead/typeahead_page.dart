@@ -130,15 +130,15 @@ Future<List<Map<String, dynamic>>> remoteCitySearch(String term) async {
 </li-typeahead>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '.demo-page [data-label="li_typeahead_input"]');
+await clickFirstVisible(page, '.demo-page [data-label="li_ta_input"]');
 await page.keyboard.type('sa');
 final popupId = await waitForAttributeMatching(
   page,
-  '.demo-page [data-label="li_typeahead_input"]',
+  '.demo-page [data-label="li_ta_input"]',
   'aria-controls',
   (value) => value != null && value.isNotEmpty,
 );
-await clickFirstVisible(page, '#\$popupId [data-label^="li_typeahead_item_"]');''';
+await clickFirstVisible(page, '#\$popupId [data-label^="li_ta_item_"]');''';
 
   final DemoI18nService i18n;
   bool get _isPt => i18n.isPortuguese;

@@ -46,15 +46,15 @@ class TimePickerPageComponent {
 </li-time-picker>''';
 
   static const String automationHooksSnippet = '''
-await clickFirstVisible(page, '[data-label="li_time_picker_trigger"]');
+await clickFirstVisible(page, '[data-label="li_tp_trigger"]');
 await clickFirstVisible(
   page,
-  '[data-label="li_time_picker_dial_label"][data-value="10"]',
+  '[data-label="li_tp_dial_label"][data-value="10"]',
 );
-await clickFirstVisible(page, '[data-label="li_time_picker_apply"]');
+await clickFirstVisible(page, '[data-label="li_tp_apply"]');
 await waitForAttributeMatching(
   page,
-  '[data-label="li_time_picker"]',
+  '[data-label="li_tp"]',
   'data-value',
   (value) => value != null && value.isNotEmpty,
 );''';

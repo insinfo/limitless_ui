@@ -1,11 +1,11 @@
-<div class="time-picker-wrapper" [attr.data-label]="'li_time_picker'" [attr.data-value]="displayValue">
+<div class="time-picker-wrapper" [attr.data-label]="'li_tp'" [attr.data-value]="displayValue">
     <div *ngIf="usesMobilePresentation" class="time-picker-mobile-backdrop" (click)="close()"></div>
     <div *ngIf="triggerTemplate != null" #triggerElement
         class="time-picker-custom-trigger"
         [class.disabled]="isDisabled"
         [attr.name]="resolvedName"
         [attr.data-li-form-focus-target]="'true'"
-        [attr.data-label]="'li_time_picker_trigger'"
+        [attr.data-label]="'li_tp_trigger'"
         [attr.data-value]="displayValue"
         role="button"
         [attr.aria-expanded]="isOpen.toString()"
@@ -21,18 +21,18 @@
     </div>
 
     <div *ngIf="triggerTemplate == null && usesOverlayTriggerIcon" #triggerElement class="time-picker-trigger-shell" [class.disabled]="isDisabled" (click)="toggleOpen()"
-        [attr.data-label]="'li_time_picker_trigger'"
+        [attr.data-label]="'li_tp_trigger'"
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedOverlayInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
             [attr.name]="resolvedName"
-            [attr.data-label]="'li_time_picker_input'"
+            [attr.data-label]="'li_tp_input'"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null">
         <div *ngIf="showsClearButton || showsTriggerIcon" class="time-picker-overlay-actions">
             <button *ngIf="showsClearButton" type="button" class="btn time-picker-overlay-button" [disabled]="isDisabled"
-                [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_time_picker_clear_trigger'" (click)="clearFromTrigger($event)">
+                [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_tp_clear_trigger'" (click)="clearFromTrigger($event)">
                 <i class="ph ph-x"></i>
             </button>
             <button *ngIf="showsTriggerIcon" type="button" class="btn time-picker-overlay-button" tabindex="-1" [disabled]="isDisabled">
@@ -41,17 +41,17 @@
         </div>
     </div>
     <div *ngIf="triggerTemplate == null && !usesOverlayTriggerIcon" #triggerElement [class]="resolvedInputGroupClass" (click)="toggleOpen()"
-        [attr.data-label]="'li_time_picker_trigger'"
+        [attr.data-label]="'li_tp_trigger'"
         [attr.data-value]="displayValue">
         <input type="text" [attr.data-li-form-focus-target]="'true'" [class]="resolvedInputClass" [value]="displayValue" [placeholder]="effectivePlaceholder"
             readonly [disabled]="isDisabled" [required]="required"
             [attr.name]="resolvedName"
-            [attr.data-label]="'li_time_picker_input'"
+            [attr.data-label]="'li_tp_input'"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null">
         <button *ngIf="showsClearButton" type="button" class="btn time-picker-trigger-button" [disabled]="isDisabled"
-            [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_time_picker_clear_trigger'" (click)="clearFromTrigger($event)">
+            [attr.aria-label]="clearAriaLabel" [attr.data-label]="'li_tp_clear_trigger'" (click)="clearFromTrigger($event)">
             <i class="ph ph-x"></i>
         </button>
         <button *ngIf="showsTriggerIcon" type="button" class="btn time-picker-trigger-button" tabindex="-1" [disabled]="isDisabled">
@@ -62,7 +62,7 @@
     <div *ngIf="hasHelperText" class="form-text mt-1">{{ helperText }}</div>
 
     <div #panelElement class="time-picker-panel daterangepicker single ltr show-calendar opensright"
-        [attr.data-label]="'li_time_picker_panel'"
+        [attr.data-label]="'li_tp_panel'"
         [class.time-picker-panel--mobile-modal]="usesMobileModal"
         [class.time-picker-panel--mobile-sheet]="usesMobileSheet"
         [class.is-open]="isOpen"
@@ -76,7 +76,7 @@
                     inputmode="numeric"
                     maxlength="2"
                     class="time-picker-display-chip"
-                    [attr.data-label]="'li_time_picker_hour_input'"
+                    [attr.data-label]="'li_tp_hour_input'"
                     [class.active]="isHourMode"
                     [value]="editableHourText"
                     (focus)="onHourFocus()"
@@ -89,7 +89,7 @@
                     inputmode="numeric"
                     maxlength="2"
                     class="time-picker-display-chip"
-                    [attr.data-label]="'li_time_picker_minute_input'"
+                    [attr.data-label]="'li_tp_minute_input'"
                     [class.active]="isMinuteMode"
                     [value]="editableMinuteText"
                     (focus)="onMinuteFocus()"
@@ -98,10 +98,10 @@
                     (blur)="onMinuteBlur()"
                     (keydown)="onChipKeyDown($event, false)">
                 <div *ngIf="showMeridiem" class="time-picker-meridiem">
-                    <button type="button" class="time-picker-meridiem-button" [class.active]="!isPm" [attr.data-label]="'li_time_picker_am'" (click)="setMeridiem(false)">
+                    <button type="button" class="time-picker-meridiem-button" [class.active]="!isPm" [attr.data-label]="'li_tp_am'" (click)="setMeridiem(false)">
                         {{ amLabel }}
                     </button>
-                    <button type="button" class="time-picker-meridiem-button" [class.active]="isPm" [attr.data-label]="'li_time_picker_pm'" (click)="setMeridiem(true)">
+                    <button type="button" class="time-picker-meridiem-button" [class.active]="isPm" [attr.data-label]="'li_tp_pm'" (click)="setMeridiem(true)">
                         {{ pmLabel }}
                     </button>
                 </div>
@@ -122,7 +122,7 @@
                 <div class="time-picker-center-dot"></div>
                 <button type="button" *ngFor="let label of visibleDialLabels; trackBy: trackByDialLabel"
                     [class]="dialLabelClass(label)"
-                    [attr.data-label]="'li_time_picker_dial_label'"
+                    [attr.data-label]="'li_tp_dial_label'"
                     [attr.data-value]="label.value.toString()"
                     [style.left.%]="label.leftPercent" [style.top.%]="label.topPercent" (click)="onDialLabelClick(label, $event)">
                     {{ label.label }}
@@ -130,9 +130,9 @@
             </div>
 
             <div class="time-picker-footer">
-                <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_time_picker_clear'" (click)="clear()">{{ clearLabel }}</button>
-                <button type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_time_picker_cancel'" (click)="close()">{{ cancelLabel }}</button>
-                <button type="button" class="btn btn-primary btn-sm" [attr.data-label]="'li_time_picker_apply'" (click)="apply()">{{ okLabel }}</button>
+                <button *ngIf="showClearButton" type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_tp_clear'" (click)="clear()">{{ clearLabel }}</button>
+                <button type="button" class="btn btn-light btn-sm" [attr.data-label]="'li_tp_cancel'" (click)="close()">{{ cancelLabel }}</button>
+                <button type="button" class="btn btn-primary btn-sm" [attr.data-label]="'li_tp_apply'" (click)="apply()">{{ okLabel }}</button>
             </div>
         </div>
     </div>

@@ -25,7 +25,7 @@ class LiTabxDirective {
   bool tabPane = true;
 
   @HostBinding('attr.data-label')
-  String get hostDataLabel => 'li_tabs_panel';
+  String get hostDataLabel => 'li_tab_panel';
 
   @HostBinding('attr.data-value')
   String get hostDataValue {

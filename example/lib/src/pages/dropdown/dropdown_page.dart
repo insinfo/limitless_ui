@@ -168,11 +168,11 @@ class DropdownPageComponent {
 await clickFirstVisible(page, '[aria-label="compact-filters"]');
 await clickFirstVisible(
   page,
-  '[data-label="li_dropdown_menu_item"][data-value="pending"]',
+  '[data-label="li_dm_item"][data-value="pending"]',
 );
 await waitForAttributeMatching(
   page,
-  '[data-label="dropdown_compact_menu_state"]',
+  '[data-label="li_dd_compact_state"]',
   'data-value',
   (value) => value != null && value.contains('pending'),
 );''';

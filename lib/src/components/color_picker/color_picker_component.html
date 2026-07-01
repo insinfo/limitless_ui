@@ -1,13 +1,13 @@
-<div class="color-picker-wrapper" [class.sp-flat-host]="flat" [attr.data-label]="'li_color_picker'" [attr.data-value]="value">
-    <div *ngIf="usesMobilePresentation" class="color-picker-mobile-backdrop" [attr.data-label]="'li_color_picker_backdrop'" (click)="close(source: 'backdrop')"></div>
+<div class="color-picker-wrapper" [class.sp-flat-host]="flat" [attr.data-label]="'li_cp'" [attr.data-value]="value">
+    <div *ngIf="usesMobilePresentation" class="color-picker-mobile-backdrop" [attr.data-label]="'li_cp_backdrop'" (click)="close(source: 'backdrop')"></div>
     <div *ngIf="!flat" class="color-picker-trigger">
         <button #triggerElement type="button" class="btn btn-light sp-replacer" [class.sp-active]="isOpen"
             [class.sp-disabled]="isDisabled" [class.is-invalid]="effectiveInvalid" [class.is-valid]="effectiveValid"
             [disabled]="isDisabled" [attr.title]="triggerTitle" [attr.aria-label]="resolvedTitleText"
             [attr.name]="resolvedName"
             [attr.aria-describedby]="resolvedDescribedBy" [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
-            [attr.data-invalid]="effectiveInvalid ? 'true' : null" [attr.data-label]="'li_color_picker_trigger'" [attr.data-value]="value" (click)="toggleOpen()">
-            <span class="sp-preview" [attr.data-label]="'li_color_picker_preview'">
+            [attr.data-invalid]="effectiveInvalid ? 'true' : null" [attr.data-label]="'li_cp_trigger'" [attr.data-value]="value" (click)="toggleOpen()">
+            <span class="sp-preview" [attr.data-label]="'li_cp_preview'">
                 <span class="sp-preview-inner" [class.sp-clear-display]="isCommittedEmpty"
                     [liCssStyle]="triggerSwatchStyle"></span>
             </span>
@@ -25,16 +25,16 @@
         [class.sp-palette-only]="isPaletteOnlyView" [class.sp-initial-disabled]="!(showInitial && hasInitialColor)"
         [class.sp-dragging]="isDragging" [class.sp-container--mobile-modal]="usesMobileModal"
         [class.sp-container--mobile-sheet]="usesMobileSheet" (click)="onPanelClick($event)"
-        [attr.data-label]="'li_color_picker_panel'"
+        [attr.data-label]="'li_cp_panel'"
         [attr.data-value]="draftValueText"
         [attr.role]="usesMobilePresentation ? 'dialog' : null"
         [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
         <div class="sp-palette-container">
-            <div *ngIf="hasPaletteContent" class="sp-palette sp-thumb sp-cf" [attr.data-label]="'li_color_picker_palette'">
+            <div *ngIf="hasPaletteContent" class="sp-palette sp-thumb sp-cf" [attr.data-label]="'li_cp_palette'">
                 <div *ngFor="let row of resolvedPaletteRows; trackBy: trackByPaletteRow" [class]="row.rowClass">
                     <span *ngFor="let swatch of row.swatches; trackBy: trackBySwatch" [class]="swatch.thumbClass"
                         [attr.title]="swatch.colorText" [attr.data-color]="swatch.colorText"
-                        [attr.data-label]="'li_color_picker_palette_swatch'"
+                        [attr.data-label]="'li_cp_swatch'"
                         [attr.data-value]="swatch.colorText"
                         (click)="onPaletteSelect(swatch.colorText)">
                         <span class="sp-thumb-inner" [liCssStyle]="swatch.swatchStyle"></span>
@@ -44,7 +44,7 @@
                 <div *ngFor="let row of selectionPaletteRows; trackBy: trackByPaletteRow" [class]="row.rowClass">
                     <span *ngFor="let swatch of row.swatches; trackBy: trackBySwatch" [class]="swatch.thumbClass"
                         [attr.title]="swatch.colorText" [attr.data-color]="swatch.colorText"
-                        [attr.data-label]="'li_color_picker_selection_swatch'"
+                        [attr.data-label]="'li_cp_sel_swatch'"
                         [attr.data-value]="swatch.colorText"
                         (click)="onPaletteSelect(swatch.colorText)">
                         <span class="sp-thumb-inner" [liCssStyle]="swatch.swatchStyle"></span>
@@ -53,7 +53,7 @@
             </div>
 
             <div *ngIf="showTogglePaletteButton" class="sp-palette-button-container sp-cf">
-                <button type="button" class="btn btn-light btn-sm sp-palette-toggle" [attr.data-label]="'li_color_picker_palette_toggle'" (click)="togglePaletteOnlyView()">
+                <button type="button" class="btn btn-light btn-sm sp-palette-toggle" [attr.data-label]="'li_cp_palette_btn'" (click)="togglePaletteOnlyView()">
                     {{ togglePaletteText }}
                 </button>
             </div>
@@ -64,36 +64,36 @@
                 <div class="sp-fill"></div>
 
                 <div *ngIf="canShowEditor" class="sp-top-inner">
-                    <div #colorAreaElement class="sp-color" [liCssStyle]="colorAreaStyle" [attr.data-label]="'li_color_picker_color_area'"
+                    <div #colorAreaElement class="sp-color" [liCssStyle]="colorAreaStyle" [attr.data-label]="'li_cp_area'"
                         (mousedown)="onColorMouseDown($event)" (touchstart)="onColorTouchStart($event)">
                         <div class="sp-sat">
                             <div class="sp-val">
-                                <div class="sp-dragger" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="draggerStyle" [attr.data-label]="'li_color_picker_dragger'"></div>
+                                <div class="sp-dragger" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="draggerStyle" [attr.data-label]="'li_cp_dragger'"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div *ngIf="allowEmpty" class="sp-clear sp-clear-display" [attr.title]="clearText" [attr.data-label]="'li_color_picker_clear'" (click)="clear()"></div>
+                    <div *ngIf="allowEmpty" class="sp-clear sp-clear-display" [attr.title]="clearText" [attr.data-label]="'li_cp_clear'" (click)="clear()"></div>
 
-                    <div #hueElement class="sp-hue" [attr.data-label]="'li_color_picker_hue'"
+                    <div #hueElement class="sp-hue" [attr.data-label]="'li_cp_hue'"
                         (mousedown)="onHueMouseDown($event)"
                         (touchstart)="onHueTouchStart($event)">
-                        <div class="sp-slider" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="hueSliderStyle" [attr.data-label]="'li_color_picker_hue_slider'"></div>
+                        <div class="sp-slider" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="hueSliderStyle" [attr.data-label]="'li_cp_hue_slider'"></div>
                     </div>
                 </div>
 
                 <div *ngIf="showAlpha && canShowEditor" #alphaElement class="sp-alpha"
-                    [attr.data-label]="'li_color_picker_alpha'"
+                    [attr.data-label]="'li_cp_alpha'"
                     (mousedown)="onAlphaMouseDown($event)" (touchstart)="onAlphaTouchStart($event)">
                     <div class="sp-alpha-inner" [liCssStyle]="alphaGradientStyle">
-                        <div class="sp-alpha-handle" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="alphaHandleStyle" [attr.data-label]="'li_color_picker_alpha_handle'"></div>
+                        <div class="sp-alpha-handle" [class.sp-hidden]="isDraftEmpty" [liCssStyle]="alphaHandleStyle" [attr.data-label]="'li_cp_alpha_handle'"></div>
                     </div>
                 </div>
             </div>
 
             <div *ngIf="showInput && canShowEditor" class="sp-input-container sp-cf">
                 <input type="text" [class]="resolvedInputClass" [value]="manualInputValue"
-                    [attr.data-label]="'li_color_picker_input'"
+                    [attr.data-label]="'li_cp_input'"
                     [attr.name]="resolvedName"
                     [placeholder]="effectivePlaceholder" (input)="onTextInput($event.target.value)"
                     (keydown)="onTextInputKeyDown($event)">
@@ -101,11 +101,11 @@
 
             <div *ngIf="showInitial && hasInitialColor && canShowEditor" class="sp-initial sp-thumb sp-cf">
                 <div class="sp-palette-row sp-palette-row-initial">
-                    <button type="button" [class]="currentThumbClass" [attr.title]="currentThumbTitle" [attr.data-label]="'li_color_picker_current_swatch'" [attr.data-value]="draftValueText">
+                    <button type="button" [class]="currentThumbClass" [attr.title]="currentThumbTitle" [attr.data-label]="'li_cp_current'" [attr.data-value]="draftValueText">
                         <span class="sp-thumb-inner" [liCssStyle]="currentThumbStyle"></span>
                     </button>
                     <button type="button" [class]="initialThumbClass" [attr.title]="initialThumbTitle"
-                        [attr.data-label]="'li_color_picker_initial_swatch'"
+                        [attr.data-label]="'li_cp_initial'"
                         [attr.data-value]="initialThumbTitle"
                         (click)="restoreInitial()">
                         <span class="sp-thumb-inner" [liCssStyle]="initialThumbStyle"></span>
@@ -114,8 +114,8 @@
             </div>
 
             <div *ngIf="shouldShowButtons && canShowEditor" class="sp-button-container sp-cf">
-                <button type="button" class="btn btn-light btn-sm sp-cancel" [attr.data-label]="'li_color_picker_cancel'" (click)="cancel()">{{ cancelText }}</button>
-                <button type="button" class="btn btn-primary btn-sm sp-choose" [attr.data-label]="'li_color_picker_choose'" (click)="apply()">{{ chooseText }}</button>
+                <button type="button" class="btn btn-light btn-sm sp-cancel" [attr.data-label]="'li_cp_cancel'" (click)="cancel()">{{ cancelText }}</button>
+                <button type="button" class="btn btn-primary btn-sm sp-choose" [attr.data-label]="'li_cp_choose'" (click)="apply()">{{ chooseText }}</button>
             </div>
         </div>
     </div>

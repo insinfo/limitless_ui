@@ -279,7 +279,7 @@ void main() {
     );
 
     final firstRow = html.document.querySelector(
-      '.modal.show [data-label="datatable_row_0"]',
+      '.modal.show [data-label="li_dt_row_0"]',
     ) as html.TableRowElement?;
     expect(firstRow, isNotNull);
 

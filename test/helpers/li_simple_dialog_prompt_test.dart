@@ -27,32 +27,32 @@ void main() {
     expect(input, isNotNull);
     expect(
       html.document
-          .querySelector('[data-label="li_simple_dialog_root"]')
+          .querySelector('[data-label="li_sd_root"]')
           ?.getAttribute('data-open'),
       'true',
     );
     expect(
       html.document
-          .querySelector('[data-label="li_simple_dialog_modal"]')
+          .querySelector('[data-label="li_sd_modal"]')
           ?.getAttribute('data-value'),
       'prompt',
     );
     expect(
-      html.document.querySelector('[data-label="li_simple_dialog_body"]'),
+      html.document.querySelector('[data-label="li_sd_body"]'),
       isNotNull,
     );
-    expect(input!.getAttribute('data-label'), 'li_simple_dialog_input');
+    expect(input!.getAttribute('data-label'), 'li_sd_input');
     expect(input.getAttribute('data-value'), 'text');
     expect(
-      html.document.querySelector('[data-label="li_simple_dialog_confirm"]'),
+      html.document.querySelector('[data-label="li_sd_confirm"]'),
       isNotNull,
     );
     expect(
-      html.document.querySelector('[data-label="li_simple_dialog_cancel"]'),
+      html.document.querySelector('[data-label="li_sd_cancel"]'),
       isNotNull,
     );
     expect(
-      html.document.querySelector('[data-label="li_simple_dialog_backdrop"]'),
+      html.document.querySelector('[data-label="li_sd_backdrop"]'),
       isNotNull,
     );
     expect(input.placeholder, 'release-2026');
@@ -107,7 +107,7 @@ void main() {
         as html.TextAreaElement?;
     expect(textarea, isNotNull);
     expect(textarea!.classes.contains('correction-reason'), isTrue);
-    expect(textarea.getAttribute('data-label'), 'li_simple_dialog_input');
+    expect(textarea.getAttribute('data-label'), 'li_sd_input');
     expect(textarea.getAttribute('data-value'), 'textarea');
     expect(textarea.rows, 6);
     expect(textarea.maxLength, 240);
@@ -118,9 +118,7 @@ void main() {
     await _settle();
     expect(textarea.classes.contains('is-invalid'), isTrue);
     expect(
-      html.document
-          .querySelector('[data-label="li_simple_dialog_validation"]')!
-          .text,
+      html.document.querySelector('[data-label="li_sd_validation"]')!.text,
       contains('Reason is required'),
     );
 
@@ -144,32 +142,32 @@ void main() {
 
     expect(
       html.document
-          .querySelector('[data-label="li_simple_dialog_root"]')
+          .querySelector('[data-label="li_sd_root"]')
           ?.getAttribute('data-value'),
       'confirm',
     );
     expect(
       html.document
-          .querySelector('[data-label="li_simple_dialog_modal"]')
+          .querySelector('[data-label="li_sd_modal"]')
           ?.getAttribute('data-open'),
       'true',
     );
     expect(
-      html.document.querySelector('[data-label="li_simple_dialog_title"]'),
+      html.document.querySelector('[data-label="li_sd_title"]'),
       isNotNull,
     );
     expect(
-      html.document.querySelector(
-          '[data-label="li_simple_dialog_cancel"][data-value="confirm"]'),
+      html.document
+          .querySelector('[data-label="li_sd_cancel"][data-value="confirm"]'),
       isNotNull,
     );
     expect(
-      html.document.querySelector(
-          '[data-label="li_simple_dialog_confirm"][data-value="confirm"]'),
+      html.document
+          .querySelector('[data-label="li_sd_confirm"][data-value="confirm"]'),
       isNotNull,
     );
 
-    _click('[data-label="li_simple_dialog_confirm"]');
+    _click('[data-label="li_sd_confirm"]');
     final result = await future;
 
     expect(result, isTrue);
