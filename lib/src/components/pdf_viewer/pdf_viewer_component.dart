@@ -8,7 +8,7 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 
 import '../dropdown_menu/dropdown_menu_component.dart';
-import '../modal_component/modal_component.dart';
+import '../modal/modal_component.dart';
 import 'pdf_viewer_browser_bridge.dart';
 import 'pdf_viewer_document_controller.dart';
 import 'pdf_viewer_page_view.dart';

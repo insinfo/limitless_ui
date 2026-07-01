@@ -1,27 +1,26 @@
 import 'dart:html';
-
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 
-import 'custom_select.dart';
+import 'li_multi_select.dart';
 
 @Component(
-  selector: 'li-option',
-  templateUrl: 'custom_option.html',
+  selector: 'li-multi-option',
+  templateUrl: 'li_multi_option.html',
   directives: [
     coreDirectives,
     formDirectives,
   ],
 )
-class LiOptionComponent {
+class LiMultiOptionComponent {
   @Input('value')
   dynamic value;
 
   final Element rootElement;
 
-  LiOptionComponent(this.rootElement);
+  LiMultiOptionComponent(this.rootElement);
 
-  LiSelectComponent? parent;
+  LiMultiSelectComponent? parent;
 
   @HostListener('click')
   void handleOnClick(Event e) {

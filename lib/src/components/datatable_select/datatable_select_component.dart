@@ -13,7 +13,7 @@ import '../../validation/li_validation_issue.dart';
 import '../datatable/datatable_col.dart';
 import '../datatable/datatable_component.dart';
 import '../datatable/datatable_settings.dart';
-import '../modal_component/modal_component.dart';
+import '../modal/modal_component.dart';
 
 class LiDatatableSelectTriggerContext {
   LiDatatableSelectTriggerContext({

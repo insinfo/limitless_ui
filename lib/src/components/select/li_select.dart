@@ -14,7 +14,7 @@ import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
 import '../../validation/li_validation_issue.dart';
-import 'custom_option.dart';
+import 'li_option.dart';
 
 class CustomSelectItem {
   String text;
@@ -74,8 +74,8 @@ class LiSelectTriggerDirective {
 @Component(
   selector: 'li-select',
   changeDetection: ChangeDetectionStrategy.onPush,
-  templateUrl: 'custom_select.html',
-  styleUrls: ['custom_select.css'],
+  templateUrl: 'li_select.html',
+  styleUrls: ['li_select.css'],
   directives: [
     coreDirectives,
     formDirectives,
@@ -349,7 +349,7 @@ class LiSelectComponent
       ]);
 
   @Input('id')
-  String id = 'custom_select_1';
+  String id = 'li_select_1';
 
   @Input()
   String? name;

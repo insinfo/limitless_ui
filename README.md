@@ -27,7 +27,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.23`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.33`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -48,7 +48,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.23
+  limitless_ui: ^1.0.0-dev.33
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -57,7 +57,7 @@ If the application will use `li-datatable`, `li-datatable-select`, `li-select`, 
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.23
+  limitless_ui: ^1.0.0-dev.33
   essential_core: ^1.2.0
 ```
 
@@ -409,6 +409,8 @@ Selection-oriented controls also render stable browser automation hooks:
 - state attributes such as `data-open`, `data-current-value`, and `aria-expanded` are available on controls where open/selected state matters.
 
 These hooks are part of the testability contract for browser automation. Prefer them over styling classes, translated labels, generated ids, or brittle DOM depth selectors.
+
+For a complete Puppeteer guide using `puppeteer: ^3.16.0`, including reusable test helpers and the hook reference table, see [docs/browser_automation_puppeteer.md](docs/browser_automation_puppeteer.md).
 
 Form controls also accept an optional `name` input and reflect it on the
 interactive DOM element, such as the inner input, combobox trigger, slider, or
@@ -2173,7 +2175,7 @@ Main features:
 
 References:
 
-- [lib/src/components/select/custom_select.dart](lib/src/components/select/custom_select.dart)
+- [lib/src/components/select/li_select.dart](lib/src/components/select/li_select.dart)
 - [example/lib/src/pages/multi_select/multi_select_page.dart](example/lib/src/pages/multi_select/multi_select_page.dart)
 - [example/lib/src/pages/multi_select/multi_select_page.html](example/lib/src/pages/multi_select/multi_select_page.html)
 

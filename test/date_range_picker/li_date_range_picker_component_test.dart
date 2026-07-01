@@ -507,7 +507,7 @@ void main() {
     );
 
     final customRangeButton = html.document.querySelector(
-      '[data-label="li_drp_custom_range"]',
+      '[data-label="li_drp_range"]',
     ) as html.ButtonElement;
 
     await fixture.update((_) {
@@ -572,7 +572,7 @@ void main() {
     );
     expect(
       html.document
-          .querySelector('[data-label="li_drp_custom_range"]')!
+          .querySelector('[data-label="li_drp_range"]')!
           .classes
           .contains('active'),
       isTrue,
@@ -601,7 +601,7 @@ void main() {
     );
     expect(
       html.document
-          .querySelector('[data-label="li_drp_custom_range"]')!
+          .querySelector('[data-label="li_drp_range"]')!
           .classes
           .contains('active'),
       isTrue,

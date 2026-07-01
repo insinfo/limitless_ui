@@ -15,7 +15,7 @@ import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
 import '../../validation/li_validation_issue.dart';
-import 'custom_multi_option.dart';
+import 'li_multi_option.dart';
 
 class CustomMultiSelectItem {
   String text;
@@ -135,8 +135,8 @@ class LiMultiSelectTriggerDirective {
 /// `<li-multi-select [dataSource]="dropdownOptions" [fields]="{'text': 'name', 'value': 'value'}" (currentValueChange)="dropdownValueChanged($event)"></li-multi-select>`
 @Component(
   selector: 'li-multi-select',
-  templateUrl: 'custom_multi_select.html',
-  styleUrls: ['custom_multi_select.css'],
+  templateUrl: 'li_multi_select.html',
+  styleUrls: ['li_multi_select.css'],
   directives: [
     coreDirectives,
     formDirectives,

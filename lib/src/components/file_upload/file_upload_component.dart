@@ -11,7 +11,7 @@ import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 
 import '../../directives/li_form_directive.dart';
-import '../modal_component/modal_component.dart';
+import '../modal/modal_component.dart';
 import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';

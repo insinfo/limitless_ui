@@ -224,7 +224,7 @@ void main() {
       );
       await clickFirstVisible(
         page,
-        '[data-label="li_drp_custom_range"]',
+        '[data-label="li_drp_range"]',
       );
       await waitForSelectorCountAtLeast(
         page,
@@ -234,7 +234,7 @@ void main() {
       final customRangeMetrics = await page.evaluate(
         r'''() => {
           const panel = document.querySelector('[data-label="li_drp_panel"].is-open');
-          const custom = document.querySelector('[data-label="li_drp_custom_range"]');
+          const custom = document.querySelector('[data-label="li_drp_range"]');
           const thisMonth = document.querySelector('[data-label="li_drp_preset"][data-value="this_month"]');
           const calendar = document.querySelector('[data-label="li_drp_panel"].is-open .drp-calendar');
           const panelRect = panel.getBoundingClientRect();
@@ -502,7 +502,7 @@ void main() {
 
       await clickFirstVisible(
         page,
-        '[data-label="li_drp_custom_range"]',
+        '[data-label="li_drp_range"]',
       );
       await waitForSelectorCountAtLeast(
         page,

@@ -31,8 +31,8 @@ class LiTreeViewNodeDirective {
 
 @Component(
   selector: 'li-treeview',
-  styleUrls: ['simple_treeview.css'],
-  templateUrl: 'simple_treeview.html',
+  styleUrls: ['li_treeview.css'],
+  templateUrl: 'li_treeview.html',
   directives: [
     coreDirectives,
   ],
