@@ -158,7 +158,11 @@ class LiNativeValidationFeedbackDirective implements AfterViewInit, OnDestroy {
     _formSubmissionSubscription =
         _formDirective?.submissionStateChanges.listen((submitted) {
       _formSubmitted = submitted;
-      _scheduleSync();
+      if (_feedbackElement == null) {
+        _scheduleSync();
+      } else {
+        _sync();
+      }
     });
   }
 
