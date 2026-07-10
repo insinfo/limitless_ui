@@ -1318,11 +1318,9 @@ class LiPdfViewerComponent
       LiDropdownMenuOption(
         value: 'zoom-open',
         label: labels.selectZoomTitle,
-        description: currentScaleLabel,
         iconClass: 'ph ph-magnifying-glass',
       ),
     );
-    mobileOptions.add(const LiDropdownMenuOption(divider: true));
     if (enableFitWidthAction) {
       mobileOptions.add(
         LiDropdownMenuOption(
