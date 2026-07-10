@@ -189,6 +189,50 @@
     transform: none !important;
 }
 
+.daterangepicker.date-range-open .date-range-mobile-header {
+    display: none;
+}
+
+.daterangepicker.date-range-open.date-range-open--mobile-modal .date-range-mobile-header,
+.daterangepicker.date-range-open.date-range-open--mobile-sheet .date-range-mobile-header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: max(0.75rem, env(safe-area-inset-top)) 1rem 0.75rem;
+    border-bottom: var(--border-width) solid var(--border-color);
+    background: var(--drp-bg, var(--card-bg, var(--white)));
+}
+
+.date-range-mobile-title {
+    min-width: 0;
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.date-range-mobile-close {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: var(--border-radius);
+}
+
+.date-range-mobile-close:hover,
+.date-range-mobile-close:focus {
+    background: color-mix(in srgb, var(--body-color) 8%, transparent);
+}
+
 .daterangepicker.date-range-open.date-range-open--mobile-modal .date-range-panel-content,
 .daterangepicker.date-range-open.date-range-open--mobile-sheet .date-range-panel-content {
     flex: 1 1 auto;
@@ -463,6 +507,7 @@
     position: sticky;
     bottom: 0;
     z-index: 1;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
     background: var(--drp-bg, color-mix(in srgb, var(--body-bg) 94%, var(--body-color) 6%));
 }
 

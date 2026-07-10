@@ -71,6 +71,17 @@
         [class.is-open]="isOpen"
         [attr.role]="usesMobilePresentation ? 'dialog' : null"
         [attr.aria-modal]="usesMobilePresentation ? 'true' : null">
+        <div *ngIf="usesMobilePresentation" class="date-range-mobile-header">
+            <span class="date-range-mobile-title">
+                {{ draftDisplayValue.isEmpty ? emptySelectionLabel : draftDisplayValue }}
+            </span>
+            <button type="button" class="date-range-mobile-close"
+                [attr.aria-label]="cancelLabel"
+                [attr.data-label]="'li_drp_mobile_close'"
+                (click)="close()">
+                <i class="ph ph-x"></i>
+            </button>
+        </div>
         <div class="date-range-panel-content" [class.date-range-panel-content--presets-only]="showPresetList && !showCalendars">
             <div *ngIf="showPresetList" class="date-range-presets">
                 <button type="button" *ngFor="let preset of presets; let idx = index; trackBy: trackByPreset"

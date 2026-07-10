@@ -636,6 +636,8 @@ class LiPdfViewerComponent
   bool _mousePanCandidate = false;
   bool _isMousePanning = false;
   String? _previousBodyOverflow;
+  html.Element? _fallbackFullscreenParent;
+  html.Element? _fallbackFullscreenNextElementSibling;
   html.IFrameElement? _printFrame;
   String? _printObjectUrl;
 
@@ -712,6 +714,8 @@ class LiPdfViewerComponent
 
   String get fullscreenButtonLabel =>
       isFullscreenActive ? labels.exitFullscreen : labels.fullscreen;
+
+  String get dropdownOverlayContainer => isFullscreenActive ? 'inline' : 'body';
 
   String get panModeIconClass =>
       isPanModeEnabled ? 'ph ph-hand-grabbing' : 'ph ph-hand';
@@ -894,6 +898,8 @@ class LiPdfViewerComponent
       }
 
       switch (action) {
+        case 'zoom':
+          break;
         case 'fit':
           fitContent();
           break;
@@ -915,6 +921,10 @@ class LiPdfViewerComponent
         case 'print':
           printDocument();
           break;
+        default:
+          if (action.startsWith('zoom:')) {
+            onScaleDropdownChange(action.substring('zoom:'.length));
+          }
       }
     });
   }
@@ -1287,6 +1297,27 @@ class LiPdfViewerComponent
         List<LiPdfViewerToolbarAction>.unmodifiable(trailingActions);
 
     final mobileOptions = <LiDropdownMenuOption>[];
+    mobileOptions.add(
+      LiDropdownMenuOption(
+        value: 'zoom',
+        label: labels.selectZoomTitle,
+        iconClass: 'ph ph-magnifying-glass',
+        disabled: true,
+      ),
+    );
+    for (final option in zoomOptions) {
+      mobileOptions.add(
+        LiDropdownMenuOption(
+          value: option.divider ? '' : 'zoom:${option.value}',
+          label: option.label,
+          iconClass:
+              option.value == currentScaleValueForSelect ? 'ph ph-check' : '',
+          disabled: option.disabled,
+          divider: option.divider,
+        ),
+      );
+    }
+    mobileOptions.add(const LiDropdownMenuOption(divider: true));
     if (enableFitWidthAction) {
       mobileOptions.add(
         LiDropdownMenuOption(
@@ -1985,6 +2016,11 @@ class LiPdfViewerComponent
     final body = html.document.body;
     _previousBodyOverflow = body?.style.overflow;
     body?.style.overflow = 'hidden';
+    _fallbackFullscreenParent = _hostElement.parent;
+    _fallbackFullscreenNextElementSibling = _hostElement.nextElementSibling;
+    if (body != null && _hostElement.parent != body) {
+      body.append(_hostElement);
+    }
     _hostElement.classes.add('pdf-viewer-viewport-fullscreen');
     _isFallbackFullscreen = true;
   }
@@ -1994,6 +2030,17 @@ class LiPdfViewerComponent
       return;
     }
     _hostElement.classes.remove('pdf-viewer-viewport-fullscreen');
+    final parent = _fallbackFullscreenParent;
+    if (parent != null && _hostElement.parent != parent) {
+      final next = _fallbackFullscreenNextElementSibling;
+      if (next != null && next.parent == parent) {
+        parent.insertBefore(_hostElement, next);
+      } else {
+        parent.append(_hostElement);
+      }
+    }
+    _fallbackFullscreenParent = null;
+    _fallbackFullscreenNextElementSibling = null;
     final body = html.document.body;
     body?.style.overflow = _previousBodyOverflow ?? '';
     _previousBodyOverflow = null;
@@ -2280,6 +2327,7 @@ class LiPdfViewerComponent
 
   void _handleTouchStart(html.TouchEvent event) {
     if (_activeTouchPointers.length >= 2) {
+      event.preventDefault();
       return;
     }
     final touches = event.touches;
@@ -2288,16 +2336,18 @@ class LiPdfViewerComponent
       _touchPinchStartScale = null;
       return;
     }
+    event.preventDefault();
     _touchPinchStartDistance = _distanceBetweenTouches(touches[0], touches[1]);
     _touchPinchStartScale = _scale;
   }
 
   void _handleTouchMove(html.TouchEvent event) {
-    if (_activeTouchPointers.length >= 2) {
-      return;
-    }
     final touches = event.touches;
     if (touches == null || touches.length < 2) {
+      return;
+    }
+    event.preventDefault();
+    if (_activeTouchPointers.length >= 2) {
       return;
     }
 
@@ -2308,7 +2358,6 @@ class LiPdfViewerComponent
       return;
     }
 
-    event.preventDefault();
     final currentDistance = _distanceBetweenTouches(touches[0], touches[1]);
     final currentCenter = _centerBetweenTouches(touches[0], touches[1]);
     final nextScale = startScale * (currentDistance / startDistance);

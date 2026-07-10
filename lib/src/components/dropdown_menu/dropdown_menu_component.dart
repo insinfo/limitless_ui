@@ -111,10 +111,37 @@ class LiDropdownMenuComponent implements OnDestroy {
   @Input()
   dynamic mobileFooterContext;
 
+  String _container = 'body';
+
   /// Rendering container: `inline` keeps the menu in normal DOM flow,
   /// `body` renders it in a portal anchored with Popper.
   @Input()
-  String container = 'body';
+  set container(String value) {
+    final next = value.trim().isEmpty ? 'body' : value.trim();
+    if (_container == next) {
+      return;
+    }
+
+    final hadBodyOverlay = usesBodyOverlay;
+    final wasOpen = isOpen;
+    if (isOpen) {
+      closeDropdown();
+    }
+    if (hadBodyOverlay) {
+      _disposeOverlay();
+    }
+    _container = next;
+    _changeDetectorRef.markForCheck();
+    if (wasOpen) {
+      Timer.run(() {
+        if (!isOpen) {
+          openDropdown();
+        }
+      });
+    }
+  }
+
+  String get container => _container;
 
   /// Dropdown direction: dropdown, dropup, dropstart, or dropend.
   @Input()
@@ -293,10 +320,7 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   bool get usesBodyOverlay => container.trim().toLowerCase() == 'body';
 
-  bool get usesBodyDropdownOverlay =>
-      usesBodyOverlay &&
-      !_shouldUseMobilePresentation('modal') &&
-      !_shouldUseMobilePresentation('sheet');
+  bool get usesBodyDropdownOverlay => usesBodyOverlay;
 
   bool get _alignEnd =>
       RegExp(r'(^|\s)dropdown-menu-end(\s|$)').hasMatch(menuClass);
@@ -377,7 +401,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     isOpen = true;
     _registerAsOpenMenu();
     _syncMenuStyleState();
-    if (usesBodyDropdownOverlay) {
+    if (usesBodyDropdownOverlay && !usesMobilePresentation) {
       _overlay?.startAutoUpdate();
       _scheduleOverlayUpdate();
     }
@@ -447,6 +471,11 @@ class LiDropdownMenuComponent implements OnDestroy {
         hostClassName: 'LiDropdownMenuComponent',
         hostZIndex: '10000',
         floatingZIndex: '1056',
+        // Restore the menu element to its inline parent when the portal is
+        // disposed (e.g. when `container` flips to `inline` as the PDF viewer
+        // enters fullscreen). Without this the element is removed from the DOM
+        // and the reopened inline menu renders nothing.
+        restoreOnDispose: true,
       ),
       popperOptions: PopperOptions(
         placement: _resolvedOverlayPlacement,
@@ -497,7 +526,10 @@ class LiDropdownMenuComponent implements OnDestroy {
   }
 
   void _scheduleOverlayUpdate() {
-    if (!usesBodyDropdownOverlay || _overlayRelayoutPending || !isOpen) {
+    if (!usesBodyDropdownOverlay ||
+        usesMobilePresentation ||
+        _overlayRelayoutPending ||
+        !isOpen) {
       return;
     }
 
@@ -601,6 +633,13 @@ class LiDropdownMenuComponent implements OnDestroy {
     _openDropdownMenus.remove(this);
   }
 
+  void _disposeOverlay() {
+    _overlayRelayoutPending = false;
+    _overlay?.stopAutoUpdate();
+    _overlay?.dispose();
+    _overlay = null;
+  }
+
   String _joinClasses(List<String> classNames) {
     return classNames
         .map((value) => value.trim())
@@ -612,8 +651,7 @@ class LiDropdownMenuComponent implements OnDestroy {
   void ngOnDestroy() {
     _unregisterAsOpenMenu();
     _unbindDocumentListeners();
-    _overlay?.stopAutoUpdate();
-    _overlay?.dispose();
+    _disposeOverlay();
     _valueChange.close();
   }
 }

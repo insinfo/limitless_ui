@@ -1,3 +1,12 @@
+## 1.0.0-dev.34
+
+- Fixed mobile `li-date-range-picker` fullscreen UX by adding a fixed header with a close action, dynamic-viewport sizing (`100dvh` with a `100vh` fallback) so the modal always covers the currently visible viewport, and safe-area-aware footer spacing so Apply/Cancel actions remain reachable on iPhone.
+- Fixed mobile `li-dropdown-menu` body overlays so action/print menus rendered with `container="body"` are not clipped behind fullscreen PDF viewers or parent overflow containers, and dispose stale body portals when `container` changes so fullscreen PDF menus can switch back to inline rendering reliably.
+- Fixed `li-dropdown-menu` so a body-portal menu that was opened at least once and then switches to `container="inline"` (e.g. the PDF viewer entering fullscreen after the zoom menu was already opened) restores its menu element to the inline view instead of removing it from the DOM, so the reopened inline/fullscreen menu renders again. Regression covered by `test/dropdown_menu/li_dropdown_menu_fullscreen_container_test.dart`.
+- Fixed `li-pdf-viewer` fullscreen layering by temporarily mounting the viewer on `document.body` when needed and keeping PDF dropdown menus inline while native fullscreen is active, preserving toolbar/dropdown visibility above app navbars and inside the browser fullscreen top layer.
+- Improved `li-pdf-viewer` touch zoom on iOS by preventing page scroll during two-finger pinch gestures.
+- Added zoom options to the mobile/fullscreen PDF action menu so zoom can be changed when the toolbar dropdown is collapsed.
+
 ## 1.0.0-dev.33
 
 - BREAKING CHANGE: shortened browser automation `data-label` hooks and standardized them with `li_` prefixes, removing the old names without aliases. Examples: old select hooks -> `li_select_*`, `datatable_*` -> `li_dt_*`, `li_datatable_select_*` -> `li_dts_*`, `li_sweet_alert_*` -> `li_sa_*`, `li_simple_dialog_*` -> `li_sd_*`, and `li_modal_*` -> `li_mdl_*`.
