@@ -555,6 +555,9 @@ class LiPdfViewerComponent
   @ViewChild('sidePanelModal')
   LiModalComponent? sidePanelModal;
 
+  @ViewChild('mobileZoomMenu')
+  LiDropdownMenuComponent? mobileZoomMenu;
+
   @ContentChild(LiPdfViewerToolbarActionsDirective)
   LiPdfViewerToolbarActionsDirective? projectedToolbarActionsTemplate;
 
@@ -889,6 +892,17 @@ class LiPdfViewerComponent
     _setScale(parsed ?? value);
   }
 
+  /// Opens the dedicated mobile zoom submenu. Deferred to the next macrotask so
+  /// the click that selected the "Zoom" entry (and closed the actions menu) has
+  /// fully settled before the submenu opens.
+  void _openMobileZoomMenu() {
+    final menu = mobileZoomMenu;
+    if (menu == null) {
+      return;
+    }
+    Timer.run(menu.openDropdown);
+  }
+
   void onActionMenuSelect(String action) {
     scheduleMicrotask(() {
       final customAction = _resolveCustomAction(action);
@@ -898,7 +912,8 @@ class LiPdfViewerComponent
       }
 
       switch (action) {
-        case 'zoom':
+        case 'zoom-open':
+          _openMobileZoomMenu();
           break;
         case 'fit':
           fitContent();
@@ -1297,26 +1312,16 @@ class LiPdfViewerComponent
         List<LiPdfViewerToolbarAction>.unmodifiable(trailingActions);
 
     final mobileOptions = <LiDropdownMenuOption>[];
+    // Zoom is a single entry that opens a dedicated zoom submenu instead of
+    // inlining every zoom level in the actions menu.
     mobileOptions.add(
       LiDropdownMenuOption(
-        value: 'zoom',
+        value: 'zoom-open',
         label: labels.selectZoomTitle,
+        description: currentScaleLabel,
         iconClass: 'ph ph-magnifying-glass',
-        disabled: true,
       ),
     );
-    for (final option in zoomOptions) {
-      mobileOptions.add(
-        LiDropdownMenuOption(
-          value: option.divider ? '' : 'zoom:${option.value}',
-          label: option.label,
-          iconClass:
-              option.value == currentScaleValueForSelect ? 'ph ph-check' : '',
-          disabled: option.disabled,
-          divider: option.divider,
-        ),
-      );
-    }
     mobileOptions.add(const LiDropdownMenuOption(divider: true));
     if (enableFitWidthAction) {
       mobileOptions.add(

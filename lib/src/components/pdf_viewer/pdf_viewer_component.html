@@ -131,13 +131,29 @@
         menuClass="dropdown-menu-end wmin-sm-200"
         [container]="dropdownOverlayContainer"
         menuMaxHeight="70vh"
-        mobilePresentation="sheet"
+        mobilePresentation="modal"
         mobileBreakpoint="767.98px"
         [mobileMenuTitle]="labels.mobileActions"
         [adaptToViewport]="true"
         [showCaret]="false"
         [ariaLabel]="labels.moreActions"
         (valueChange)="onActionMenuSelect($event)">
+      </li-dropdown-menu>
+
+      <li-dropdown-menu #mobileZoomMenu class="pdf-mobile-zoom-menu"
+        [options]="zoomOptions"
+        [value]="currentScaleValueForSelect"
+        triggerClass="pdf-mobile-zoom-menu__trigger"
+        menuClass="dropdown-menu-end wmin-sm-200"
+        [container]="dropdownOverlayContainer"
+        menuMaxHeight="70vh"
+        mobilePresentation="modal"
+        mobileBreakpoint="767.98px"
+        [mobileMenuTitle]="labels.selectZoomTitle"
+        [adaptToViewport]="true"
+        [showCaret]="false"
+        [ariaLabel]="labels.selectZoomTitle"
+        (valueChange)="onScaleDropdownChange($event)">
       </li-dropdown-menu>
     </div>
   </div>

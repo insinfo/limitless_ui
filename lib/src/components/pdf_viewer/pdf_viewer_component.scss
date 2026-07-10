@@ -54,6 +54,15 @@
   box-sizing: border-box;
 }
 
+// The mobile zoom submenu is opened programmatically from the actions menu;
+// its trigger stays visually hidden (the portaled modal is unaffected).
+:host .pdf-mobile-zoom-menu {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 :host ::ng-deep .hiddenCanvasElement {
   position: absolute;
   top: 0;

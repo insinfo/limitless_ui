@@ -30,29 +30,36 @@
 // still attribute-scopes these rules via `[_ngcontent-*]`, so they only target
 // this component's own elements while surviving the move to the portal.
 .li-dropdown-menu__menu--mobile-modal {
-  position: fixed;
+  // `!important` so consumer utility classes on `menuClass` (e.g. Bootstrap
+  // `.w-100`, which is `width: 100% !important`) cannot break the fixed
+  // modal/sheet layout and push it off-center.
+  position: fixed !important;
   top: 50%;
   left: 50%;
+  right: auto !important;
   z-index: 1056;
   display: block;
   overflow: hidden;
-  width: min(22rem, calc(100vw - 2rem));
-  min-width: 0;
-  transform: translate(-50%, -50%);
+  width: min(22rem, calc(100vw - 2rem)) !important;
+  min-width: 0 !important;
+  max-width: min(22rem, calc(100vw - 2rem)) !important;
+  transform: translate(-50%, -50%) !important;
   overscroll-behavior: contain;
 }
 
 .li-dropdown-menu__menu--mobile-sheet {
-  position: fixed;
-  right: 0.75rem;
+  position: fixed !important;
+  top: auto !important;
+  right: 0.75rem !important;
   bottom: 0.75rem;
-  left: 0.75rem;
+  left: 0.75rem !important;
   z-index: 1056;
   display: block;
   overflow: hidden;
-  width: auto;
-  min-width: 0;
-  max-width: none;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  transform: none !important;
   overscroll-behavior: contain;
 }
 
@@ -109,16 +116,34 @@
   width: 2rem;
   height: 2rem;
   padding: 0;
+  font-size: 1.125rem;
+  line-height: 1;
   color: inherit;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
   background: transparent;
   border: 0;
   border-radius: 0.25rem;
+  box-shadow: none;
 }
 
-.li-dropdown-menu__mobile-close:hover,
-.li-dropdown-menu__mobile-close:focus {
+.li-dropdown-menu__mobile-close > i {
+  display: block;
+  line-height: 1;
+}
+
+.li-dropdown-menu__mobile-close:hover {
   background: var(--bs-tertiary-bg, rgba(0, 0, 0, 0.05));
+}
+
+.li-dropdown-menu__mobile-close:focus {
+  outline: 0;
+}
+
+.li-dropdown-menu__mobile-close:focus-visible {
+  outline: 2px solid var(--bs-primary, #0d6efd);
+  outline-offset: 2px;
 }
 
 :host .li-dropdown-trigger-reset {
