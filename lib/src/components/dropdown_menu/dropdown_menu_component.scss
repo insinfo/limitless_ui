@@ -22,7 +22,14 @@
   background: rgba(0, 0, 0, 0.35);
 }
 
-:host .li-dropdown-menu__menu--mobile-modal {
+// NOTE: the mobile-presentation rules below are intentionally NOT scoped under
+// `:host`. When `container="body"` the menu element is moved into a body portal
+// (`div.LiDropdownMenuComponent`), so any `:host`-scoped rule would stop
+// matching and the sheet/modal would collapse to a Bootstrap `.dropdown-menu`
+// (display:block, position:absolute at 0,0). Angular emulated encapsulation
+// still attribute-scopes these rules via `[_ngcontent-*]`, so they only target
+// this component's own elements while surviving the move to the portal.
+.li-dropdown-menu__menu--mobile-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -35,7 +42,7 @@
   overscroll-behavior: contain;
 }
 
-:host .li-dropdown-menu__menu--mobile-sheet {
+.li-dropdown-menu__menu--mobile-sheet {
   position: fixed;
   right: 0.75rem;
   bottom: 0.75rem;
@@ -49,28 +56,25 @@
   overscroll-behavior: contain;
 }
 
-:host .li-dropdown-menu__menu--mobile-modal,
-:host .li-dropdown-menu__menu--mobile-sheet {
+.li-dropdown-menu__menu--mobile-modal,
+.li-dropdown-menu__menu--mobile-sheet {
   flex-direction: column;
 }
 
-:host .li-dropdown-menu__menu--mobile-modal.show,
-:host .li-dropdown-menu__menu--mobile-sheet.show {
+.li-dropdown-menu__menu--mobile-modal.show,
+.li-dropdown-menu__menu--mobile-sheet.show {
   display: flex;
 }
 
-:host .li-dropdown-menu__items {
+.li-dropdown-menu__menu--mobile-modal .li-dropdown-menu__items,
+.li-dropdown-menu__menu--mobile-sheet .li-dropdown-menu__items {
   min-height: 0;
-}
-
-:host .li-dropdown-menu__menu--mobile-modal .li-dropdown-menu__items,
-:host .li-dropdown-menu__menu--mobile-sheet .li-dropdown-menu__items {
   flex: 1 1 auto;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-:host .li-dropdown-menu__mobile-footer {
+.li-dropdown-menu__mobile-footer {
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
@@ -80,7 +84,7 @@
   background: color-mix(in srgb, var(--card-bg) 92%, var(--body-bg) 8%);
 }
 
-:host .li-dropdown-menu__mobile-header {
+.li-dropdown-menu__mobile-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -89,7 +93,7 @@
   border-bottom: 1px solid var(--bs-border-color, #dee2e6);
 }
 
-:host .li-dropdown-menu__mobile-title {
+.li-dropdown-menu__mobile-title {
   min-width: 0;
   overflow: hidden;
   font-weight: 600;
@@ -97,7 +101,7 @@
   white-space: nowrap;
 }
 
-:host .li-dropdown-menu__mobile-close {
+.li-dropdown-menu__mobile-close {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
@@ -112,8 +116,8 @@
   border-radius: 0.25rem;
 }
 
-:host .li-dropdown-menu__mobile-close:hover,
-:host .li-dropdown-menu__mobile-close:focus {
+.li-dropdown-menu__mobile-close:hover,
+.li-dropdown-menu__mobile-close:focus {
   background: var(--bs-tertiary-bg, rgba(0, 0, 0, 0.05));
 }
 
