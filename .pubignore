@@ -9,3 +9,11 @@ example/
 test/
 ui_test/
 coverage/
+
+# Codecov CI uploader. It is downloaded into the package root, is not tracked
+# by git, and nothing else here excludes it: a .pubignore replaces .gitignore
+# entirely, so gitignoring it would not keep it out of the published archive.
+# Left unlisted it ships to consumers as ~9 MB of the ~10 MB package.
+codecov
+codecov.SHA256SUM
+codecov.SHA256SUM.sig

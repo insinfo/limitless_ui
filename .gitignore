@@ -7,3 +7,9 @@ coverage/
 
 referencias/
 .local-chrome/
+
+# Codecov CI uploader, downloaded into the package root. Keep it out of commits;
+# .pubignore is what keeps it out of the published archive.
+codecov
+codecov.SHA256SUM
+codecov.SHA256SUM.sig
