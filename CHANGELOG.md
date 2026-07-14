@@ -1,3 +1,7 @@
+## 1.0.0-dev.35
+
+- Fixed `li-multi-select` dropping the initial `ngModel`/form selection. `writeValue` matched the incoming value against `options` and discarded it when no option matched, but `options` is only populated later — projected `li-multi-option` children are read in a microtask after `ngAfterContentInit`, and `[dataSource]` may resolve asynchronously — so the first written value always arrived too early and was never reapplied. The attempts to preserve the selection in `_syncProjectedOptions`/`_applyDataSource` read it back from `selectedValues`, which derives from those same empty `options`, so there was nothing to restore. The component now retains the last written value and reapplies it once options arrive, matching the behavior `li-select` already had. Consumers that set an initial multi-selection no longer need to reapply the value in `ngAfterViewInit`. Regression covered by `test/multi_select/li_multi_select_initial_value_test.dart`.
+
 ## 1.0.0-dev.34
 
 - Fixed mobile `li-date-range-picker` fullscreen UX by adding a fixed header with a close action, dynamic-viewport sizing (`100dvh` with a `100vh` fallback) so the modal always covers the currently visible viewport, and safe-area-aware footer spacing so Apply/Cancel actions remain reachable on iPhone.

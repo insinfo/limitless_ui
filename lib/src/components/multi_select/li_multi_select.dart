@@ -242,6 +242,12 @@ class LiMultiSelectComponent
   List<LiRule> _effectiveRules = const <LiRule>[];
   Map<String, String> _effectiveMessages = const <String, String>{};
 
+  /// Last value written by the form model. `writeValue` can run before the
+  /// options exist (projected `li-multi-option` children are only readable
+  /// after `ngAfterContentInit`, and `dataSource` may resolve asynchronously),
+  /// so the value is retained here and reapplied once options arrive.
+  List<dynamic>? _lastWrittenValues;
+
   String optionId(int index) => '$_idPrefix-$index';
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
@@ -388,22 +394,19 @@ class LiMultiSelectComponent
 
   @override
   void writeValue(dynamic newVal) {
-    for (final option in options) {
-      option.selected = false;
-    }
-
-    if (newVal is List) {
-      for (final value in newVal) {
-        for (final option in options) {
-          if (_areValuesEqual(option.value, value)) {
-            option.selected = true;
-          }
-        }
-      }
-    }
-
+    _lastWrittenValues =
+        newVal is List ? List<dynamic>.from(newVal) : const <dynamic>[];
+    _applySelectedValues(_lastWrittenValues!);
     _runAutoValidation();
     _markForCheck();
+  }
+
+  void _applySelectedValues(List<dynamic> values) {
+    for (final option in options) {
+      option.selected = values.any(
+        (value) => _areValuesEqual(option.value, value),
+      );
+    }
   }
 
   dynamic Function(dynamic, {String rawValue})? _callback;
@@ -515,8 +518,11 @@ class LiMultiSelectComponent
       _markForCheck();
     });
     _rebuildValidationConfig();
-    if (options.isNotEmpty == true) {
-      //currentValue = options[0];
+    final pendingValues = _lastWrittenValues;
+    if (pendingValues != null) {
+      _applySelectedValues(pendingValues);
+      _runAutoValidation();
+      _markForCheck();
     }
   }
 
@@ -681,6 +687,7 @@ class LiMultiSelectComponent
     for (final element in options) {
       element.selected = false;
     }
+    _lastWrittenValues = <dynamic>[];
     _changeController.add(selectedValues);
     _modelChangeController.add(selectedModels);
     if (emitUserValueChange) {
@@ -714,6 +721,7 @@ class LiMultiSelectComponent
   void _toggleOptionSelection(CustomMultiSelectItem option) {
     _dirty = true;
     option.selected = !option.selected;
+    _lastWrittenValues = selectedValues;
 
     _changeController.add(selectedValues);
     _modelChangeController.add(selectedModels);
@@ -770,13 +778,9 @@ class LiMultiSelectComponent
       return;
     }
 
-    final selectedValueSet = selectedValues.toSet();
+    final valuesToRestore = _lastWrittenValues ?? selectedValues;
     options = nextOptions;
-    for (final option in options) {
-      option.selected = selectedValueSet.any(
-        (selectedValue) => _areValuesEqual(option.value, selectedValue),
-      );
-    }
+    _applySelectedValues(valuesToRestore);
     _runAutoValidation();
     _markForCheck();
   }
@@ -802,13 +806,9 @@ class LiMultiSelectComponent
       return;
     }
 
-    final selectedValueSet = selectedValues.toList(growable: false);
+    final valuesToRestore = _lastWrittenValues ?? selectedValues;
     options = nextOptions;
-    for (final option in options) {
-      option.selected = selectedValueSet.any(
-        (selectedValue) => _areValuesEqual(option.value, selectedValue),
-      );
-    }
+    _applySelectedValues(valuesToRestore);
 
     _runAutoValidation();
 
