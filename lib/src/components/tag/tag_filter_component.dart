@@ -482,9 +482,15 @@ class LiTagFilterComponent
     selectedOptions = nextSelectedOptions;
     _selectedValues = nextSelectedValues;
     _selectedModels = nextSelectedModels;
-    _boundValues = List<dynamic>.from(nextSelectedValues);
 
     if (emit) {
+      // Mirror the bound value back only when the selection itself changed.
+      // `emit: false` means an existing bound value is being applied to the
+      // options (writeValue, or a dataSource that just arrived): deriving from
+      // `options` there yields [] whenever the options are not loaded yet, and
+      // would discard the very value that must be replayed once they are.
+      _boundValues = List<dynamic>.from(nextSelectedValues);
+
       final emittedValues = List<dynamic>.unmodifiable(_selectedValues);
       final emittedModels = List<dynamic>.unmodifiable(_selectedModels);
       _valueChangeController.add(emittedValues);

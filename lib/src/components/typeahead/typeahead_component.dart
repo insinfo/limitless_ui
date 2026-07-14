@@ -112,6 +112,13 @@ class LiTypeaheadComponent
 
   List<LiTypeaheadItem> _allItems = <LiTypeaheadItem>[];
   LiTypeaheadItem? _selectedItem;
+
+  /// Last value written by the form model, retained so it can still be matched
+  /// once the items arrive. `writeValue` runs before an asynchronous
+  /// `[dataSource]` resolves, and matching against the empty `_allItems` would
+  /// otherwise discard the value for good.
+  dynamic _lastWrittenValue;
+
   String _committedInputValue = '';
   String rawSearchTerm = '';
   String? _asyncErrorMessage;
@@ -252,6 +259,8 @@ class LiTypeaheadComponent
 
   @override
   void writeValue(dynamic value) {
+    _lastWrittenValue = value;
+
     if (value == null) {
       _selectedItem = null;
       _committedInputValue = '';
@@ -744,7 +753,10 @@ class LiTypeaheadComponent
   }
 
   void _applyDataSource(List<LiTypeaheadItem> nextItems) {
-    final selectedValue = _selectedItem?.value;
+    // Fall back to the retained written value: while the items were still
+    // empty `_selectedItem` stayed null, so deriving from it would drop the
+    // model value exactly when the items that can resolve it finally arrive.
+    final selectedValue = _selectedItem?.value ?? _lastWrittenValue;
     _allItems = nextItems;
     _selectedItem = _findItemByValue(selectedValue);
 
@@ -778,6 +790,10 @@ class LiTypeaheadComponent
   }
 
   void _emitModelValue(dynamic value) {
+    // Every user-driven model change funnels through here. Keeping the
+    // retained value in step stops a dataSource arriving later from restoring
+    // a stale selection over what the user just did.
+    _lastWrittenValue = value;
     _ngModelValueChangeCallback?.call(value);
   }
 
