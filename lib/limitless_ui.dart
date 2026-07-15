@@ -107,6 +107,7 @@ export 'src/components/treeview/li_treeview.dart';
 export 'src/components/treeview/tree_view_base.dart';
 export 'src/components/treeview/treeview_settings.dart';
 export 'src/components/treeview/treeview_select_component.dart';
+export 'src/core/li_before_open_event.dart';
 export 'src/core/lite_xlsx.dart';
 export 'src/core/tine_pdf.dart';
 export 'src/directives/click_outside.dart';

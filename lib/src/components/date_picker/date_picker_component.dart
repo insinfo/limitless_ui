@@ -182,6 +182,8 @@ class LiDatePickerComponent
       StreamController<DateTime?>.broadcast();
   final StreamController<DateTime?> _userValueChangeController =
       StreamController<DateTime?>.broadcast();
+  final StreamController<bool> _openChangeController =
+      StreamController<bool>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
   StreamSubscription<html.Event>? _documentClickSubscription;
@@ -286,6 +288,13 @@ class LiDatePickerComponent
 
   @Output('userValueChange')
   Stream<DateTime?> get userValueChange => _userValueChangeController.stream;
+
+  /// Emits `true` when the picker panel opens and `false` when it closes.
+  ///
+  /// Only real transitions are emitted, so repeated `open()` calls on an
+  /// already open picker stay silent.
+  @Output()
+  Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('triggerElement')
   html.Element? triggerElement;
@@ -561,6 +570,8 @@ class LiDatePickerComponent
   }
 
   void _open() {
+    final wasOpen = isOpen;
+
     draftValue = _normalize(value);
     _syncVisibleMonth();
     viewMode = DatePickerViewMode.day;
@@ -574,6 +585,11 @@ class LiDatePickerComponent
       _overlay?.stopAutoUpdate();
     }
     _bindDocumentListeners();
+
+    if (!wasOpen) {
+      _openChangeController.add(true);
+    }
+
     _markForCheck();
   }
 
@@ -687,6 +703,8 @@ class LiDatePickerComponent
   }
 
   void close() {
+    final wasOpen = isOpen;
+
     if (isOpen) {
       _markTouched();
     }
@@ -695,6 +713,11 @@ class LiDatePickerComponent
     isOpen = false;
     viewMode = DatePickerViewMode.day;
     _markTouched();
+
+    if (wasOpen) {
+      _openChangeController.add(false);
+    }
+
     _markForCheck();
   }
 
@@ -1005,5 +1028,6 @@ class LiDatePickerComponent
     _formSubmissionSubscription?.cancel();
     _valueChangeController.close();
     _userValueChangeController.close();
+    _openChangeController.close();
   }
 }

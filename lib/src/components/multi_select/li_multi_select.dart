@@ -7,6 +7,7 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 import 'package:popper/popper.dart';
 
+import '../../core/li_before_open_event.dart';
 import '../../core/overlay_positioning.dart';
 import '../../directives/click_outside.dart';
 import '../../directives/li_form_directive.dart';
@@ -358,6 +359,13 @@ class LiMultiSelectComponent
       StreamController<List<dynamic>>();
   final StreamController<dynamic> _userChangeController =
       StreamController<dynamic>();
+  final StreamController<bool> _openChangeController =
+      StreamController<bool>.broadcast();
+
+  /// Synchronous so `preventDefault()` runs before the dropdown opens.
+  final StreamController<LiBeforeOpenEvent> _beforeOpenController =
+      StreamController<LiBeforeOpenEvent>.broadcast(sync: true);
+  bool _destroyed = false;
   bool _overlayRelayoutPending = false;
 
   @Output('currentValueChange')
@@ -368,6 +376,28 @@ class LiMultiSelectComponent
 
   @Output('userValueChange')
   Stream<dynamic> get onUserValueChange => _userChangeController.stream;
+
+  /// Emits `true` when the dropdown opens and `false` when it closes.
+  ///
+  /// Only real transitions are emitted, so repeated `openDropdown()` calls on
+  /// an already open dropdown stay silent. Nothing is emitted while the
+  /// component is being destroyed.
+  ///
+  /// Useful to defer loading the option list until the user actually opens the
+  /// select.
+  @Output()
+  Stream<bool> get openChange => _openChangeController.stream;
+
+  /// Emitted right before the dropdown opens, while it is still closed.
+  ///
+  /// Calling `preventDefault()` on the event keeps the dropdown closed and
+  /// suppresses the matching [openChange]. Only emitted for a real open, so an
+  /// already open dropdown never re-emits it.
+  ///
+  /// The stream is synchronous: `preventDefault()` has to be called from the
+  /// handler itself, not after an `await`.
+  @Output()
+  Stream<LiBeforeOpenEvent> get beforeOpen => _beforeOpenController.stream;
 
   @ContentChildren(LiMultiOptionComponent)
   List<LiMultiOptionComponent> childrenSelectOptions = [];
@@ -559,6 +589,17 @@ class LiMultiSelectComponent
     );
   }
 
+  /// Emits [beforeOpen] and reports whether the open should go ahead.
+  bool _dispatchBeforeOpen() {
+    if (_destroyed) {
+      return false;
+    }
+
+    final event = LiBeforeOpenEvent();
+    _beforeOpenController.add(event);
+    return !event.defaultPrevented;
+  }
+
   void closeDropdown({
     bool markForCheck = true,
     bool restoreFocus = false,
@@ -599,6 +640,10 @@ class LiMultiSelectComponent
       });
     }
 
+    if (wasOpen && !_destroyed) {
+      _openChangeController.add(false);
+    }
+
     if (markForCheck) {
       _markForCheck();
     }
@@ -606,6 +651,12 @@ class LiMultiSelectComponent
 
   void openDropdown() {
     if (isDisabled) {
+      return;
+    }
+
+    final wasOpen = dropdownOpen;
+
+    if (!wasOpen && !_dispatchBeforeOpen()) {
       return;
     }
 
@@ -622,6 +673,10 @@ class LiMultiSelectComponent
     Future.delayed(const Duration(milliseconds: 20), () {
       _overlay?.update();
     });
+
+    if (!wasOpen) {
+      _openChangeController.add(true);
+    }
 
     _markForCheck();
   }
@@ -649,12 +704,12 @@ class LiMultiSelectComponent
       return;
     }
 
-    dropdownOpen = !dropdownOpen;
-    //dropdownElement.setAttribute( 'aria-expanded', dropdownOpen ? 'true' : 'false');
+    // openDropdown/closeDropdown own `dropdownOpen`; flipping it here first
+    // made both of them read the already-updated state as their previous one.
     if (dropdownOpen) {
-      openDropdown();
-    } else {
       closeDropdown(restoreFocus: true);
+    } else {
+      openDropdown();
     }
   }
 
@@ -674,12 +729,15 @@ class LiMultiSelectComponent
 
   @override
   void ngOnDestroy() {
+    _destroyed = true;
     closeDropdown(markForCheck: false);
     _overlay?.dispose();
     _formSubmissionSubscription?.cancel();
     _changeController.close();
     _modelChangeController.close();
     _userChangeController.close();
+    _openChangeController.close();
+    _beforeOpenController.close();
   }
 
   void reset({bool emitUserValueChange = false}) {

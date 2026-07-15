@@ -111,6 +111,8 @@ class LiTreeviewSelectComponent
       StreamController<dynamic>.broadcast();
   final StreamController<dynamic> _userChangeController =
       StreamController<dynamic>.broadcast();
+  final StreamController<bool> _openChangeController =
+      StreamController<bool>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
   StreamSubscription<html.Event>? _documentClickSubscription;
@@ -300,6 +302,17 @@ class LiTreeviewSelectComponent
 
   @Output('userValueChange')
   Stream<dynamic> get userValueChange => _userChangeController.stream;
+
+  /// Emits `true` when the dropdown opens and `false` when it closes.
+  ///
+  /// Only real transitions are emitted, so repeated `openDropdown()` calls on
+  /// an already open dropdown stay silent. Nothing is emitted while the
+  /// component is being destroyed.
+  ///
+  /// Useful to defer loading the tree until the user actually opens the select.
+  /// Note that [pageLoader] already loads the root nodes lazily on first open.
+  @Output()
+  Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('triggerButton')
   html.ButtonElement? triggerButtonElement;
@@ -591,6 +604,7 @@ class LiTreeviewSelectComponent
     _overlay?.dispose();
     _changeController.close();
     _userChangeController.close();
+    _openChangeController.close();
   }
 
   @override
@@ -643,6 +657,8 @@ class LiTreeviewSelectComponent
       return;
     }
 
+    final wasOpen = dropdownOpen;
+
     dropdownOpen = true;
     _ensureOverlay();
     _overlay?.startAutoUpdate();
@@ -665,6 +681,10 @@ class LiTreeviewSelectComponent
       }
     });
 
+    if (!wasOpen && !_destroyed) {
+      _openChangeController.add(true);
+    }
+
     _markForCheck();
   }
 
@@ -682,6 +702,10 @@ class LiTreeviewSelectComponent
 
     if (markTouched) {
       _markTouched();
+    }
+
+    if (!_destroyed) {
+      _openChangeController.add(false);
     }
 
     _markForCheck();

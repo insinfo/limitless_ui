@@ -139,6 +139,7 @@
     [enableModalBodyClass]="false"
     [closeOnBackdropClick]="true"
     [enableRoundedCorners]="true"
+    (open)="onModalOpened()"
     (close)="onModalClosed()">
 
     <template [ngTemplateOutlet]="modalContentTemplate == null ? null : modalContentTemplate?.templateRef"

@@ -372,6 +372,90 @@ The `userValueChange` output is available on `li-select`, `li-multi-select`, `li
 
 `li-select` also preserves the written `ngModel` value when its `dataSource` or projected `li-option` items arrive later. For record hydration flows, use `setSelectedItemByValue(...)` or `clearSelectedItem(...)` with `isCallNgModelChange: false` and `isCallCurrentValueChange: false` to synchronize the visual selection without emitting model/current-value events. These programmatic APIs do not emit `userValueChange`.
 
+### Open lifecycle events
+
+Controls that open a dropdown or a modal expose `openChange`, a `Stream<bool>` that emits `true` on open and `false` on close:
+
+`li-select`, `li-multi-select`, `li-treeview-select`, `li-tag-filter`, `li-datatable-select`, `li-date-picker`, `li-date-range-picker`, and `li-time-picker`. `li-color-picker` predates this and exposes the same state through `pickerShow`/`pickerHide`.
+
+Only real transitions are emitted: reopening an already open dropdown stays silent, as does closing an already closed one. Nothing is emitted while the component is being destroyed, so a component held through a `ViewChild` and subscribed to directly does not receive a spurious `false` during teardown.
+
+The main use is loading the option list on demand instead of upfront, so a screen does not pay for a field the user may never open:
+
+```html
+<li-select
+  [dataSource]="classifications"
+  labelKey="label"
+  valueKey="id"
+  (openChange)="onClassificationsOpenChange($event)"
+  [(ngModel)]="filters.classificationId">
+</li-select>
+```
+
+```dart
+bool _classificationsLoaded = false;
+
+Future<void> onClassificationsOpenChange(bool open) async {
+  if (!open || _classificationsLoaded) {
+    return;
+  }
+  _classificationsLoaded = true;
+  classifications = await _service.listClassifications();
+}
+```
+
+The "already loaded" guard lives in the host on purpose: the library does not decide caching policy. Drop the guard to refetch on every open.
+
+### Vetoing an open with `beforeOpen`
+
+`li-select` and `li-multi-select` also emit `beforeOpen` right before the dropdown opens, while it is still closed. Calling `preventDefault()` on the event keeps it closed and suppresses the matching `openChange`, which is useful to gate opening on a permission check, a confirmation, or a required field elsewhere in the form:
+
+```html
+<li-select
+  [dataSource]="cityOptions"
+  (beforeOpen)="requireStateFirst($event)"
+  [(ngModel)]="address.cityId">
+</li-select>
+```
+
+```dart
+void requireStateFirst(LiBeforeOpenEvent event) {
+  if (address.stateId == null) {
+    event.preventDefault();
+    toastService.warning('Select a state first.');
+  }
+}
+```
+
+The stream is synchronous, following the same shape as `liNav`'s `LiNavChangeEvent`. `preventDefault()` must therefore be called from the handler itself: after an `await` it runs too late, because the dropdown has already opened. To gate opening on asynchronous work, prevent the default, run the work, and call `openDropdown()` when it resolves.
+
+### Loading a `li-datatable-select` list on demand
+
+The `li-datatable-select` modal renders its content lazily, so the inner datatable only exists once the modal opens. That datatable never asks for data on its own — it emits `dataRequest` only when the user paginates, sorts, or searches — so a screen that simply stops preloading the list would open an empty modal.
+
+Set `requestDataOnOpen` to have the component emit `dataRequest` with its current `dataTableFilter` the first time the modal opens:
+
+```html
+<li-datatable-select
+  [settings]="settings"
+  [dataTableFilter]="filter"
+  [data]="users"
+  [requestDataOnOpen]="true"
+  (dataRequest)="loadUsers($event)"
+  [(ngModel)]="form.responsibleId">
+</li-datatable-select>
+```
+
+Only the first open emits, so reopening keeps the data already loaded. Use `openChange` instead to reload on every open.
+
+`li-modal` itself exposes `open` alongside the `close` it already had. Since `lazyContent` only creates the projected content once the modal is open, `open` is the earliest point at which a consumer can load data for that content:
+
+```html
+<li-modal #forward title-text="Forward" [lazyContent]="true" (open)="loadHierarchy()">
+  <org-chart-dropdown [(ngModel)]="target"></org-chart-dropdown>
+</li-modal>
+```
+
 ### Custom trigger templates
 
 Select-like controls can render a custom trigger template while keeping the component-owned wrapper responsible for click, keyboard focus, disabled state, data hooks, and Popper positioning. This is useful when the trigger should look like a Limitless badge, toolbar button, chip, or compact filter pill instead of a full input.
@@ -552,6 +636,14 @@ The public building blocks are:
 - `liValidationMode`: controls when automatic validation becomes visible.
 - `invalid`, `dataInvalid` and `errorText`: explicit external overrides, typically used for backend errors.
 
+### Bind rules and messages as component fields
+
+AngularDart template expressions do not support list or map literals. Writing `[liRules]="[LiRule.required()]"` or `[liMessages]="{'required': 'Informe o CPF.'}"` does not compile: the template compiler rejects them with `Parser Error: ListLiteralImpl: Not a subset of supported Dart expressions` and `SetOrMapLiteralImpl: ...`. Closures written inline, such as `LiRule.custom((value) => ...)`, fall under the same rule.
+
+Declare rules and messages as fields on the component and bind them by name, as every example below does. Beyond being the only form that compiles, it keeps Dart code out of the template and gives the lists a stable identity across change detection cycles.
+
+Rule constructors are `const factory`, so fixed lists can be `static const`. The exception is `LiRule.custom(...)`, which takes a callback and therefore cannot be const: use `static final`.
+
 ### Why this path
 
 This API follows the same separation of concerns used by modern form systems:
@@ -603,14 +695,17 @@ Built-in presets currently include `cpf`, `cnpj`, `cpfOrCnpj`, `email`, `phone`,
   name="fullName"
   label="Nome completo"
   liType="requiredText"
-  [liRules]="[
-    LiRule.custom(validateFullName, code: 'fullName')
-  ]"
+  [liRules]="fullNameRules"
   [(ngModel)]="person.fullName">
 </li-input>
 ```
 
 ```dart
+// LiRule.custom takes a callback, so the list cannot be const.
+static final List<LiRule> fullNameRules = <LiRule>[
+  LiRule.custom(validateFullName, code: 'fullName'),
+];
+
 String? validateFullName(dynamic value) {
   final normalized = '${value ?? ''}'.trim();
   return normalized.length >= 6
@@ -650,12 +745,16 @@ final LiInputType inventoryCodeType = LiPresetInputType(
 <li-input
   label="CPF"
   liType="cpf"
-  [liMessages]="{
-    'required': 'Informe o CPF do cidadao.',
-    'cpf': 'CPF invalido.'
-  }"
+  [liMessages]="cpfMessages"
   [(ngModel)]="person.cpf">
 </li-input>
+```
+
+```dart
+static const Map<String, String> cpfMessages = <String, String>{
+  'required': 'Informe o CPF do cidadao.',
+  'cpf': 'CPF invalido.',
+};
 ```
 
 ### Backend errors still win
@@ -705,7 +804,7 @@ The validation pipeline uses a fixed precedence model so component behavior stay
   [dataSource]="departments"
   labelKey="label"
   valueKey="id"
-  [liRules]="[LiRule.required()]"
+  [liRules]="departmentRules"
   [(ngModel)]="person.departmentId">
 </li-select>
 
@@ -713,19 +812,28 @@ The validation pipeline uses a fixed precedence model so component behavior stay
   [dataSource]="skills"
   labelKey="label"
   valueKey="id"
-  [liRules]="[
-    LiRule.custom(validateAtLeastTwoSkills, code: 'skills')
-  ]"
+  [liRules]="skillsRules"
   [(ngModel)]="person.skillIds">
 </li-multi-select>
 
 <li-checkbox
   label="Aceito os termos"
-  [liRules]="[
-    LiRule.requiredTrue('Voce precisa aceitar os termos.')
-  ]"
+  [liRules]="acceptTermsRules"
   [(ngModel)]="person.acceptTerms">
 </li-checkbox>
+```
+
+```dart
+static const List<LiRule> departmentRules = <LiRule>[LiRule.required()];
+
+static const List<LiRule> acceptTermsRules = <LiRule>[
+  LiRule.requiredTrue('Voce precisa aceitar os termos.'),
+];
+
+// LiRule.custom takes a callback, so the list cannot be const.
+static final List<LiRule> skillsRules = <LiRule>[
+  LiRule.custom(validateAtLeastTwoSkills, code: 'skills'),
+];
 ```
 
 ### Pairing field validation with `liForm`
@@ -735,7 +843,7 @@ The validation pipeline uses a fixed precedence model so component behavior stay
 ```html
 <div liForm #personForm="liForm">
   <li-input liType="cpf" [(ngModel)]="person.cpf"></li-input>
-  <li-select [liRules]="[LiRule.required()]" [(ngModel)]="person.departmentId"></li-select>
+  <li-select [liRules]="departmentRules" [(ngModel)]="person.departmentId"></li-select>
 
   <button type="button" (click)="save(personForm)">Salvar</button>
 </div>
@@ -804,7 +912,7 @@ When the page mixes native inputs, projected buttons, and composite components, 
       [dataSource]="departments"
       labelKey="label"
       valueKey="id"
-      [liRules]="[LiRule.required()]"
+      [liRules]="departmentRules"
       [(ngModel)]="person.departmentId">
     </li-select>
   </div>
@@ -911,7 +1019,15 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiScrollSpyFragmentDirective`, `LiScrollSpyItemDirective`,
   `LiScrollSpyMenuDirective`, `LiScrollSpyConfig`.
 - Modal:
-  `LiModalComponent` with lazy content support.
+  `LiModalComponent` with lazy content support, plus `open` and `close`
+  outputs.
+- Selects:
+  `LiSelectComponent`, `LiOptionComponent`, `LiSelectTriggerDirective`,
+  `LiMultiSelectComponent`, `LiMultiOptionComponent`,
+  `LiMultiSelectTriggerDirective`, `CustomSelectItem`,
+  `CustomMultiSelectItem`, plus the `openChange` and `beforeOpen` streams.
+- Open lifecycle:
+  `LiBeforeOpenEvent`, the cancelable event carried by `beforeOpen`.
 - Page header:
   `LiPageHeaderComponent`, `LiPageHeaderBreadcrumbItemDirective`,
   `LiPageHeaderBottomDirective`, `LiPageHeaderActionsDirective`,
@@ -937,7 +1053,9 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiDatatableFooterContext`, `DatatableCol`, `DatatableSettings`,
   `DatatableRow`, `DatatableStyle`.
 - Datatable select:
-  `LiDatatableSelectComponent`, `LiDatatableSelectModalContentDirective`.
+  `LiDatatableSelectComponent`, `LiDatatableSelectModalContentDirective`,
+  plus the `requestDataOnOpen` input and the `openChange` stream for
+  on-demand loading.
 - Tagging and tokenization:
   `LiTagFilterComponent`, `LiTagEditorComponent`, `LiTagManagerComponent`,
   `LiTagSelectionChange`, `LiTagSaveRequest`, `LiTagDeleteRequest`,

@@ -94,6 +94,8 @@ class LiTimePickerComponent
       StreamController<Duration?>.broadcast();
   final StreamController<Duration?> _userValueChangeController =
       StreamController<Duration?>.broadcast();
+  final StreamController<bool> _openChangeController =
+      StreamController<bool>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
   StreamSubscription<html.Event>? _documentClickSubscription;
@@ -191,6 +193,13 @@ class LiTimePickerComponent
 
   @Output('userValueChange')
   Stream<Duration?> get userValueChange => _userValueChangeController.stream;
+
+  /// Emits `true` when the picker panel opens and `false` when it closes.
+  ///
+  /// Only real transitions are emitted, so repeated `open()` calls on an
+  /// already open picker stay silent.
+  @Output()
+  Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('triggerElement')
   html.Element? triggerElement;
@@ -512,6 +521,8 @@ class LiTimePickerComponent
   }
 
   void _open() {
+    final wasOpen = isOpen;
+
     _syncDraftFromValue();
     _syncInputTexts();
     dialMode = TimePickerDialMode.hour;
@@ -525,6 +536,11 @@ class LiTimePickerComponent
       _overlay?.stopAutoUpdate();
     }
     _bindDocumentListeners();
+
+    if (!wasOpen) {
+      _openChangeController.add(true);
+    }
+
     _markForCheck();
   }
 
@@ -723,6 +739,8 @@ class LiTimePickerComponent
   }
 
   void close() {
+    final wasOpen = isOpen;
+
     if (isOpen) {
       _markTouched();
     }
@@ -735,6 +753,11 @@ class LiTimePickerComponent
     _isEditingHour = false;
     _isEditingMinute = false;
     _markTouched();
+
+    if (wasOpen) {
+      _openChangeController.add(false);
+    }
+
     _markForCheck();
   }
 
@@ -1231,5 +1254,6 @@ class LiTimePickerComponent
     _formSubmissionSubscription?.cancel();
     _valueChangeController.close();
     _userValueChangeController.close();
+    _openChangeController.close();
   }
 }

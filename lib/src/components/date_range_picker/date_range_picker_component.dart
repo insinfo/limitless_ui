@@ -230,6 +230,7 @@ class LiDateRangePickerComponent
   final _fimChangeController = StreamController<DateTime?>.broadcast();
   final _userValueChangeController =
       StreamController<LiDateRangeValue?>.broadcast();
+  final _openChangeController = StreamController<bool>.broadcast();
 
   DateTime? _inicio;
   DateTime? _fim;
@@ -364,6 +365,13 @@ class LiDateRangePickerComponent
   @Output('userValueChange')
   Stream<LiDateRangeValue?> get userValueChange =>
       _userValueChangeController.stream;
+
+  /// Emits `true` when the picker panel opens and `false` when it closes.
+  ///
+  /// Only real transitions are emitted, so repeated `open()` calls on an
+  /// already open picker stay silent.
+  @Output()
+  Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('triggerElement')
   html.Element? triggerElement;
@@ -601,6 +609,8 @@ class LiDateRangePickerComponent
   }
 
   void _open() {
+    final wasOpen = isOpen;
+
     draftInicio = _normalize(inicio);
     draftFim = _normalize(fim);
     hoverDateValue = null;
@@ -623,6 +633,11 @@ class LiDateRangePickerComponent
       _overlay?.stopAutoUpdate();
     }
     _bindDocumentListeners();
+
+    if (!wasOpen) {
+      _openChangeController.add(true);
+    }
+
     _markForCheck();
   }
 
@@ -919,6 +934,8 @@ class LiDateRangePickerComponent
   }
 
   void close() {
+    final wasOpen = isOpen;
+
     if (isOpen) {
       _markTouched();
     }
@@ -932,6 +949,11 @@ class LiDateRangePickerComponent
     leftViewMode = DateRangePickerViewMode.day;
     rightViewMode = DateRangePickerViewMode.day;
     _markTouched();
+
+    if (wasOpen) {
+      _openChangeController.add(false);
+    }
+
     _markForCheck();
   }
 
@@ -1395,5 +1417,6 @@ class LiDateRangePickerComponent
     _inicioChangeController.close();
     _fimChangeController.close();
     _userValueChangeController.close();
+    _openChangeController.close();
   }
 }

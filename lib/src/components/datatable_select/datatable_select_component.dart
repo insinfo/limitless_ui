@@ -502,6 +502,19 @@ class LiDatatableSelectComponent
   @Input()
   bool requestDataOnItemsPerPageChange = false;
 
+  /// When `true`, emits [dataRequest] with [dataTableFilter] the first time the
+  /// modal opens, so the list can be loaded on demand instead of upfront.
+  ///
+  /// The inner modal uses `lazyContent`, so the datatable only exists once the
+  /// modal is open and never asks for data on its own — it only emits
+  /// `dataRequest` when the user paginates, sorts or searches. Without this the
+  /// modal would open empty until the user interacted with it.
+  ///
+  /// Only the first open emits; reopening keeps the data already loaded. Use
+  /// [openChange] instead to reload on every open.
+  @Input()
+  bool requestDataOnOpen = false;
+
   // ---------------------------------------------------------------------------
   // Outputs
   // ---------------------------------------------------------------------------
@@ -523,6 +536,20 @@ class LiDatatableSelectComponent
   /// Forwards the datatable's `dataRequest` event so the parent can load data.
   @Output()
   Stream<Filters> get dataRequest => _dataRequestCtrl.stream;
+
+  final _openChangeCtrl = StreamController<bool>.broadcast();
+  bool _requestedDataOnOpen = false;
+
+  /// Emits `true` when the modal opens and `false` when it closes.
+  ///
+  /// Only real transitions are emitted, since it is driven by the inner
+  /// modal's own `open`/`close` outputs.
+  ///
+  /// Useful to load the list on demand. For the common case of loading it once
+  /// on first open, prefer [requestDataOnOpen], which emits a [dataRequest]
+  /// carrying the current [dataTableFilter].
+  @Output()
+  Stream<bool> get openChange => _openChangeCtrl.stream;
 
   final _limitChangeCtrl = StreamController<Filters>();
 
@@ -808,6 +835,17 @@ class LiDatatableSelectComponent
     _changeDetectorRef.markForCheck();
   }
 
+  /// Called from the inner modal's `open` output, which only fires on a real
+  /// transition, so this covers every path that opens the modal.
+  void onModalOpened() {
+    if (requestDataOnOpen && !_requestedDataOnOpen) {
+      _requestedDataOnOpen = true;
+      _dataRequestCtrl.add(dataTableFilter);
+    }
+
+    _openChangeCtrl.add(true);
+  }
+
   void onModalClosed() {
     if (multiple && _hasPendingSelectionChanged()) {
       _commitPendingSelection(emitUserValueChange: true);
@@ -815,6 +853,7 @@ class LiDatatableSelectComponent
 
     _markTouched();
     _changeDetectorRef.markForCheck();
+    _openChangeCtrl.add(false);
   }
 
   void onDatatableRowClick(dynamic instance) {
@@ -1065,6 +1104,7 @@ class LiDatatableSelectComponent
     _dataRequestCtrl.close();
     _limitChangeCtrl.close();
     _searchRequestCtrl.close();
+    _openChangeCtrl.close();
   }
 
   void _markTouched() {

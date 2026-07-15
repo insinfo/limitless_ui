@@ -67,6 +67,9 @@ class LiTagFilterComponent
       StreamController<LiTagSelectionChange>.broadcast();
   final StreamController<void> _reloadRequestController =
       StreamController<void>.broadcast();
+  final StreamController<bool> _openChangeController =
+      StreamController<bool>.broadcast();
+  bool _destroyed = false;
 
   PopperAnchoredOverlay? _overlay;
   StreamSubscription<html.Event>? _documentClickSubscription;
@@ -154,6 +157,17 @@ class LiTagFilterComponent
 
   @Output('reloadRequest')
   Stream<void> get onReloadRequest => _reloadRequestController.stream;
+
+  /// Emits `true` when the dropdown opens and `false` when it closes.
+  ///
+  /// Only real transitions are emitted, so repeated `openDropdown()` calls on
+  /// an already open dropdown stay silent. Nothing is emitted while the
+  /// component is being destroyed.
+  ///
+  /// Useful to defer loading the tag list until the user actually opens the
+  /// filter.
+  @Output()
+  Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('dropdownButton')
   html.Element? dropdownButtonElement;
@@ -279,6 +293,7 @@ class LiTagFilterComponent
         searchInputElement?.focus();
       }
     });
+    _openChangeController.add(true);
     _markForCheck();
   }
 
@@ -296,6 +311,10 @@ class LiTagFilterComponent
 
     if (restoreFocus) {
       dropdownButtonElement?.focus();
+    }
+
+    if (!_destroyed) {
+      _openChangeController.add(false);
     }
 
     _markForCheck();
@@ -358,6 +377,7 @@ class LiTagFilterComponent
 
   @override
   void ngOnDestroy() {
+    _destroyed = true;
     _unbindDocumentListeners();
     closeDropdown();
     _overlay?.dispose();
@@ -365,6 +385,7 @@ class LiTagFilterComponent
     _modelChangeController.close();
     _selectionChangeController.close();
     _reloadRequestController.close();
+    _openChangeController.close();
   }
 
   void _applyDataSource(List<LiTagFilterOptionView> nextOptions) {

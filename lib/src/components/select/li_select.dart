@@ -7,6 +7,7 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 import 'package:popper/popper.dart';
 
+import '../../core/li_before_open_event.dart';
 import '../../core/overlay_positioning.dart';
 import '../../directives/li_form_directive.dart';
 import '../../exceptions/invalid_argument_exception.dart';
@@ -115,6 +116,13 @@ class LiSelectComponent
       StreamController<dynamic>();
   final StreamController<dynamic> _userChangeController =
       StreamController<dynamic>();
+  final StreamController<bool> _openChangeController =
+      StreamController<bool>.broadcast();
+
+  /// Synchronous so `preventDefault()` runs before the dropdown opens.
+  final StreamController<LiBeforeOpenEvent> _beforeOpenController =
+      StreamController<LiBeforeOpenEvent>.broadcast(sync: true);
+  bool _destroyed = false;
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   StreamSubscription<bool>? _formSubmissionSubscription;
@@ -210,6 +218,28 @@ class LiSelectComponent
 
   @Output('userValueChange')
   Stream<dynamic> get onUserValueChange => _userChangeController.stream;
+
+  /// Emits `true` when the dropdown opens and `false` when it closes.
+  ///
+  /// Only real transitions are emitted, so repeated `openDropdown()` calls on
+  /// an already open dropdown stay silent. Nothing is emitted while the
+  /// component is being destroyed.
+  ///
+  /// Useful to defer loading the option list until the user actually opens the
+  /// select.
+  @Output()
+  Stream<bool> get openChange => _openChangeController.stream;
+
+  /// Emitted right before the dropdown opens, while it is still closed.
+  ///
+  /// Calling `preventDefault()` on the event keeps the dropdown closed and
+  /// suppresses the matching [openChange]. Only emitted for a real open, so an
+  /// already open dropdown never re-emits it.
+  ///
+  /// The stream is synchronous: `preventDefault()` has to be called from the
+  /// handler itself, not after an `await`.
+  @Output()
+  Stream<LiBeforeOpenEvent> get beforeOpen => _beforeOpenController.stream;
 
   @ContentChildren(LiOptionComponent)
   List<LiOptionComponent> childrenSelectOptions = [];
@@ -523,6 +553,17 @@ class LiSelectComponent
     );
   }
 
+  /// Emits [beforeOpen] and reports whether the open should go ahead.
+  bool _dispatchBeforeOpen() {
+    if (_destroyed) {
+      return false;
+    }
+
+    final event = LiBeforeOpenEvent();
+    _beforeOpenController.add(event);
+    return !event.defaultPrevented;
+  }
+
   void closeDropdown({bool markForCheck = true}) {
     final wasOpen = dropdownOpen;
 
@@ -549,12 +590,22 @@ class LiSelectComponent
       dropdownButtonElement?.focus();
     }
 
+    if (wasOpen && !_destroyed) {
+      _openChangeController.add(false);
+    }
+
     if (markForCheck) {
       _markForCheck();
     }
   }
 
   void openDropdown() {
+    final wasOpen = dropdownOpen;
+
+    if (!wasOpen && !_dispatchBeforeOpen()) {
+      return;
+    }
+
     if (childrenSelectOptions.isNotEmpty) {
       _syncProjectedOptions(markForCheck: false);
     }
@@ -571,6 +622,10 @@ class LiSelectComponent
         inputSearch?.focus();
       }
     });
+
+    if (!wasOpen) {
+      _openChangeController.add(true);
+    }
 
     _markForCheck();
   }
@@ -798,6 +853,7 @@ class LiSelectComponent
 
   @override
   void ngOnDestroy() {
+    _destroyed = true;
     _unbindDocumentListeners();
     closeDropdown(markForCheck: false);
     _overlay?.dispose();
@@ -805,6 +861,8 @@ class LiSelectComponent
     _changeController.close();
     _modelChangeController.close();
     _userChangeController.close();
+    _openChangeController.close();
+    _beforeOpenController.close();
   }
 
   void _handleOverlayLayout(PopperLayout layout) {

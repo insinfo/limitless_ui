@@ -420,9 +420,19 @@ class LiModalComponent implements OnInit, OnDestroy {
     _syncBodyScrollLock();
     _bindEscapeListener();
     _focusModal();
+    _onOpenCtrl.add(null);
   }
 
   bool get isOpen => _isOpen;
+
+  final _onOpenCtrl = StreamController<void>.broadcast();
+
+  /// Emitted after the modal opens, mirroring [onClose].
+  ///
+  /// With [lazyContent] the projected content only exists once the modal is
+  /// open, so this is the earliest point a consumer can load data for it.
+  @Output('open')
+  Stream<void> get onOpen => _onOpenCtrl.stream;
 
   final _onCloseCtrl = StreamController<void>.broadcast();
 
@@ -454,6 +464,7 @@ class LiModalComponent implements OnInit, OnDestroy {
     _removeFromModalStack();
     rootElement.remove();
     backdropDiv.remove();
+    _onOpenCtrl.close();
     _onCloseCtrl.close();
   }
 }

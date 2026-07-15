@@ -31,19 +31,31 @@ Os blocos principais dessa API são:
 - `liMessages`: sobrescrita por código de regra, como `required`, `cpf`, `requiredTrue` e `minLength`.
 - `liValidationMode`: controla quando o erro aparece, com modos como `dirty`, `touchedOrDirty`, `submitted`, `submittedOrTouched` e `submittedOrTouchedOrDirty`. O padrão do pacote é `submittedOrTouchedOrDirty`.
 
+### Regras e mensagens são campos do componente, não literais no template
+
+Antes dos exemplos, uma restrição do AngularDart que define a forma correta de usar essa API: **expressões de template não aceitam literais de lista nem de mapa**. Escrever `[liRules]="[LiRule.required()]"` ou `[liMessages]="{'required': 'Informe o CPF.'}"` não compila — o compilador de templates rejeita com `Parser Error: ListLiteralImpl: Not a subset of supported Dart expressions` e `SetOrMapLiteralImpl: ...`. Closures dentro do template, como `LiRule.custom((value) => ...)`, caem na mesma regra.
+
+Declare as regras e as mensagens como campos do componente e faça o binding pelo nome. Além de ser o único jeito que compila, isso segue a orientação geral de manter código Dart fora do template e mantém as listas com identidade estável entre ciclos de change detection.
+
+Os construtores de regra são `const factory`, então listas fixas podem ser `static const`. A exceção é `LiRule.custom(...)`, que recebe um callback e por isso não é const: use `static final`.
+
 Exemplo com `li-input`:
 
 ```html
 <li-input
     label="CPF"
     liType="cpf"
-    [liMessages]="{
-      'required': 'Informe o CPF.',
-      'cpf': 'Digite um CPF valido.'
-    }"
+    [liMessages]="cpfMessages"
     liValidationMode="submitted"
     [(ngModel)]="person.cpf">
 </li-input>
+```
+
+```dart
+static const Map<String, String> cpfMessages = <String, String>{
+  'required': 'Informe o CPF.',
+  'cpf': 'Digite um CPF válido.',
+};
 ```
 
 Exemplo com selects e seleção múltipla:
@@ -53,8 +65,8 @@ Exemplo com selects e seleção múltipla:
     [dataSource]="departments"
     labelKey="label"
     valueKey="id"
-    [liRules]="[LiRule.required()]"
-    [liMessages]="{'required': 'Escolha um departamento.'}"
+    [liRules]="departmentRules"
+    [liMessages]="departmentMessages"
     liValidationMode="submitted"
     [(ngModel)]="person.departmentId">
 </li-select>
@@ -63,15 +75,27 @@ Exemplo com selects e seleção múltipla:
     [dataSource]="channels"
     labelKey="label"
     valueKey="id"
-    [liRules]="[
-      LiRule.custom((value) =>
-        value is Iterable && value.length >= 2
-          ? null
-          : 'Selecione ao menos 2 canais.')
-    ]"
+    [liRules]="channelRules"
     liValidationMode="submitted"
     [(ngModel)]="person.channelIds">
 </li-multi-select>
+```
+
+```dart
+static const List<LiRule> departmentRules = <LiRule>[LiRule.required()];
+
+static const Map<String, String> departmentMessages = <String, String>{
+  'required': 'Escolha um departamento.',
+};
+
+// LiRule.custom recebe um callback, então não é const.
+static final List<LiRule> channelRules = <LiRule>[
+  LiRule.custom(
+    (value) => value is Iterable && value.length >= 2
+        ? null
+        : 'Selecione ao menos 2 canais.',
+  ),
+];
 ```
 
 Exemplo com checkbox e rádio:
@@ -80,7 +104,7 @@ Exemplo com checkbox e rádio:
 <li-checkbox
     label="Aceito os termos"
     [required]="true"
-    [liMessages]="{'requiredTrue': 'Confirme o aceite.'}"
+    [liMessages]="termsMessages"
     liValidationMode="submitted"
     [(ngModel)]="acceptedTerms">
 </li-checkbox>
@@ -88,11 +112,23 @@ Exemplo com checkbox e rádio:
 <li-radio-group
     [legend]="approvalLegend"
     [value]="approvalMode"
-    [liRules]="[LiRule.required()]"
-    [liMessages]="{'required': 'Selecione um modo de aprovação.'}"
+    [liRules]="approvalRules"
+    [liMessages]="approvalMessages"
     liValidationMode="submitted">
   ...
 </li-radio-group>
+```
+
+```dart
+static const Map<String, String> termsMessages = <String, String>{
+  'requiredTrue': 'Confirme o aceite.',
+};
+
+static const List<LiRule> approvalRules = <LiRule>[LiRule.required()];
+
+static const Map<String, String> approvalMessages = <String, String>{
+  'required': 'Selecione um modo de aprovação.',
+};
 ```
 
 Essa mesma base também vale para `li-date-picker`, `li-time-picker` e `li-file-upload`, com a vantagem de manter a precedência antiga:
@@ -106,7 +142,7 @@ Quando o formulário é maior, combine os campos com `liForm`:
 ```html
 <form liForm #ui="liForm">
   <li-input liType="cpf" [(ngModel)]="person.cpf"></li-input>
-  <li-select [liRules]="[LiRule.required()]" [(ngModel)]="person.departmentId"></li-select>
+  <li-select [liRules]="departmentRules" [(ngModel)]="person.departmentId"></li-select>
 </form>
 ```
 
@@ -249,6 +285,102 @@ Comportamentos mais relevantes:
 - `hide()` remove a overlay e libera o timer interno.
 
 A pagina de helpers no example inclui tanto uma demo standalone quanto uma demo acionada de dentro de `li-modal`, para validar visualmente o comportamento da pilha de overlays.
+
+## Eventos de abertura e carregamento sob demanda em `1.0.0-dev.36`
+
+Até a `1.0.0-dev.35` não havia como saber que um select ou um picker tinha aberto. Isso empurrava as telas para um padrão caro: carregar a lista de opções no `ngOnInit`, mesmo quando o usuário talvez nunca abrisse aquele campo. Em telas com vários lookups, isso é a maior parte do payload inicial — e boa parte dele nunca é usada.
+
+A `1.0.0-dev.36` fecha essa lacuna com três APIs complementares.
+
+### `openChange`: saber que abriu
+
+`openChange` é um `Stream<bool>` que emite `true` ao abrir e `false` ao fechar. Está disponível em `li-select`, `li-multi-select`, `li-treeview-select`, `li-tag-filter`, `li-datatable-select`, `li-date-picker`, `li-date-range-picker` e `li-time-picker`. O `li-color-picker` é anterior a essa convenção e expõe o mesmo estado pelos seus `pickerShow`/`pickerHide`.
+
+Só transições reais são emitidas: reabrir um dropdown já aberto não emite de novo, e fechar um já fechado também não — o que importa, porque caminhos como selecionar uma opção ou apertar Escape chamam `closeDropdown()` sem saber o estado atual. Nada é emitido durante a destruição do componente, então quem segura o componente por um `ViewChild` e assina o stream direto não recebe um `false` espúrio no teardown.
+
+O uso principal é adiar a busca da lista:
+
+```html
+<li-select
+  [dataSource]="classificacoes"
+  labelKey="descricao"
+  valueKey="id"
+  (openChange)="aoAbrirClassificacoes($event)"
+  [(ngModel)]="filtros.codClassificacao">
+</li-select>
+```
+
+```dart
+bool _classificacoesCarregadas = false;
+
+Future<void> aoAbrirClassificacoes(bool aberto) async {
+  if (!aberto || _classificacoesCarregadas) {
+    return;
+  }
+  _classificacoesCarregadas = true;
+  classificacoes = await _service.listarClassificacoes();
+}
+```
+
+A guarda de "já carregou" fica no host de propósito: a lib não decide política de cache. Se a tela quiser recarregar a cada abertura, basta remover a guarda.
+
+### `beforeOpen`: vetar a abertura
+
+`li-select` e `li-multi-select` também emitem `beforeOpen` imediatamente antes de abrir, com o dropdown ainda fechado. Chamar `preventDefault()` no evento mantém o dropdown fechado e suprime o `openChange` correspondente:
+
+```html
+<li-select
+  [dataSource]="cidades"
+  (beforeOpen)="exigirEstadoAntes($event)"
+  [(ngModel)]="endereco.cidadeId">
+</li-select>
+```
+
+```dart
+void exigirEstadoAntes(LiBeforeOpenEvent event) {
+  if (endereco.estadoId == null) {
+    event.preventDefault();
+    _toastService.warning('Selecione o estado primeiro.');
+  }
+}
+```
+
+O evento segue o mesmo formato cancelável que o `liNav` já usava no `LiNavChangeEvent`, e, como ele, o stream é **síncrono**. Isso tem uma consequência prática que vale memorizar: `preventDefault()` precisa ser chamado dentro do próprio handler. Depois de um `await` ele roda tarde demais — o dropdown já abriu, e o veto passa despercebido. Para condicionar a abertura a um trabalho assíncrono, previna o default, faça o trabalho e chame `openDropdown()` quando ele resolver.
+
+### `requestDataOnOpen`: o caso do `li-datatable-select`
+
+O `li-datatable-select` merece atenção separada. O modal interno dele já renderiza o conteúdo de forma lazy, então o datatable só nasce quando o modal abre — mas nasce mudo: ele só emite `dataRequest` em ação do usuário (paginar, ordenar, buscar), nunca ao ser criado. Uma tela que simplesmente parasse de adiantar a lista abriria um modal vazio até o usuário digitar algo.
+
+O `requestDataOnOpen` resolve isso fazendo o componente emitir `dataRequest` com o `dataTableFilter` atual na primeira abertura:
+
+```html
+<li-datatable-select
+  [settings]="settings"
+  [dataTableFilter]="filtro"
+  [data]="usuarios"
+  [requestDataOnOpen]="true"
+  (dataRequest)="carregarUsuarios($event)"
+  [(ngModel)]="form.numcgmResponsavel">
+</li-datatable-select>
+```
+
+Como o evento carrega o `Filters` correto, o handler que já existia para paginação e busca serve sem mudança. Só a primeira abertura emite; reabrir mantém os dados já carregados. Para recarregar a cada abertura, use `openChange`.
+
+### `li-modal`: o `open` como primitiva
+
+Por baixo dos dois casos acima está o `li-modal`, que agora expõe `open` além do `close` que já tinha. Como o `lazyContent` só cria o conteúdo projetado quando o modal abre, o `open` é o primeiro momento em que dá para carregar dados para esse conteúdo:
+
+```html
+<li-modal #modalEncaminhar
+    title-text="Encaminhar"
+    size="xtra-large"
+    [lazyContent]="true"
+    (open)="carregarHierarquia()">
+  <dropdown-organograma [(ngModel)]="destino"></dropdown-organograma>
+</li-modal>
+```
+
+Vale um cuidado ao adotar `lazyContent` num modal que já existe: o conteúdo é destruído ao fechar e recriado a cada abertura. Um `@ViewChild` que aponte para dentro do modal fica nulo enquanto ele está fechado, e qualquer busca feita no `ngOnInit` do conteúdo passa a rodar a cada abertura.
 
 ## 1. O que você está construindo
 
@@ -729,7 +861,8 @@ Padrões comuns:
 - `li-color-picker` para configurações de cor, branding e aparência;
 - `li-modal` ou `li-offcanvas` para fluxos de edição;
 - `li-toast` e `LiToastService` para feedback;
-- `li-pagination` e `Filters` para dados paginados.
+- `li-pagination` e `Filters` para dados paginados;
+- `openChange`, `beforeOpen` e `requestDataOnOpen` para carregar listas de lookup só quando o campo é aberto, em vez de no `ngOnInit` da tela.
 
 Ao documentar ou apresentar essa camada de UI, prefira o nome real do componente, `li-color-picker`. Ele pode ser inspirado por interações clássicas de color picker, mas a API pública e o comportamento pertencem ao `limitless_ui`.
 
