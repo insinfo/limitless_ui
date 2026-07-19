@@ -1,7 +1,7 @@
 # Relatório da migração dart:html → package:web (branch ngx9)
 
-> Status: validação final. Iniciado em 2026-07-18. Complementa o plano
-> [ngx_migration_plan.md](ngx_migration_plan.md).
+> Status: concluído em 2026-07-19. Iniciado em 2026-07-18. Complementa o
+> plano [ngx_migration_plan.md](ngx_migration_plan.md).
 
 > Escopo de entrega confirmado: migração, testes, documentação, `git add`,
 > `git commit` e `git push`. Não será executada publicação no pub.dev para
@@ -439,3 +439,15 @@ Depois dessas correções, uma execução focada dos subsistemas alterados passo
   README, `doc.md`, `doc-pt_BR.md`, o example e os guias HTML também não
   contêm referências legadas; as únicas menções históricas intencionais
   ficam neste relatório, no plano e em comentários da fachada transitória.
+
+## Entrega Git
+
+- `angular/master`: `12d91771` (tokens DOM por typedef), `72dc21e9`
+  (preservação dos erros do contexto do compilador) e `12a50e32`
+  (`web: ^1.1.1` no pacote auxiliar goldens), todos enviados ao remoto.
+- `popper_dart/dart_web`: `cd89e88` (comparações DOM compatíveis com Wasm) e
+  `1daf2d95` (`web: ^1.1.1`), ambos enviados ao remoto.
+- `limitless_ui/ngx9`: commit principal `3575fe7`
+  (`Migrate limitless_ui to package:web`) enviado para `origin/ngx9`.
+- Nenhum `dart pub publish`, upload ou publicação no pub.dev foi executado.
+  A branch permanece protegida por `publish_to: none`.

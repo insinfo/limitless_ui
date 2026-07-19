@@ -1,6 +1,8 @@
 # Plano de migração do limitless_ui para a família ngx_*
 
-> Status: execução da Fase 2 em validação final. Criado em 2026-07-18.
+> Status: Fase 2 concluída em 2026-07-19. Commit principal `3575fe7`
+> enviado para `origin/ngx9`; nenhuma publicação foi realizada. Plano criado
+> em 2026-07-18.
 
 > **Limite desta execução:** migrar, testar, documentar, fazer `git add`,
 > `git commit` e `git push`. **Não executar `dart pub publish` e não publicar
