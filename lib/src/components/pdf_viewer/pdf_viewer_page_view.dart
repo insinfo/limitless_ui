@@ -2,7 +2,7 @@ import 'dart:html' as html;
 import 'dart:js_util' as js_util;
 import 'dart:math';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'pdf_viewer_pdfjs_bridge.dart';
 import 'pdfjs_bindings.dart';

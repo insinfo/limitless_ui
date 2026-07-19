@@ -1,7 +1,7 @@
 import 'dart:html';
 
 import 'package:limitless_ui_example/limitless_ui_example.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_router/ngx_router.dart';
 
 class DemoStat {
   const DemoStat({
@@ -108,7 +108,7 @@ class OverviewPageComponent {
       ),
       DemoStat(
         label: t.pages.overview.statNavigationLabel,
-        value: 'ngrouter',
+        value: 'ngx_router',
         help: t.pages.overview.statNavigationHelp,
       ),
     ]);

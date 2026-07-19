@@ -6,7 +6,7 @@
 
 Reusable AngularDart UI components, directives, and browser helpers for applications built on the Limitless visual language and Bootstrap-based CSS: https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css.
 
-This package is browser-only. It depends on `dart:html`, `ngdart`, `ngforms` and `ngrouter`.
+This package is browser-only. It depends on `dart:html`, `ngx_dart`, `ngx_forms` and `ngx_router`.
 
 ## Contract overview
 
@@ -21,21 +21,31 @@ This library has two explicit usage layers:
 
 For consumers using the data-oriented components above, `essential_core` should be understood as shared infrastructure, not as an application-specific dependency.
 
-Some form value accessors in this package rely on internal `ngforms` APIs and behavior because AngularDart does not expose all hooks needed by the library through stable public APIs. Because of that, keep `ngdart`, `ngforms` and `ngrouter` tightly pinned, prefer exact or very narrow version constraints in consuming apps, avoid automatic upgrades, and always run focused tests for the value accessors first during framework upgrades.
+Some form value accessors in this package rely on internal `ngx_forms` APIs and behavior because AngularDart does not expose all hooks needed by the library through stable public APIs. Because of that, keep `ngx_dart`, `ngx_forms` and `ngx_router` tightly pinned, prefer exact or very narrow version constraints in consuming apps, avoid automatic upgrades, and always run focused tests for the value accessors first during framework upgrades.
 
 Demo page: https://insinfo.github.io/limitless_ui/
 
-## Publication status
+## Version lines
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.33`, because it still depends on AngularDart pre-release packages:
+`limitless_ui` is maintained in parallel lines, one per framework family. This branch (`ngx8`) is the `2.x` line:
 
-- `ngdart: ^8.0.0-dev.4`
-- `ngforms: ^5.0.0-dev.3`
-- `ngrouter: ^4.0.0-dev.3`
+| Line | Branch | Framework | DOM |
+|------|--------|-----------|-----|
+| `1.0.0-dev.*` (frozen, critical fixes only) | `main` | `ngdart 8.0.0-dev.4` | `dart:html` |
+| `2.x` (this branch) | `ngx8` | `ngx_dart ^8.0.1` ([ngx_* family](https://insinfo.github.io/angular/migration)) | `dart:html` |
+| `3.x` (planned) | `ngx9` | `ngx_dart ^9.0.0-dev.1` | `package:web` |
+
+Apps on the `1.0.0-dev.*` line are unaffected by `2.x`/`3.x` releases: `^1.0.0-dev.x` resolves to `< 2.0.0`, so upgrading is always an explicit opt-in. To migrate an app to `2.x`, follow the framework's [ngdart → ngx migration guide](https://insinfo.github.io/angular/migration) and switch the app's own imports and dependencies to the `ngx_*` packages together with the `limitless_ui: ^2.0.0` bump.
+
+The `2.x` line depends on the stable `ngx_*` releases:
+
+- `ngx_dart: ^8.0.1`
+- `ngx_forms: ^5.0.1`
+- `ngx_router: ^4.0.1`
 
 For applications consuming `limitless_ui`, treat these versions as compatibility-critical. In particular:
 
-- keep `ngdart`, `ngforms` and `ngrouter` well pinned in the application;
+- keep `ngx_dart`, `ngx_forms` and `ngx_router` well pinned in the application;
 - prefer exact versions or very narrow ranges for these packages in consumers of `limitless_ui`;
 - do not enable automated dependency upgrades for these packages without manual validation;
 - when testing an upgrade, run the value accessor tests first, because they are usually the first area to break.
@@ -566,13 +576,13 @@ Beyond visual components, the package also exposes small browser-oriented helper
 - `LiTextMaskDirective`, `LiOnlyNumberDirective` and `LiCustomHrefDirective`: helpers for generic masked inputs, digit-only fields and attribute-driven href synchronization.
 - `LiNumberValueAccessor`, `LiDateTimeValueAccessor` and `LiMinMaxDirective`: form helpers for `<input type="number">`, `<input type="datetime-local">` and constrained numeric inputs.
 
-In `ngdart` 8, template pipes are invoked through `$pipe` instead of the legacy `value | pipeName` syntax. That applies both to built-in pipes such as `date` and to custom pipes registered in the component.
+In `ngx_dart` 8, template pipes are invoked through `$pipe` instead of the legacy `value | pipeName` syntax. That applies both to built-in pipes such as `date` and to custom pipes registered in the component.
 
 Example:
 
 ```dart
 import 'package:limitless_ui/limitless_ui.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 @Component(
   selector: 'demo-form-helpers',
@@ -3034,7 +3044,7 @@ dart pub global run coverage:format_coverage --lcov --in=coverage/vm_raw --out=c
 
 Codecov is enabled in CI through `CODECOV_TOKEN` and publishes only the VM LCOV report. The browser and AngularDart suite still runs in CI as a functional safety net, but it does not contribute coverage to Codecov in this repository.
 
-When validating dependency upgrades for `ngdart`, `ngforms`, or `ngrouter`, add focused runs for the form value accessors and input bindings before broader test suites. Those accessors depend on internal `ngforms` APIs and behavior due to framework limitations, and they are usually the first compatibility boundary to break.
+When validating dependency upgrades for `ngx_dart`, `ngx_forms`, or `ngx_router`, add focused runs for the form value accessors and input bindings before broader test suites. Those accessors depend on internal `ngx_forms` APIs and behavior due to framework limitations, and they are usually the first compatibility boundary to break.
 
 Recommended first-pass upgrade command:
 
@@ -3086,4 +3096,4 @@ Use the demo app as the reference for real template usage, especially for lazy a
 - The demo application is in [example](example).
 - The package is not intended for Flutter or server-side Dart.
 - `essential_core` is the shared generic foundation reused by the data-oriented component family of this package: `li-datatable`, `li-datatable-select`, `li-select`, `li-multi-select`, `li-typeahead` and treeview-related components.
-- Some value accessors are intentionally coupled to internal `ngforms` APIs and behavior due to framework limitations, so framework package upgrades must be deliberate, pinned, and test-driven.
+- Some value accessors are intentionally coupled to internal `ngx_forms` APIs and behavior due to framework limitations, so framework package upgrades must be deliberate, pinned, and test-driven.

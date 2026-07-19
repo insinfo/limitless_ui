@@ -2,10 +2,10 @@
 
 Este guia mostra como desenhar e construir uma aplicação full stack séria em Dart usando:
 
-- `ngdart: 8.0.0-dev.4`
-- `ngforms: 5.0.0-dev.3`
-- `ngrouter: 4.0.0-dev.3`
-- `ngtest: ^5.0.0-dev.3`
+- `ngx_dart: ^8.0.1`
+- `ngx_forms: ^5.0.1`
+- `ngx_router: ^4.0.1`
+- `ngx_test: ^5.0.1`
 - `build_runner: ^2.4.12`
 - `build_test: ^2.2.2`
 - `build_web_compilers: ^4.0.11`
@@ -413,9 +413,9 @@ Esse stack é uma boa escolha quando você quer:
 
 O que cada peça entrega:
 
-- `ngdart`: arquitetura de componentes no estilo Angular para Dart no navegador.
-- `ngforms`: formulários e value accessors no AngularDart.
-- `ngrouter`: definições de rota, navegação e guards.
+- `ngx_dart`: arquitetura de componentes no estilo Angular para Dart no navegador.
+- `ngx_forms`: formulários e value accessors no AngularDart.
+- `ngx_router`: definições de rota, navegação e guards.
 - `limitless_ui`: UI reutilizável de aplicação como datatables, selects, typeahead, modais, tabs, toasts, wizards, paginação e mais.
 - `essential_core`: modelos genéricos reutilizáveis como `Filters`, `DataFrame<T>` e contratos compartilhados de baixo nível.
 - `shelf`: uma camada HTTP pequena e explícita.
@@ -650,9 +650,9 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  ngdart: 8.0.0-dev.4
-  ngforms: 5.0.0-dev.3
-  ngrouter: 4.0.0-dev.3
+  ngx_dart: ^8.0.1
+  ngx_forms: ^5.0.1
+  ngx_router: ^4.0.1
   limitless_ui: ^1.0.0-dev.10
   essential_core: ^1.2.0
   my_app_core:
@@ -662,7 +662,7 @@ dev_dependencies:
   build_runner: ^2.4.12
   build_test: ^2.2.2
   build_web_compilers: ^4.0.11
-  ngtest: ^5.0.0-dev.3
+  ngx_test: ^5.0.1
   test: ^1.25.9
   sass_builder: ^2.2.1
 ```
@@ -686,7 +686,7 @@ Por que essas dependências ficam assim:
 Entry point mínimo:
 
 ```dart
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 import 'package:my_app_frontend/src/app/app_component.template.dart' as ng;
 
 void main() {
@@ -701,7 +701,7 @@ Exemplo com inicialização de locale:
 ```dart
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 import 'package:my_app_frontend/src/app/app_component.template.dart' as ng;
 import 'package:my_app_frontend/src/shared/di/di.dart';
 
@@ -715,8 +715,8 @@ Future<void> main() async {
 Componente raiz:
 
 ```dart
-import 'package:ngdart/angular.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_router/ngx_router.dart';
 import 'package:my_app_frontend/src/routes/app_routes.dart';
 
 @Component(
@@ -744,7 +744,7 @@ Para aplicações AngularDart não triviais, use objetos `RouteDefinition` expl�
 Exemplo de registro de rotas:
 
 ```dart
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_router/ngx_router.dart';
 import 'package:my_app_frontend/src/pages/dashboard/dashboard_page.template.dart'
     as dashboard_template;
 import 'package:my_app_frontend/src/pages/projects/projects_page.template.dart'
@@ -800,8 +800,8 @@ Responsabilidades típicas da DI no frontend:
 Exemplo de injector:
 
 ```dart
-import 'package:ngdart/angular.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_router/ngx_router.dart';
 import 'package:my_app_frontend/src/shared/guards/auth_guard.dart';
 import 'package:my_app_frontend/src/shared/services/api_client.dart';
 import 'package:my_app_frontend/src/modules/projects/services/project_service.dart';
@@ -843,7 +843,7 @@ Exemplo de `frontend/build.yaml`:
 targets:
   $default:
     builders:
-      ngdart:
+      ngx_dart:
         generate_for:
           exclude:
             - "web/assets/**"
@@ -871,7 +871,7 @@ Exemplo de componente de página:
 ```dart
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 import 'package:my_app_core/my_app_core.dart';
 import 'package:my_app_frontend/src/modules/projects/services/project_service.dart';
 
@@ -1227,7 +1227,7 @@ Teste DTOs, filtros, utilitários e erros compartilhados.
 
 ### Frontend
 
-Teste componentes AngularDart com `ngtest`, comportamento de browser com `build_runner test` e interações de rota e formulário.
+Teste componentes AngularDart com `ngx_test`, comportamento de browser com `build_runner test` e interações de rota e formulário.
 
 Exemplo de `frontend/dart_test.yaml`:
 
@@ -1634,7 +1634,7 @@ class ProjectService {
 ```dart
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 import 'package:my_app_core/my_app_core.dart';
 import 'package:my_app_frontend/src/modules/projects/services/project_service.dart';
 
@@ -1905,8 +1905,8 @@ class ApiClient {
 ### Route guard no AngularDart
 
 ```dart
-import 'package:ngdart/angular.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_router/ngx_router.dart';
 import 'package:my_app_frontend/src/shared/services/auth_service.dart';
 
 class AuthGuard extends RouterHook {

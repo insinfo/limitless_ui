@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import '../../directives/li_form_directive.dart';
 import '../../validation/li_rule.dart';

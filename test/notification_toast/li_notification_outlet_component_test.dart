@@ -9,9 +9,9 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
-import 'package:ngdart/angular.dart';
-import 'package:ngrouter/ngrouter.dart';
-import 'package:ngtest/ngtest.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_router/ngx_router.dart';
+import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
 
 import 'package:limitless_ui/src/components/notification_toast/notification_toast.template.dart'

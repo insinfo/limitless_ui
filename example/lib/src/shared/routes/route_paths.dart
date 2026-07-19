@@ -1,4 +1,4 @@
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_router/ngx_router.dart';
 
 class DemoRoutePaths {
   static final overview = RoutePath(path: 'overview');

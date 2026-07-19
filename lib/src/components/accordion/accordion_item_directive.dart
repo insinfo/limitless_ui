@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'accordion_collapse_directive.dart';
 import 'accordion_directive.dart';

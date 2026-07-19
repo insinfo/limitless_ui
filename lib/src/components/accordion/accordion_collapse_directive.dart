@@ -1,6 +1,6 @@
 import 'dart:html' as html;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import '../collapse/collapse_directive.dart';
 import 'accordion_item_directive.dart';

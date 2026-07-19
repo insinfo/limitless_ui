@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'carousel_caption_component.dart';
 import 'carousel_item_component.dart';

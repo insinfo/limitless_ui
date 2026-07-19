@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Declarative Bootstrap/Limitless toast component.
 @Component(

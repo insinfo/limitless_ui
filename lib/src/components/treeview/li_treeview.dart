@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:essential_core/essential_core.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'tree_view_base.dart';
 import 'treeview_settings.dart';

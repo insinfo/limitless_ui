@@ -1,4 +1,4 @@
-import 'package:ngforms/ngforms.dart';
+import 'package:ngx_forms/ngx_forms.dart';
 
 class LiRuleContext {
   const LiRuleContext({

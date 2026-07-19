@@ -97,10 +97,10 @@ class AppMessagesEn extends AppMessages {
   String get navigation => """Navigation""";
 
   /// ```dart
-  /// "Example with ngrouter and real package components."
+  /// "Example with ngx_router and real package components."
   /// ```
   String get navigationHelp =>
-      """Example with ngrouter and real package components.""";
+      """Example with ngx_router and real package components.""";
 
   /// ```dart
   /// "Components"
@@ -428,10 +428,10 @@ class OverviewPagesMessagesEn extends OverviewPagesMessages {
       """Executable gallery to document components and configurations""";
 
   /// ```dart
-  /// "This example uses the Limitless theme in index.html, navigates with ngrouter, and renders real package components in scenarios closer to the product."
+  /// "This example uses the Limitless theme in index.html, navigates with ngx_router, and renders real package components in scenarios closer to the product."
   /// ```
   String get heroLead =>
-      """This example uses the Limitless theme in index.html, navigates with ngrouter, and renders real package components in scenarios closer to the product.""";
+      """This example uses the Limitless theme in index.html, navigates with ngx_router, and renders real package components in scenarios closer to the product.""";
 
   /// ```dart
   /// "Components"
@@ -5481,7 +5481,7 @@ Map<String, String> get messagesEnMap => {
       """app.badge""": """AngularDart + Limitless""",
       """app.navigation""": """Navigation""",
       """app.navigationHelp""":
-          """Example with ngrouter and real package components.""",
+          """Example with ngx_router and real package components.""",
       """app.components""": """Components""",
       """app.language""": """Language""",
       """app.portuguese""": """Portuguese""",
@@ -5540,7 +5540,7 @@ Map<String, String> get messagesEnMap => {
       """pages.overview.heroTitle""":
           """Executable gallery to document components and configurations""",
       """pages.overview.heroLead""":
-          """This example uses the Limitless theme in index.html, navigates with ngrouter, and renders real package components in scenarios closer to the product.""",
+          """This example uses the Limitless theme in index.html, navigates with ngx_router, and renders real package components in scenarios closer to the product.""",
       """pages.overview.statComponentsLabel""": """Components""",
       """pages.overview.statComponentsHelp""":
           """Executable examples using the real package API.""",

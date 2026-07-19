@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:html' show Event;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 const liWizardDirectives = <Object>[
   LiWizardComponent,

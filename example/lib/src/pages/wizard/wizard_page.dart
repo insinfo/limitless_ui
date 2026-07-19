@@ -1,6 +1,6 @@
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
-//import 'package:ngforms/ngforms.dart' show RadioButtonState;
+//import 'package:ngx_forms/ngx_forms.dart' show RadioButtonState;
 
 @Component(
   selector: 'wizard-page',

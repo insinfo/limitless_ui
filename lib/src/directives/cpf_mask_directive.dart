@@ -1,7 +1,7 @@
 import 'dart:html';
 
 import 'package:essential_core/essential_core.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Applies a CPF mask to a text input as the user types.
 ///

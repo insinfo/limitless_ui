@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Public directives used by the button toggle group component.
 const liButtonToggleGroupDirectives = <Object>[

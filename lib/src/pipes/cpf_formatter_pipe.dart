@@ -1,5 +1,5 @@
 import 'package:essential_core/essential_core.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import '../exceptions/invalid_pipe_argument_exception.dart';
 

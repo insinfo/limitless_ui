@@ -1,4 +1,4 @@
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
 
 PopperOptions defaultLiPopoverPopperOptions(PopperOptions options) => options;

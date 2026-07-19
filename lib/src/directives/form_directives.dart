@@ -1,4 +1,4 @@
-import 'package:ngforms/ngforms.dart';
+import 'package:ngx_forms/ngx_forms.dart';
 
 import 'indexed_name_directive.dart';
 import 'li_auto_click_file_input_directive.dart';

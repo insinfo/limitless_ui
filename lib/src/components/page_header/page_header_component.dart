@@ -1,5 +1,5 @@
-import 'package:ngdart/angular.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_router/ngx_router.dart';
 
 import '../breadcrumbs/breadcrumbs_component.dart';
 

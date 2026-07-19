@@ -2,7 +2,7 @@
 
 Este manual complementa as instruções gerais do projeto para código AngularDart/ngdart 8. Ele foi escrito a partir da leitura de:
 
-- `package:ngdart/angular.dart`
+- `package:ngx_dart/angular.dart`
 - `src/meta/lifecycle_hooks.dart`
 - `src/meta/change_detection_constants.dart`
 - `src/meta/directives.dart`

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:ngdart/angular.dart';
-import 'package:ngforms/ngforms.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_forms/ngx_forms.dart';
+import 'package:ngx_router/ngx_router.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 
 import '../../messages.i18n.dart';

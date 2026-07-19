@@ -1,7 +1,7 @@
 import 'dart:html';
 
-import 'package:ngdart/angular.dart';
-import 'package:ngforms/angular_forms.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_forms/angular_forms.dart';
 
 /// Writes `DateTime` values to `<input type="datetime-local">` elements and
 /// reads them back into AngularDart form controls.

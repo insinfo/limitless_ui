@@ -3,7 +3,7 @@ targets:
     builders:
       # i18n:yamlBasedBuilder:
       #   enabled: false
-      ngdart:
+      ngx_dart:
         generate_for:
            exclude:
             - "web/assets/css/**"

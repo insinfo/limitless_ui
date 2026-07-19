@@ -1,8 +1,8 @@
 // ignore_for_file: unnecessary_import, implementation_imports
 import 'dart:html';
-import 'package:ngdart/angular.dart';
-import 'package:ngforms/ngforms.dart';
-import 'package:ngforms/src/directives/control_value_accessor.dart'
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_forms/ngx_forms.dart';
+import 'package:ngx_forms/src/directives/control_value_accessor.dart'
     show ChangeHandler, ControlValueAccessor, ngValueAccessor, TouchHandler;
 
 bool isPrimitive(val) {

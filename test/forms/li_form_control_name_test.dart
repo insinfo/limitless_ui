@@ -8,8 +8,8 @@ library;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:limitless_ui/quill_text_editor.dart';
 import 'package:limitless_ui/src/components/quill_text_editor/quill_text_editor_bridge.dart';
-import 'package:ngdart/angular.dart';
-import 'package:ngtest/ngtest.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
 
 import '../quill_text_editor/quill_test_fakes.dart';

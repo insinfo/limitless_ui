@@ -4,8 +4,8 @@ import 'dart:js_util' as js_util;
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:ngdart/angular.dart';
-import 'package:ngforms/ngforms.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_forms/ngx_forms.dart';
 
 import '../dropdown_menu/dropdown_menu_component.dart';
 import '../modal/modal_component.dart';

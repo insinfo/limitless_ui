@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_is_not_operator
 
 import 'package:essential_core/essential_core.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Masks CPF strings for public display.
 ///

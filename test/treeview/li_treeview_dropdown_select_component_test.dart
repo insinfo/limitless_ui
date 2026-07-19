@@ -10,9 +10,9 @@ import 'dart:html' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
-import 'package:ngdart/angular.dart';
-import 'package:ngforms/ngforms.dart';
-import 'package:ngtest/ngtest.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_forms/ngx_forms.dart';
+import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
 
 import 'li_treeview_dropdown_select_component_test.template.dart' as ng;

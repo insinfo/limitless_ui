@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_cast
 
 import 'dart:html';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Restricts keyboard and paste input to numeric characters only.
 ///

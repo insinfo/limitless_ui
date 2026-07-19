@@ -1,7 +1,7 @@
 // ignore_for_file: uri_has_not_been_generated
 
 import 'package:limitless_ui_example/limitless_ui_example.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_router/ngx_router.dart';
 
 import 'package:limitless_ui_example/src/pages/accordion/accordion_page.template.dart'
     as accordion_page;

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:html' as html;
 import 'dart:math' as math;
 
-import 'package:ngdart/angular.dart';
-import 'package:ngforms/ngforms.dart'
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_forms/ngx_forms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 import 'package:popper/popper.dart';
 import 'package:essential_core/essential_core.dart';

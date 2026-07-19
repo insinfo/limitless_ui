@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'dynamic_tab_header_directive.dart';
 import 'dynamic_tabs.dart';

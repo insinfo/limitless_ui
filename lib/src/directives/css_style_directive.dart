@@ -1,6 +1,6 @@
 import 'dart:html' show Element;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Applies a CSS style string directly via the CSSOM (`element.style.cssText`)
 /// instead of the DOM attribute (`element.setAttribute('style', ...)`).

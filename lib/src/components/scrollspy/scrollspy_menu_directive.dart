@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'scrollspy_directive.dart';
 import 'scrollspy_item_directive.dart';

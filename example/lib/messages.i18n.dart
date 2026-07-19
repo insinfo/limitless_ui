@@ -96,10 +96,10 @@ class AppMessages {
   String get navigation => """Navegação""";
 
   /// ```dart
-  /// "Exemplo com ngrouter e componentes reais do pacote."
+  /// "Exemplo com ngx_router e componentes reais do pacote."
   /// ```
   String get navigationHelp =>
-      """Exemplo com ngrouter e componentes reais do pacote.""";
+      """Exemplo com ngx_router e componentes reais do pacote.""";
 
   /// ```dart
   /// "Componentes"
@@ -425,10 +425,10 @@ class OverviewPagesMessages {
       """Galeria executável para documentar componentes e configurações""";
 
   /// ```dart
-  /// "Este example usa o tema Limitless no index.html, navega com ngrouter e renderiza componentes reais do pacote em cenários mais próximos do produto."
+  /// "Este example usa o tema Limitless no index.html, navega com ngx_router e renderiza componentes reais do pacote em cenários mais próximos do produto."
   /// ```
   String get heroLead =>
-      """Este example usa o tema Limitless no index.html, navega com ngrouter e renderiza componentes reais do pacote em cenários mais próximos do produto.""";
+      """Este example usa o tema Limitless no index.html, navega com ngx_router e renderiza componentes reais do pacote em cenários mais próximos do produto.""";
 
   /// ```dart
   /// "Componentes"
@@ -5474,7 +5474,7 @@ Map<String, String> get messagesMap => {
       """app.badge""": """AngularDart + Limitless""",
       """app.navigation""": """Navegação""",
       """app.navigationHelp""":
-          """Exemplo com ngrouter e componentes reais do pacote.""",
+          """Exemplo com ngx_router e componentes reais do pacote.""",
       """app.components""": """Componentes""",
       """app.language""": """Idioma""",
       """app.portuguese""": """Português""",
@@ -5533,7 +5533,7 @@ Map<String, String> get messagesMap => {
       """pages.overview.heroTitle""":
           """Galeria executável para documentar componentes e configurações""",
       """pages.overview.heroLead""":
-          """Este example usa o tema Limitless no index.html, navega com ngrouter e renderiza componentes reais do pacote em cenários mais próximos do produto.""",
+          """Este example usa o tema Limitless no index.html, navega com ngx_router e renderiza componentes reais do pacote em cenários mais próximos do produto.""",
       """pages.overview.statComponentsLabel""": """Componentes""",
       """pages.overview.statComponentsHelp""":
           """Examples executáveis com API real do pacote.""",

@@ -1,7 +1,7 @@
 import 'dart:html' as html;
 import 'dart:typed_data';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'pdf_viewer_page_view.dart';
 import 'pdf_viewer_pdfjs_bridge.dart';

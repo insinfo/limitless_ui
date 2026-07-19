@@ -1,4 +1,4 @@
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Renders a [TemplateRef] with optional local variables.
 ///

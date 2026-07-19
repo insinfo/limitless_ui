@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:ngdart/angular.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_router/ngx_router.dart';
 import 'notification_toast_service.dart';
 
 /// Top navigation component.

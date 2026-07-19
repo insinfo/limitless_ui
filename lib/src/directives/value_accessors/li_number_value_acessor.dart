@@ -1,10 +1,10 @@
 // ignore_for_file: implementation_imports
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'dart:html';
 
-import 'package:ngforms/src/directives/control_value_accessor.dart'
+import 'package:ngx_forms/src/directives/control_value_accessor.dart'
     show ChangeHandler, ControlValueAccessor, ngValueAccessor, TouchHandler;
 
 const liNumberValueAccessor = ExistingProvider.forToken(

@@ -1,4 +1,4 @@
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Creates a lazily rendered accordion body template.
 @Directive(selector: 'template[li-accordion-body]')

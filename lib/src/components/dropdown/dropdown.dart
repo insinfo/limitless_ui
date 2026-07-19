@@ -3,7 +3,7 @@ import 'dart:html' as html;
 import 'dart:js_util' as js_util;
 import 'dart:math' as math;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
 
 import 'dropdown_config.dart';

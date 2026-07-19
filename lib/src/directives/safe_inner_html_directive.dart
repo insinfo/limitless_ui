@@ -1,6 +1,6 @@
 import 'dart:html' show Element, NodeTreeSanitizer;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Writes trusted HTML into the host element.
 @Directive(selector: '[liSafeInnerHtml]')

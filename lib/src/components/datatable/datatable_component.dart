@@ -4,7 +4,7 @@ import 'dart:collection';
 import 'dart:html';
 
 import 'package:essential_core/essential_core.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import '../../directives/dropdown_menu_directive.dart';
 import '../../directives/form_directives.dart';

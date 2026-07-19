@@ -70,7 +70,7 @@ atuais nunca recebem 2.x/3.x sem opt-in explícito.
 ## Fase 2 — branch `ngx9` → limitless_ui 3.0.0-dev.*
 
 Pré-requisito: `ngx_dart 9.0.0-dev.1` publicado (acompanhar o branch
-`master` do fork).
+`master` do fork). eu ja publiquei o ngx_dart 9.0.0-dev.1 hoje 18/07/206  
 
 1. Criar `ngx9` a partir do `ngx8` (não do `main`): herda a fase 1.
 2. `pubspec.yaml`: `version: 3.0.0-dev.1`, `ngx_dart: ^9.0.0-dev.1` (e

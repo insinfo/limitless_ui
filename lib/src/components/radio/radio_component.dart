@@ -1,7 +1,7 @@
 import 'dart:html' as html;
 
-import 'package:ngdart/angular.dart';
-import 'package:ngforms/ngforms.dart'
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_forms/ngx_forms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 
 @Component(

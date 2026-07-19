@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Clamps numeric input values to the configured `liMin` and `liMax` range.
 ///

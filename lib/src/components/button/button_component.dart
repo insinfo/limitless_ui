@@ -1,4 +1,4 @@
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Public directives used by the button component.
 const liButtonDirectives = <Object>[

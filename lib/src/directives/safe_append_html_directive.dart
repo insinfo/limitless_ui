@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Appends a trusted DOM node to the host element.
 @Directive(selector: '[liSafeAppendHtml]')

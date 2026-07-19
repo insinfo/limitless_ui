@@ -4,10 +4,10 @@ import 'dart:async';
 import 'dart:html' as html;
 import 'dart:math' as math;
 
-import 'package:ngdart/angular.dart';
-import 'package:ngdart/src/security/dom_sanitization_service.dart'
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_dart/src/security/dom_sanitization_service.dart'
     show DomSanitizationService, SafeResourceUrl, SafeUrl;
-import 'package:ngforms/ngforms.dart'
+import 'package:ngx_forms/ngx_forms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 
 import '../../directives/li_form_directive.dart';

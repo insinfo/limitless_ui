@@ -1,6 +1,6 @@
 import 'dart:html' as html;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Writes an explicit non-standard autocomplete token to discourage browser
 /// autofill without capturing the native `autocomplete` attribute.

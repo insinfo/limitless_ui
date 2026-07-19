@@ -1,5 +1,5 @@
 import 'package:limitless_ui_example/limitless_ui_example.dart';
-import 'package:ngrouter/ngrouter.dart';
+import 'package:ngx_router/ngx_router.dart';
 
 @Component(
   selector: 'date-picker-page',

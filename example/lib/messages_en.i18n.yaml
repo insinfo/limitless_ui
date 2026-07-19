@@ -3,7 +3,7 @@ app:
   searchPlaceholder: Live package documentation
   badge: AngularDart + Limitless
   navigation: Navigation
-  navigationHelp: Example with ngrouter and real package components.
+  navigationHelp: Example with ngx_router and real package components.
   components: Components
   language: Language
   portuguese: Portuguese
@@ -67,7 +67,7 @@ pages:
     subtitle: Overview
     breadcrumb: Library overview
     heroTitle: Executable gallery to document components and configurations
-    heroLead: This example uses the Limitless theme in index.html, navigates with ngrouter, and renders real package components in scenarios closer to the product.
+    heroLead: This example uses the Limitless theme in index.html, navigates with ngx_router, and renders real package components in scenarios closer to the product.
     statComponentsLabel: Components
     statComponentsHelp: Executable examples using the real package API.
     statThemeLabel: Theme

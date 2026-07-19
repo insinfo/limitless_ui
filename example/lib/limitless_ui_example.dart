@@ -6,9 +6,9 @@ export 'src/shared/components/demo_page_breadcrumb_component.dart';
 
 export 'src/shared/routes/route_paths.dart';
 
-export 'package:ngdart/angular.dart';
-export 'package:ngforms/ngforms.dart';
-export 'package:ngforms/src/directives/control_value_accessor.dart'
+export 'package:ngx_dart/angular.dart';
+export 'package:ngx_forms/ngx_forms.dart';
+export 'package:ngx_forms/src/directives/control_value_accessor.dart'
     show
         ChangeFunction,
         ChangeHandler,

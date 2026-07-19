@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html' as html;
 import 'dart:math';
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
 
 /// Public directives used by the dropdown menu component.

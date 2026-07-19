@@ -1,4 +1,4 @@
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Creates a new Limitless/Bootstrap tab header template
 @Directive(selector: 'template[li-tabx-header]')

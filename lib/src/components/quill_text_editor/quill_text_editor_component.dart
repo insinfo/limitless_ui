@@ -2,8 +2,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
-import 'package:ngdart/angular.dart';
-import 'package:ngforms/ngforms.dart';
+import 'package:ngx_dart/angular.dart';
+import 'package:ngx_forms/ngx_forms.dart';
 
 import 'quill_interop.dart' as quill;
 import 'quill_text_editor_bridge.dart';

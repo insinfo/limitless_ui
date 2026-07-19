@@ -3,7 +3,7 @@ app:
   searchPlaceholder: Documentação viva do pacote
   badge: AngularDart + Limitless
   navigation: Navegação
-  navigationHelp: Exemplo com ngrouter e componentes reais do pacote.
+  navigationHelp: Exemplo com ngx_router e componentes reais do pacote.
   components: Componentes
   language: Idioma
   portuguese: Português
@@ -67,7 +67,7 @@ pages:
     subtitle: Visão geral
     breadcrumb: Visão geral da biblioteca
     heroTitle: Galeria executável para documentar componentes e configurações
-    heroLead: Este example usa o tema Limitless no index.html, navega com ngrouter e renderiza componentes reais do pacote em cenários mais próximos do produto.
+    heroLead: Este example usa o tema Limitless no index.html, navega com ngx_router e renderiza componentes reais do pacote em cenários mais próximos do produto.
     statComponentsLabel: Componentes
     statComponentsHelp: Examples executáveis com API real do pacote.
     statThemeLabel: Tema

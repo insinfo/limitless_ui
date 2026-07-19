@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:html' as html;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 @Directive(selector: 'li-file-drop,[liFileDrop]')
 class LiFileDropDirective implements OnDestroy {

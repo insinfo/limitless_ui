@@ -1,4 +1,4 @@
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import 'accordion_body_component.dart';
 import 'accordion_body_directive.dart';

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:essential_core/essential_core.dart';
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 import '../../directives/css_style_directive.dart';
 import 'tag_editor_component.dart';

@@ -1,6 +1,6 @@
 import 'dart:html' show Element, Node, NodeTreeSanitizer;
 
-import 'package:ngdart/angular.dart';
+import 'package:ngx_dart/angular.dart';
 
 /// Unified directive that renders trusted HTML text and/or appends a trusted
 /// DOM [Node] into the host element in a single pass, avoiding the
