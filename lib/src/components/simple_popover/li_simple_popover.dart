@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 /// Lightweight DOM-based popover helper for quick warning messages.
 class LiSimplePopover {
@@ -33,7 +34,7 @@ class LiSimplePopover {
       return;
     }
 
-    final root = html.DivElement()
+    final root = html.createDivElement()
       ..id = _popoverId
       ..classes.addAll(['popover', 'show', 'bs-popover-top'])
       ..style.position = 'fixed'
@@ -42,11 +43,11 @@ class LiSimplePopover {
       ..style.zIndex = '10000'
       ..style.visibility = 'hidden';
 
-    final arrow = html.DivElement()..classes.add('popover-arrow');
-    final header = html.HeadingElement.h3()
+    final arrow = html.createDivElement()..classes.add('popover-arrow');
+    final header = html.createHeadingElement(3)
       ..classes.add('popover-header')
       ..text = title;
-    final content = html.DivElement()
+    final content = html.createDivElement()
       ..classes.add('popover-body')
       ..style.whiteSpace = 'pre-line'
       ..text = message;
@@ -78,8 +79,8 @@ class LiSimplePopover {
 
     clickSub = html.document.onClick.listen((event) {
       final clickTarget = event.target;
-      if (clickTarget is html.Element &&
-          !root.contains(clickTarget) &&
+      if ((clickTarget?.isA<html.Element>() ?? false) &&
+          !root.contains(clickTarget as html.Node?) &&
           !target.contains(clickTarget)) {
         close();
       }
@@ -101,8 +102,8 @@ class LiSimplePopover {
   ) {
     final targetRect = target.getBoundingClientRect();
     final popoverRect = popover.getBoundingClientRect();
-    final viewportWidth = html.window.innerWidth ?? 1366;
-    final viewportHeight = html.window.innerHeight ?? 768;
+    final viewportWidth = html.window.innerWidth;
+    final viewportHeight = html.window.innerHeight;
     const spacing = 10.0;
     const pagePadding = 8.0;
 

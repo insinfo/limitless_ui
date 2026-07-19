@@ -90,7 +90,8 @@ class WorkspaceShellPageComponent {
   final List<WorkspaceShellNavEntry> sidebarEntries =
       const <WorkspaceShellNavEntry>[
     WorkspaceShellNavEntry('Painel', 'ph-squares-four', active: true),
-    WorkspaceShellNavEntry('Fila de analise', 'ph-hourglass-medium', badge: '18'),
+    WorkspaceShellNavEntry('Fila de analise', 'ph-hourglass-medium',
+        badge: '18'),
     WorkspaceShellNavEntry('Atendimento', 'ph-headset', badge: '6'),
     WorkspaceShellNavEntry('Protocolos', 'ph-files'),
     WorkspaceShellNavEntry('Agenda', 'ph-calendar-blank'),
@@ -188,7 +189,8 @@ class WorkspaceShellPageComponent {
       ? 'Esta tela simula um shell administrativo completo dentro do example para validar navbar compacta, dropdown de setor em overlay body, menu de usuario com submenu lateral e status bar no rodape.'
       : 'This page simulates a full administrative shell inside the example to validate a compact navbar, a body-overlay organization dropdown, a user menu with lateral submenu, and a bottom status bar.';
 
-  String get heroEyebrow => _isPt ? 'Ambiente operacional' : 'Operational shell';
+  String get heroEyebrow =>
+      _isPt ? 'Ambiente operacional' : 'Operational shell';
 
   String get heroTitle => _isPt
       ? 'Layout de trabalho com navbar, sidebar e rodape de status'
@@ -206,8 +208,7 @@ class WorkspaceShellPageComponent {
 
   String get searchStatusLabel => _isPt ? 'Ultima acao' : 'Last action';
 
-  String get shellStateTitle =>
-      _isPt ? 'Estado da demonstracao' : 'Demo state';
+  String get shellStateTitle => _isPt ? 'Estado da demonstracao' : 'Demo state';
 
   String get quickPanelTitle => _isPt ? 'Fila priorizada' : 'Priority queue';
 

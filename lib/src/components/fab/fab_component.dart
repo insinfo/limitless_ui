@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -28,7 +29,7 @@ class LiFabShortcut {
 
   bool matches(html.KeyboardEvent event) {
     final normalizedKey = key.trim().toLowerCase();
-    final matchesKey = (event.key ?? '').toLowerCase() == normalizedKey ||
+    final matchesKey = event.key.toLowerCase() == normalizedKey ||
         (normalizedKey.length == 1 &&
             event.keyCode == normalizedKey.toUpperCase().codeUnitAt(0));
 
@@ -576,15 +577,16 @@ class LiFabComponent implements OnDestroy {
     }
 
     final target = event.target;
-    if (target is html.InputElement ||
-        target is html.TextAreaElement ||
-        target is html.SelectElement ||
-        target is html.Element && target.isContentEditable == true) {
+    if ((target?.isA<html.InputElement>() ?? false) ||
+        (target?.isA<html.TextAreaElement>() ?? false) ||
+        (target?.isA<html.SelectElement>() ?? false) ||
+        (target?.isA<html.HtmlElement>() ?? false) &&
+            (target as html.HtmlElement).isContentEditable == true) {
       return;
     }
 
     if (triggerShortcut(
-      key: event.key ?? '',
+      key: event.key,
       alt: event.altKey,
       ctrl: event.ctrlKey,
       meta: event.metaKey,

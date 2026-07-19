@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:popper/popper.dart';
 
@@ -37,8 +37,7 @@ int _resolveModalAwareHostZIndex({
     return _max(baseHostZIndex, owningModalZIndex + modalZIndexOffset);
   }
 
-  final openModals =
-      html.document.querySelectorAll('.modal[data-status="open"]');
+  final openModals = html.document.queryAll('.modal[data-status="open"]');
   var highestModalZIndex = -1;
   for (final modal in openModals) {
     final zIndex = _parseElementZIndex(modal);
@@ -96,7 +95,7 @@ bool matchesResponsivePresentation({
 }
 
 double resolveViewportHeight() {
-  final windowHeight = html.window.innerHeight?.toDouble() ?? 0;
+  final windowHeight = html.window.innerHeight.toDouble();
   final documentHeight =
       html.document.documentElement?.clientHeight.toDouble() ?? 0;
   if (windowHeight > 0 && documentHeight > 0) {

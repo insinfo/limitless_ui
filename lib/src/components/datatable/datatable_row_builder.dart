@@ -1,5 +1,5 @@
 //datatable_row_builder.dart
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:intl/intl.dart';
@@ -682,9 +682,6 @@ class DatatableRowBuilder {
     }
 
     final viewportWidth = window.innerWidth;
-    if (viewportWidth == null) {
-      return false;
-    }
 
     return viewportWidth <= responsiveCollapseMaxWidth;
   }

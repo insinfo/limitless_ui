@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -117,7 +117,7 @@ void main() {
     // Clearing the field goes through the same model-emit path a user edit does.
     await fixture.update((_) {
       input.value = '';
-      input.dispatchEvent(html.Event('input'));
+      input.dispatchEvent(html.liEvent('input'));
     });
     await _settle(fixture);
     expect(host.selectedCity, isNull);

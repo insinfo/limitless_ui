@@ -5,7 +5,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
@@ -126,7 +126,7 @@ void main() {
     expect(playCount, 0);
 
     html.document.body!.dispatchEvent(
-      html.MouseEvent('click', canBubble: true),
+      html.liMouseEvent('click', canBubble: true),
     );
     await Future<void>.delayed(const Duration(milliseconds: 20));
 

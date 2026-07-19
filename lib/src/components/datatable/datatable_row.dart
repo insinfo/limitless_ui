@@ -1,5 +1,6 @@
+import 'package:limitless_ui/web_compat.dart';
+
 //datatable_row.dart
-import 'dart:html';
 
 import 'datatable_col.dart';
 

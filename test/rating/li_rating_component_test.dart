@@ -5,8 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -48,13 +47,13 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final buttons = fixture.rootElement.querySelectorAll('li-rating button');
+    final buttons = fixture.rootElement.queryAll('li-rating button');
     final fourthStar = buttons[3] as html.ButtonElement;
 
     expect(host.userScore, isNull);
 
     await fixture.update((_) {
-      fourthStar.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      fourthStar.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -62,7 +61,7 @@ void main() {
     expect(host.userScore, 4);
 
     await fixture.update((_) {
-      fourthStar.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      fourthStar.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -102,17 +101,6 @@ Future<void> _settle(
 }
 
 void _dispatchKey(html.Element element, String key) {
-  final keyboardEventConstructor =
-      js_util.getProperty(html.window, 'KeyboardEvent');
-  final event = js_util.callConstructor(
-    keyboardEventConstructor,
-    <Object>[
-      'keydown',
-      js_util.jsify(<String, Object>{
-        'key': key,
-        'bubbles': true,
-      }),
-    ],
-  );
-  element.dispatchEvent(event as html.Event);
+  final event = html.liKeyboardEvent('keydown', key: key);
+  element.dispatchEvent(event);
 }

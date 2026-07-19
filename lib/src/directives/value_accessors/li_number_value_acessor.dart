@@ -2,7 +2,7 @@
 
 import 'package:ngx_dart/angular.dart';
 
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_forms/src/directives/control_value_accessor.dart'
     show ChangeHandler, ControlValueAccessor, ngValueAccessor, TouchHandler;
@@ -30,7 +30,7 @@ class LiNumberValueAccessor extends Object
     implements ControlValueAccessor<Object?> {
   final InputElement _element;
 
-  LiNumberValueAccessor(HtmlElement element)
+  LiNumberValueAccessor(HTMLElement element)
       : _element = element as InputElement;
 
   @HostListener('change', ['\$event.target.value'])

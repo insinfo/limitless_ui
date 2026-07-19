@@ -1,8 +1,9 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:js_interop';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 enum LiDialogColor { DANGER, PRIMARY, SUCCESS, WARNING, INFO, PINK }
 
@@ -71,7 +72,7 @@ class LiSimpleDialogComponent {
     </div>
      ''';
     // ignore: omit_local_variable_types
-    html.DivElement root = html.DivElement();
+    html.DivElement root = html.createDivElement();
     html.document.querySelector('body')?.append(root);
     // ignore: unsafe_html
     root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
@@ -89,7 +90,7 @@ class LiSimpleDialogComponent {
      ''';
     html.document.querySelector('.FullScreenAlert')?.remove();
     // ignore: omit_local_variable_types
-    html.DivElement root = html.DivElement();
+    html.DivElement root = html.createDivElement();
     root.classes.add('FullScreenAlert');
     html.document.querySelector('body')?.append(root);
     // ignore: unsafe_html
@@ -125,7 +126,7 @@ class LiSimpleDialogComponent {
     </div>
         <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_sd_backdrop" data-value="alert" data-open="true"></div>
     ''';
-    var root = html.DivElement();
+    var root = html.createDivElement();
     root.classes.add('li-simple-dialog-root');
     root
       ..setAttribute('data-label', 'li_sd_root')
@@ -135,19 +136,19 @@ class LiSimpleDialogComponent {
     // ignore: unsafe_html
     root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
     if (subMessage != null) {
-      var btnEle = html.DivElement();
+      var btnEle = html.createDivElement();
       btnEle
         ..setAttribute('data-label', 'li_sd_detail_toggle')
         ..setAttribute('data-value', 'alert');
-      btnEle.attributes['style'] =
-          'padding-top:15px;padding-bottom:5px;cursor: pointer;';
+      btnEle.setAttribute(
+          'style', 'padding-top:15px;padding-bottom:5px;cursor: pointer;');
       var t =
           '<label class="text-muted" style="cursor: pointer;">$detailLabel  </label> <a class="list-icons-item dropdown-toggle" data-toggle="dropdown" ></a>';
       // ignore: unsafe_html
       btnEle.setInnerHtml(t, treeSanitizer: html.NodeTreeSanitizer.trusted);
       root.querySelector('.modal-body')?.append(btnEle);
 
-      var container = html.DivElement();
+      var container = html.createDivElement();
       container.classes.add('modal-detail');
       container
         ..setAttribute('data-label', 'li_sd_detail')
@@ -226,7 +227,7 @@ class LiSimpleDialogComponent {
     </div>
         <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_sd_backdrop" data-value="confirm" data-open="true"></div>
     ''';
-    final root = html.DivElement();
+    final root = html.createDivElement();
     root.classes.add('li-simple-dialog-root');
     root
       ..setAttribute('data-label', 'li_sd_root')
@@ -309,7 +310,7 @@ class LiSimpleDialogComponent {
     </div>
         <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_sd_backdrop" data-value="prompt" data-open="true"></div>
     ''';
-    final root = html.DivElement();
+    final root = html.createDivElement();
     root.classes.add('li-simple-dialog-root');
     root
       ..setAttribute('data-label', 'li_sd_root')
@@ -320,13 +321,13 @@ class LiSimpleDialogComponent {
     root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
 
     final input = root.querySelector('#$inputId') as html.HtmlElement?;
-    if (input is html.InputElement) {
-      input
+    if ((input?.isA<html.InputElement>() ?? false)) {
+      (input as html.InputElement)
         ..placeholder = inputPlaceholder ?? ''
         ..value = inputValue
         ..autocomplete = inputConfig?.autocomplete ?? 'off';
-    } else if (input is html.TextAreaElement) {
-      input
+    } else if ((input?.isA<html.TextAreaElement>() ?? false)) {
+      (input as html.TextAreaElement)
         ..placeholder = inputPlaceholder ?? ''
         ..value = inputValue
         ..rows = inputConfig?.rows ?? 4;
@@ -381,7 +382,9 @@ class LiSimpleDialogComponent {
       if (!isEnter) {
         return;
       }
-      if (input is html.TextAreaElement && !event.ctrlKey && !event.metaKey) {
+      if (input.isA<html.TextAreaElement>() &&
+          !event.ctrlKey &&
+          !event.metaKey) {
         return;
       }
       event.preventDefault();
@@ -408,11 +411,11 @@ class LiSimpleDialogComponent {
   }
 
   static String _readPromptValue(html.HtmlElement? input) {
-    if (input is html.InputElement) {
-      return input.value ?? '';
+    if ((input?.isA<html.InputElement>() ?? false)) {
+      return (input as html.InputElement).value;
     }
-    if (input is html.TextAreaElement) {
-      return input.value ?? '';
+    if ((input?.isA<html.TextAreaElement>() ?? false)) {
+      return (input as html.TextAreaElement).value;
     }
     return '';
   }
@@ -442,35 +445,37 @@ class LiSimpleDialogComponent {
         in (inputConfig.attributes ?? const <String, String>{}).entries) {
       final attribute = entry.key.trim();
       if (attribute.isNotEmpty) {
-        input.attributes[attribute] = entry.value;
+        input.setAttribute(attribute, entry.value);
       }
     }
 
-    if (input is html.TextAreaElement) {
+    if (input.isA<html.TextAreaElement>()) {
+      final textArea = input as html.TextAreaElement;
       if (inputConfig.rows != null) {
-        input.rows = inputConfig.rows!;
+        textArea.rows = inputConfig.rows!;
       }
       if (inputConfig.cols != null) {
-        input.cols = inputConfig.cols!;
+        textArea.cols = inputConfig.cols!;
       }
       if (inputConfig.minLength != null) {
-        input.minLength = inputConfig.minLength!;
+        textArea.minLength = inputConfig.minLength!;
       }
       if (inputConfig.maxLength != null) {
-        input.maxLength = inputConfig.maxLength!;
+        textArea.maxLength = inputConfig.maxLength!;
       }
       return;
     }
 
-    if (input is html.InputElement) {
+    if (input.isA<html.InputElement>()) {
+      final inputEl = input as html.InputElement;
       if (inputConfig.minLength != null) {
-        input.minLength = inputConfig.minLength!;
+        inputEl.minLength = inputConfig.minLength!;
       }
       if (inputConfig.maxLength != null) {
-        input.maxLength = inputConfig.maxLength!;
+        inputEl.maxLength = inputConfig.maxLength!;
       }
       if (inputConfig.autocomplete != null) {
-        input.autocomplete = inputConfig.autocomplete!;
+        inputEl.autocomplete = inputConfig.autocomplete!;
       }
     }
   }

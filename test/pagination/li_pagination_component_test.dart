@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -106,7 +106,8 @@ void main() {
     expect(fourthPageLink, isNotNull);
 
     await fixture.update((_) {
-      fourthPageLink!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      fourthPageLink!
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -146,7 +147,7 @@ void main() {
     expect(thirdPageLink, isNotNull);
 
     await fixture.update((_) {
-      thirdPageLink!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      thirdPageLink!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -160,8 +161,8 @@ Future<void> _settle(NgTestFixture<PaginationTestHostComponent> fixture) async {
 }
 
 html.AnchorElement? _findLinkByText(html.Element root, String text) {
-  for (final element in root.querySelectorAll('a.page-link')) {
-    if ((element.text ?? '').trim() == text) {
+  for (final element in root.queryAll('a.page-link')) {
+    if ((element.text).trim() == text) {
       return element as html.AnchorElement;
     }
   }

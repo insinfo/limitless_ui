@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -1351,7 +1352,7 @@ class LiTreeviewSelectComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _overlayRelayoutPending = false;
       if (!dropdownOpen) {
         return;
@@ -1370,7 +1371,7 @@ class LiTreeviewSelectComponent
       return;
     }
 
-    final viewportHeight = html.window.innerHeight?.toDouble() ?? 900.0;
+    final viewportHeight = html.window.innerHeight.toDouble();
     final triggerRect = trigger.getBoundingClientRect();
     final popupRect = popup.getBoundingClientRect();
     final opensUpward = popupRect.top < triggerRect.top;
@@ -1388,13 +1389,15 @@ class LiTreeviewSelectComponent
       }
 
       final target = event.target;
-      if (target is! html.Node) {
+      if (!(target?.isA<html.Node>() ?? false)) {
         closeDropdown();
         return;
       }
 
-      final clickedTrigger = triggerButtonElement?.contains(target) ?? false;
-      final clickedPanel = dropdownPanelElement?.contains(target) ?? false;
+      final clickedTrigger =
+          triggerButtonElement?.contains(target as html.Node?) ?? false;
+      final clickedPanel =
+          dropdownPanelElement?.contains(target as html.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         closeDropdown();
       }

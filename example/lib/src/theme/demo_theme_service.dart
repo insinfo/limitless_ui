@@ -1,18 +1,21 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
+
+import 'dart:js_interop';
 
 enum DemoThemeMode { light, dark, blu, pink, orange, retro, old, auto }
 
 class DemoThemeService {
   DemoThemeService() {
     _mediaQueryList = html.window.matchMedia('(prefers-color-scheme: dark)');
-    _themeChangeListener = (html.Event _) {
+    _themeChangeListener = ((html.Event _) {
       if (_mode == DemoThemeMode.auto) {
         _applyTheme();
       }
-    };
+    }).toJS;
     _mediaQueryList?.addEventListener('change', _themeChangeListener);
 
-    final storedTheme = html.window.localStorage[_storageKey] ?? _autoValue;
+    final storedTheme =
+        html.window.localStorage.getItem(_storageKey) ?? _autoValue;
     if (storedTheme == _darkValue) {
       _mode = DemoThemeMode.dark;
     } else if (storedTheme == _bluValue) {
@@ -50,7 +53,7 @@ class DemoThemeService {
 
   DemoThemeMode _mode = DemoThemeMode.light;
   html.MediaQueryList? _mediaQueryList;
-  late final void Function(html.Event) _themeChangeListener;
+  late final html.EventListener _themeChangeListener;
 
   DemoThemeMode get mode => _mode;
   bool get isLight => _mode == DemoThemeMode.light;
@@ -116,8 +119,8 @@ class DemoThemeService {
 
   void _applyTheme() {
     final value = _resolvedThemeValue();
-    html.document.documentElement?.attributes['data-color-theme'] = value;
-    html.window.localStorage[_storageKey] = modeValue;
+    html.document.documentElement?.setAttribute('data-color-theme', value);
+    html.window.localStorage.setItem(_storageKey, modeValue);
   }
 
   String _resolvedThemeValue() {

@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:popper/popper.dart';
 
@@ -19,7 +20,7 @@ class SweetAlertPopover {
 
     final id = 'popover441630';
 
-    final olds = document.querySelectorAll('#$id');
+    final olds = document.queryAll('#$id');
     if (olds.isNotEmpty) {
       for (final old in olds) {
         old.remove();
@@ -27,23 +28,23 @@ class SweetAlertPopover {
     }
 
     final rootPopover = DivElement();
-    rootPopover.attributes['id'] = id;
+    rootPopover.setAttribute('id', id);
     rootPopover.classes.addAll(['popover', 'bs-popover-auto', 'fade', 'show']);
-    rootPopover.attributes['data-label'] = 'li_sa_popover';
-    rootPopover.attributes['data-value'] = id;
-    rootPopover.attributes['data-open'] = 'true';
+    rootPopover.setAttribute('data-label', 'li_sa_popover');
+    rootPopover.setAttribute('data-value', id);
+    rootPopover.setAttribute('data-open', 'true');
     final popoverClassNames = _classNames(popoverClass);
     if (popoverClassNames.isNotEmpty) {
       rootPopover.classes.addAll(popoverClassNames);
     }
-    rootPopover.attributes['data-popper-placement'] = 'top';
+    rootPopover.setAttribute('data-popper-placement', 'top');
     rootPopover.style.position = 'fixed';
     rootPopover.style.margin = '0px';
     rootPopover.style.zIndex = '10000';
 
     final popoverArrow = DivElement();
     popoverArrow.classes.add('popover-arrow');
-    popoverArrow.attributes['data-label'] = 'li_sa_popover_arrow';
+    popoverArrow.setAttribute('data-label', 'li_sa_popover_arrow');
     popoverArrow.classes.addAll(
       popoverClassNames.where((className) => className.startsWith('border-')),
     );
@@ -51,9 +52,9 @@ class SweetAlertPopover {
     popoverArrow.style.position = 'absolute';
     popoverArrow.style.left = '0px';
 
-    final popoverHeader = HeadingElement.h3();
+    final popoverHeader = createHeadingElement(3);
     popoverHeader.classes.add('popover-header');
-    popoverHeader.attributes['data-label'] = 'li_sa_popover_header';
+    popoverHeader.setAttribute('data-label', 'li_sa_popover_header');
     popoverHeader.text = title;
     _applyCustomTheme(
       header: popoverHeader,
@@ -64,7 +65,7 @@ class SweetAlertPopover {
 
     final popoverBody = DivElement();
     popoverBody.classes.add('popover-body');
-    popoverBody.attributes['data-label'] = 'li_sa_popover_body';
+    popoverBody.setAttribute('data-label', 'li_sa_popover_body');
     popoverBody.innerHtml = message;
     popoverBody.style.whiteSpace = 'pre-line';
     _applyCustomTheme(
@@ -101,7 +102,7 @@ class SweetAlertPopover {
         arrowElement: popoverArrow,
         arrowPadding: const PopperInsets.all(10),
         onLayout: (layout) {
-          rootPopover.attributes['data-popper-placement'] = layout.placement;
+          rootPopover.setAttribute('data-popper-placement', layout.placement);
           rootPopover.classes
             ..remove('bs-popover-top')
             ..remove('bs-popover-bottom')
@@ -120,7 +121,7 @@ class SweetAlertPopover {
     Timer? closeTimer;
 
     void close() {
-      target.attributes.remove('data-popover');
+      target.removeAttribute('data-popover');
       document.body!.classes.removeAll(['swal2-toast-shown', 'swal2-shown']);
       overlay.dispose();
       ssoc?.cancel();
@@ -139,8 +140,8 @@ class SweetAlertPopover {
     Future.delayed(const Duration(milliseconds: 250), () {
       ssoc = document.onClick.listen((event) {
         final te = event.target;
-        if (te is Element &&
-            !rootPopover.contains(te) &&
+        if ((te?.isA<Element>() ?? false) &&
+            !rootPopover.contains(te as Node?) &&
             !target.contains(te)) {
           close();
         }
@@ -153,8 +154,8 @@ class SweetAlertPopover {
       });
     });
 
-    if (target.attributes['data-popover'] == null) {
-      target.attributes['data-popover'] = 'true';
+    if (target.getAttribute('data-popover') == null) {
+      target.setAttribute('data-popover', 'true');
     }
   }
 

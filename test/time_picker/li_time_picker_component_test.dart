@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -73,7 +73,7 @@ void main() {
         .querySelector('.time-picker-wrapper .input-group') as html.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -95,7 +95,7 @@ void main() {
         .querySelector('.time-picker-wrapper .input-group') as html.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -148,7 +148,7 @@ void main() {
         .querySelector('.time-picker-wrapper .input-group') as html.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleMobile(fixture);
 
@@ -164,8 +164,8 @@ void main() {
     );
 
     final panelRect = panel.getBoundingClientRect();
-    final viewportWidth = html.window.innerWidth!;
-    final viewportHeight = html.window.innerHeight!;
+    final viewportWidth = html.window.innerWidth;
+    final viewportHeight = html.window.innerHeight;
     expect(panelRect.top.abs(), lessThanOrEqualTo(1));
     expect(panelRect.left.abs(), lessThanOrEqualTo(1));
     expect(panelRect.width, greaterThanOrEqualTo(viewportWidth - 1));

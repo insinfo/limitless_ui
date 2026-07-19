@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -435,7 +435,7 @@ void main() {
 }
 
 void _click(html.Element element) {
-  element.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  element.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 Future<void> _settle(NgTestFixture<TestHostComponent> fixture) async {

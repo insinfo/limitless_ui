@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -412,7 +412,7 @@ Future<void> _settleBenchmark(
 
 Future<num> _nextAnimationFrameTime() {
   final completer = Completer<num>();
-  html.window.requestAnimationFrame((timestamp) {
+  html.window.liRequestAnimationFrame((timestamp) {
     completer.complete(timestamp);
   });
   return completer.future;
@@ -582,14 +582,15 @@ DatatableCol _column({
 }
 
 html.Element _renderTitleHtml(DatatableCol column) {
-  final shell = html.SpanElement()
+  final shell = html.createSpanElement()
     ..classes.addAll(<String>[
       'd-inline-flex',
       'align-items-center',
       'gap-1',
     ]);
-  shell.append(html.Element.tag('i')..classes.addAll(<String>['ph', 'ph-tag']));
-  shell.append(html.SpanElement()..text = column.title);
+  shell.append(html.document.createElement('i')
+    ..classes.addAll(<String>['ph', 'ph-tag']));
+  shell.append(html.createSpanElement()..text = column.title);
   return shell;
 }
 

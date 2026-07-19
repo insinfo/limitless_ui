@@ -6,7 +6,9 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'dart:js_interop';
+
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -550,7 +552,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final lazyHost =
-        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(1);
+        fixture.rootElement.queryAll('li-treeview-select').elementAt(1);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[1].click();
@@ -593,7 +595,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final lazyHost =
-        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(1);
+        fixture.rootElement.queryAll('li-treeview-select').elementAt(1);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[1].click();
@@ -601,12 +603,12 @@ void main() {
     await _settle(fixture, milliseconds: 140);
 
     final searchInput = lazyHost
-        .querySelectorAll('.treeview-dropdown-select__search input')
+        .queryAll('.treeview-dropdown-select__search input')
         .elementAt(0) as html.InputElement;
 
     await fixture.update((_) {
       searchInput.value = 'cad';
-      searchInput.dispatchEvent(html.Event('input', canBubble: true));
+      searchInput.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture, milliseconds: 260);
 
@@ -620,7 +622,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final multiHost =
-        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(2);
+        fixture.rootElement.queryAll('li-treeview-select').elementAt(2);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[2].click();
@@ -645,8 +647,7 @@ void main() {
     expect(host.multiTree!.isPopupOpen, isTrue);
 
     final chips = multiHost
-        .querySelectorAll('.treeview-dropdown-select__chip')
-        .whereType<html.Element>()
+        .queryAll('.treeview-dropdown-select__chip')
         .toList(growable: false);
     final visibleValueChips = chips
         .where((chip) =>
@@ -665,7 +666,7 @@ void main() {
     expect(visibleValueChips, hasLength(2));
     expect(hiddenValueChips, hasLength(1));
     expect(summaryChips, hasLength(1));
-    expect(summaryChips.single.text?.trim(), '+1 itens');
+    expect(summaryChips.single.text.trim(), '+1 itens');
   });
 
   test('selects loaded descendants when parent cascade option is enabled',
@@ -674,7 +675,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final descendantHost =
-        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(7);
+        fixture.rootElement.queryAll('li-treeview-select').elementAt(7);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[7].click();
@@ -711,7 +712,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final frameHost =
-        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(3);
+        fixture.rootElement.queryAll('li-treeview-select').elementAt(3);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[3].click();
@@ -761,7 +762,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final rawHost =
-        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(4);
+        fixture.rootElement.queryAll('li-treeview-select').elementAt(4);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[4].click();
@@ -858,7 +859,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final multiHost =
-        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(2);
+        fixture.rootElement.queryAll('li-treeview-select').elementAt(2);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[2].click();
@@ -875,7 +876,7 @@ void main() {
       final toggleAll = multiHost.querySelector(
         '.treeview-dropdown-select__action-expand',
       ) as html.ButtonElement;
-      expect((toggleAll.text ?? '').trim(), 'Recolher tudo');
+      expect((toggleAll.text).trim(), 'Recolher tudo');
       toggleAll.click();
     });
     await _settle(fixture, milliseconds: 140);
@@ -893,7 +894,7 @@ void main() {
       final toggleAll = multiHost.querySelector(
         '.treeview-dropdown-select__action-expand',
       ) as html.ButtonElement;
-      expect((toggleAll.text ?? '').trim(), 'Expandir tudo');
+      expect((toggleAll.text).trim(), 'Expandir tudo');
       toggleAll.click();
     });
     await _settle(fixture, milliseconds: 140);
@@ -928,7 +929,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final searchToggleHost =
-        fixture.rootElement.querySelectorAll('li-treeview-select').elementAt(6);
+        fixture.rootElement.queryAll('li-treeview-select').elementAt(6);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[6].click();
@@ -1015,16 +1016,15 @@ Future<void> _settle(
 }
 
 List<html.ButtonElement> _triggerButtons(html.Element root) {
-  return root
-      .querySelectorAll('.treeview-dropdown-select__trigger')
-      .whereType<html.ButtonElement>()
-      .toList(growable: false);
+  return <html.ButtonElement>[
+    for (final element in root.queryAll('.treeview-dropdown-select__trigger'))
+      if (element.isA<html.ButtonElement>()) element as html.ButtonElement,
+  ];
 }
 
 html.ButtonElement? _findLabelButton(html.Element root, String text) {
-  for (final element
-      in root.querySelectorAll('.treeview-dropdown-select__label')) {
-    if (element.text?.trim() == text) {
+  for (final element in root.queryAll('.treeview-dropdown-select__label')) {
+    if (element.text.trim() == text) {
       return element as html.ButtonElement;
     }
   }
@@ -1032,8 +1032,8 @@ html.ButtonElement? _findLabelButton(html.Element root, String text) {
 }
 
 html.ButtonElement? _findButtonByText(html.Element root, String text) {
-  for (final element in root.querySelectorAll('button')) {
-    if (element.text?.trim() == text) {
+  for (final element in root.queryAll('button')) {
+    if (element.text.trim() == text) {
       return element as html.ButtonElement;
     }
   }
@@ -1041,9 +1041,9 @@ html.ButtonElement? _findButtonByText(html.Element root, String text) {
 }
 
 html.ButtonElement? _findExpanderForLabel(html.Element root, String label) {
-  for (final row in root.querySelectorAll('.treeview-dropdown-select__row')) {
+  for (final row in root.queryAll('.treeview-dropdown-select__row')) {
     final labelElement = row.querySelector('.treeview-dropdown-select__label');
-    if (labelElement?.text?.trim() == label) {
+    if (labelElement?.text.trim() == label) {
       final expander = row.querySelector('.treeview-dropdown-select__expander');
       return expander as html.ButtonElement?;
     }

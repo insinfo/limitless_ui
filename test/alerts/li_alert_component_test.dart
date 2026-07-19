@@ -3,7 +3,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';

@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -225,7 +225,7 @@ void main() {
       fixture.rootElement.text,
       contains('Selecione ao menos uma etapa paralela.'),
     );
-    expect(html.document.activeElement, same(currencyInput));
+    expect(html.document.activeElement == currencyInput, isTrue);
   });
 
   test('clears validation once the three components receive valid values',

@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
@@ -64,18 +65,18 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
 
   void onRootClick(MouseEvent event) {
     final target = event.target;
-    if (target is! Element) {
+    if (!(target?.isA<Element>() ?? false)) {
       return;
     }
 
-    if (_triggerElement != null && _triggerElement!.contains(target)) {
+    if (_triggerElement != null && _triggerElement!.contains(target as Node?)) {
       event.preventDefault();
       event.stopPropagation();
       toogle();
       return;
     }
 
-    if (target.closest('.li-dropdown-close') != null) {
+    if ((target as Element).closest('.li-dropdown-close') != null) {
       hide();
     }
   }
@@ -192,7 +193,7 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     }
 
     _overlayRelayoutPending = true;
-    window.requestAnimationFrame((_) {
+    window.liRequestAnimationFrame((_) {
       _overlayRelayoutPending = false;
       if (!rootElement.classes.contains('show')) {
         return;

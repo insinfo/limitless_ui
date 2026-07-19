@@ -1,3 +1,19 @@
+## 3.0.0-dev.1
+
+- **Breaking:** migrated the browser layer to `package:web` and
+  `dart:js_interop`, and moved the framework dependencies to the ngx9
+  development line. The package and example now compile for both dart2js and
+  dart2wasm.
+- Added a transitional, tested `web_compat` facade for the small set of legacy
+  DOM semantics that have no direct one-to-one replacement. New code should
+  prefer canonical Web IDL names and APIs from `package:web`.
+- Updated the example and browser documentation to the `package:web` API, and
+  fixed migration regressions in DOM sanitization, typed-array Blob creation,
+  live DOM collections, event defaults, Zone-bound callbacks and JS identity.
+- This Git dependency configuration is intentionally marked
+  `publish_to: none`. This migration is committed and pushed for validation;
+  it is not published to pub.dev.
+
 ## 2.0.0
 
 - **Breaking:** migrated from the abandoned `ngdart` family to its continuation, the `ngx_*` family published from the [insinfo/angular](https://github.com/insinfo/angular) fork: `ngdart: ^8.0.0-dev.4` → `ngx_dart: ^8.0.1`, `ngforms: ^5.0.0-dev.3` → `ngx_forms: ^5.0.1`, `ngrouter: ^4.0.0-dev.3` → `ngx_router: ^4.0.1` and `ngtest: ^5.0.0-dev.3` → `ngx_test: ^5.0.1`. The framework code is identical to the `ngdart 8.0.0-dev.4` line — only the package names changed — but every type this package re-exports now comes from the `ngx_*` packages, so consuming apps must migrate their own imports and dependencies in the same step. See the framework's [ngdart → ngx migration guide](https://insinfo.github.io/angular/migration).

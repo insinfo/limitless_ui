@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -314,7 +314,7 @@ Future<void> _click(
   html.Element element,
 ) async {
   await fixture.update((_) {
-    element.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    element.dispatchEvent(html.liMouseEvent('click', canBubble: true));
   });
 }
 

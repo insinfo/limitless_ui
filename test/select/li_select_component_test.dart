@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -252,7 +252,7 @@ class SelectProgrammaticApiTestHostComponent {
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
-    html.document.documentElement?.attributes.remove('data-color-theme');
+    html.document.documentElement?.removeAttribute('data-color-theme');
   });
 
   final testBed = NgTestBed<SelectTestHostComponent>(
@@ -292,17 +292,17 @@ void main() {
     expect(host.userSelectedStatus, isNull);
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     final option = html.document
-        .querySelectorAll('.dropdown-container .dropdown-item')
+        .queryAll('.dropdown-container .dropdown-item')
         .cast<html.Element>()
-        .firstWhere((element) => (element.text ?? '').contains('Aprovado'));
+        .firstWhere((element) => (element.text).contains('Aprovado'));
 
     await fixture.update((_) {
-      option.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      option.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -340,17 +340,17 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     final disabledOption = html.document
-        .querySelectorAll('.dropdown-container .dropdown-item')
+        .queryAll('.dropdown-container .dropdown-item')
         .cast<html.Element>()
-        .firstWhere((element) => (element.text ?? '').contains('Arquivado'));
+        .firstWhere((element) => (element.text).contains('Arquivado'));
 
     await fixture.update((_) {
-      disabledOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      disabledOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -365,7 +365,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -393,7 +393,7 @@ void main() {
     await _settle(fixture);
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -405,12 +405,12 @@ void main() {
     );
 
     final option = html.document
-        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
         .cast<html.Element>()
-        .firstWhere((element) => (element.text ?? '').contains('Aprovado'));
+        .firstWhere((element) => (element.text).contains('Aprovado'));
 
     await fixture.update((_) {
-      option.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      option.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -427,7 +427,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -493,7 +493,7 @@ void main() {
         as html.ButtonElement;
 
     expect(host.selectedStatus, isNull);
-    expect(trigger.text?.trim(), isEmpty);
+    expect(trigger.text.trim(), isEmpty);
     expect(trigger.text, isNot(contains('Rascunho')));
   });
 
@@ -583,7 +583,7 @@ void main() {
     final clearButton = field.querySelector('.dropdown-clear') as html.Element;
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleValidation(fixture);
 
@@ -592,17 +592,17 @@ void main() {
     expect(fixture.rootElement.text, contains('Escolha um status.'));
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleValidation(fixture);
 
     final option = html.document
-        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
         .cast<html.Element>()
-        .firstWhere((element) => (element.text ?? '').contains('Aprovado'));
+        .firstWhere((element) => (element.text).contains('Aprovado'));
 
     await fixture.update((_) {
-      option.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      option.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleValidation(fixture);
 

@@ -5,9 +5,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js';
-
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
 
@@ -215,7 +213,7 @@ void main() {
     expect(input, isNotNull);
     input!
       ..value = 'batch-42'
-      ..dispatchEvent(html.Event('input', canBubble: true));
+      ..dispatchEvent(html.liEvent('input', canBubble: true));
 
     _click('.swal2-confirm');
     final result = await future;
@@ -281,8 +279,8 @@ void main() {
     expect(textarea.rows, 6);
     expect(textarea.minLength, 10);
     expect(textarea.maxLength, 240);
-    expect(textarea.attributes['aria-label'], 'Correction reason');
-    expect(textarea.attributes['data-test-id'], 'correction-reason');
+    expect(textarea.getAttribute('aria-label'), 'Correction reason');
+    expect(textarea.getAttribute('data-test-id'), 'correction-reason');
     expect(textarea.style.minHeight, '10rem');
     expect(textarea.style.resize, 'none');
 
@@ -363,6 +361,7 @@ void main() {
     final actions = html.document.querySelector('.swal2-actions');
     expect(actions, isNotNull);
     final actionButtons = actions!.children
+        .toList()
         .where((element) => element.classes.contains('swal2-styled'))
         .toList(growable: false);
     expect(actionButtons.first.classes.contains('swal2-cancel'), isTrue);
@@ -474,7 +473,7 @@ void main() {
 void _click(String selector) {
   final element = html.document.querySelector(selector);
   expect(element, isNotNull);
-  element!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 void _resetSweetAlertDom() {
@@ -488,31 +487,9 @@ Future<void> _settle() async {
   await Future<void>.delayed(const Duration(milliseconds: 40));
 }
 
-const _createKeyEventName = '__dart_createSweetAlertKeyboardEvent';
-const _createKeyEventScript = '''
-window['$_createKeyEventName'] = function(type, key, code) {
-  return new KeyboardEvent(type, {
-    key: key,
-    code: code || key,
-    bubbles: true
-  });
-}
-''';
-
 html.Event _createKeyEvent(
   String type, {
   required String key,
   String? code,
-}) {
-  if (!context.hasProperty(_createKeyEventName)) {
-    final script = html.document.createElement('script')
-      ..setAttribute('type', 'text/javascript')
-      ..text = _createKeyEventScript;
-    html.document.body!.append(script);
-  }
-
-  return context.callMethod(
-    _createKeyEventName,
-    <Object>[type, key, code ?? key],
-  ) as html.Event;
-}
+}) =>
+    html.liKeyboardEvent(type, key: key, code: code ?? key);

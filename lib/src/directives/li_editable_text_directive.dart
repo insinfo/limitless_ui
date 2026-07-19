@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -77,7 +77,7 @@ class LiEditableTextDirective
   @override
   void writeValue(String? value) {
     _value = value ?? '';
-    if (_element.innerText != _value) {
+    if ((_element as html.HtmlElement).innerText != _value) {
       _element.innerText = _value;
     }
     _syncEditableState();
@@ -143,7 +143,7 @@ class LiEditableTextDirective
   }
 
   String _currentValue() {
-    final text = _element.innerText;
+    final text = (_element as html.HtmlElement).innerText;
     return liEditableTextTrim ? text.trim() : text;
   }
 
@@ -158,7 +158,7 @@ class LiEditableTextDirective
     if (liEditableText && !_disabled) {
       _element.setAttribute('contenteditable', 'true');
     } else {
-      _element.attributes.remove('contenteditable');
+      _element.removeAttribute('contenteditable');
     }
   }
 

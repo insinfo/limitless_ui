@@ -6,8 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -230,7 +229,7 @@ void main() {
     expect(menu!.classes.contains('show'), isFalse);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -238,7 +237,7 @@ void main() {
     expect(menu.classes.contains('show'), isTrue);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -263,21 +262,21 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement, same(firstItem));
+    expect(html.document.activeElement == firstItem, isTrue);
 
     await fixture.update((_) {
       _dispatchKey(firstItem!, 'End');
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement, same(thirdItem));
+    expect(html.document.activeElement == thirdItem, isTrue);
 
     await fixture.update((_) {
       _dispatchKey(thirdItem!, 'Home');
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement, same(firstItem));
+    expect(html.document.activeElement == firstItem, isTrue);
   });
 
   test('autoClose inside ignores outside clicks and closes on inside click',
@@ -295,21 +294,21 @@ void main() {
     expect(outside, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     expect(menu!.classes.contains('show'), isTrue);
 
     await fixture.update((_) {
-      outside!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      outside!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     expect(menu.classes.contains('show'), isTrue);
 
     await fixture.update((_) {
-      item!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      item!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -329,7 +328,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -348,7 +347,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -369,7 +368,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -391,7 +390,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -413,11 +412,11 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
-    final viewportWidth = (html.window.innerWidth ?? 0).toDouble();
+    final viewportWidth = (html.window.innerWidth).toDouble();
     final menuRect = menu!.getBoundingClientRect();
 
     expect(menuRect.width, lessThanOrEqualTo(viewportWidth - 14));
@@ -441,7 +440,7 @@ void main() {
     expect(label, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -449,7 +448,7 @@ void main() {
     expect(initialWrapper, isNotNull);
     expect(html.document.body!.contains(initialWrapper), isTrue);
 
-    final initialText = label!.text?.trim();
+    final initialText = label!.text.trim();
     expect(
       initialText,
       'DepartamentoSuperExtraordinariamenteExtensoDeRegistrosEDesenvolvimentoDePessoalComNomeMuitoLongo-637',
@@ -458,10 +457,10 @@ void main() {
     await _settle(fixture);
     await _settle(fixture);
 
-    expect(identical(menu.parent, initialWrapper), isTrue);
+    expect(menu.parent == initialWrapper, isTrue);
     expect(menu.classes.contains('show'), isTrue);
     expect(html.document.body!.contains(initialWrapper), isTrue);
-    expect(label.text?.trim(), initialText);
+    expect(label.text.trim(), initialText);
     expect(menu.style.maxWidth, isNotEmpty);
     expect(
       label.getBoundingClientRect().width,
@@ -482,7 +481,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
     await _settle(fixture);
@@ -527,19 +526,19 @@ void main() {
     expect(label, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
     await _settle(fixture);
 
-    final viewportWidth = (html.window.innerWidth ?? 0).toDouble();
+    final viewportWidth = (html.window.innerWidth).toDouble();
     final menuRect = menu!.getBoundingClientRect();
     expect(menu.style.width, 'max-content');
     expect(menu.style.maxWidth, contains('min(22rem,'));
     expect(menu.style.maxWidth, contains('100vw'));
     expect(menuRect.left, greaterThanOrEqualTo(7));
     expect(menuRect.right, lessThanOrEqualTo(viewportWidth - 7));
-    expect(label!.text?.trim(), contains('SecretariaSuperExtraordinariamente'));
+    expect(label!.text.trim(), contains('SecretariaSuperExtraordinariamente'));
   });
 
   test('body overlay adapta menu alto para nao sair da viewport', () async {
@@ -552,11 +551,11 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
-    final viewportHeight = (html.window.innerHeight ?? 0).toDouble();
+    final viewportHeight = (html.window.innerHeight).toDouble();
     final menuRect = menu!.getBoundingClientRect();
 
     expect(menuRect.height, lessThanOrEqualTo(viewportHeight - 14));
@@ -575,7 +574,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -615,12 +614,12 @@ void main() {
         fixture.rootElement.querySelector('#theme-submenu-menu');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -640,12 +639,12 @@ void main() {
         fixture.rootElement.querySelector('#theme-submenu-menu');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuHost!.dispatchEvent(html.MouseEvent('mouseenter'));
+      submenuHost!.dispatchEvent(html.liMouseEvent('mouseenter'));
     });
     await _settle(fixture);
 
@@ -653,7 +652,7 @@ void main() {
     expect(submenuMenu!.classes.contains('show'), isTrue);
 
     await fixture.update((_) {
-      submenuToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -705,17 +704,17 @@ void main() {
     final submenuItem = fixture.rootElement.querySelector('#theme-light');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuItem!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      submenuItem!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -733,7 +732,7 @@ void main() {
     final submenuItem = fixture.rootElement.querySelector('#theme-light');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -766,17 +765,17 @@ void main() {
     final submenuItem = fixture.rootElement.querySelector('#theme-light');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuItem!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      submenuItem!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -792,17 +791,6 @@ Future<void> _settle(NgTestFixture<DropdownTestHostComponent> fixture) async {
 }
 
 void _dispatchKey(html.Element element, String key) {
-  final keyboardEventConstructor =
-      js_util.getProperty(html.window, 'KeyboardEvent');
-  final event = js_util.callConstructor(
-    keyboardEventConstructor,
-    <Object>[
-      'keydown',
-      js_util.jsify(<String, Object>{
-        'key': key,
-        'bubbles': true,
-      }),
-    ],
-  );
-  element.dispatchEvent(event as html.Event);
+  final event = html.liKeyboardEvent('keydown', key: key);
+  element.dispatchEvent(event);
 }

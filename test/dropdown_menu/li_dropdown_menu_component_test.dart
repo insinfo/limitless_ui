@@ -6,9 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
-
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
@@ -213,7 +211,7 @@ void main() {
         .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -237,7 +235,7 @@ void main() {
         .querySelector('[aria-label="body-actions"]') as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -266,7 +264,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -292,7 +290,7 @@ void main() {
             as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -318,7 +316,7 @@ void main() {
             as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -352,7 +350,7 @@ void main() {
             as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -386,7 +384,7 @@ void main() {
             as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -397,7 +395,7 @@ void main() {
     expect(footerButton!.text, contains('Validação avançada'));
 
     await fixture.update((_) {
-      footerButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      footerButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -415,7 +413,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -440,7 +438,7 @@ void main() {
         .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -466,7 +464,7 @@ void main() {
         .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -476,7 +474,7 @@ void main() {
     );
 
     html.document.body!
-        .dispatchEvent(html.MouseEvent('click', canBubble: true));
+        .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     await _settle(fixture);
 
     expect(
@@ -496,14 +494,14 @@ void main() {
         .querySelector('[aria-label="body-actions"]') as html.ButtonElement;
 
     await fixture.update((_) {
-      inlineTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      inlineTrigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     expect(host.inlineMenu!.isOpen, isTrue);
 
     await fixture.update((_) {
-      bodyTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      bodyTrigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -528,22 +526,20 @@ void main() {
             as html.ButtonElement;
 
     await fixture.update((_) {
-      inlineTrigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      inlineTrigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
       persistentTrigger
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     expect(host.inlineMenu!.isOpen, isTrue);
     expect(host.persistentMenu!.isOpen, isTrue);
     expect(
-      fixture.rootElement
-          .querySelectorAll('.li-dropdown-menu__menu.show')
-          .length,
+      fixture.rootElement.queryAll('.li-dropdown-menu__menu.show').length,
       2,
     );
   });
@@ -557,18 +553,18 @@ void main() {
         .querySelector('[aria-label="body-actions"]') as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     final option = html.document
-        .querySelectorAll(
+        .queryAll(
             '.LiDropdownMenuComponent .li-dropdown-menu__menu.show .dropdown-item')
         .cast<html.ButtonElement>()
-        .firstWhere((element) => (element.text ?? '').contains('Limpar'));
+        .firstWhere((element) => (element.text).contains('Limpar'));
 
     await fixture.update((_) {
-      option.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      option.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -592,7 +588,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -602,7 +598,8 @@ void main() {
     expect(disabledOption, isNotNull);
 
     await fixture.update((_) {
-      disabledOption!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      disabledOption!
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -619,7 +616,7 @@ void main() {
             as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -629,7 +626,7 @@ void main() {
     expect(option, isNotNull);
 
     await fixture.update((_) {
-      option!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      option!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -652,25 +649,13 @@ Future<void> _settle(
 
 Future<void> _nextAnimationFrame() {
   final completer = Completer<void>();
-  html.window.requestAnimationFrame((_) {
+  html.window.liRequestAnimationFrame((_) {
     completer.complete();
   });
   return completer.future;
 }
 
 void _dispatchEscapeKeydown() {
-  final keyboardEventConstructor =
-      js_util.getProperty(html.window, 'KeyboardEvent');
-  final event = js_util.callConstructor(
-    keyboardEventConstructor,
-    <Object?>[
-      'keydown',
-      js_util.jsify(<String, Object?>{
-        'key': 'Escape',
-        'bubbles': true,
-        'cancelable': true,
-      }),
-    ],
-  );
-  js_util.callMethod(html.document, 'dispatchEvent', <Object?>[event]);
+  final event = html.liKeyboardEvent('keydown', key: 'Escape');
+  html.document.dispatchEvent(event);
 }

@@ -1,3 +1,4 @@
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 @Component(

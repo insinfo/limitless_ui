@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -377,11 +378,11 @@ class LiTypeaheadComponent
   }
 
   void handleKeydown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    if (event.key == 'ArrowDown') {
+    if ((event as html.KeyboardEvent).key == 'ArrowDown') {
       event.preventDefault();
       if (!popupOpen) {
         _scheduleSearch(immediate: true);
@@ -391,7 +392,7 @@ class LiTypeaheadComponent
       return;
     }
 
-    if (event.key == 'ArrowUp') {
+    if ((event).key == 'ArrowUp') {
       event.preventDefault();
       if (!popupOpen) {
         _scheduleSearch(immediate: true);
@@ -401,7 +402,7 @@ class LiTypeaheadComponent
       return;
     }
 
-    if (event.key == 'Enter' || event.key == 'Tab') {
+    if ((event).key == 'Enter' || (event).key == 'Tab') {
       if (!popupOpen) {
         return;
       }
@@ -418,7 +419,7 @@ class LiTypeaheadComponent
       return;
     }
 
-    if (event.key == 'Escape') {
+    if ((event).key == 'Escape') {
       event.preventDefault();
       dismissPopup();
     }
@@ -846,7 +847,7 @@ class LiTypeaheadComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _overlayRelayoutPending = false;
       if (!popupOpen) {
         return;
@@ -865,7 +866,7 @@ class LiTypeaheadComponent
       return;
     }
 
-    final viewportHeight = html.window.innerHeight?.toDouble() ?? 900.0;
+    final viewportHeight = html.window.innerHeight.toDouble();
     final inputRect = input.getBoundingClientRect();
     final popupRect = popup.getBoundingClientRect();
     final opensUpward = popupRect.top < inputRect.top;
@@ -883,13 +884,15 @@ class LiTypeaheadComponent
       }
 
       final target = event.target;
-      if (target is! html.Node) {
+      if (!(target?.isA<html.Node>() ?? false)) {
         dismissPopup();
         return;
       }
 
-      final clickedInput = inputElement?.contains(target) ?? false;
-      final clickedPopup = popupElement?.contains(target) ?? false;
+      final clickedInput =
+          inputElement?.contains(target as html.Node?) ?? false;
+      final clickedPopup =
+          popupElement?.contains(target as html.Node?) ?? false;
       if (!clickedInput && !clickedPopup) {
         dismissPopup();
       }

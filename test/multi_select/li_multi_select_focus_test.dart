@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -67,7 +67,7 @@ void main() {
         fixture.rootElement.querySelector('input#external-input') as dynamic;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -75,11 +75,11 @@ void main() {
 
     await fixture.update((_) {
       input.focus();
-      input.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      input.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement, same(input as html.Element));
+    expect(html.document.activeElement == input, isTrue);
     expect(trigger.getAttribute('aria-expanded'), 'false');
   });
 }

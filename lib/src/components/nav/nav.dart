@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -18,7 +19,7 @@ bool _isValidNavId(Object? id) => id != null && id.toString().isNotEmpty;
 
 String _normalizedKey(html.KeyboardEvent event) {
   final key = event.key;
-  if (key != null && key.isNotEmpty) {
+  if (key.isNotEmpty) {
     return key;
   }
 
@@ -228,8 +229,9 @@ class LiNavDirective implements AfterContentInit, OnDestroy {
 
   void onFocusout(html.FocusEvent event) {
     final relatedTarget = event.relatedTarget;
-    if (relatedTarget is html.Element &&
-        _links.any((link) => link.nativeElement.contains(relatedTarget))) {
+    if ((relatedTarget?.isA<html.Element>() ?? false) &&
+        _links.any((link) =>
+            link.nativeElement.contains(relatedTarget as html.Node?))) {
       return;
     }
     _navigatingWithKeyboard = false;
@@ -254,7 +256,7 @@ class LiNavDirective implements AfterContentInit, OnDestroy {
     }
 
     var position = enabledLinks.indexWhere(
-      (link) => identical(link.nativeElement, html.document.activeElement),
+      (link) => link.nativeElement == html.document.activeElement,
     );
     if (position < 0) {
       position = enabledLinks.indexWhere((link) => link.item.active);
@@ -508,14 +510,15 @@ class LiNavLinkDirective implements OnInit, OnDestroy {
   }
 
   @HostBinding('attr.href')
-  String? get hostHref => nativeElement is html.AnchorElement ? '' : null;
+  String? get hostHref => nativeElement.isA<html.AnchorElement>() ? '' : null;
 
   @HostBinding('attr.type')
-  String? get hostType => nativeElement is html.ButtonElement ? 'button' : null;
+  String? get hostType =>
+      nativeElement.isA<html.ButtonElement>() ? 'button' : null;
 
   @HostBinding('attr.disabled')
   String? get hostDisabledAttribute =>
-      nativeElement is html.ButtonElement && item.disabled ? '' : null;
+      nativeElement.isA<html.ButtonElement>() && item.disabled ? '' : null;
 
   @override
   void ngOnInit() {
@@ -524,7 +527,7 @@ class LiNavLinkDirective implements OnInit, OnDestroy {
 
   @HostListener('click', ['\$event'])
   void onClick(html.MouseEvent event) {
-    if (nativeElement is html.AnchorElement) {
+    if (nativeElement.isA<html.AnchorElement>()) {
       event.preventDefault();
     }
     nav.click(item);
@@ -610,7 +613,7 @@ class LiNavOutletDirective implements OnInit, OnDestroy {
         continue;
       }
 
-      final pane = html.DivElement()
+      final pane = html.createDivElement()
         ..classes.add('tab-pane')
         ..id = item.panelDomId
         ..setAttribute('aria-labelledby', item.domId);

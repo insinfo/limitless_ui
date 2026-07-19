@@ -4,7 +4,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
@@ -111,7 +111,7 @@ void main() {
     expect(textarea.getAttribute('data-value'), 'textarea');
     expect(textarea.rows, 6);
     expect(textarea.maxLength, 240);
-    expect(textarea.attributes['aria-label'], 'Correction reason');
+    expect(textarea.getAttribute('aria-label'), 'Correction reason');
     expect(textarea.style.minHeight, '10rem');
 
     _click('.BtnOk');
@@ -178,11 +178,11 @@ void main() {
 void _click(String selector) {
   final element = html.document.querySelector(selector);
   expect(element, isNotNull);
-  element!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 void _resetSimpleDialogDom() {
-  html.document.querySelectorAll('.li-simple-dialog-root').forEach((element) {
+  html.document.queryAll('.li-simple-dialog-root').forEach((element) {
     element.remove();
   });
 }

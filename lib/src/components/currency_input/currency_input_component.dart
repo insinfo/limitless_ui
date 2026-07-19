@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -26,7 +26,7 @@ class LiCurrencyInputComponent
         AfterViewInit,
         OnDestroy,
         AfterChanges {
-  final HtmlElement _hostElement;
+  final HTMLElement _hostElement;
   final LiFormDirective? _formDirective;
 
   LiCurrencyInputComponent(
@@ -319,7 +319,7 @@ class LiCurrencyInputComponent
       if (input == null) {
         return;
       }
-      final length = input.value?.length ?? 0;
+      final length = input.value.length;
       input.setSelectionRange(length, length);
     });
   }
@@ -343,9 +343,9 @@ class LiCurrencyInputComponent
     }
 
     if (effectiveInvalid) {
-      input.attributes['data-invalid'] = 'true';
+      input.setAttribute('data-invalid', 'true');
     } else {
-      input.attributes.remove('data-invalid');
+      input.removeAttribute('data-invalid');
     }
   }
 
@@ -416,7 +416,7 @@ class LiCurrencyInputComponent
 
   bool get _hasHostInvalidState =>
       _hostElement.classes.contains('is-invalid') ||
-      _hostElement.attributes['data-invalid'] == 'true';
+      _hostElement.getAttribute('data-invalid') == 'true';
 
   bool get _hasHostValidState => _hostElement.classes.contains('is-valid');
 

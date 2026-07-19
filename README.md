@@ -6,7 +6,7 @@
 
 Reusable AngularDart UI components, directives, and browser helpers for applications built on the Limitless visual language and Bootstrap-based CSS: https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/css/all.min.css https://cdn.jsdelivr.net/gh/SXNhcXVl/limitless@4.0/dist/icons/phosphor/2.0.3/styles.min.css.
 
-This package is browser-only. It depends on `dart:html`, `ngx_dart`, `ngx_forms` and `ngx_router`.
+This package is browser-only. Its browser APIs use `package:web`; it depends on `ngx_dart`, `ngx_forms` and `ngx_router`.
 
 ## Contract overview
 
@@ -27,21 +27,17 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Version lines
 
-`limitless_ui` is maintained in parallel lines, one per framework family. This branch (`ngx8`) is the `2.x` line:
+`limitless_ui` is maintained in parallel lines, one per framework family. This branch (`ngx9`) is the current `3.x` development line:
 
 | Line | Branch | Framework | DOM |
 |------|--------|-----------|-----|
-| `1.0.0-dev.*` (frozen, critical fixes only) | `main` | `ngdart 8.0.0-dev.4` | `dart:html` |
-| `2.x` (this branch) | `ngx8` | `ngx_dart ^8.0.1` ([ngx_* family](https://insinfo.github.io/angular/migration)) | `dart:html` |
-| `3.x` (planned) | `ngx9` | `ngx_dart ^9.0.0-dev.1` | `package:web` |
+| `1.0.0-dev.*` (frozen, critical fixes only) | `main` | `ngdart 8.0.0-dev.4` | Legacy DOM bindings |
+| `2.x` (maintenance line) | `ngx8` | `ngx_dart ^8.0.1` ([ngx_* family](https://insinfo.github.io/angular/migration)) | Legacy DOM bindings |
+| `3.x` (current migration line) | `ngx9` | `ngx_dart 9` development line | `package:web` |
 
-Apps on the `1.0.0-dev.*` line are unaffected by `2.x`/`3.x` releases: `^1.0.0-dev.x` resolves to `< 2.0.0`, so upgrading is always an explicit opt-in. To migrate an app to `2.x`, follow the framework's [ngdart → ngx migration guide](https://insinfo.github.io/angular/migration) and switch the app's own imports and dependencies to the `ngx_*` packages together with the `limitless_ui: ^2.0.0` bump.
+Apps on the `1.0.0-dev.*` line are unaffected by `2.x`/`3.x` releases: `^1.0.0-dev.x` resolves to `< 2.0.0`, so upgrading is always an explicit opt-in. To migrate an app to `3.x`, follow the framework's [ngdart → ngx migration guide](https://insinfo.github.io/angular/migration), move browser DOM imports to `package:web`, and switch the app's framework dependencies to the ngx9 package family.
 
-The `2.x` line depends on the stable `ngx_*` releases:
-
-- `ngx_dart: ^8.0.1`
-- `ngx_forms: ^5.0.1`
-- `ngx_router: ^4.0.1`
+The current `3.x` migration checkout uses the ngx9 packages and the `package:web` DOM bindings. Required framework and Popper fixes are temporarily pinned to Git revisions while the migration is validated.
 
 For applications consuming `limitless_ui`, treat these versions as compatibility-critical. In particular:
 
@@ -50,15 +46,20 @@ For applications consuming `limitless_ui`, treat these versions as compatibility
 - do not enable automated dependency upgrades for these packages without manual validation;
 - when testing an upgrade, run the value accessor tests first, because they are usually the first area to break.
 
-Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is defined in [.github/workflows/ci.yml](.github/workflows/ci.yml).
+Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is defined in [.github/workflows/ci.yml](.github/workflows/ci.yml). This migration execution is validation-only: do not publish `3.0.0-dev.1` or the current Git-based dependency configuration. Publication remains blocked until the required ngx9/Popper fixes can be pinned to released packages and the full validation suite is green.
+
+The Dart sources under `example/` have been checked against the current browser baseline and contain no legacy DOM-library imports.
 
 ## Installation
 
-### Generic usage
+### Current `3.x` development usage
+
+No package release is produced by this migration execution. Validate the current line from a local checkout:
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.33
+  limitless_ui:
+    path: ../limitless_ui
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -67,18 +68,9 @@ If the application will use `li-datatable`, `li-datatable-select`, `li-select`, 
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.33
-  essential_core: ^1.2.0
-```
-
-For local development:
-
-```yaml
-dependencies:
   limitless_ui:
     path: ../limitless_ui
-  essential_core:
-    path: ../essential_core
+  essential_core: ^1.4.0
 ```
 
 ## Import
@@ -3052,7 +3044,7 @@ Recommended first-pass upgrade command:
 dart run build_runner test -- -p chrome -j 1 test/input/li_input_component_test.dart test/multi_select/li_multi_select_focus_test.dart
 ```
 
-Validate the package before publishing:
+After the migration's publication block is lifted, validate a future release candidate with:
 
 ```bash
 dart pub publish --dry-run
@@ -3084,6 +3076,8 @@ The demo app under [example](example) now includes dedicated routes for accordio
 Use the demo app as the reference for real template usage, especially for lazy accordion bodies, lazy modal content, scrollspy menus, overlay components that depend on browser geometry, the PDF.js and Quill integration pages, and the `person-registration` route that demonstrates an end-to-end form with declarative frontend rules plus fake backend validation.
 
 ## Release checklist
+
+This checklist is for a future releasable dependency configuration; it does not authorize publication from the current migration checkout.
 
 - `dart analyze`
 - VM-safe tests

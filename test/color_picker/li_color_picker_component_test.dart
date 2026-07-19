@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -72,7 +72,7 @@ void main() {
     ) as html.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -95,7 +95,7 @@ void main() {
     ) as html.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleMobile(fixture);
 
@@ -123,7 +123,7 @@ void main() {
     ) as html.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -140,7 +140,7 @@ void main() {
 
     await fixture.update((_) {
       colorArea.dispatchEvent(
-        html.MouseEvent(
+        html.liMouseEvent(
           'mousedown',
           clientX: startX,
           clientY: startY,
@@ -149,7 +149,7 @@ void main() {
         ),
       );
       html.document.dispatchEvent(
-        html.MouseEvent(
+        html.liMouseEvent(
           'mousemove',
           clientX: endX,
           clientY: endY,
@@ -158,7 +158,7 @@ void main() {
         ),
       );
       html.document.dispatchEvent(
-        html.MouseEvent(
+        html.liMouseEvent(
           'mouseup',
           clientX: endX,
           clientY: endY,
@@ -172,7 +172,7 @@ void main() {
     expect(panel.classes.contains('sp-hidden'), isFalse);
 
     await fixture.update((_) {
-      outside.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      outside.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 

@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -134,8 +134,7 @@ void main() {
     expect(fixture.text, contains('Sucesso'));
     expect(fixture.text, contains('Alteracoes salvas.'));
 
-    final items =
-        fixture.rootElement.querySelectorAll('[data-label="li_ntf_item"]');
+    final items = fixture.rootElement.queryAll('[data-label="li_ntf_item"]');
     expect(items, hasLength(1));
 
     final body = fixture.rootElement.querySelector(
@@ -153,8 +152,7 @@ void main() {
 
     await _settle(fixture);
 
-    final items =
-        fixture.rootElement.querySelectorAll('[data-label="li_ntf_item"]');
+    final items = fixture.rootElement.queryAll('[data-label="li_ntf_item"]');
 
     expect(items, hasLength(2));
     expect(fixture.text, contains('Primeiro'));
@@ -179,7 +177,7 @@ void main() {
 
     await fixture.update((_) {
       closeButton!.dispatchEvent(
-        html.MouseEvent('click', canBubble: true),
+        html.liMouseEvent('click', canBubble: true),
       );
     });
     await _settle(fixture);
@@ -207,7 +205,7 @@ void main() {
 
     await fixture.update((_) {
       toastElement!.dispatchEvent(
-        html.MouseEvent('click', canBubble: true),
+        html.liMouseEvent('click', canBubble: true),
       );
     });
     await _settle(fixture);
@@ -237,7 +235,7 @@ void main() {
 
     await fixture.update((_) {
       toastElement!.dispatchEvent(
-        html.MouseEvent('click', canBubble: true),
+        html.liMouseEvent('click', canBubble: true),
       );
     });
     await _settle(fixture);
@@ -269,7 +267,7 @@ void main() {
 
     await fixture.update((_) {
       toastElement!.dispatchEvent(
-        html.MouseEvent('click', canBubble: true),
+        html.liMouseEvent('click', canBubble: true),
       );
     });
     await _settle(fixture);

@@ -26,7 +26,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -120,7 +120,7 @@ void main() {
           reason: 'sheet must have a visible height, not collapse to 0');
       // A bottom sheet sits near the bottom of the viewport, never pinned to
       // the top-left corner like a broken absolute dropdown.
-      expect(rect.bottom, lessThanOrEqualTo(html.window.innerHeight!.toDouble()),
+      expect(rect.bottom, lessThanOrEqualTo(html.window.innerHeight.toDouble()),
           reason: 'sheet stays within the viewport');
       expect(rect.top, greaterThan(0),
           reason: 'sheet is not stuck at the very top (0,0)');
@@ -154,9 +154,9 @@ void main() {
       // Centered modal: its center is near the viewport center.
       final centerX = rect.left + rect.width / 2;
       final centerY = rect.top + rect.height / 2;
-      expect((centerX - html.window.innerWidth! / 2).abs(), lessThan(40),
+      expect((centerX - html.window.innerWidth / 2).abs(), lessThan(40),
           reason: 'modal should be horizontally centered');
-      expect((centerY - html.window.innerHeight! / 2).abs(), lessThan(40),
+      expect((centerY - html.window.innerHeight / 2).abs(), lessThan(40),
           reason: 'modal should be vertically centered');
     },
   );
@@ -168,7 +168,7 @@ void main() {
     _openMenu(fixture, 'body-sheet');
     await _settle(fixture);
 
-    final items = html.document.querySelectorAll(
+    final items = html.document.queryAll(
       '.LiDropdownMenuComponent .li-dropdown-menu__menu--mobile-sheet.show '
       '.dropdown-item',
     );
@@ -187,7 +187,7 @@ void _openMenu(
 ) {
   final trigger = fixture.rootElement.querySelector('[aria-label="$ariaLabel"]')
       as html.ButtonElement;
-  trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 Future<void> _settle(
@@ -202,7 +202,7 @@ Future<void> _settle(
 
 Future<void> _nextAnimationFrame() {
   final completer = Completer<void>();
-  html.window.requestAnimationFrame((_) {
+  html.window.liRequestAnimationFrame((_) {
     completer.complete();
   });
   return completer.future;

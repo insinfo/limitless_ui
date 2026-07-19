@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -111,7 +112,7 @@ class LiCollapseController implements OnDestroy {
     _forceReflow();
 
     final targetSize = _expandedSize;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       if (!_collapsing || _collapsed) {
         return;
       }
@@ -135,7 +136,7 @@ class LiCollapseController implements OnDestroy {
     _setDimension('${currentSize}px');
     _forceReflow();
 
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       if (!_collapsing || !_collapsed) {
         return;
       }
@@ -147,7 +148,7 @@ class LiCollapseController implements OnDestroy {
 
   void _awaitTransition(void Function() onComplete) {
     _transitionSubscription = _element.onTransitionEnd.listen((event) {
-      if (!identical(event.target, _element)) {
+      if (event.target != _element) {
         return;
       }
       onComplete();
@@ -270,7 +271,7 @@ class LiCollapseDirective implements OnInit, OnDestroy {
     _horizontal = _config.horizontal;
   }
 
-  final html.HtmlElement _element;
+  final html.HTMLElement _element;
   final LiCollapseConfig _config;
   final StreamController<bool> _collapseChangeController =
       StreamController<bool>.broadcast();
@@ -354,7 +355,7 @@ class LiCollapseDirective implements OnInit, OnDestroy {
 class LiCollapseToggleDirective implements OnInit, OnDestroy {
   LiCollapseToggleDirective(this._host);
 
-  final html.HtmlElement _host;
+  final html.HTMLElement _host;
   final StreamController<bool> _collapseChangeController =
       StreamController<bool>.broadcast();
 
@@ -441,20 +442,20 @@ class LiCollapseToggleDirective implements OnInit, OnDestroy {
 
     if (selector.startsWith('#')) {
       final byId = html.document.getElementById(selector.substring(1));
-      if (byId is html.HtmlElement) {
-        return byId;
+      if ((byId?.isA<html.HtmlElement>() ?? false)) {
+        return byId as html.HtmlElement;
       }
     }
 
     try {
       final bySelector = html.document.querySelector(selector);
-      if (bySelector is html.HtmlElement) {
-        return bySelector;
+      if ((bySelector?.isA<html.HtmlElement>() ?? false)) {
+        return bySelector as html.HtmlElement;
       }
     } catch (_) {
       final byId = html.document.getElementById(selector);
-      if (byId is html.HtmlElement) {
-        return byId;
+      if ((byId?.isA<html.HtmlElement>() ?? false)) {
+        return byId as html.HtmlElement;
       }
     }
 

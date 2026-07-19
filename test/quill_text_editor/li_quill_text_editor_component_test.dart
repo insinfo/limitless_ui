@@ -6,8 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/quill_text_editor.dart';
 import 'package:limitless_ui/src/components/quill_text_editor/quill_text_editor_bridge.dart';
@@ -62,8 +61,7 @@ class QuillTextEditorTestHostComponent {
   String projectedActionLabel = 'Acao projetada';
   LiQuillTextEditorLabels labels = LiQuillTextEditorLabels.portuguese;
 
-  late final List<LiQuillToolbarAction> toolbarActions =
-      <LiQuillToolbarAction>[
+  late final List<LiQuillToolbarAction> toolbarActions = <LiQuillToolbarAction>[
     LiQuillToolbarAction(
       id: 'append-signature',
       iconClass: 'ph ph-signature',
@@ -147,7 +145,7 @@ void main() {
     expect(toolbarAction, isNotNull);
 
     await fixture.update((_) {
-      toolbarAction!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toolbarAction!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -163,7 +161,8 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final error = fixture.rootElement.querySelector('.li-quill-text-editor__error');
+    final error =
+        fixture.rootElement.querySelector('.li-quill-text-editor__error');
     expect(error, isNotNull);
     expect(error!.text, contains('não está disponível'));
   });
@@ -183,36 +182,41 @@ void main() {
     expect(toolbarBefore, isNotNull);
     expect(boldButtonBefore, isNotNull);
     expect(headerSelectBefore, isNotNull);
-    expect(toolbarBefore!.classes, isNot(contains('li-quill-text-editor__toolbar--hidden')));
+    expect(toolbarBefore!.classes,
+        isNot(contains('li-quill-text-editor__toolbar--hidden')));
 
     await fixture.update((_) {
       host.toolbarVisible = false;
     });
     await _settle(fixture);
 
-    final toolbarHidden = fixture.rootElement.querySelector('.li-quill-text-editor__toolbar');
+    final toolbarHidden =
+        fixture.rootElement.querySelector('.li-quill-text-editor__toolbar');
     final boldButtonHidden = fixture.rootElement.querySelector('.ql-bold');
     final headerSelectHidden = fixture.rootElement.querySelector('.ql-header');
-    expect(identical(toolbarBefore, toolbarHidden), isTrue);
-    expect(identical(boldButtonBefore, boldButtonHidden), isTrue);
-    expect(identical(headerSelectBefore, headerSelectHidden), isTrue);
-    expect(toolbarHidden!.classes, contains('li-quill-text-editor__toolbar--hidden'));
+    expect(toolbarBefore == toolbarHidden, isTrue);
+    expect(boldButtonBefore == boldButtonHidden, isTrue);
+    expect(headerSelectBefore == headerSelectHidden, isTrue);
+    expect(toolbarHidden!.classes,
+        contains('li-quill-text-editor__toolbar--hidden'));
 
     await fixture.update((_) {
       host.toolbarVisible = true;
     });
     await _settle(fixture);
 
-    final toolbarAfter = fixture.rootElement.querySelector('.li-quill-text-editor__toolbar');
+    final toolbarAfter =
+        fixture.rootElement.querySelector('.li-quill-text-editor__toolbar');
     final boldButtonAfter = fixture.rootElement.querySelector('.ql-bold');
     final headerSelectAfter = fixture.rootElement.querySelector('.ql-header');
-    expect(identical(toolbarBefore, toolbarAfter), isTrue);
-    expect(identical(boldButtonBefore, boldButtonAfter), isTrue);
-    expect(identical(headerSelectBefore, headerSelectAfter), isTrue);
-    expect(toolbarAfter!.classes, isNot(contains('li-quill-text-editor__toolbar--hidden')));
+    expect(toolbarBefore == toolbarAfter, isTrue);
+    expect(boldButtonBefore == boldButtonAfter, isTrue);
+    expect(headerSelectBefore == headerSelectAfter, isTrue);
+    expect(toolbarAfter!.classes,
+        isNot(contains('li-quill-text-editor__toolbar--hidden')));
   });
 
-    test('disables selected toolbar controls without rebuilding them', () async {
+  test('disables selected toolbar controls without rebuilding them', () async {
     final fakeBridge = FakeLiQuillTextEditorBridge();
     setLiQuillTextEditorBridgeForTesting(fakeBridge);
 
@@ -221,19 +225,19 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final orderedButtonBefore = fixture.rootElement
-      .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
+        .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
     final alignLeftButtonBefore = fixture.rootElement
-      .querySelector('[title="Alinhar à esquerda"]') as html.ButtonElement?;
+        .querySelector('[title="Alinhar à esquerda"]') as html.ButtonElement?;
     final boldButtonBefore =
-      fixture.rootElement.querySelector('.ql-bold') as html.ButtonElement?;
-    final headerSelectBefore =
-      fixture.rootElement.querySelector('select.ql-header') as html.SelectElement?;
-    final sizeSelectBefore =
-      fixture.rootElement.querySelector('select.ql-size') as html.SelectElement?;
-    final colorSelectBefore =
-      fixture.rootElement.querySelector('select.ql-color') as html.SelectElement?;
+        fixture.rootElement.querySelector('.ql-bold') as html.ButtonElement?;
+    final headerSelectBefore = fixture.rootElement
+        .querySelector('select.ql-header') as html.SelectElement?;
+    final sizeSelectBefore = fixture.rootElement.querySelector('select.ql-size')
+        as html.SelectElement?;
+    final colorSelectBefore = fixture.rootElement
+        .querySelector('select.ql-color') as html.SelectElement?;
     final backgroundSelectBefore = fixture.rootElement
-      .querySelector('select.ql-background') as html.SelectElement?;
+        .querySelector('select.ql-background') as html.SelectElement?;
 
     expect(orderedButtonBefore, isNotNull);
     expect(alignLeftButtonBefore, isNotNull);
@@ -245,37 +249,37 @@ void main() {
 
     await fixture.update((_) {
       host.disabledToolbarItemIds = <String>[
-      LiQuillToolbarItems.orderedList.id,
-      LiQuillToolbarItems.alignLeft.id,
-      LiQuillToolbarItems.header.id,
-      LiQuillToolbarItems.fontSize.id,
-      LiQuillToolbarItems.color.id,
-      LiQuillToolbarItems.background.id,
+        LiQuillToolbarItems.orderedList.id,
+        LiQuillToolbarItems.alignLeft.id,
+        LiQuillToolbarItems.header.id,
+        LiQuillToolbarItems.fontSize.id,
+        LiQuillToolbarItems.color.id,
+        LiQuillToolbarItems.background.id,
       ];
     });
     await _settle(fixture);
 
     final orderedButtonAfter = fixture.rootElement
-      .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
+        .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
     final alignLeftButtonAfter = fixture.rootElement
-      .querySelector('[title="Alinhar à esquerda"]') as html.ButtonElement?;
+        .querySelector('[title="Alinhar à esquerda"]') as html.ButtonElement?;
     final boldButtonAfter =
-      fixture.rootElement.querySelector('.ql-bold') as html.ButtonElement?;
-    final headerSelectAfter =
-      fixture.rootElement.querySelector('select.ql-header') as html.SelectElement?;
-    final sizeSelectAfter =
-      fixture.rootElement.querySelector('select.ql-size') as html.SelectElement?;
-    final colorSelectAfter =
-      fixture.rootElement.querySelector('select.ql-color') as html.SelectElement?;
+        fixture.rootElement.querySelector('.ql-bold') as html.ButtonElement?;
+    final headerSelectAfter = fixture.rootElement
+        .querySelector('select.ql-header') as html.SelectElement?;
+    final sizeSelectAfter = fixture.rootElement.querySelector('select.ql-size')
+        as html.SelectElement?;
+    final colorSelectAfter = fixture.rootElement
+        .querySelector('select.ql-color') as html.SelectElement?;
     final backgroundSelectAfter = fixture.rootElement
-      .querySelector('select.ql-background') as html.SelectElement?;
+        .querySelector('select.ql-background') as html.SelectElement?;
 
-    expect(identical(orderedButtonBefore, orderedButtonAfter), isTrue);
-    expect(identical(alignLeftButtonBefore, alignLeftButtonAfter), isTrue);
-    expect(identical(headerSelectBefore, headerSelectAfter), isTrue);
-    expect(identical(sizeSelectBefore, sizeSelectAfter), isTrue);
-    expect(identical(colorSelectBefore, colorSelectAfter), isTrue);
-    expect(identical(backgroundSelectBefore, backgroundSelectAfter), isTrue);
+    expect(orderedButtonBefore == orderedButtonAfter, isTrue);
+    expect(alignLeftButtonBefore == alignLeftButtonAfter, isTrue);
+    expect(headerSelectBefore == headerSelectAfter, isTrue);
+    expect(sizeSelectBefore == sizeSelectAfter, isTrue);
+    expect(colorSelectBefore == colorSelectAfter, isTrue);
+    expect(backgroundSelectBefore == backgroundSelectAfter, isTrue);
     expect(orderedButtonAfter!.disabled, isTrue);
     expect(alignLeftButtonAfter!.disabled, isTrue);
     expect(headerSelectAfter!.disabled, isTrue);
@@ -294,19 +298,19 @@ void main() {
     await _settle(fixture);
 
     final orderedButtonReset = fixture.rootElement
-      .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
-    final headerSelectReset =
-      fixture.rootElement.querySelector('select.ql-header') as html.SelectElement?;
+        .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
+    final headerSelectReset = fixture.rootElement
+        .querySelector('select.ql-header') as html.SelectElement?;
 
-    expect(identical(orderedButtonBefore, orderedButtonReset), isTrue);
-    expect(identical(headerSelectBefore, headerSelectReset), isTrue);
+    expect(orderedButtonBefore == orderedButtonReset, isTrue);
+    expect(headerSelectBefore == headerSelectReset, isTrue);
     expect(orderedButtonReset!.disabled, isFalse);
     expect(headerSelectReset!.disabled, isFalse);
     expect(
       (orderedButtonReset.parent as html.Element).classes,
       isNot(contains('li-quill-text-editor__toolbar-item--disabled')),
     );
-    });
+  });
 
   test('rebuilds the editor destructively when toolbar structure changes',
       () async {
@@ -372,7 +376,7 @@ void main() {
         .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
 
     expect(fakeBridge.createdEditors, hasLength(1));
-    expect(identical(orderedButtonBefore, orderedButtonAfter), isTrue);
+    expect(orderedButtonBefore == orderedButtonAfter, isTrue);
     expect(
       (orderedButtonAfter!.parent as html.Element).getAttribute('hidden'),
       isNotNull,
@@ -383,7 +387,8 @@ void main() {
     );
   });
 
-  test('removes selected toolbar controls when hidden ids change in destructive mode',
+  test(
+      'removes selected toolbar controls when hidden ids change in destructive mode',
       () async {
     final fakeBridge = FakeLiQuillTextEditorBridge();
     setLiQuillTextEditorBridgeForTesting(fakeBridge);
@@ -418,7 +423,8 @@ void main() {
     expect(host.editor!.getPlainText(), contains('ocultado'));
   });
 
-  test('neutralizes legacy list-marker pseudos from the theme-bundled Quill CSS',
+  test(
+      'neutralizes legacy list-marker pseudos from the theme-bundled Quill CSS',
       () async {
     final legacyStyle = _appendHeadStyle('''
       .ql-editor ol {
@@ -491,7 +497,7 @@ void main() {
         width: 1.2em;
       }
     ''');
-    addTearDown(legacyStyle.remove);
+    addTearDown(() => legacyStyle.remove());
 
     final fakeBridge = FakeLiQuillTextEditorBridge();
     setLiQuillTextEditorBridgeForTesting(fakeBridge);
@@ -500,14 +506,15 @@ void main() {
     await _settle(fixture);
 
     final editorSurface =
-      fixture.rootElement.querySelector('.li-quill-text-editor__editor');
+        fixture.rootElement.querySelector('.li-quill-text-editor__editor');
     expect(editorSurface, isNotNull);
 
-    final qlEditor = html.DivElement()..classes.add('ql-editor');
+    final qlEditor = html.createDivElement()..classes.add('ql-editor');
 
-    final orderedList = html.OListElement();
-    final orderedItem = html.LIElement()..setAttribute('data-list', 'ordered');
-    final orderedUi = html.SpanElement()
+    final orderedList = html.createOListElement();
+    final orderedItem = html.createLIElement()
+      ..setAttribute('data-list', 'ordered');
+    final orderedUi = html.createSpanElement()
       ..classes.add('ql-ui')
       ..setAttribute('contenteditable', 'false');
     orderedItem
@@ -515,9 +522,10 @@ void main() {
       ..appendText('Primeiro item');
     orderedList.append(orderedItem);
 
-    final bulletList = html.UListElement();
-    final bulletItem = html.LIElement()..setAttribute('data-list', 'bullet');
-    final bulletUi = html.SpanElement()
+    final bulletList = html.createUListElement();
+    final bulletItem = html.createLIElement()
+      ..setAttribute('data-list', 'bullet');
+    final bulletUi = html.createSpanElement()
       ..classes.add('ql-ui')
       ..setAttribute('contenteditable', 'false');
     bulletItem
@@ -525,11 +533,11 @@ void main() {
       ..appendText('Item com marcador');
     bulletList.append(bulletItem);
 
-    final rtlList = html.OListElement();
-    final rtlItem = html.LIElement()
+    final rtlList = html.createOListElement();
+    final rtlItem = html.createLIElement()
       ..setAttribute('data-list', 'ordered')
       ..classes.add('ql-direction-rtl');
-    final rtlUi = html.SpanElement()
+    final rtlUi = html.createSpanElement()
       ..classes.add('ql-ui')
       ..setAttribute('contenteditable', 'false');
     rtlItem
@@ -600,22 +608,20 @@ void main() {
   });
 }
 
-Future<void> _settle(NgTestFixture<QuillTextEditorTestHostComponent> fixture) async {
+Future<void> _settle(
+    NgTestFixture<QuillTextEditorTestHostComponent> fixture) async {
   await fixture.update();
   await Future<void>.delayed(Duration.zero);
   await fixture.update();
 }
 
 html.StyleElement _appendHeadStyle(String cssText) {
-  final style = html.StyleElement()..text = cssText;
+  final style = html.createStyleElement()..text = cssText;
   html.document.head!.append(style);
   return style;
 }
 
-html.CssStyleDeclaration _pseudoStyle(html.Element element, String pseudoElement) {
-  return js_util.callMethod<html.CssStyleDeclaration>(
-    html.window,
-    'getComputedStyle',
-    <Object?>[element, pseudoElement],
-  );
+html.CssStyleDeclaration _pseudoStyle(
+    html.Element element, String pseudoElement) {
+  return html.window.getComputedStyle(element, pseudoElement);
 }

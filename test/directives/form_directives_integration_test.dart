@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -195,7 +195,7 @@ void main() {
     final feedback = input.parent?.querySelector('.invalid-feedback');
 
     expect(host.requiredNativeValid, isFalse);
-    expect(html.document.activeElement, same(input));
+    expect(html.document.activeElement == input, isTrue);
     expect(input.classes.contains('is-invalid'), isTrue);
     expect(input.getAttribute('aria-invalid'), 'true');
     expect(feedback, isNotNull);
@@ -203,8 +203,8 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'ok';
-      input.dispatchEvent(html.Event('input', canBubble: true));
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -225,7 +225,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '9.5';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -244,7 +244,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '2024-06-06T08:30';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -266,7 +266,7 @@ Future<void> _settle(
 
 void _typeSequentially(html.InputElement input, String text) {
   for (final char in text.split('')) {
-    input.value = '${input.value ?? ''}$char';
-    input.dispatchEvent(html.Event('input', canBubble: true));
+    input.value = '${input.value}$char';
+    input.dispatchEvent(html.liEvent('input', canBubble: true));
   }
 }

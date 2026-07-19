@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 enum SweetAlertType { success, error, warning, info, question }
 
@@ -439,7 +440,7 @@ class SweetAlert {
     required FutureOr<T?> Function(_SweetAlertInstance<T> instance) onConfirm,
   }) {
     final alertId = _sequence++;
-    final root = html.DivElement()
+    final root = html.createDivElement()
       ..id = 'swal2-container-$alertId'
       ..classes.addAll(<String>['swal2-container', _positionClass(position)])
       ..setAttribute('data-label', 'li_sa_root')
@@ -456,7 +457,7 @@ class SweetAlert {
       root.style.background = 'transparent';
     }
 
-    final popup = html.DivElement()
+    final popup = html.createDivElement()
       ..classes.addAll(<String>[
         'swal2-popup',
         toast ? 'swal2-toast' : 'swal2-modal',
@@ -464,14 +465,14 @@ class SweetAlert {
       ])
       ..tabIndex = -1
       ..style.display = 'grid'
-      ..attributes['role'] = toast ? 'alert' : 'dialog'
-      ..attributes['aria-live'] = toast ? 'polite' : 'assertive'
+      ..setAttribute('role', toast ? 'alert' : 'dialog')
+      ..setAttribute('aria-live', toast ? 'polite' : 'assertive')
       ..setAttribute('data-label', 'li_sa_popup')
       ..setAttribute('data-value', alertId.toString())
       ..setAttribute('data-open', 'true')
       ..setAttribute('data-toast', toast ? 'true' : 'false');
     if (!toast) {
-      popup.attributes['aria-modal'] = 'true';
+      popup.setAttribute('aria-modal', 'true');
     }
     popup.classes.addAll(_classNames(popupClass));
     if (type != null) {
@@ -502,10 +503,10 @@ class SweetAlert {
     }
 
     if (showCloseButton) {
-      final closeButton = html.ButtonElement()
+      final closeButton = html.createButtonElement()
         ..type = 'button'
         ..classes.add('swal2-close')
-        ..attributes['aria-label'] = 'Close'
+        ..setAttribute('aria-label', 'Close')
         ..setAttribute('data-label', 'li_sa_close')
         ..setAttribute('data-value', alertId.toString())
         ..text = '×';
@@ -514,8 +515,8 @@ class SweetAlert {
 
     final titleId = 'swal2-title-$alertId';
     final htmlContainerId = 'swal2-html-container-$alertId';
-    popup.attributes['aria-labelledby'] = titleId;
-    popup.attributes['aria-describedby'] = htmlContainerId;
+    popup.setAttribute('aria-labelledby', titleId);
+    popup.setAttribute('aria-describedby', htmlContainerId);
 
     if (type != null) {
       popup.append(_createIcon(type));
@@ -533,7 +534,7 @@ class SweetAlert {
     }
 
     if (title != null && title.trim().isNotEmpty) {
-      final titleElement = html.HeadingElement.h2()
+      final titleElement = html.createHeadingElement(2)
         ..classes.add('swal2-title')
         ..id = titleId
         ..setAttribute('data-label', 'li_sa_title')
@@ -542,19 +543,19 @@ class SweetAlert {
       popup.append(titleElement);
     }
 
-    final htmlContainer = html.DivElement()
+    final htmlContainer = html.createDivElement()
       ..classes.add('swal2-html-container')
       ..id = htmlContainerId
       ..setAttribute('data-label', 'li_sa_body')
       ..setAttribute('data-value', alertId.toString());
     if (message != null && message.trim().isNotEmpty) {
-      final bodyText = html.DivElement()
+      final bodyText = html.createDivElement()
         ..text = message
         ..style.whiteSpace = 'pre-line';
       htmlContainer.append(bodyText);
     }
     if (htmlContent != null && htmlContent.trim().isNotEmpty) {
-      final htmlBlock = html.DivElement();
+      final htmlBlock = html.createDivElement();
       htmlBlock.setInnerHtml(
         htmlContent,
         treeSanitizer: html.NodeTreeSanitizer.trusted,
@@ -563,11 +564,11 @@ class SweetAlert {
     }
 
     htmlContainer.style.display =
-        htmlContainer.children.isNotEmpty ? 'block' : 'none';
+        htmlContainer.children.length != 0 ? 'block' : 'none';
     popup.append(htmlContainer);
 
     html.Element? inputElement;
-    final validationMessage = html.DivElement()
+    final validationMessage = html.createDivElement()
       ..classes.add('swal2-validation-message')
       ..setAttribute('data-label', 'li_sa_validation')
       ..setAttribute('data-value', alertId.toString())
@@ -591,7 +592,7 @@ class SweetAlert {
     }
 
     if (footer != null && footer.trim().isNotEmpty) {
-      final footerElement = html.DivElement()
+      final footerElement = html.createDivElement()
         ..classes.add('swal2-footer')
         ..setAttribute('data-label', 'li_sa_footer')
         ..setAttribute('data-value', alertId.toString())
@@ -602,10 +603,10 @@ class SweetAlert {
     html.DivElement? progressContainer;
     html.DivElement? progressBar;
     if (timer != null && timerProgressBar) {
-      progressContainer = html.DivElement()
+      progressContainer = html.createDivElement()
         ..classes.add('swal2-timer-progress-bar-container')
         ..setAttribute('data-label', 'li_sa_progress');
-      progressBar = html.DivElement()
+      progressBar = html.createDivElement()
         ..classes.add('swal2-timer-progress-bar')
         ..setAttribute('data-label', 'li_sa_progress_bar');
       progressBar.style.width = '100%';
@@ -614,18 +615,18 @@ class SweetAlert {
     }
 
     if (showConfirmButton || showCancelButton) {
-      final actions = html.DivElement()
+      final actions = html.createDivElement()
         ..classes.add('swal2-actions')
         ..setAttribute('data-label', 'li_sa_actions')
         ..setAttribute('data-value', alertId.toString());
-      actions.append(html.DivElement()
+      actions.append(html.createDivElement()
         ..classes.add('swal2-loader')
         ..setAttribute('data-label', 'li_sa_loader')
         ..setAttribute('data-value', alertId.toString()));
       final buttons = <html.Element>[];
       if (showConfirmButton) {
         buttons.add(
-          html.ButtonElement()
+          html.createButtonElement()
             ..type = 'button'
             ..classes.addAll(
               <String>[
@@ -643,7 +644,7 @@ class SweetAlert {
       }
       if (showCancelButton) {
         buttons.add(
-          html.ButtonElement()
+          html.createButtonElement()
             ..type = 'button'
             ..classes.addAll(
               <String>[
@@ -660,9 +661,13 @@ class SweetAlert {
         );
       }
       if (reverseButtons && buttons.length > 1) {
-        actions.children.addAll(buttons.reversed);
+        for (final button in buttons.reversed) {
+          actions.append(button);
+        }
       } else {
-        actions.children.addAll(buttons);
+        for (final button in buttons) {
+          actions.append(button);
+        }
       }
       popup.append(actions);
     }
@@ -694,7 +699,7 @@ class SweetAlert {
   }
 
   static html.Element _createIcon(SweetAlertType type) {
-    final icon = html.DivElement()
+    final icon = html.createDivElement()
       ..classes.addAll(
           <String>['swal2-icon', 'swal2-${_iconName(type)}', 'swal2-icon-show'])
       ..setAttribute('data-label', 'li_sa_icon')
@@ -703,37 +708,39 @@ class SweetAlert {
 
     switch (type) {
       case SweetAlertType.success:
+        icon.append(html.createDivElement()
+          ..classes.add('swal2-success-circular-line-left'));
         icon.append(
-            html.DivElement()..classes.add('swal2-success-circular-line-left'));
-        icon.append(html.SpanElement()..classes.add('swal2-success-line-tip'));
-        icon.append(html.SpanElement()..classes.add('swal2-success-line-long'));
-        icon.append(html.DivElement()..classes.add('swal2-success-ring'));
-        icon.append(html.DivElement()..classes.add('swal2-success-fix'));
-        icon.append(html.DivElement()
+            html.createSpanElement()..classes.add('swal2-success-line-tip'));
+        icon.append(
+            html.createSpanElement()..classes.add('swal2-success-line-long'));
+        icon.append(html.createDivElement()..classes.add('swal2-success-ring'));
+        icon.append(html.createDivElement()..classes.add('swal2-success-fix'));
+        icon.append(html.createDivElement()
           ..classes.add('swal2-success-circular-line-right'));
         break;
       case SweetAlertType.error:
-        final xMark = html.SpanElement()..classes.add('swal2-x-mark');
+        final xMark = html.createSpanElement()..classes.add('swal2-x-mark');
         xMark.append(
-          html.SpanElement()..classes.add('swal2-x-mark-line-left'),
+          html.createSpanElement()..classes.add('swal2-x-mark-line-left'),
         );
         xMark.append(
-          html.SpanElement()..classes.add('swal2-x-mark-line-right'),
+          html.createSpanElement()..classes.add('swal2-x-mark-line-right'),
         );
         icon.append(xMark);
         break;
       case SweetAlertType.warning:
-        icon.append(html.DivElement()
+        icon.append(html.createDivElement()
           ..classes.add('swal2-icon-content')
           ..text = '!');
         break;
       case SweetAlertType.info:
-        icon.append(html.DivElement()
+        icon.append(html.createDivElement()
           ..classes.add('swal2-icon-content')
           ..text = 'i');
         break;
       case SweetAlertType.question:
-        icon.append(html.DivElement()
+        icon.append(html.createDivElement()
           ..classes.add('swal2-icon-content')
           ..text = '?');
         break;
@@ -756,7 +763,7 @@ class SweetAlert {
   }) {
     switch (inputType) {
       case SweetAlertInputType.select:
-        final select = html.SelectElement()
+        final select = html.createSelectElement()
           ..classes.add('swal2-select')
           ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
@@ -764,7 +771,7 @@ class SweetAlert {
         final placeholder = inputPlaceholder?.trim();
         if (placeholder != null && placeholder.isNotEmpty) {
           select.append(
-            html.OptionElement()
+            html.createOptionElement()
               ..value = ''
               ..setAttribute('data-label', 'li_sa_input_option')
               ..setAttribute('data-value', '')
@@ -776,7 +783,7 @@ class SweetAlert {
         for (final entry
             in (inputOptions ?? const <String, String>{}).entries) {
           select.append(
-            html.OptionElement()
+            html.createOptionElement()
               ..value = entry.key
               ..setAttribute('data-label', 'li_sa_input_option')
               ..setAttribute('data-value', entry.key)
@@ -787,7 +794,7 @@ class SweetAlert {
         _applyInputConfig(select, inputConfig);
         return select;
       case SweetAlertInputType.radio:
-        final container = html.DivElement()
+        final container = html.createDivElement()
           ..classes.add('swal2-radio')
           ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
@@ -799,11 +806,11 @@ class SweetAlert {
                 : '');
         for (final entry
             in (inputOptions ?? const <String, String>{}).entries) {
-          final label = html.LabelElement()
+          final label = html.createLabelElement()
             ..classes.add('swal2-radio-label')
             ..setAttribute('data-label', 'li_sa_input_radio_label')
             ..setAttribute('data-value', entry.key);
-          final input = html.RadioButtonInputElement()
+          final input = html.createRadioButtonInputElement()
             ..name = 'swal2-radio'
             ..value = entry.key
             ..setAttribute('data-label', 'li_sa_input_radio')
@@ -811,18 +818,18 @@ class SweetAlert {
             ..checked = entry.key == resolvedValue;
           label
             ..append(input)
-            ..append(html.SpanElement()..text = entry.value);
+            ..append(html.createSpanElement()..text = entry.value);
           container.append(label);
         }
         _applyInputConfig(container, inputConfig);
         return container;
       case SweetAlertInputType.checkbox:
-        final checkbox = html.CheckboxInputElement()
+        final checkbox = html.createCheckboxInputElement()
           ..setAttribute('data-label', 'li_sa_input_checkbox')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
           ..checked =
               inputChecked || (inputValue ?? '').toLowerCase() == 'true';
-        final label = html.LabelElement()
+        final label = html.createLabelElement()
           ..classes.add('swal2-checkbox')
           ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
@@ -831,12 +838,12 @@ class SweetAlert {
           ..style.gap = '0.5rem';
         label
           ..append(checkbox)
-          ..append(
-              html.SpanElement()..text = inputLabel ?? inputPlaceholder ?? '');
+          ..append(html.createSpanElement()
+            ..text = inputLabel ?? inputPlaceholder ?? '');
         _applyInputConfig(label, inputConfig);
         return label;
       case SweetAlertInputType.range:
-        final range = html.InputElement()
+        final range = html.createInputElement()
           ..classes.add('swal2-range')
           ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
@@ -856,7 +863,7 @@ class SweetAlert {
         _applyInputConfig(range, inputConfig);
         return range;
       case SweetAlertInputType.textarea:
-        final textarea = html.TextAreaElement()
+        final textarea = html.createTextAreaElement()
           ..classes.addAll(<String>['swal2-textarea', 'form-control'])
           ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
@@ -875,7 +882,7 @@ class SweetAlert {
       case SweetAlertInputType.url:
       case SweetAlertInputType.password:
       case SweetAlertInputType.number:
-        final input = html.InputElement()
+        final input = html.createInputElement()
           ..classes.add('swal2-input')
           ..setAttribute('data-label', 'li_sa_input')
           ..setAttribute('data-value', _inputAutomationTypeName(inputType))
@@ -909,35 +916,37 @@ class SweetAlert {
         in (inputConfig.attributes ?? const <String, String>{}).entries) {
       final attribute = entry.key.trim();
       if (attribute.isNotEmpty) {
-        input.attributes[attribute] = entry.value;
+        input.setAttribute(attribute, entry.value);
       }
     }
 
-    if (input is html.TextAreaElement) {
+    if (input.isA<html.TextAreaElement>()) {
+      final textarea = input as html.TextAreaElement;
       if (inputConfig.rows != null) {
-        input.rows = inputConfig.rows!;
+        textarea.rows = inputConfig.rows!;
       }
       if (inputConfig.cols != null) {
-        input.cols = inputConfig.cols!;
+        textarea.cols = inputConfig.cols!;
       }
       if (inputConfig.minLength != null) {
-        input.minLength = inputConfig.minLength!;
+        textarea.minLength = inputConfig.minLength!;
       }
       if (inputConfig.maxLength != null) {
-        input.maxLength = inputConfig.maxLength!;
+        textarea.maxLength = inputConfig.maxLength!;
       }
       return;
     }
 
-    if (input is html.InputElement) {
+    if (input.isA<html.InputElement>()) {
+      final field = input as html.InputElement;
       if (inputConfig.minLength != null) {
-        input.minLength = inputConfig.minLength!;
+        field.minLength = inputConfig.minLength!;
       }
       if (inputConfig.maxLength != null) {
-        input.maxLength = inputConfig.maxLength!;
+        field.maxLength = inputConfig.maxLength!;
       }
       if (inputConfig.autocomplete != null) {
-        input.autocomplete = inputConfig.autocomplete!;
+        field.autocomplete = inputConfig.autocomplete!;
       }
     }
   }
@@ -1028,7 +1037,7 @@ class SweetAlert {
     num? height,
     String alt = '',
   }) {
-    return html.ImageElement(src: imageUrl)
+    return html.createImageElement(src: imageUrl)
       ..classes.add('swal2-image')
       ..setAttribute('data-label', 'li_sa_image')
       ..setAttribute('data-value', imageUrl)
@@ -1252,8 +1261,8 @@ class _SweetAlertInstance<T> {
       final defaultFocus = popup.querySelector('.swal2-confirm') ??
           popup.querySelector('.swal2-cancel') ??
           popup.querySelector('.swal2-close');
-      if (defaultFocus is html.HtmlElement) {
-        defaultFocus.focus();
+      if ((defaultFocus?.isA<html.HtmlElement>() ?? false)) {
+        defaultFocus!.focus();
       }
     });
   }
@@ -1312,27 +1321,28 @@ class _SweetAlertInstance<T> {
 
   String? readInputValue() {
     final element = inputElement;
-    if (element is html.InputElement) {
-      if (element.type == 'checkbox') {
-        return element.checked == true ? 'true' : 'false';
+    if ((element?.isA<html.InputElement>() ?? false)) {
+      final input = element as html.InputElement;
+      if (input.type == 'checkbox') {
+        return input.checked == true ? 'true' : 'false';
       }
-      return element.value;
+      return input.value;
     }
-    if (element is html.SelectElement) {
-      return element.value;
+    if ((element?.isA<html.SelectElement>() ?? false)) {
+      return (element as html.SelectElement).value;
     }
-    if (element is html.TextAreaElement) {
-      return element.value;
+    if ((element?.isA<html.TextAreaElement>() ?? false)) {
+      return (element as html.TextAreaElement).value;
     }
-    if (element is html.LabelElement) {
-      final checkbox =
-          element.querySelector('input[type="checkbox"]') as html.InputElement?;
+    if ((element?.isA<html.LabelElement>() ?? false)) {
+      final checkbox = element!.querySelector('input[type="checkbox"]')
+          as html.InputElement?;
       if (checkbox != null) {
         return checkbox.checked == true ? 'true' : 'false';
       }
     }
-    if (element is html.DivElement) {
-      final selected = element.querySelector('input[type="radio"]:checked')
+    if ((element?.isA<html.DivElement>() ?? false)) {
+      final selected = element!.querySelector('input[type="radio"]:checked')
           as html.InputElement?;
       if (selected != null) {
         return selected.value;
@@ -1343,15 +1353,15 @@ class _SweetAlertInstance<T> {
 
   html.HtmlElement? _resolveInputFocusTarget() {
     final element = inputElement;
-    if (element is html.InputElement ||
-        element is html.SelectElement ||
-        element is html.TextAreaElement) {
+    if ((element?.isA<html.InputElement>() ?? false) ||
+        (element?.isA<html.SelectElement>() ?? false) ||
+        (element?.isA<html.TextAreaElement>() ?? false)) {
       return element as html.HtmlElement;
     }
 
     final candidate = element?.querySelector('input, select, textarea');
-    if (candidate is html.HtmlElement) {
-      return candidate;
+    if ((candidate?.isA<html.HtmlElement>() ?? false)) {
+      return candidate as html.HtmlElement;
     }
 
     return null;

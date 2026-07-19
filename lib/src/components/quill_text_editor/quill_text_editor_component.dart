@@ -1,7 +1,7 @@
 //C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_text_editor_component.dart
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 
@@ -788,8 +788,8 @@ class LiQuillTextEditorComponent
   String? errorMessage;
 
   quill.Quill? get quillInstance {
-    final rawInstance = _quill?.rawInstance;
-    return rawInstance is quill.Quill ? rawInstance : null;
+    final handle = _quill;
+    return handle is LiJsQuillTextEditorHandle ? handle.quillInstance : null;
   }
 
   bool get isReady => _quill != null;
@@ -933,8 +933,8 @@ class LiQuillTextEditorComponent
     final editor = editorContainer?.querySelector('.ql-editor');
     final resolved = resolvedName;
     if (resolved == null) {
-      editorContainer?.attributes.remove('name');
-      editor?.attributes.remove('name');
+      editorContainer?.removeAttribute('name');
+      editor?.removeAttribute('name');
       return;
     }
 

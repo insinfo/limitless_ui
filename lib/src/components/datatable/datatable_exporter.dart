@@ -1,7 +1,6 @@
 //datatable_exporter.dart
 import 'dart:async';
-import 'dart:html';
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart';
 import 'dart:math' as math;
 
 import 'package:intl/intl.dart';
@@ -383,7 +382,7 @@ class DatatableExporter {
 
   static String _plainTextFromColumn(DatatableCol col) {
     if (col.htmlElement != null) {
-      return col.htmlElement!.text?.trim() ?? '';
+      return col.htmlElement!.text.trim();
     }
 
     final raw = col.value.trim();
@@ -394,8 +393,7 @@ class DatatableExporter {
     final container = DivElement()
       ..setInnerHtml(raw, treeSanitizer: NodeTreeSanitizer.trusted);
 
-    final normalized =
-        container.text?.replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';
+    final normalized = container.text.replaceAll(RegExp(r'\s+'), ' ').trim();
 
     return normalized.isNotEmpty ? normalized : raw;
   }
@@ -595,10 +593,10 @@ class DatatableExporter {
 
   static void _downloadBytes(
       List<int> bytes, String mimeType, String fileName) {
-    final blob = Blob(<Object>[bytes], mimeType);
+    final blob = liBlob(<Object>[bytes], mimeType);
     final url = Url.createObjectUrlFromBlob(blob);
 
-    final anchor = AnchorElement(href: url)
+    final anchor = createAnchorElement(href: url)
       ..download = fileName
       ..style.display = 'none';
 
@@ -609,13 +607,13 @@ class DatatableExporter {
   }
 
   static void _openForPrint(List<int> bytes, String mimeType) {
-    final blob = Blob(<Object>[bytes], mimeType);
+    final blob = liBlob(<Object>[bytes], mimeType);
     final url = Url.createObjectUrlFromBlob(blob);
     final win = window.open(url, '_blank');
 
     Timer(const Duration(milliseconds: 300), () {
-      js_util.callMethod(win, 'focus', const <Object>[]);
-      js_util.callMethod(win, 'print', const <Object>[]);
+      win?.focus();
+      win?.print();
       Url.revokeObjectUrl(url);
     });
   }

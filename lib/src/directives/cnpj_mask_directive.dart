@@ -1,4 +1,5 @@
-import 'dart:html';
+import 'dart:js_interop';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngx_dart/angular.dart';
@@ -17,14 +18,14 @@ class LiCnpjMaskDirective implements OnDestroy {
   var _lastValue = MaskedTextValue.collapsed('');
 
   LiCnpjMaskDirective(this._el) {
-    if (_el is! InputElement) {
+    if (!_el.isA<InputElement>()) {
       throw Exception(
           'LiCnpjMaskDirective has to be applied to an InputElement');
     }
-    inputElement = _el;
-    _lastValue = MaskedTextValue.collapsed(inputElement.value ?? '');
-    _inputListener = (event) => _onChange();
-    inputElement.addEventListener('input', _inputListener, true);
+    inputElement = _el as InputElement;
+    _lastValue = MaskedTextValue.collapsed(inputElement.value);
+    _inputListener = ((Event event) => _onChange()).toJS;
+    inputElement.addEventListener('input', _inputListener, true.toJS);
   }
 
   /// Applies the CNPJ mask to the current input value.
@@ -32,7 +33,7 @@ class LiCnpjMaskDirective implements OnDestroy {
     final result = _mask.applyEdit(
       oldValue: _lastValue,
       newValue: MaskedTextValue(
-        text: inputElement.value ?? '',
+        text: inputElement.value,
         selectionStart: inputElement.selectionStart,
         selectionEnd: inputElement.selectionEnd,
       ),
@@ -45,6 +46,6 @@ class LiCnpjMaskDirective implements OnDestroy {
 
   @override
   void ngOnDestroy() {
-    inputElement.removeEventListener('input', _inputListener, true);
+    inputElement.removeEventListener('input', _inputListener, true.toJS);
   }
 }

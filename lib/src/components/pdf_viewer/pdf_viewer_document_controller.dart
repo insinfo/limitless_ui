@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:typed_data';
 
 import 'package:ngx_dart/angular.dart';
@@ -113,11 +113,11 @@ class PdfViewerDocumentController {
     final firstPdfPage = await activeDocument.getPageDart(1);
 
     for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
-      final pageDiv = html.DivElement()
+      final pageDiv = html.createDivElement()
         ..className = 'page'
-        ..attributes['data-page-number'] = '$pageNum';
+        ..setAttribute('data-page-number', '$pageNum');
 
-      final wrapper = html.DivElement()..className = 'canvasWrapper';
+      final wrapper = html.createDivElement()..className = 'canvasWrapper';
       pageDiv.append(wrapper);
       viewerElement.append(pageDiv);
 
@@ -154,7 +154,7 @@ class PdfViewerDocumentController {
           continue;
         }
         final pageNum =
-            int.tryParse(entry.target.attributes['data-page-number'] ?? '');
+            int.tryParse(entry.target.getAttribute('data-page-number') ?? '');
         if (pageNum == null) {
           continue;
         }

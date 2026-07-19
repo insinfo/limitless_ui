@@ -1,6 +1,7 @@
+import 'dart:js_interop';
 import 'dart:async';
 
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 
@@ -23,11 +24,11 @@ class LiClickOutsideDirective implements OnDestroy, OnInit {
 
   void onClick(MouseEvent event) {
     final target = event.target;
-    if (target is! Node) {
+    if (!(target?.isA<Node>() ?? false)) {
       return;
     }
 
-    var clickedInside = nativeElement.contains(target);
+    var clickedInside = nativeElement.contains(target as Node?);
     if (!clickedInside) {
       liClickOutsideSC.add(event);
     }

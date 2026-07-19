@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 
@@ -28,7 +28,7 @@ class LiIndexedNameDirective {
     final index = _index;
 
     if (baseName == null || baseName.isEmpty || index == null) {
-      _element.attributes.remove('name');
+      _element.removeAttribute('name');
       return;
     }
 

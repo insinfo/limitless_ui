@@ -7,7 +7,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -54,7 +54,7 @@ void main() {
       ).create();
       final input = _input(fixture);
 
-      final paste = html.Event('paste', canBubble: true, cancelable: true);
+      final paste = html.liEvent('paste', canBubble: true, cancelable: true);
       final allowed = input.dispatchEvent(paste);
 
       expect(allowed, isTrue);
@@ -175,7 +175,7 @@ html.InputElement _input(NgTestFixture<dynamic> fixture) {
 void _setRawInput(html.InputElement input, String value) {
   input.value = value;
   input.setSelectionRange(value.length, value.length);
-  input.dispatchEvent(html.Event('input', canBubble: true));
+  input.dispatchEvent(html.liEvent('input', canBubble: true));
 }
 
 Future<void> _flushScheduledValidation(NgTestFixture<dynamic> fixture) async {

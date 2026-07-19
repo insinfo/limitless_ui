@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -90,7 +90,7 @@ void main() {
     final option =
         host.filter!.options.firstWhere((option) => option.value == 1);
     await fixture.update((_) {
-      host.filter!.toggleOptionFromUi(option, html.MouseEvent('click'));
+      host.filter!.toggleOptionFromUi(option, html.liMouseEvent('click'));
     });
     await _settle(fixture);
 

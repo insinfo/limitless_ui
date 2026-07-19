@@ -1,11 +1,20 @@
 import 'dart:convert';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 import '../datatable/datatable_demo_service.dart';
 import 'person_registration_demo_service.dart';
+
+List<html.File> _filesFromValue(Object? value) {
+  if (value is! Iterable<Object?>) return const <html.File>[];
+
+  return <html.File>[
+    for (final item in value)
+      if (html.liFileOrNull(item) case final file?) file,
+  ];
+}
 
 class PersonRegistrationFormState {
   String fullName = '';
@@ -480,11 +489,7 @@ if (!result.success) {
   late final List<LiRule> attachmentRules = <LiRule>[
     LiRule.custom(
       (value) {
-        final files = value is List<html.File>
-            ? value
-            : (value is Iterable
-                ? value.whereType<html.File>().toList(growable: false)
-                : const <html.File>[]);
+        final files = _filesFromValue(value);
 
         final hasPdf = files.any((file) {
           final name = file.name.toLowerCase();
@@ -1103,9 +1108,7 @@ if (!result.success) {
         draft.notes = '$value';
         break;
       case 'attachments':
-        draft.attachments = value is List<html.File>
-            ? List<html.File>.from(value)
-            : <html.File>[];
+        draft.attachments = _filesFromValue(value);
         break;
     }
     clearFieldError(errorField ?? field);
@@ -1243,7 +1246,7 @@ if (!result.success) {
   }
 
   html.File _createDemoFile(String name, String type, String content) {
-    return html.File(<Object>[content], name, <String, Object>{'type': type});
+    return html.liFile(<Object>[content], name, type: type);
   }
 
   void _clearAllErrors() {

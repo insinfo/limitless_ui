@@ -5,6 +5,7 @@
 @TestOn('browser')
 library;
 
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';

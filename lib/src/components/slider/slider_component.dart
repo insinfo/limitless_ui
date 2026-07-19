@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -157,7 +157,8 @@ class LiSliderComponent
       return normalized;
     }
 
-    final documentDirection = html.document.documentElement?.dir ?? '';
+    final documentDirection =
+        (html.document.documentElement as html.HtmlElement?)?.dir ?? '';
     final normalizedDocumentDirection = documentDirection.trim().toLowerCase();
     if (normalizedDocumentDirection == 'rtl') {
       return 'rtl';
@@ -628,7 +629,8 @@ class LiSliderComponent
     return _offsetsToPositionPercent(
       clientX: event.client.x.toDouble(),
       clientY: event.client.y.toDouble(),
-      bounds: bounds,
+      bounds:
+          html.Rectangle(bounds.left, bounds.top, bounds.width, bounds.height),
     );
   }
 
@@ -639,18 +641,19 @@ class LiSliderComponent
       return null;
     }
     return _offsetsToPositionPercent(
-      clientX: touch.client.x.toDouble(),
-      clientY: touch.client.y.toDouble(),
-      bounds: bounds,
+      clientX: touch.clientX.toDouble(),
+      clientY: touch.clientY.toDouble(),
+      bounds:
+          html.Rectangle(bounds.left, bounds.top, bounds.width, bounds.height),
     );
   }
 
   html.Touch? _resolveTouch(html.TouchEvent event) {
-    if (event.changedTouches != null && event.changedTouches!.isNotEmpty) {
-      return event.changedTouches![0];
+    if (event.changedTouches.isNotEmpty) {
+      return event.changedTouches[0];
     }
-    if (event.touches != null && event.touches!.isNotEmpty) {
-      return event.touches![0];
+    if (event.touches.isNotEmpty) {
+      return event.touches[0];
     }
     return null;
   }

@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -123,16 +123,16 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
-    final runAction = fixture.rootElement.querySelectorAll(
+    final runAction = fixture.rootElement.queryAll(
       '.fab-menu-inner .btn',
     )[0] as html.ButtonElement;
 
     await fixture.update((_) {
-      runAction.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      runAction.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -161,7 +161,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -170,7 +170,7 @@ void main() {
     expect(link, isNotNull);
 
     await fixture.update((_) {
-      link.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      link.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -191,7 +191,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleTemplate(fixture);
 
@@ -237,7 +237,7 @@ void _injectFabIconStyles() {
     return;
   }
 
-  final style = html.StyleElement()
+  final style = html.createStyleElement()
     ..id = 'fab-icon-style-test'
     ..text = '''
 .fab-menu-btn i {

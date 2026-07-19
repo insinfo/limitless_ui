@@ -65,7 +65,8 @@ class PdfViewerSignatureDemoPanelComponent implements OnDestroy {
   final StreamController<PdfViewerDemoSignatureEntry> _entryOpenController =
       StreamController<PdfViewerDemoSignatureEntry>.broadcast();
 
-  bool get isQuickValidationActive => activeMode == PdfViewerDemoValidationMode.quick;
+  bool get isQuickValidationActive =>
+      activeMode == PdfViewerDemoValidationMode.quick;
 
   bool get isAdvancedValidationActive =>
       activeMode == PdfViewerDemoValidationMode.advanced;
@@ -82,8 +83,7 @@ class PdfViewerSignatureDemoPanelComponent implements OnDestroy {
       ? 'Escolha uma validação para exibir os detalhes das assinaturas.'
       : 'Choose a validation mode to display the signature details.';
 
-  String get integrityOkLabel =>
-      isPt ? 'Documento íntegro' : 'Document intact';
+  String get integrityOkLabel => isPt ? 'Documento íntegro' : 'Document intact';
 
   String get integrityFailLabel => isPt
       ? 'Documento alterado ou corrompido após assinatura'
@@ -100,8 +100,7 @@ class PdfViewerSignatureDemoPanelComponent implements OnDestroy {
   String get approvedLabel =>
       isPt ? 'Assinatura aprovada' : 'Signature approved';
 
-  String get invalidLabel =>
-      isPt ? 'Assinatura inválida' : 'Signature invalid';
+  String get invalidLabel => isPt ? 'Assinatura inválida' : 'Signature invalid';
 
   String get elapsedPrefix =>
       isPt ? 'Tempo total da validação:' : 'Validation total time:';

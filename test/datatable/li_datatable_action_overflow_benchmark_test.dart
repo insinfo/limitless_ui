@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -152,7 +152,7 @@ void main() {
     expect(result.averageMilliseconds, lessThanOrEqualTo(120));
     expect(result.p95Milliseconds, lessThanOrEqualTo(220));
     expect(
-      html.document.body?.querySelectorAll(
+      html.document.body?.queryAll(
         '[data-li-datatable-action-overflow-menu="true"].show',
       ),
       isEmpty,
@@ -179,7 +179,7 @@ Future<DatatableActionOverflowBenchmarkResult> _runOverflowBenchmark({
     expect(openMenu, isNotNull);
     expect(openMenu!.classes.contains('show'), isTrue);
     expect(
-      openMenu.querySelectorAll('button[data-li-datatable-action="true"]'),
+      openMenu.queryAll('button[data-li-datatable-action="true"]'),
       hasLength(2),
     );
 
@@ -206,13 +206,11 @@ Future<DatatableActionOverflowBenchmarkResult> _runOverflowBenchmark({
     averageMilliseconds: totalMilliseconds / cycles,
     p95Milliseconds: sortedDurations[p95Index],
     maxMilliseconds: sortedDurations.last,
-    portalHosts: html.document.body
-            ?.querySelectorAll('.DatatableActionOverflowPortal')
-            .length ??
-        0,
+    portalHosts:
+        html.document.body?.queryAll('.DatatableActionOverflowPortal').length ??
+            0,
     menuElements: html.document.body
-            ?.querySelectorAll(
-                '[data-li-datatable-action-overflow-menu="true"]')
+            ?.queryAll('[data-li-datatable-action-overflow-menu="true"]')
             .length ??
         0,
   );
@@ -229,7 +227,7 @@ Future<void> _settleBenchmark(
 
 Future<num> _nextAnimationFrameTime() {
   final completer = Completer<num>();
-  html.window.requestAnimationFrame((timestamp) {
+  html.window.liRequestAnimationFrame((timestamp) {
     completer.complete(timestamp);
   });
   return completer.future;

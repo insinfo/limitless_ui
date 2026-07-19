@@ -27,7 +27,8 @@ class QuillTextEditorPageComponent {
   static const String importSnippet =
       '''import 'package:limitless_ui/quill_text_editor.dart';''';
 
-  static const String assetSnippet = '''<script src="assets/js/quill/2.0.3/quill.js"></script>
+  static const String assetSnippet =
+      '''<script src="assets/js/quill/2.0.3/quill.js"></script>
 <script src="assets/js/quill_table_better/1.2.3/quill_table_better.js"></script>''';
 
   static const String basicSnippet = '''<li-quill-text-editor
@@ -36,7 +37,8 @@ class QuillTextEditorPageComponent {
     minHeight="20rem">
 </li-quill-text-editor>''';
 
-  static const String disabledItemsSnippet = '''final disabledToolbarItemIds = <String>[
+  static const String disabledItemsSnippet =
+      '''final disabledToolbarItemIds = <String>[
   LiQuillToolbarItems.orderedList.id,
   LiQuillToolbarItems.header.id,
   LiQuillToolbarItems.fontSize.id,
@@ -153,7 +155,8 @@ class QuillTextEditorPageComponent {
   List<String> disabledToolbarItemIds = const <String>[];
   String toolbarEvent = '';
 
-  String _htmlValue = '<p><strong>Limitless UI</strong> editor pronto para notas, pareceres e orientações rápidas.</p>';
+  String _htmlValue =
+      '<p><strong>Limitless UI</strong> editor pronto para notas, pareceres e orientações rápidas.</p>';
   String plainTextPreview = '';
   String deltaPreview = '';
 
@@ -164,8 +167,9 @@ class QuillTextEditorPageComponent {
     _refreshSnapshots();
   }
 
-  LiQuillTextEditorLabels get editorLabels =>
-      isPt ? LiQuillTextEditorLabels.portuguese : LiQuillTextEditorLabels.english;
+  LiQuillTextEditorLabels get editorLabels => isPt
+      ? LiQuillTextEditorLabels.portuguese
+      : LiQuillTextEditorLabels.english;
 
   List<LiQuillToolbarAction> get toolbarActions =>
       isPt ? _toolbarActionsPt : _toolbarActionsEn;
@@ -205,9 +209,8 @@ class QuillTextEditorPageComponent {
   String get defaultStatus => isPt
       ? 'Toolbar pronta para receber ações e templates.'
       : 'Toolbar ready to receive actions and templates.';
-  String get destructiveModeLabel => isPt
-      ? 'Modo destrutivo da toolbar'
-      : 'Destructive toolbar mode';
+  String get destructiveModeLabel =>
+      isPt ? 'Modo destrutivo da toolbar' : 'Destructive toolbar mode';
   String get disableOrderedListLabel =>
       isPt ? 'Desativar lista ordenada' : 'Disable ordered list';
   String get disableHeadingsLabel =>
@@ -227,8 +230,10 @@ class QuillTextEditorPageComponent {
       ? 'Use o modo destrutivo só quando a estrutura real da toolbar precisar mudar em runtime. Ele recria a instância do Quill preservando o conteúdo atual.'
       : 'Use destructive mode only when the real toolbar structure must change at runtime. It recreates the Quill instance while preserving the current content.';
   String get projectedStampLabel => isPt ? 'Carimbo' : 'Stamp';
-  String get projectedSnapshotLabel => isPt ? 'Atualizar snapshot' : 'Refresh snapshot';
-  String get checklistButtonLabel => isPt ? 'Aplicar checklist' : 'Apply checklist';
+  String get projectedSnapshotLabel =>
+      isPt ? 'Atualizar snapshot' : 'Refresh snapshot';
+  String get checklistButtonLabel =>
+      isPt ? 'Aplicar checklist' : 'Apply checklist';
 
   void syncDisabledToolbarItemIds() {
     disabledToolbarItemIds = List<String>.unmodifiable(<String>[
@@ -286,7 +291,9 @@ class QuillTextEditorPageComponent {
     }
     currentEditor.insertTextAtSelection(isPt ? ' [carimbo]' : ' [stamp]');
     captureEditorState(
-      isPt ? 'Carimbo inserido pela template toolbar.' : 'Stamp inserted from the template toolbar.',
+      isPt
+          ? 'Carimbo inserido pela template toolbar.'
+          : 'Stamp inserted from the template toolbar.',
     );
   }
 
@@ -299,14 +306,26 @@ class QuillTextEditorPageComponent {
     final delta = isPt
         ? <String, dynamic>{
             'ops': <Map<String, dynamic>>[
-              <String, dynamic>{'insert': 'Checklist de revisão\n', 'attributes': <String, dynamic>{'header': 2}},
-              <String, dynamic>{'insert': 'Objetivo validado\nPrazo confirmado\nAtores notificados\n'},
+              <String, dynamic>{
+                'insert': 'Checklist de revisão\n',
+                'attributes': <String, dynamic>{'header': 2}
+              },
+              <String, dynamic>{
+                'insert':
+                    'Objetivo validado\nPrazo confirmado\nAtores notificados\n'
+              },
             ],
           }
         : <String, dynamic>{
             'ops': <Map<String, dynamic>>[
-              <String, dynamic>{'insert': 'Review checklist\n', 'attributes': <String, dynamic>{'header': 2}},
-              <String, dynamic>{'insert': 'Goal validated\nDeadline confirmed\nStakeholders notified\n'},
+              <String, dynamic>{
+                'insert': 'Review checklist\n',
+                'attributes': <String, dynamic>{'header': 2}
+              },
+              <String, dynamic>{
+                'insert':
+                    'Goal validated\nDeadline confirmed\nStakeholders notified\n'
+              },
             ],
           };
 
@@ -322,7 +341,8 @@ class QuillTextEditorPageComponent {
       _htmlValue = currentEditor.getHtml();
     }
     _refreshSnapshots();
-    toolbarEvent = message ?? (isPt ? 'Snapshot atualizado.' : 'Snapshot refreshed.');
+    toolbarEvent =
+        message ?? (isPt ? 'Snapshot atualizado.' : 'Snapshot refreshed.');
   }
 
   void _refreshSnapshots() {
@@ -340,7 +360,9 @@ class QuillTextEditorPageComponent {
         .trim();
     deltaPreview = jsonEncode(<String, dynamic>{
       'ops': <Map<String, String>>[
-        <String, String>{'insert': plainTextPreview.isEmpty ? '\n' : '$plainTextPreview\n'},
+        <String, String>{
+          'insert': plainTextPreview.isEmpty ? '\n' : '$plainTextPreview\n'
+        },
       ],
     });
   }

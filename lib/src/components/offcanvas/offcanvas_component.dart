@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -472,7 +473,7 @@ class LiOffcanvasComponent
         _firstFocusable(panel) ??
         panel;
 
-    if (focusTarget is html.HtmlElement) {
+    if (focusTarget.isA<html.HtmlElement>()) {
       focusTarget.focus();
     }
   }
@@ -483,14 +484,15 @@ class LiOffcanvasComponent
         'input:not([disabled]), select:not([disabled]), '
         '[tabindex]:not([tabindex="-1"])';
 
-    for (final candidate in root.querySelectorAll(selector)) {
-      if (candidate is! html.HtmlElement) {
+    for (final candidate in root.queryAll(selector)) {
+      if (!candidate.isA<html.HtmlElement>()) {
         continue;
       }
-      if (candidate.hidden || candidate.tabIndex == -1) {
+      final element = candidate as html.HtmlElement;
+      if (element.hidden.isTruthy.toDart || element.tabIndex == -1) {
         continue;
       }
-      return candidate;
+      return element;
     }
 
     return null;
@@ -499,7 +501,8 @@ class LiOffcanvasComponent
   void _restoreFocus() {
     final previous = _previouslyFocusedElement;
     _previouslyFocusedElement = null;
-    if (previous is html.HtmlElement && previous.isConnected == true) {
+    if ((previous?.isA<html.HtmlElement>() ?? false) &&
+        previous!.isConnected == true) {
       previous.focus();
     }
   }

@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -556,14 +557,14 @@ class LiDatePickerComponent
   }
 
   void handleTriggerKeydown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    if (event.code == 'Enter' ||
-        event.code == 'NumpadEnter' ||
-        event.code == 'Space' ||
-        event.key == ' ') {
+    if ((event as html.KeyboardEvent).code == 'Enter' ||
+        (event).code == 'NumpadEnter' ||
+        (event).code == 'Space' ||
+        (event).key == ' ') {
       event.preventDefault();
       toggleOpen();
     }
@@ -799,14 +800,16 @@ class LiDatePickerComponent
       }
 
       final target = event.target;
-      if (target is! html.Node) {
+      if (!(target?.isA<html.Node>() ?? false)) {
         close();
         _markForCheck();
         return;
       }
 
-      final clickedTrigger = triggerElement?.contains(target) ?? false;
-      final clickedPanel = panelElement?.contains(target) ?? false;
+      final clickedTrigger =
+          triggerElement?.contains(target as html.Node?) ?? false;
+      final clickedPanel =
+          panelElement?.contains(target as html.Node?) ?? false;
 
       if (!clickedTrigger && !clickedPanel) {
         close();

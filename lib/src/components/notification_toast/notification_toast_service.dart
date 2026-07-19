@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:limitless_ui/web_compat.dart' as html;
 
 typedef LiToastSoundPlayer = Future<void> Function();
 
@@ -79,7 +80,7 @@ class LiToastSoundController {
   })  : _customPlayer = customPlayer,
         audio =
             customPlayer == null && (audioSrc != null || audioElement != null)
-                ? (audioElement ?? html.AudioElement())
+                ? (audioElement ?? html.createAudioElement())
                 : null {
     if (audio != null && audioSrc != null) {
       audio!
@@ -115,7 +116,7 @@ class LiToastSoundController {
       }
 
       audio!.currentTime = 0;
-      await audio!.play();
+      await audio!.play().toDart;
     } catch (_) {
       // ignore: política do navegador
     }

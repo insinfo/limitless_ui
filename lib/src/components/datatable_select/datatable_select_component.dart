@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngx_dart/angular.dart';
@@ -816,14 +817,14 @@ class LiDatatableSelectComponent
   }
 
   void handleTriggerKeydown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    if (event.code == 'Enter' ||
-        event.code == 'NumpadEnter' ||
-        event.code == 'Space' ||
-        event.key == ' ') {
+    if ((event as html.KeyboardEvent).code == 'Enter' ||
+        (event).code == 'NumpadEnter' ||
+        (event).code == 'Space' ||
+        (event).key == ' ') {
       event.preventDefault();
       openModal();
     }
@@ -1336,7 +1337,7 @@ class LiDatatableSelectComponent
     }
 
     Future<void>.microtask(() {
-      html.window.requestAnimationFrame((_) {
+      html.window.liRequestAnimationFrame((_) {
         _syncDatatableSelection();
       });
     });

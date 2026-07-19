@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -104,7 +104,7 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Next')!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -112,15 +112,14 @@ void main() {
     expect(host.stepChangeCount, 1);
     expect(host.lastPreviousIndex, 0);
     expect(host.lastCurrentIndex, 1);
-    expect(
-        fixture.rootElement.querySelectorAll('.steps li.done'), hasLength(1));
+    expect(fixture.rootElement.queryAll('.steps li.done'), hasLength(1));
     expect(_pseudoContent(fixture.rootElement, '.steps li.done .number'),
         contains('\\ea30'));
     expect(_currentStepItem(fixture.rootElement)?.text, contains('Profile'));
 
     await fixture.update((_) {
       _findStepLinkByText(fixture.rootElement, 'Account')!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -139,7 +138,7 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Next')!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -165,13 +164,13 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Next')!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Next')!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -180,7 +179,7 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Finish')!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -193,7 +192,7 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Finish')!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -211,8 +210,8 @@ html.Element? _currentBody(html.Element root) {
 }
 
 html.ButtonElement? _findButtonByText(html.Element root, String text) {
-  for (final element in root.querySelectorAll('button')) {
-    if ((element.text ?? '').trim() == text) {
+  for (final element in root.queryAll('button')) {
+    if ((element.text).trim() == text) {
       return element as html.ButtonElement;
     }
   }
@@ -220,8 +219,8 @@ html.ButtonElement? _findButtonByText(html.Element root, String text) {
 }
 
 html.AnchorElement? _findStepLinkByText(html.Element root, String text) {
-  for (final element in root.querySelectorAll('.steps a')) {
-    if ((element.text ?? '').contains(text)) {
+  for (final element in root.queryAll('.steps a')) {
+    if ((element.text).contains(text)) {
       return element as html.AnchorElement;
     }
   }

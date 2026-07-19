@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -14,13 +15,14 @@ class LiFileSelectDirective implements OnDestroy {
   @HostListener('change', ['\$event'])
   void onChange(html.Event event) {
     final input = event.target;
-    if (input is! html.InputElement) {
+    if (!(input?.isA<html.InputElement>() ?? false)) {
       _filesChangeController.add(const <html.File>[]);
       return;
     }
 
     _filesChangeController.add(
-      List<html.File>.from(input.files ?? const <html.File>[]),
+      List<html.File>.from(
+          (input as html.InputElement).files?.toList() ?? const <html.File>[]),
     );
   }
 

@@ -45,7 +45,8 @@ class PdfViewerPageComponent {
   </li-pdf-viewer>
 </div>''';
 
-  static const String customSnippet = '''const labels = LiPdfViewerLabels.portuguese;
+  static const String customSnippet =
+      '''const labels = LiPdfViewerLabels.portuguese;
 const zoomOptions = defaultLiPdfViewerZoomOptionsPt;
 
 final toolbarActions = <LiPdfViewerToolbarAction>[
@@ -99,7 +100,7 @@ final toolbarActions = <LiPdfViewerToolbarAction>[
   bool sidePanelOpen = true;
   List<LiPdfViewerToolbarAction> viewerToolbarActions =
       const <LiPdfViewerToolbarAction>[];
-    PdfViewerDemoValidationMode activeValidationMode =
+  PdfViewerDemoValidationMode activeValidationMode =
       PdfViewerDemoValidationMode.quick;
 
   Uint8List? activePdfBytes;
@@ -207,49 +208,51 @@ final toolbarActions = <LiPdfViewerToolbarAction>[
 
   String get pageTitle => isPt ? 'Utilitários' : 'Utilities';
   String get pageSubtitle => 'PDF Viewer';
-    String get breadcrumb => isPt
+  String get breadcrumb => isPt
       ? 'Visualização genérica de PDF com PDF.js'
       : 'Generic PDF viewing with PDF.js';
-    String get intro => isPt
+  String get intro => isPt
       ? 'LiPdfViewerComponent oferece visualização genérica de PDF com PDF.js, zoom, paginação, fullscreen, impressão e download, sem acoplamento a backend específico ou fluxos de assinatura.'
       : 'LiPdfViewerComponent provides generic PDF viewing with PDF.js, zoom, paging, fullscreen, print, and download without coupling to a specific backend or signature flow.';
-    String get descriptionTitle => isPt ? 'Escopo' : 'Scope';
-    String get descriptionBody => isPt
+  String get descriptionTitle => isPt ? 'Escopo' : 'Scope';
+  String get descriptionBody => isPt
       ? 'O componente aceita `bytes` ou `url`, renderiza via PDF.js e mantém o contrato focado em leitura, navegação e ações de arquivo.'
       : 'The component accepts `bytes` or `url`, renders through PDF.js, and keeps the contract focused on reading, navigation, and file actions.';
-    String get flexibilityTitle => isPt ? 'Customização' : 'Customization';
-    String get flexibilityBody => isPt
+  String get flexibilityTitle => isPt ? 'Customização' : 'Customization';
+  String get flexibilityBody => isPt
       ? 'É possível alternar toolbar, fullscreen, pan, impressão, download, rotação, labels, opções de zoom e caminhos dos assets do PDF.js.'
       : 'You can toggle toolbar, fullscreen, pan, print, download, rotation, labels, zoom options, and PDF.js asset paths.';
-    String get requirementTitle => isPt ? 'Requisito de layout' : 'Layout requirement';
-    String get requirementBody => isPt
+  String get requirementTitle =>
+      isPt ? 'Requisito de layout' : 'Layout requirement';
+  String get requirementBody => isPt
       ? 'O container pai precisa ter altura explícita. No exemplo abaixo, a shell do viewer usa altura fixa para que o canvas e a rolagem funcionem corretamente.'
       : 'The parent container needs an explicit height. In the live example below the viewer shell uses a fixed height so the canvas and scrolling behave correctly.';
-    String get controlsTitle => isPt ? 'Controles da demo' : 'Demo controls';
-    String get controlsBody => isPt
+  String get controlsTitle => isPt ? 'Controles da demo' : 'Demo controls';
+  String get controlsBody => isPt
       ? 'Use estes toggles para validar rapidamente os principais pontos de customização do viewer.'
       : 'Use these toggles to validate the main viewer customization points quickly.';
-      String get extensibilityTitle => isPt ? 'Extensão' : 'Extension';
-      String get extensibilityBody => isPt
-        ? 'A toolbar agora aceita ações via API Dart e templates projetados, e o viewer expõe um painel lateral genérico para cenários como assinatura, inspeção e metadados.'
-        : 'The toolbar now accepts actions through a Dart API and projected templates, and the viewer exposes a generic side panel for signature, inspection, and metadata scenarios.';
-        String get sidePanelTitle => isPt ? 'Assinaturas do documento' : 'Document signatures';
-      String get inspectorSummary => isPt
-        ? 'O painel lateral é genérico: o host decide o conteúdo e pode abri-lo por ação Dart ou botão customizado de template.'
-        : 'The side panel is generic: the host owns the content and can open it through a Dart action or a custom template button.';
-      String get inspectorJumpLabel => isPt ? 'Ir para a página atual' : 'Jump to current page';
-      String get inspectorFitLabel => isPt ? 'Ajustar largura' : 'Fit width';
-      String get inspectorToggleLabel => isPt
-        ? (sidePanelOpen ? 'Ocultar painel' : 'Mostrar painel')
-        : (sidePanelOpen ? 'Hide panel' : 'Show panel');
+  String get extensibilityTitle => isPt ? 'Extensão' : 'Extension';
+  String get extensibilityBody => isPt
+      ? 'A toolbar agora aceita ações via API Dart e templates projetados, e o viewer expõe um painel lateral genérico para cenários como assinatura, inspeção e metadados.'
+      : 'The toolbar now accepts actions through a Dart API and projected templates, and the viewer exposes a generic side panel for signature, inspection, and metadata scenarios.';
+  String get sidePanelTitle =>
+      isPt ? 'Assinaturas do documento' : 'Document signatures';
+  String get inspectorSummary => isPt
+      ? 'O painel lateral é genérico: o host decide o conteúdo e pode abri-lo por ação Dart ou botão customizado de template.'
+      : 'The side panel is generic: the host owns the content and can open it through a Dart action or a custom template button.';
+  String get inspectorJumpLabel =>
+      isPt ? 'Ir para a página atual' : 'Jump to current page';
+  String get inspectorFitLabel => isPt ? 'Ajustar largura' : 'Fit width';
+  String get inspectorToggleLabel => isPt
+      ? (sidePanelOpen ? 'Ocultar painel' : 'Mostrar painel')
+      : (sidePanelOpen ? 'Hide panel' : 'Show panel');
   String get releaseDocLabel =>
       isPt ? 'Carregar release note' : 'Load release note';
-  String get handbookDocLabel =>
-      isPt ? 'Carregar handbook' : 'Load handbook';
-    String get apiIntro => isPt
+  String get handbookDocLabel => isPt ? 'Carregar handbook' : 'Load handbook';
+  String get apiIntro => isPt
       ? 'Para usar o viewer no app hospedeiro, carregue o bridge `pdf.export.js`, importe o barrel separado `package:limitless_ui/pdf_viewer.dart` se quiser uma dependência mais estreita, e renderize o componente dentro de um container com altura definida.'
       : 'To use the viewer in the host app, load the `pdf.export.js` bridge, import the separate barrel `package:limitless_ui/pdf_viewer.dart` if you want a narrower dependency, and render the component inside a container with an explicit height.';
-    List<String> get apiItems => isPt
+  List<String> get apiItems => isPt
       ? const <String>[
           '`bytes` e `url` cobrem os dois cenários principais de carregamento.',
           '`pdfJsBasePath`, `workerSource`, `standardFontDataUrl` e `cMapUrl` desacoplam o componente da estrutura de assets do app.',
@@ -266,7 +269,7 @@ final toolbarActions = <LiPdfViewerToolbarAction>[
           '`customToolbarActions`, `toolbarActionsTemplate`, and `sidePanelTemplate` let you plug in signature, inspection, and business-specific actions without coupling the viewer.',
           'The `documentLoaded`, `pageChange`, `scaleChange`, and `loadError` outputs expose viewer state.',
         ];
-    String get statusSummary => isPt
+  String get statusSummary => isPt
       ? 'Documento: $activeDocumentTitle | Paginas: $loadedPages | Pagina atual: $observedPage | Zoom: ${(observedScale * 100).round()}%'
       : 'Document: $activeDocumentTitle | Pages: $loadedPages | Current page: $observedPage | Zoom: ${(observedScale * 100).round()}%';
   String get errorSummary => lastError.trim().isEmpty
@@ -317,10 +320,14 @@ final toolbarActions = <LiPdfViewerToolbarAction>[
         id: 'signatures',
         iconClass: 'ph ph-signature',
         titleBuilder: (viewer) => isPt
-            ? (viewer.sidePanelOpen ? 'Ocultar assinaturas' : 'Abrir assinaturas')
+            ? (viewer.sidePanelOpen
+                ? 'Ocultar assinaturas'
+                : 'Abrir assinaturas')
             : (viewer.sidePanelOpen ? 'Hide signatures' : 'Open signatures'),
         labelBuilder: (viewer) => isPt
-            ? (viewer.sidePanelOpen ? 'Ocultar assinaturas' : 'Abrir assinaturas')
+            ? (viewer.sidePanelOpen
+                ? 'Ocultar assinaturas'
+                : 'Abrir assinaturas')
             : (viewer.sidePanelOpen ? 'Hide signatures' : 'Open signatures'),
         activeBuilder: (viewer) => viewer.sidePanelOpen,
         onPressed: (event) => event.viewer.toggleSidePanel(),

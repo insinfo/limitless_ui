@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -29,7 +29,7 @@ class LiOptionComponent {
   }
 
   String get text {
-    return (rootElement.text ?? '').trim();
+    return rootElement.text.trim();
   }
 
   set text(String inputText) {
@@ -41,6 +41,6 @@ class LiOptionComponent {
   }
 
   set innerHtml(String? inputText) {
-    rootElement.innerHtml = inputText;
+    rootElement.innerHtml = inputText ?? '';
   }
 }

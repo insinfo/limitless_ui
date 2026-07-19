@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -567,7 +568,7 @@ class LiSelectComponent
   void closeDropdown({bool markForCheck = true}) {
     final wasOpen = dropdownOpen;
 
-    for (final element in dropdownContainerEle!.querySelectorAll('li')) {
+    for (final element in dropdownContainerEle!.queryAll('li')) {
       element.classes.remove('dropdown-item-hover');
     }
     currentIndex = -1;
@@ -714,11 +715,11 @@ class LiSelectComponent
   }
 
   void handleTriggerKeydown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    if (event.code == 'Enter' ||
+    if ((event as html.KeyboardEvent).code == 'Enter' ||
         event.code == 'NumpadEnter' ||
         event.code == 'Space' ||
         event.key == ' ') {
@@ -741,19 +742,19 @@ class LiSelectComponent
       options[i].hover = i == currentIndex;
     }
 
-    for (final element in dropdownContainerEle!.querySelectorAll('li')) {
+    for (final element in dropdownContainerEle!.queryAll('li')) {
       element.classes.remove('dropdown-item-hover');
     }
 
     dropdownContainerEle!
-        .querySelectorAll('li')[currentIndex]
+        .queryAll('li')[currentIndex]
         .classes
         .add('dropdown-item-hover');
   }
 
   @HostListener('keydown')
   void handleKeydownEvents(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
@@ -761,7 +762,7 @@ class LiSelectComponent
       return;
     }
 
-    _handleKeydownEvent(event);
+    _handleKeydownEvent(event as html.KeyboardEvent);
   }
 
   void _handleKeydownEvent(html.KeyboardEvent event) {
@@ -906,7 +907,7 @@ class LiSelectComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _overlayRelayoutPending = false;
       if (!dropdownOpen) {
         return;
@@ -922,13 +923,15 @@ class LiSelectComponent
       }
 
       final target = event.target;
-      if (target is! html.Node) {
+      if (!(target?.isA<html.Node>() ?? false)) {
         closeDropdown();
         return;
       }
 
-      final clickedTrigger = dropdownButtonElement?.contains(target) ?? false;
-      final clickedPanel = dropdownContainerEle?.contains(target) ?? false;
+      final clickedTrigger =
+          dropdownButtonElement?.contains(target as html.Node?) ?? false;
+      final clickedPanel =
+          dropdownContainerEle?.contains(target as html.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         closeDropdown();
       }
@@ -940,9 +943,9 @@ class LiSelectComponent
       }
 
       final target = event.target;
-      final isInsideOverlay = target is html.Node &&
-          ((dropdownButtonElement?.contains(target) ?? false) ||
-              (dropdownContainerEle?.contains(target) ?? false));
+      final isInsideOverlay = (target?.isA<html.Node>() ?? false) &&
+          ((dropdownButtonElement?.contains(target as html.Node?) ?? false) ||
+              (dropdownContainerEle?.contains(target as html.Node?) ?? false));
 
       final isNavigationKey = event.key == 'ArrowUp' ||
           event.key == 'ArrowDown' ||

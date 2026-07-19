@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
@@ -257,12 +258,13 @@ class LiPopoverComponent implements OnDestroy {
 
   @Input()
   set positionTarget(Object? value) {
-    if (value is html.Element) {
-      _positionTargetElement = value;
-      _positionTargetSelector = null;
-    } else if (value is String && value.trim().isNotEmpty) {
-      _positionTargetSelector = value.trim();
+    if (value is String) {
+      final selector = value.trim();
+      _positionTargetSelector = selector.isEmpty ? null : selector;
       _positionTargetElement = null;
+    } else if (html.liElementOrNull(value) case final element?) {
+      _positionTargetElement = element;
+      _positionTargetSelector = null;
     } else {
       _positionTargetElement = null;
       _positionTargetSelector = null;
@@ -380,8 +382,8 @@ class LiPopoverComponent implements OnDestroy {
 
   html.Element? get _defaultReferenceElement {
     final children = _hostElement.children;
-    if (children.isNotEmpty) {
-      return children.first;
+    if (children.length != 0) {
+      return children.item(0);
     }
 
     return null;
@@ -474,7 +476,8 @@ class LiPopoverComponent implements OnDestroy {
     }
 
     final relatedTarget = event.relatedTarget;
-    if (relatedTarget is html.Element && _hostElement.contains(relatedTarget)) {
+    if ((relatedTarget?.isA<html.Element>() ?? false) &&
+        _hostElement.contains(relatedTarget as html.Node?)) {
       return;
     }
 
@@ -651,7 +654,7 @@ class LiPopoverComponent implements OnDestroy {
 
     _visible = false;
     _stableAnchorRect = null;
-    _referenceElement.attributes.remove('aria-describedby');
+    _referenceElement.removeAttribute('aria-describedby');
     _cancelShownTimer();
 
     final popoverElement = _popoverElement;
@@ -681,7 +684,7 @@ class LiPopoverComponent implements OnDestroy {
       return;
     }
 
-    final popoverElement = html.DivElement()
+    final popoverElement = html.createDivElement()
       ..id = _popoverId
       ..classes.addAll(const <String>['popover', 'bs-popover-auto'])
       ..setAttribute('role', 'tooltip')
@@ -698,7 +701,7 @@ class LiPopoverComponent implements OnDestroy {
       popoverElement.classes.addAll(popoverClassNames);
     }
 
-    final popoverArrowElement = html.DivElement()
+    final popoverArrowElement = html.createDivElement()
       ..classes.add('popover-arrow')
       ..setAttribute('data-label', 'li_popover_arrow');
     if (popoverClassNames.isNotEmpty) {
@@ -707,10 +710,10 @@ class LiPopoverComponent implements OnDestroy {
       );
     }
 
-    final popoverHeaderElement = html.HeadingElement.h3()
+    final popoverHeaderElement = html.createHeadingElement(3)
       ..classes.add('popover-header')
       ..setAttribute('data-label', 'li_popover_header');
-    final popoverBodyElement = html.DivElement()
+    final popoverBodyElement = html.createDivElement()
       ..classes.add('popover-body')
       ..setAttribute('data-label', 'li_popover_body')
       ..style.whiteSpace = 'pre-line';
@@ -777,7 +780,13 @@ class LiPopoverComponent implements OnDestroy {
           ..right = '';
       },
       anchorRectBuilder: (reference, floating) {
-        return _stableAnchorRect ??= reference.getBoundingClientRect();
+        final cached = _stableAnchorRect;
+        if (cached != null) {
+          return cached;
+        }
+        final r = reference.getBoundingClientRect();
+        return _stableAnchorRect =
+            html.Rectangle<num>(r.left, r.top, r.width, r.height);
       },
       onLayout: _handleLayout,
     );
@@ -1089,8 +1098,7 @@ class LiPopoverComponent implements OnDestroy {
   }
 
   int? _highestOpenModalZIndex() {
-    final openModals =
-        html.document.querySelectorAll('.modal[data-status="open"]');
+    final openModals = html.document.queryAll('.modal[data-status="open"]');
     int? highestZIndex;
 
     for (final modal in openModals) {
@@ -1137,14 +1145,15 @@ class LiPopoverComponent implements OnDestroy {
         }
 
         final target = event.target;
-        if (target is! html.Element) {
+        if (!(target?.isA<html.Element>() ?? false)) {
           return;
         }
 
         final popoverElement = _popoverElement;
-        final clickedInsidePopover =
-            popoverElement != null && popoverElement.contains(target);
-        final clickedOnReference = _referenceElement.contains(target);
+        final clickedInsidePopover = popoverElement != null &&
+            popoverElement.contains(target as html.Node?);
+        final clickedOnReference =
+            _referenceElement.contains(target as html.Node?);
         final clickedOnHost = _hostElement.contains(target);
 
         if (clickedInsidePopover) {

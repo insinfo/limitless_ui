@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_cast
 
-import 'dart:html';
+import 'dart:js_interop';
+import 'package:limitless_ui/web_compat.dart';
 import 'package:ngx_dart/angular.dart';
 
 /// Restricts keyboard and paste input to numeric characters only.
@@ -18,7 +19,7 @@ class LiOnlyNumberDirective {
   bool liOnlyNumber = true;
 
   LiOnlyNumberDirective(this._el) {
-    if (_el is! InputElement) {
+    if (!_el.isA<InputElement>()) {
       throw Exception(
           'LiOnlyNumberDirective has to be applied to an InputElement');
     }
@@ -39,8 +40,7 @@ class LiOnlyNumberDirective {
   /// Prevents non-digit key presses from reaching the input.
   void onlyNumberKey(KeyboardEvent evt) {
     final whichCode = evt.which;
-    final asciiCode =
-        (whichCode == null || whichCode == 0) ? evt.keyCode : whichCode;
+    final asciiCode = whichCode == 0 ? evt.keyCode : whichCode;
     if (asciiCode > 31 && (asciiCode < 48 || asciiCode > 57)) {
       evt.preventDefault();
     }

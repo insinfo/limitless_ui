@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -128,7 +128,7 @@ class MultiSelectValidationTestHostComponent {
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
-    html.document.documentElement?.attributes.remove('data-color-theme');
+    html.document.documentElement?.removeAttribute('data-color-theme');
   });
 
   final testBed = NgTestBed<MultiSelectTestHostComponent>(
@@ -151,17 +151,17 @@ void main() {
     expect(host.userSelectedChannels, isNull);
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     final pushOption = html.document
-        .querySelectorAll('.dropdown-container .dropdown-item')
+        .queryAll('.dropdown-container .dropdown-item')
         .cast<html.Element>()
-        .firstWhere((element) => (element.text ?? '').contains('Push'));
+        .firstWhere((element) => (element.text).contains('Push'));
 
     await fixture.update((_) {
-      pushOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      pushOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -174,7 +174,7 @@ void main() {
     );
 
     await fixture.update((_) {
-      pushOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      pushOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -192,7 +192,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    expect(fixture.rootElement.querySelectorAll('.badge'), isNotEmpty);
+    expect(fixture.rootElement.queryAll('.badge'), isNotEmpty);
     expect(host.userSelectedChannels, isNull);
 
     await fixture.update((_) {
@@ -203,7 +203,7 @@ void main() {
     expect(host.selectedChannels, isEmpty);
     expect(host.userSelectedChannels, isNull);
     expect(host.selectedChannelModels, isEmpty);
-    expect(fixture.rootElement.querySelectorAll('.badge'), isEmpty);
+    expect(fixture.rootElement.queryAll('.badge'), isEmpty);
   });
 
   test('clear button resets selected values without opening the dropdown',
@@ -219,7 +219,7 @@ void main() {
     expect(trigger.getAttribute('aria-expanded'), 'false');
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -235,7 +235,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -258,7 +258,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -276,7 +276,7 @@ void main() {
     final fixture = await compareTestBed.create();
     await _settleCompare(fixture);
 
-    expect(fixture.rootElement.querySelectorAll('.badge').length, 1);
+    expect(fixture.rootElement.queryAll('.badge').length, 1);
     expect(fixture.rootElement.text, contains('Push'));
   });
 
@@ -291,7 +291,7 @@ void main() {
     final clearButton = field.querySelector('.dropdown-clear') as html.Element;
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleValidation(fixture);
 
@@ -300,24 +300,24 @@ void main() {
     expect(fixture.rootElement.text, contains('Selecione ao menos 2 canais.'));
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleValidation(fixture);
 
     final options = html.document
-        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
         .cast<html.Element>()
         .toList(growable: false);
     final emailOption = options.firstWhere(
-      (element) => (element.text ?? '').contains('E-mail'),
+      (element) => (element.text).contains('E-mail'),
     );
     final pushOption = options.firstWhere(
-      (element) => (element.text ?? '').contains('Push'),
+      (element) => (element.text).contains('Push'),
     );
 
     await fixture.update((_) {
-      emailOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
-      pushOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      emailOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      pushOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleValidation(fixture);
 

@@ -1,15 +1,15 @@
-import 'dart:js_util' as js_util;
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 import 'dart:typed_data';
 
-import 'package:js/js.dart';
 import 'package:limitless_ui/src/components/pdf_viewer/pdf_viewer_pdfjs_bridge.dart';
 import 'package:limitless_ui/src/components/pdf_viewer/pdfjs_bindings.dart';
 
 @JS('Promise.resolve')
-external Object _promiseResolve(dynamic value);
+external JSPromise<JSAny?> _promiseResolve(JSAny? value);
 
 @JS('Promise.reject')
-external Object _promiseReject(dynamic error);
+external JSPromise<JSAny?> _promiseReject(JSAny? error);
 
 class FakePdfDocumentState {
   int destroyCalls = 0;
@@ -30,8 +30,7 @@ class FakePdfJsBridge implements LiPdfViewerPdfJsBridge {
 
   String? configuredWorkerSrc;
   final List<Map<String, dynamic>> documentRequests = <Map<String, dynamic>>[];
-  final List<Map<String, dynamic>> textLayerRequests =
-      <Map<String, dynamic>>[];
+  final List<Map<String, dynamic>> textLayerRequests = <Map<String, dynamic>>[];
 
   @override
   void configureWorker(String src) {
@@ -41,30 +40,28 @@ class FakePdfJsBridge implements LiPdfViewerPdfJsBridge {
   @override
   TextLayer createTextLayer(Map<String, dynamic> options) {
     textLayerRequests.add(Map<String, dynamic>.from(options));
-    final jsTextLayer = js_util.newObject();
-    js_util.setProperty(
-      jsTextLayer,
-      'render',
-      allowInterop(() => _promiseResolve(null)),
+    final jsTextLayer = JSObject();
+    jsTextLayer.setProperty(
+      'render'.toJS,
+      (() => _promiseResolve(null)).toJS,
     );
-    return jsTextLayer as dynamic;
+    return jsTextLayer as TextLayer;
   }
 
   @override
   PDFDocumentLoadingTask getDocument(Map<String, dynamic> source) {
     documentRequests.add(Map<String, dynamic>.from(source));
 
-    final jsTask = js_util.newObject();
-    js_util.setProperty(jsTask, 'cancel', allowInterop(() {}));
+    final jsTask = JSObject();
+    jsTask.setProperty('cancel'.toJS, (() {}).toJS);
     final error = loadError;
-    js_util.setProperty(
-      jsTask,
-      'promise',
+    jsTask.setProperty(
+      'promise'.toJS,
       error == null
           ? _promiseResolve(documentFactory(source))
-          : _promiseReject(error),
+          : _promiseReject(error.toString().toJS),
     );
-    return jsTask as dynamic;
+    return jsTask as PDFDocumentLoadingTask;
   }
 }
 
@@ -91,70 +88,70 @@ PDFDocumentProxy createFakePdfDocument({
       ),
   };
 
-  final jsDocument = js_util.newObject();
-  js_util.setProperty(jsDocument, 'numPages', numPages);
-  js_util.setProperty(
-    jsDocument,
-    'getPage',
-    allowInterop((int pageNum) {
+  final jsDocument = JSObject();
+  jsDocument.setProperty('numPages'.toJS, numPages.toJS);
+  jsDocument.setProperty(
+    'getPage'.toJS,
+    ((int pageNum) {
       final page = pages[pageNum];
       if (page == null) {
-        return _promiseReject(StateError('Missing fake page $pageNum'));
+        return _promiseReject('Missing fake page $pageNum'.toJS);
       }
       return _promiseResolve(page);
-    }),
+    }).toJS,
   );
-  js_util.setProperty(jsDocument, 'destroy', allowInterop(() {
-    documentState.destroyCalls += 1;
-    return null;
-  }));
-  js_util.setProperty(
-    jsDocument,
-    'getDestinations',
-    allowInterop(() {
+  jsDocument.setProperty(
+    'destroy'.toJS,
+    (() {
+      documentState.destroyCalls += 1;
+    }).toJS,
+  );
+  jsDocument.setProperty(
+    'getDestinations'.toJS,
+    (() {
       documentState.getDestinationsCalls += 1;
-      return _promiseResolve(destinations);
-    }),
+      return _promiseResolve(destinations.jsify());
+    }).toJS,
   );
-  js_util.setProperty(
-    jsDocument,
-    'getPageIndex',
-    allowInterop((dynamic ref) {
+  jsDocument.setProperty(
+    'getPageIndex'.toJS,
+    ((JSAny? ref) {
       documentState.getPageIndexCalls += 1;
-      documentState.pageIndexRefs.add(ref);
-      return _promiseResolve(pageIndexResolver?.call(ref) ?? 0);
-    }),
+      documentState.pageIndexRefs.add(ref.dartify());
+      return _promiseResolve(
+        (pageIndexResolver?.call(ref.dartify()) ?? 0).toJS,
+      );
+    }).toJS,
   );
-  js_util.setProperty(
-    jsDocument,
-    'getData',
-    allowInterop(() {
+  jsDocument.setProperty(
+    'getData'.toJS,
+    (() {
       documentState.getDataCalls += 1;
       return _promiseResolve(
-        data ?? Uint8List.fromList(<int>[37, 80, 68, 70]),
+        (data ?? Uint8List.fromList(<int>[37, 80, 68, 70])).toJS,
       );
-    }),
+    }).toJS,
   );
-  return jsDocument as dynamic;
+  return jsDocument as PDFDocumentProxy;
 }
 
-dynamic createFakeLinkAnnotation({
+JSObject createFakeLinkAnnotation({
   List<num> rect = const <num>[0, 0, 120, 20],
   String? url,
   String? unsafeUrl,
   dynamic dest,
 }) {
-  final annotation = js_util.newObject();
-  js_util.setProperty(annotation, 'subtype', 'Link');
-  js_util.setProperty(annotation, 'rect', rect);
+  final annotation = JSObject();
+  annotation.setProperty('subtype'.toJS, 'Link'.toJS);
+  annotation.setProperty('rect'.toJS, rect.jsify());
   if (url != null) {
-    js_util.setProperty(annotation, 'url', url);
+    annotation.setProperty('url'.toJS, url.toJS);
   }
   if (unsafeUrl != null) {
-    js_util.setProperty(annotation, 'unsafeUrl', unsafeUrl);
+    annotation.setProperty('unsafeUrl'.toJS, unsafeUrl.toJS);
   }
   if (dest != null) {
-    js_util.setProperty(annotation, 'dest', dest);
+    annotation.setProperty('dest'.toJS, (dest as Object).jsify());
   }
   return annotation;
 }
@@ -166,67 +163,63 @@ PDFPageProxy createFakePdfPage({
   List<dynamic> annotations = const <dynamic>[],
   List<dynamic> textItems = const <dynamic>[],
 }) {
-  final jsPage = js_util.newObject();
-  js_util.setProperty(
-    jsPage,
-    'getViewport',
-    allowInterop((dynamic params) {
-      final scale = js_util.getProperty<num>(params, 'scale').toDouble();
-      final rotation = js_util.getProperty<num>(params, 'rotation').toDouble();
+  final jsPage = JSObject();
+  jsPage.setProperty(
+    'getViewport'.toJS,
+    ((JSObject params) {
+      final scale =
+          (params.getProperty('scale'.toJS) as JSNumber?)?.toDartDouble ?? 1;
+      final rotation =
+          (params.getProperty('rotation'.toJS) as JSNumber?)?.toDartDouble ?? 0;
       return _createViewport(
         width: width * scale,
         height: height * scale,
         rotation: rotation,
         scale: scale,
       );
-    }),
+    }).toJS,
   );
-  js_util.setProperty(
-    jsPage,
-    'render',
-    allowInterop((dynamic _) {
-      final jsTask = js_util.newObject();
-      js_util.setProperty(jsTask, 'cancel', allowInterop(() {}));
-      js_util.setProperty(
-        jsTask,
-        'promise',
-        _promiseResolve(null),
-      );
+  jsPage.setProperty(
+    'render'.toJS,
+    ((JSAny? _) {
+      final jsTask = JSObject();
+      jsTask.setProperty('cancel'.toJS, (() {}).toJS);
+      jsTask.setProperty('promise'.toJS, _promiseResolve(null));
       return jsTask;
-    }),
+    }).toJS,
   );
-  js_util.setProperty(
-    jsPage,
-    'getTextContent',
-    allowInterop(
-      ([dynamic _]) => _promiseResolve(
-        js_util.jsify(<String, dynamic>{
-          'items': textItems,
-          'styles': const <String, dynamic>{},
-          'lang': 'pt-BR',
-        }),
-      ),
-    ),
+  jsPage.setProperty(
+    'getTextContent'.toJS,
+    (([JSAny? _]) {
+      final content = JSObject();
+      content.setProperty(
+        'items'.toJS,
+        [for (final item in textItems) item as JSAny?].toJS,
+      );
+      content.setProperty('styles'.toJS, JSObject());
+      content.setProperty('lang'.toJS, 'pt-BR'.toJS);
+      return _promiseResolve(content);
+    }).toJS,
   );
-  js_util.setProperty(
-    jsPage,
-    'getAnnotations',
-    allowInterop((dynamic _) => _promiseResolve(annotations)),
+  jsPage.setProperty(
+    'getAnnotations'.toJS,
+    ((JSAny? _) => _promiseResolve(
+          [for (final annotation in annotations) annotation as JSAny?].toJS,
+        )).toJS,
   );
-  js_util.setProperty(jsPage, 'cleanup', allowInterop(() => null));
-  js_util.setProperty(
-    jsPage,
-    'streamTextContent',
-    allowInterop(
-      (dynamic _) => <String, dynamic>{
-        'items': const <dynamic>[],
-        'styles': const <String, dynamic>{},
-        'lang': 'pt-BR',
-      },
-    ),
+  jsPage.setProperty('cleanup'.toJS, (() {}).toJS);
+  jsPage.setProperty(
+    'streamTextContent'.toJS,
+    ((JSAny? _) {
+      final stream = JSObject();
+      stream.setProperty('items'.toJS, JSArray<JSAny?>());
+      stream.setProperty('styles'.toJS, JSObject());
+      stream.setProperty('lang'.toJS, 'pt-BR'.toJS);
+      return stream;
+    }).toJS,
   );
-  js_util.setProperty(jsPage, 'pageNumber', pageNum);
-  return jsPage as dynamic;
+  jsPage.setProperty('pageNumber'.toJS, pageNum.toJS);
+  return jsPage as PDFPageProxy;
 }
 
 PageViewport _createViewport({
@@ -235,30 +228,28 @@ PageViewport _createViewport({
   required double rotation,
   required double scale,
 }) {
-  final jsViewport = js_util.newObject();
-  js_util.setProperty(jsViewport, 'width', width);
-  js_util.setProperty(jsViewport, 'height', height);
-  js_util.setProperty(jsViewport, 'rotation', rotation);
-  js_util.setProperty(jsViewport, 'scale', scale);
-  js_util.setProperty(
-    jsViewport,
-    'rawDims',
-    js_util.jsify(<String, num>{
+  final jsViewport = JSObject();
+  jsViewport.setProperty('width'.toJS, width.toJS);
+  jsViewport.setProperty('height'.toJS, height.toJS);
+  jsViewport.setProperty('rotation'.toJS, rotation.toJS);
+  jsViewport.setProperty('scale'.toJS, scale.toJS);
+  jsViewport.setProperty(
+    'rawDims'.toJS,
+    <String, num>{
       'pageWidth': width,
       'pageHeight': height,
       'pageX': 0,
       'pageY': 0,
-    }),
+    }.jsify(),
   );
-  js_util.setProperty(
-    jsViewport,
-    'convertToViewportRectangle',
-    allowInterop((List<num> rect) => rect),
+  jsViewport.setProperty(
+    'convertToViewportRectangle'.toJS,
+    ((JSArray<JSNumber> rect) => rect).toJS,
   );
-  return jsViewport as dynamic;
+  return jsViewport as PageViewport;
 }
 
-dynamic createFakeTextItem({
+JSObject createFakeTextItem({
   required String text,
   bool hasEndOfLine = false,
   String direction = 'ltr',
@@ -267,7 +258,7 @@ dynamic createFakeTextItem({
   String fontName = 'f1',
   List<num> transform = const <num>[1, 0, 0, 1, 0, 0],
 }) {
-  return js_util.jsify(<String, Object?>{
+  return <String, Object?>{
     'str': text,
     'dir': direction,
     'width': width,
@@ -275,5 +266,5 @@ dynamic createFakeTextItem({
     'hasEOL': hasEndOfLine,
     'fontName': fontName,
     'transform': transform,
-  });
+  }.jsify()! as JSObject;
 }

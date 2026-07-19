@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -89,7 +89,7 @@ void main() {
         fixture.rootElement.querySelector('#show-button') as html.ButtonElement;
 
     await fixture.update((_) {
-      button.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      button.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -111,7 +111,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      button.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      button.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -135,7 +135,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      button.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      button.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -143,7 +143,7 @@ void main() {
         html.document.querySelector('.swal2-input') as html.InputElement;
     await fixture.update((_) {
       input.value = 'batch-42';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
       _click('.swal2-confirm');
     });
     await _settle(fixture);
@@ -160,26 +160,26 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      button.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      button.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
-    final textarea = html.document.querySelector('.swal2-textarea')
-        as html.TextAreaElement;
+    final textarea =
+        html.document.querySelector('.swal2-textarea') as html.TextAreaElement;
     expect(textarea.classes.contains('li-swalert-textarea'), isTrue);
     expect(textarea.rows, 6);
     expect(textarea.maxLength, 240);
-    expect(textarea.attributes['aria-label'], 'Correction reason');
+    expect(textarea.getAttribute('aria-label'), 'Correction reason');
 
     await fixture.update((_) {
       textarea.value = 'Wrong dispatch selected.';
-      textarea.dispatchEvent(html.Event('input', canBubble: true));
+      textarea.dispatchEvent(html.liEvent('input', canBubble: true));
       _click('.swal2-confirm');
     });
     await _settle(fixture);
 
-    final result = fixture.assertOnlyInstance.promptResult
-        as SweetAlertResult<String>;
+    final result =
+        fixture.assertOnlyInstance.promptResult as SweetAlertResult<String>;
     expect(result.isConfirmed, isTrue);
     expect(result.value, 'Wrong dispatch selected.');
   });
@@ -188,7 +188,7 @@ void main() {
 void _click(String selector) {
   final element = html.document.querySelector(selector);
   expect(element, isNotNull);
-  element!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 void _resetSweetAlertDom() {

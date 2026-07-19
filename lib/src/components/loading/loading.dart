@@ -1,9 +1,10 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 import 'dart:math' as math;
 
 String _resolveLoadingOverlayColor() {
-  final theme = document.documentElement?.attributes['data-color-theme'];
+  final theme = document.documentElement?.getAttribute('data-color-theme');
   return theme == 'dark' ? 'rgb(0 0 0 / 36%)' : 'rgb(255 255 255 / 48%)';
 }
 
@@ -42,7 +43,7 @@ class LiSimpleLoading {
   }) {
     final root = DivElement()
       ..classes.add('li-simple-loading')
-      ..attributes['data-li-simple-loading'] = 'true'
+      ..setAttribute('data-li-simple-loading', 'true')
       ..style.position = position
       ..style.left = '0'
       ..style.top = '0'
@@ -69,7 +70,8 @@ class LiSimpleLoading {
   void showOnBody({
     double safeMargin = 64,
     int zIndex = defaultBodyZIndex,
-  }) => show(target: null, safeMargin: safeMargin, zIndex: zIndex);
+  }) =>
+      show(target: null, safeMargin: safeMargin, zIndex: zIndex);
 
   void show({Element? target, double safeMargin = 64, int? zIndex}) {
     hide();
@@ -103,7 +105,7 @@ class LiSimpleLoading {
 
     _winScrollSub = window.onScroll.listen((_) => _rafUpdate());
 
-    if (_scrollContainer is Element) {
+    if ((_scrollContainer?.isA<Element>() ?? false)) {
       _containerScrollSub =
           (_scrollContainer as Element).onScroll.listen((_) => _rafUpdate());
     }
@@ -120,7 +122,7 @@ class LiSimpleLoading {
 
   void _rafUpdate() {
     if (_target != null && _target!.isConnected == true) {
-      window.requestAnimationFrame((_) => _updateSpinnerPosition());
+      window.liRequestAnimationFrame((_) => _updateSpinnerPosition());
     } else {
       hide();
     }
@@ -131,17 +133,20 @@ class LiSimpleLoading {
       return;
     }
 
-    final Rectangle<num> rect =
-        (_target == document.body || _target == document.documentElement)
-            ? Rectangle<num>(
-                0,
-                0,
-                (window.innerWidth ?? 0).toDouble(),
-                (document.documentElement?.scrollHeight ?? 0).toDouble(),
-              )
-            : _target!.getBoundingClientRect();
+    final Rectangle<num> rect;
+    if (_target == document.body || _target == document.documentElement) {
+      rect = Rectangle<num>(
+        0,
+        0,
+        window.innerWidth.toDouble(),
+        (document.documentElement?.scrollHeight ?? 0).toDouble(),
+      );
+    } else {
+      final r = _target!.getBoundingClientRect();
+      rect = Rectangle<num>(r.left, r.top, r.width, r.height);
+    }
 
-    final double viewportH = (window.innerHeight ?? 0).toDouble();
+    final double viewportH = window.innerHeight.toDouble();
     final double centerYViewport = (rect.top + rect.height / 2).toDouble();
     final double topClamp = _safeMargin;
     final double bottomClamp = viewportH - _safeMargin;
@@ -475,7 +480,7 @@ class LiNarratedFullScreenLoading {
 
     _root = DivElement()
       ..classes.add('li-narrated-full-screen-loading')
-      ..attributes['data-li-narrated-full-screen-loading'] = 'true'
+      ..setAttribute('data-li-narrated-full-screen-loading', 'true')
       ..style.position = 'fixed'
       ..style.left = '0'
       ..style.top = '0'

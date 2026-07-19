@@ -5,6 +5,7 @@
 @TestOn('browser')
 library;
 
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -89,7 +90,7 @@ void main() {
     expect(host.multi!.selectedValues, containsAll(<String>['email', 'sms']));
     expect(host.multi!.selectedValues.length, 2);
     expect(host.selectedChannels, containsAll(<String>['email', 'sms']));
-    expect(fixture.rootElement.querySelectorAll('.badge').length, 2);
+    expect(fixture.rootElement.queryAll('.badge').length, 2);
   });
 
   test('does not overwrite a user selection when options are resynced',
@@ -129,7 +130,7 @@ void main() {
     await _settleAsyncSource(fixture);
 
     expect(host.multi!.selectedValues, <String>['push']);
-    expect(fixture.rootElement.querySelectorAll('.badge').length, 1);
+    expect(fixture.rootElement.queryAll('.badge').length, 1);
   });
 }
 

@@ -5,9 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
-import 'dart:js';
-
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -144,7 +142,7 @@ void main() {
         fixture.rootElement.querySelector('.li-token-field') as html.Element;
     final input = fixture.rootElement.querySelector('.li-token-field__input')
         as html.InputElement;
-    final tokens = fixture.rootElement.querySelectorAll('.tokenfield-set-item');
+    final tokens = fixture.rootElement.queryAll('.tokenfield-set-item');
     final tokenRows = tokens
         .map((element) => element.getBoundingClientRect().top.round())
         .toSet();
@@ -173,14 +171,14 @@ void main() {
         .querySelector('.li-token-field__menu button') as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     final menuItems = html.document
-        .querySelectorAll(
+        .queryAll(
             '.LiDropdownMenuComponent .li-dropdown-menu__menu.show .dropdown-item')
-        .map((element) => (element.text ?? '').trim())
+        .map((element) => (element.text).trim())
         .toList(growable: false);
 
     expect(menuItems.any((label) => label.contains('Copy')), isFalse);
@@ -205,31 +203,9 @@ Future<void> _settle(
   await fixture.update((_) {});
 }
 
-const _createKeyEventName = '__dart_createLiTokenFieldKeyboardEvent';
-const _createKeyEventScript = '''
-window['$_createKeyEventName'] = function(type, key, code) {
-  return new KeyboardEvent(type, {
-    key: key,
-    code: code || key,
-    bubbles: true
-  });
-}
-''';
-
 html.Event createKeyEvent(
   String type, {
   required String key,
   String? code,
-}) {
-  if (!context.hasProperty(_createKeyEventName)) {
-    final script = html.document.createElement('script')
-      ..setAttribute('type', 'text/javascript')
-      ..text = _createKeyEventScript;
-    html.document.body!.append(script);
-  }
-
-  return context.callMethod(
-    _createKeyEventName,
-    <Object>[type, key, code ?? key],
-  ) as html.Event;
-}
+}) =>
+    html.liKeyboardEvent(type, key: key, code: code ?? key);

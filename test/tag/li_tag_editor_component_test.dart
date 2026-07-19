@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -49,7 +49,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final inputs = fixture.rootElement
-        .querySelectorAll('input')
+        .queryAll('input')
         .cast<html.InputElement>()
         .toList(growable: false);
     final nameInput = inputs.first;
@@ -59,14 +59,14 @@ void main() {
 
     await fixture.update((_) {
       nameInput.value = 'Etiqueta Retro';
-      nameInput.dispatchEvent(html.Event('input', canBubble: true));
+      nameInput.dispatchEvent(html.liEvent('input', canBubble: true));
       colorInput.value = 'f4511e';
-      colorInput.dispatchEvent(html.Event('input', canBubble: true));
+      colorInput.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      saveButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      saveButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 

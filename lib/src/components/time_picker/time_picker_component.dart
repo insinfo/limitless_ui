@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -507,14 +508,14 @@ class LiTimePickerComponent
   }
 
   void handleTriggerKeydown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    if (event.code == 'Enter' ||
-        event.code == 'NumpadEnter' ||
-        event.code == 'Space' ||
-        event.key == ' ') {
+    if ((event as html.KeyboardEvent).code == 'Enter' ||
+        (event).code == 'NumpadEnter' ||
+        (event).code == 'Space' ||
+        (event).key == ' ') {
       event.preventDefault();
       toggleOpen();
     }
@@ -619,11 +620,11 @@ class LiTimePickerComponent
   }
 
   void onChipKeyDown(html.Event event, bool isHourField) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    if (event.key == 'Enter') {
+    if ((event as html.KeyboardEvent).key == 'Enter') {
       event.preventDefault();
       if (isHourField) {
         _commitHourInput();
@@ -633,7 +634,7 @@ class LiTimePickerComponent
       return;
     }
 
-    if (event.key == 'Escape') {
+    if ((event).key == 'Escape') {
       event.preventDefault();
       _syncInputTexts();
       _isEditingHour = false;
@@ -668,13 +669,13 @@ class LiTimePickerComponent
 
   void onClockTouchStart(html.TouchEvent event) {
     final touches = event.touches;
-    if (touches == null || touches.isEmpty) {
+    if (touches.isEmpty) {
       return;
     }
 
     event.preventDefault();
     final touch = touches.first;
-    _beginClockDrag(touch.client.x.toDouble(), touch.client.y.toDouble());
+    _beginClockDrag(touch.clientX.toDouble(), touch.clientY.toDouble());
   }
 
   void onDialLabelClick(TimePickerDialLabel label, html.MouseEvent event) {
@@ -866,13 +867,15 @@ class LiTimePickerComponent
       }
 
       final target = event.target;
-      if (target is! html.Node) {
+      if (!(target?.isA<html.Node>() ?? false)) {
         close();
         return;
       }
 
-      final clickedTrigger = triggerElement?.contains(target) ?? false;
-      final clickedPanel = panelElement?.contains(target) ?? false;
+      final clickedTrigger =
+          triggerElement?.contains(target as html.Node?) ?? false;
+      final clickedPanel =
+          panelElement?.contains(target as html.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         close();
       }
@@ -928,13 +931,13 @@ class LiTimePickerComponent
       }
 
       final touches = event.touches;
-      if (touches == null || touches.isEmpty) {
+      if (touches.isEmpty) {
         return;
       }
 
       event.preventDefault();
       final touch = touches.first;
-      _queuePointerUpdate(touch.client.x.toDouble(), touch.client.y.toDouble());
+      _queuePointerUpdate(touch.clientX.toDouble(), touch.clientY.toDouble());
     });
 
     _documentTouchEndSubscription ??=
@@ -967,7 +970,7 @@ class LiTimePickerComponent
       return;
     }
 
-    _dragAnimationFrameId = html.window.requestAnimationFrame((_) {
+    _dragAnimationFrameId = html.window.liRequestAnimationFrame((_) {
       _dragAnimationFrameId = null;
 
       final pendingX = _pendingPointerX;
@@ -1100,7 +1103,7 @@ class LiTimePickerComponent
       return;
     }
 
-    final valueLength = input.value?.length ?? 0;
+    final valueLength = input.value.length;
     input.setSelectionRange(0, valueLength);
   }
 

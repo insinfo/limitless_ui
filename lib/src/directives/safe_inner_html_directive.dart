@@ -1,4 +1,4 @@
-import 'dart:html' show Element, NodeTreeSanitizer;
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 
@@ -12,6 +12,6 @@ class LiSafeInnerHtmlDirective {
   @Input()
   set liSafeInnerHtml(String? html) {
     // ignore: unsafe_html
-    _element.setInnerHtml(html, treeSanitizer: NodeTreeSanitizer.trusted);
+    _element.setInnerHtml(html ?? '', treeSanitizer: NodeTreeSanitizer.trusted);
   }
 }

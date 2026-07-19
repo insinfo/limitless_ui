@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -194,8 +194,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final triggers =
-        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
     expect(triggers.first.text, contains('Maria Silva'));
     expect(fixture.assertOnlyInstance.userSelectedPerson, isNull);
   });
@@ -205,8 +204,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final triggers =
-        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
     final typedTrigger = triggers.first as html.ButtonElement;
 
     await fixture.update((_) {
@@ -216,7 +214,7 @@ void main() {
 
     final modalText =
         html.document.querySelector('.modal.show .modal-content')?.text ?? '';
-    final modalRows = html.document.querySelectorAll('.modal.show tbody tr');
+    final modalRows = html.document.queryAll('.modal.show tbody tr');
 
     expect(modalText, contains('Nome'));
     expect(modalText, contains('E-mail'));
@@ -299,8 +297,7 @@ void main() {
     });
     await _settle(fixture);
 
-    final triggers =
-        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
     final typedTrigger = triggers.first as html.ButtonElement;
 
     await fixture.update((_) {
@@ -319,8 +316,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final triggers =
-        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
     final customTrigger = triggers[1] as html.ButtonElement;
 
     await fixture.update((_) {
@@ -349,8 +345,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final triggers =
-        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
     final multipleTrigger = triggers[2] as html.ButtonElement;
 
     await fixture.update((_) {
@@ -390,8 +385,7 @@ void main() {
     expect(multipleTrigger.text, contains('Ana Souza'));
 
     final chips = multipleTrigger
-        .querySelectorAll('.datatable-select-chip')
-        .whereType<html.Element>()
+        .queryAll('.datatable-select-chip')
         .toList(growable: false);
     final visibleValueChips = chips
         .where((chip) =>
@@ -410,7 +404,7 @@ void main() {
     expect(visibleValueChips, hasLength(2));
     expect(hiddenValueChips, hasLength(1));
     expect(summaryChips, hasLength(1));
-    expect(summaryChips.single.text?.trim(), '+1');
+    expect(summaryChips.single.text.trim(), '+1');
   });
 
   test('passes custom datatable header and compact modal header to inner modal',
@@ -418,8 +412,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final triggers =
-        fixture.rootElement.querySelectorAll('.datatable-select-trigger');
+    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
     final customHeaderTrigger = triggers[3] as html.ButtonElement;
 
     await fixture.update((_) {

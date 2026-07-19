@@ -1,5 +1,6 @@
-import 'dart:html';
+import 'dart:js_interop';
 
+import 'package:limitless_ui/web_compat.dart';
 import 'package:ngx_dart/angular.dart';
 
 /// Clamps numeric input values to the configured `liMin` and `liMax` range.
@@ -20,14 +21,13 @@ class LiMinMaxDirective {
   double? liMax;
 
   LiMinMaxDirective(this._el) {
-    if (_el is! InputElement) {
+    if (!_el.isA<InputElement>()) {
       throw Exception('LiMinMaxDirective has to be applied to an InputElement');
     }
-    inputElement = _el;
+    inputElement = _el as InputElement;
 
     inputElement.onKeyUp.listen((e) {
-      final valorAtual =
-          double.tryParse((e.target as InputElement).value ?? '') ?? 0;
+      final valorAtual = double.tryParse((e.target as InputElement).value) ?? 0;
       if (e.keyCode >= 48 && e.keyCode <= 57 ||
           e.keyCode >= 96 && e.keyCode <= 105) {
         final min = liMin;

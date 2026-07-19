@@ -6,8 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -173,7 +172,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.querySelectorAll('input');
+    final inputs = fixture.rootElement.queryAll('input');
     final basicInput = inputs[0] as html.InputElement;
 
     expect(host.userSelectedState, isNull);
@@ -181,7 +180,7 @@ void main() {
     await fixture.update((_) {
       basicInput.focus();
       basicInput.value = 'ala';
-      basicInput.dispatchEvent(html.Event('input', canBubble: true));
+      basicInput.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -205,12 +204,12 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.querySelectorAll('input');
+    final inputs = fixture.rootElement.queryAll('input');
     final focusInput = inputs[1] as html.InputElement;
 
     await fixture.update((_) {
       focusInput.focus();
-      focusInput.dispatchEvent(html.Event('focus'));
+      focusInput.dispatchEvent(html.liEvent('focus'));
     });
     await _settle(fixture);
 
@@ -222,13 +221,13 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.querySelectorAll('input');
+    final inputs = fixture.rootElement.queryAll('input');
     final exactInput = inputs[2] as html.InputElement;
 
     await fixture.update((_) {
       exactInput.focus();
       exactInput.value = 'California';
-      exactInput.dispatchEvent(html.Event('input', canBubble: true));
+      exactInput.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -241,13 +240,13 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.querySelectorAll('input');
+    final inputs = fixture.rootElement.queryAll('input');
     final strictInput = inputs[3] as html.InputElement;
 
     await fixture.update((_) {
       strictInput.focus();
       strictInput.value = 'Ark';
-      strictInput.dispatchEvent(html.Event('input', canBubble: true));
+      strictInput.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -267,13 +266,13 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.querySelectorAll('input');
+    final inputs = fixture.rootElement.queryAll('input');
     final asyncInput = inputs[4] as html.InputElement;
 
     await fixture.update((_) {
       asyncInput.focus();
       asyncInput.value = 'san';
-      asyncInput.dispatchEvent(html.Event('input', canBubble: true));
+      asyncInput.dispatchEvent(html.liEvent('input', canBubble: true));
     });
 
     await _settle(fixture, milliseconds: 260);
@@ -295,12 +294,12 @@ void main() {
   test('config service provides default values to nested typeahead', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final inputs = fixture.rootElement.querySelectorAll('input');
+    final inputs = fixture.rootElement.queryAll('input');
     final configuredInput = inputs[5] as html.InputElement;
 
     await fixture.update((_) {
       configuredInput.focus();
-      configuredInput.dispatchEvent(html.Event('focus'));
+      configuredInput.dispatchEvent(html.liEvent('focus'));
     });
     await _settle(fixture);
 
@@ -318,17 +317,6 @@ Future<void> _settle(
 }
 
 void _dispatchKey(html.Element element, String key) {
-  final keyboardEventConstructor =
-      js_util.getProperty(html.window, 'KeyboardEvent');
-  final event = js_util.callConstructor(
-    keyboardEventConstructor,
-    <Object>[
-      'keydown',
-      js_util.jsify(<String, Object>{
-        'key': key,
-        'bubbles': true,
-      }),
-    ],
-  );
-  element.dispatchEvent(event as html.Event);
+  final event = html.liKeyboardEvent('keydown', key: key);
+  element.dispatchEvent(event);
 }

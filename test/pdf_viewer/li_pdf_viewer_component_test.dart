@@ -6,8 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:typed_data';
 
 import 'package:limitless_ui/pdf_viewer.dart';
@@ -144,7 +143,7 @@ void main() {
     );
     expect(fakeBridge.documentRequests.single['cMapPacked'], isTrue);
 
-    final pages = fixture.rootElement.querySelectorAll('.page');
+    final pages = fixture.rootElement.queryAll('.page');
     expect(pages, hasLength(2));
   });
 
@@ -207,7 +206,7 @@ void main() {
     expect(trigger, isNotNull);
 
     await fixture.update((_) {
-      trigger!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -283,7 +282,7 @@ void main() {
     final printFrame =
         await _waitForElement('#liPdfViewerPrintFrame') as html.IFrameElement;
 
-    printFrame.dispatchEvent(html.Event('load'));
+    printFrame.dispatchEvent(html.liEvent('load'));
     await printFuture;
     await _settle(fixture);
 
@@ -293,7 +292,7 @@ void main() {
     expect(
         html.document.body!.querySelector('#liPdfViewerPrintFrame'), isNotNull);
 
-    html.window.dispatchEvent(html.Event('afterprint'));
+    html.window.dispatchEvent(html.liEvent('afterprint'));
     await _settle(fixture);
 
     expect(html.document.body!.querySelector('#liPdfViewerPrintFrame'), isNull);
@@ -305,7 +304,7 @@ void main() {
   test('internal link annotations resolve destinations and page indexes',
       () async {
     final state = FakePdfDocumentState();
-    final pageRef = js_util.jsify(<String, Object>{'num': 7, 'gen': 0});
+    final pageRef = <String, Object>{'num': 7, 'gen': 0};
 
     setLiPdfViewerPdfJsBridgeForTesting(
       FakePdfJsBridge(
@@ -331,7 +330,7 @@ void main() {
         await _waitForElement('.annotationLayer a') as html.AnchorElement;
     expect(link.getAttribute('href'), '#');
 
-    link.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    link.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     await _settle(fixture);
 
     expect(state.getDestinationsCalls, 1);
@@ -380,7 +379,7 @@ Future<void> _settle(
 
 Future<void> _nextAnimationFrame() {
   final completer = Completer<void>();
-  html.window.requestAnimationFrame((_) {
+  html.window.liRequestAnimationFrame((_) {
     completer.complete();
   });
   return completer.future;

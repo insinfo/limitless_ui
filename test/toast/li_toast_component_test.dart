@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -167,7 +167,7 @@ void main() {
     expect(closeButton, isNotNull);
 
     await fixture.update((_) {
-      closeButton!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      closeButton!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -180,9 +180,9 @@ void main() {
     await _settle(fixture);
 
     final solidToast = fixture.rootElement
-        .querySelectorAll('.toast')
+        .queryAll('.toast')
         .cast<html.Element>()
-        .firstWhere((element) => (element.text ?? '').contains('Warning body'));
+        .firstWhere((element) => (element.text).contains('Warning body'));
     final header = solidToast.querySelector('.toast-header');
     final closeButton = solidToast.querySelector('.btn-close');
 

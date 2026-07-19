@@ -860,21 +860,21 @@ If you’re not careful, this pipe will punish the server with requests.</p>
 
 <p>&lt;?code-excerpt “lib/src/fetch_json_pipe.dart” title?&gt;</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:convert';
-  import 'dart:html';
 
   import 'package:angular/angular.dart';
+  import 'package:http/http.dart' as http;
 
   @Pipe('fetch', pure: false)
   class FetchJsonPipe extends PipeTransform {
     dynamic _cachedData;
-    String _cachedUrl;
+    String? _cachedUrl;
 
     dynamic transform(String url) {
       if (url != _cachedUrl) {
         _cachedUrl = url;
         _cachedData = null;
-        HttpRequest.getString(url).then((s) {
-          _cachedData = json.decode(s);
+        http.get(Uri.parse(url)).then((response) {
+          _cachedData = json.decode(response.body);
         });
       }
       return _cachedData;

@@ -1,6 +1,7 @@
 //datatable_col.dart
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:popper/popper.dart';
 
@@ -462,7 +463,7 @@ class DatatableActionColumn extends DatatableCol {
     final normalizedOverflowIconClass = overflowButtonIconClass.trim();
     if (normalizedOverflowIconClass.isNotEmpty) {
       toggleButton.append(
-        Element.tag('i')..className = normalizedOverflowIconClass,
+        document.createElement('i')..className = normalizedOverflowIconClass,
       );
     }
 
@@ -523,7 +524,8 @@ class DatatableActionColumn extends DatatableCol {
       await overlay!.update();
       outsideClickSubscription ??= document.onClick.listen((event) {
         final target = event.target;
-        if (target is Node && !targetIsInsideOverflow(target)) {
+        if ((target?.isA<Node>() ?? false) &&
+            !targetIsInsideOverflow(target as Node)) {
           closeMenu();
         }
       });
@@ -533,12 +535,12 @@ class DatatableActionColumn extends DatatableCol {
           toggleButton.focus();
         }
       });
-      focusInSubscription ??=
-          const EventStreamProvider<FocusEvent>('focusin')
-              .forTarget(document)
-              .listen((event) {
+      focusInSubscription ??= const EventStreamProvider<FocusEvent>('focusin')
+          .forTarget(document)
+          .listen((event) {
         final target = event.target;
-        if (target is Node && !targetIsInsideOverflow(target)) {
+        if ((target?.isA<Node>() ?? false) &&
+            !targetIsInsideOverflow(target as Node)) {
           closeMenu();
         }
       });
@@ -575,7 +577,7 @@ class DatatableActionColumn extends DatatableCol {
     final iconClass = action.iconClass?.trim();
     if (iconClass != null && iconClass.isNotEmpty) {
       button.append(
-        Element.tag('i')..className = '$iconClass me-2',
+        document.createElement('i')..className = '$iconClass me-2',
       );
     }
     button.appendText(action.label);
@@ -589,13 +591,13 @@ class DatatableActionColumn extends DatatableCol {
       event.stopPropagation();
       menu.classes.remove('show');
       final wrapper = menu.parent;
-      if (wrapper is Element) {
-        wrapper.classes.remove('show');
+      if ((wrapper?.isA<Element>() ?? false)) {
+        wrapper!.classes.remove('show');
         final toggle = wrapper.querySelector(
           '[data-li-datatable-action-overflow-toggle="true"]',
         );
-        if (toggle is Element) {
-          toggle.setAttribute('aria-expanded', 'false');
+        if ((toggle?.isA<Element>() ?? false)) {
+          toggle!.setAttribute('aria-expanded', 'false');
         }
       }
       Future.sync(() => action.onTap(context));
@@ -665,7 +667,7 @@ class DatatableActionColumn extends DatatableCol {
         if (renderLabel) 'me-2',
         ...extraIconClasses,
       ];
-      final icon = Element.tag('i')
+      final icon = document.createElement('i')
         ..className =
             iconClasses.where((value) => value.trim().isNotEmpty).join(' ');
       button.append(icon);

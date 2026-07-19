@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -174,12 +174,8 @@ void main() {
 
     await fixture.update((host) {
       host.files = <html.File>[
-        html.File(
-            <Object>['demo'],
-            'comprovante.pdf',
-            <String, String>{
-              'type': 'application/pdf',
-            }),
+        html.liFile(<Object>['demo'], 'comprovante.pdf',
+            type: 'application/pdf'),
       ];
     });
     await _settle(fixture);
@@ -196,7 +192,7 @@ void main() {
     expect(preview, isNotNull);
     expect(clearButton, isNotNull);
     expect(previewStatus, isNotNull);
-    expect(previewStatus?.text?.trim(), isEmpty);
+    expect(previewStatus?.text.trim(), isEmpty);
     expect(uploadDropzone.text, contains('comprovante.pdf'));
   });
 
@@ -235,12 +231,8 @@ void main() {
     await fixture.update((host) {
       host.uploadPreviewMode = 'thumbnails';
       host.files = <html.File>[
-        html.File(
-            <Object>['demo'],
-            'comprovante.pdf',
-            <String, String>{
-              'type': 'application/pdf',
-            }),
+        html.liFile(<Object>['demo'], 'comprovante.pdf',
+            type: 'application/pdf'),
       ];
     });
     await _settle(fixture);
@@ -281,12 +273,7 @@ void main() {
     await fixture.update((host) {
       host.uploadPreviewMode = 'limitless';
       host.files = <html.File>[
-        html.File(
-            <Object>['demo'],
-            'copilot-color.png',
-            <String, String>{
-              'type': 'image/png',
-            }),
+        html.liFile(<Object>['demo'], 'copilot-color.png', type: 'image/png'),
       ];
     });
     await _settle(fixture);

@@ -177,7 +177,7 @@ It should contain:
 
 It should not contain:
 
-- `dart:html`;
+- browser-only DOM APIs such as `package:web`;
 - `dart:io`;
 - direct database code;
 - AngularDart components;

@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -89,7 +90,7 @@ class LiFormDirective {
     markAllAsTouched();
     await Future<void>.microtask(() {});
     final nextFrame = Completer<void>();
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       if (!nextFrame.isCompleted) {
         nextFrame.complete();
       }
@@ -127,7 +128,7 @@ class LiFormDirective {
   Future<bool> focusFirstInvalidLater({bool scroll = true}) async {
     await Future<void>.microtask(() {});
     final nextFrame = Completer<void>();
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       if (!nextFrame.isCompleted) {
         nextFrame.complete();
       }
@@ -180,21 +181,21 @@ class LiFormDirective {
       return registeredTarget;
     }
 
-    final focusableNodes = _hostElement.querySelectorAll(focusableSelector);
+    final focusableNodes = _hostElement.queryAll(focusableSelector);
     for (final node in focusableNodes) {
-      if (node is! html.HtmlElement || !_isFocusable(node)) {
+      if (!node.isA<html.HtmlElement>() || !_isFocusable(node)) {
         continue;
       }
 
       final invalidAncestor = node.closest(invalidSelector);
-      if (invalidAncestor is html.Element &&
+      if ((invalidAncestor?.isA<html.Element>() ?? false) &&
           _hostElement.contains(invalidAncestor) &&
-          _isUsableInvalidCandidate(invalidAncestor)) {
-        return node;
+          _isUsableInvalidCandidate(invalidAncestor!)) {
+        return node as html.HtmlElement;
       }
     }
 
-    final invalidNodes = _hostElement.querySelectorAll(invalidSelector);
+    final invalidNodes = _hostElement.queryAll(invalidSelector);
     for (final node in invalidNodes) {
       if (!_isUsableInvalidCandidate(node)) {
         continue;
@@ -244,11 +245,11 @@ class LiFormDirective {
   }
 
   bool _isUsableInvalidCandidate(html.Element element) {
-    if (identical(element, _hostElement) || element is html.FormElement) {
+    if (element == _hostElement || element.isA<html.FormElement>()) {
       return false;
     }
-    if (element.attributes.containsKey('disabled') ||
-        element.attributes['aria-disabled'] == 'true') {
+    if (element.hasAttribute('disabled') ||
+        element.getAttribute('aria-disabled') == 'true') {
       return false;
     }
     return true;
@@ -260,32 +261,32 @@ class LiFormDirective {
     }
 
     final nested = element.querySelector(focusableSelector);
-    if (nested is html.HtmlElement && _isFocusable(nested)) {
-      return nested;
+    if ((nested?.isA<html.HtmlElement>() ?? false) && _isFocusable(nested!)) {
+      return nested as html.HtmlElement;
     }
 
     return null;
   }
 
   bool _isFocusable(html.Element element) {
-    if (element is! html.HtmlElement) {
+    if (!element.isA<html.HtmlElement>()) {
       return false;
     }
 
-    if (element.attributes.containsKey('disabled') ||
-        element.attributes['aria-disabled'] == 'true') {
+    if (element.hasAttribute('disabled') ||
+        element.getAttribute('aria-disabled') == 'true') {
       return false;
     }
 
-    if (element is html.InputElement ||
-        element is html.TextAreaElement ||
-        element is html.SelectElement ||
-        element is html.ButtonElement) {
+    if (element.isA<html.InputElement>() ||
+        element.isA<html.TextAreaElement>() ||
+        element.isA<html.SelectElement>() ||
+        element.isA<html.ButtonElement>()) {
       return true;
     }
 
-    if (element is html.AnchorElement) {
-      return (element.href ?? '').trim().isNotEmpty;
+    if (element.isA<html.AnchorElement>()) {
+      return (element as html.AnchorElement).href.trim().isNotEmpty;
     }
 
     final tabindex = element.getAttribute('tabindex');
@@ -371,27 +372,31 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
         : focusableSelector.trim();
 
     final explicitTarget = _findMatchingSelfOrDescendant(targetSelector);
-    if (explicitTarget is html.HtmlElement &&
-        _isFocusable(explicitTarget, resolvedFocusableSelector)) {
+    if ((explicitTarget?.isA<html.HtmlElement>() ?? false) &&
+        _isFocusable(
+            explicitTarget as html.HtmlElement, resolvedFocusableSelector)) {
       return explicitTarget;
     }
 
     final preferredTarget = _findMatchingSelfOrDescendant(
       _defaultPreferredFocusTargetSelector,
     );
-    if (preferredTarget is html.HtmlElement &&
-        _isFocusable(preferredTarget, resolvedFocusableSelector)) {
+    if ((preferredTarget?.isA<html.HtmlElement>() ?? false) &&
+        _isFocusable(
+            preferredTarget as html.HtmlElement, resolvedFocusableSelector)) {
       return preferredTarget;
     }
 
-    if (_hostElement is html.HtmlElement &&
-        _isFocusable(_hostElement, resolvedFocusableSelector)) {
+    if (_hostElement.isA<html.HtmlElement>() &&
+        _isFocusable(
+            _hostElement as html.HtmlElement, resolvedFocusableSelector)) {
       return _hostElement;
     }
 
     final nestedTarget = _hostElement.querySelector(resolvedFocusableSelector);
-    if (nestedTarget is html.HtmlElement &&
-        _isFocusable(nestedTarget, resolvedFocusableSelector)) {
+    if ((nestedTarget?.isA<html.HtmlElement>() ?? false) &&
+        _isFocusable(
+            nestedTarget as html.HtmlElement, resolvedFocusableSelector)) {
       return nestedTarget;
     }
 
@@ -404,11 +409,11 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
     }
 
     final selfMatch = _findMatchingSelfOrDescendant(selector);
-    if (selfMatch is! html.Element) {
+    if (!(selfMatch?.isA<html.Element>() ?? false)) {
       return null;
     }
 
-    if (_isDisabled(selfMatch)) {
+    if (_isDisabled(selfMatch!)) {
       return null;
     }
 
@@ -425,7 +430,7 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
     }
 
     final nested = _hostElement.querySelector(selector);
-    if (nested is html.Element) {
+    if ((nested?.isA<html.Element>() ?? false)) {
       return nested;
     }
 
@@ -454,10 +459,10 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
   }
 
   bool _isDisabled(html.Element element) {
-    if (element.attributes.containsKey('disabled')) {
+    if (element.hasAttribute('disabled')) {
       return true;
     }
 
-    return element.attributes['aria-disabled'] == 'true';
+    return element.getAttribute('aria-disabled') == 'true';
   }
 }

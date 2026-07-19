@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -43,7 +44,7 @@ class LiInputComponent
 
   static int _nextId = 0;
 
-  final html.HtmlElement _hostElement;
+  final html.HTMLElement _hostElement;
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
   final String _generatedId;
@@ -614,11 +615,11 @@ class LiInputComponent
   }
 
   void handleKeydown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    _keydownController.add(event);
+    _keydownController.add(event as html.KeyboardEvent);
     if (event.key == 'Enter' ||
         event.code == 'Enter' ||
         event.code == 'NumpadEnter') {
@@ -650,23 +651,23 @@ class LiInputComponent
 
   void _focusInput() {
     final element = inputElement;
-    if (element is html.InputElement) {
-      element.focus();
+    if ((element?.isA<html.InputElement>() ?? false)) {
+      element!.focus();
       return;
     }
-    if (element is html.TextAreaElement) {
-      element.focus();
+    if ((element?.isA<html.TextAreaElement>() ?? false)) {
+      element!.focus();
     }
   }
 
   void _syncInputValue() {
     final element = inputElement;
-    if (element is html.InputElement) {
-      element.value = _value;
+    if ((element?.isA<html.InputElement>() ?? false)) {
+      (element as html.InputElement).value = _value;
       return;
     }
-    if (element is html.TextAreaElement) {
-      element.value = _value;
+    if ((element?.isA<html.TextAreaElement>() ?? false)) {
+      (element as html.TextAreaElement).value = _value;
     }
   }
 
@@ -692,9 +693,9 @@ class LiInputComponent
     }
 
     if (effectiveInvalid) {
-      element.attributes['data-invalid'] = 'true';
+      element.setAttribute('data-invalid', 'true');
     } else {
-      element.attributes.remove('data-invalid');
+      element.removeAttribute('data-invalid');
     }
   }
 
@@ -819,7 +820,7 @@ class LiInputComponent
 
   bool get _hasHostInvalidState =>
       _hostElement.classes.contains('is-invalid') ||
-      _hostElement.attributes['data-invalid'] == 'true';
+      _hostElement.getAttribute('data-invalid') == 'true';
 
   bool get _shouldShowValidation => liShouldShowValidation(
         mode: liValidationMode,

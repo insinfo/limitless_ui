@@ -451,11 +451,11 @@ a dialog service; the following simple implementation will do.</p>
 
 <p>&lt;?code-excerpt “lib/src/crisis/dialog_service.dart” title?&gt;</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:async';
-  import 'dart:html';
+  import 'package:web/web.dart';
 
   class DialogService {
     Future&lt;bool&gt; confirm(String message) async =&gt;
-        window.confirm(message ?? 'Ok?');
+        window.confirm(message);
   }
 </code></pre></div></div>
 

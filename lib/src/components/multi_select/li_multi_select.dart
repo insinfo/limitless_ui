@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -607,8 +608,8 @@ class LiMultiSelectComponent
   }) {
     final wasOpen = dropdownOpen;
 
-    for (final element in dropdownContainerEle?.querySelectorAll('li') ??
-        const <html.Element>[]) {
+    for (final element
+        in dropdownContainerEle?.queryAll('li') ?? const <html.Element>[]) {
       if (element.classes.contains('dropdown-item-hover')) {
         element.classes.remove('dropdown-item-hover');
       }
@@ -633,9 +634,9 @@ class LiMultiSelectComponent
     } else if (_canPreserveFocus(preserveFocusTarget)) {
       Future<void>.microtask(() {
         final focusTarget = preserveFocusTarget;
-        if (focusTarget is html.HtmlElement &&
-            focusTarget.isConnected == true) {
-          focusTarget.focus();
+        if ((focusTarget?.isA<html.HtmlElement>() ?? false) &&
+            focusTarget?.isConnected == true) {
+          focusTarget!.focus();
         }
       });
     }
@@ -714,11 +715,11 @@ class LiMultiSelectComponent
   }
 
   void handleTriggerKeydown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    if (event.code == 'Enter' ||
+    if ((event as html.KeyboardEvent).code == 'Enter' ||
         event.code == 'NumpadEnter' ||
         event.code == 'Space' ||
         event.key == ' ') {
@@ -794,20 +795,21 @@ class LiMultiSelectComponent
   }
 
   bool _canPreserveFocus(html.Element? element) {
-    if (element is! html.HtmlElement || element.isConnected != true) {
+    if (!(element?.isA<html.HtmlElement>() ?? false) ||
+        element?.isConnected != true) {
       return false;
     }
 
-    final tabIndex = element.tabIndex;
-    if (tabIndex != null && tabIndex >= 0) {
+    final tabIndex = (element as html.HtmlElement).tabIndex;
+    if (tabIndex >= 0) {
       return true;
     }
 
-    return element is html.InputElement ||
-        element is html.ButtonElement ||
-        element is html.SelectElement ||
-        element is html.TextAreaElement ||
-        element.attributes.containsKey('contenteditable');
+    return element.isA<html.InputElement>() ||
+        element.isA<html.ButtonElement>() ||
+        element.isA<html.SelectElement>() ||
+        element.isA<html.TextAreaElement>() ||
+        element.hasAttribute('contenteditable');
   }
 
   void searchHandle(String? searchString) {
@@ -938,7 +940,7 @@ class LiMultiSelectComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _overlayRelayoutPending = false;
       if (!dropdownOpen) {
         return;

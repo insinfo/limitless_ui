@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'datatable_exporter.dart';
 import 'datatable_models.dart';

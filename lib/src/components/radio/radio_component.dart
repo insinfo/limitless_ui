@@ -1,4 +1,5 @@
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -160,8 +161,8 @@ class LiRadioComponent implements ControlValueAccessor<dynamic> {
 
     event.preventDefault();
     final target = event.target;
-    if (target is html.InputElement) {
-      target.checked = false;
+    if ((target?.isA<html.InputElement>() ?? false)) {
+      (target as html.InputElement).checked = false;
     }
 
     _groupValue = null;

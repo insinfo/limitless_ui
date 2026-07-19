@@ -1,5 +1,6 @@
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 abstract class LiPdfViewerBrowserBridge {
   const LiPdfViewerBrowserBridge();
@@ -33,7 +34,7 @@ class DefaultLiPdfViewerBrowserBridge implements LiPdfViewerBrowserBridge {
 
   @override
   void printWindow(dynamic targetFrame) {
-    js_util.callMethod(targetFrame, 'print', const <Object?>[]);
+    (targetFrame as JSObject).callMethod('print'.toJS);
   }
 }
 

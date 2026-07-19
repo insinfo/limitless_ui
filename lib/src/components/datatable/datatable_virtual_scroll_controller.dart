@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 import 'dart:math' as math;
 
 import 'datatable_css_utils.dart';

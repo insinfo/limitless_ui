@@ -1,5 +1,6 @@
+import 'package:limitless_ui/web_compat.dart';
+
 import 'dart:async';
-import 'dart:html';
 
 import 'datatable_models.dart';
 

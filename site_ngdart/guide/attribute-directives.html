@@ -372,13 +372,13 @@ named <code class="language-plaintext highlighter-rouge">attribute_directives</c
 <p>Create the following source file in the indicated folder:</p>
 
 <p>&lt;?code-excerpt “lib/src/highlight_directive_1.dart” title?&gt;</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:html';
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:web/web.dart';
 
   import 'package:angular/angular.dart';
 
   @Directive(selector: '[myHighlight]')
   class HighlightDirective {
-    HighlightDirective(Element el) {
+    HighlightDirective(HTMLElement el) {
       el.style.backgroundColor = 'yellow';
     }
   }
@@ -409,7 +409,7 @@ Angular locates all elements in the template that have an attribute named <code 
 called <code class="language-plaintext highlighter-rouge">HighlightDirective</code>, which contains the logic for the directive.</p>
 
 <p>Angular creates a new instance of the directive’s controller class for
-each matching element, injecting an HTML <a href="https://api.dart.dev/stable/dart-html/Element-class.html">Element</a>
+each matching element, injecting an HTML <a href="https://developer.mozilla.org/docs/Web/API/HTMLElement">HTMLElement</a>
 into the constructor.</p>
 
 <p><a id="apply-directive"></a></p>
@@ -500,8 +500,8 @@ each adorned by the <code class="language-plaintext highlighter-rouge">HostListe
     _highlight();
   }
 
-  void _highlight([String color]) {
-    _el.style.backgroundColor = color;
+  void _highlight([String? color]) {
+    _el.style.backgroundColor = color ?? '';
   }
 </code></pre></div></div>
 
@@ -523,7 +523,7 @@ element that hosts an attribute directive, the <code class="language-plaintext h
 which you declare and initialize in the constructor.</p>
 
 <p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart (constructor)” region=”ctor” title?&gt;</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  final Element _el;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  final HTMLElement _el;
 
   HighlightDirective(this._el);
 </code></pre></div></div>
@@ -531,13 +531,13 @@ which you declare and initialize in the constructor.</p>
 <p>Here’s the updated directive in full:</p>
 
 <p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart” plaster=”none” title?&gt;</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:html';
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:web/web.dart';
 
   import 'package:angular/angular.dart';
 
   @Directive(selector: '[myHighlight]')
   class HighlightDirective {
-    final Element _el;
+    final HTMLElement _el;
 
     HighlightDirective(this._el);
 
@@ -551,8 +551,8 @@ which you declare and initialize in the constructor.</p>
       _highlight();
     }
 
-    void _highlight([String color]) {
-      _el.style.backgroundColor = color;
+    void _highlight([String? color]) {
+      _el.style.backgroundColor = color ?? '';
     }
   }
 </code></pre></div></div>
@@ -574,7 +574,7 @@ In this section, you give the developer the power to set the highlight color whi
 
 <p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart (highlightColor)” region=”color” title?&gt;</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
-  String highlightColor;
+  String? highlightColor;
 </code></pre></div></div>
 
 <p><a id="input"></a></p>
@@ -637,7 +637,7 @@ That’s a crisp, compact syntax.</p>
 
 <p>&lt;?code-excerpt “lib/src/highlight_directive.dart (color property with alias)” region=”color” title?&gt;</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input('myHighlight')
-  String highlightColor;
+  String? highlightColor;
 </code></pre></div></div>
 
 <p><em>Inside</em> the directive the property is known as <code class="language-plaintext highlighter-rouge">highlightColor</code>.
@@ -660,18 +660,18 @@ If someone neglects to bind to <code class="language-plaintext highlighter-rouge
 <p>Here’s the latest version of the directive class.</p>
 
 <p>&lt;?code-excerpt “lib/src/highlight_directive_3.dart” title?&gt;</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:html';
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:web/web.dart';
 
   import 'package:angular/angular.dart';
 
   @Directive(selector: '[myHighlight]')
   class HighlightDirective {
-    final Element _el;
+    final HTMLElement _el;
 
     HighlightDirective(this._el);
 
     @Input('myHighlight')
-    String highlightColor;
+    String? highlightColor;
 
     @HostListener('mouseenter')
     void onMouseEnter() =&gt; _highlight(highlightColor ?? 'red');
@@ -679,8 +679,8 @@ If someone neglects to bind to <code class="language-plaintext highlighter-rouge
     @HostListener('mouseleave')
     void onMouseLeave() =&gt; _highlight();
 
-    void _highlight([String color]) {
-      _el.style.backgroundColor = color;
+    void _highlight([String? color]) {
+      _el.style.backgroundColor = color ?? '';
     }
   }
 </code></pre></div></div>
@@ -710,7 +710,7 @@ lets you pick the highlight color with a radio button and bind your color choice
 
 <p>&lt;?code-excerpt “lib/app_component.dart (class)”?&gt;</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  class AppComponent {
-    String color;
+    String? color;
   }
 </code></pre></div></div>
 
@@ -776,14 +776,14 @@ You create a functional directive by annotating a public, top-level function wit
 <p>Create the following functional attribute directive:</p>
 
 <p>&lt;?code-excerpt “lib/src/auto_id_directive.dart” title?&gt;</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'dart:html';
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  import 'package:web/web.dart';
   import 'package:angular/angular.dart';
 
   int _idCounter = 0;
 
   @Directive(selector: '[autoId]')
   void autoIdDirective(
-    Element el,
+    HTMLElement el,
     @Attribute('autoId') String prefix,
   ) {
     el.id = '$prefix${_idCounter++}';
@@ -857,14 +857,14 @@ the <code class="language-plaintext highlighter-rouge">HighlightDirective</code>
 
 <p>&lt;?code-excerpt “lib/src/highlight_directive_2.dart (color)”?&gt;</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input()
-  String highlightColor;
+  String? highlightColor;
 </code></pre></div></div>
 
 <p>You’ve seen it with an alias:</p>
 
 <p>&lt;?code-excerpt “lib/src/highlight_directive.dart (color)”?&gt;</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  @Input('myHighlight')
-  String highlightColor;
+  String? highlightColor;
 </code></pre></div></div>
 
 <p>Either way, the <code class="language-plaintext highlighter-rouge">@Input</code> annotation tells Angular that this property is

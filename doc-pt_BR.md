@@ -539,7 +539,7 @@ Ele deve conter:
 
 Ele não deve conter:
 
-- `dart:html`;
+- APIs DOM exclusivas do navegador, como `package:web`;
 - `dart:io`;
 - código direto de banco de dados;
 - componentes AngularDart;

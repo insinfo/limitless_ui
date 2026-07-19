@@ -1,5 +1,6 @@
+import 'package:limitless_ui/web_compat.dart' as html;
+
 import 'dart:async';
-import 'dart:html' as html;
 
 import 'package:ngx_dart/angular.dart';
 

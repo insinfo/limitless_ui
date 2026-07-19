@@ -47,8 +47,9 @@ class PdfViewerRenderingQueue {
         cancelActiveOutsidePageIds != null &&
         !cancelActiveOutsidePageIds.contains(active.pageNum)) {
       active.cancelRender();
-      active.renderingState =
-          active.canvas == null ? RenderingState.initial : RenderingState.zooming;
+      active.renderingState = active.canvas == null
+          ? RenderingState.initial
+          : RenderingState.zooming;
     }
 
     _generation++;

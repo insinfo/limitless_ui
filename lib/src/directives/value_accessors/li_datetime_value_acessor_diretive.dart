@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/angular_forms.dart';
@@ -21,7 +21,7 @@ import 'package:ngx_forms/angular_forms.dart';
 class LiDateTimeValueAccessor implements ControlValueAccessor {
   final InputElement _element;
 
-  LiDateTimeValueAccessor(HtmlElement element)
+  LiDateTimeValueAccessor(HTMLElement element)
       : _element = element as InputElement;
 
   @HostListener('change', ['\$event.target.value'])

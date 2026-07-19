@@ -5,9 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
-import 'dart:js';
-
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -234,7 +232,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'Maria';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -249,7 +247,7 @@ void main() {
         fixture.rootElement.querySelector('input#name-input') as dynamic;
 
     await fixture.update((_) {
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -258,8 +256,8 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'Joao';
-      input.dispatchEvent(html.Event('input', canBubble: true));
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -276,7 +274,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '12345678901';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -293,7 +291,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '123456';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -309,8 +307,8 @@ void main() {
 
     await fixture.update((_) {
       input.value = '123';
-      input.dispatchEvent(html.Event('input', canBubble: true));
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -320,8 +318,8 @@ void main() {
 
     await fixture.update((_) {
       input.value = '123456';
-      input.dispatchEvent(html.Event('input', canBubble: true));
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -337,7 +335,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '123';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -347,7 +345,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '52998224725';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -367,7 +365,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '123';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -389,7 +387,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '12';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -420,7 +418,7 @@ void main() {
         toggle.classes.contains('li-input__password-toggle--overlay'), isTrue);
 
     await fixture.update((_) {
-      toggle.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -468,7 +466,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'Token#2040';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -476,7 +474,7 @@ void main() {
     expect(input.value, '•' * host.signaturePassword.length);
 
     await fixture.update((_) {
-      toggle.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      toggle.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -493,7 +491,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'abc';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
     });
     await _settle(fixture);
 
@@ -503,7 +501,7 @@ void main() {
         isNot(contains('Use ao menos uma letra maiuscula.')));
 
     await fixture.update((_) {
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -521,7 +519,7 @@ void main() {
         .querySelector('input#validated-password-input') as html.InputElement;
 
     await fixture.update((_) {
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -530,8 +528,8 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'abc123';
-      input.dispatchEvent(html.Event('input', canBubble: true));
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -541,8 +539,8 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'Abc123';
-      input.dispatchEvent(html.Event('input', canBubble: true));
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -552,8 +550,8 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'Abc123!';
-      input.dispatchEvent(html.Event('input', canBubble: true));
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -569,12 +567,12 @@ void main() {
         as html.InputElement;
 
     await fixture.update((_) {
-      input.dispatchEvent(html.Event('focus', canBubble: true));
-      input.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      input.dispatchEvent(html.liEvent('focus', canBubble: true));
+      input.dispatchEvent(html.liMouseEvent('click', canBubble: true));
       input.dispatchEvent(createKeyEvent('keydown', key: 'A'));
       input.dispatchEvent(
           createKeyEvent('keydown', key: 'Enter', code: 'Enter'));
-      input.dispatchEvent(html.Event('blur', canBubble: true));
+      input.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -591,31 +589,9 @@ Future<void> _settle(NgTestFixture<InputTestHostComponent> fixture) async {
   await fixture.update((_) {});
 }
 
-const _createKeyEventName = '__dart_createLiInputKeyboardEvent';
-const _createKeyEventScript = '''
-window['$_createKeyEventName'] = function(type, key, code) {
-  return new KeyboardEvent(type, {
-    key: key,
-    code: code || key,
-    bubbles: true
-  });
-}
-''';
-
 html.Event createKeyEvent(
   String type, {
   required String key,
   String? code,
-}) {
-  if (!context.hasProperty(_createKeyEventName)) {
-    final script = html.document.createElement('script')
-      ..setAttribute('type', 'text/javascript')
-      ..text = _createKeyEventScript;
-    html.document.body!.append(script);
-  }
-
-  return context.callMethod(
-    _createKeyEventName,
-    <Object>[type, key, code ?? key],
-  ) as html.Event;
-}
+}) =>
+    html.liKeyboardEvent(type, key: key, code: code ?? key);

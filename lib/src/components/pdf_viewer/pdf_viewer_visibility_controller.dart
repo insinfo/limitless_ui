@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math';
 
 import 'pdf_viewer_page_view.dart';

@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
@@ -253,13 +253,13 @@ await controller.closed;''';
   String get globalConfigBody => _isPt
       ? 'Os defaults podem ser escopados por subtree usando LiTooltipConfig como provider local.'
       : 'Defaults can be scoped by subtree using LiTooltipConfig as a local provider.';
-    String get staticApiTitle => _isPt ? 'API estática' : 'Static API';
-    String get staticApiBody => _isPt
-        ? 'Para fluxos imperativos fora de uma diretiva, LiTooltip.show reutiliza o mesmo overlay, aceita callbacks onOpen/onClose, suporta openDelay/closeDelay e devolve um controller com closed e close().'
-        : 'For imperative flows outside a directive, LiTooltip.show reuses the same overlay, accepts onOpen/onClose callbacks, supports openDelay/closeDelay, and returns a controller with closed and close().';
-    String get staticApiButton =>
+  String get staticApiTitle => _isPt ? 'API estática' : 'Static API';
+  String get staticApiBody => _isPt
+      ? 'Para fluxos imperativos fora de uma diretiva, LiTooltip.show reutiliza o mesmo overlay, aceita callbacks onOpen/onClose, suporta openDelay/closeDelay e devolve um controller com closed e close().'
+      : 'For imperative flows outside a directive, LiTooltip.show reuses the same overlay, accepts onOpen/onClose callbacks, supports openDelay/closeDelay, and returns a controller with closed and close().';
+  String get staticApiButton =>
       _isPt ? 'Abrir tooltip estático' : 'Open static tooltip';
-    String get staticApiTooltipText => _isPt
+  String get staticApiTooltipText => _isPt
       ? 'Fluxo imperativo concluído sem depender de DI.'
       : 'Imperative flow completed without depending on DI.';
   String get apiIntro => _isPt

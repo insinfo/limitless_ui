@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -315,49 +315,49 @@ void main() {
 
     await fixture.update((_) {
       cpfInput.value = '52998224725';
-      cpfInput.dispatchEvent(html.Event('input', canBubble: true));
-      cpfInput.dispatchEvent(html.Event('blur', canBubble: true));
+      cpfInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      cpfInput.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      selectButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      selectButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     final designOption = html.document
-        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
         .cast<html.Element>()
-        .firstWhere((element) => (element.text ?? '').contains('Design'));
+        .firstWhere((element) => (element.text).contains('Design'));
 
     await fixture.update((_) {
-      designOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      designOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
       multiSelectButton
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     final multiOptions = html.document
-        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
         .cast<html.Element>()
         .toList(growable: false);
     final emailOption = multiOptions.firstWhere(
-      (element) => (element.text ?? '').contains('Email'),
+      (element) => (element.text).contains('Email'),
     );
     final pushOption = multiOptions.firstWhere(
-      (element) => (element.text ?? '').contains('Push'),
+      (element) => (element.text).contains('Push'),
     );
 
     await fixture.update((_) {
-      emailOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
-      pushOption.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      emailOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      pushOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
       checkboxInput.checked = true;
-      checkboxInput.dispatchEvent(html.Event('change', canBubble: true));
-      checkboxInput.dispatchEvent(html.Event('blur', canBubble: true));
+      checkboxInput.dispatchEvent(html.liEvent('change', canBubble: true));
+      checkboxInput.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 

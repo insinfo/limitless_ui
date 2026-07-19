@@ -5,8 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -90,7 +89,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final sliders = fixture.rootElement.querySelectorAll('li-slider');
+    final sliders = fixture.rootElement.queryAll('li-slider');
     final handle = sliders.first.querySelector('.noUi-handle') as html.Element;
 
     await fixture.update((_) {
@@ -114,13 +113,13 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final sliders = fixture.rootElement.querySelectorAll('li-slider');
+    final sliders = fixture.rootElement.queryAll('li-slider');
     final rangeSlider = sliders[1];
-    final handles = rangeSlider.querySelectorAll('.noUi-handle');
+    final handles = rangeSlider.queryAll('.noUi-handle');
     final upperHandle = handles[1];
 
-    expect(rangeSlider.querySelectorAll('.noUi-tooltip').length, 2);
-    expect(rangeSlider.querySelectorAll('.noUi-value').length, 4);
+    expect(rangeSlider.queryAll('.noUi-tooltip').length, 2);
+    expect(rangeSlider.queryAll('.noUi-value').length, 4);
 
     await fixture.update((_) {
       upperHandle.focus();
@@ -134,7 +133,7 @@ void main() {
   test('connect upper renders the connector from handle to the end', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final sliders = fixture.rootElement.querySelectorAll('li-slider');
+    final sliders = fixture.rootElement.queryAll('li-slider');
     final upperSlider = sliders[2];
     final connect = upperSlider.querySelector('.noUi-connect') as html.Element;
     final style = connect.getAttribute('style') ?? '';
@@ -147,11 +146,11 @@ void main() {
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final sliders = fixture.rootElement.querySelectorAll('li-slider');
+    final sliders = fixture.rootElement.queryAll('li-slider');
     final customPipsSlider = sliders[3];
     final labels = customPipsSlider
-        .querySelectorAll('.noUi-value')
-        .map((element) => element.text?.trim() ?? '')
+        .queryAll('.noUi-value')
+        .map((element) => element.text.trim())
         .toList();
 
     expect(labels, orderedEquals(<String>['Start', 'Alpha', 'Beta', 'Live']));
@@ -189,33 +188,11 @@ Future<void> _settle(
 }
 
 void _dispatchKey(html.Element element, String key) {
-  final keyboardEventConstructor =
-      js_util.getProperty(html.window, 'KeyboardEvent');
-  final event = js_util.callConstructor(
-    keyboardEventConstructor,
-    <Object>[
-      'keydown',
-      js_util.jsify(<String, Object>{
-        'key': key,
-        'bubbles': true,
-      }),
-    ],
-  );
-  element.dispatchEvent(event as html.Event);
+  final event = html.liKeyboardEvent('keydown', key: key);
+  element.dispatchEvent(event);
 }
 
 void _dispatchMouse(html.Element element, String type) {
-  final mouseEventConstructor = js_util.getProperty(html.window, 'MouseEvent');
-  final event = js_util.callConstructor(
-    mouseEventConstructor,
-    <Object>[
-      type,
-      js_util.jsify(<String, Object>{
-        'bubbles': true,
-        'clientX': 120,
-        'clientY': 20,
-      }),
-    ],
-  );
-  element.dispatchEvent(event as html.Event);
+  final event = html.liMouseEvent(type, clientX: 120, clientY: 20);
+  element.dispatchEvent(event);
 }

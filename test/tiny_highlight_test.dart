@@ -13,7 +13,8 @@ void main() {
       expect(result, contains('<span class="th-keyword">FROM</span>'));
       expect(result, contains('<span class="th-keyword">WHERE</span>'));
       expect(result, contains('<span class="th-number">18</span>'));
-      expect(result, contains('<span class="th-string">&#39;active&#39;</span>'));
+      expect(
+          result, contains('<span class="th-string">&#39;active&#39;</span>'));
       expect(result, contains('<span class="th-comment">-- comment</span>'));
     });
 

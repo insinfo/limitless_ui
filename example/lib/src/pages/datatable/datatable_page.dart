@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/messages_en.i18n.dart' as en;
@@ -1123,7 +1123,7 @@ void openProcess(Map<String, dynamic> itemMap) {
       customRenderTitleHtml: (column) {
         final root = SpanElement()
           ..classes.addAll(<String>['d-inline-flex', 'align-items-center', 'gap-1']);
-        root.append(Element.tag('i')..className = 'ph ph-seal-check text-primary');
+        root.append(document.createElement('i')..className = 'ph ph-seal-check text-primary');
         root.appendText('Situação');
         return root;
       },
@@ -2404,7 +2404,7 @@ class ProductController {
       ..classes.add('datatable-api-card__eyebrow')
       ..text = t.pages.datatable.customCardEyebrow;
 
-    final title = HeadingElement.h6()
+    final title = createHeadingElement(6)
       ..classes.add('datatable-api-card__title')
       ..text = itemMap['feature']?.toString() ?? '';
 
@@ -2453,15 +2453,28 @@ class ProductController {
       ..classes.add('datatable-api-card__metric-value')
       ..text = itemMap['health']?.toString() ?? '';
 
-    ownerMetric.children.addAll(<Element>[ownerMetricLabel, ownerMetricValue]);
-    healthMetric.children
-        .addAll(<Element>[healthMetricLabel, healthMetricValue]);
+    for (final child in <Element>[ownerMetricLabel, ownerMetricValue]) {
+      ownerMetric.append(child);
+    }
+    for (final child in <Element>[healthMetricLabel, healthMetricValue]) {
+      healthMetric.append(child);
+    }
 
-    header.children.addAll(<Element>[eyebrow, title]);
-    badgeRow.children.addAll(<Element>[statusBadge, healthBadge]);
-    body.children.addAll(<Element>[owner, badgeRow, summary]);
-    footer.children.addAll(<Element>[ownerMetric, healthMetric]);
-    root.children.addAll(<Element>[header, body, footer]);
+    for (final child in <Element>[eyebrow, title]) {
+      header.append(child);
+    }
+    for (final child in <Element>[statusBadge, healthBadge]) {
+      badgeRow.append(child);
+    }
+    for (final child in <Element>[owner, badgeRow, summary]) {
+      body.append(child);
+    }
+    for (final child in <Element>[ownerMetric, healthMetric]) {
+      footer.append(child);
+    }
+    for (final child in <Element>[header, body, footer]) {
+      root.append(child);
+    }
 
     return root;
   }
@@ -2569,7 +2582,9 @@ class ProductController {
         ..classes.addAll(<String>['ph', 'ph-clock-counter-clockwise']),
     );
 
-    root.children.addAll(<Element>[openAction, timelineAction]);
+    for (final action in <Element>[openAction, timelineAction]) {
+      root.append(action);
+    }
     return root;
   }
 

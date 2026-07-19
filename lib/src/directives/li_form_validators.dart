@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngx_dart/angular.dart';
@@ -312,12 +313,12 @@ class LiNativeValidationFeedbackDirective implements AfterViewInit, OnDestroy {
 
     if (selector.isNotEmpty) {
       final existing = parent.querySelector(selector);
-      if (existing is html.HtmlElement) {
-        return existing;
+      if ((existing?.isA<html.HtmlElement>() ?? false)) {
+        return existing as html.HtmlElement;
       }
     }
 
-    final created = html.DivElement()
+    final created = html.createDivElement()
       ..classes.add('invalid-feedback')
       ..setAttribute('data-li-validation-feedback', 'true');
     parent.append(created);
@@ -336,7 +337,7 @@ class LiNativeValidationFeedbackDirective implements AfterViewInit, OnDestroy {
     _element.classes
       ..remove(liValidationInvalidClass)
       ..remove(liValidationValidClass);
-    _element.attributes.remove('aria-invalid');
+    _element.removeAttribute('aria-invalid');
     _setFeedbackText('');
   }
 

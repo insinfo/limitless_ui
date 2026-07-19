@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 
@@ -28,7 +28,7 @@ class LiMultiOptionComponent {
   }
 
   String get text {
-    return (rootElement.text ?? '').trim();
+    return rootElement.text.trim();
   }
 
   set text(String inputText) {
@@ -40,6 +40,6 @@ class LiMultiOptionComponent {
   }
 
   set innerHtml(String? inputText) {
-    rootElement.innerHtml = inputText;
+    rootElement.innerHtml = inputText ?? '';
   }
 }

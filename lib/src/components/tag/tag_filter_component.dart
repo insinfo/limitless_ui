@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -702,13 +703,15 @@ class LiTagFilterComponent
       }
 
       final target = event.target;
-      if (target is! html.Node) {
+      if (!(target?.isA<html.Node>() ?? false)) {
         closeDropdown();
         return;
       }
 
-      final clickedTrigger = dropdownButtonElement?.contains(target) ?? false;
-      final clickedPanel = dropdownContainerElement?.contains(target) ?? false;
+      final clickedTrigger =
+          dropdownButtonElement?.contains(target as html.Node?) ?? false;
+      final clickedPanel =
+          dropdownContainerElement?.contains(target as html.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         closeDropdown();
       }
@@ -739,7 +742,7 @@ class LiTagFilterComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _overlayRelayoutPending = false;
       if (!dropdownOpen) {
         return;

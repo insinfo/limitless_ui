@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -253,7 +254,7 @@ class LiTokenFieldComponent
       return;
     }
 
-    final text = inputToken?.value?.trim() ?? '';
+    final text = inputToken?.value.trim() ?? '';
     if (text.isEmpty) {
       return;
     }
@@ -275,7 +276,7 @@ class LiTokenFieldComponent
       return;
     }
 
-    final key = event.key ?? '';
+    final key = event.key;
     if (key.length != 1) {
       return;
     }
@@ -290,7 +291,7 @@ class LiTokenFieldComponent
       return;
     }
 
-    final key = event.key ?? '';
+    final key = event.key;
     final isModifierPressed = event.ctrlKey || event.metaKey;
     if (isModifierPressed && key.toLowerCase() == 'a') {
       event.preventDefault();
@@ -313,7 +314,7 @@ class LiTokenFieldComponent
     }
 
     final shouldSelectLastToken =
-        key == 'Backspace' && (inputToken?.value?.isEmpty ?? true);
+        key == 'Backspace' && (inputToken?.value.isEmpty ?? true);
     if (shouldSelectLastToken && items.isNotEmpty) {
       _clearItemSelection();
       items.last.selected = true;
@@ -326,7 +327,7 @@ class LiTokenFieldComponent
       return;
     }
 
-    final key = event.key ?? '';
+    final key = event.key;
     if (key == 'Enter' || key == ',' || key == ';') {
       event.preventDefault();
       addToken();
@@ -430,13 +431,11 @@ class LiTokenFieldComponent
     }
 
     final clipboard = html.window.navigator.clipboard;
-    if (clipboard != null) {
-      try {
-        await clipboard.writeText(textToCopy);
-        _copyActionController.add(null);
-        return;
-      } catch (_) {}
-    }
+    try {
+      await clipboard.writeText(textToCopy).toDart;
+      _copyActionController.add(null);
+      return;
+    } catch (_) {}
 
     _fallbackCopyToClipboard(textToCopy);
     _copyActionController.add(null);
@@ -449,10 +448,12 @@ class LiTokenFieldComponent
 
     String text = '';
     try {
-      await html.window.navigator.permissions?.query(<String, String>{
-        'name': 'clipboard-read',
-      });
-      text = await html.window.navigator.clipboard?.readText() ?? '';
+      await html.window.navigator.permissions
+          .query(<String, String>{
+            'name': 'clipboard-read',
+          }.jsify() as JSObject)
+          .toDart;
+      text = (await html.window.navigator.clipboard.readText().toDart).toDart;
     } catch (_) {
       text = '';
     }
@@ -568,7 +569,7 @@ class LiTokenFieldComponent
   }
 
   void _fallbackCopyToClipboard(String text) {
-    final helper = html.TextAreaElement()
+    final helper = html.createTextAreaElement()
       ..value = text
       ..style.position = 'fixed'
       ..style.opacity = '0'
@@ -599,7 +600,7 @@ class LiTokenFieldComponent
       _syncInputWidthFrameId = null;
     }
 
-    _syncInputWidthFrameId = html.window.requestAnimationFrame((_) {
+    _syncInputWidthFrameId = html.window.liRequestAnimationFrame((_) {
       _syncInputWidthFrameId = null;
       if (_isDestroyed) {
         return;

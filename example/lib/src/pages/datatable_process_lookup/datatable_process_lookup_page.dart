@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/limitless_ui_example.dart';

@@ -1,4 +1,5 @@
-import 'dart:html';
+import 'dart:js_interop';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'datatable_col.dart';
 import 'datatable_collection_utils.dart';
@@ -109,8 +110,12 @@ class DatatableResponsiveController {
       return;
     }
 
-    final headerCells = tableElement.querySelectorAll('thead th[data-key]');
-    for (final cell in headerCells.whereType<TableCellElement>()) {
+    final headerCells = tableElement.queryAll('thead th[data-key]');
+    for (final element in headerCells) {
+      if (!element.isA<TableCellElement>()) {
+        continue;
+      }
+      final cell = element as TableCellElement;
       if (cell.classes.contains('hide')) {
         continue;
       }
@@ -137,13 +142,14 @@ class DatatableResponsiveController {
 
     final checkboxCell =
         tableElement.querySelector('thead th.datatable-first-col');
-    if (checkboxCell is! TableCellElement) {
+    if (!(checkboxCell?.isA<TableCellElement>() ?? false)) {
       return;
     }
+    final firstCol = checkboxCell as TableCellElement;
 
-    final rectWidth = checkboxCell.getBoundingClientRect().width.toDouble();
+    final rectWidth = firstCol.getBoundingClientRect().width.toDouble();
     final measuredWidth =
-        rectWidth > 0 ? rectWidth : checkboxCell.offsetWidth.toDouble();
+        rectWidth > 0 ? rectWidth : firstCol.offsetWidth.toDouble();
     if (measuredWidth > 0) {
       _checkboxWidth =
           measuredWidth < _checkboxWidth ? measuredWidth : _checkboxWidth;

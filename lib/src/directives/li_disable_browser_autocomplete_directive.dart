@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -39,7 +39,7 @@ class LiDisableBrowserAutocompleteDirective implements OnInit, AfterChanges {
     if (!liDisableBrowserAutocomplete) {
       final original = _originalAutocomplete;
       if (original == null) {
-        _element.attributes.remove('autocomplete');
+        _element.removeAttribute('autocomplete');
       } else {
         _element.setAttribute('autocomplete', original);
       }
@@ -49,7 +49,7 @@ class LiDisableBrowserAutocompleteDirective implements OnInit, AfterChanges {
     final explicit = liAutocompleteValue?.trim() ?? '';
     final value = explicit.isNotEmpty
         ? explicit
-        : '${liAutocompletePrefix.trim()}-${_element.attributes['name'] ?? 'field'}';
+        : '${liAutocompletePrefix.trim()}-${_element.getAttribute('name') ?? 'field'}';
     _element.setAttribute('autocomplete', value);
   }
 }

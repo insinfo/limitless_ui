@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -8,21 +9,29 @@ import 'package:ngx_dart/angular.dart';
 @Directive(selector: 'input[type=file][liAutoClickFileInput]')
 class LiAutoClickFileInputDirective implements AfterChanges, OnDestroy {
   LiAutoClickFileInputDirective(html.Element hostElement) {
-    if (hostElement is! html.FileUploadInputElement) {
+    if (!hostElement.isA<html.HTMLInputElement>()) {
       throw StateError(
         'LiAutoClickFileInputDirective must be used on <input type="file">.',
       );
     }
 
-    _input = hostElement;
+    final input = hostElement as html.HTMLInputElement;
+    if (input.type.toLowerCase() != 'file') {
+      throw StateError(
+        'LiAutoClickFileInputDirective must be used on <input type="file">.',
+      );
+    }
+
+    _input = input;
     _changeSubscription = _input.onChange.listen((_) {
       _filesSelectedController.add(
-        List<html.File>.unmodifiable(_input.files ?? const <html.File>[]),
+        List<html.File>.unmodifiable(
+            _input.files?.toList() ?? const <html.File>[]),
       );
     });
   }
 
-  late final html.FileUploadInputElement _input;
+  late final html.HTMLInputElement _input;
   StreamSubscription<html.Event>? _changeSubscription;
   bool _previousTrigger = false;
 
@@ -41,7 +50,7 @@ class LiAutoClickFileInputDirective implements AfterChanges, OnDestroy {
   @override
   void ngAfterChanges() {
     if (liAutoClickFileInput && !_previousTrigger) {
-      scheduleMicrotask(_input.click);
+      scheduleMicrotask(() => _input.click());
     }
     _previousTrigger = liAutoClickFileInput;
   }

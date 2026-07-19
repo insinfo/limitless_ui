@@ -6,8 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -69,7 +68,7 @@ void main() {
     await _settle(fixture);
 
     final carousel = fixture.rootElement.querySelector('li-carousel');
-    final indicators = fixture.rootElement.querySelectorAll(
+    final indicators = fixture.rootElement.queryAll(
       '.carousel-indicators button',
     );
     final nextControl = fixture.rootElement.querySelector(
@@ -99,7 +98,7 @@ void main() {
     ) as html.ButtonElement;
 
     await fixture.update((_) {
-      nextControl.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      nextControl.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleTransition(fixture);
 
@@ -111,7 +110,8 @@ void main() {
     ) as html.ButtonElement;
 
     await fixture.update((_) {
-      previousControl.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      previousControl
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settleTransition(fixture);
 
@@ -154,7 +154,8 @@ void main() {
     ) as html.ButtonElement;
 
     await fixture.update((_) {
-      previousControl.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      previousControl
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -170,7 +171,7 @@ void main() {
     ) as html.ButtonElement;
 
     await fixture.update((_) {
-      nextControl.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      nextControl.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -197,15 +198,6 @@ Future<void> _settleTransition(
 }
 
 void _dispatchKeyboardEvent(html.Element target, String key) {
-  final event = js_util.callConstructor(
-    js_util.getProperty(html.window, 'KeyboardEvent'),
-    <Object>[
-      'keydown',
-      js_util.jsify(<String, Object>{
-        'key': key,
-        'bubbles': true,
-      }),
-    ],
-  ) as html.KeyboardEvent;
+  final event = html.liKeyboardEvent('keydown', key: key);
   target.dispatchEvent(event);
 }

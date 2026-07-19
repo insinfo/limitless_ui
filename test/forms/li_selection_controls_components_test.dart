@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -90,7 +90,7 @@ void main() {
 
     await fixture.update((_) {
       checkbox.checked = true;
-      checkbox.dispatchEvent(html.Event('change', canBubble: true));
+      checkbox.dispatchEvent(html.liEvent('change', canBubble: true));
     });
     await _settle(fixture);
 
@@ -105,7 +105,7 @@ void main() {
         .querySelector('input#required-checkbox') as html.InputElement;
 
     await fixture.update((_) {
-      checkbox.dispatchEvent(html.Event('blur', canBubble: true));
+      checkbox.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -115,8 +115,8 @@ void main() {
 
     await fixture.update((_) {
       checkbox.checked = true;
-      checkbox.dispatchEvent(html.Event('change', canBubble: true));
-      checkbox.dispatchEvent(html.Event('blur', canBubble: true));
+      checkbox.dispatchEvent(html.liEvent('change', canBubble: true));
+      checkbox.dispatchEvent(html.liEvent('blur', canBubble: true));
     });
     await _settle(fixture);
 
@@ -128,19 +128,19 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final radios = fixture.rootElement.querySelectorAll('li-radio input');
+    final radios = fixture.rootElement.queryAll('li-radio input');
     final publicRadio = radios[1] as html.InputElement;
 
     await fixture.update((_) {
       publicRadio.checked = true;
-      publicRadio.dispatchEvent(html.Event('change', canBubble: true));
+      publicRadio.dispatchEvent(html.liEvent('change', canBubble: true));
     });
     await _settle(fixture);
 
     expect(host.radioValue, 'public');
 
     await fixture.update((_) {
-      publicRadio.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      publicRadio.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -155,19 +155,19 @@ void main() {
     await _settle(fixture);
 
     final host = fixture.assertOnlyInstance;
-    final radios = fixture.rootElement.querySelectorAll('li-radio input');
+    final radios = fixture.rootElement.queryAll('li-radio input');
     final publicRadio = radios[1] as html.InputElement;
 
     await fixture.update((_) {
       publicRadio.checked = true;
-      publicRadio.dispatchEvent(html.Event('change', canBubble: true));
+      publicRadio.dispatchEvent(html.liEvent('change', canBubble: true));
     });
     await _settle(fixture);
 
     expect(host.radioValue, 'public');
 
     await fixture.update((_) {
-      publicRadio.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      publicRadio.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -178,7 +178,7 @@ void main() {
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final radios = fixture.rootElement.querySelectorAll('li-radio input');
+    final radios = fixture.rootElement.queryAll('li-radio input');
     final teamRadio = radios[0] as html.InputElement;
     final publicRadio = radios[1] as html.InputElement;
 
@@ -187,7 +187,7 @@ void main() {
 
     await fixture.update((_) {
       publicRadio.checked = true;
-      publicRadio.dispatchEvent(html.Event('change', canBubble: true));
+      publicRadio.dispatchEvent(html.liEvent('change', canBubble: true));
     });
     await _settle(fixture);
 
@@ -205,7 +205,7 @@ void main() {
 
     await fixture.update((_) {
       toggle.checked = true;
-      toggle.dispatchEvent(html.Event('change', canBubble: true));
+      toggle.dispatchEvent(html.liEvent('change', canBubble: true));
     });
     await _settle(fixture);
 
@@ -213,7 +213,7 @@ void main() {
 
     await fixture.update((_) {
       toggle.checked = false;
-      toggle.dispatchEvent(html.Event('change', canBubble: true));
+      toggle.dispatchEvent(html.liEvent('change', canBubble: true));
     });
     await _settle(fixture);
 

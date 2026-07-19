@@ -1,8 +1,8 @@
-//C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_text_editor_bridge.dart
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 
-import 'package:js/js.dart' show allowInterop;
+//C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_text_editor_bridge.dart
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 import 'quill_interop.dart' as quill;
 
@@ -56,6 +56,15 @@ abstract class LiQuillTextEditorHandle {
   void enable(bool enabled);
 }
 
+/// Marker for handles backed by a real JavaScript Quill instance.
+///
+/// Keeping the typed instance on the Dart wrapper avoids runtime `is` checks
+/// against the `quill.Quill` extension type, whose representation checks are
+/// erased and backend-dependent.
+abstract class LiJsQuillTextEditorHandle implements LiQuillTextEditorHandle {
+  quill.Quill get quillInstance;
+}
+
 abstract class LiQuillTextEditorBridge {
   bool get isQuillAvailable;
 
@@ -79,25 +88,23 @@ class DefaultLiQuillTextEditorBridge implements LiQuillTextEditorBridge {
   const DefaultLiQuillTextEditorBridge();
 
   @override
-  bool get isQuillAvailable => js_util.hasProperty(html.window, 'Quill');
+  bool get isQuillAvailable => (html.window as JSObject).has('Quill');
 
   @override
   bool get isTableBetterAvailable =>
-      js_util.hasProperty(html.window, 'QuillTableBetter');
+      (html.window as JSObject).has('QuillTableBetter');
 
   @override
   Object? getTableBetterKeyboardBindings() {
     if (!isTableBetterAvailable) {
       return null;
     }
-    final tableBetter = js_util.getProperty<Object?>(
-      html.window,
-      'QuillTableBetter',
-    );
+    final tableBetter =
+        (html.window as JSObject).getProperty('QuillTableBetter'.toJS);
     if (tableBetter == null) {
       return null;
     }
-    return js_util.getProperty<Object?>(tableBetter, 'keyboardBindings');
+    return (tableBetter as JSObject).getProperty('keyboardBindings'.toJS);
   }
 
   @override
@@ -133,13 +140,16 @@ class DefaultLiQuillTextEditorBridge implements LiQuillTextEditorBridge {
   }
 }
 
-class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
+class _JsLiQuillTextEditorHandle implements LiJsQuillTextEditorHandle {
   _JsLiQuillTextEditorHandle(this._editor);
 
   final quill.Quill _editor;
 
   @override
   quill.Quill get rawInstance => _editor;
+
+  @override
+  quill.Quill get quillInstance => _editor;
 
   @override
   void dispose() {
@@ -151,9 +161,9 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
   void onTextChange(void Function(String source) callback) {
     _editor.on(
       'text-change',
-      allowInterop((dynamic _, dynamic __, dynamic source) {
-        callback(source?.toString() ?? '');
-      }),
+      ((JSAny? _, JSAny? __, JSAny? source) {
+        callback((source as JSString?)?.toDart ?? '');
+      }).toJS,
     );
   }
 
@@ -163,18 +173,15 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
   ) {
     _editor.on(
       'selection-change',
-      allowInterop((dynamic range, dynamic _, dynamic __) {
+      ((quill.Range? range, JSAny? _, JSAny? __) {
         if (range == null) {
           callback(null);
           return;
         }
         callback(
-          LiQuillBridgeSelection(
-            index: js_util.getProperty<int>(range, 'index'),
-            length: js_util.getProperty<int>(range, 'length'),
-          ),
+          LiQuillBridgeSelection(index: range.index, length: range.length),
         );
-      }),
+      }).toJS,
     );
   }
 
@@ -201,12 +208,12 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
 
   @override
   void setSelection(int index, int length, [String source = 'api']) {
-    _editor.setSelection(index, length, source);
+    _editor.setSelection(index.toJS, length.toJS, source);
   }
 
   @override
   void setContents(dynamic delta, [String source = 'api']) {
-    _editor.setContents(delta, source);
+    _editor.setContents(delta as JSAny?, source);
   }
 
   @override
@@ -216,11 +223,7 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
 
   @override
   void insertText(int index, String text, [String source = 'user']) {
-    js_util.callMethod<void>(_editor, 'insertText', <Object?>[
-      index,
-      text,
-      source,
-    ]);
+    _editor.insertTextWithSource(index, text, source);
   }
 
   @override
@@ -230,7 +233,7 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
 
   @override
   void format(String name, dynamic value, [String source = 'user']) {
-    _editor.format(name, value, source);
+    _editor.format(name, (value as Object?).jsify(), source);
   }
 
   @override

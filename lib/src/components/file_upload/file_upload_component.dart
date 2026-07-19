@@ -1,7 +1,8 @@
 // ignore_for_file: implementation_imports
 
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -494,7 +495,7 @@ class LiFileUploadComponent
   bool get hostClass => true;
 
   void onDropzoneKeyDown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
@@ -502,7 +503,7 @@ class LiFileUploadComponent
       return;
     }
 
-    if (event.key == 'Enter' || event.key == ' ') {
+    if ((event as html.KeyboardEvent).key == 'Enter' || event.key == ' ') {
       event.preventDefault();
       openPicker();
     }
@@ -514,7 +515,8 @@ class LiFileUploadComponent
     }
 
     final target = event.target;
-    if (target is html.Element && _isInteractiveTarget(target)) {
+    if ((target?.isA<html.Element>() ?? false) &&
+        _isInteractiveTarget(target as html.Element)) {
       return;
     }
 
@@ -546,8 +548,7 @@ class LiFileUploadComponent
       return;
     }
     final removedFile = _files[index];
-    if (activePreviewItem != null &&
-        identical(activePreviewItem!.file, removedFile)) {
+    if (activePreviewItem != null && activePreviewItem!.file == removedFile) {
       closePreview();
     }
     _dirty = true;
@@ -697,8 +698,8 @@ class LiFileUploadComponent
 
   void onPreviewImageLoad(html.Event event) {
     final target = event.target;
-    if (target is html.ImageElement) {
-      _previewImageNaturalWidth = target.naturalWidth;
+    if ((target?.isA<html.ImageElement>() ?? false)) {
+      _previewImageNaturalWidth = (target as html.ImageElement).naturalWidth;
       _previewImageNaturalHeight = target.naturalHeight;
     }
     _refreshPreviewImageLayout();
@@ -893,7 +894,7 @@ class LiFileUploadComponent
 
     if (enable) {
       if (html.document.fullscreenElement == null) {
-        unawaited(root.requestFullscreen());
+        unawaited(root.requestFullscreen().toDart);
       }
       return;
     }
@@ -926,16 +927,16 @@ class LiFileUploadComponent
 
     final body = previewZoomBodyElement;
     final image = previewImageElement;
-    if (body == null || image == null || image is! html.ImageElement) {
+    if (body == null || image == null || !image.isA<html.ImageElement>()) {
       return;
     }
 
     final naturalWidth = _previewImageNaturalWidth > 0
         ? _previewImageNaturalWidth
-        : image.naturalWidth;
+        : (image as html.ImageElement).naturalWidth;
     final naturalHeight = _previewImageNaturalHeight > 0
         ? _previewImageNaturalHeight
-        : image.naturalHeight;
+        : (image as html.ImageElement).naturalHeight;
     if (naturalWidth <= 0 || naturalHeight <= 0) {
       return;
     }

@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -263,11 +263,11 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
 
   @HostListener('touchstart', ['\$event'])
   void onTouchStart(html.TouchEvent event) {
-    if (!touchEnabled || event.touches == null || event.touches!.isEmpty) {
+    if (!touchEnabled || event.touches.isEmpty) {
       return;
     }
 
-    _touchStartX = event.touches!.first.client.x;
+    _touchStartX = event.touches.first.clientX;
   }
 
   @HostListener('touchend', ['\$event'])
@@ -277,12 +277,12 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
     }
 
     final changedTouches = event.changedTouches;
-    if (changedTouches == null || changedTouches.isEmpty) {
+    if (changedTouches.isEmpty) {
       _touchStartX = null;
       return;
     }
 
-    final endX = changedTouches.first.client.x;
+    final endX = changedTouches.first.clientX;
     final deltaX = endX - _touchStartX!;
     _touchStartX = null;
 
@@ -364,7 +364,7 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
       isPrev: !isNext,
     );
 
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       nextItem.forceReflow();
 
       currentItem.setState(

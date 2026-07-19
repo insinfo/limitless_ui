@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 class LiFileType {
   static const List<String> _mimeDoc = <String>[

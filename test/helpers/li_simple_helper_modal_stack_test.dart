@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -124,7 +124,7 @@ void main() {
 
     final okButton = helperDialog.querySelector('button.BtnOk');
     expect(okButton, isNotNull);
-    okButton!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+    okButton!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     await _settle(fixture);
 
     expect(
@@ -196,7 +196,7 @@ void main() {
       int.parse(overlay.style.zIndex),
       greaterThan(int.parse(modalRoot!.style.zIndex)),
     );
-    expect(message?.text?.trim(), isNotEmpty);
+    expect(message?.text.trim(), isNotEmpty);
 
     await fixture.update((host) {
       host.narratedLoading.hide();
@@ -289,7 +289,7 @@ void main() {
 void _clickById(String id) {
   final element = html.document.body!.querySelector('#$id');
   expect(element, isNotNull);
-  element!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 Future<void> _settle<T>(NgTestFixture<T> fixture) async {
@@ -299,9 +299,9 @@ Future<void> _settle<T>(NgTestFixture<T> fixture) async {
 }
 
 html.Element? _modalRootByTitle(String title) {
-  for (final modal in html.document.body!.querySelectorAll('.modal')) {
+  for (final modal in html.document.body!.queryAll('.modal')) {
     final titleElement = modal.querySelector('.modal-title');
-    if (titleElement?.text?.trim() == title) {
+    if (titleElement?.text.trim() == title) {
       return modal;
     }
   }

@@ -1,19 +1,23 @@
+import 'package:limitless_ui/web_compat.dart';
+
 import 'dart:async';
-import 'dart:js_util' as js_util;
-import 'dart:html';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 /// Converts a nullable browser [Selection] to its selected text.
 ///
-/// This calls the DOM `Selection.toString()` method through `dart:js_util` as
-/// a workaround for https://github.com/dart-lang/sdk/issues/47942.
+/// This calls the DOM `Selection.toString()` method through
+/// `dart:js_interop_unsafe` as a workaround for
+/// https://github.com/dart-lang/sdk/issues/47942.
 extension ToStringSelectionExtension on Selection? {
   /// Returns the text currently covered by this selection.
   ///
   /// The extension expects the receiver to contain a real [Selection]. A `null`
   /// receiver follows the previous package behavior and throws at runtime.
   String asString() {
-    var result = js_util.callMethod(this as Selection, 'toString', []);
-    return result.toString();
+    final selection = this as Selection;
+    final result = (selection as JSObject).callMethod('toString'.toJS);
+    return (result as JSString).toDart;
   }
 }
 
@@ -21,12 +25,12 @@ extension ToStringSelectionExtension on Selection? {
 extension ToStringNullSafetySelectionExtension on Selection {
   /// Returns the text currently covered by this selection.
   ///
-  /// The DOM implementation is invoked through `dart:js_util` to avoid the
-  /// SDK interop issue documented in
+  /// The DOM implementation is invoked through `dart:js_interop_unsafe` to
+  /// avoid the SDK interop issue documented in
   /// https://github.com/dart-lang/sdk/issues/47942.
   String asString() {
-    var result = js_util.callMethod(this, 'toString', []);
-    return result.toString();
+    final result = (this as JSObject).callMethod('toString'.toJS);
+    return (result as JSString).toDart;
   }
 }
 
@@ -39,7 +43,7 @@ extension HtmlFileExtension on File {
   Future<dynamic> asArrayBuffer() async {
     final completer = Completer();
     final reader = FileReader();
-    reader.onLoad.listen((progressEvent) {
+    EventStreamProviders.loadEvent.forTarget(reader).listen((progressEvent) {
       final loadedFile = progressEvent.currentTarget as FileReader;
       completer.complete(loadedFile.result);
     });

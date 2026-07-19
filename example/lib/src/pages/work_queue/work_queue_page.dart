@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/limitless_ui_example.dart';
@@ -685,12 +685,12 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           responsiveAutoHideRequired: true,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
-            final wrapper = html.DivElement()
+            final wrapper = html.createDivElement()
               ..classes.addAll(<String>['d-flex', 'flex-column']);
-            final title = html.SpanElement()
+            final title = html.createSpanElement()
               ..classes.addAll(<String>['fw-semibold', 'text-body'])
               ..text = itemMap['fullCode']?.toString() ?? '';
-            final subtitle = html.SpanElement()
+            final subtitle = html.createSpanElement()
               ..classes.addAll(<String>['small', 'text-muted'])
               ..text = '$listLabel ${itemMap['listCode'] ?? '-'}';
             wrapper
@@ -746,10 +746,10 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           responsiveAutoHidePriority: 40,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
-            final wrapper = html.DivElement()
+            final wrapper = html.createDivElement()
               ..classes
                   .addAll(<String>['d-flex', 'align-items-center', 'gap-2']);
-            final avatar = html.SpanElement()
+            final avatar = html.createSpanElement()
               ..classes.addAll(<String>[
                 'd-inline-flex',
                 'align-items-center',
@@ -764,17 +764,17 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
               ..style.background = '#0f4c81'
               ..style.flex = '0 0 2rem'
               ..text = itemMap['responsibleInitials']?.toString() ?? '--';
-            final copy = html.DivElement()
+            final copy = html.createDivElement()
               ..classes.addAll(<String>['d-flex', 'flex-column']);
             copy
               ..append(
-                html.SpanElement()
+                html.createSpanElement()
                   ..classes.addAll(<String>['fw-semibold', 'text-body'])
                   ..text =
                       itemMap['responsibleName']?.toString() ?? ownerEmptyLabel,
               )
               ..append(
-                html.SpanElement()
+                html.createSpanElement()
                   ..classes.addAll(<String>['small', 'text-muted'])
                   ..text = itemMap['queueLaneLabel']?.toString() ?? '',
               );
@@ -790,11 +790,11 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           responsiveAutoHidePriority: 50,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
-            final wrapper = html.DivElement()
+            final wrapper = html.createDivElement()
               ..classes.addAll(<String>['d-flex', 'flex-wrap', 'gap-1']);
             final tags = itemMap['tags'] as List<dynamic>? ?? const <dynamic>[];
             if (tags.isEmpty) {
-              return html.SpanElement()
+              return html.createSpanElement()
                 ..classes.add('text-muted')
                 ..text = '-';
             }
@@ -808,7 +808,7 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
                 (dynamic key, dynamic value) => MapEntry(key.toString(), value),
               );
               wrapper.append(
-                html.SpanElement()
+                html.createSpanElement()
                   ..classes.addAll(<String>['badge', 'rounded-pill'])
                   ..text = tag['name']?.toString() ?? ''
                   ..style.background =
@@ -826,7 +826,7 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           responsiveAutoHideRequired: true,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
-            final previewButton = html.ButtonElement()
+            final previewButton = html.createButtonElement()
               ..type = 'button'
               ..title = previewLabel
               ..classes.addAll(<String>[
@@ -844,7 +844,7 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
               });
             });
 
-            final tagButton = html.ButtonElement()
+            final tagButton = html.createButtonElement()
               ..type = 'button'
               ..title = labelsLabel
               ..classes.addAll(<String>[
@@ -862,7 +862,7 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
               });
             });
 
-            final wrapper = html.DivElement()
+            final wrapper = html.createDivElement()
               ..classes.addAll(<String>['d-flex', 'flex-wrap', 'gap-1']);
             wrapper
               ..append(previewButton)

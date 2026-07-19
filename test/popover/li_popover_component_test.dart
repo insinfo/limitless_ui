@@ -5,8 +5,9 @@
 @TestOn('browser')
 library;
 
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -771,34 +772,38 @@ PopperOptions forceBottomPopoverPlacement(PopperOptions options) {
 }
 
 void _click(html.Element element) {
-  element.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  element.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 void _focusIn(html.Element element) {
-  element.dispatchEvent(html.Event('focusin', canBubble: true));
+  element.dispatchEvent(html.liEvent('focusin', canBubble: true));
 }
 
 void _clickById(String id) {
   final element = html.document.body!.querySelector('#$id');
-  if (element is html.Element) {
-    _click(element);
+  if ((element?.isA<html.Element>() ?? false)) {
+    _click(element!);
   }
 }
 
 html.DivElement? _popoverElement() {
   final popover = html.document.querySelector('.popover');
-  return popover is html.DivElement ? popover : null;
+  return (popover?.isA<html.DivElement>() ?? false)
+      ? popover as html.DivElement
+      : null;
 }
 
 html.DivElement? _popoverPortalHost() {
   final host = html.document.querySelector('.LiPopoverComponent');
-  return host is html.DivElement ? host : null;
+  return (host?.isA<html.DivElement>() ?? false)
+      ? host as html.DivElement
+      : null;
 }
 
 html.Element? _modalRootByTitle(String titleText) {
-  final titles = html.document.body!.querySelectorAll('.modal-title');
+  final titles = html.document.body!.queryAll('.modal-title');
   for (final title in titles) {
-    if (title.text?.trim() != titleText) {
+    if (title.text.trim() != titleText) {
       continue;
     }
     return title.closest('.modal');
@@ -808,17 +813,19 @@ html.Element? _modalRootByTitle(String titleText) {
 
 html.DivElement? _popoverArrowElement() {
   final arrow = html.document.querySelector('.popover .popover-arrow');
-  return arrow is html.DivElement ? arrow : null;
+  return (arrow?.isA<html.DivElement>() ?? false)
+      ? arrow as html.DivElement
+      : null;
 }
 
 String? _popoverTitleText() {
   final title = html.document.querySelector('.popover .template-popover-title');
-  return title?.text?.trim();
+  return title?.text.trim();
 }
 
 String? _popoverBodyText() {
   final body = html.document.querySelector('.popover .template-popover-body');
-  return body?.text?.trim();
+  return body?.text.trim();
 }
 
 Future<void> _settlePopover(NgTestFixture<TestHostComponent> fixture) async {

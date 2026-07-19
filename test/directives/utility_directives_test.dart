@@ -4,13 +4,25 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
-import 'dart:js';
-
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('LiAutoClickFileInputDirective', () {
+    test('accepts only input elements whose type is file', () {
+      final textInput = html.createInputElement(type: 'text');
+      expect(
+        () => LiAutoClickFileInputDirective(textInput),
+        throwsStateError,
+      );
+
+      final fileInput = html.createInputElement(type: 'file');
+      final directive = LiAutoClickFileInputDirective(fileInput);
+      directive.ngOnDestroy();
+    });
+  });
+
   group('LiCpfMaskDirective', () {
     test('applies the CPF mask while typing and ignores extra digits', () {
       final input = _attachInput();
@@ -20,7 +32,7 @@ void main() {
       expect(input.value, '123.456.789-01');
 
       input.value = '${input.value}2';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
       expect(input.value, '123.456.789-01');
 
       input.remove();
@@ -36,11 +48,15 @@ void main() {
 
       input.value = '0';
       input.dispatchEvent(createKeyboardEvent('keyup', 48));
-      expect(double.parse(input.value!), directive.liMin);
+      expect(double.parse(input.value), directive.liMin);
 
       input.value = '42';
       input.dispatchEvent(createKeyboardEvent('keyup', 50));
-      expect(double.parse(input.value!), directive.liMax);
+      expect(double.parse(input.value), directive.liMax);
+
+      input.value = '';
+      input.dispatchEvent(createKeyboardEvent('keyup', 49));
+      expect(double.parse(input.value), directive.liMin);
 
       input.remove();
     });
@@ -55,7 +71,7 @@ void main() {
       expect(input.value, '12.345.678/0001-99');
 
       input.value = '${input.value}0';
-      input.dispatchEvent(html.Event('input', canBubble: true));
+      input.dispatchEvent(html.liEvent('input', canBubble: true));
       expect(input.value, '12.345.678/0001-99');
 
       input.remove();
@@ -79,39 +95,17 @@ void main() {
 }
 
 html.InputElement _attachInput() {
-  final input = html.InputElement();
+  final input = html.createInputElement();
   html.document.body!.append(input);
   return input;
 }
 
 void _typeSequentially(html.InputElement input, String text) {
   for (final char in text.split('')) {
-    input.value = '${input.value ?? ''}$char';
-    input.dispatchEvent(html.Event('input', canBubble: true));
+    input.value = '${input.value}$char';
+    input.dispatchEvent(html.liEvent('input', canBubble: true));
   }
 }
-
-const _createKeyboardEventName = '__dart_createKeyboardEvent';
-const _createKeyboardEventScript = '''
-window['$_createKeyboardEventName'] = function(
-    type, keyCode, ctrlKey, altKey, shiftKey, metaKey) {
-  var event = document.createEvent('KeyboardEvent');
-
-  Object.defineProperty(event, 'keyCode', {
-    get: function() { return keyCode; }
-  });
-
-  if (event.initKeyboardEvent) {
-    event.initKeyboardEvent(type, true, true, document.defaultView, keyCode,
-        keyCode, ctrlKey, altKey, shiftKey, metaKey);
-  } else {
-    event.initKeyEvent(type, true, true, document.defaultView, ctrlKey, altKey,
-        shiftKey, metaKey, keyCode, keyCode);
-  }
-
-  return event;
-}
-''';
 
 html.Event createKeyboardEvent(
   String type,
@@ -120,16 +114,12 @@ html.Event createKeyboardEvent(
   bool altKey = false,
   bool shiftKey = false,
   bool metaKey = false,
-}) {
-  if (!context.hasProperty(_createKeyboardEventName)) {
-    final script = html.document.createElement('script')
-      ..setAttribute('type', 'text/javascript')
-      ..text = _createKeyboardEventScript;
-    html.document.body!.append(script);
-  }
-
-  return context.callMethod(
-    _createKeyboardEventName,
-    <Object>[type, keyCode, ctrlKey, altKey, shiftKey, metaKey],
-  ) as html.Event;
-}
+}) =>
+    html.liKeyboardEvent(
+      type,
+      keyCode: keyCode,
+      ctrlKey: ctrlKey,
+      altKey: altKey,
+      shiftKey: shiftKey,
+      metaKey: metaKey,
+    );

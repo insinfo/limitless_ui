@@ -1,4 +1,4 @@
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/limitless_ui_example.dart';
@@ -647,7 +647,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
       Map<String, dynamic>.from(item as Map);
 
   static html.SpanElement _textSpan(String text, {String? title}) {
-    final span = html.SpanElement()..text = text;
+    final span = html.createSpanElement()..text = text;
     final normalizedTitle = title?.trim();
     if (normalizedTitle != null && normalizedTitle.isNotEmpty) {
       span.title = normalizedTitle;
@@ -661,7 +661,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
     String? iconClass,
     String? title,
   }) {
-    final badge = html.SpanElement()
+    final badge = html.createSpanElement()
       ..classes.addAll(classes.split(' ').where((item) => item.isNotEmpty));
     final normalizedTitle = title?.trim();
     if (normalizedTitle != null && normalizedTitle.isNotEmpty) {
@@ -670,7 +670,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
 
     final normalizedIconClass = iconClass?.trim();
     if (normalizedIconClass != null && normalizedIconClass.isNotEmpty) {
-      badge.append(html.Element.tag('i')
+      badge.append(html.document.createElement('i')
         ..classes.addAll(
           normalizedIconClass.split(' ').where((item) => item.isNotEmpty),
         )
@@ -727,7 +727,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
           iconClass: 'ph ph-x-circle',
         );
       default:
-        return html.SpanElement()
+        return html.createSpanElement()
           ..classes.addAll(<String>['text-muted', 'small'])
           ..text = '-';
     }

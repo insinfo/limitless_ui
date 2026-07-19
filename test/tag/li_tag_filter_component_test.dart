@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -73,20 +73,20 @@ void main() {
     expect(fixture.rootElement.text, contains('Apoio previdenciário'));
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
     final options = html.document
-        .querySelectorAll('.li-tag-filter__panel--open .li-tag-filter__option')
+        .queryAll('.li-tag-filter__panel--open .li-tag-filter__option')
         .cast<html.Element>()
         .toList(growable: false);
     final assessoria = options.firstWhere(
-      (element) => (element.text ?? '').contains('Assessoria'),
+      (element) => (element.text).contains('Assessoria'),
     );
 
     await fixture.update((_) {
-      assessoria.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      assessoria.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -106,7 +106,7 @@ void main() {
         fixture.rootElement.querySelector('.dropdown-clear') as html.Element;
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -127,7 +127,7 @@ void main() {
     final selection = fixture.rootElement
         .querySelector('.li-tag-filter__selection') as html.Element;
     final badges =
-        fixture.rootElement.querySelectorAll('.li-tag-filter__selection-badge');
+        fixture.rootElement.queryAll('.li-tag-filter__selection-badge');
     final badgeRows = badges
         .map((element) => element.getBoundingClientRect().top.round())
         .toSet();
@@ -149,7 +149,7 @@ void main() {
         as html.ButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
@@ -164,7 +164,7 @@ void main() {
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
 
     await fixture.update((_) {
-      reloadButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      reloadButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 

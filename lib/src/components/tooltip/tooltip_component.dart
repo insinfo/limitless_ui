@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
@@ -402,12 +403,13 @@ class _LiTooltipOverlay implements OnDestroy {
   }
 
   set positionTarget(Object? value) {
-    if (value is html.Element) {
-      _positionTargetElement = value;
-      _positionTargetSelector = null;
-    } else if (value is String && value.trim().isNotEmpty) {
-      _positionTargetSelector = value.trim();
+    if (value is String) {
+      final selector = value.trim();
+      _positionTargetSelector = selector.isEmpty ? null : selector;
       _positionTargetElement = null;
+    } else if (html.liElementOrNull(value) case final element?) {
+      _positionTargetElement = element;
+      _positionTargetSelector = null;
     } else {
       _positionTargetElement = null;
       _positionTargetSelector = null;
@@ -530,7 +532,8 @@ class _LiTooltipOverlay implements OnDestroy {
     }
 
     final relatedTarget = event.relatedTarget;
-    if (relatedTarget is html.Element && _hostElement.contains(relatedTarget)) {
+    if ((relatedTarget?.isA<html.Element>() ?? false) &&
+        _hostElement.contains(relatedTarget as html.Node?)) {
       return;
     }
 
@@ -684,7 +687,7 @@ class _LiTooltipOverlay implements OnDestroy {
 
     _hideController.add(null);
     _visible = false;
-    _hostElement.attributes.remove('aria-describedby');
+    _hostElement.removeAttribute('aria-describedby');
     _cancelShownTimer();
 
     if (_tooltipElement == null) {
@@ -715,7 +718,7 @@ class _LiTooltipOverlay implements OnDestroy {
       return;
     }
 
-    final tooltipElement = html.DivElement()
+    final tooltipElement = html.createDivElement()
       ..id = _tooltipId
       ..classes.add('tooltip')
       ..setAttribute('role', 'tooltip')
@@ -727,10 +730,10 @@ class _LiTooltipOverlay implements OnDestroy {
       tooltipElement.classes.add('fade');
     }
 
-    final tooltipArrowElement = html.DivElement()
+    final tooltipArrowElement = html.createDivElement()
       ..classes.add('tooltip-arrow')
       ..setAttribute('data-label', 'li_tooltip_arrow');
-    final tooltipInnerElement = html.DivElement()
+    final tooltipInnerElement = html.createDivElement()
       ..classes.add('tooltip-inner')
       ..setAttribute('data-label', 'li_tooltip_body')
       ..style.whiteSpace = 'pre-line';
@@ -1014,14 +1017,15 @@ class _LiTooltipOverlay implements OnDestroy {
         }
 
         final target = event.target;
-        if (target is! html.Element) {
+        if (!(target?.isA<html.Element>() ?? false)) {
           return;
         }
 
         final tooltipElement = _tooltipElement;
-        final clickedInsideTooltip =
-            tooltipElement != null && tooltipElement.contains(target);
-        final clickedOnReference = _referenceElement.contains(target);
+        final clickedInsideTooltip = tooltipElement != null &&
+            tooltipElement.contains(target as html.Node?);
+        final clickedOnReference =
+            _referenceElement.contains(target as html.Node?);
         final clickedOnHost = _hostElement.contains(target);
 
         if (clickedInsideTooltip) {

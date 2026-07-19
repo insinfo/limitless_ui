@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -129,7 +129,7 @@ class AppComponent implements OnDestroy {
   Set<String> _searchExpandedSectionIds = <String>{};
   Object? navbarSearchSelection;
 
-  bool get _isDesktopViewport => (window.innerWidth ?? 0) >= 992;
+  bool get _isDesktopViewport => (window.innerWidth) >= 992;
 
   bool get hasSidebarFilter => sidebarFilter.trim().isNotEmpty;
 

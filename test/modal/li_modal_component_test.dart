@@ -6,9 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
-
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
@@ -271,7 +269,7 @@ void main() {
     expect(bootstrapBody!.classes.contains('li-modal-body'), isFalse);
 
     final openModal = html.document.body!
-        .querySelectorAll('[data-status="open"]')
+        .queryAll('[data-status="open"]')
         .where((element) => element.querySelector('#start-open-body') != null);
 
     expect(openModal, isNotEmpty);
@@ -540,8 +538,7 @@ void main() {
     expect(int.parse(stackARoot!.style.zIndex),
         lessThan(int.parse(stackBRoot!.style.zIndex)));
 
-    final backdrops =
-        html.document.body!.querySelectorAll('.li-modal-backdrop');
+    final backdrops = html.document.body!.queryAll('.li-modal-backdrop');
     expect(backdrops.length, 2);
     expect(int.parse(backdrops[0].style.zIndex),
         lessThan(int.parse(backdrops[1].style.zIndex)));
@@ -631,24 +628,12 @@ void main() {
 void _clickById(String id) {
   final element = html.document.body!.querySelector('#$id');
   expect(element, isNotNull);
-  element!.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 void _dispatchEscapeKeydown() {
-  final keyboardEventConstructor =
-      js_util.getProperty(html.window, 'KeyboardEvent');
-  final event = js_util.callConstructor(
-    keyboardEventConstructor,
-    <Object?>[
-      'keydown',
-      js_util.jsify(<String, Object?>{
-        'key': 'Escape',
-        'bubbles': true,
-        'cancelable': true,
-      }),
-    ],
-  );
-  js_util.callMethod(html.document, 'dispatchEvent', <Object?>[event]);
+  final event = html.liKeyboardEvent('keydown', key: 'Escape');
+  html.document.dispatchEvent(event);
 }
 
 Future<void> _settle<T>(NgTestFixture<T> fixture) async {
@@ -669,9 +654,9 @@ html.Element? _closestAncestorWithClass(
 }
 
 html.Element? _modalHeaderByTitle(String title) {
-  for (final header in html.document.body!.querySelectorAll('.modal-header')) {
+  for (final header in html.document.body!.queryAll('.modal-header')) {
     final titleElement = header.querySelector('.modal-title');
-    if (titleElement?.text?.trim() == title) {
+    if (titleElement?.text.trim() == title) {
       return header;
     }
   }
@@ -679,9 +664,9 @@ html.Element? _modalHeaderByTitle(String title) {
 }
 
 html.Element? _modalDialogByTitle(String title) {
-  for (final dialog in html.document.body!.querySelectorAll('.modal-dialog')) {
+  for (final dialog in html.document.body!.queryAll('.modal-dialog')) {
     final titleElement = dialog.querySelector('.modal-title');
-    if (titleElement?.text?.trim() == title) {
+    if (titleElement?.text.trim() == title) {
       return dialog;
     }
   }

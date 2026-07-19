@@ -1,4 +1,4 @@
-import 'dart:html' show Element, Node, NodeTreeSanitizer;
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 
@@ -37,7 +37,7 @@ class LiSafeHtmlDirective {
 
   @Input('liSafeHtmlNode')
   set liSafeHtmlNode(Node? node) {
-    if (identical(_node, node)) {
+    if (_node == node) {
       return;
     }
     _node = node;
@@ -56,7 +56,7 @@ class LiSafeHtmlDirective {
       _element.append(_node!);
     } else if (_html != null && _html!.isNotEmpty) {
       // ignore: unsafe_html
-      _element.setInnerHtml(_html, treeSanitizer: NodeTreeSanitizer.trusted);
+      _element.setInnerHtml(_html!, treeSanitizer: NodeTreeSanitizer.trusted);
     } else {
       _element.nodes.clear();
     }

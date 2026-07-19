@@ -1,5 +1,6 @@
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math';
 
 import 'package:ngx_dart/angular.dart';
@@ -140,13 +141,14 @@ class PdfPageView {
       canvasHeight = (viewport!.height * pixelRatio).ceil();
     }
 
-    final newCanvas = html.CanvasElement(width: canvasWidth, height: canvasHeight)
-      ..style.width = '${viewport!.width}px'
-      ..style.height = '${viewport!.height}px'
-      ..style.visibility = 'hidden'
-      ..style.position = 'absolute'
-      ..style.top = '0'
-      ..style.left = '0';
+    final newCanvas =
+        html.createCanvasElement(width: canvasWidth, height: canvasHeight)
+          ..style.width = '${viewport!.width}px'
+          ..style.height = '${viewport!.height}px'
+          ..style.visibility = 'hidden'
+          ..style.position = 'absolute'
+          ..style.top = '0'
+          ..style.left = '0';
 
     canvasWrapper?.append(newCanvas);
 
@@ -202,7 +204,7 @@ class PdfPageView {
     }
 
     textLayerDiv?.remove();
-    textLayerDiv = html.DivElement()..className = 'textLayer';
+    textLayerDiv = html.createDivElement()..className = 'textLayer';
     div.append(textLayerDiv!);
 
     try {
@@ -212,7 +214,8 @@ class PdfPageView {
           disableNormalization: true,
         ),
       );
-      final textLayer = liPdfViewerPdfJsBridge.createTextLayer(<String, dynamic>{
+      final textLayer =
+          liPdfViewerPdfJsBridge.createTextLayer(<String, dynamic>{
         'textContentSource': textContentSource,
         'viewport': viewport,
         'container': textLayerDiv,
@@ -231,10 +234,10 @@ class PdfPageView {
     }
 
     annotationLayerDiv?.remove();
-    annotationLayerDiv = html.DivElement()..className = 'annotationLayer';
+    annotationLayerDiv = html.createDivElement()..className = 'annotationLayer';
     div.append(annotationLayerDiv!);
 
-    List<dynamic> annotations;
+    List<JSObject> annotations;
     try {
       annotations = await pdfPage!.getAnnotationsDart();
     } catch (error) {
@@ -243,12 +246,13 @@ class PdfPageView {
     }
 
     for (final annotation in annotations) {
-      final subtype = js_util.getProperty(annotation, 'subtype')?.toString();
+      final subtype =
+          annotation.getProperty('subtype'.toJS).dartify()?.toString();
       if (subtype != 'Link') {
         continue;
       }
 
-      final rectRaw = js_util.getProperty(annotation, 'rect');
+      final rectRaw = annotation.getProperty('rect'.toJS).dartify();
       if (rectRaw is! List) {
         continue;
       }
@@ -271,15 +275,15 @@ class PdfPageView {
         continue;
       }
 
-      final urlProp = js_util.getProperty(annotation, 'url');
-      final unsafeUrlProp = js_util.getProperty(annotation, 'unsafeUrl');
-      final dest = js_util.getProperty(annotation, 'dest');
+      final urlProp = annotation.getProperty('url'.toJS).dartify();
+      final unsafeUrlProp = annotation.getProperty('unsafeUrl'.toJS).dartify();
+      final dest = annotation.getProperty('dest'.toJS).dartify();
       final url = urlProp?.toString() ?? unsafeUrlProp?.toString();
       if (url == null && dest == null) {
         continue;
       }
 
-      final link = html.AnchorElement()
+      final link = html.createAnchorElement()
         ..style.position = 'absolute'
         ..style.left = '${left}px'
         ..style.top = '${top}px'
@@ -288,9 +292,8 @@ class PdfPageView {
         ..style.cursor = 'pointer'
         ..style.textDecoration = 'none';
 
-      final safeUrl = url == null || url.isEmpty
-          ? null
-          : _sanitizeAnnotationUrl?.call(url);
+      final safeUrl =
+          url == null || url.isEmpty ? null : _sanitizeAnnotationUrl?.call(url);
 
       if (safeUrl != null && safeUrl.isNotEmpty) {
         link.href = safeUrl;

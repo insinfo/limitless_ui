@@ -1,4 +1,4 @@
-import 'dart:html' show Element;
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 

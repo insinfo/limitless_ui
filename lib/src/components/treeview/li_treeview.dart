@@ -6,7 +6,7 @@ import 'package:ngx_dart/angular.dart';
 import 'tree_view_base.dart';
 import 'treeview_settings.dart';
 
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 class LiTreeViewNodeContext {
   LiTreeViewNodeContext({

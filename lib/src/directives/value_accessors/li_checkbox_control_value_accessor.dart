@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -19,7 +19,7 @@ const liCheckboxValueAccessor = ExistingProvider.forToken(
 class LiCheckboxControlValueAccessor implements ControlValueAccessor<bool?> {
   final InputElement _element;
 
-  LiCheckboxControlValueAccessor(HtmlElement element)
+  LiCheckboxControlValueAccessor(HTMLElement element)
       : _element = element as InputElement;
 
   ChangeFunction<bool?> onChange = (bool? _, {String? rawValue}) {};

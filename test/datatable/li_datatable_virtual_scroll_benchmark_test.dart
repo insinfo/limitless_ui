@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -226,7 +226,7 @@ Future<DatatableVirtualScrollBenchmarkResult> _runScrollBenchmark({
     final progress = frame / (framesToSample - 1);
     final waveProgress = frame.isEven ? progress : 1 - progress;
     scrollContainer.scrollTop = (maxScrollTop * waveProgress).round();
-    scrollContainer.dispatchEvent(html.Event('scroll'));
+    scrollContainer.dispatchEvent(html.liEvent('scroll'));
     final timestamp = await _nextAnimationFrameTime();
     frameTimestamps.add(timestamp - previousTimestamp);
     previousTimestamp = timestamp;
@@ -250,7 +250,7 @@ Future<DatatableVirtualScrollBenchmarkResult> _runScrollBenchmark({
       .toList(growable: false);
   final renderedRows = host.table?.rows.length ?? 0;
   final visibleBodyRows = fixture.rootElement
-      .querySelectorAll('tbody > tr:not(.datatable-virtual-spacer)')
+      .queryAll('tbody > tr:not(.datatable-virtual-spacer)')
       .length;
   final durationMilliseconds = frameDurations.fold<double>(0, _sum);
   final totalDrawMilliseconds = drawDurations.fold<double>(0, _sum);
@@ -300,7 +300,7 @@ Future<void> _settleBenchmark(
 
 Future<num> _nextAnimationFrameTime() {
   final completer = Completer<num>();
-  html.window.requestAnimationFrame((timestamp) {
+  html.window.liRequestAnimationFrame((timestamp) {
     completer.complete(timestamp);
   });
   return completer.future;

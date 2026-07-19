@@ -1,11 +1,11 @@
-//C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_interop.dart
-@JS()
+/// Quill.js interop bindings, written with `dart:js_interop` extension types
+/// (previously `package:js` classes + `dart:js_util`).
 library;
 
-import 'package:js/js.dart';
-import 'package:js/js_util.dart' as js_util;
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
-dynamic jsify(dynamic object) => js_util.jsify(object);
+JSAny? jsify(Object? object) => object.jsify();
 
 Map<String, dynamic> _deepMapConvert(Map<Object?, Object?> map) {
   final newMap = <String, dynamic>{};
@@ -38,85 +38,78 @@ List<dynamic> _deepListConvert(List<dynamic> list) {
 }
 
 @JS('Quill')
-class Quill {
-  external factory Quill(dynamic container, [QuillOptions? options]);
+extension type Quill._(JSObject _) implements JSObject {
+  external factory Quill(JSObject container, [QuillOptions options]);
 
-  external static dynamic import(String path);
-  external static void register(dynamic pathOrType,
-      [bool? suppressWarning, bool? overwrite]);
+  external static JSAny? import(String path);
+  external static void register(JSAny? pathOrType,
+      [bool suppressWarning, bool overwrite]);
 
-  external void on(String event, Function callback);
-  external String getText([int? index, int? length]);
-  external String getSemanticHTML([int? index, int? length]);
-  external JsQuillDelta getContents([int? index, int? length]);
-  external dynamic getModule(String name);
+  external void on(String event, JSFunction callback);
+  external String getText([int index, int length]);
+  external String getSemanticHTML([int index, int length]);
+  external JsQuillDelta getContents([int index, int length]);
+  external JSAny? getModule(String name);
   external Clipboard get clipboard;
   external Range? getSelection([bool focus]);
-  external void setSelection(dynamic index, [dynamic length, String? source]);
-  external void setContents(dynamic delta, [String? source]);
-  external void updateContents(dynamic delta, [String? source]);
+  external void setSelection(JSAny? index, [JSAny? length, String source]);
+  external void setContents(JSAny? delta, [String source]);
+  external void updateContents(JSAny? delta, [String source]);
   external void insertText(int index, String text,
-      [dynamic formats, String? source]);
-  external void deleteText(int index, int length, [String? source]);
-  external void format(String name, dynamic value, [String? source]);
+      [JSAny? formats, String source]);
+  @JS('insertText')
+  external void insertTextWithSource(int index, String text, String source);
+  external void deleteText(int index, int length, [String source]);
+  external void format(String name, JSAny? value, [String source]);
   external void focus();
   external void blur();
-  external void enable([bool? enabled]);
+  external void enable([bool enabled]);
 }
 
 extension QuillExtension on Quill {
-  void setContentsDart(dynamic delta, [String? source]) {
-    setContents(js_util.jsify(delta), source);
+  void setContentsDart(Object? delta, [String source = 'api']) {
+    setContents(delta.jsify(), source);
   }
 
-  void updateContentsDart(dynamic delta, [String? source]) {
-    updateContents(js_util.jsify(delta), source);
+  void updateContentsDart(Object? delta, [String source = 'api']) {
+    updateContents(delta.jsify(), source);
   }
 
   List<Map<String, dynamic>> getContentsAsDart([int? index, int? length]) {
-    final jsDelta =
-        index == null || length == null ? getContents() : getContents(index, length);
-    final jsOps = js_util.getProperty(jsDelta, 'ops');
-    final dartOps = js_util.dartify(jsOps) as List<dynamic>;
+    final jsDelta = index == null || length == null
+        ? getContents()
+        : getContents(index, length);
+    final jsOps = (jsDelta as JSObject).getProperty('ops'.toJS);
+    final dartOps = jsOps.dartify() as List<dynamic>;
     return _deepListConvert(dartOps).cast<Map<String, dynamic>>();
   }
 }
 
-@JS()
-@anonymous
-class JsQuillDelta {
-  external List<dynamic> get ops;
-  external factory JsQuillDelta({List<dynamic>? ops});
+extension type JsQuillDelta._(JSObject _) implements JSObject {
+  external JSArray<JSAny?>? get ops;
+  external factory JsQuillDelta({JSArray<JSAny?>? ops});
 }
 
-@JS()
-@anonymous
-class QuillOptions {
+extension type QuillOptions._(JSObject _) implements JSObject {
   external factory QuillOptions({
     String? theme,
-    dynamic modules,
+    JSAny? modules,
     String? placeholder,
     bool? readOnly,
-    dynamic bounds,
+    JSAny? bounds,
   });
 }
 
-@JS()
-@anonymous
-class Range {
+extension type Range._(JSObject _) implements JSObject {
   external int get index;
   external int get length;
   external factory Range({required int index, required int length});
 }
 
-@JS()
-@anonymous
-class Clipboard {
-  external dynamic convert(String html);
+extension type Clipboard._(JSObject _) implements JSObject {
+  external JSAny? convert(String html);
 }
 
-@JS()
-@anonymous
-class Attributor {
-  external set whitelist(dynamic value);
+extension type Attributor._(JSObject _) implements JSObject {
+  external set whitelist(JSAny? value);
 }

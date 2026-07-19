@@ -1,7 +1,8 @@
 //datatable_component.dart
+import 'dart:js_interop';
 import 'dart:async';
 import 'dart:collection';
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngx_dart/angular.dart';
@@ -819,7 +820,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    _virtualScrollAnimationFrameId = window.requestAnimationFrame((_) {
+    _virtualScrollAnimationFrameId = window.liRequestAnimationFrame((_) {
       _virtualScrollAnimationFrameId = null;
       if (_isDestroyed || !isVirtualScrollActive) {
         return;
@@ -841,7 +842,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       totalItems: _data.items.length,
       scrollContainer: _activeVirtualScrollContainer,
       fallbackContainerWidth: rootElement.clientWidth,
-      windowInnerHeight: window.innerHeight ?? 0,
+      windowInnerHeight: window.innerHeight,
       viewportHeight: virtualViewportHeight,
       overscan: _effectiveVirtualOverscan,
       rowHeight: virtualRowHeight,
@@ -944,7 +945,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     );
 
     _drawScheduled = true;
-    _drawAnimationFrameId = window.requestAnimationFrame((_) {
+    _drawAnimationFrameId = window.liRequestAnimationFrame((_) {
       _drawAnimationFrameId = null;
       _drawScheduled = false;
       if (_isDestroyed || !_canDrawNow) {
@@ -1000,25 +1001,24 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     final tableScrollContainer = scrollContainer;
     final gridScrollViewport = gridScrollContainer;
     final gridLayout = rootElement.querySelector('.grid-layout');
-    final visibleBodyRows =
-        tableElement?.querySelectorAll('tbody > tr').length ?? 0;
-    final visibleBodyCells =
-        tableElement?.querySelectorAll('tbody td').length ?? 0;
+    final visibleBodyRows = tableElement?.queryAll('tbody > tr').length ?? 0;
+    final visibleBodyCells = tableElement?.queryAll('tbody td').length ?? 0;
     final gridItems = gridLayout == null
         ? 0
         : gridLayout.children
+            .toList()
             .where((child) => child.classes.contains('grid-item'))
             .length;
     final legacyActionButtons = rootElement
-        .querySelectorAll(
+        .queryAll(
             '.datatable-action-cell button, [data-label="li_dt"] .btn-icon')
         .length;
     final actionCells = rootElement
-        .querySelectorAll(
+        .queryAll(
             '.datatable-action-cell, [data-li-datatable-action-cell="true"]')
         .length;
     final actionElements = rootElement
-        .querySelectorAll(
+        .queryAll(
           '[data-li-datatable-action="true"], '
           '.datatable-action-cell button, '
           '.datatable-action-cell a, '
@@ -1026,7 +1026,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           '.datatable-action-cell .btn',
         )
         .length;
-    final visibleDomNodes = rootElement.querySelectorAll('*').length;
+    final visibleDomNodes = rootElement.queryAll('*').length;
 
     return <String, Object?>{
       'tableVisible': tableElement != null && showTableView,
@@ -1108,7 +1108,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       },
     );
 
-    _visualProbeFrame1Id = window.requestAnimationFrame((_) {
+    _visualProbeFrame1Id = window.liRequestAnimationFrame((_) {
       _visualProbeFrame1Id = null;
       if (_isDestroyed || token != _visualProbeToken) {
         return;
@@ -1124,7 +1124,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         },
       );
 
-      _visualProbeFrame2Id = window.requestAnimationFrame((_) {
+      _visualProbeFrame2Id = window.liRequestAnimationFrame((_) {
         _visualProbeFrame2Id = null;
         if (_isDestroyed || token != _visualProbeToken) {
           return;
@@ -1555,7 +1555,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       },
     );
 
-    _postRenderAnimationFrameId = window.requestAnimationFrame((_) {
+    _postRenderAnimationFrameId = window.liRequestAnimationFrame((_) {
       _postRenderAnimationFrameId = null;
       if (_isDestroyed) {
         _emitInstrumentation('postRenderSync.frameSkipped');
@@ -1632,8 +1632,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   bool requestDataOnItemsPerPageChange = false;
 
   bool get isCompactPaginationViewport =>
-      window.innerWidth != null &&
-      window.innerWidth! <= compactPaginationMaxWidth;
+      window.innerWidth <= compactPaginationMaxWidth;
 
   int get resolvedPaginationButtonQuantity => isCompactPaginationViewport
       ? compactPaginationButtonQuantity
@@ -1693,7 +1692,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   Stream<Filters> get limitChange => _paginationController.limitChange;
 
   void changeItemsPerPageHandler(SelectElement select) {
-    final li = int.tryParse(select.selectedOptions.first.value);
+    final li = int.tryParse(
+        (select.selectedOptions.toList().first as OptionElement).value);
     _changeItemsPerPage(li);
   }
 
@@ -1797,7 +1797,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     }
 
     final checkbox = event.target as InputElement;
-    isSelectAll = checkbox.checked ?? false;
+    isSelectAll = checkbox.checked;
 
     if (virtualScroll) {
       if (isSelectAll) {
@@ -1971,21 +1971,21 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void _syncSortingIndicators() {
-    final headerElements = table?.querySelectorAll('th[data-sort-key]');
+    final headerElements = table?.queryAll('th[data-sort-key]');
     if (headerElements == null) {
       return;
     }
 
     final orderFields = _resolvedOrderFields();
     for (final element in headerElements) {
-      if (element is! HtmlElement) {
+      if (!element.isA<HtmlElement>()) {
         continue;
       }
 
       element.classes.removeAll(<String>['sorting_asc', 'sorting_desc']);
       final sortKey = element.getAttribute('data-sort-key');
       if (sortKey == null || sortKey.isEmpty) {
-        element.attributes.remove('title');
+        element.removeAttribute('title');
         continue;
       }
 
@@ -2000,7 +2000,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       }
 
       if (currentOrder == null) {
-        element.attributes.remove('title');
+        element.removeAttribute('title');
         continue;
       }
 
@@ -2008,10 +2008,10 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         currentOrder.direction == 'asc' ? 'sorting_asc' : 'sorting_desc',
       );
       if (enableMultiColumnSorting && orderFields.length > 1) {
-        final title = element.text?.trim() ?? '';
-        element.title = '$title (${sortIndex + 1}o criterio)';
+        final title = element.text.trim();
+        (element as HtmlElement).title = '$title (${sortIndex + 1}o criterio)';
       } else {
-        element.attributes.remove('title');
+        element.removeAttribute('title');
       }
     }
   }
@@ -2463,8 +2463,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   void onHeaderCellClick(MouseEvent event, DatatableCol colDefinition) {
     final target = event.target;
-    if (target is Element &&
-        target.closest('.datatable-header-help-control') != null) {
+    if ((target?.isA<Element>() ?? false) &&
+        (target as Element).closest('.datatable-header-help-control') != null) {
       return;
     }
 
@@ -2727,7 +2727,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       },
     );
 
-    _responsiveAutoHideAnimationFrameId = window.requestAnimationFrame((_) {
+    _responsiveAutoHideAnimationFrameId = window.liRequestAnimationFrame((_) {
       _responsiveAutoHideAnimationFrameId = null;
       if (_isDestroyed) {
         _emitInstrumentation('responsiveAutoHideSync.frameSkipped');
@@ -2831,8 +2831,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       );
     }
 
-    final viewportActive = window.innerWidth != null &&
-        window.innerWidth! <= responsiveCollapseMaxWidth;
+    final viewportActive = window.innerWidth <= responsiveCollapseMaxWidth;
     final shouldMeasureAvailableWidth =
         responsiveCollapseByContainer || responsiveAutoHideColumns;
     final availableWidth = shouldMeasureAvailableWidth

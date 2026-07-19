@@ -1,6 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
-import 'dart:js_util' as js_util;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -23,7 +23,7 @@ const liDropdownDirectives = <Object>[
 
 String _normalizedDropdownKey(html.KeyboardEvent event) {
   final key = event.key;
-  if (key != null && key.isNotEmpty) {
+  if (key.isNotEmpty) {
     return key;
   }
 
@@ -333,10 +333,10 @@ class LiDropdownDirective implements OnInit, OnDestroy {
 
     for (var index = 0; index < itemElements.length; index++) {
       final item = itemElements[index];
-      if (identical(item, html.document.activeElement)) {
+      if (item == html.document.activeElement) {
         position = index;
       }
-      if (event.target is html.Element &&
+      if ((event.target?.isA<html.Element>() ?? false) &&
           item.contains(event.target as html.Element)) {
         currentItem = item;
       }
@@ -490,16 +490,17 @@ class LiDropdownDirective implements OnInit, OnDestroy {
         }
 
         final target = event.target;
-        if (target is! html.Element) {
+        if (!(target?.isA<html.Element>() ?? false)) {
           return;
         }
 
-        final clickedAnchor =
-            _anchor != null && _anchor!.nativeElement.contains(target);
-        final clickedMenu =
-            _menu != null && _menu!.nativeElement.contains(target);
+        final clickedAnchor = _anchor != null &&
+            _anchor!.nativeElement.contains(target as html.Node?);
+        final clickedMenu = _menu != null &&
+            _menu!.nativeElement.contains(target as html.Node?);
         final clickedSubmenuToggle =
-            target.closest('.li-dropdown-submenu__toggle') != null;
+            (target as html.Element).closest('.li-dropdown-submenu__toggle') !=
+                null;
 
         if (clickedAnchor) {
           return;
@@ -548,7 +549,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
 
     _resetContainer();
     if (container == 'body') {
-      final wrapper = _bodyContainer ??= html.DivElement();
+      final wrapper = _bodyContainer ??= html.createDivElement();
       wrapper.style
         ..position = 'absolute'
         ..zIndex = '1055';
@@ -749,8 +750,8 @@ class LiDropdownDirective implements OnInit, OnDestroy {
       return;
     }
 
-    if (element.attributes.containsKey(attributeName)) {
-      element.attributes.remove(attributeName);
+    if (element.hasAttribute(attributeName)) {
+      element.removeAttribute(attributeName);
     }
   }
 
@@ -760,7 +761,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     }
 
     _positioningRefreshPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _positioningRefreshPending = false;
       if (!_open) {
         return;
@@ -785,7 +786,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     }
 
     _viewportAdaptationPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _viewportAdaptationPending = false;
       if (!_open) {
         return;
@@ -809,8 +810,8 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   bool _applyViewportAdaptationStyles(html.Element menu) {
     _captureViewportAdaptationBaseline(menu);
 
-    final viewportWidth = html.window.innerWidth?.toDouble() ?? 0;
-    final viewportHeight = html.window.innerHeight?.toDouble() ?? 0;
+    final viewportWidth = html.window.innerWidth.toDouble();
+    final viewportHeight = html.window.innerHeight.toDouble();
     if (viewportWidth <= 0 || viewportHeight <= 0) {
       return false;
     }
@@ -991,7 +992,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
       if (display == 'static') {
         _menu!.nativeElement.setAttribute('data-bs-popper', 'static');
       } else {
-        _menu!.nativeElement.attributes.remove('data-bs-popper');
+        _menu!.nativeElement.removeAttribute('data-bs-popper');
       }
     }
   }
@@ -1201,10 +1202,7 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
       return const <html.Element>[];
     }
 
-    return menuElement
-        .querySelectorAll('.dropdown-item:not(.disabled)')
-        .whereType<html.Element>()
-        .toList(growable: false);
+    return menuElement.queryAll('.dropdown-item:not(.disabled)');
   }
 
   void _bindDocumentClick() {
@@ -1214,18 +1212,19 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
       }
 
       final target = event.target;
-      if (target is! html.Element) {
+      if (!(target?.isA<html.Element>() ?? false)) {
         closeSubmenu();
         return;
       }
 
-      if (!hostElement.contains(target)) {
+      if (!hostElement.contains(target as html.Node?)) {
         closeSubmenu();
         return;
       }
 
       final clickedToggle =
-          target.closest('.li-dropdown-submenu__toggle') != null;
+          (target as html.Element).closest('.li-dropdown-submenu__toggle') !=
+              null;
       final clickedMenuItem = target.closest('.dropdown-item') != null;
       if (closeOnItemClick && !clickedToggle && clickedMenuItem) {
         closeSubmenu();
@@ -1294,9 +1293,8 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
         return true;
       }
 
-      final maxTouchPoints =
-          js_util.getProperty(html.window.navigator, 'maxTouchPoints');
-      return maxTouchPoints is! num || maxTouchPoints <= 0;
+      final maxTouchPoints = html.window.navigator.maxTouchPoints;
+      return maxTouchPoints <= 0;
     } catch (_) {
       return true;
     }
@@ -1527,7 +1525,7 @@ class LiDropdownItemDirective implements OnInit, OnDestroy {
 
   @HostBinding('attr.disabled')
   String? get hostDisabledAttribute =>
-      nativeElement is html.ButtonElement && disabled ? '' : null;
+      nativeElement.isA<html.ButtonElement>() && disabled ? '' : null;
 
   @override
   void ngOnInit() {

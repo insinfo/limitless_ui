@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 import 'package:ngx_router/ngx_router.dart';

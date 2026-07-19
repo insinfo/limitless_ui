@@ -313,9 +313,8 @@
 
 <p>Most frontend apps communicate with backend services
 using the HTTP protocol.
-Dart web apps typically do this using the XMLHttpRequest (XHR) API,
-using either <a href="https://api.dart.dev/stable/dart-html/HttpRequest-class.html">HttpRequest</a> from the <a href="https://api.dart.dev/stable/dart-html/dart-html-library.html">dart:html</a> library
-or a higher level API, such as what the <a href="https://pub.dev/packages/http">http package</a> provides.</p>
+Dart web apps typically use a higher-level API such as the <a href="https://pub.dev/packages/http">http package</a>.
+In browsers, its <a href="https://pub.dev/documentation/http/latest/browser_client/BrowserClient-class.html">BrowserClient</a> uses standard Web APIs exposed through <a href="https://pub.dev/packages/web">package:web</a>. Code that specifically needs low-level XHR access can use the Web IDL <code class="language-plaintext highlighter-rouge">XMLHttpRequest</code> binding from that package.</p>
 
 <p>The following demos, which use the http package,
 illustrate server communication:</p>

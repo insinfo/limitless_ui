@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:ngx_dart/angular.dart';
 
@@ -180,7 +181,7 @@ class LiModalComponent implements OnInit, OnDestroy {
   void ngOnInit() {
     document.body?.append(rootElement);
 
-    rootElement.addEventListener('mousedown', _handleRootMouseDown);
+    rootElement.addEventListener('mousedown', _handleRootMouseDown.toJS);
 
     if (startOpen) {
       Future<void>.microtask(open);
@@ -197,11 +198,12 @@ class LiModalComponent implements OnInit, OnDestroy {
     }
 
     final target = event.target;
-    if (!identical(target, modalRootElement)) {
+    if (target != modalRootElement) {
       return;
     }
 
-    if (event is MouseEvent && _isScrollbarInteraction(event, target)) {
+    if (event.isA<MouseEvent>() &&
+        _isScrollbarInteraction(event as MouseEvent, target)) {
       return;
     }
 
@@ -209,25 +211,26 @@ class LiModalComponent implements OnInit, OnDestroy {
   }
 
   bool _isScrollbarInteraction(MouseEvent event, EventTarget? target) {
-    if (target is! Element) {
+    if (!(target?.isA<Element>() ?? false)) {
       return false;
     }
 
-    final rect = target.getBoundingClientRect();
+    final element = target as Element;
+    final rect = element.getBoundingClientRect();
     final offsetX = event.client.x - rect.left;
     final offsetY = event.client.y - rect.top;
-    final style = target.getComputedStyle();
-    final hasVerticalScrollbar = target.scrollHeight > target.clientHeight ||
-        target.offsetWidth > target.clientWidth ||
+    final style = element.getComputedStyle();
+    final hasVerticalScrollbar = element.scrollHeight > element.clientHeight ||
+        element.offsetWidth > element.clientWidth ||
         style.overflowY == 'auto' ||
         style.overflowY == 'scroll';
-    final hasHorizontalScrollbar = target.scrollWidth > target.clientWidth ||
-        target.offsetHeight > target.clientHeight ||
+    final hasHorizontalScrollbar = element.scrollWidth > element.clientWidth ||
+        element.offsetHeight > element.clientHeight ||
         style.overflowX == 'auto' ||
         style.overflowX == 'scroll';
 
-    return hasVerticalScrollbar && offsetX >= target.clientWidth ||
-        hasHorizontalScrollbar && offsetY >= target.clientHeight;
+    return hasVerticalScrollbar && offsetX >= element.clientWidth ||
+        hasHorizontalScrollbar && offsetY >= element.clientHeight;
   }
 
   DivElement backdropDiv = DivElement();
@@ -332,9 +335,9 @@ class LiModalComponent implements OnInit, OnDestroy {
 
   void _restoreFocus() {
     final previousElement = _previouslyFocusedElement;
-    if (previousElement is HtmlElement &&
+    if ((previousElement?.isA<HtmlElement>() ?? false) &&
         document.body?.contains(previousElement) == true) {
-      previousElement.focus();
+      previousElement!.focus();
     }
     _previouslyFocusedElement = null;
   }
@@ -415,8 +418,8 @@ class LiModalComponent implements OnInit, OnDestroy {
     }
 
     modalRootElement?.style.display = 'block';
-    modalRootElement?.attributes['data-status'] = 'open';
-    modalRootElement?.attributes['data-open'] = 'true';
+    modalRootElement?.setAttribute('data-status', 'open');
+    modalRootElement?.setAttribute('data-open', 'true');
     _syncBodyScrollLock();
     _bindEscapeListener();
     _focusModal();
@@ -450,8 +453,8 @@ class LiModalComponent implements OnInit, OnDestroy {
     _removeFromModalStack();
     backdropDiv.remove();
     modalRootElement?.style.display = 'none';
-    modalRootElement?.attributes['data-status'] = 'close';
-    modalRootElement?.attributes['data-open'] = 'false';
+    modalRootElement?.setAttribute('data-status', 'close');
+    modalRootElement?.setAttribute('data-open', 'false');
     showError = false;
     _changeDetectorRef.markForCheck();
     _restoreFocus();

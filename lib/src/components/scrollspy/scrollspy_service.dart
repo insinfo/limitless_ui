@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -366,9 +366,8 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
       return null;
     }
 
-    if (fragment is html.Element) {
-      return fragment;
-    }
+    final fragmentElement = html.liElementOrNull(fragment);
+    if (fragmentElement != null) return fragmentElement;
 
     final id = fragment.toString().trim();
     if (id.isEmpty) {
@@ -396,7 +395,7 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
     }
 
     _updateQueued = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _updateQueued = false;
       if (_disposed || !_started) {
         return;
@@ -415,13 +414,16 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
     final rootRect = _measureRootRect(rootElement);
     final fragments = _fragments
         .where((fragment) => fragment.id.trim().isNotEmpty)
-        .map((fragment) => LiScrollSpyFragmentState(
-              element: fragment,
-              id: fragment.id,
-              rect: fragment.getBoundingClientRect(),
-              visible: _isVisible(fragment.getBoundingClientRect(), rootRect),
-            ))
-        .toList()
+        .map((fragment) {
+      final r = fragment.getBoundingClientRect();
+      final rect = html.Rectangle<num>(r.left, r.top, r.width, r.height);
+      return LiScrollSpyFragmentState(
+        element: fragment,
+        id: fragment.id,
+        rect: rect,
+        visible: _isVisible(rect, rootRect),
+      );
+    }).toList()
       ..sort((a, b) => a.rect.top.compareTo(b.rect.top));
 
     final state = LiScrollSpyState(
@@ -442,12 +444,13 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
       return html.Rectangle<num>(
         0,
         0,
-        html.window.innerWidth?.toDouble() ?? 0,
-        html.window.innerHeight?.toDouble() ?? 0,
+        html.window.innerWidth.toDouble(),
+        html.window.innerHeight.toDouble(),
       );
     }
 
-    return rootElement.getBoundingClientRect();
+    final r = rootElement.getBoundingClientRect();
+    return html.Rectangle<num>(r.left, r.top, r.width, r.height);
   }
 
   bool _isVisible(

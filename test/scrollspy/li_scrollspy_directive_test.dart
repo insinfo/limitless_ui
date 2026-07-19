@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -94,7 +94,7 @@ void main() {
     await fixture.update((_) {
       (container as html.Element).scrollTop =
           serviceFragment!.offsetTop - container.offsetTop;
-      container.dispatchEvent(html.Event('scroll'));
+      container.dispatchEvent(html.liEvent('scroll'));
     });
     await _settle(fixture);
 
@@ -118,7 +118,7 @@ void main() {
 
     await fixture.update((_) {
       customizationItem!
-          .dispatchEvent(html.MouseEvent('click', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 

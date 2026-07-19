@@ -15,7 +15,7 @@ import 'package:limitless_ui_example/src/pages/person_registration/person_regist
 import 'package:limitless_ui_example/src/pages/pagination/pagination_page.template.dart'
     as pagination_page;
 import 'package:limitless_ui_example/src/pages/pdf_viewer/pdf_viewer_page.template.dart'
-  as pdf_viewer_page;
+    as pdf_viewer_page;
 import 'package:limitless_ui_example/src/pages/quill_text_editor/quill_text_editor_page.template.dart'
     as quill_text_editor_page;
 import 'package:limitless_ui_example/src/pages/selection_controls/selection_controls_page.template.dart'
@@ -87,7 +87,7 @@ import 'package:limitless_ui_example/src/pages/wizard/wizard_page.template.dart'
 import 'package:limitless_ui_example/src/pages/dropdown/dropdown_page.template.dart'
     as dropdown_page;
 import 'package:limitless_ui_example/src/pages/workspace_shell/workspace_shell_page.template.dart'
-  as workspace_shell_page;
+    as workspace_shell_page;
 import 'package:limitless_ui_example/src/pages/tabs/tabs_page.template.dart'
     as tabs_page;
 import 'package:limitless_ui_example/src/pages/toast/toast_page.template.dart'

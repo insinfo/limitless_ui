@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 
 import 'package:limitless_ui_example/messages.i18n.dart';
 import 'package:limitless_ui_example/messages_en.i18n.dart' as en;

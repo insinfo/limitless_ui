@@ -1,5 +1,5 @@
 // ignore_for_file: unnecessary_import, implementation_imports
-import 'dart:html';
+import 'package:limitless_ui/web_compat.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_forms/src/directives/control_value_accessor.dart'
@@ -53,7 +53,7 @@ class LiSelectControlValueAccessor extends Object
   final Map<String, Object?> _optionMap = <String, Object?>{};
   num _idCounter = 0;
 
-  LiSelectControlValueAccessor(HtmlElement element)
+  LiSelectControlValueAccessor(HTMLElement element)
       : _element = element as SelectElement;
 
   @HostListener('change', ['\$event.target.value'])
@@ -130,7 +130,7 @@ class LiNgSelectOption implements OnDestroy {
   final LiSelectControlValueAccessor? _select;
   late final String id;
 
-  LiNgSelectOption(HtmlElement element, @Optional() @Host() this._select)
+  LiNgSelectOption(HTMLElement element, @Optional() @Host() this._select)
       : _element = element as OptionElement {
     if (_select != null) id = _select._registerOption();
   }

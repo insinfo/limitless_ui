@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -72,7 +72,7 @@ void main() {
     await _settle(fixture);
 
     final group = fixture.rootElement.querySelector('[role="group"]');
-    final buttons = fixture.rootElement.querySelectorAll('button');
+    final buttons = fixture.rootElement.queryAll('button');
 
     expect(group, isNotNull);
     expect(group!.classes.contains('btn-group'), isTrue);
@@ -106,15 +106,15 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final buttons = fixture.rootElement.querySelectorAll('button');
+    final buttons = fixture.rootElement.queryAll('button');
     final listButton = buttons[1] as html.ButtonElement;
 
     await fixture.update((_) {
-      listButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      listButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 
-    final updatedButtons = fixture.rootElement.querySelectorAll('button');
+    final updatedButtons = fixture.rootElement.queryAll('button');
     final updatedGridButton = updatedButtons[0] as html.ButtonElement;
     final updatedListButton = updatedButtons[1] as html.ButtonElement;
 
@@ -129,13 +129,13 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final buttons = fixture.rootElement.querySelectorAll('button');
+    final buttons = fixture.rootElement.queryAll('button');
     final activeButton = buttons[0] as html.ButtonElement;
     final disabledButton = buttons[2] as html.ButtonElement;
 
     await fixture.update((_) {
-      activeButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
-      disabledButton.dispatchEvent(html.MouseEvent('click', canBubble: true));
+      activeButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      disabledButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
     });
     await _settle(fixture);
 

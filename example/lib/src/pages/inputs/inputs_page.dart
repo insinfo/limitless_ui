@@ -42,7 +42,7 @@ class InputsPageComponent {
     (inputEnter)="loadPersonByCode(\$event.target.value)">
 </li-input>''';
 
-    static const String passwordSnippet = '''
+  static const String passwordSnippet = '''
 <li-password-input
         label="Senha de assinatura"
         helperText="Mascara controlada em Dart para reduzir autofill agressivo"
@@ -161,7 +161,7 @@ class InputsPageComponent {
   String seats = '25';
   String searchTerm = 'deploy canary';
   String adminPassword = 'Limitless@2026';
-    String signaturePassword = 'SIG-2048';
+  String signaturePassword = 'SIG-2048';
   String readonlyToken = 'REL-2026.03.31';
   String disabledOwner = 'Conta sincronizada';
   String disabledBatch = '314';

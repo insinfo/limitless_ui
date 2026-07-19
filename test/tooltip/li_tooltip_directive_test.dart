@@ -5,8 +5,9 @@
 @TestOn('browser')
 library;
 
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -172,7 +173,7 @@ void main() {
 
     await fixture.update((_) {
       hoverTrigger
-          .dispatchEvent(html.MouseEvent('mouseenter', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('mouseenter', canBubble: true));
     });
     await _settleTooltip(fixture);
 
@@ -188,7 +189,7 @@ void main() {
 
     await fixture.update((_) {
       hoverTrigger
-          .dispatchEvent(html.MouseEvent('mouseleave', canBubble: true));
+          .dispatchEvent(html.liMouseEvent('mouseleave', canBubble: true));
     });
     await _settleTooltip(fixture);
 
@@ -439,30 +440,34 @@ void main() {
 }
 
 void _click(html.Element element) {
-  element.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  element.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 void _clickById(String id) {
   final element = html.document.body!.querySelector('#$id');
-  if (element is html.Element) {
-    _click(element);
+  if ((element?.isA<html.Element>() ?? false)) {
+    _click(element!);
   }
 }
 
 html.DivElement? _tooltipElement() {
   final tooltip = html.document.querySelector('.tooltip');
-  return tooltip is html.DivElement ? tooltip : null;
+  return (tooltip?.isA<html.DivElement>() ?? false)
+      ? tooltip as html.DivElement
+      : null;
 }
 
 html.DivElement? _tooltipPortalHost() {
   final host = html.document.querySelector('.LiTooltipComponent');
-  return host is html.DivElement ? host : null;
+  return (host?.isA<html.DivElement>() ?? false)
+      ? host as html.DivElement
+      : null;
 }
 
 html.Element? _modalRootByTitle(String titleText) {
-  final titles = html.document.body!.querySelectorAll('.modal-title');
+  final titles = html.document.body!.queryAll('.modal-title');
   for (final title in titles) {
-    if (title.text?.trim() != titleText) {
+    if (title.text.trim() != titleText) {
       continue;
     }
     return title.closest('.modal');

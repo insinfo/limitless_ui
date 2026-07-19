@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -760,27 +761,27 @@ class LiColorPickerComponent
   }
 
   void onColorMouseDown(html.MouseEvent event) {
-    _startDrag('color', event);
+    _startMouseDrag('color', event);
   }
 
   void onColorTouchStart(html.TouchEvent event) {
-    _startDrag('color', event);
+    _startTouchDrag('color', event);
   }
 
   void onHueMouseDown(html.MouseEvent event) {
-    _startDrag('hue', event);
+    _startMouseDrag('hue', event);
   }
 
   void onHueTouchStart(html.TouchEvent event) {
-    _startDrag('hue', event);
+    _startTouchDrag('hue', event);
   }
 
   void onAlphaMouseDown(html.MouseEvent event) {
-    _startDrag('alpha', event);
+    _startMouseDrag('alpha', event);
   }
 
   void onAlphaTouchStart(html.TouchEvent event) {
-    _startDrag('alpha', event);
+    _startTouchDrag('alpha', event);
   }
 
   void onInteractiveStart() {
@@ -994,13 +995,15 @@ class LiColorPickerComponent
       }
 
       final target = event.target;
-      if (target is! html.Node) {
+      if (!(target?.isA<html.Node>() ?? false)) {
         close(commit: clickoutFiresChange, source: 'document');
         return;
       }
 
-      final clickedTrigger = triggerElement?.contains(target) ?? false;
-      final clickedPanel = panelElement?.contains(target) ?? false;
+      final clickedTrigger =
+          triggerElement?.contains(target as html.Node?) ?? false;
+      final clickedPanel =
+          panelElement?.contains(target as html.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         close(commit: clickoutFiresChange, source: 'document');
       }
@@ -1030,20 +1033,29 @@ class LiColorPickerComponent
     _stopDragging();
   }
 
-  void _startDrag(String target, dynamic event) {
+  void _startMouseDrag(String target, html.MouseEvent event) {
+    _startDrag(target, event, _pointerPositionFromMouseEvent(event));
+  }
+
+  void _startTouchDrag(String target, html.TouchEvent event) {
+    _startDrag(target, event, _pointerPositionFromTouchEvent(event));
+  }
+
+  void _startDrag(
+    String target,
+    html.Event event,
+    math.Point<double>? point,
+  ) {
     if (isDisabled) {
       return;
     }
 
-    final point = _pointerPositionFromEvent(event);
     if (point == null) {
       return;
     }
 
-    if (event is html.MouseEvent || event is html.TouchEvent) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
+    event.preventDefault();
+    event.stopPropagation();
 
     _activeDragTarget = target;
     _bindDragListeners();
@@ -1075,9 +1087,9 @@ class LiColorPickerComponent
   }
 
   void _handleDocumentMouseMove(html.MouseEvent event) {
-    final point = _pointerPositionFromEvent(event);
+    final point = _pointerPositionFromMouseEvent(event);
     final target = _activeDragTarget;
-    if (point == null || target == null) {
+    if (target == null) {
       return;
     }
 
@@ -1090,7 +1102,7 @@ class LiColorPickerComponent
   }
 
   void _handleDocumentTouchMove(html.TouchEvent event) {
-    final point = _pointerPositionFromEvent(event);
+    final point = _pointerPositionFromTouchEvent(event);
     final target = _activeDragTarget;
     if (point == null || target == null) {
       return;
@@ -1165,7 +1177,7 @@ class LiColorPickerComponent
       return;
     }
 
-    _dragAnimationFrameId = html.window.requestAnimationFrame((_) {
+    _dragAnimationFrameId = html.window.liRequestAnimationFrame((_) {
       _dragAnimationFrameId = null;
       _flushPendingDragUpdate();
     });
@@ -1190,33 +1202,29 @@ class LiColorPickerComponent
     _updateDrag(point, target);
   }
 
-  math.Point<double>? _pointerPositionFromEvent(dynamic event) {
-    if (event is html.MouseEvent) {
-      return math.Point<double>(
-        event.client.x.toDouble(),
-        event.client.y.toDouble(),
-      );
+  math.Point<double> _pointerPositionFromMouseEvent(html.MouseEvent event) {
+    return math.Point<double>(
+      event.clientX.toDouble(),
+      event.clientY.toDouble(),
+    );
+  }
+
+  math.Point<double>? _pointerPositionFromTouchEvent(html.TouchEvent event) {
+    final touches = event.touches;
+    final changedTouches = event.changedTouches;
+    final touch = touches.isNotEmpty
+        ? touches.first
+        : changedTouches.isNotEmpty
+            ? changedTouches.first
+            : null;
+    if (touch == null) {
+      return null;
     }
 
-    if (event is html.TouchEvent) {
-      final touches = event.touches;
-      final changedTouches = event.changedTouches;
-      final touch = touches != null && touches.isNotEmpty
-          ? touches.first
-          : changedTouches != null && changedTouches.isNotEmpty
-              ? changedTouches.first
-              : null;
-      if (touch == null) {
-        return null;
-      }
-
-      return math.Point<double>(
-        touch.client.x.toDouble(),
-        touch.client.y.toDouble(),
-      );
-    }
-
-    return null;
+    return math.Point<double>(
+      touch.clientX.toDouble(),
+      touch.clientY.toDouble(),
+    );
   }
 
   void _updateDrag(math.Point<double> point, String target) {

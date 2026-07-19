@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -42,7 +43,7 @@ class LiPasswordInputComponent
 
   static int _nextId = 0;
 
-  final html.HtmlElement _hostElement;
+  final html.HTMLElement _hostElement;
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
   final String _generatedId;
@@ -466,7 +467,7 @@ class LiPasswordInputComponent
     _dirty = true;
 
     if (_passwordVisible) {
-      _realValue = field.value ?? '';
+      _realValue = field.value;
       _onChange(_realValue, rawValue: _realValue);
       if (validateOnInput ||
           _shouldShowValidation ||
@@ -479,7 +480,7 @@ class LiPasswordInputComponent
       return;
     }
 
-    final newView = field.value ?? '';
+    final newView = field.value;
     final oldView = _mask(_realValue.length);
     if (newView == oldView) {
       return;
@@ -536,11 +537,11 @@ class LiPasswordInputComponent
   }
 
   void handleKeydown(html.Event event) {
-    if (event is! html.KeyboardEvent) {
+    if (!event.isA<html.KeyboardEvent>()) {
       return;
     }
 
-    _keydownController.add(event);
+    _keydownController.add(event as html.KeyboardEvent);
     if (event.key == 'Enter' ||
         event.code == 'Enter' ||
         event.code == 'NumpadEnter') {
@@ -551,7 +552,7 @@ class LiPasswordInputComponent
       return;
     }
 
-    final key = event.key ?? '';
+    final key = event.key;
     final field = inputElement;
     final start = field?.selectionStart ?? _realValue.length;
     final end = field?.selectionEnd ?? start;
@@ -688,9 +689,9 @@ class LiPasswordInputComponent
     }
 
     if (effectiveInvalid) {
-      field.attributes['data-invalid'] = 'true';
+      field.setAttribute('data-invalid', 'true');
     } else {
-      field.attributes.remove('data-invalid');
+      field.removeAttribute('data-invalid');
     }
   }
 
@@ -828,7 +829,7 @@ class LiPasswordInputComponent
 
   bool get _hasHostInvalidState =>
       _hostElement.classes.contains('is-invalid') ||
-      _hostElement.attributes['data-invalid'] == 'true';
+      _hostElement.getAttribute('data-invalid') == 'true';
 
   bool get _shouldShowValidation => liShouldShowValidation(
         mode: liValidationMode,

@@ -28,7 +28,7 @@
 library;
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -130,8 +130,8 @@ void main() {
 
       // No stale body portal may keep a shown menu under document.body.
       expect(
-        html.document.querySelectorAll(
-            '.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
+        html.document
+            .queryAll('.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
         isEmpty,
         reason: 'switching to inline must not leave a shown body portal',
       );
@@ -177,8 +177,8 @@ void main() {
       final shownMenu = _onlyShownMenu();
       expect(host.contains(shownMenu), isTrue);
       expect(
-        html.document.querySelectorAll(
-            '.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
+        html.document
+            .queryAll('.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
         isEmpty,
       );
     },
@@ -231,11 +231,11 @@ html.Element _fullscreenHost(
 void _openMenu(NgTestFixture<FullscreenDropdownTestHostComponent> fixture) {
   final trigger = fixture.rootElement.querySelector('[aria-label="fs-zoom"]')
       as html.ButtonElement;
-  trigger.dispatchEvent(html.MouseEvent('click', canBubble: true));
+  trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
 }
 
 html.Element _onlyShownMenu() {
-  final shown = html.document.querySelectorAll('.li-dropdown-menu__menu.show');
+  final shown = html.document.queryAll('.li-dropdown-menu__menu.show');
   expect(shown, hasLength(1),
       reason: 'exactly one dropdown menu should be visible');
   return shown.first;
@@ -255,7 +255,7 @@ Future<void> _settle(
 
 Future<void> _nextAnimationFrame() {
   final completer = Completer<void>();
-  html.window.requestAnimationFrame((_) {
+  html.window.liRequestAnimationFrame((_) {
     completer.complete();
   });
   return completer.future;

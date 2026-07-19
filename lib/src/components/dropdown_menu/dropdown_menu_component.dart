@@ -1,5 +1,6 @@
+import 'dart:js_interop';
 import 'dart:async';
-import 'dart:html' as html;
+import 'package:limitless_ui/web_compat.dart' as html;
 import 'dart:math';
 
 import 'package:ngx_dart/angular.dart';
@@ -307,7 +308,7 @@ class LiDropdownMenuComponent implements OnDestroy {
       usesMobilePresentation && mobileMenuTitle.trim().isNotEmpty;
 
   double get _viewportHeight {
-    final windowHeight = html.window.innerHeight?.toDouble() ?? 0;
+    final windowHeight = html.window.innerHeight.toDouble();
     final documentHeight =
         html.document.documentElement?.clientHeight.toDouble() ?? 0;
     if (windowHeight > 0 && documentHeight > 0) {
@@ -494,13 +495,14 @@ class LiDropdownMenuComponent implements OnDestroy {
       }
 
       final target = event.target;
-      if (target is! html.Node) {
+      if (!(target?.isA<html.Node>() ?? false)) {
         closeDropdown();
         return;
       }
 
-      final clickedTrigger = triggerButtonElement?.contains(target) ?? false;
-      final clickedMenu = menuElement?.contains(target) ?? false;
+      final clickedTrigger =
+          triggerButtonElement?.contains(target as html.Node?) ?? false;
+      final clickedMenu = menuElement?.contains(target as html.Node?) ?? false;
       if (!clickedTrigger && !clickedMenu) {
         closeDropdown();
       }
@@ -534,7 +536,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     }
 
     _overlayRelayoutPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _overlayRelayoutPending = false;
       if (!isOpen) {
         return;
@@ -560,7 +562,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     }
 
     _inlineViewportRelayoutPending = true;
-    html.window.requestAnimationFrame((_) {
+    html.window.liRequestAnimationFrame((_) {
       _inlineViewportRelayoutPending = false;
       if (!isOpen || usesMobilePresentation) {
         return;
@@ -592,14 +594,14 @@ class LiDropdownMenuComponent implements OnDestroy {
           menuRect.height > availableHeight ? '${availableHeight}px' : '';
       final menuItems = menu.querySelector('.li-dropdown-menu__items');
       final itemContentHeight = menu
-          .querySelectorAll('.li-dropdown-menu__items > *')
+          .queryAll('.li-dropdown-menu__items > *')
           .fold<double>(0, (height, element) {
         return height + element.getBoundingClientRect().height;
       });
       final contentHeight = itemContentHeight > 0
           ? itemContentHeight.ceil()
-          : menuItems is html.Element
-              ? menuItems.scrollHeight
+          : (menuItems?.isA<html.Element>() ?? false)
+              ? menuItems!.scrollHeight
               : menu.scrollHeight;
       final contentOverflows = contentHeight > menu.clientHeight + 4;
 

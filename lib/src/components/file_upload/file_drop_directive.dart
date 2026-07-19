@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:limitless_ui/web_compat.dart' as html;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -19,8 +20,8 @@ class LiFileDropDirective implements OnDestroy {
   @HostListener('drop', ['\$event'])
   void onDrop(html.MouseEvent event) {
     _preventAndStop(event);
-    final transfer = event.dataTransfer;
-    final files = transfer.files ?? const <html.File>[];
+    final transfer = (event as html.DragEvent).dataTransfer;
+    final files = transfer?.files.toList() ?? const <html.File>[];
     _fileOverController.add(false);
     _filesChangeController.add(
       List<html.File>.from(files),
@@ -30,9 +31,12 @@ class LiFileDropDirective implements OnDestroy {
   @HostListener('dragover', ['\$event'])
   void onDragOver(html.MouseEvent event) {
     _preventAndStop(event);
-    final transfer = event.dataTransfer;
-    final types = transfer.types ?? const <String>[];
-    if (!types.contains('Files')) {
+    final transfer = (event as html.DragEvent).dataTransfer;
+    if (transfer == null) {
+      return;
+    }
+    final types = transfer.types.toDart;
+    if (!types.any((type) => type.toDart == 'Files')) {
       return;
     }
     transfer.dropEffect = 'copy';
