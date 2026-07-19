@@ -3,5 +3,6 @@
     "allow": [
       "Bash(dart run *)"
     ]
-  }
+  },
+  "includeCoAuthoredBy": false
 }
