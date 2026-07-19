@@ -1,7 +1,12 @@
 # Relatório da migração dart:html → package:web (branch ngx9)
 
-> Status: concluído em 2026-07-19. Iniciado em 2026-07-18. Complementa o
-> plano [ngx_migration_plan.md](ngx_migration_plan.md).
+> Status: migração base versionada e homologação release concluída em
+> 2026-07-19. Depois de reproduzir o example preso em `Carregando...` apesar
+> do build verde, as correções foram aplicadas e o bundle release aprovou
+> 15/15 cenários E2E sem `pageerror`, `console.error` ou fallback persistente.
+> A implementação foi versionada em `01ff5e4` e enviada para `origin/ngx9`.
+> Iniciado em 2026-07-18. Complementa o plano
+> [ngx_migration_plan.md](ngx_migration_plan.md).
 
 > Escopo de entrega confirmado: migração, testes, documentação, `git add`,
 > `git commit` e `git push`. Não será executada publicação no pub.dev para
@@ -241,9 +246,11 @@ Por solicitação, o `pubspec.yaml` raiz e o do example passaram a consumir
 `ngx_compiler` pelo Git, branch `master`. A primeira resolução encontrou um
 conflito de origem porque o compilador Git ainda declara `ngx_dart` hospedado;
 um override raiz de `ngx_dart` unificou todas as referências no mesmo Git. O
-`dart pub get` e `dart pub upgrade` então resolveram os cinco pacotes em
-`12a50e32`, revisão do `master` que contém `12d91771` e `72dc21e9`. Nenhum
-pacote foi publicado no pub.dev.
+`dart pub get` e `dart pub upgrade` inicialmente resolveram os cinco pacotes
+em `12a50e32`, revisão do `master` que contém `12d91771` e `72dc21e9`. Depois
+das correções reveladas pelo E2E, a resolução final passou a `fc8c8c3a`, que
+também contém `f789d199d`, `99d11f69`, `f40dbf30` e a correção de forms.
+Nenhum pacote foi publicado no pub.dev.
 
 Por fim, o único `pubspec.yaml` do repositório Angular ainda em `web: ^1.1.0`
 era `goldens/pubspec.yaml`; todos os pacotes principais `ngx_*` já exigiam
@@ -292,6 +299,25 @@ limpo e a alteração foi enviada ao `master` como `12a50e32`
   `Touch.clientY`, com conversão numérica explícita onde a API interna exige
   `double`.
 
+A fachada também foi auditada como arquitetura, não apenas como código que
+compila. Ela é consumida por 94 arquivos de `lib`, 17 do example e 71 de
+testes; 21 dos 37 aliases e 16 das 22 fábricas ainda têm uso de produção.
+Portanto, removê-la agora quebraria streams, coleções vivas, callbacks com
+Zone, sanitização e outras semânticas sem substituição mecânica. Isso é uma
+ponte de migração legítima conforme o
+[guia oficial](https://dart.dev/interop/js-interop/package-web), que admite
+adaptadores pequenos quando `package:web` não oferece o comportamento
+necessário. Não é o destino final praticado: código novo deve importar
+`package:web` diretamente, usar nomes Web IDL canônicos e reduzir a fachada.
+
+A auditoria também registrou riscos para a redução futura: o bypass explícito
+`NodeTreeSanitizer.trusted` é superfície de segurança; helpers que forçam
+`Element` para `HTMLElement` não servem genericamente para SVG/MathML;
+`IntersectionObserver` ainda confina opções dinâmicas na fronteira JS; e
+`ResizeObserver`/`IntersectionObserver` precisam de teste de Zone se seus
+callbacks passarem a atualizar UI Angular. Símbolos públicos sem uso interno
+devem ser depreciados antes de remoção em uma versão maior.
+
 ### 10. Correções reveladas pelas suítes completas
 
 A primeira suíte completa após a migração terminou com 550 aprovações e cinco
@@ -323,6 +349,96 @@ coberto:
 
 Depois dessas correções, uma execução focada dos subsistemas alterados passou
 107/107. As duas suítes completas e limpas passaram 559/559 em cada backend.
+
+### 11. Reabertura da homologação com o example em release
+
+O comando usado pelo usuário, `webdev serve web:8080 --auto=refresh
+--release -- --delete-conflicting-outputs`, concluiu a geração e informou
+sucesso. No navegador, porém, o example permaneceu indefinidamente na tela
+`Carregando...` e o console registrou exceções minificadas como
+`NoSuchMethodError: method not found: 'gaOv'`. Isso comprovou uma lacuna no
+gate anterior: analyzer, build e testes de componentes não asseguravam que o
+bootstrap completo do bundle release executava sem despacho DOM dinâmico.
+
+A investigação com source maps isolou três frentes:
+
+- no próprio example, `DemoI18nService` lia `navigator.languages` por
+  `dynamic`. Em `package:web`, esse valor é `JSArray<JSString>`; o getter
+  dinâmico virou um nome minificado inexistente. O acesso passou a ser
+  estático, com conversão explícita para Dart antes de escolher e normalizar
+  o locale;
+- no `ngx_compiler`, a criação de uma raiz local destacada emitia
+  `unsafeCast(document.createElement(...))` sem conservar o tipo
+  `Element`. Uma chamada posterior a `append` era então gerada como despacho
+  dinâmico e falhava somente no JavaScript release. O gerador passou a
+  preservar o tipo do elemento, ganhou regressão e a correção foi commitada e
+  enviada ao `angular/master` como
+  `f789d199d8ee1c95574f9dece2f03350853bc572`
+  (`fix(compiler): preserve package:web element types`);
+- depois dessas duas correções, a execução revelou outro bug real do
+  compilador: `$event` era propagado como `dynamic`, inclusive quando o evento
+  DOM possuía tipo Web IDL conhecido ou quando um `@Output` expunha
+  `Stream<T>`. Em release, expressões como `$event.preventDefault()` e
+  `$event.target` dependiam de nomes dinâmicos minificados. O commit
+  `f40dbf30` (`fix(compiler): preserve web event payload types`) agora
+  transporta tipos de eventos nativos e payloads `Stream<T>` pela metadata,
+  IR e handler gerado, com fallback seguro para streams raw/`void`. O analyzer
+  do compilador ficou limpo, a integração sequencial passou 76 testes com 4
+  skips e o build completo dos goldens release terminou com 100 outputs/173
+  ações;
+- a propagação correta tornou visível um problema separado do `ngx_forms`:
+  accessors geravam `$event.target.value` ou `checked`, mas `Event.target` é
+  apenas `EventTarget?`. O commit final `fc8c8c3a` passa a ler
+  `HTMLInputElement`/`HTMLSelectElement` injetados. Forms ficou com analyzer
+  limpo e 116/116 testes em cada backend, Dart2JS e Dart2Wasm; o teste de
+  `HostListener('$event.target')` passou 12/12;
+- durante a validação dos testes do compilador, 51 falhas aparentes eram casos
+  que declaravam erros esperados e passaram a receber corretamente a exceção
+  propagada por `72dc21e9`. `99d11f69` ajustou o harness para capturar apenas
+  esses erros declarados e continuar propagando falhas inesperadas; não é uma
+  correção de runtime.
+
+Em paralelo, os pontos executáveis já identificados no `limitless_ui` foram
+movidos para handlers Dart tipados, usando `Event`, `MouseEvent`,
+`KeyboardEvent` e `HTMLInputElement` canônicos conforme o caso, em vez de
+acessar diretamente `$event.target` ou chamar métodos por `dynamic` no
+template. Essas mudanças foram validadas e entregues em `01ff5e4`.
+
+O diretório `ui_test` deixou de aceitar apenas a presença genérica de
+conteúdo. O harness Puppeteer agora captura `Page.onError`, mensagens
+`console.error`, verifica conteúdo real do app e exige que o fallback
+`my-app > .loadContainer` desapareça. Foi acrescentado um smoke de bootstrap,
+totalizando 15 cenários E2E. A primeira execução release com essas guardas
+aprovou 9/15 e reprovou 6/15, expondo tanto os handlers dinâmicos quanto uma
+asserção frágil do date picker que comparava coordenadas absolutas entre
+aberturas; a asserção passou a medir o painel relativamente ao gatilho. Esse
+resultado foi mantido como diagnóstico intermediário, não como validação
+final.
+
+Depois das correções do Angular, dos handlers tipados e da estabilização da
+asserção relativa do date picker (fontes prontas e dois frames de layout), o
+build release final compilou 26.013.840 bytes de entrada para 4.131.767
+caracteres JavaScript. A execução completa do `ui_test/e2e` aprovou 15/15 em
+76,9 segundos. Como o harness falha no primeiro erro, esse resultado também
+confirma ausência de `Page.onError`, `console.error` e da tela
+`Carregando...` persistente durante bootstrap e interações.
+
+O workflow de CI foi preparado para também atender o branch `ngx9`, iniciar
+o example em modo release, esperar tanto o processo vivo quanto o bundle
+`main.dart.js` disponível e só então executar o E2E. A etapa de publicação foi
+removida: a CI apenas confirma `publish_to: none` e registra que publicação é
+intencionalmente bloqueada.
+
+Os três repositórios em escopo — `limitless_ui`, `angular` e `popper_dart` —
+declaram `web: ^1.1.1` nos pacotes aplicáveis. Esta rodada de runtime não
+confirmou novo bug funcional no `popper_dart`; os erros observados foram
+localizados no app, no `ngx_compiler` e no `ngx_forms`. A conclusão
+arquitetural sobre `web_compat` permanece: adaptadores pequenos, tipados e
+testados são uma
+ponte aceitável para semânticas legadas, mas uma fachada que perpetue todo o
+dialeto de `dart:html` não representa o estado final praticado na migração.
+Novos pontos devem usar `package:web` canônico, e a ponte deve diminuir
+progressivamente.
 
 ## Aprendizados e dificuldades
 
@@ -413,8 +529,22 @@ Depois dessas correções, uma execução focada dos subsistemas alterados passo
     `InvalidType` no asset graph. Congelar os fontes e executar
     `build_runner clean` eliminou o estado. O erro secundário que mascarava a
     causa, porém, era do compilador e foi corrigido em `72dc21e9`.
+17. **Geradores não podem apagar o tipo de eventos.** Um `$event` dinâmico
+    pode parecer funcional em debug e falhar apenas depois da minificação. O
+    tipo Web IDL ou o payload `Stream<T>` precisa atravessar metadata, IR,
+    parâmetro do handler e conversão `.toJS` de forma coerente.
+18. **Accessors não devem depender de `Event.target` para obter valor.** No
+    modelo Web IDL ele é `EventTarget?`; quando a diretiva já injeta o
+    `HTMLInputElement` ou `HTMLSelectElement`, ler esse elemento tipado evita
+    casts frágeis e preserva Dart2JS/Dart2Wasm.
+19. **Build verde não é smoke de runtime.** O bundle original compilava e era
+    servido com sucesso, mas parava no bootstrap. O gate precisa abrir o
+    JavaScript release real, observar erros do navegador e provar que o
+    conteúdo substituiu o fallback inicial.
 
-## Validação
+## Validação final concluída
+
+Os resultados da migração base e da homologação release final são:
 
 - `dart analyze` da raiz: sem problemas após a trava `publish_to: none`.
 - `dart analyze` do example: sem problemas.
@@ -431,23 +561,36 @@ Depois dessas correções, uma execução focada dos subsistemas alterados passo
   build, 0 `SEVERE` e 0 `InvalidType`.
 - Suíte completa Chrome/dart2wasm: 82 arquivos, 559/559, 0 falhas e 0 erros de
   geração, compilação ou runtime Wasm.
-- A resolução final local aponta Angular para `12a50e32` e Popper para
-  `1daf2d95`. Esses commits finais alteram apenas metadados/testes, não os
-  fontes de biblioteca já cobertos pelas suítes completas; os analyzers foram
-  repetidos depois do upgrade.
+- A resolução final local aponta Angular para `fc8c8c3a` e Popper para
+  `1daf2d95`. Os analyzers foram repetidos depois do upgrade.
 - Não há imports executáveis de `dart:html`, `dart:js_util` ou `package:js`.
   README, `doc.md`, `doc-pt_BR.md`, o example e os guias HTML também não
   contêm referências legadas; as únicas menções históricas intencionais
   ficam neste relatório, no plano e em comentários da fachada transitória.
+- Build release do example concluído e bundle `main.dart.js` servido com HTTP
+  200; `ui_test/e2e` passou 15/15 sem `pageerror`, `console.error` ou tela
+  `Carregando...` persistente.
+- Formatação dos 28 arquivos Dart alterados: nenhuma mudança necessária;
+  `dart analyze` da raiz, do example e de `ui_test/e2e`: sem problemas.
+- Teste afetado do datatable: 76/76 no Chrome, com 6.352 outputs/14.143 ações
+  e sem `SEVERE`; conjunto VM da CI: 52/52.
 
 ## Entrega Git
 
 - `angular/master`: `12d91771` (tokens DOM por typedef), `72dc21e9`
-  (preservação dos erros do contexto do compilador) e `12a50e32`
-  (`web: ^1.1.1` no pacote auxiliar goldens), todos enviados ao remoto.
+  (preservação dos erros do contexto do compilador), `12a50e32`
+  (`web: ^1.1.1` no pacote auxiliar goldens) e
+  `f789d199d8ee1c95574f9dece2f03350853bc572` (preservação do tipo de
+  elementos em raízes destacadas), `99d11f69` (harness de erros esperados),
+  `f40dbf30` (tipos de eventos DOM/`@Output`) e `fc8c8c3a` (accessors de
+  forms tipados), todos enviados ao remoto.
 - `popper_dart/dart_web`: `cd89e88` (comparações DOM compatíveis com Wasm) e
   `1daf2d95` (`web: ^1.1.1`), ambos enviados ao remoto.
 - `limitless_ui/ngx9`: commit principal `3575fe7`
-  (`Migrate limitless_ui to package:web`) enviado para `origin/ngx9`.
+  (`Migrate limitless_ui to package:web`) e correções da homologação release
+  em `01ff5e4` (`fix(web): make release example runtime-safe`), ambos enviados
+  para `origin/ngx9`. Este fechamento documental acompanha a entrega final.
 - Nenhum `dart pub publish`, upload ou publicação no pub.dev foi executado.
-  A branch permanece protegida por `publish_to: none`.
+  A branch permanece protegida por `publish_to: none`. O único fluxo
+  autorizado nesta execução é migrar, testar, documentar, adicionar,
+  commitar e fazer push; publicar exige outra solicitação explícita.

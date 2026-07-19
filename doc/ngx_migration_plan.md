@@ -1,8 +1,12 @@
 # Plano de migração do limitless_ui para a família ngx_*
 
-> Status: Fase 2 concluída em 2026-07-19. Commit principal `3575fe7`
-> enviado para `origin/ngx9`; nenhuma publicação foi realizada. Plano criado
-> em 2026-07-18.
+> Status: migração base da Fase 2 versionada no commit `3575fe7` e enviada
+> para `origin/ngx9`. A aceitação em modo release foi reaberta em 2026-07-19
+> depois que o example ficou preso em `Carregando...` apesar de o build
+> terminar com sucesso; as correções foram concluídas e a homologação final
+> aprovou 15/15 cenários E2E em release, sem erros do navegador nem fallback
+> persistente. A implementação foi versionada em `01ff5e4` e enviada para
+> `origin/ngx9`; nenhuma publicação foi realizada. Plano criado em 2026-07-18.
 
 > **Limite desta execução:** migrar, testar, documentar, fazer `git add`,
 > `git commit` e `git push`. **Não executar `dart pub publish` e não publicar
@@ -107,11 +111,59 @@ Pré-requisito: `ngx_dart 9.0.0-dev.1` publicado (acompanhar o branch
    se o `popper` precisa de uma versão js_interop para compatibilidade com
    dart2wasm (hoje ele usa apenas SDK libs).
 5. Testes em Chrome com dart2js **e** dart2wasm (o `_tests` do framework já
-   roda os dois; replicar aqui).
-6. Entrega desta execução: adicionar as alterações, criar commit e fazer push
-   do branch `ngx9`. A publicação de `3.0.0-dev.1` e a promoção futura para
-   `3.0.0` ficam explicitamente fora do escopo; não executar comandos de
-   publicação no pub.dev.
+   roda os dois; replicar aqui). O gate também deve iniciar o example real com
+   `webdev serve --release`, executar todos os cenários em `ui_test/e2e` via
+   Puppeteer e falhar diante de `pageerror`, `console.error`, conteúdo real
+   ausente ou permanência da tela `Carregando...`. Build verde, isoladamente,
+   não comprova que o bootstrap minificado funciona.
+6. Entrega desta execução: somente depois do gate final, adicionar as
+   alterações, criar commit e fazer push do branch `ngx9`. A publicação de
+   `3.0.0-dev.1` e a promoção futura para `3.0.0` ficam explicitamente fora do
+   escopo; não executar comandos de publicação no pub.dev.
+
+## Gate de aceitação release reaberto em 2026-07-19
+
+- [x] Declarar `web: ^1.1.1` no `limitless_ui`, no `angular` e no
+  `popper_dart`, incluindo os pacotes auxiliares aplicáveis.
+- [x] Reproduzir o example em release: o build terminou sem erro, mas a
+  aplicação permaneceu em `Carregando...`, com exceções JavaScript
+  minificadas no console.
+- [x] Remover do app o acesso `dynamic` a `navigator.languages`; no
+  `package:web`, a coleção é `JSArray<JSString>` e precisa ser convertida e
+  lida de forma tipada.
+- [x] Corrigir no `ngx_compiler` a perda do tipo `Element` em raízes locais
+  destacadas (*detached roots*), que fazia chamadas como `append` virarem
+  despacho dinâmico em release. A correção foi enviada ao `angular/master` no
+  commit `f789d199d8ee1c95574f9dece2f03350853bc572`.
+- [x] Corrigir, testar, commitar e enviar o segundo bug do `ngx_compiler`:
+  `$event` agora conserva o tipo Web IDL do evento DOM e `@Output` conserva o
+  payload de `Stream<T>` pelo IR e pelo handler gerado. A correção está no
+  `angular/master` em `f40dbf30`.
+- [x] Corrigir no `ngx_forms` os accessors que ainda geravam
+  `$event.target.value`/`checked`. Eles agora leem o elemento Web IDL tipado
+  injetado; a revisão final do Angular consumida pelo projeto é `fc8c8c3a`.
+- [x] Atualizar a resolução Git do `limitless_ui` para `fc8c8c3a` e executar
+  os 15 cenários de `ui_test/e2e` contra o servidor release: 15/15, sem
+  `pageerror`, `console.error` ou fallback de carregamento.
+- [x] Repetir formatação, analyzers, build release e testes afetados: raiz,
+  example e `ui_test/e2e` sem problemas; datatable 76/76 no Chrome; suíte VM
+  52/52; build do teste web com 6.352 outputs/14.143 ações, sem `SEVERE`.
+- [x] Revisar o diff final, fazer `git add`, `git commit` e `git push` da nova
+  rodada no branch `ngx9`: implementação enviada em `01ff5e4`; este fechamento
+  documental registra o resultado final.
+- [x] Manter `publish_to: none` e a proibição de `dart pub publish`: esta
+  execução é exclusivamente de migração, teste, commit e push.
+
+O `web_compat` permanece aceito como ponte transitória e testada para
+semânticas legadas sem equivalente direto (por exemplo, Zone em callbacks,
+streams, coleções vivas, sanitização e fábricas de eventos). A auditoria
+encontrou uso em 94 arquivos de `lib`, 17 do example e 71 de testes; removê-lo
+agora quebraria comportamento real. Ele não é, porém, o padrão arquitetural
+final: código novo e pontos já estabilizados devem preferir imports e tipos
+Web IDL canônicos de `package:web`, reduzindo a fachada gradualmente. O guia
+oficial permite adaptadores pequenos quando falta uma semântica, mas não
+recomenda recriar todo `dart:html`. A investigação desta rodada não confirmou
+novo bug funcional no `popper_dart`.
 
 ## Política de manutenção entre linhas
 
