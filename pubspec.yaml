@@ -4,8 +4,9 @@ version: 3.0.0-dev.1
 homepage: https://github.com/insinfo/limitless_ui
 repository: https://github.com/insinfo/limitless_ui
 issue_tracker: https://github.com/insinfo/limitless_ui/issues
-# Esta branch de migração consome dependências Git e não deve ser publicada.
-# Remover somente em uma entrega futura, solicitada e preparada separadamente.
+# Todas as dependências já são hospedadas no pub.dev, mas a publicação do
+# limitless_ui é uma entrega separada: remover esta trava somente quando a
+# publicação for solicitada e preparada explicitamente.
 publish_to: none
 
 environment:
@@ -13,29 +14,10 @@ environment:
 
 dependencies:
   essential_core: ^1.4.0
-  # popper 2.0.0 (package:web) ainda não publicado no pub.dev; trocar para
-  # popper: ^2.0.0 quando for publicado.
-  popper:
-    git:
-      url: https://github.com/insinfo/popper_dart.git
-      ref: dart_web
-  # Consumir o master corrigido durante a migração; não publicar esta
-  # configuração no pub.dev.
-  ngx_dart:
-    git:
-      url: https://github.com/insinfo/angular.git
-      ref: master
-      path: ngx_dart
-  ngx_forms:
-    git:
-      url: https://github.com/insinfo/angular.git
-      ref: master
-      path: ngx_forms
-  ngx_router:
-    git:
-      url: https://github.com/insinfo/angular.git
-      ref: master
-      path: ngx_router
+  popper: ^2.0.0-dev.1
+  ngx_dart: ^9.0.0-dev.2
+  ngx_forms: ^9.0.0-dev.2
+  ngx_router: ^9.0.0-dev.2
   web: ^1.1.1
   intl: ^0.19.0
   # é obrigatorio para o consumidor funcionar corretamente
@@ -43,30 +25,9 @@ dependencies:
 dev_dependencies:
   lints: ^5.0.0
   test: ^1.26.3
-  ngx_test:
-    git:
-      url: https://github.com/insinfo/angular.git
-      ref: master
-      path: ngx_test
+  ngx_test: ^9.0.0-dev.2
   build_runner: ">=2.4.12 <2.9.0"
   build_test: ^2.2.2
   build_web_compilers: ^4.0.11
   # para ui testes
   puppeteer: ^3.16.0
-
-dependency_overrides:
-  # Contém as correções de aliases DOM em DI, propagação de erros, raízes DOM
-  # tipadas, payloads de eventos e accessors de formulário canônicos
-  # (angular master em fc8c8c3a).
-  ngx_compiler:
-    git:
-      url: https://github.com/insinfo/angular.git
-      ref: master
-      path: ngx_compiler
-  # Unifica as dependências transitivas hospedadas do monorepo com a mesma
-  # origem Git usada acima.
-  ngx_dart:
-    git:
-      url: https://github.com/insinfo/angular.git
-      ref: master
-      path: ngx_dart
