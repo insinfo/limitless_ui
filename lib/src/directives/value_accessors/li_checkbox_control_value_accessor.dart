@@ -25,8 +25,9 @@ class LiCheckboxControlValueAccessor implements ControlValueAccessor<bool?> {
   ChangeFunction<bool?> onChange = (bool? _, {String? rawValue}) {};
   TouchFunction onTouched = () {};
 
-  @HostListener('change', ['\$event.target.checked'])
-  void handleChange(bool checked) {
+  @HostListener('change')
+  void handleChange() {
+    final checked = _element.checked;
     onChange(checked, rawValue: '$checked');
   }
 

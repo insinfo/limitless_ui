@@ -38,7 +38,7 @@
             <div *ngIf="searchable" class="form-control-feedback form-control-feedback-start li-tag-filter__search">
                 <input #searchInput type="text" [class]="resolvedSearchInputClass" [placeholder]="resolvedSearchPlaceholder"
                     [attr.data-label]="'li_tf_input_search'"
-                    (input)="onSearchInput($event.target.value)">
+                    (input)="onSearchInput($event)">
                 <div class="form-control-feedback-icon">
                     <i class="ph ph-magnifying-glass"></i>
                 </div>

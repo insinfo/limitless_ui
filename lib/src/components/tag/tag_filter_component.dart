@@ -321,8 +321,9 @@ class LiTagFilterComponent
     _markForCheck();
   }
 
-  void onSearchInput(String? value) {
-    _searchQuery = value?.trim() ?? '';
+  void onSearchInput(html.Event event) {
+    final input = event.target as html.InputElement;
+    _searchQuery = input.value.trim();
     _applySearchQuery(_searchQuery, markForCheck: true);
   }
 

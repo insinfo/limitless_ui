@@ -2,7 +2,7 @@
     <div class="mb-3">
         <label class="form-label">{{ nameLabel }}</label>
         <input type="text" class="form-control" [value]="draftName" [placeholder]="resolvedNamePlaceholder"
-            [disabled]="isDisabled" (input)="onNameInput($event.target.value)">
+            [disabled]="isDisabled" (input)="onNameInput($event)">
     </div>
 
     <div class="mb-3">
@@ -19,7 +19,7 @@
         <div class="li-tag-editor__color-input-row">
             <span class="li-tag-editor__swatch li-tag-editor__swatch--preview" [liCssStyle]="previewSwatchStyle"></span>
             <input type="text" class="form-control" [value]="draftColorInput" [placeholder]="resolvedColorPlaceholder"
-                [disabled]="isDisabled" (input)="onColorInput($event.target.value)">
+                [disabled]="isDisabled" (input)="onColorInput($event)">
         </div>
 
         <div class="li-tag-editor__preview">

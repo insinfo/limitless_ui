@@ -163,7 +163,7 @@ To run the real Puppeteer E2E suite, keep the example server running on port `80
 
 ```bash
 cd example
-dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs
+dart run webdev serve web:8081 --release --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs
 ```
 
 Then run from the repository root:
@@ -182,3 +182,4 @@ dart test ui_test\e2e\puppeteer_test.dart
 ```
 
 If `RUN_EXAMPLE_E2E` is not set to `true`, `ui_test/e2e/puppeteer_test.dart` is skipped by design.
+The E2E server uses release mode so the bootstrap smoke test exercises the minified bundle and rejects browser exceptions, `console.error`, and a stuck `Carregando...` fallback.

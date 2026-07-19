@@ -14,8 +14,19 @@ void main() {
     });
 
     tearDown(() async {
-      await page.browser.close();
+      try {
+        assertNoExamplePageErrors(page);
+      } finally {
+        await page.browser.close();
+      }
     });
+
+    test('inicializa o example sem erro JS nem fallback de carregamento',
+        () async {
+      await gotoExample(page, '');
+      expect(await hasSelector(page, 'my-app > .loadContainer'), isFalse);
+      assertNoExamplePageErrors(page);
+    }, skip: skipExampleE2eReason());
 
     test('seleciona valores em select e multi-select', () async {
       await gotoExample(page, 'select');
@@ -274,7 +285,8 @@ void main() {
       );
     }, skip: skipExampleE2eReason());
 
-    test('mantem posicao desktop do date picker ao reabrir pelo mesmo trigger',
+    test(
+        'mantem ancoragem relativa do date picker ao reabrir pelo mesmo trigger',
         () async {
       await page.setViewport(DeviceViewport(width: 1000, height: 650));
       await gotoExample(page, 'date-picker');
@@ -317,18 +329,71 @@ void main() {
           page,
           '[data-label="li_dp_panel"].is-open',
         );
-        await aguarde(250);
+        await page.evaluate(
+          r'''async () => {
+            if (document.fonts?.ready) {
+              await document.fonts.ready;
+            }
+            await new Promise((resolve) => requestAnimationFrame(() =>
+              requestAnimationFrame(resolve)));
+          }''',
+        );
 
         return await page.evaluate(
           r'''() => {
             const panel = document.querySelector('[data-label="li_dp_panel"].is-open');
-            const rect = panel.getBoundingClientRect();
+            const triggers = [...document.querySelectorAll('[data-label="li_dp_trigger"]')]
+              .filter((item) => {
+                const rect = item.getBoundingClientRect();
+                const style = window.getComputedStyle(item);
+                return rect.width > 0 &&
+                  rect.height > 0 &&
+                  style.display !== 'none' &&
+                  style.visibility !== 'hidden' &&
+                  style.pointerEvents !== 'none';
+              });
+            const trigger = triggers[1] || triggers[0];
+            const panelRect = panel.getBoundingClientRect();
+            const triggerRect = trigger.getBoundingClientRect();
+            const placement = panel.getAttribute('data-popper-placement');
+            const basePlacement = placement?.split('-')[0];
+            const endAligned = placement?.endsWith('-end');
+            const startAligned = placement?.endsWith('-start');
+            let mainAxisGap;
+            let crossAxisOffset;
+            if (basePlacement === 'top') {
+              mainAxisGap = triggerRect.top - panelRect.bottom;
+            } else if (basePlacement === 'bottom') {
+              mainAxisGap = panelRect.top - triggerRect.bottom;
+            } else if (basePlacement === 'left') {
+              mainAxisGap = triggerRect.left - panelRect.right;
+            } else {
+              mainAxisGap = panelRect.left - triggerRect.right;
+            }
+            if (basePlacement === 'top' || basePlacement === 'bottom') {
+              crossAxisOffset = endAligned
+                ? panelRect.right - triggerRect.right
+                : startAligned
+                  ? panelRect.left - triggerRect.left
+                  : (panelRect.left + panelRect.width / 2) -
+                    (triggerRect.left + triggerRect.width / 2);
+            } else {
+              crossAxisOffset = endAligned
+                ? panelRect.bottom - triggerRect.bottom
+                : startAligned
+                  ? panelRect.top - triggerRect.top
+                  : (panelRect.top + panelRect.height / 2) -
+                    (triggerRect.top + triggerRect.height / 2);
+            }
             return {
-              left: rect.left,
-              top: rect.top,
-              width: rect.width,
-              height: rect.height,
-              placement: panel.getAttribute('data-popper-placement'),
+              panelLeft: panelRect.left,
+              panelTop: panelRect.top,
+              triggerLeft: triggerRect.left,
+              triggerTop: triggerRect.top,
+              scrollY: window.scrollY,
+              mainAxisGap,
+              crossAxisOffset,
+              placement,
               inlineMaxHeight: panel.style.maxHeight,
               inlineOverflowY: panel.style.overflowY
             };
@@ -338,16 +403,26 @@ void main() {
 
       final firstOpen = await openDatePickerAt(0.15);
       await page.keyboard.press(Key.escape);
-      await aguarde(200);
+      await waitForSelectorGone(
+        page,
+        '[data-label="li_dp_panel"].is-open',
+      );
 
       final secondOpen = await openDatePickerAt(0.85);
       expect(
-        ((secondOpen['left'] as num) - (firstOpen['left'] as num)).abs(),
+        ((secondOpen['mainAxisGap'] as num) - (firstOpen['mainAxisGap'] as num))
+            .abs(),
         lessThanOrEqualTo(2),
+        reason: 'O painel mudou a distancia relativa ao trigger: '
+            'first=$firstOpen second=$secondOpen',
       );
       expect(
-        ((secondOpen['top'] as num) - (firstOpen['top'] as num)).abs(),
+        ((secondOpen['crossAxisOffset'] as num) -
+                (firstOpen['crossAxisOffset'] as num))
+            .abs(),
         lessThanOrEqualTo(2),
+        reason: 'O painel mudou o alinhamento relativo ao trigger: '
+            'first=$firstOpen second=$secondOpen',
       );
       expect(secondOpen['placement'], firstOpen['placement']);
     }, skip: skipExampleE2eReason());

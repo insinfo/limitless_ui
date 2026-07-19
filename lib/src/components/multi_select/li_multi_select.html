@@ -16,7 +16,7 @@
         [attr.tabindex]="isDisabled ? null : '0'"
         (click)="toggleDropdown()"
         (keydown)="handleTriggerKeydown($event)"
-        (liClickOutside)="closeDropdown(restoreFocus: false, preserveFocusTarget: $event.target)">
+        (liClickOutside)="closeDropdownFromOutside($event)">
         <template [ngTemplateOutlet]="triggerTemplate?.templateRef"
             [ngTemplateOutletValue]="triggerContext">
         </template>
@@ -32,7 +32,7 @@
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
             aria-haspopup="listbox"
-            (click)="toggleDropdown()" (liClickOutside)="closeDropdown(restoreFocus: false, preserveFocusTarget: $event.target)" tabindex="0"
+            (click)="toggleDropdown()" (liClickOutside)="closeDropdownFromOutside($event)" tabindex="0"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null"
             [disabled]="isDisabled">
 
@@ -66,7 +66,7 @@
         [attr.aria-describedby]="resolvedDescribedBy"
         [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
         aria-haspopup="listbox"
-        (click)="toggleDropdown()" (liClickOutside)="closeDropdown(restoreFocus: false, preserveFocusTarget: $event.target)" tabindex="0"
+        (click)="toggleDropdown()" (liClickOutside)="closeDropdownFromOutside($event)" tabindex="0"
         [attr.data-invalid]="effectiveInvalid ? 'true' : null"
         [disabled]="isDisabled">
 
@@ -93,10 +93,10 @@
     </button>
     <div #dropdownContainer class="dropdown-container dropdown-menu"
         [class.dropdown-open]="dropdownOpen">
-        <div *ngIf="searchable" class="dropdown-search" (click)="$event.stopPropagation()">
+        <div *ngIf="searchable" class="dropdown-search" (click)="stopEventPropagation($event)">
             <div class="form-control-feedback form-control-feedback-start m-2">
                 <input #inputSearch type="text" [class]="resolvedSearchInputClass" [placeholder]="searchPlaceholder"
-                    (input)="searchHandle($event.target.value)"
+                    (input)="searchInputHandle($event)"
                     [attr.data-label]="'li_ms_search'"
                     tabindex="-1" [attr.aria-label]="searchAriaLabel">
                 <div class="form-control-feedback-icon">

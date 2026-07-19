@@ -417,6 +417,10 @@ class LiTokenFieldComponent
     _markForCheck();
   }
 
+  void stopPropagation(html.Event event) {
+    event.stopPropagation();
+  }
+
   Future<void> copyTokens() async {
     final textToCopy = (hasSelectedItems
             ? items

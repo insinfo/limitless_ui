@@ -1,4 +1,5 @@
 import 'package:limitless_ui_example/limitless_ui_example.dart';
+import 'package:web/web.dart' as web;
 
 @Component(
   selector: 'offcanvas-page',
@@ -505,8 +506,9 @@ ref.close();''';
         : 'Complex scenario offcanvas opened.';
   }
 
-  void onRealWorldSearch(String? value) {
-    timelineSearch = value ?? '';
+  void onRealWorldSearch(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
+    timelineSearch = input.value;
   }
 
   void onTimelineFilterChange(String value) {

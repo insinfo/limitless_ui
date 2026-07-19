@@ -188,7 +188,7 @@ class LiModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  void stopPropagation(event) {
+  void stopPropagation(Event event) {
     event.stopPropagation();
   }
 

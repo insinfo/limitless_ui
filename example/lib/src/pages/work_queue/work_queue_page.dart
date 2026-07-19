@@ -271,12 +271,14 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     _loadWorkItems();
   }
 
-  void onRequesterInput(String value) {
-    requesterQuery = value;
+  void onRequesterInput(html.Event event) {
+    final input = event.target as html.InputElement;
+    requesterQuery = input.value;
   }
 
-  void onResponsibleInput(String value) {
-    responsibleQuery = value;
+  void onResponsibleInput(html.Event event) {
+    final input = event.target as html.InputElement;
+    responsibleQuery = input.value;
   }
 
   void onClassificationChanged(dynamic value) {
@@ -287,8 +289,9 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     selectedSubjectId = value?.toString() ?? '';
   }
 
-  void onListCodeInput(String value) {
-    listCodeFilter = value.trim();
+  void onListCodeInput(html.Event event) {
+    final input = event.target as html.InputElement;
+    listCodeFilter = input.value.trim();
   }
 
   void onSelectedCodesChange(List<String> values) {

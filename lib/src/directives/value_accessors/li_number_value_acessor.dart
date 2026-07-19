@@ -33,11 +33,12 @@ class LiNumberValueAccessor extends Object
   LiNumberValueAccessor(HTMLElement element)
       : _element = element as InputElement;
 
-  @HostListener('change', ['\$event.target.value'])
-  @HostListener('input', ['\$event.target.value'])
+  @HostListener('change')
+  @HostListener('input')
 
   /// Parses the raw input string and notifies AngularDart forms.
-  void handleChange(String value) {
+  void handleChange() {
+    final value = _element.value;
     onChange(value == '' ? null : double.parse(value), rawValue: value);
   }
 

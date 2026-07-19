@@ -95,7 +95,7 @@
                 <input type="text" [class]="resolvedInputClass" [value]="manualInputValue"
                     [attr.data-label]="'li_cp_input'"
                     [attr.name]="resolvedName"
-                    [placeholder]="effectivePlaceholder" (input)="onTextInput($event.target.value)"
+                    [placeholder]="effectivePlaceholder" (input)="onTextInput($event)"
                     (keydown)="onTextInputKeyDown($event)">
             </div>
 

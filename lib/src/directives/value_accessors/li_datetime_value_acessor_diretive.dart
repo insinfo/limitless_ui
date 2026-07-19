@@ -24,11 +24,12 @@ class LiDateTimeValueAccessor implements ControlValueAccessor {
   LiDateTimeValueAccessor(HTMLElement element)
       : _element = element as InputElement;
 
-  @HostListener('change', ['\$event.target.value'])
-  @HostListener('input', ['\$event.target.value'])
+  @HostListener('change')
+  @HostListener('input')
 
   /// Parses the raw `datetime-local` string and reports model changes.
-  void handleChange(String value) {
+  void handleChange() {
+    final value = _element.value;
     DateTime? dec;
     try {
       dec = DateTime.tryParse(value);

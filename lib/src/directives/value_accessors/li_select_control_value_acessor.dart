@@ -56,8 +56,9 @@ class LiSelectControlValueAccessor extends Object
   LiSelectControlValueAccessor(HTMLElement element)
       : _element = element as SelectElement;
 
-  @HostListener('change', ['\$event.target.value'])
-  void handleChange(String value) {
+  @HostListener('change')
+  void handleChange() {
+    final value = _element.value;
     onChange(_getOptionValue(value), rawValue: value);
   }
 

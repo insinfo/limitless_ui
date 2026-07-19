@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ngx_dart/angular.dart';
+import 'package:web/web.dart' as web;
 
 import '../../directives/css_style_directive.dart';
 import 'tag_models.dart';
@@ -152,13 +153,15 @@ class LiTagEditorComponent implements OnDestroy {
 
   bool get canSave => !isDisabled && draftName.trim().isNotEmpty;
 
-  void onNameInput(String? value) {
-    draftName = value?.trim() ?? '';
+  void onNameInput(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
+    draftName = input.value.trim();
     _syncDraft(emitValueChange: true);
   }
 
-  void onColorInput(String? value) {
-    draftColorInput = value?.trim() ?? '';
+  void onColorInput(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
+    draftColorInput = input.value.trim();
     _syncDraft(emitValueChange: true);
   }
 

@@ -1,4 +1,5 @@
 import 'package:limitless_ui_example/limitless_ui_example.dart';
+import 'package:web/web.dart' as web;
 
 @Component(
   selector: 'inputs-page',
@@ -35,11 +36,11 @@ class InputsPageComponent {
 <li-input
     label="CGM"
     type="number"
-    (inputBlur)="loadPersonByCode(\$event.target.value)"
+    (inputBlur)="loadPersonByCodeFromEvent(\$event)"
     (inputFocus)="onFocusField(\$event)"
     (inputClick)="openPicker()"
     (inputKeydown)="onFieldKeydown(\$event)"
-    (inputEnter)="loadPersonByCode(\$event.target.value)">
+    (inputEnter)="loadPersonByCodeFromEvent(\$event)">
 </li-input>''';
 
   static const String passwordSnippet = '''
@@ -378,8 +379,8 @@ class InputsPageComponent {
         isPt ? 'click: abrir busca modal' : 'click: open modal picker';
   }
 
-  void onInputKeydown(dynamic event) {
-    final key = event?.key?.toString() ?? '?';
+  void onInputKeydown(web.KeyboardEvent event) {
+    final key = event.key;
     lastInputEvent = isPt ? 'keydown: tecla $key' : 'keydown: key $key';
   }
 

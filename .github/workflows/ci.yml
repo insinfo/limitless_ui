@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - ngx8
+      - ngx9
   pull_request:
 
 jobs:
@@ -99,15 +100,20 @@ jobs:
           chmod +x /tmp/chrome-no-sandbox
 
           pushd example
-          dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs > /tmp/limitless-example-serve.log 2>&1 &
+          dart run webdev serve web:8081 --release --auto=refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs > /tmp/limitless-example-serve.log 2>&1 &
           SERVER_PID=$!
           popd
 
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
 
           READY=0
-          for _ in $(seq 1 90); do
-            if curl -fsS http://127.0.0.1:8081 >/dev/null; then
+          for _ in $(seq 1 180); do
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              cat /tmp/limitless-example-serve.log
+              exit 1
+            fi
+            if grep -q 'Succeeded after' /tmp/limitless-example-serve.log && \
+               curl -fsS http://127.0.0.1:8081/main.dart.js >/dev/null; then
               READY=1
               break
             fi
@@ -124,5 +130,12 @@ jobs:
           CHROME_EXECUTABLE=/tmp/chrome-no-sandbox \
           dart test ui_test/e2e/puppeteer_test.dart
 
-      - name: Validate pub package
-        run: dart pub publish --dry-run
+      - name: Validate publication configuration
+        run: |
+          for manifest in pubspec.yaml example/pubspec.yaml; do
+            grep -Eq '^publish_to:[[:space:]]*none([[:space:]]|$)' "$manifest" || {
+              echo "publish_to: none is required in $manifest on this migration branch."
+              exit 1
+            }
+          done
+          echo 'Publication is intentionally blocked; CI only builds and tests.'

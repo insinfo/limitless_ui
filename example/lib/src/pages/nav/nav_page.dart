@@ -52,7 +52,7 @@ class NavPageComponent {
   bool get _isPt => i18n.isPortuguese;
 
   Object activeId = 1;
-  Object verticalActiveId = 'overview';
+  Object? verticalActiveId = 'overview';
   String eventLog;
 
   late final List<NavShowcaseItem> _dynamicItemsPt = <NavShowcaseItem>[

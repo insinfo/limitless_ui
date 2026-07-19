@@ -407,7 +407,7 @@
                class="form-control form-control-sm flex-1"
                [value]="timelineSearch"
                [attr.placeholder]="realWorldSearchPlaceholder"
-               (input)="onRealWorldSearch($event.target.value)">
+               (input)="onRealWorldSearch($event)">
 
         <li-dropdown-menu class="process-timeline-type-dropdown"
                           [options]="timelineFilterOptions"

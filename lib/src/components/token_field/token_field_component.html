@@ -20,7 +20,7 @@
         (keydown)="inputKeydownHandle($event)" (keyup)="inputKeyupHandle($event)"
         (keypress)="inputKeypressHandle($event)" (paste)="onPasteHandle($event)">
 
-    <div *ngIf="showActionMenu && hasActionMenuOptions" class="li-token-field__menu" [attr.data-label]="'li_token_menu'" (click)="$event.stopPropagation()">
+    <div *ngIf="showActionMenu && hasActionMenuOptions" class="li-token-field__menu" [attr.data-label]="'li_token_menu'" (click)="stopPropagation($event)">
         <li-dropdown-menu [options]="actionMenuOptions" [showCaret]="false"
             [triggerClass]="actionMenuTriggerClass" [triggerIconClass]="actionMenuTriggerIconClass"
             menuClass="" (valueChange)="onActionSelected($event)">

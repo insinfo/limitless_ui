@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ngx_dart/angular.dart';
+import 'package:web/web.dart' as web;
 
 import 'dynamic_tab_directive.dart';
 import 'dynamic_tab_header_directive.dart';
@@ -18,6 +19,10 @@ const esDynamicTabsDirectives = [
     styleUrls: ['dynamic_tabs.css'],
     directives: [coreDirectives])
 class LiTabsComponent implements OnInit, AfterContentInit {
+  void preventDefault(web.Event event) {
+    event.preventDefault();
+  }
+
   /// if `true` tabs will be placed vertically
   bool get vertical => placement == 'left' || placement == 'right';
 

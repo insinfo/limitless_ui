@@ -14,6 +14,9 @@ final bool defaultHeadless =
 final bool runExampleE2e =
     (Platform.environment['RUN_EXAMPLE_E2E'] ?? '').toLowerCase() == 'true';
 
+final Expando<_ExamplePageDiagnostics> _examplePageDiagnostics =
+    Expando<_ExamplePageDiagnostics>('example page diagnostics');
+
 String? skipExampleE2eReason() {
   if (runExampleE2e) {
     return null;
@@ -53,6 +56,7 @@ Future<Page> setupExampleBrowser({bool? headless}) async {
 
   final page = await browser.newPage();
   await page.setViewport(DeviceViewport(width: 1920, height: 1003));
+  _diagnosticsFor(page);
   return page;
 }
 
@@ -71,7 +75,11 @@ Future<void> gotoExample(Page page, String route) async {
     '$normalizedBaseUrl/#/$normalizedRoute',
     wait: Until.domContentLoaded,
   );
-  await waitForSelectorMatching(page, '.demo-page, .content');
+  await _waitForExampleBootstrap(page);
+}
+
+void assertNoExamplePageErrors(Page page) {
+  _diagnosticsFor(page).throwIfFailed(page);
 }
 
 Future<void> waitForSelectorMatching(
@@ -457,4 +465,79 @@ bool _isTransientNavigationError(Object error) {
   final message = error.toString();
   return message.contains('Execution context was destroyed') ||
       message.contains('Cannot find context with specified id');
+}
+
+_ExamplePageDiagnostics _diagnosticsFor(Page page) {
+  return _examplePageDiagnostics[page] ??= _ExamplePageDiagnostics(page);
+}
+
+Future<void> _waitForExampleBootstrap(
+  Page page, {
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  final diagnostics = _diagnosticsFor(page);
+  final stopwatch = Stopwatch()..start();
+  var fallbackStillVisible = true;
+
+  while (stopwatch.elapsed < timeout) {
+    diagnostics.throwIfFailed(page);
+
+    final appContentReady = await hasSelector(
+      page,
+      '.demo-page, .content',
+      tolerateNavigation: true,
+    );
+    fallbackStillVisible = await hasSelector(
+      page,
+      'my-app > .loadContainer',
+      tolerateNavigation: true,
+    );
+    if (appContentReady && !fallbackStillVisible) {
+      await aguarde(100);
+      diagnostics.throwIfFailed(page);
+      return;
+    }
+
+    await aguarde(100);
+  }
+
+  diagnostics.throwIfFailed(page);
+  throw TimeoutException(
+    'O example nao concluiu o bootstrap dentro de ${timeout.inSeconds}s. '
+    'Conteudo da aplicacao ausente ou fallback "Carregando..." ainda presente: '
+    '$fallbackStillVisible. URL atual: ${page.url}',
+  );
+}
+
+class _ExamplePageDiagnostics {
+  final List<String> _errors = <String>[];
+
+  _ExamplePageDiagnostics(Page page) {
+    page.onError.listen((error) {
+      _record('Excecao JavaScript nao capturada', error.toString());
+    });
+    page.onConsole.listen((message) {
+      if (message.type == ConsoleMessageType.error) {
+        _record('console.error', message.text ?? message.toString());
+      }
+    });
+  }
+
+  void _record(String source, String message) {
+    final diagnostic = '$source: $message';
+    if (!_errors.contains(diagnostic)) {
+      _errors.add(diagnostic);
+    }
+  }
+
+  void throwIfFailed(Page page) {
+    if (_errors.isEmpty) {
+      return;
+    }
+
+    throw StateError(
+      'O example produziu erro no navegador em ${page.url}:\n'
+      '${_errors.join('\n')}',
+    );
+  }
 }

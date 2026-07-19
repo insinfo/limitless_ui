@@ -684,8 +684,9 @@ class LiColorPickerComponent
     _autoCommitIfNeeded('initial');
   }
 
-  void onTextInput(String? rawValue) {
-    manualInputValue = rawValue?.trim() ?? '';
+  void onTextInput(html.Event event) {
+    final input = event.target as html.InputElement;
+    manualInputValue = input.value.trim();
 
     if (manualInputValue.isEmpty && allowEmpty) {
       _setDraftColorFromColor(null);

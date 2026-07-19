@@ -11,7 +11,7 @@
     [class.nav-tabs-solid]="type == 'solid'"
     [class.nav-tabs-vertical]="vertical"
     [class.border]="type == 'solid'"
-    (click)="$event.preventDefault()">
+    (click)="preventDefault($event)">
   
     <li *ngFor="let tab of tabs; let idx = index"
         class="nav-item"

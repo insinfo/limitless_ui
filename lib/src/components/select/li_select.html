@@ -79,10 +79,10 @@
     </button>
     <div #dropdownContainer [attr.data-id]="'dropdown_'+ id" class="dropdown-container dropdown-menu"
         [class.dropdown-open]="dropdownOpen">
-        <div *ngIf="searchable" class="dropdown-search" (click)="$event.stopPropagation()">
+        <div *ngIf="searchable" class="dropdown-search" (click)="stopEventPropagation($event)">
             <div class="form-control-feedback form-control-feedback-start m-2">
                 <input #inputSearch type="text" [class]="resolvedSearchInputClass" [placeholder]="searchPlaceholder"
-                    (input)="searchHandle($event.target.value)"
+                    (input)="searchInputHandle($event)"
                     [attr.data-label]="'li_select_search'"
                     tabindex="-1" [attr.aria-label]="searchAriaLabel">
                 <div class="form-control-feedback-icon">

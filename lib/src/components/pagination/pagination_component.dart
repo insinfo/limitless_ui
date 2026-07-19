@@ -423,6 +423,15 @@ class LiPaginationComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _updatePages(requestedPage, emitPageChange: true);
   }
 
+  void onPageItemClick(LiPaginationPageItem item, html.Event event) {
+    if (item.ellipsis) {
+      event.preventDefault();
+      return;
+    }
+
+    selectPage(item.value, event);
+  }
+
   @override
   void ngOnDestroy() {
     _pageChangeController.close();

@@ -55,8 +55,9 @@ dev_dependencies:
   puppeteer: ^3.16.0
 
 dependency_overrides:
-  # Contém as correções de aliases DOM em DI e propagação de erros do
-  # compilador (angular commits 12d91771 e 72dc21e9).
+  # Contém as correções de aliases DOM em DI, propagação de erros, raízes DOM
+  # tipadas, payloads de eventos e accessors de formulário canônicos
+  # (angular master em fc8c8c3a).
   ngx_compiler:
     git:
       url: https://github.com/insinfo/angular.git

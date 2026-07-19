@@ -94,7 +94,7 @@
            [attr.data-label]="item.ellipsis ? 'li_pagination_ellipsis' : 'li_pagination_page'"
            [attr.data-value]="item.value.toString()"
            [attr.data-active]="item.active ? 'true' : 'false'"
-           (click)="item.ellipsis ? $event.preventDefault() : selectPage(item.value, $event)">
+           (click)="onPageItemClick(item, $event)">
           <template [ngIf]="item.ellipsis">
             <template [liPaginationOutlet]="resolvedEllipsisTemplate"
                       [liPaginationOutletCurrentPage]="page"

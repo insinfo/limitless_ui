@@ -1,3 +1,5 @@
+import 'dart:js_interop';
+
 import 'package:limitless_ui/web_compat.dart';
 
 import 'package:limitless_ui_example/messages.i18n.dart';
@@ -29,13 +31,11 @@ class DemoI18nService {
   }
 
   void useBrowserLocale() {
-    final navigator = window.navigator as dynamic;
-    final List<dynamic>? languages = navigator.languages as List<dynamic>?;
-    final locale = (languages != null && languages.isNotEmpty
-                ? languages.first?.toString()
-                : window.navigator.language)
-            ?.toLowerCase() ??
-        'en';
+    final languages = window.navigator.languages.toDart;
+    final locale = (languages.isNotEmpty
+            ? languages.first.toDart
+            : window.navigator.language)
+        .toLowerCase();
     final language = locale.split(RegExp('[-_]')).first;
 
     if (language == 'pt') {

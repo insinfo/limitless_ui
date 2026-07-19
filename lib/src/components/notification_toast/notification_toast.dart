@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_router/ngx_router.dart';
+import 'package:web/web.dart' as web;
+
 import 'notification_toast_service.dart';
 
 /// Top navigation component.
@@ -48,7 +50,7 @@ class LiNotificationOutletComponent implements OnDestroy {
     return '${i * 20}px';
   }
 
-  void closeToast(LiNotificationToast toast, [dynamic event]) {
+  void closeToast(LiNotificationToast toast, [web.Event? event]) {
     event?.stopPropagation();
     service?.remove(toast);
   }

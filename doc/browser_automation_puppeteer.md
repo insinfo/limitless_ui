@@ -26,8 +26,10 @@ For this repository's example app, run the server from the `example` package:
 
 ```bash
 cd example
-dart run webdev serve web:8081 --auto refresh --hostname 127.0.0.1 -- --delete-conflicting-outputs
+dart run webdev serve web:8081 --release --auto refresh --hostname 127.0.0.1 -- --delete-conflicting-outputs
 ```
+
+Use release mode for this E2E gate. The repository harness treats an uncaught JavaScript exception, `console.error`, or the initial `Carregando...` fallback remaining in the DOM as a bootstrap failure.
 
 Then run the Puppeteer tests from the repository root:
 

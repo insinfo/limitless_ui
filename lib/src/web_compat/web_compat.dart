@@ -9,8 +9,10 @@
 /// It provides:
 /// - `typedef` aliases for the `dart:html` type names (`HtmlElement`,
 ///   `DivElement`, `CssStyleDeclaration`, ...);
-/// - `createXxxElement()` factory functions replacing the `dart:html`
-///   element constructors (`package:web` element types are not constructible);
+/// - transitional `createXxxElement()` factories that centralize legacy
+///   creation semantics and specialized input defaults. Most corresponding
+///   `package:web` 1.1.1 element types also have canonical constructors, which
+///   new code should prefer;
 /// - `liEvent`/`liMouseEvent`/`liKeyboardEvent` event factories that keep the
 ///   `dart:html` defaults (`bubbles: true`, settable `keyCode`);
 /// - `onXxx` event-stream getters, `classes`, `attributes`-style helpers,

@@ -682,7 +682,7 @@ class LiMultiSelectComponent
     _markForCheck();
   }
 
-  void onLiClickHandle(dynamic event, CustomMultiSelectItem value) {
+  void onLiClickHandle(html.Event event, CustomMultiSelectItem value) {
     if (isDisabled) {
       return;
     }
@@ -691,7 +691,7 @@ class LiMultiSelectComponent
     _toggleOptionSelection(value);
   }
 
-  void onCheckboxClickHandle(dynamic event, CustomMultiSelectItem option) {
+  void onCheckboxClickHandle(html.Event event, CustomMultiSelectItem option) {
     if (isDisabled) {
       return;
     }
@@ -775,6 +775,24 @@ class LiMultiSelectComponent
 
   void clearSelection(html.Event event) {
     clearFromTriggerTemplate(event);
+  }
+
+  void closeDropdownFromOutside(html.MouseEvent event) {
+    final target = event.target;
+    closeDropdown(
+      restoreFocus: false,
+      preserveFocusTarget: (target?.isA<html.Element>() ?? false)
+          ? target as html.Element
+          : null,
+    );
+  }
+
+  void stopEventPropagation(html.Event event) {
+    event.stopPropagation();
+  }
+
+  void searchInputHandle(html.Event event) {
+    searchHandle((event.target as html.InputElement).value);
   }
 
   void _toggleOptionSelection(CustomMultiSelectItem option) {

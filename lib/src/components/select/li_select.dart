@@ -852,6 +852,14 @@ class LiSelectComponent
     }
   }
 
+  void stopEventPropagation(html.Event event) {
+    event.stopPropagation();
+  }
+
+  void searchInputHandle(html.Event event) {
+    searchHandle((event.target as html.InputElement).value);
+  }
+
   @override
   void ngOnDestroy() {
     _destroyed = true;

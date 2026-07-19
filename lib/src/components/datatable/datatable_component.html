@@ -265,7 +265,7 @@
                         [liCssStyle]="view.row.styleCss"
                         (click)="rowClickHandler(view.row)">
                         <td *ngIf="showCheckboxToSelectRow && view.row.type == DatatableRowType.normal"
-                            class="datatable-first-col" (click)="$event.stopPropagation()">
+                            class="datatable-first-col" (click)="stopPropagation($event)">
                             <input class="cursor-pointer form-check-input m-0 me-3" (click)="onSelect($event, view.row)"
                                 type="checkbox" [checked]="view.row.selected" autocomplete="off" tabindex="-1"
                                 [attr.data-label]="'li_dt_check'"

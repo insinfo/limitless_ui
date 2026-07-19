@@ -24,9 +24,10 @@ class LiDateValueAccessor implements ControlValueAccessor {
 
   LiDateValueAccessor(HTMLElement element) : _element = element as InputElement;
 
-  @HostListener('change', ['\$event.target.value'])
-  @HostListener('input', ['\$event.target.value'])
-  void handleChange(String value) {
+  @HostListener('change')
+  @HostListener('input')
+  void handleChange() {
+    final value = _element.value;
     DateTime? parsedValue;
     try {
       parsedValue = DateTime.tryParse(value);

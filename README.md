@@ -3006,7 +3006,7 @@ Run the real example-app Puppeteer E2E suite from the repository root after serv
 
 ```bash
 cd example
-dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs
+dart run webdev serve web:8081 --release --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs
 ```
 
 In another shell:
@@ -3025,6 +3025,7 @@ dart test ui_test\e2e\puppeteer_test.dart
 ```
 
 Without `RUN_EXAMPLE_E2E=true`, the Puppeteer tests are intentionally skipped so normal local `dart test` runs do not need a running web server.
+The E2E server intentionally uses `--release`: the bootstrap smoke test fails on uncaught JavaScript exceptions, `console.error`, or if the initial `Carregando...` fallback remains mounted.
 
 Generate local coverage for the VM-only suite:
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ngx_dart/angular.dart';
+import 'package:web/web.dart' as web;
 
 import 'sweet_alert.dart';
 import 'sweet_alert_service.dart';
@@ -123,8 +124,8 @@ class LiSweetAlertDirective implements OnDestroy {
   Stream<Object> get resultStream => _resultController.stream;
 
   @HostListener('click', ['\$event'])
-  Future<void> handleClick(dynamic event) async {
-    event?.preventDefault();
+  Future<void> handleClick(web.Event event) async {
+    event.preventDefault();
 
     switch (_normalizedMode) {
       case 'confirm':

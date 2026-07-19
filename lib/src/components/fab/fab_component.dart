@@ -169,7 +169,7 @@ class LiFabActionTemplateContext {
 
   String? get rel => fab.resolvedActionRel(action);
 
-  void select([dynamic event]) => fab.handleActionClick(action, event);
+  void select([html.Event? event]) => fab.handleActionClick(action, event);
 }
 
 @Component(
@@ -468,7 +468,7 @@ class LiFabComponent implements OnDestroy {
     _setExpanded(false);
   }
 
-  void handleActionClick(LiFabAction action, [dynamic event]) {
+  void handleActionClick(LiFabAction action, [html.Event? event]) {
     if (action.disabled) {
       event?.preventDefault();
       return;

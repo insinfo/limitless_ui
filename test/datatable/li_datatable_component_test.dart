@@ -334,17 +334,6 @@ class CardTemplateTestHostComponent extends TestHostComponent {
   }
 }
 
-class _FakeKeyPressEvent {
-  _FakeKeyPressEvent(this.keyCode);
-
-  final int keyCode;
-  bool stopPropagationCalled = false;
-
-  void stopPropagation() {
-    stopPropagationCalled = true;
-  }
-}
-
 void main() {
   tearDown(disposeAnyRunningTest);
 
@@ -691,8 +680,9 @@ void main() {
 
     await fixture.update((component) {
       component.table!.dataTableFilter.searchString = 'Ana';
-      component.table!
-          .handleSearchInputKeypress(_FakeKeyPressEvent(KeyCode.ENTER));
+      component.table!.handleSearchInputKeypress(
+        liKeyboardEvent('keypress', keyCode: KeyCode.ENTER),
+      );
     });
 
     expect(host.lastSearchRequest, isNotNull);

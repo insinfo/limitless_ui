@@ -1724,16 +1724,20 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     onRequestData();
   }
 
-  void handleSearchInputKeypress(dynamic e) {
+  void handleSearchInputKeypress(KeyboardEvent event) {
     if (disableSearchEvent != true) {
-      e.stopPropagation();
-      if (e.keyCode == KeyCode.ENTER) {
+      event.stopPropagation();
+      if (event.keyCode == KeyCode.ENTER) {
         onSearch();
       }
     }
   }
 
-  void handleSearchFieldSelectChange(dynamic event, String? index) {
+  void stopPropagation(Event event) {
+    event.stopPropagation();
+  }
+
+  void handleSearchFieldSelectChange(Object? _, String? index) {
     if (index == null) {
       return;
     }
