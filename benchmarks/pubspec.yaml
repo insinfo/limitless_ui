@@ -1,0 +1,17 @@
+name: benchmarks
+description: Benchmark app comparing limitless_ui render performance between the 2.x dart:html line (ngx8) and the 3.x package:web line (ngx9).
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  essential_core: ^1.4.0
+  limitless_ui:
+    path: ..
+  ngx_dart: ^9.0.0-dev.2
+
+dev_dependencies:
+  build_runner: ">=2.4.12 <2.9.0"
+  build_web_compilers: ^4.0.11
+  puppeteer: ^3.16.0

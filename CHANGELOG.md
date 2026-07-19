@@ -12,9 +12,22 @@
 - Updated the example and browser documentation to the `package:web` API, and
   fixed migration regressions in DOM sanitization, typed-array Blob creation,
   live DOM collections, event defaults, Zone-bound callbacks and JS identity.
-- This Git dependency configuration is intentionally marked
-  `publish_to: none`. This migration is committed and pushed for validation;
-  it is not published to pub.dev.
+- Benchmarked the migration against the 2.x/`dart:html` line with a dedicated
+  app (`benchmarks/`): rendering a 2,500-row `li-datatable` without
+  virtualization and opening `li-dropdown-menu`/`li-select` show no measurable
+  runtime difference in dart2js release builds (warm medians of ~1.0 s for the
+  table and ~45 ms for the overlays on both lines, Chrome via Puppeteer), while
+  the release `main.dart.js` of the same app shrank ~14% (550 KB to 472 KB),
+  which improves download and parse time on startup. The perceived speedup of
+  the migrated app comes from the smaller bundle and the ngx_* 9.0.0-dev.2
+  compiler fixes (typed event payloads instead of `dynamic`), not from faster
+  DOM calls: both `dart:html` and `package:web` are near-zero-cost layers over
+  the same DOM objects.
+- Dependencies now resolve from pub.dev: `popper ^2.0.0-dev.1` and the ngx_*
+  family at `^9.0.0-dev.2` (which carries the generated-DI typedef token,
+  compiler error propagation, typed element/event and typed form accessor
+  fixes). The package itself remains `publish_to: none`; publishing
+  limitless_ui to pub.dev is a separate, explicit deliverable.
 
 ## 2.0.0
 
