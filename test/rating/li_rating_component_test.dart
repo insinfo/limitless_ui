@@ -5,13 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_rating_component_test.template.dart' as ng;
 
@@ -47,13 +50,15 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final buttons = fixture.rootElement.queryAll('li-rating button');
-    final fourthStar = buttons[3] as html.ButtonElement;
+    final buttons = fixture.rootElement
+        .querySelectorAll('li-rating button')
+        .toElementList();
+    final fourthStar = buttons[3] as web.HTMLButtonElement;
 
     expect(host.userScore, isNull);
 
     await fixture.update((_) {
-      fourthStar.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      fourthStar.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -61,7 +66,7 @@ void main() {
     expect(host.userScore, 4);
 
     await fixture.update((_) {
-      fourthStar.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      fourthStar.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -74,7 +79,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final root = fixture.rootElement.querySelector('li-rating .li-rating')
-        as html.DivElement;
+        as web.HTMLDivElement;
 
     await fixture.update((_) {
       root.focus();
@@ -100,7 +105,7 @@ Future<void> _settle(
   await fixture.update((_) {});
 }
 
-void _dispatchKey(html.Element element, String key) {
-  final event = html.liKeyboardEvent('keydown', key: key);
+void _dispatchKey(web.Element element, String key) {
+  final event = bubblingKeyboardEvent('keydown', key: key);
   element.dispatchEvent(event);
 }

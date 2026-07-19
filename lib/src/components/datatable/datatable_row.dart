@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 //datatable_row.dart
 
@@ -17,7 +17,7 @@ class DatatableRow {
   bool selected = false;
   bool isExpanded = false;
   String? styleCss;
-  Element? customCardElement;
+  web.Element? customCardElement;
 
   DatatableRowType type = DatatableRowType.normal;
 

@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'dart:math' as math;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -31,10 +32,10 @@ class LiSliderComponent
   ChangeFunction<dynamic> _onChange = (dynamic _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
 
-  StreamSubscription<html.MouseEvent>? _mouseMoveSubscription;
-  StreamSubscription<html.MouseEvent>? _mouseUpSubscription;
-  StreamSubscription<html.TouchEvent>? _touchMoveSubscription;
-  StreamSubscription<html.TouchEvent>? _touchEndSubscription;
+  StreamSubscription<web.MouseEvent>? _mouseMoveSubscription;
+  StreamSubscription<web.MouseEvent>? _mouseUpSubscription;
+  StreamSubscription<web.TouchEvent>? _touchMoveSubscription;
+  StreamSubscription<web.TouchEvent>? _touchEndSubscription;
   Timer? _tapStateTimer;
 
   double _singleValue = 0;
@@ -45,7 +46,7 @@ class LiSliderComponent
   bool _tapActive = false;
 
   @ViewChild('surface')
-  html.Element? surfaceElement;
+  web.Element? surfaceElement;
 
   @Input()
   bool range = false;
@@ -158,7 +159,7 @@ class LiSliderComponent
     }
 
     final documentDirection =
-        (html.document.documentElement as html.HtmlElement?)?.dir ?? '';
+        (web.document.documentElement as web.HTMLElement?)?.dir ?? '';
     final normalizedDocumentDirection = documentDirection.trim().toLowerCase();
     if (normalizedDocumentDirection == 'rtl') {
       return 'rtl';
@@ -241,7 +242,7 @@ class LiSliderComponent
     _markForCheck();
   }
 
-  void onTrackMouseDown(html.MouseEvent event) {
+  void onTrackMouseDown(web.MouseEvent event) {
     if (disabled) {
       return;
     }
@@ -258,7 +259,7 @@ class LiSliderComponent
     event.preventDefault();
   }
 
-  void onTrackTouchStart(html.TouchEvent event) {
+  void onTrackTouchStart(web.TouchEvent event) {
     if (disabled) {
       return;
     }
@@ -275,7 +276,7 @@ class LiSliderComponent
     event.preventDefault();
   }
 
-  void onHandleMouseDown(int handleIndex, html.MouseEvent event) {
+  void onHandleMouseDown(int handleIndex, web.MouseEvent event) {
     if (disabled) {
       return;
     }
@@ -285,7 +286,7 @@ class LiSliderComponent
     event.preventDefault();
   }
 
-  void onHandleTouchStart(int handleIndex, html.TouchEvent event) {
+  void onHandleTouchStart(int handleIndex, web.TouchEvent event) {
     if (disabled) {
       return;
     }
@@ -308,7 +309,7 @@ class LiSliderComponent
     _markForCheck();
   }
 
-  void onHandleKeyDown(int handleIndex, html.KeyboardEvent event) {
+  void onHandleKeyDown(int handleIndex, web.KeyboardEvent event) {
     if (disabled) {
       return;
     }
@@ -621,20 +622,20 @@ class LiSliderComponent
     return double.parse(value.toStringAsFixed(precision));
   }
 
-  double? _mouseEventToPositionPercent(html.MouseEvent event) {
+  double? _mouseEventToPositionPercent(web.MouseEvent event) {
     final bounds = surfaceElement?.getBoundingClientRect();
     if (bounds == null) {
       return null;
     }
     return _offsetsToPositionPercent(
-      clientX: event.client.x.toDouble(),
-      clientY: event.client.y.toDouble(),
+      clientX: event.clientX.toDouble(),
+      clientY: event.clientY.toDouble(),
       bounds:
-          html.Rectangle(bounds.left, bounds.top, bounds.width, bounds.height),
+          math.Rectangle(bounds.left, bounds.top, bounds.width, bounds.height),
     );
   }
 
-  double? _touchEventToPositionPercent(html.TouchEvent event) {
+  double? _touchEventToPositionPercent(web.TouchEvent event) {
     final touch = _resolveTouch(event);
     final bounds = surfaceElement?.getBoundingClientRect();
     if (touch == null || bounds == null) {
@@ -644,16 +645,16 @@ class LiSliderComponent
       clientX: touch.clientX.toDouble(),
       clientY: touch.clientY.toDouble(),
       bounds:
-          html.Rectangle(bounds.left, bounds.top, bounds.width, bounds.height),
+          math.Rectangle(bounds.left, bounds.top, bounds.width, bounds.height),
     );
   }
 
-  html.Touch? _resolveTouch(html.TouchEvent event) {
-    if (event.changedTouches.isNotEmpty) {
-      return event.changedTouches[0];
+  web.Touch? _resolveTouch(web.TouchEvent event) {
+    if (event.changedTouches.length > 0) {
+      return event.changedTouches.item(0);
     }
-    if (event.touches.isNotEmpty) {
-      return event.touches[0];
+    if (event.touches.length > 0) {
+      return event.touches.item(0);
     }
     return null;
   }
@@ -661,7 +662,7 @@ class LiSliderComponent
   double _offsetsToPositionPercent({
     required double clientX,
     required double clientY,
-    required html.Rectangle<num> bounds,
+    required math.Rectangle<num> bounds,
   }) {
     final rawPosition = isVertical
         ? ((clientY - bounds.top) / bounds.height)
@@ -712,7 +713,10 @@ class LiSliderComponent
     _dragHandleIndex = handleIndex;
     _syncHandleStateClasses();
     _markForCheck();
-    _mouseMoveSubscription ??= html.document.onMouseMove.listen((event) {
+    _mouseMoveSubscription ??=
+        web.EventStreamProvider<web.MouseEvent>('mousemove')
+            .forTarget(web.document)
+            .listen((event) {
       if (_dragHandleIndex == null || disabled) {
         return;
       }
@@ -723,12 +727,17 @@ class LiSliderComponent
       _applyPointerPosition(_dragHandleIndex!, positionPercent);
       event.preventDefault();
     });
-    _mouseUpSubscription ??= html.document.onMouseUp.listen((_) {
+    _mouseUpSubscription ??= web.EventStreamProvider<web.MouseEvent>('mouseup')
+        .forTarget(web.document)
+        .listen((_) {
       _dragHandleIndex = null;
       _syncHandleStateClasses();
       _markForCheck();
     });
-    _touchMoveSubscription ??= html.document.onTouchMove.listen((event) {
+    _touchMoveSubscription ??=
+        web.EventStreamProvider<web.TouchEvent>('touchmove')
+            .forTarget(web.document)
+            .listen((event) {
       if (_dragHandleIndex == null || disabled) {
         return;
       }
@@ -739,7 +748,10 @@ class LiSliderComponent
       _applyPointerPosition(_dragHandleIndex!, positionPercent);
       event.preventDefault();
     });
-    _touchEndSubscription ??= html.document.onTouchEnd.listen((_) {
+    _touchEndSubscription ??=
+        web.EventStreamProvider<web.TouchEvent>('touchend')
+            .forTarget(web.document)
+            .listen((_) {
       _dragHandleIndex = null;
       _syncHandleStateClasses();
       _markForCheck();

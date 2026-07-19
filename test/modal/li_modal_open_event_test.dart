@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -84,12 +84,12 @@ void main() {
     // The modal moves its root element to document.body on init, so the content
     // is queried from there rather than from the fixture root.
     // With lazyContent the body does not exist until the modal opens.
-    expect(html.document.body!.querySelector('#lazy-body'), isNull);
+    expect(web.document.body!.querySelector('#lazy-body'), isNull);
 
     await fixture.update((_) => host.modal!.open());
 
     expect(host.events, <String>['open']);
-    expect(html.document.body!.querySelector('#lazy-body'), isNotNull);
+    expect(web.document.body!.querySelector('#lazy-body'), isNotNull);
   });
 
   test('a start-open modal still reports its open', () async {

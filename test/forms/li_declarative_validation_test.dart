@@ -5,13 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_declarative_validation_test.template.dart' as ng;
 
@@ -254,7 +257,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final validateButton = fixture.rootElement.querySelector('#validate-form')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
       validateButton.click();
@@ -262,28 +265,30 @@ void main() {
     await _settle(fixture);
 
     final cpfInput = fixture.rootElement.querySelector('input#cpf-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
     final selectButton =
         fixture.rootElement.querySelector('#department-field .dropdown-button')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
     final multiSelectButton =
         fixture.rootElement.querySelector('#channels-field .dropdown-button')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
     final checkboxInput = fixture.rootElement
             .querySelector('#consent-field input[type="checkbox"]')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     expect(host.lastValidationResult, isFalse);
-    expect(html.document.activeElement?.id, 'cpf-input');
-    expect(cpfInput.classes.contains('is-invalid'), isTrue);
-    expect(selectButton.classes.contains('is-invalid'), isTrue);
+    expect(web.document.activeElement?.id, 'cpf-input');
+    expect(cpfInput.classList.contains('is-invalid'), isTrue);
+    expect(selectButton.classList.contains('is-invalid'), isTrue);
     expect(selectButton.getAttribute('aria-invalid'), 'true');
-    expect(multiSelectButton.classes.contains('is-invalid'), isTrue);
-    expect(checkboxInput.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('Informe o CPF.'));
-    expect(fixture.rootElement.text, contains('Escolha um departamento.'));
-    expect(fixture.rootElement.text, contains('Selecione ao menos 2 canais.'));
-    expect(fixture.rootElement.text, contains('Confirme o aceite.'));
+    expect(multiSelectButton.classList.contains('is-invalid'), isTrue);
+    expect(checkboxInput.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent, contains('Informe o CPF.'));
+    expect(
+        fixture.rootElement.textContent, contains('Escolha um departamento.'));
+    expect(fixture.rootElement.textContent,
+        contains('Selecione ao menos 2 canais.'));
+    expect(fixture.rootElement.textContent, contains('Confirme o aceite.'));
   });
 
   test(
@@ -294,7 +299,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final validateButton = fixture.rootElement.querySelector('#validate-form')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
       validateButton.click();
@@ -302,62 +307,65 @@ void main() {
     await _settle(fixture);
 
     final cpfInput = fixture.rootElement.querySelector('input#cpf-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
     final selectButton =
         fixture.rootElement.querySelector('#department-field .dropdown-button')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
     final multiSelectButton =
         fixture.rootElement.querySelector('#channels-field .dropdown-button')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
     final checkboxInput = fixture.rootElement
             .querySelector('#consent-field input[type="checkbox"]')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       cpfInput.value = '52998224725';
-      cpfInput.dispatchEvent(html.liEvent('input', canBubble: true));
-      cpfInput.dispatchEvent(html.liEvent('blur', canBubble: true));
+      cpfInput.dispatchEvent(bubblingEvent('input', bubbles: true));
+      cpfInput.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      selectButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      selectButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final designOption = html.document
-        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
-        .cast<html.Element>()
-        .firstWhere((element) => (element.text).contains('Design'));
+    final designOption = web.document
+        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .toElementList()
+        .cast<web.Element>()
+        .firstWhere(
+            (element) => ((element.textContent ?? '')).contains('Design'));
 
     await fixture.update((_) {
-      designOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      designOption.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
       multiSelectButton
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final multiOptions = html.document
-        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
-        .cast<html.Element>()
+    final multiOptions = web.document
+        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .toElementList()
+        .cast<web.Element>()
         .toList(growable: false);
     final emailOption = multiOptions.firstWhere(
-      (element) => (element.text).contains('Email'),
+      (element) => ((element.textContent ?? '')).contains('Email'),
     );
     final pushOption = multiOptions.firstWhere(
-      (element) => (element.text).contains('Push'),
+      (element) => ((element.textContent ?? '')).contains('Push'),
     );
 
     await fixture.update((_) {
-      emailOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
-      pushOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      emailOption.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
+      pushOption.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
       checkboxInput.checked = true;
-      checkboxInput.dispatchEvent(html.liEvent('change', canBubble: true));
-      checkboxInput.dispatchEvent(html.liEvent('blur', canBubble: true));
+      checkboxInput.dispatchEvent(bubblingEvent('change', bubbles: true));
+      checkboxInput.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
@@ -371,16 +379,17 @@ void main() {
     expect(host.departmentId, 'design');
     expect(host.channelIds, containsAll(<String>['email', 'push']));
     expect(host.acceptedTerms, isTrue);
-    expect(cpfInput.classes.contains('is-invalid'), isFalse);
-    expect(selectButton.classes.contains('is-invalid'), isFalse);
-    expect(multiSelectButton.classes.contains('is-invalid'), isFalse);
-    expect(checkboxInput.classes.contains('is-invalid'), isFalse);
-    expect(fixture.rootElement.text, isNot(contains('Informe o CPF.')));
-    expect(
-        fixture.rootElement.text, isNot(contains('Escolha um departamento.')));
-    expect(fixture.rootElement.text,
+    expect(cpfInput.classList.contains('is-invalid'), isFalse);
+    expect(selectButton.classList.contains('is-invalid'), isFalse);
+    expect(multiSelectButton.classList.contains('is-invalid'), isFalse);
+    expect(checkboxInput.classList.contains('is-invalid'), isFalse);
+    expect(fixture.rootElement.textContent, isNot(contains('Informe o CPF.')));
+    expect(fixture.rootElement.textContent,
+        isNot(contains('Escolha um departamento.')));
+    expect(fixture.rootElement.textContent,
         isNot(contains('Selecione ao menos 2 canais.')));
-    expect(fixture.rootElement.text, isNot(contains('Confirme o aceite.')));
+    expect(
+        fixture.rootElement.textContent, isNot(contains('Confirme o aceite.')));
   });
 
   test('uses submittedOrTouched by default across declarative form components',
@@ -390,7 +399,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final validateButton = fixture.rootElement
-        .querySelector('#validate-default-form') as html.ButtonElement;
+        .querySelector('#validate-default-form') as web.HTMLButtonElement;
 
     await fixture.update((_) {
       validateButton.click();
@@ -398,23 +407,23 @@ void main() {
     await _settleDefault(fixture);
 
     final cpfInput = fixture.rootElement
-        .querySelector('input#default-cpf-input') as html.InputElement;
+        .querySelector('input#default-cpf-input') as web.HTMLInputElement;
     final selectButton = fixture.rootElement
             .querySelector('#default-department-field .dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final multiSelectButton = fixture.rootElement
             .querySelector('#default-channels-field .dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final checkboxInput = fixture.rootElement
             .querySelector('#default-consent-field input[type="checkbox"]')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     expect(host.lastValidationResult, isFalse);
-    expect(html.document.activeElement?.id, 'default-cpf-input');
-    expect(cpfInput.classes.contains('is-invalid'), isTrue);
-    expect(selectButton.classes.contains('is-invalid'), isTrue);
-    expect(multiSelectButton.classes.contains('is-invalid'), isTrue);
-    expect(checkboxInput.classes.contains('is-invalid'), isTrue);
+    expect(web.document.activeElement?.id, 'default-cpf-input');
+    expect(cpfInput.classList.contains('is-invalid'), isTrue);
+    expect(selectButton.classList.contains('is-invalid'), isTrue);
+    expect(multiSelectButton.classList.contains('is-invalid'), isTrue);
+    expect(checkboxInput.classList.contains('is-invalid'), isTrue);
   });
 }
 

@@ -5,12 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:limitless_ui/src/web_support/dom_tokens.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_sweet_alert_directive_test.template.dart' as ng;
 
@@ -85,17 +88,17 @@ void main() {
   test('uses centered positioning by default for modal mode', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final button =
-        fixture.rootElement.querySelector('#show-button') as html.ButtonElement;
+    final button = fixture.rootElement.querySelector('#show-button')
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      button.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      button.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(html.document.querySelector('.swal2-container.swal2-center'),
-        isNotNull);
-    expect(html.document.querySelector('.swal2-popup.swal2-modal'), isNotNull);
+    expect(
+        web.document.querySelector('.swal2-container.swal2-center'), isNotNull);
+    expect(web.document.querySelector('.swal2-popup.swal2-modal'), isNotNull);
 
     await fixture.update((_) {
       _click('.swal2-confirm');
@@ -108,14 +111,14 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final button = fixture.rootElement.querySelector('#confirm-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      button.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      button.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(html.document.querySelector('.swal2-popup'), isNotNull);
+    expect(web.document.querySelector('.swal2-popup'), isNotNull);
 
     await fixture.update((_) {
       _click('.swal2-confirm');
@@ -132,18 +135,18 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final button = fixture.rootElement.querySelector('#prompt-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      button.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      button.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final input =
-        html.document.querySelector('.swal2-input') as html.InputElement;
+        web.document.querySelector('.swal2-input') as web.HTMLInputElement;
     await fixture.update((_) {
       input.value = 'batch-42';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
       _click('.swal2-confirm');
     });
     await _settle(fixture);
@@ -157,23 +160,23 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final button = fixture.rootElement.querySelector('#textarea-prompt-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      button.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      button.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final textarea =
-        html.document.querySelector('.swal2-textarea') as html.TextAreaElement;
-    expect(textarea.classes.contains('li-swalert-textarea'), isTrue);
+    final textarea = web.document.querySelector('.swal2-textarea')
+        as web.HTMLTextAreaElement;
+    expect(textarea.classList.contains('li-swalert-textarea'), isTrue);
     expect(textarea.rows, 6);
     expect(textarea.maxLength, 240);
     expect(textarea.getAttribute('aria-label'), 'Correction reason');
 
     await fixture.update((_) {
       textarea.value = 'Wrong dispatch selected.';
-      textarea.dispatchEvent(html.liEvent('input', canBubble: true));
+      textarea.dispatchEvent(bubblingEvent('input', bubbles: true));
       _click('.swal2-confirm');
     });
     await _settle(fixture);
@@ -186,14 +189,14 @@ void main() {
 }
 
 void _click(String selector) {
-  final element = html.document.querySelector(selector);
+  final element = web.document.querySelector(selector);
   expect(element, isNotNull);
-  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+  element!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 void _resetSweetAlertDom() {
   SweetAlert.dismissAll();
-  html.document.body?.classes.removeAll(
+  web.document.body?.classList.removeAllTokens(
     const <String>['swal2-shown', 'swal2-height-auto', 'swal2-toast-shown'],
   );
 }

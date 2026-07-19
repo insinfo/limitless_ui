@@ -1,9 +1,10 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 import '../datatable/datatable_demo_service.dart';
+import '../../web_support/dom_tokens.dart';
 import 'datatable_process_lookup_support.dart';
 
 @Component(
@@ -233,13 +234,13 @@ class DatatableProcessLookupPageComponent implements OnInit {
     dynamic itemInstance,
   ) {
     final isDigital = (itemMap['digitalLabel']?.toString() ?? '') == 'Sim';
-    return SpanElement()
-      ..classes.addAll(<String>[
+    return HTMLSpanElement()
+      ..classList.addAllTokens(<String>[
         'badge',
         'rounded-pill',
         isDigital ? 'bg-primary' : 'bg-light',
         isDigital ? 'text-white' : 'text-body',
       ])
-      ..text = itemMap['digitalLabel']?.toString() ?? '';
+      ..textContent = itemMap['digitalLabel']?.toString() ?? '';
   }
 }

@@ -7,13 +7,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_document_mask_directives_integration_test.template.dart' as ng;
 
@@ -54,7 +56,7 @@ void main() {
       ).create();
       final input = _input(fixture);
 
-      final paste = html.liEvent('paste', canBubble: true, cancelable: true);
+      final paste = bubblingEvent('paste', bubbles: true, cancelable: true);
       final allowed = input.dispatchEvent(paste);
 
       expect(allowed, isTrue);
@@ -76,10 +78,10 @@ void main() {
             ?['type'],
         equals('cpf'),
       );
-      expect(input.classes.contains('is-invalid'), isTrue);
+      expect(input.classList.contains('is-invalid'), isTrue);
       expect(input.getAttribute('aria-invalid'), equals('true'));
       expect(
-        input.parent?.querySelector('.invalid-feedback')?.text,
+        input.parentElement?.querySelector('.invalid-feedback')?.textContent,
         equals('Documento invalido.'),
       );
     });
@@ -142,9 +144,9 @@ void main() {
             ?['type'],
         equals('cnpj'),
       );
-      expect(input.classes.contains('is-invalid'), isTrue);
+      expect(input.classList.contains('is-invalid'), isTrue);
       expect(
-        input.parent?.querySelector('.invalid-feedback')?.text,
+        input.parentElement?.querySelector('.invalid-feedback')?.textContent,
         equals('Documento invalido.'),
       );
     });
@@ -160,22 +162,24 @@ void main() {
 
       expect(input.value, equals('12.ABC.345/01DE-35'));
       expect(fixture.assertOnlyInstance.model?.control.errors, isNull);
-      expect(input.classes.contains('is-invalid'), isFalse);
-      expect(input.classes.contains('is-valid'), isTrue);
+      expect(input.classList.contains('is-invalid'), isFalse);
+      expect(input.classList.contains('is-valid'), isTrue);
       expect(input.getAttribute('aria-invalid'), equals('false'));
-      expect(input.parent?.querySelector('.invalid-feedback')?.text, isEmpty);
+      expect(
+          input.parentElement?.querySelector('.invalid-feedback')?.textContent,
+          isEmpty);
     });
   });
 }
 
-html.InputElement _input(NgTestFixture<dynamic> fixture) {
-  return fixture.rootElement.querySelector('input')! as html.InputElement;
+web.HTMLInputElement _input(NgTestFixture<dynamic> fixture) {
+  return fixture.rootElement.querySelector('input')! as web.HTMLInputElement;
 }
 
-void _setRawInput(html.InputElement input, String value) {
+void _setRawInput(web.HTMLInputElement input, String value) {
   input.value = value;
   input.setSelectionRange(value.length, value.length);
-  input.dispatchEvent(html.liEvent('input', canBubble: true));
+  input.dispatchEvent(bubblingEvent('input', bubbles: true));
 }
 
 Future<void> _flushScheduledValidation(NgTestFixture<dynamic> fixture) async {

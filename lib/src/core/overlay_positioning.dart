@@ -1,10 +1,10 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:popper/popper.dart';
 
 PopperPortalOptions resolveModalAwarePortalOptions({
   required String hostClassName,
-  required html.Element referenceElement,
+  required web.Element referenceElement,
   required int baseHostZIndex,
   int? baseFloatingZIndex,
   int modalZIndexOffset = 1,
@@ -27,7 +27,7 @@ PopperPortalOptions resolveModalAwarePortalOptions({
 }
 
 int _resolveModalAwareHostZIndex({
-  required html.Element referenceElement,
+  required web.Element referenceElement,
   required int baseHostZIndex,
   required int modalZIndexOffset,
 }) {
@@ -37,9 +37,11 @@ int _resolveModalAwareHostZIndex({
     return _max(baseHostZIndex, owningModalZIndex + modalZIndexOffset);
   }
 
-  final openModals = html.document.queryAll('.modal[data-status="open"]');
+  final openModals =
+      web.document.querySelectorAll('.modal[data-status="open"]');
   var highestModalZIndex = -1;
-  for (final modal in openModals) {
+  for (var index = 0; index < openModals.length; index++) {
+    final modal = openModals.item(index)! as web.Element;
     final zIndex = _parseElementZIndex(modal);
     if (zIndex != null && zIndex > highestModalZIndex) {
       highestModalZIndex = zIndex;
@@ -53,17 +55,18 @@ int _resolveModalAwareHostZIndex({
   return baseHostZIndex;
 }
 
-int? _parseElementZIndex(html.Element? element) {
+int? _parseElementZIndex(web.Element? element) {
   if (element == null) {
     return null;
   }
 
-  final inlineZIndex = int.tryParse(element.style.zIndex.trim());
+  final inlineZIndex =
+      int.tryParse((element as web.HTMLElement).style.zIndex.trim());
   if (inlineZIndex != null) {
     return inlineZIndex;
   }
 
-  return int.tryParse(element.getComputedStyle().zIndex.trim());
+  return int.tryParse(web.window.getComputedStyle(element).zIndex.trim());
 }
 
 int _max(int a, int b) => a >= b ? a : b;
@@ -85,9 +88,9 @@ bool matchesResponsivePresentation({
   }
 
   final widthMatches = normalizedWidthBreakpoint.isNotEmpty &&
-      html.window.matchMedia('(max-width: $normalizedWidthBreakpoint)').matches;
+      web.window.matchMedia('(max-width: $normalizedWidthBreakpoint)').matches;
   final heightMatches = normalizedHeightBreakpoint.isNotEmpty &&
-      html.window
+      web.window
           .matchMedia('(max-height: $normalizedHeightBreakpoint)')
           .matches;
 
@@ -95,9 +98,9 @@ bool matchesResponsivePresentation({
 }
 
 double resolveViewportHeight() {
-  final windowHeight = html.window.innerHeight.toDouble();
+  final windowHeight = web.window.innerHeight.toDouble();
   final documentHeight =
-      html.document.documentElement?.clientHeight.toDouble() ?? 0;
+      web.document.documentElement?.clientHeight.toDouble() ?? 0;
   if (windowHeight > 0 && documentHeight > 0) {
     return windowHeight <= documentHeight ? windowHeight : documentHeight;
   }
@@ -105,21 +108,22 @@ double resolveViewportHeight() {
 }
 
 void resetOverlayViewportConstraints({
-  required html.Element? floatingElement,
+  required web.Element? floatingElement,
 }) {
   final floating = floatingElement;
   if (floating == null) {
     return;
   }
 
-  floating.style.maxHeight = '';
-  floating.style.overflowY = '';
-  floating.style.overflowX = '';
-  floating.style.removeProperty('overscroll-behavior');
+  final style = (floating as web.HTMLElement).style;
+  style.maxHeight = '';
+  style.overflowY = '';
+  style.overflowX = '';
+  style.removeProperty('overscroll-behavior');
 }
 
 void normalizeOverlayVerticalPosition({
-  required html.Element? floatingElement,
+  required web.Element? floatingElement,
   required PopperLayout layout,
   double gap = 0.0,
 }) {
@@ -147,13 +151,14 @@ void normalizeOverlayVerticalPosition({
 
   final correctedTransform =
       'translate(${x.toStringAsFixed(2)}px, ${correctedY.toStringAsFixed(2)}px)';
-  if (floating.style.transform != correctedTransform) {
-    floating.style.transform = correctedTransform;
+  final style = (floating as web.HTMLElement).style;
+  if (style.transform != correctedTransform) {
+    style.transform = correctedTransform;
   }
 }
 
 void constrainOverlayHeightToViewport({
-  required html.Element? floatingElement,
+  required web.Element? floatingElement,
   required PopperLayout layout,
   double viewportPadding = 8.0,
   double gap = 0.0,
@@ -187,15 +192,17 @@ void constrainOverlayHeightToViewport({
   }
 
   if (floatingHeight > availableHeight) {
-    floating.style.maxHeight = '${availableHeight.floor()}px';
-    floating.style.overflowY = 'auto';
-    floating.style.overflowX = 'hidden';
-    floating.style.setProperty('overscroll-behavior', 'contain');
+    final style = (floating as web.HTMLElement).style;
+    style.maxHeight = '${availableHeight.floor()}px';
+    style.overflowY = 'auto';
+    style.overflowX = 'hidden';
+    style.setProperty('overscroll-behavior', 'contain');
     return;
   }
 
-  floating.style.maxHeight = '';
-  floating.style.overflowY = '';
-  floating.style.overflowX = '';
-  floating.style.removeProperty('overscroll-behavior');
+  final style = (floating as web.HTMLElement).style;
+  style.maxHeight = '';
+  style.overflowY = '';
+  style.overflowX = '';
+  style.removeProperty('overscroll-behavior');
 }

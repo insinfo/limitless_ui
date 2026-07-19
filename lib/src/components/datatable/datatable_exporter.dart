@@ -1,12 +1,14 @@
 //datatable_exporter.dart
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 import 'dart:math' as math;
 
 import 'package:intl/intl.dart';
 
 import '../../core/lite_xlsx.dart';
 import '../../core/tine_pdf.dart' as tine_pdf;
+import '../../web_support/blob_parts.dart';
+import '../../web_support/html_sinks.dart';
 import 'datatable_col.dart';
 import 'datatable_row.dart';
 import 'datatable_settings.dart';
@@ -49,7 +51,7 @@ class DatatableExporter {
   static void exportXlsx({
     required DatatableSettings settings,
     required List<DatatableRow> rows,
-    DivElement? card,
+    web.HTMLDivElement? card,
   }) {
     // Always export all exportable columns regardless of visibility.
     final allColumns = settings.exportColumns;
@@ -72,7 +74,7 @@ class DatatableExporter {
     final bytes = LiteXlsx.create(workbook);
     _downloadBytes(
       bytes,
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.openxmlformats-officeweb.document.spreadsheetml.sheet',
       '${_exportFileBaseName(card)}.xlsx',
     );
   }
@@ -80,7 +82,7 @@ class DatatableExporter {
   static Future<void> exportPdf({
     required DatatableSettings settings,
     required List<DatatableRow> rows,
-    DivElement? card,
+    web.HTMLDivElement? card,
     bool isPrint = false,
     bool isDownload = true,
   }) async {
@@ -382,7 +384,7 @@ class DatatableExporter {
 
   static String _plainTextFromColumn(DatatableCol col) {
     if (col.htmlElement != null) {
-      return col.htmlElement!.text.trim();
+      return (col.htmlElement!.textContent ?? '').trim();
     }
 
     final raw = col.value.trim();
@@ -390,15 +392,16 @@ class DatatableExporter {
       return '';
     }
 
-    final container = DivElement()
-      ..setInnerHtml(raw, treeSanitizer: NodeTreeSanitizer.trusted);
+    final container = web.HTMLDivElement();
+    setTrustedHtml(container, raw);
 
-    final normalized = container.text.replaceAll(RegExp(r'\s+'), ' ').trim();
+    final normalized =
+        (container.textContent ?? '').replaceAll(RegExp(r'\s+'), ' ').trim();
 
     return normalized.isNotEmpty ? normalized : raw;
   }
 
-  static String _exportSheetName(DivElement? card) {
+  static String _exportSheetName(web.HTMLDivElement? card) {
     final base = _exportFileBaseName(card)
         .replaceAll(RegExp(r'[\[\]\*:/\\?]'), ' ')
         .trim();
@@ -410,9 +413,10 @@ class DatatableExporter {
     return base.length > 31 ? base.substring(0, 31) : base;
   }
 
-  static String _exportFileBaseName(DivElement? card) {
+  static String _exportFileBaseName(web.HTMLDivElement? card) {
     final title =
-        (card?.querySelector('.card-title, .datatable-title')?.text ?? '')
+        (card?.querySelector('.card-title, .datatable-title')?.textContent ??
+                '')
             .trim();
     return title.isNotEmpty ? title : 'Relatório';
   }
@@ -593,28 +597,29 @@ class DatatableExporter {
 
   static void _downloadBytes(
       List<int> bytes, String mimeType, String fileName) {
-    final blob = liBlob(<Object>[bytes], mimeType);
-    final url = Url.createObjectUrlFromBlob(blob);
+    final blob = blobFromDartParts(<Object>[bytes], type: mimeType);
+    final url = web.URL.createObjectURL(blob);
 
-    final anchor = createAnchorElement(href: url)
+    final anchor = web.HTMLAnchorElement()
+      ..href = url
       ..download = fileName
       ..style.display = 'none';
 
-    document.body?.append(anchor);
+    web.document.body?.appendChild(anchor);
     anchor.click();
     anchor.remove();
-    Url.revokeObjectUrl(url);
+    web.URL.revokeObjectURL(url);
   }
 
   static void _openForPrint(List<int> bytes, String mimeType) {
-    final blob = liBlob(<Object>[bytes], mimeType);
-    final url = Url.createObjectUrlFromBlob(blob);
-    final win = window.open(url, '_blank');
+    final blob = blobFromDartParts(<Object>[bytes], type: mimeType);
+    final url = web.URL.createObjectURL(blob);
+    final win = web.window.open(url, '_blank');
 
     Timer(const Duration(milliseconds: 300), () {
       win?.focus();
       win?.print();
-      Url.revokeObjectUrl(url);
+      web.URL.revokeObjectURL(url);
     });
   }
 }

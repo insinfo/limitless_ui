@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -11,7 +11,7 @@ import 'accordion_item_directive.dart';
   exportAs: 'liAccordionCollapse',
 )
 class LiAccordionCollapseDirective implements OnInit, OnDestroy {
-  LiAccordionCollapseDirective(html.HTMLElement element, this.item)
+  LiAccordionCollapseDirective(web.HTMLElement element, this.item)
       : _controller = LiCollapseController(element);
 
   final LiAccordionItemDirective item;

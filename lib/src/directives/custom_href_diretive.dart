@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -13,7 +13,7 @@ class LiCustomHrefDirective implements AfterChanges {
   @Input()
   String? liCustomHref;
 
-  final Element _element;
+  final web.Element _element;
   LiCustomHrefDirective(this._element) {
     init();
   }
@@ -21,7 +21,7 @@ class LiCustomHrefDirective implements AfterChanges {
   @HostListener('click', ['\$event'])
 
   /// Reserved click hook for future custom navigation behavior.
-  void onClick(MouseEvent event) {}
+  void onClick(web.MouseEvent event) {}
 
   /// Synchronizes the host `href` attribute with [liCustomHref].
   void init() {

@@ -6,7 +6,10 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import 'package:limitless_ui/src/web_support/zone_dom_callbacks.dart';
+
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -14,6 +17,9 @@ import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_datatable_virtual_scroll_benchmark_test.template.dart' as ng;
 
@@ -175,7 +181,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final scrollContainer = fixture.rootElement.querySelector(
       '.datatable-scroll',
-    ) as html.HtmlElement?;
+    ) as web.HTMLElement?;
     expect(scrollContainer, isNotNull);
     expect(host.table, isNotNull);
     expect(host.table!.isTableVirtualScrollActive, isTrue);
@@ -211,7 +217,7 @@ void main() {
 Future<DatatableVirtualScrollBenchmarkResult> _runScrollBenchmark({
   required NgTestFixture<DatatableVirtualScrollBenchmarkHostComponent> fixture,
   required DatatableVirtualScrollBenchmarkHostComponent host,
-  required html.HtmlElement scrollContainer,
+  required web.HTMLElement scrollContainer,
 }) async {
   const framesToSample = 96;
   final frameTimestamps = <num>[];
@@ -226,7 +232,7 @@ Future<DatatableVirtualScrollBenchmarkResult> _runScrollBenchmark({
     final progress = frame / (framesToSample - 1);
     final waveProgress = frame.isEven ? progress : 1 - progress;
     scrollContainer.scrollTop = (maxScrollTop * waveProgress).round();
-    scrollContainer.dispatchEvent(html.liEvent('scroll'));
+    scrollContainer.dispatchEvent(bubblingEvent('scroll'));
     final timestamp = await _nextAnimationFrameTime();
     frameTimestamps.add(timestamp - previousTimestamp);
     previousTimestamp = timestamp;
@@ -250,7 +256,8 @@ Future<DatatableVirtualScrollBenchmarkResult> _runScrollBenchmark({
       .toList(growable: false);
   final renderedRows = host.table?.rows.length ?? 0;
   final visibleBodyRows = fixture.rootElement
-      .queryAll('tbody > tr:not(.datatable-virtual-spacer)')
+      .querySelectorAll('tbody > tr:not(.datatable-virtual-spacer)')
+      .toElementList()
       .length;
   final durationMilliseconds = frameDurations.fold<double>(0, _sum);
   final totalDrawMilliseconds = drawDurations.fold<double>(0, _sum);
@@ -300,7 +307,7 @@ Future<void> _settleBenchmark(
 
 Future<num> _nextAnimationFrameTime() {
   final completer = Completer<num>();
-  html.window.liRequestAnimationFrame((timestamp) {
+  requestAnimationFrameInZone((timestamp) {
     completer.complete(timestamp);
   });
   return completer.future;

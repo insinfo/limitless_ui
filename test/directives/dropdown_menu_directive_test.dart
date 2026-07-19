@@ -5,12 +5,14 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'dropdown_menu_directive_test.template.dart' as ng;
 
@@ -64,16 +66,16 @@ void main() {
 
     final trigger = fixture.rootElement.querySelector(
       '[aria-label="inline-trigger"]',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(fixture.rootElement.querySelector('.dropdown-menu.show'), isNotNull);
     expect(
-      html.document.querySelector(
+      web.document.querySelector(
           '.LiDropdownMenuPositionDirective .dropdown-menu.show'),
       isNull,
     );
@@ -85,16 +87,16 @@ void main() {
 
     final trigger = fixture.rootElement.querySelector(
       '[aria-label="body-trigger"]',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final menu = html.document.querySelector(
+    final menu = web.document.querySelector(
       '.LiDropdownMenuPositionDirective .dropdown-menu.show',
-    ) as html.Element;
+    ) as web.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final menuRect = menu.getBoundingClientRect();
 
@@ -112,39 +114,39 @@ void main() {
 
     final trigger = fixture.rootElement.querySelector(
       '[aria-label="body-trigger"]',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final checkbox = html.document.querySelector(
+    final checkbox = web.document.querySelector(
       '.LiDropdownMenuPositionDirective .dropdown-menu.show input[type="checkbox"]',
-    ) as html.InputElement;
+    ) as web.HTMLInputElement;
 
     await fixture.update((_) {
-      checkbox.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      checkbox.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(
-      html.document.querySelector(
+      web.document.querySelector(
           '.LiDropdownMenuPositionDirective .dropdown-menu.show'),
       isNotNull,
     );
 
-    final closeButton = html.document.querySelector(
+    final closeButton = web.document.querySelector(
       '.LiDropdownMenuPositionDirective .dropdown-menu.show .li-dropdown-close',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      closeButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      closeButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(
-      html.document.querySelector(
+      web.document.querySelector(
           '.LiDropdownMenuPositionDirective .dropdown-menu.show'),
       isNull,
     );

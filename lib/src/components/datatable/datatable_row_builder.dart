@@ -1,5 +1,5 @@
 //datatable_row_builder.dart
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:intl/intl.dart';
@@ -146,8 +146,8 @@ class DatatableRowBuilder {
           }
 
           if (currentGroupingValue != previousGroupingValue) {
-            final divTitle = DivElement()
-              ..text =
+            final divTitle = web.HTMLDivElement()
+              ..textContent =
                   groupingColumns.map((column) => column.value).join(' / ');
             rows.add(
               DatatableRow(
@@ -461,16 +461,16 @@ class DatatableRowBuilder {
     return normalized?.toString() ?? '';
   }
 
-  Element? _resolveFormattedHtmlElement({
+  web.Element? _resolveFormattedHtmlElement({
     required dynamic value,
     required DatatableFormat? format,
   }) {
     switch (format) {
       case DatatableFormat.boolHighlightedBadge:
         if (value is bool && value) {
-          return SpanElement()
+          return web.HTMLSpanElement()
             ..className = 'badge bg-primary'
-            ..text = 'Sim';
+            ..textContent = 'Sim';
         }
         break;
       case DatatableFormat.bool:
@@ -547,7 +547,7 @@ class DatatableRowBuilder {
     }
   }
 
-  Element? _resolveTitleHtmlElement(DatatableCol colDefinition) {
+  web.Element? _resolveTitleHtmlElement(DatatableCol colDefinition) {
     final customRenderTitleHtml = colDefinition.customRenderTitleHtml;
     if (customRenderTitleHtml == null) {
       return null;
@@ -681,7 +681,7 @@ class DatatableRowBuilder {
       return false;
     }
 
-    final viewportWidth = window.innerWidth;
+    final viewportWidth = web.window.innerWidth;
 
     return viewportWidth <= responsiveCollapseMaxWidth;
   }

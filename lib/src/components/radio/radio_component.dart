@@ -1,5 +1,5 @@
 import 'dart:js_interop';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -150,7 +150,7 @@ class LiRadioComponent implements ControlValueAccessor<dynamic> {
   @HostBinding('class.d-block')
   bool get hostClass => true;
 
-  void handleClick(html.MouseEvent event) {
+  void handleClick(web.MouseEvent event) {
     if (disabled) {
       return;
     }
@@ -161,8 +161,8 @@ class LiRadioComponent implements ControlValueAccessor<dynamic> {
 
     event.preventDefault();
     final target = event.target;
-    if ((target?.isA<html.InputElement>() ?? false)) {
-      (target as html.InputElement).checked = false;
+    if ((target?.isA<web.HTMLInputElement>() ?? false)) {
+      (target as web.HTMLInputElement).checked = false;
     }
 
     _groupValue = null;

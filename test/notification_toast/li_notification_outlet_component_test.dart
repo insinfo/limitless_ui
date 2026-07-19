@@ -6,16 +6,17 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
 
+import 'package:limitless_ui/src/components/notification_toast/notification_toast.template.dart'
+    as ng;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_router/ngx_router.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
 
-import 'package:limitless_ui/src/components/notification_toast/notification_toast.template.dart'
-    as ng;
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 class NavigationCall {
   NavigationCall(this.path, this.navigationParams);
@@ -134,14 +135,16 @@ void main() {
     expect(fixture.text, contains('Sucesso'));
     expect(fixture.text, contains('Alteracoes salvas.'));
 
-    final items = fixture.rootElement.queryAll('[data-label="li_ntf_item"]');
+    final items = fixture.rootElement
+        .querySelectorAll('[data-label="li_ntf_item"]')
+        .toElementList();
     expect(items, hasLength(1));
 
     final body = fixture.rootElement.querySelector(
       '[data-label="li_ntf_body"]',
     );
     expect(body, isNotNull);
-    expect(body!.text, contains('Alteracoes salvas.'));
+    expect(body!.textContent, contains('Alteracoes salvas.'));
   });
 
   test('renderiza mais de um toast', () async {
@@ -152,7 +155,9 @@ void main() {
 
     await _settle(fixture);
 
-    final items = fixture.rootElement.queryAll('[data-label="li_ntf_item"]');
+    final items = fixture.rootElement
+        .querySelectorAll('[data-label="li_ntf_item"]')
+        .toElementList();
 
     expect(items, hasLength(2));
     expect(fixture.text, contains('Primeiro'));
@@ -177,7 +182,7 @@ void main() {
 
     await fixture.update((_) {
       closeButton!.dispatchEvent(
-        html.liMouseEvent('click', canBubble: true),
+        bubblingMouseEvent('click', bubbles: true),
       );
     });
     await _settle(fixture);
@@ -205,7 +210,7 @@ void main() {
 
     await fixture.update((_) {
       toastElement!.dispatchEvent(
-        html.liMouseEvent('click', canBubble: true),
+        bubblingMouseEvent('click', bubbles: true),
       );
     });
     await _settle(fixture);
@@ -235,7 +240,7 @@ void main() {
 
     await fixture.update((_) {
       toastElement!.dispatchEvent(
-        html.liMouseEvent('click', canBubble: true),
+        bubblingMouseEvent('click', bubbles: true),
       );
     });
     await _settle(fixture);
@@ -267,7 +272,7 @@ void main() {
 
     await fixture.update((_) {
       toastElement!.dispatchEvent(
-        html.liMouseEvent('click', canBubble: true),
+        bubblingMouseEvent('click', bubbles: true),
       );
     });
     await _settle(fixture);

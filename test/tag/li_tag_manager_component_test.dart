@@ -5,12 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_tag_manager_component_test.template.dart' as ng;
 
@@ -64,24 +67,26 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final rows = fixture.rootElement
-        .queryAll('.li-tag-manager__item-main')
-        .cast<html.Element>()
+        .querySelectorAll('.li-tag-manager__item-main')
+        .toElementList()
+        .cast<web.Element>()
         .toList(growable: false);
     final supportRow = rows.firstWhere(
-      (element) => (element.text).contains('Apoio previdenciário'),
+      (element) =>
+          ((element.textContent ?? '')).contains('Apoio previdenciário'),
     );
 
     await fixture.update((_) {
-      supportRow.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      supportRow.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.liveSelectedIds, containsAll(<int>[1, 2]));
 
     final applyButton = fixture.rootElement
-        .querySelector('.li-tag-manager__apply') as html.ButtonElement;
+        .querySelector('.li-tag-manager__apply') as web.HTMLButtonElement;
     await fixture.update((_) {
-      applyButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      applyButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -96,32 +101,33 @@ void main() {
 
     final createButton =
         fixture.rootElement.querySelector('.li-tag-manager__footer .btn-link')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
     await fixture.update((_) {
-      createButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      createButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final inputs = fixture.rootElement
-        .queryAll('.li-tag-manager__editor input')
-        .cast<html.InputElement>()
+        .querySelectorAll('.li-tag-manager__editor input')
+        .toElementList()
+        .cast<web.HTMLInputElement>()
         .toList(growable: false);
     final nameInput = inputs.first;
     final colorInput = inputs.last;
     final saveButton = fixture.rootElement
             .querySelector('.li-tag-manager__editor .btn-primary')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
       nameInput.value = 'Etiqueta global';
-      nameInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      nameInput.dispatchEvent(bubblingEvent('input', bubbles: true));
       colorInput.value = '#ff6600';
-      colorInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      colorInput.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      saveButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      saveButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -137,36 +143,38 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final items = fixture.rootElement
-        .queryAll('.li-tag-manager__item')
-        .cast<html.Element>()
+        .querySelectorAll('.li-tag-manager__item')
+        .toElementList()
+        .cast<web.Element>()
         .toList(growable: false);
     final assessoriaItem = items.firstWhere(
-      (element) => (element.text).contains('Assessoria'),
+      (element) => ((element.textContent ?? '')).contains('Assessoria'),
     );
     final actionButtons = assessoriaItem
-        .queryAll('.li-tag-manager__action-button')
-        .cast<html.ButtonElement>()
+        .querySelectorAll('.li-tag-manager__action-button')
+        .toElementList()
+        .cast<web.HTMLButtonElement>()
         .toList(growable: false);
     final editButton = actionButtons.first;
     await fixture.update((_) {
-      editButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      editButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final nameInput = fixture.rootElement
-        .querySelector('.li-tag-manager__editor input') as html.InputElement;
+        .querySelector('.li-tag-manager__editor input') as web.HTMLInputElement;
     final saveButton = fixture.rootElement
             .querySelector('.li-tag-manager__editor .btn-primary')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
       nameInput.value = 'Assessoria técnica';
-      nameInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      nameInput.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      saveButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      saveButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -175,20 +183,22 @@ void main() {
     expect(host.lastUpdate!.value['nome'], 'Assessoria técnica');
 
     final refreshedItems = fixture.rootElement
-        .queryAll('.li-tag-manager__item')
-        .cast<html.Element>()
+        .querySelectorAll('.li-tag-manager__item')
+        .toElementList()
+        .cast<web.Element>()
         .toList(growable: false);
     final assessoriaRefreshed = refreshedItems.firstWhere(
-      (element) => (element.text).contains('Assessoria'),
+      (element) => ((element.textContent ?? '')).contains('Assessoria'),
     );
     final refreshedButtons = assessoriaRefreshed
-        .queryAll('.li-tag-manager__action-button')
-        .cast<html.ButtonElement>()
+        .querySelectorAll('.li-tag-manager__action-button')
+        .toElementList()
+        .cast<web.HTMLButtonElement>()
         .toList(growable: false);
 
     await fixture.update((_) {
       refreshedButtons.last
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 

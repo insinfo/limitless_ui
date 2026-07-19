@@ -4,20 +4,23 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 void main() {
   group('LiAutoClickFileInputDirective', () {
     test('accepts only input elements whose type is file', () {
-      final textInput = html.createInputElement(type: 'text');
+      final textInput = (web.HTMLInputElement()..type = 'text');
       expect(
         () => LiAutoClickFileInputDirective(textInput),
         throwsStateError,
       );
 
-      final fileInput = html.createInputElement(type: 'file');
+      final fileInput = (web.HTMLInputElement()..type = 'file');
       final directive = LiAutoClickFileInputDirective(fileInput);
       directive.ngOnDestroy();
     });
@@ -32,7 +35,7 @@ void main() {
       expect(input.value, '123.456.789-01');
 
       input.value = '${input.value}2';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
       expect(input.value, '123.456.789-01');
 
       input.remove();
@@ -47,15 +50,15 @@ void main() {
         ..liMax = 10.0;
 
       input.value = '0';
-      input.dispatchEvent(createKeyboardEvent('keyup', 48));
+      input.dispatchEvent(createKeyboardEvent('keyup', '0'));
       expect(double.parse(input.value), directive.liMin);
 
       input.value = '42';
-      input.dispatchEvent(createKeyboardEvent('keyup', 50));
+      input.dispatchEvent(createKeyboardEvent('keyup', '2'));
       expect(double.parse(input.value), directive.liMax);
 
       input.value = '';
-      input.dispatchEvent(createKeyboardEvent('keyup', 49));
+      input.dispatchEvent(createKeyboardEvent('keyup', '1'));
       expect(double.parse(input.value), directive.liMin);
 
       input.remove();
@@ -71,7 +74,7 @@ void main() {
       expect(input.value, '12.345.678/0001-99');
 
       input.value = '${input.value}0';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
       expect(input.value, '12.345.678/0001-99');
 
       input.remove();
@@ -83,8 +86,8 @@ void main() {
       final input = _attachInput();
       LiOnlyNumberDirective(input);
 
-      final blocked = createKeyboardEvent('keypress', 65);
-      final allowed = createKeyboardEvent('keypress', 52);
+      final blocked = createKeyboardEvent('keypress', 'A');
+      final allowed = createKeyboardEvent('keypress', '4');
 
       expect(input.dispatchEvent(blocked), isFalse);
       expect(input.dispatchEvent(allowed), isTrue);
@@ -94,30 +97,31 @@ void main() {
   });
 }
 
-html.InputElement _attachInput() {
-  final input = html.createInputElement();
-  html.document.body!.append(input);
+web.HTMLInputElement _attachInput() {
+  final input = web.HTMLInputElement();
+  web.document.body!.appendChild(input);
   return input;
 }
 
-void _typeSequentially(html.InputElement input, String text) {
+void _typeSequentially(web.HTMLInputElement input, String text) {
   for (final char in text.split('')) {
     input.value = '${input.value}$char';
-    input.dispatchEvent(html.liEvent('input', canBubble: true));
+    input.dispatchEvent(bubblingEvent('input', bubbles: true));
   }
 }
 
-html.Event createKeyboardEvent(
+web.Event createKeyboardEvent(
   String type,
-  int keyCode, {
+  String key, {
   bool ctrlKey = false,
   bool altKey = false,
   bool shiftKey = false,
   bool metaKey = false,
 }) =>
-    html.liKeyboardEvent(
+    bubblingKeyboardEvent(
       type,
-      keyCode: keyCode,
+      key: key,
+      code: key,
       ctrlKey: ctrlKey,
       altKey: altKey,
       shiftKey: shiftKey,

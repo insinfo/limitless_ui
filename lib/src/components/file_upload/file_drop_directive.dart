@@ -1,37 +1,42 @@
 import 'dart:async';
 import 'dart:js_interop';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
+
+List<web.File> _filesFromList(web.FileList files) => <web.File>[
+      for (var index = 0; index < files.length; index++) files.item(index)!,
+    ];
 
 @Directive(selector: 'li-file-drop,[liFileDrop]')
 class LiFileDropDirective implements OnDestroy {
   final StreamController<bool> _fileOverController =
       StreamController<bool>.broadcast();
-  final StreamController<List<html.File>> _filesChangeController =
-      StreamController<List<html.File>>.broadcast();
+  final StreamController<List<web.File>> _filesChangeController =
+      StreamController<List<web.File>>.broadcast();
 
   @Output()
   Stream<bool> get fileOver => _fileOverController.stream;
 
   @Output()
-  Stream<List<html.File>> get filesChange => _filesChangeController.stream;
+  Stream<List<web.File>> get filesChange => _filesChangeController.stream;
 
   @HostListener('drop', ['\$event'])
-  void onDrop(html.MouseEvent event) {
+  void onDrop(web.MouseEvent event) {
     _preventAndStop(event);
-    final transfer = (event as html.DragEvent).dataTransfer;
-    final files = transfer?.files.toList() ?? const <html.File>[];
+    final transfer = (event as web.DragEvent).dataTransfer;
+    final files =
+        transfer == null ? const <web.File>[] : _filesFromList(transfer.files);
     _fileOverController.add(false);
     _filesChangeController.add(
-      List<html.File>.from(files),
+      List<web.File>.from(files),
     );
   }
 
   @HostListener('dragover', ['\$event'])
-  void onDragOver(html.MouseEvent event) {
+  void onDragOver(web.MouseEvent event) {
     _preventAndStop(event);
-    final transfer = (event as html.DragEvent).dataTransfer;
+    final transfer = (event as web.DragEvent).dataTransfer;
     if (transfer == null) {
       return;
     }
@@ -44,12 +49,12 @@ class LiFileDropDirective implements OnDestroy {
   }
 
   @HostListener('dragleave', ['\$event'])
-  void onDragLeave(html.Event event) {
+  void onDragLeave(web.Event event) {
     _preventAndStop(event);
     _fileOverController.add(false);
   }
 
-  void _preventAndStop(html.Event event) {
+  void _preventAndStop(web.Event event) {
     event
       ..preventDefault()
       ..stopPropagation();

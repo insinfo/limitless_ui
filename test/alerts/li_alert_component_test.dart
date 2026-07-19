@@ -3,7 +3,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart';
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -70,21 +70,21 @@ void main() {
     final closeButton = alert?.querySelector('button.btn-close');
 
     expect(alert, isNotNull);
-    expect(alert!.classes.contains('alert'), isTrue);
-    expect(alert.classes.contains('alert-warning'), isTrue);
-    expect(alert.classes.contains('alert-dismissible'), isTrue);
-    expect(alert.classes.contains('alert-icon-start'), isTrue);
-    expect(alert.classes.contains('shadow-sm'), isTrue);
-    expect(alert.classes.contains('show'), isTrue);
-    expect(alert.text, contains('Heads up!'));
-    expect(alert.text, contains('Test alert content.'));
+    expect(alert!.classList.contains('alert'), isTrue);
+    expect(alert.classList.contains('alert-warning'), isTrue);
+    expect(alert.classList.contains('alert-dismissible'), isTrue);
+    expect(alert.classList.contains('alert-icon-start'), isTrue);
+    expect(alert.classList.contains('shadow-sm'), isTrue);
+    expect(alert.classList.contains('show'), isTrue);
+    expect(alert.textContent, contains('Heads up!'));
+    expect(alert.textContent, contains('Test alert content.'));
     expect(iconWrapper, isNotNull);
-    expect(iconWrapper!.classes.contains('bg-warning'), isTrue);
-    expect(iconWrapper.classes.contains('text-white'), isTrue);
+    expect(iconWrapper!.classList.contains('bg-warning'), isTrue);
+    expect(iconWrapper.classList.contains('text-white'), isTrue);
     expect(icon, isNotNull);
-    expect(icon!.classes.contains('ph-warning-circle'), isTrue);
+    expect(icon!.classList.contains('ph-warning-circle'), isTrue);
     expect(closeButton, isNotNull);
-    expect(closeButton!.classes.contains('btn-close-white'), isFalse);
+    expect(closeButton!.classList.contains('btn-close-white'), isFalse);
   });
 
   test('renderiza alerta solido com icone inline ao final', () async {
@@ -105,18 +105,18 @@ void main() {
     final closeButton = alert?.querySelector('button.btn-close');
 
     expect(alert, isNotNull);
-    expect(alert!.classes.contains('bg-indigo'), isTrue);
-    expect(alert.classes.contains('text-white'), isTrue);
-    expect(alert.classes.contains('rounded-pill'), isTrue);
-    expect(alert.classes.contains('border-0'), isTrue);
-    expect(alert.classes.contains('text-truncate'), isTrue);
+    expect(alert!.classList.contains('bg-indigo'), isTrue);
+    expect(alert.classList.contains('text-white'), isTrue);
+    expect(alert.classList.contains('rounded-pill'), isTrue);
+    expect(alert.classList.contains('border-0'), isTrue);
+    expect(alert.classList.contains('text-truncate'), isTrue);
     expect(blockIcon, isNull);
     expect(inlineEndIcon, isNotNull);
-    expect(inlineEndIcon!.classes.contains('ph-gear'), isTrue);
-    expect(inlineEndIcon.classes.contains('ms-2'), isTrue);
+    expect(inlineEndIcon!.classList.contains('ph-gear'), isTrue);
+    expect(inlineEndIcon.classList.contains('ms-2'), isTrue);
     expect(closeButton, isNotNull);
-    expect(closeButton!.classes.contains('btn-close-white'), isTrue);
-    expect(closeButton.classes.contains('rounded-pill'), isTrue);
+    expect(closeButton!.classList.contains('btn-close-white'), isTrue);
+    expect(closeButton.classList.contains('rounded-pill'), isTrue);
   });
 
   test('clicar em fechar oculta o alerta e emite dismissed', () async {
@@ -131,7 +131,7 @@ void main() {
     expect(host.dismissedCount, 0);
 
     await fixture.update((_) {
-      (closeButton as ButtonElement).click();
+      (closeButton as HTMLButtonElement).click();
     });
 
     final alert = fixture.rootElement.querySelector('li-alert > div');
@@ -139,7 +139,7 @@ void main() {
     expect(alert, isNotNull);
     expect(host.visible, isFalse);
     expect(host.dismissedCount, 1);
-    expect((alert as HtmlElement).hidden, isTrue);
-    expect(alert.classes.contains('show'), isFalse);
+    expect((alert as HTMLElement).hidden, isTrue);
+    expect(alert.classList.contains('show'), isFalse);
   });
 }

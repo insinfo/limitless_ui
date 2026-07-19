@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -63,7 +63,7 @@ class LiDatePickerTriggerContext {
 
   void toggle() => _component.toggleOpen();
 
-  void clear([html.Event? event]) => _component.clearFromTriggerTemplate(event);
+  void clear([web.Event? event]) => _component.clearFromTriggerTemplate(event);
 }
 
 @Directive(selector: 'template[liDatePickerTrigger]')
@@ -187,8 +187,8 @@ class LiDatePickerComponent
       StreamController<bool>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
-  StreamSubscription<html.Event>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.Event>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
   StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
@@ -298,10 +298,10 @@ class LiDatePickerComponent
   Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('triggerElement')
-  html.Element? triggerElement;
+  web.Element? triggerElement;
 
   @ViewChild('panelElement')
-  html.Element? panelElement;
+  web.Element? panelElement;
 
   @ContentChild(LiDatePickerTriggerDirective)
   LiDatePickerTriggerDirective? triggerTemplate;
@@ -556,12 +556,12 @@ class LiDatePickerComponent
     _open();
   }
 
-  void handleTriggerKeydown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleTriggerKeydown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    if ((event as html.KeyboardEvent).code == 'Enter' ||
+    if ((event as web.KeyboardEvent).code == 'Enter' ||
         (event).code == 'NumpadEnter' ||
         (event).code == 'Space' ||
         (event).key == ' ') {
@@ -690,7 +690,7 @@ class LiDatePickerComponent
     _markForCheck();
   }
 
-  void clearFromTriggerTemplate([html.Event? event]) {
+  void clearFromTriggerTemplate([web.Event? event]) {
     event?.preventDefault();
     event?.stopPropagation();
     if (isDisabled) {
@@ -699,7 +699,7 @@ class LiDatePickerComponent
     clear();
   }
 
-  void clearFromTrigger(html.MouseEvent event) {
+  void clearFromTrigger(web.MouseEvent event) {
     clearFromTriggerTemplate(event);
   }
 
@@ -794,22 +794,23 @@ class LiDatePickerComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= web.EventStreamProviders.clickEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!isOpen) {
         return;
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Node>() ?? false)) {
+      if (!(target?.isA<web.Node>() ?? false)) {
         close();
         _markForCheck();
         return;
       }
 
       final clickedTrigger =
-          triggerElement?.contains(target as html.Node?) ?? false;
-      final clickedPanel =
-          panelElement?.contains(target as html.Node?) ?? false;
+          triggerElement?.contains(target as web.Node?) ?? false;
+      final clickedPanel = panelElement?.contains(target as web.Node?) ?? false;
 
       if (!clickedTrigger && !clickedPanel) {
         close();
@@ -817,7 +818,9 @@ class LiDatePickerComponent
       }
     });
 
-    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+    _documentKeySubscription ??= web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (isOpen && event.key == 'Escape') {
         event.preventDefault();
         close();
@@ -826,7 +829,7 @@ class LiDatePickerComponent
     });
   }
 
-  void onPanelClick(html.Event event) {
+  void onPanelClick(web.Event event) {
     event.stopPropagation();
   }
 

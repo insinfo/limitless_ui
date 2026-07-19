@@ -1,18 +1,19 @@
 import 'dart:convert';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 import '../datatable/datatable_demo_service.dart';
+import '../../web_support/file_interop.dart';
 import 'person_registration_demo_service.dart';
 
-List<html.File> _filesFromValue(Object? value) {
-  if (value is! Iterable<Object?>) return const <html.File>[];
+List<web.File> _filesFromValue(Object? value) {
+  if (value is! Iterable<Object?>) return const <web.File>[];
 
-  return <html.File>[
+  return <web.File>[
     for (final item in value)
-      if (html.liFileOrNull(item) case final file?) file,
+      if (fileOrNull(item) case final file?) file,
   ];
 }
 
@@ -43,7 +44,7 @@ class PersonRegistrationFormState {
   bool publicProfile = false;
   bool acceptTerms = false;
   bool acceptPrivacy = false;
-  List<html.File> attachments = <html.File>[];
+  List<web.File> attachments = <web.File>[];
 
   PersonRegistrationMockRequest toRequest() {
     return PersonRegistrationMockRequest(
@@ -74,7 +75,7 @@ class PersonRegistrationFormState {
       publicProfile: publicProfile,
       acceptTerms: acceptTerms,
       acceptPrivacy: acceptPrivacy,
-      attachments: List<html.File>.from(attachments),
+      attachments: List<web.File>.from(attachments),
     );
   }
 }
@@ -789,7 +790,7 @@ if (!result.success) {
       ..availabilityEnd = DateTime(2026, 5, 20)
       ..acceptTerms = true
       ..acceptPrivacy = true
-      ..attachments = <html.File>[
+      ..attachments = <web.File>[
         _createDemoFile(
           'curriculo-marina.pdf',
           'application/pdf',
@@ -824,7 +825,7 @@ if (!result.success) {
       ..contactChannel = 'sms'
       ..phone = '(21) 99999-0000'
       ..publicProfile = true
-      ..attachments = <html.File>[
+      ..attachments = <web.File>[
         _createDemoFile(
           'comprovante-financeiro.pdf',
           'application/pdf',
@@ -875,7 +876,7 @@ if (!result.success) {
       ..publicProfile = false
       ..acceptTerms = false
       ..acceptPrivacy = false
-      ..attachments = <html.File>[];
+      ..attachments = <web.File>[];
     selectedDepartmentModel = null;
     selectedSkillModels = <Map<String, dynamic>>[];
     lastResult = null;
@@ -1245,8 +1246,8 @@ if (!result.success) {
     return '${value.year}-$month-$day';
   }
 
-  html.File _createDemoFile(String name, String type, String content) {
-    return html.liFile(<Object>[content], name, type: type);
+  web.File _createDemoFile(String name, String type, String content) {
+    return fileFromDartParts(<Object>[content], name, type: type);
   }
 
   void _clearAllErrors() {

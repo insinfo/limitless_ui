@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 //C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_text_editor_bridge.dart
 import 'dart:js_interop';
@@ -75,8 +75,8 @@ abstract class LiQuillTextEditorBridge {
   void registerSizeWhitelist(List<String> values);
 
   LiQuillTextEditorHandle createEditor({
-    required html.Element container,
-    required html.Element bounds,
+    required web.Element container,
+    required web.Element bounds,
     required String theme,
     required Map<String, dynamic> modules,
     String? placeholder,
@@ -88,11 +88,11 @@ class DefaultLiQuillTextEditorBridge implements LiQuillTextEditorBridge {
   const DefaultLiQuillTextEditorBridge();
 
   @override
-  bool get isQuillAvailable => (html.window as JSObject).has('Quill');
+  bool get isQuillAvailable => (web.window as JSObject).has('Quill');
 
   @override
   bool get isTableBetterAvailable =>
-      (html.window as JSObject).has('QuillTableBetter');
+      (web.window as JSObject).has('QuillTableBetter');
 
   @override
   Object? getTableBetterKeyboardBindings() {
@@ -100,7 +100,7 @@ class DefaultLiQuillTextEditorBridge implements LiQuillTextEditorBridge {
       return null;
     }
     final tableBetter =
-        (html.window as JSObject).getProperty('QuillTableBetter'.toJS);
+        (web.window as JSObject).getProperty('QuillTableBetter'.toJS);
     if (tableBetter == null) {
       return null;
     }
@@ -119,8 +119,8 @@ class DefaultLiQuillTextEditorBridge implements LiQuillTextEditorBridge {
 
   @override
   LiQuillTextEditorHandle createEditor({
-    required html.Element container,
-    required html.Element bounds,
+    required web.Element container,
+    required web.Element bounds,
     required String theme,
     required Map<String, dynamic> modules,
     String? placeholder,

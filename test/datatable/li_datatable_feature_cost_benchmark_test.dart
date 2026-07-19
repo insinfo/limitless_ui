@@ -6,7 +6,9 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:limitless_ui/src/web_support/dom_tokens.dart';
+import 'package:web/web.dart' as web;
+import 'package:limitless_ui/src/web_support/zone_dom_callbacks.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -412,7 +414,7 @@ Future<void> _settleBenchmark(
 
 Future<num> _nextAnimationFrameTime() {
   final completer = Completer<num>();
-  html.window.liRequestAnimationFrame((timestamp) {
+  requestAnimationFrameInZone((timestamp) {
     completer.complete(timestamp);
   });
   return completer.future;
@@ -581,16 +583,16 @@ DatatableCol _column({
   );
 }
 
-html.Element _renderTitleHtml(DatatableCol column) {
-  final shell = html.createSpanElement()
-    ..classes.addAll(<String>[
+web.Element _renderTitleHtml(DatatableCol column) {
+  final shell = web.HTMLSpanElement()
+    ..classList.addAllTokens(<String>[
       'd-inline-flex',
       'align-items-center',
       'gap-1',
     ]);
-  shell.append(html.document.createElement('i')
-    ..classes.addAll(<String>['ph', 'ph-tag']));
-  shell.append(html.createSpanElement()..text = column.title);
+  shell.appendChild(web.document.createElement('i')
+    ..classList.addAllTokens(<String>['ph', 'ph-tag']));
+  shell.appendChild(web.HTMLSpanElement()..textContent = column.title);
   return shell;
 }
 

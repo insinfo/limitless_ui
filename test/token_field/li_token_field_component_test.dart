@@ -5,12 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_token_field_component_test.template.dart' as ng;
 
@@ -75,7 +79,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input =
-        fixture.rootElement.querySelector('input') as html.InputElement;
+        fixture.rootElement.querySelector('input') as web.HTMLInputElement;
 
     await fixture.update((_) {
       input.value = '40596/2012';
@@ -113,9 +117,9 @@ void main() {
     await _settle(fixture);
 
     final token = fixture.rootElement.querySelector('.tokenfield-set-item')
-        as html.Element;
+        as web.Element;
     final input = fixture.rootElement.querySelector('.li-token-field__input')
-        as html.InputElement;
+        as web.HTMLInputElement;
     final tokenRect = token.getBoundingClientRect();
     final inputRect = input.getBoundingClientRect();
 
@@ -139,15 +143,17 @@ void main() {
     await _settle(fixture);
 
     final field =
-        fixture.rootElement.querySelector('.li-token-field') as html.Element;
+        fixture.rootElement.querySelector('.li-token-field') as web.Element;
     final input = fixture.rootElement.querySelector('.li-token-field__input')
-        as html.InputElement;
-    final tokens = fixture.rootElement.queryAll('.tokenfield-set-item');
+        as web.HTMLInputElement;
+    final tokens = fixture.rootElement
+        .querySelectorAll('.tokenfield-set-item')
+        .toElementList();
     final tokenRows = tokens
         .map((element) => element.getBoundingClientRect().top.round())
         .toSet();
 
-    expect(field.classes.contains('li-token-field--wrap'), isTrue);
+    expect(field.classList.contains('li-token-field--wrap'), isTrue);
     expect(input.style.width, isEmpty);
     expect(tokenRows.length, greaterThan(1));
   });
@@ -168,17 +174,18 @@ void main() {
     expect(host.clearActionCount, 1);
 
     final trigger = fixture.rootElement
-        .querySelector('.li-token-field__menu button') as html.ButtonElement;
+        .querySelector('.li-token-field__menu button') as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final menuItems = html.document
-        .queryAll(
+    final menuItems = web.document
+        .querySelectorAll(
             '.LiDropdownMenuComponent .li-dropdown-menu__menu.show .dropdown-item')
-        .map((element) => (element.text).trim())
+        .toElementList()
+        .map((element) => ((element.textContent ?? '')).trim())
         .toList(growable: false);
 
     expect(menuItems.any((label) => label.contains('Copy')), isFalse);
@@ -203,9 +210,9 @@ Future<void> _settle(
   await fixture.update((_) {});
 }
 
-html.Event createKeyEvent(
+web.Event createKeyEvent(
   String type, {
   required String key,
   String? code,
 }) =>
-    html.liKeyboardEvent(type, key: key, code: code ?? key);
+    bubblingKeyboardEvent(type, key: key, code: code ?? key);

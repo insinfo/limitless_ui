@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:js_interop';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 
 import '../dropdown_menu/dropdown_menu_component.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 
 class LiTokenFieldItemView {
   LiTokenFieldItemView({
@@ -42,7 +43,7 @@ class LiTokenFieldComponent
   }
 
   final ChangeDetectorRef _changeDetectorRef;
-  final html.Element _rootElement;
+  final web.Element _rootElement;
   final StreamController<List<String>> _changeController =
       StreamController<List<String>>.broadcast();
   final StreamController<void> _copyActionController =
@@ -51,7 +52,7 @@ class LiTokenFieldComponent
       StreamController<void>.broadcast();
   final StreamController<void> _clearActionController =
       StreamController<void>.broadcast();
-  StreamSubscription<html.Event>? _resizeSubscription;
+  StreamSubscription<web.Event>? _resizeSubscription;
 
   ChangeFunction<List<String>>? _onChange;
   TouchFunction _onTouched = () {};
@@ -126,7 +127,7 @@ class LiTokenFieldComponent
   String copySeparator = ',';
 
   @ViewChild('inputToken')
-  html.InputElement? inputToken;
+  web.HTMLInputElement? inputToken;
 
   List<LiTokenFieldItemView> items = <LiTokenFieldItemView>[];
   List<LiDropdownMenuOption> actionMenuOptions = const <LiDropdownMenuOption>[];
@@ -218,7 +219,9 @@ class LiTokenFieldComponent
 
   @override
   void ngAfterViewInit() {
-    _resizeSubscription = html.window.onResize.listen((_) {
+    _resizeSubscription = web.EventStreamProvider<web.Event>('resize')
+        .forTarget(web.window)
+        .listen((_) {
       _scheduleInputWidthSync();
     });
     _scheduleInputWidthSync();
@@ -266,7 +269,7 @@ class LiTokenFieldComponent
     _scheduleInputWidthSync();
   }
 
-  void inputKeypressHandle(html.KeyboardEvent event) {
+  void inputKeypressHandle(web.KeyboardEvent event) {
     if (isDisabled || !filterInput) {
       return;
     }
@@ -286,7 +289,7 @@ class LiTokenFieldComponent
     }
   }
 
-  void inputKeydownHandle(html.KeyboardEvent event) {
+  void inputKeydownHandle(web.KeyboardEvent event) {
     if (isDisabled) {
       return;
     }
@@ -322,7 +325,7 @@ class LiTokenFieldComponent
     }
   }
 
-  void inputKeyupHandle(html.KeyboardEvent event) {
+  void inputKeyupHandle(web.KeyboardEvent event) {
     if (isDisabled) {
       return;
     }
@@ -334,7 +337,7 @@ class LiTokenFieldComponent
     }
   }
 
-  void onPasteHandle(html.ClipboardEvent event) {
+  void onPasteHandle(web.ClipboardEvent event) {
     if (isDisabled) {
       return;
     }
@@ -352,7 +355,7 @@ class LiTokenFieldComponent
 
   void toggleItemSelection(
     LiTokenFieldItemView item,
-    html.MouseEvent event,
+    web.MouseEvent event,
   ) {
     event.stopPropagation();
     if (isDisabled) {
@@ -372,7 +375,7 @@ class LiTokenFieldComponent
     _markForCheck();
   }
 
-  void removeToken(LiTokenFieldItemView item, [html.Event? event]) {
+  void removeToken(LiTokenFieldItemView item, [web.Event? event]) {
     event?.preventDefault();
     event?.stopPropagation();
     if (isDisabled) {
@@ -417,7 +420,7 @@ class LiTokenFieldComponent
     _markForCheck();
   }
 
-  void stopPropagation(html.Event event) {
+  void stopPropagation(web.Event event) {
     event.stopPropagation();
   }
 
@@ -434,7 +437,7 @@ class LiTokenFieldComponent
       return;
     }
 
-    final clipboard = html.window.navigator.clipboard;
+    final clipboard = web.window.navigator.clipboard;
     try {
       await clipboard.writeText(textToCopy).toDart;
       _copyActionController.add(null);
@@ -452,12 +455,12 @@ class LiTokenFieldComponent
 
     String text = '';
     try {
-      await html.window.navigator.permissions
+      await web.window.navigator.permissions
           .query(<String, String>{
             'name': 'clipboard-read',
           }.jsify() as JSObject)
           .toDart;
-      text = (await html.window.navigator.clipboard.readText().toDart).toDart;
+      text = (await web.window.navigator.clipboard.readText().toDart).toDart;
     } catch (_) {
       text = '';
     }
@@ -537,7 +540,7 @@ class LiTokenFieldComponent
     _isDestroyed = true;
     _resizeSubscription?.cancel();
     if (_syncInputWidthFrameId != null) {
-      html.window.cancelAnimationFrame(_syncInputWidthFrameId!);
+      web.window.cancelAnimationFrame(_syncInputWidthFrameId!);
       _syncInputWidthFrameId = null;
     }
     _changeController.close();
@@ -573,15 +576,15 @@ class LiTokenFieldComponent
   }
 
   void _fallbackCopyToClipboard(String text) {
-    final helper = html.createTextAreaElement()
+    final helper = web.HTMLTextAreaElement()
       ..value = text
       ..style.position = 'fixed'
       ..style.opacity = '0'
       ..style.left = '-9999px'
       ..style.top = '-9999px';
-    html.document.body?.append(helper);
+    web.document.body?.append(helper);
     helper.select();
-    html.document.execCommand('copy');
+    web.document.execCommand('copy');
     helper.remove();
   }
 
@@ -600,11 +603,11 @@ class LiTokenFieldComponent
     }
 
     if (_syncInputWidthFrameId != null) {
-      html.window.cancelAnimationFrame(_syncInputWidthFrameId!);
+      web.window.cancelAnimationFrame(_syncInputWidthFrameId!);
       _syncInputWidthFrameId = null;
     }
 
-    _syncInputWidthFrameId = html.window.liRequestAnimationFrame((_) {
+    _syncInputWidthFrameId = requestAnimationFrameInZone((_) {
       _syncInputWidthFrameId = null;
       if (_isDestroyed) {
         return;
@@ -630,12 +633,12 @@ class LiTokenFieldComponent
       return;
     }
 
-    final computedStyle = container.getComputedStyle();
+    final computedStyle = web.window.getComputedStyle(container);
     final leftInset = _parsePixels(computedStyle.paddingLeft) +
         _parsePixels(computedStyle.borderLeftWidth);
     final rightInset = _parsePixels(computedStyle.paddingRight) +
         _parsePixels(computedStyle.borderRightWidth);
-    final inputStyle = input.getComputedStyle();
+    final inputStyle = web.window.getComputedStyle(input);
     final inputHorizontalInset = _parsePixels(inputStyle.paddingLeft) +
         _parsePixels(inputStyle.paddingRight) +
         _parsePixels(inputStyle.borderLeftWidth) +

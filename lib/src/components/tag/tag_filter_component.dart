@@ -1,6 +1,6 @@
-import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -10,6 +10,7 @@ import 'package:ngx_forms/ngx_forms.dart'
 import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 import '../../directives/css_style_directive.dart';
 import 'tag_models.dart';
 
@@ -57,7 +58,7 @@ class LiTagFilterComponent
 
   static int _nextSequence = 0;
 
-  final html.Element nativeElement;
+  final web.Element nativeElement;
   final ChangeDetectorRef _changeDetectorRef;
 
   final StreamController<List<dynamic>> _valueChangeController =
@@ -73,8 +74,8 @@ class LiTagFilterComponent
   bool _destroyed = false;
 
   PopperAnchoredOverlay? _overlay;
-  StreamSubscription<html.Event>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.Event>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
   ChangeFunction<List<dynamic>>? _onChange;
   TouchFunction _onTouched = () {};
   bool _touched = false;
@@ -171,13 +172,13 @@ class LiTagFilterComponent
   Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('dropdownButton')
-  html.Element? dropdownButtonElement;
+  web.Element? dropdownButtonElement;
 
   @ViewChild('dropdownContainer')
-  html.Element? dropdownContainerElement;
+  web.Element? dropdownContainerElement;
 
   @ViewChild('searchInput')
-  html.InputElement? searchInputElement;
+  web.HTMLInputElement? searchInputElement;
 
   List<LiTagFilterOptionView> options = <LiTagFilterOptionView>[];
   List<LiTagFilterOptionView> selectedOptions = <LiTagFilterOptionView>[];
@@ -291,7 +292,7 @@ class LiTagFilterComponent
     Future<void>.delayed(const Duration(milliseconds: 20), () {
       _overlay?.update();
       if (searchable) {
-        searchInputElement?.focus();
+        (searchInputElement as web.HTMLElement?)?.focus();
       }
     });
     _openChangeController.add(true);
@@ -311,7 +312,7 @@ class LiTagFilterComponent
     _markTouched();
 
     if (restoreFocus) {
-      dropdownButtonElement?.focus();
+      (dropdownButtonElement as web.HTMLElement?)?.focus();
     }
 
     if (!_destroyed) {
@@ -321,13 +322,13 @@ class LiTagFilterComponent
     _markForCheck();
   }
 
-  void onSearchInput(html.Event event) {
-    final input = event.target as html.InputElement;
+  void onSearchInput(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
     _searchQuery = input.value.trim();
     _applySearchQuery(_searchQuery, markForCheck: true);
   }
 
-  void toggleOptionFromUi(LiTagFilterOptionView option, html.Event event) {
+  void toggleOptionFromUi(LiTagFilterOptionView option, web.Event event) {
     event.preventDefault();
     event.stopPropagation();
     if (isDisabled || option.disabled) {
@@ -341,7 +342,7 @@ class LiTagFilterComponent
     }
   }
 
-  void removeSelection(LiTagFilterOptionView option, html.Event event) {
+  void removeSelection(LiTagFilterOptionView option, web.Event event) {
     event.preventDefault();
     event.stopPropagation();
     if (isDisabled || option.disabled) {
@@ -352,14 +353,14 @@ class LiTagFilterComponent
     _rebuildSelectionState(emit: true);
   }
 
-  void clearSelectionFromUi(html.Event event) {
+  void clearSelectionFromUi(web.Event event) {
     event.preventDefault();
     event.stopPropagation();
     reset();
-    dropdownButtonElement?.focus();
+    (dropdownButtonElement as web.HTMLElement?)?.focus();
   }
 
-  void requestReload(html.Event event) {
+  void requestReload(web.Event event) {
     event.preventDefault();
     event.stopPropagation();
     if (isDisabled) {
@@ -692,33 +693,40 @@ class LiTagFilterComponent
         math.max(64.0, availablePanelHeight - chromeHeight);
     final desiredMaxHeight = '${availableListHeight.floor()}px';
 
-    if (listElement.style.maxHeight != desiredMaxHeight) {
-      listElement.style.maxHeight = desiredMaxHeight;
+    final listStyle = (listElement as web.HTMLElement).style;
+    if (listStyle.maxHeight != desiredMaxHeight) {
+      listStyle.maxHeight = desiredMaxHeight;
     }
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??=
+        web.EventStreamProvider<web.MouseEvent>('click')
+            .forTarget(web.document)
+            .listen((event) {
       if (!dropdownOpen) {
         return;
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Node>() ?? false)) {
+      if (!(target?.isA<web.Node>() ?? false)) {
         closeDropdown();
         return;
       }
 
       final clickedTrigger =
-          dropdownButtonElement?.contains(target as html.Node?) ?? false;
+          dropdownButtonElement?.contains(target as web.Node?) ?? false;
       final clickedPanel =
-          dropdownContainerElement?.contains(target as html.Node?) ?? false;
+          dropdownContainerElement?.contains(target as web.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         closeDropdown();
       }
     });
 
-    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+    _documentKeySubscription ??=
+        web.EventStreamProvider<web.KeyboardEvent>('keydown')
+            .forTarget(web.document)
+            .listen((event) {
       if (!dropdownOpen) {
         return;
       }
@@ -743,7 +751,7 @@ class LiTagFilterComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _overlayRelayoutPending = false;
       if (!dropdownOpen) {
         return;

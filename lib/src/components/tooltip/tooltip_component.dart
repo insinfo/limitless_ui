@@ -1,11 +1,14 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
+import '../../web_support/dom_tokens.dart';
+import '../../web_support/html_sinks.dart';
+import '../../web_support/js_type_guards.dart';
 import 'tooltip_config.dart';
 
 /// Public directives used by tooltip APIs.
@@ -14,7 +17,7 @@ const liTooltipDirectives = <Object>[
   LiTooltipDirective,
 ];
 
-typedef LiTooltipLifecycleCallback = void Function(html.Element tooltip);
+typedef LiTooltipLifecycleCallback = void Function(web.Element tooltip);
 
 class LiTooltipController {
   LiTooltipController._(
@@ -125,7 +128,7 @@ class LiTooltip {
       <LiTooltipController>{};
 
   static LiTooltipController show({
-    required html.Element referenceElement,
+    required web.Element referenceElement,
     required Object content,
     String placement = 'top',
     Object? positionTarget,
@@ -195,12 +198,12 @@ class _LiTooltipFloatingOverlay {
 
   final PopperController _controller;
   final PopperPortal? portal;
-  final html.Element floatingElement;
+  final web.Element floatingElement;
 
   factory _LiTooltipFloatingOverlay.attach({
-    required html.Element referenceElement,
-    required html.Element floatingElement,
-    required html.Element localContainer,
+    required web.Element referenceElement,
+    required web.Element floatingElement,
+    required web.Element localContainer,
     required bool appendToBody,
     PopperOptions popperOptions = const PopperOptions(),
     PopperPortalOptions portalOptions = const PopperPortalOptions(),
@@ -213,8 +216,8 @@ class _LiTooltipFloatingOverlay {
         options: portalOptions,
       );
     } else {
-      localContainer.append(floatingElement);
-      floatingElement.style
+      localContainer.appendChild(floatingElement);
+      (floatingElement as web.HTMLElement).style
         ..position = 'fixed'
         ..pointerEvents = 'auto'
         ..zIndex = portalOptions.floatingZIndex;
@@ -274,7 +277,7 @@ class _LiTooltipOverlay implements OnDestroy {
     'manual',
   };
 
-  final html.Element _hostElement;
+  final web.Element _hostElement;
   final ViewContainerRef? _viewContainerRef;
   final LiTooltipConfig _config;
   final StreamController<void> _showController =
@@ -287,12 +290,12 @@ class _LiTooltipOverlay implements OnDestroy {
       StreamController<void>.broadcast();
 
   _LiTooltipFloatingOverlay? _overlay;
-  html.DivElement? _tooltipElement;
-  html.DivElement? _tooltipInnerElement;
-  StreamSubscription<html.MouseEvent>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
-  StreamSubscription<html.MouseEvent>? _tooltipMouseEnterSubscription;
-  StreamSubscription<html.MouseEvent>? _tooltipMouseLeaveSubscription;
+  web.HTMLDivElement? _tooltipElement;
+  web.HTMLDivElement? _tooltipInnerElement;
+  StreamSubscription<web.MouseEvent>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.MouseEvent>? _tooltipMouseEnterSubscription;
+  StreamSubscription<web.MouseEvent>? _tooltipMouseLeaveSubscription;
   Timer? _showTimer;
   Timer? _hideTimer;
   Timer? _shownTimer;
@@ -317,7 +320,7 @@ class _LiTooltipOverlay implements OnDestroy {
   String? _container;
   Object _autoClose = true;
   Object? _templateContext;
-  html.Element? _positionTargetElement;
+  web.Element? _positionTargetElement;
   String? _positionTargetSelector;
   Set<String> _appliedTooltipClasses = <String>{};
   late final String _tooltipId = 'li-tooltip-${_nextId++}';
@@ -407,7 +410,7 @@ class _LiTooltipOverlay implements OnDestroy {
       final selector = value.trim();
       _positionTargetSelector = selector.isEmpty ? null : selector;
       _positionTargetElement = null;
-    } else if (html.liElementOrNull(value) case final element?) {
+    } else if (elementOrNull(value) case final element?) {
       _positionTargetElement = element;
       _positionTargetSelector = null;
     } else {
@@ -482,14 +485,14 @@ class _LiTooltipOverlay implements OnDestroy {
   bool get _closeOnOutsideClick =>
       _autoCloseMode == 'true' || _autoCloseMode == 'outside';
 
-  html.Element get _referenceElement {
+  web.Element get _referenceElement {
     if (_positionTargetElement != null) {
       return _positionTargetElement!;
     }
 
     final selector = _positionTargetSelector;
     if (selector != null) {
-      final target = html.document.querySelector(selector);
+      final target = web.document.querySelector(selector);
       if (target != null) {
         _positionTargetElement = target;
         return target;
@@ -517,7 +520,7 @@ class _LiTooltipOverlay implements OnDestroy {
     _hideIfInactive();
   }
 
-  void handleFocusIn(html.Event event) {
+  void handleFocusIn(web.Event event) {
     if (_isManual || !_triggers.contains('focus')) {
       return;
     }
@@ -526,14 +529,14 @@ class _LiTooltipOverlay implements OnDestroy {
     open(useDelay: true);
   }
 
-  void handleFocusOut(html.FocusEvent event) {
+  void handleFocusOut(web.FocusEvent event) {
     if (_isManual || !_triggers.contains('focus')) {
       return;
     }
 
     final relatedTarget = event.relatedTarget;
-    if ((relatedTarget?.isA<html.Element>() ?? false) &&
-        _hostElement.contains(relatedTarget as html.Node?)) {
+    if ((relatedTarget?.isA<web.Element>() ?? false) &&
+        _hostElement.contains(relatedTarget as web.Node?)) {
       return;
     }
 
@@ -541,7 +544,7 @@ class _LiTooltipOverlay implements OnDestroy {
     _hideIfInactive();
   }
 
-  void handleClick(html.MouseEvent event) {
+  void handleClick(web.MouseEvent event) {
     if (_isManual || !_triggers.contains('click')) {
       return;
     }
@@ -666,17 +669,17 @@ class _LiTooltipOverlay implements OnDestroy {
     _bindDocumentListeners();
 
     if (animation) {
-      _tooltipElement!.classes.remove('show');
+      _tooltipElement!.classList.remove('show');
       Future<void>.delayed(Duration.zero, () {
         if (_visible && _tooltipElement != null) {
-          _tooltipElement!.classes.add('show');
+          _tooltipElement!.classList.add('show');
         }
       });
       _shownTimer = Timer(_animationDuration, _emitShownIfVisible);
       return;
     }
 
-    _tooltipElement!.classes.add('show');
+    _tooltipElement!.classList.add('show');
     _shownController.add(null);
   }
 
@@ -697,7 +700,7 @@ class _LiTooltipOverlay implements OnDestroy {
 
     final shouldAnimate = animateOverride ?? animation;
     if (shouldAnimate) {
-      _tooltipElement!.classes.remove('show');
+      _tooltipElement!.classList.remove('show');
       _shownTimer = Timer(_animationDuration, _destroyTooltip);
       return;
     }
@@ -718,23 +721,23 @@ class _LiTooltipOverlay implements OnDestroy {
       return;
     }
 
-    final tooltipElement = html.createDivElement()
+    final tooltipElement = web.HTMLDivElement()
       ..id = _tooltipId
-      ..classes.add('tooltip')
+      ..classList.add('tooltip')
       ..setAttribute('role', 'tooltip')
       ..setAttribute('data-label', 'li_tooltip_panel')
       ..setAttribute('data-open', 'true')
       ..style.pointerEvents = 'auto';
 
     if (animation) {
-      tooltipElement.classes.add('fade');
+      tooltipElement.classList.add('fade');
     }
 
-    final tooltipArrowElement = html.createDivElement()
-      ..classes.add('tooltip-arrow')
+    final tooltipArrowElement = web.HTMLDivElement()
+      ..classList.add('tooltip-arrow')
       ..setAttribute('data-label', 'li_tooltip_arrow');
-    final tooltipInnerElement = html.createDivElement()
-      ..classes.add('tooltip-inner')
+    final tooltipInnerElement = web.HTMLDivElement()
+      ..classList.add('tooltip-inner')
       ..setAttribute('data-label', 'li_tooltip_body')
       ..style.whiteSpace = 'pre-line';
 
@@ -781,10 +784,11 @@ class _LiTooltipOverlay implements OnDestroy {
               layout.middlewareData['arrow'] ?? const <String, dynamic>{};
           final placement = layout.placement.toLowerCase();
 
-          arrowElement.style.position = 'absolute';
+          final arrowStyle = (arrowElement as web.HTMLElement).style;
+          arrowStyle.position = 'absolute';
 
           if (placement.startsWith('top') || placement.startsWith('bottom')) {
-            arrowElement.style
+            arrowStyle
               ..left = '${((arrowData['x'] as num?) ?? 0).toStringAsFixed(2)}px'
               ..right = ''
               ..top = placement.startsWith('bottom') ? '-1px' : ''
@@ -792,7 +796,7 @@ class _LiTooltipOverlay implements OnDestroy {
             return;
           }
 
-          arrowElement.style
+          arrowStyle
             ..top = '${((arrowData['y'] as num?) ?? 0).toStringAsFixed(2)}px'
             ..bottom = ''
             ..right = placement.startsWith('left') ? '-1px' : ''
@@ -810,7 +814,7 @@ class _LiTooltipOverlay implements OnDestroy {
       return;
     }
 
-    final showClassPresent = tooltipElement.classes.contains('show');
+    final showClassPresent = tooltipElement.classList.contains('show');
     _overlay?.stopAutoUpdate();
     _overlay?.dispose();
     _overlay = null;
@@ -824,7 +828,7 @@ class _LiTooltipOverlay implements OnDestroy {
     _appliedTooltipClasses = <String>{};
     _ensureTooltip();
     if (showClassPresent) {
-      _tooltipElement?.classes.add('show');
+      _tooltipElement?.classList.add('show');
     }
     _overlay?.startAutoUpdate();
     _overlay?.update();
@@ -868,7 +872,7 @@ class _LiTooltipOverlay implements OnDestroy {
     }
 
     tooltipElement.setAttribute('data-popper-placement', layout.placement);
-    tooltipElement.classes
+    tooltipElement.classList
       ..remove('bs-tooltip-top')
       ..remove('bs-tooltip-bottom')
       ..remove('bs-tooltip-start')
@@ -902,28 +906,24 @@ class _LiTooltipOverlay implements OnDestroy {
     }
 
     if (_allowHtml) {
-      // ignore: unsafe_html
-      tooltipInnerElement.setInnerHtml(
-        _content,
-        treeSanitizer: html.NodeTreeSanitizer.trusted,
-      );
+      setTrustedHtml(tooltipInnerElement, _content);
       return;
     }
 
-    tooltipInnerElement.text = _content;
+    tooltipInnerElement.textContent = _content;
   }
 
-  void _syncTemplateContent(html.DivElement tooltipInnerElement) {
+  void _syncTemplateContent(web.HTMLDivElement tooltipInnerElement) {
     _ensureTemplateView();
     final contentView = _contentView;
     if (contentView == null) {
-      tooltipInnerElement.text = '';
+      tooltipInnerElement.textContent = '';
       return;
     }
 
-    tooltipInnerElement.nodes.clear();
+    tooltipInnerElement.textContent = '';
     for (final node in contentView.rootNodes) {
-      tooltipInnerElement.append(node);
+      tooltipInnerElement.appendChild(node);
     }
     contentView.markForCheck();
   }
@@ -970,10 +970,10 @@ class _LiTooltipOverlay implements OnDestroy {
     contentView.markForCheck();
   }
 
-  html.Element _resolveOverlayContainer() {
-    return _referenceElement.parent ??
-        _hostElement.parent ??
-        html.document.body!;
+  web.Element _resolveOverlayContainer() {
+    return _referenceElement.parentElement ??
+        _hostElement.parentElement ??
+        web.document.body!;
   }
 
   void _syncTooltipClasses() {
@@ -983,7 +983,7 @@ class _LiTooltipOverlay implements OnDestroy {
     }
 
     if (_appliedTooltipClasses.isNotEmpty) {
-      tooltipElement.classes.removeAll(_appliedTooltipClasses);
+      removeClassTokens(tooltipElement, _appliedTooltipClasses);
     }
 
     _appliedTooltipClasses = _tooltipClass
@@ -993,14 +993,16 @@ class _LiTooltipOverlay implements OnDestroy {
         <String>{};
 
     if (_appliedTooltipClasses.isNotEmpty) {
-      tooltipElement.classes.addAll(_appliedTooltipClasses);
+      addClassTokens(tooltipElement, _appliedTooltipClasses);
     }
   }
 
   void _bindDocumentListeners() {
     if (_closeOnEscape) {
-      _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
-        if (event.key == 'Escape' || event.keyCode == 27) {
+      _documentKeySubscription ??= web.EventStreamProviders.keyDownEvent
+          .forTarget(web.document)
+          .listen((event) {
+        if (event.key == 'Escape') {
           _clickActive = false;
           _hoverActive = false;
           _focusActive = false;
@@ -1011,21 +1013,23 @@ class _LiTooltipOverlay implements OnDestroy {
     }
 
     if (_closeOnInsideClick || _closeOnOutsideClick) {
-      _documentClickSubscription ??= html.document.onClick.listen((event) {
+      _documentClickSubscription ??= web.EventStreamProviders.clickEvent
+          .forTarget(web.document)
+          .listen((event) {
         if (!_visible) {
           return;
         }
 
         final target = event.target;
-        if (!(target?.isA<html.Element>() ?? false)) {
+        if (!(target?.isA<web.Element>() ?? false)) {
           return;
         }
 
         final tooltipElement = _tooltipElement;
         final clickedInsideTooltip = tooltipElement != null &&
-            tooltipElement.contains(target as html.Node?);
+            tooltipElement.contains(target as web.Node?);
         final clickedOnReference =
-            _referenceElement.contains(target as html.Node?);
+            _referenceElement.contains(target as web.Node?);
         final clickedOnHost = _hostElement.contains(target);
 
         if (clickedInsideTooltip) {
@@ -1175,8 +1179,7 @@ class _LiTooltipOverlay implements OnDestroy {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiTooltipComponent implements OnDestroy {
-  LiTooltipComponent(
-      html.Element hostElement, ViewContainerRef viewContainerRef,
+  LiTooltipComponent(web.Element hostElement, ViewContainerRef viewContainerRef,
       [@Optional() LiTooltipConfig? config])
       : _overlay = _LiTooltipOverlay(hostElement, viewContainerRef, config);
 
@@ -1290,17 +1293,17 @@ class LiTooltipComponent implements OnDestroy {
   }
 
   @HostListener('focusin', ['\$event'])
-  void onFocusIn(html.Event event) {
+  void onFocusIn(web.Event event) {
     _overlay.handleFocusIn(event);
   }
 
   @HostListener('focusout', ['\$event'])
-  void onFocusOut(html.FocusEvent event) {
+  void onFocusOut(web.FocusEvent event) {
     _overlay.handleFocusOut(event);
   }
 
   @HostListener('click', ['\$event'])
-  void onClick(html.MouseEvent event) {
+  void onClick(web.MouseEvent event) {
     _overlay.handleClick(event);
   }
 
@@ -1344,8 +1347,7 @@ class LiTooltipComponent implements OnDestroy {
   exportAs: 'liTooltip',
 )
 class LiTooltipDirective implements OnDestroy {
-  LiTooltipDirective(
-      html.Element hostElement, ViewContainerRef viewContainerRef,
+  LiTooltipDirective(web.Element hostElement, ViewContainerRef viewContainerRef,
       [@Optional() LiTooltipConfig? config])
       : _overlay = _LiTooltipOverlay(hostElement, viewContainerRef, config);
 
@@ -1418,17 +1420,17 @@ class LiTooltipDirective implements OnDestroy {
   }
 
   @HostListener('focusin', ['\$event'])
-  void onFocusIn(html.Event event) {
+  void onFocusIn(web.Event event) {
     _overlay.handleFocusIn(event);
   }
 
   @HostListener('focusout', ['\$event'])
-  void onFocusOut(html.FocusEvent event) {
+  void onFocusOut(web.FocusEvent event) {
     _overlay.handleFocusOut(event);
   }
 
   @HostListener('click', ['\$event'])
-  void onClick(html.MouseEvent event) {
+  void onClick(web.MouseEvent event) {
     _overlay.handleClick(event);
   }
 

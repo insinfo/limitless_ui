@@ -5,11 +5,12 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_node_list.dart';
 
 import 'li_timeline_component_test.template.dart' as ng;
 
@@ -51,27 +52,38 @@ void main() {
 
   test('renders center and right timeline mode classes', () async {
     final fixture = await testBed.create();
-    final timelines = fixture.rootElement.queryAll('li-timeline');
+    final timelines =
+        fixture.rootElement.querySelectorAll('li-timeline').toElementList();
 
-    expect(timelines[0].classes.contains('timeline-center'), isTrue);
-    expect(timelines[1].classes.contains('timeline-end'), isTrue);
+    expect(timelines[0].classList.contains('timeline-center'), isTrue);
+    expect(timelines[1].classList.contains('timeline-end'), isTrue);
   });
 
   test('applies row alignment classes in center mode', () async {
     final fixture = await testBed.create();
-    final items = fixture.rootElement.queryAll('li-timeline-item');
+    final items = fixture.rootElement
+        .querySelectorAll('li-timeline-item')
+        .toElementList();
 
-    expect(items[0].classes.contains('timeline-row-start'), isTrue);
-    expect(items[1].classes.contains('timeline-row-end'), isTrue);
+    expect(items[0].classList.contains('timeline-row-start'), isTrue);
+    expect(items[1].classList.contains('timeline-row-end'), isTrue);
   });
 
   test('renders projected icon, time and content slots', () async {
     final fixture = await testBed.create();
-    final projectedItem = fixture.rootElement.queryAll('li-timeline-item')[1];
+    final projectedItem = fixture.rootElement
+        .querySelectorAll('li-timeline-item')
+        .toElementList()[1];
 
-    expect(projectedItem.querySelector('.custom-icon')?.text.trim(), 'B');
-    expect(projectedItem.querySelector('.timeline-time')?.text.trim(), '10:15');
-    expect(projectedItem.querySelector('.custom-card')?.text.trim(),
+    expect(
+        (projectedItem.querySelector('.custom-icon')?.textContent ?? '').trim(),
+        'B');
+    expect(
+        (projectedItem.querySelector('.timeline-time')?.textContent ?? '')
+            .trim(),
+        '10:15');
+    expect(
+        (projectedItem.querySelector('.custom-card')?.textContent ?? '').trim(),
         'Conteudo customizado');
   });
 }

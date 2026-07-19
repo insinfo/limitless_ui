@@ -5,13 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_select_component_test.template.dart' as ng;
 
@@ -252,7 +255,7 @@ class SelectProgrammaticApiTestHostComponent {
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
-    html.document.documentElement?.removeAttribute('data-color-theme');
+    web.document.documentElement?.removeAttribute('data-color-theme');
   });
 
   final testBed = NgTestBed<SelectTestHostComponent>(
@@ -287,22 +290,24 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     expect(host.userSelectedStatus, isNull);
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final option = html.document
-        .queryAll('.dropdown-container .dropdown-item')
-        .cast<html.Element>()
-        .firstWhere((element) => (element.text).contains('Aprovado'));
+    final option = web.document
+        .querySelectorAll('.dropdown-container .dropdown-item')
+        .toElementList()
+        .cast<web.Element>()
+        .firstWhere(
+            (element) => ((element.textContent ?? '')).contains('Aprovado'));
 
     await fixture.update((_) {
-      option.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      option.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -310,7 +315,7 @@ void main() {
     expect(host.userSelectedStatus, 'approved');
     expect(host.selectedStatusModel?['id'], 'approved');
     expect(host.selectedStatusModel?['label'], 'Aprovado');
-    expect(trigger.text, contains('Aprovado'));
+    expect(trigger.textContent, contains('Aprovado'));
 
     await fixture.update((component) {
       component.selectedStatus = 'draft';
@@ -319,7 +324,7 @@ void main() {
 
     expect(host.selectedStatus, 'draft');
     expect(host.userSelectedStatus, 'approved');
-    expect(trigger.text, contains('Rascunho'));
+    expect(trigger.textContent, contains('Rascunho'));
   });
 
   test('reflects name on the interactive trigger for browser automation',
@@ -327,7 +332,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     expect(trigger.getAttribute('name'), 'status');
   });
@@ -337,41 +342,43 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final disabledOption = html.document
-        .queryAll('.dropdown-container .dropdown-item')
-        .cast<html.Element>()
-        .firstWhere((element) => (element.text).contains('Arquivado'));
+    final disabledOption = web.document
+        .querySelectorAll('.dropdown-container .dropdown-item')
+        .toElementList()
+        .cast<web.Element>()
+        .firstWhere(
+            (element) => ((element.textContent ?? '')).contains('Arquivado'));
 
     await fixture.update((_) {
-      disabledOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      disabledOption.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.selectedStatus, 'review');
-    expect(trigger.text, contains('Em revisao'));
+    expect(trigger.textContent, contains('Em revisao'));
   });
 
   test('opens overlay aligned directly below the trigger', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.dropdown-container.dropdown-open',
-    ) as html.Element;
+    ) as web.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final panelRect = panel.getBoundingClientRect();
 
@@ -385,7 +392,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((component) {
       component.searchable = false;
@@ -393,50 +400,52 @@ void main() {
     await _settle(fixture);
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(
-      html.document.querySelector(
+      web.document.querySelector(
         '.dropdown-container.dropdown-open .dropdown-search',
       ),
       isNull,
     );
 
-    final option = html.document
-        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
-        .cast<html.Element>()
-        .firstWhere((element) => (element.text).contains('Aprovado'));
+    final option = web.document
+        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .toElementList()
+        .cast<web.Element>()
+        .firstWhere(
+            (element) => ((element.textContent ?? '')).contains('Aprovado'));
 
     await fixture.update((_) {
-      option.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      option.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.selectedStatus, 'approved');
-    expect(trigger.text, contains('Aprovado'));
+    expect(trigger.textContent, contains('Aprovado'));
   });
 
   test('keeps dark theme styling delegated to dropdown-menu classes', () async {
-    html.document.documentElement?.setAttribute('data-color-theme', 'dark');
+    web.document.documentElement?.setAttribute('data-color-theme', 'dark');
 
     final fixture = await testBed.create();
     await _settle(fixture);
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.dropdown-container.dropdown-open',
-    ) as html.Element;
+    ) as web.Element;
 
-    expect(panel.classes.contains('dropdown-menu'), isTrue);
-    expect(panel.style.backgroundColor, isEmpty);
+    expect(panel.classList.contains('dropdown-menu'), isTrue);
+    expect((panel as web.HTMLElement).style.backgroundColor, isEmpty);
     expect(panel.style.boxShadow, isEmpty);
     expect(panel.style.borderColor, isEmpty);
   });
@@ -445,9 +454,9 @@ void main() {
     final fixture = await compareTestBed.create();
     await _settleCompare(fixture);
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
-    expect(trigger.text, contains('Categoria B'));
+    expect(trigger.textContent, contains('Categoria B'));
   });
 
   test('reconciles a written model value when dataSource arrives later',
@@ -456,10 +465,10 @@ void main() {
     await _settleAsyncSource(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     expect(host.selectedStatus, 'approved');
-    expect(trigger.text, contains('Selecione'));
+    expect(trigger.textContent, contains('Selecione'));
 
     await fixture.update((component) {
       component.loadOptions();
@@ -467,7 +476,7 @@ void main() {
     await _settleAsyncSource(fixture);
 
     expect(host.selectedStatus, 'approved');
-    expect(trigger.text, contains('Aprovado'));
+    expect(trigger.textContent, contains('Aprovado'));
     expect(host.currentValueEvents, isEmpty);
     expect(host.modelEvents, isEmpty);
   });
@@ -478,11 +487,11 @@ void main() {
     await _settleNullModel(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     expect(host.selectedStatus, isNull);
-    expect(trigger.text, contains('Selecione'));
-    expect(trigger.text, isNot(contains('Rascunho')));
+    expect(trigger.textContent, contains('Selecione'));
+    expect(trigger.textContent, isNot(contains('Rascunho')));
   });
 
   test('allows a blank placeholder for null model values', () async {
@@ -490,11 +499,11 @@ void main() {
     await _settleEmptyPlaceholder(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     expect(host.selectedStatus, isNull);
-    expect(trigger.text.trim(), isEmpty);
-    expect(trigger.text, isNot(contains('Rascunho')));
+    expect((trigger.textContent ?? '').trim(), isEmpty);
+    expect(trigger.textContent, isNot(contains('Rascunho')));
   });
 
   test('autoSelectFirstOption keeps the old first-option behavior', () async {
@@ -502,10 +511,10 @@ void main() {
     await _settleAutoFirst(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     expect(host.selectedStatus, isNull);
-    expect(trigger.text, contains('Rascunho'));
+    expect(trigger.textContent, contains('Rascunho'));
   });
 
   test('supports silent programmatic set and clear APIs', () async {
@@ -513,7 +522,7 @@ void main() {
     await _settleProgrammaticApi(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((component) {
       component.select!.setSelectedItemByValue(
@@ -525,7 +534,7 @@ void main() {
     await _settleProgrammaticApi(fixture);
 
     expect(host.selectedStatus, 'review');
-    expect(trigger.text, contains('Aprovado'));
+    expect(trigger.textContent, contains('Aprovado'));
     expect(host.currentValueEvents, isEmpty);
     expect(host.modelEvents, isEmpty);
     expect(host.userValueEvents, isEmpty);
@@ -539,7 +548,7 @@ void main() {
     await _settleProgrammaticApi(fixture);
 
     expect(host.selectedStatus, 'review');
-    expect(trigger.text, contains('Selecione'));
+    expect(trigger.textContent, contains('Selecione'));
     expect(host.currentValueEvents, isEmpty);
     expect(host.modelEvents, isEmpty);
     expect(host.userValueEvents, isEmpty);
@@ -550,7 +559,7 @@ void main() {
     await _settleProgrammaticApi(fixture);
 
     expect(host.selectedStatus, 'draft');
-    expect(trigger.text, contains('Rascunho'));
+    expect(trigger.textContent, contains('Rascunho'));
     expect(host.currentValueEvents, <dynamic>['draft']);
     expect(
       host.modelEvents
@@ -566,7 +575,7 @@ void main() {
     await _settleProgrammaticApi(fixture);
 
     expect(host.selectedStatus, isNull);
-    expect(trigger.text, contains('Selecione'));
+    expect(trigger.textContent, contains('Selecione'));
     expect(host.currentValueEvents, <dynamic>['draft', null]);
     expect(host.modelEvents.last, isNull);
     expect(host.userValueEvents, isEmpty);
@@ -579,35 +588,37 @@ void main() {
     final field =
         fixture.rootElement.querySelector('#validation-select-field')!;
     final trigger =
-        field.querySelector('.dropdown-button') as html.ButtonElement;
-    final clearButton = field.querySelector('.dropdown-clear') as html.Element;
+        field.querySelector('.dropdown-button') as web.HTMLButtonElement;
+    final clearButton = field.querySelector('.dropdown-clear') as web.Element;
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleValidation(fixture);
 
     expect(host.selectedStatus, isNull);
-    expect(trigger.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('Escolha um status.'));
+    expect(trigger.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent, contains('Escolha um status.'));
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleValidation(fixture);
 
-    final option = html.document
-        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
-        .cast<html.Element>()
-        .firstWhere((element) => (element.text).contains('Aprovado'));
+    final option = web.document
+        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .toElementList()
+        .cast<web.Element>()
+        .firstWhere(
+            (element) => ((element.textContent ?? '')).contains('Aprovado'));
 
     await fixture.update((_) {
-      option.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      option.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleValidation(fixture);
 
     expect(host.selectedStatus, 'approved');
-    expect(trigger.classes.contains('is-invalid'), isFalse);
+    expect(trigger.classList.contains('is-invalid'), isFalse);
   });
 }
 

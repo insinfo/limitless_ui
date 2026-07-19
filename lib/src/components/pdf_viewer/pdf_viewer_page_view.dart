@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:math';
 
 import 'package:ngx_dart/angular.dart';
@@ -33,7 +33,7 @@ class PdfPageView {
 
   final int pageNum;
   final ChangeDetectorRef _changeDetectorRef;
-  final html.DivElement div;
+  final web.HTMLDivElement div;
   final Future<void> Function(dynamic dest)? _onNavigateToDest;
   final String? Function(String rawUrl)? _sanitizeAnnotationUrl;
   final void Function(String message) _onLog;
@@ -42,12 +42,12 @@ class PdfPageView {
   PageViewport? viewport;
   RenderingState renderingState = RenderingState.initial;
 
-  html.CanvasElement? _outputCanvas;
-  html.CanvasElement? get canvas => _outputCanvas;
-  html.DivElement? textLayerDiv;
-  html.DivElement? annotationLayerDiv;
+  web.HTMLCanvasElement? _outputCanvas;
+  web.HTMLCanvasElement? get canvas => _outputCanvas;
+  web.HTMLDivElement? textLayerDiv;
+  web.HTMLDivElement? annotationLayerDiv;
   RenderTask? _renderTask;
-  html.DivElement? canvasWrapper;
+  web.HTMLDivElement? canvasWrapper;
 
   double _renderedScale = 1.0;
   double? _baseWidth;
@@ -127,7 +127,7 @@ class PdfPageView {
     _changeDetectorRef.markForCheck();
 
     final oldCanvas = _outputCanvas;
-    final devicePixelRatio = html.window.devicePixelRatio.toDouble();
+    final devicePixelRatio = web.window.devicePixelRatio.toDouble();
     var canvasWidth = (viewport!.width * devicePixelRatio).ceil();
     var canvasHeight = (viewport!.height * devicePixelRatio).ceil();
     var pixelRatio = devicePixelRatio;
@@ -141,16 +141,17 @@ class PdfPageView {
       canvasHeight = (viewport!.height * pixelRatio).ceil();
     }
 
-    final newCanvas =
-        html.createCanvasElement(width: canvasWidth, height: canvasHeight)
-          ..style.width = '${viewport!.width}px'
-          ..style.height = '${viewport!.height}px'
-          ..style.visibility = 'hidden'
-          ..style.position = 'absolute'
-          ..style.top = '0'
-          ..style.left = '0';
+    final newCanvas = web.HTMLCanvasElement()
+      ..width = canvasWidth
+      ..height = canvasHeight
+      ..style.width = '${viewport!.width}px'
+      ..style.height = '${viewport!.height}px'
+      ..style.visibility = 'hidden'
+      ..style.position = 'absolute'
+      ..style.top = '0'
+      ..style.left = '0';
 
-    canvasWrapper?.append(newCanvas);
+    canvasWrapper?.appendChild(newCanvas);
 
     final context = newCanvas.context2D;
     context.scale(pixelRatio, pixelRatio);
@@ -204,8 +205,8 @@ class PdfPageView {
     }
 
     textLayerDiv?.remove();
-    textLayerDiv = html.createDivElement()..className = 'textLayer';
-    div.append(textLayerDiv!);
+    textLayerDiv = web.HTMLDivElement()..className = 'textLayer';
+    div.appendChild(textLayerDiv!);
 
     try {
       final textContentSource = pdfPage!.streamTextContent(
@@ -234,8 +235,8 @@ class PdfPageView {
     }
 
     annotationLayerDiv?.remove();
-    annotationLayerDiv = html.createDivElement()..className = 'annotationLayer';
-    div.append(annotationLayerDiv!);
+    annotationLayerDiv = web.HTMLDivElement()..className = 'annotationLayer';
+    div.appendChild(annotationLayerDiv!);
 
     List<JSObject> annotations;
     try {
@@ -283,7 +284,7 @@ class PdfPageView {
         continue;
       }
 
-      final link = html.createAnchorElement()
+      final link = web.HTMLAnchorElement()
         ..style.position = 'absolute'
         ..style.left = '${left}px'
         ..style.top = '${top}px'
@@ -313,13 +314,13 @@ class PdfPageView {
         });
       }
 
-      annotationLayerDiv!.append(link);
+      annotationLayerDiv!.appendChild(link);
     }
   }
 
   void reset() {
     cancelRender();
-    canvasWrapper?.children.clear();
+    canvasWrapper?.textContent = '';
     textLayerDiv?.remove();
     textLayerDiv = null;
     annotationLayerDiv?.remove();

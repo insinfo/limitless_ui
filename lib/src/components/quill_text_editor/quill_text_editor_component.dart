@@ -1,7 +1,7 @@
 //C:\MyDartProjects\limitless_ui\lib\src\components\quill_text_editor\quill_text_editor_component.dart
 import 'dart:async';
 import 'dart:convert';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 
@@ -767,10 +767,10 @@ class LiQuillTextEditorComponent
   TemplateRef? toolbarActionsTemplate;
 
   @ViewChild('editorContainer')
-  html.DivElement? editorContainer;
+  web.HTMLDivElement? editorContainer;
 
   @ViewChild('toolbar')
-  html.DivElement? toolbar;
+  web.HTMLDivElement? toolbar;
 
   @ContentChild(LiQuillTextEditorToolbarActionsDirective)
   LiQuillTextEditorToolbarActionsDirective? projectedToolbarActionsTemplate;
@@ -1114,7 +1114,7 @@ class LiQuillTextEditorComponent
     _initialized = false;
     _hasPendingUserChange = false;
     _lastSelection = null;
-    editorContainer?.nodes.clear();
+    editorContainer?.textContent = '';
   }
 
   void _applyToolbarConfigurationSignature() {

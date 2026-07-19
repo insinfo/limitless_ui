@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 typedef LiToastSoundPlayer = Future<void> Function();
 
@@ -75,12 +75,12 @@ LiNotificationToastColor _stringAsNotificationCompColor(String val) {
 class LiToastSoundController {
   LiToastSoundController({
     String? audioSrc,
-    html.AudioElement? audioElement,
+    web.HTMLAudioElement? audioElement,
     LiToastSoundPlayer? customPlayer,
   })  : _customPlayer = customPlayer,
         audio =
             customPlayer == null && (audioSrc != null || audioElement != null)
-                ? (audioElement ?? html.createAudioElement())
+                ? (audioElement ?? web.HTMLAudioElement())
                 : null {
     if (audio != null && audioSrc != null) {
       audio!
@@ -90,7 +90,7 @@ class LiToastSoundController {
     _registerUserInteraction();
   }
 
-  final html.AudioElement? audio;
+  final web.HTMLAudioElement? audio;
   final LiToastSoundPlayer? _customPlayer;
   bool userInteracted = false;
 
@@ -103,8 +103,14 @@ class LiToastSoundController {
   }
 
   void _registerUserInteraction() {
-    html.document.onClick.first.then((_) => userInteracted = true);
-    html.document.onKeyDown.first.then((_) => userInteracted = true);
+    web.EventStreamProviders.clickEvent
+        .forTarget(web.document)
+        .first
+        .then((_) => userInteracted = true);
+    web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .first
+        .then((_) => userInteracted = true);
   }
 
   Future<void> playOnceSafely() async {

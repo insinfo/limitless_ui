@@ -8,7 +8,7 @@ library;
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -16,6 +16,9 @@ import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_treeview_dropdown_select_component_test.template.dart' as ng;
 
@@ -551,17 +554,19 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final lazyHost =
-        fixture.rootElement.queryAll('li-treeview-select').elementAt(1);
+    final lazyHost = fixture.rootElement
+        .querySelectorAll('li-treeview-select')
+        .toElementList()
+        .elementAt(1);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[1].click();
     });
     await _settle(fixture, milliseconds: 140);
 
-    expect(fixture.rootElement.text, contains('Atendimento'));
-    expect(fixture.rootElement.text, contains('Benefícios'));
-    expect(fixture.rootElement.text, isNot(contains('Cadastros')));
+    expect(fixture.rootElement.textContent, contains('Atendimento'));
+    expect(fixture.rootElement.textContent, contains('Benefícios'));
+    expect(fixture.rootElement.textContent, isNot(contains('Cadastros')));
     expect(host.requests.first.parent, isNull);
 
     final loadMoreRoot = _findButtonByText(lazyHost, 'Carregar mais');
@@ -572,7 +577,7 @@ void main() {
     });
     await _settle(fixture, milliseconds: 140);
 
-    expect(fixture.rootElement.text, contains('Cadastros'));
+    expect(fixture.rootElement.textContent, contains('Cadastros'));
 
     final expandBenefits = _findExpanderForLabel(lazyHost, 'Benefícios');
     expect(expandBenefits, isNotNull);
@@ -582,8 +587,8 @@ void main() {
     });
     await _settle(fixture, milliseconds: 140);
 
-    expect(lazyHost.text, contains('Cesta básica'));
-    expect(lazyHost.text, contains('Auxílio aluguel'));
+    expect(lazyHost.textContent, contains('Cesta básica'));
+    expect(lazyHost.textContent, contains('Auxílio aluguel'));
     expect(
       host.requests.any((request) => request.parent?.value == 'benefits'),
       isTrue,
@@ -594,8 +599,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final lazyHost =
-        fixture.rootElement.queryAll('li-treeview-select').elementAt(1);
+    final lazyHost = fixture.rootElement
+        .querySelectorAll('li-treeview-select')
+        .toElementList()
+        .elementAt(1);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[1].click();
@@ -603,26 +610,29 @@ void main() {
     await _settle(fixture, milliseconds: 140);
 
     final searchInput = lazyHost
-        .queryAll('.treeview-dropdown-select__search input')
-        .elementAt(0) as html.InputElement;
+        .querySelectorAll('.treeview-dropdown-select__search input')
+        .toElementList()
+        .elementAt(0) as web.HTMLInputElement;
 
     await fixture.update((_) {
       searchInput.value = 'cad';
-      searchInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      searchInput.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture, milliseconds: 260);
 
     expect(host.requests.last.searchTerm, 'cad');
-    expect(lazyHost.text, contains('Cadastros'));
-    expect(lazyHost.text, isNot(contains('Atendimento')));
+    expect(lazyHost.textContent, contains('Cadastros'));
+    expect(lazyHost.textContent, isNot(contains('Atendimento')));
   });
 
   test('multiple mode keeps popup open and accumulates selections', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final multiHost =
-        fixture.rootElement.queryAll('li-treeview-select').elementAt(2);
+    final multiHost = fixture.rootElement
+        .querySelectorAll('li-treeview-select')
+        .toElementList()
+        .elementAt(2);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[2].click();
@@ -647,26 +657,28 @@ void main() {
     expect(host.multiTree!.isPopupOpen, isTrue);
 
     final chips = multiHost
-        .queryAll('.treeview-dropdown-select__chip')
+        .querySelectorAll('.treeview-dropdown-select__chip')
+        .toElementList()
         .toList(growable: false);
     final visibleValueChips = chips
         .where((chip) =>
-            !chip.classes.contains('treeview-dropdown-select__chip--hidden') &&
-            !chip.classes.contains('treeview-dropdown-select__chip--muted'))
+            !chip.classList
+                .contains('treeview-dropdown-select__chip--hidden') &&
+            !chip.classList.contains('treeview-dropdown-select__chip--muted'))
         .toList(growable: false);
     final hiddenValueChips = chips
         .where((chip) =>
-            chip.classes.contains('treeview-dropdown-select__chip--hidden'))
+            chip.classList.contains('treeview-dropdown-select__chip--hidden'))
         .toList(growable: false);
     final summaryChips = chips
         .where((chip) =>
-            chip.classes.contains('treeview-dropdown-select__chip--muted'))
+            chip.classList.contains('treeview-dropdown-select__chip--muted'))
         .toList(growable: false);
 
     expect(visibleValueChips, hasLength(2));
     expect(hiddenValueChips, hasLength(1));
     expect(summaryChips, hasLength(1));
-    expect(summaryChips.single.text.trim(), '+1 itens');
+    expect((summaryChips.single.textContent ?? '').trim(), '+1 itens');
   });
 
   test('selects loaded descendants when parent cascade option is enabled',
@@ -674,8 +686,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final descendantHost =
-        fixture.rootElement.queryAll('li-treeview-select').elementAt(7);
+    final descendantHost = fixture.rootElement
+        .querySelectorAll('li-treeview-select')
+        .toElementList()
+        .elementAt(7);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[7].click();
@@ -711,8 +725,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final frameHost =
-        fixture.rootElement.queryAll('li-treeview-select').elementAt(3);
+    final frameHost = fixture.rootElement
+        .querySelectorAll('li-treeview-select')
+        .toElementList()
+        .elementAt(3);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[3].click();
@@ -761,17 +777,19 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final rawHost =
-        fixture.rootElement.queryAll('li-treeview-select').elementAt(4);
+    final rawHost = fixture.rootElement
+        .querySelectorAll('li-treeview-select')
+        .toElementList()
+        .elementAt(4);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[4].click();
     });
     await _settle(fixture, milliseconds: 140);
 
-    expect(rawHost.text, contains('Atendimento'));
-    expect(rawHost.text, contains('Benefícios'));
-    expect(rawHost.text, isNot(contains('Cadastros')));
+    expect(rawHost.textContent, contains('Atendimento'));
+    expect(rawHost.textContent, contains('Benefícios'));
+    expect(rawHost.textContent, isNot(contains('Cadastros')));
     expect(host.rawRequests.first.parent, isNull);
 
     final loadMoreRoot = _findButtonByText(rawHost, 'Carregar mais');
@@ -782,7 +800,7 @@ void main() {
     });
     await _settle(fixture, milliseconds: 140);
 
-    expect(rawHost.text, contains('Cadastros'));
+    expect(rawHost.textContent, contains('Cadastros'));
 
     final expandBenefits = _findExpanderForLabel(rawHost, 'Benefícios');
     expect(expandBenefits, isNotNull);
@@ -837,8 +855,8 @@ void main() {
     });
     await _settle(fixture);
 
-    final popup = html.document
-        .querySelector('.treeview-dropdown-select__panel.show') as html.Element;
+    final popup = web.document
+        .querySelector('.treeview-dropdown-select__panel.show') as web.Element;
     final expandBenefits = _findExpanderForLabel(popup, 'Benefícios');
     expect(expandBenefits, isNotNull);
     final benefitsNode = host.overlayTree!.rootNodes
@@ -858,8 +876,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final multiHost =
-        fixture.rootElement.queryAll('li-treeview-select').elementAt(2);
+    final multiHost = fixture.rootElement
+        .querySelectorAll('li-treeview-select')
+        .toElementList()
+        .elementAt(2);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[2].click();
@@ -875,8 +895,8 @@ void main() {
     await fixture.update((_) {
       final toggleAll = multiHost.querySelector(
         '.treeview-dropdown-select__action-expand',
-      ) as html.ButtonElement;
-      expect((toggleAll.text).trim(), 'Recolher tudo');
+      ) as web.HTMLButtonElement;
+      expect(((toggleAll.textContent ?? '')).trim(), 'Recolher tudo');
       toggleAll.click();
     });
     await _settle(fixture, milliseconds: 140);
@@ -893,8 +913,8 @@ void main() {
     await fixture.update((_) {
       final toggleAll = multiHost.querySelector(
         '.treeview-dropdown-select__action-expand',
-      ) as html.ButtonElement;
-      expect((toggleAll.text).trim(), 'Expandir tudo');
+      ) as web.HTMLButtonElement;
+      expect(((toggleAll.textContent ?? '')).trim(), 'Expandir tudo');
       toggleAll.click();
     });
     await _settle(fixture, milliseconds: 140);
@@ -905,7 +925,7 @@ void main() {
     await fixture.update((_) {
       final clearButton = multiHost.querySelector(
         '.treeview-dropdown-select__action-clear',
-      ) as html.ButtonElement;
+      ) as web.HTMLButtonElement;
       clearButton.click();
     });
     await _settle(fixture);
@@ -916,7 +936,7 @@ void main() {
     await fixture.update((_) {
       final confirmButton = multiHost.querySelector(
         '.treeview-dropdown-select__action-confirm',
-      ) as html.ButtonElement;
+      ) as web.HTMLButtonElement;
       confirmButton.click();
     });
     await _settle(fixture);
@@ -928,8 +948,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final searchToggleHost =
-        fixture.rootElement.queryAll('li-treeview-select').elementAt(6);
+    final searchToggleHost = fixture.rootElement
+        .querySelectorAll('li-treeview-select')
+        .toElementList()
+        .elementAt(6);
 
     await fixture.update((_) {
       _triggerButtons(fixture.rootElement)[6].click();
@@ -938,13 +960,13 @@ void main() {
 
     final searchToggleButton = searchToggleHost.querySelector(
       '.treeview-dropdown-select__search-action',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     expect(
       searchToggleHost.querySelector('.treeview-dropdown-select__actions'),
       isNull,
     );
-    expect(searchToggleButton.classes.contains('btn-sm'), isTrue);
+    expect(searchToggleButton.classList.contains('btn-sm'), isTrue);
     expect(searchToggleButton.title, 'Recolher tudo');
 
     await fixture.update((_) {
@@ -962,7 +984,7 @@ void main() {
 
     final refreshedSearchToggleButton = searchToggleHost.querySelector(
       '.treeview-dropdown-select__search-action',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
     expect(refreshedSearchToggleButton.title, 'Expandir tudo');
 
     await fixture.update((_) {
@@ -991,7 +1013,7 @@ void main() {
     expect(panel, isNotNull);
     expect(panel!.getAttribute('role'), 'dialog');
     expect(panel.getAttribute('aria-modal'), 'true');
-    expect(panel.getComputedStyle().position, 'fixed');
+    expect(web.window.getComputedStyle(panel).position, 'fixed');
 
     final backdrop = fixture.rootElement.querySelector(
       '.treeview-dropdown-select__mobile-backdrop',
@@ -999,7 +1021,7 @@ void main() {
     expect(backdrop, isNotNull);
 
     await fixture.update((_) {
-      backdrop!.click();
+      (backdrop as web.HTMLElement).click();
     });
     await _settle(fixture);
 
@@ -1015,37 +1037,44 @@ Future<void> _settle(
   await fixture.update((_) {});
 }
 
-List<html.ButtonElement> _triggerButtons(html.Element root) {
-  return <html.ButtonElement>[
-    for (final element in root.queryAll('.treeview-dropdown-select__trigger'))
-      if (element.isA<html.ButtonElement>()) element as html.ButtonElement,
+List<web.HTMLButtonElement> _triggerButtons(web.Element root) {
+  return <web.HTMLButtonElement>[
+    for (final element in root
+        .querySelectorAll('.treeview-dropdown-select__trigger')
+        .toElementList())
+      if (element.isA<web.HTMLButtonElement>())
+        element as web.HTMLButtonElement,
   ];
 }
 
-html.ButtonElement? _findLabelButton(html.Element root, String text) {
-  for (final element in root.queryAll('.treeview-dropdown-select__label')) {
-    if (element.text.trim() == text) {
-      return element as html.ButtonElement;
+web.HTMLButtonElement? _findLabelButton(web.Element root, String text) {
+  for (final element in root
+      .querySelectorAll('.treeview-dropdown-select__label')
+      .toElementList()) {
+    if ((element.textContent ?? '').trim() == text) {
+      return element as web.HTMLButtonElement;
     }
   }
   return null;
 }
 
-html.ButtonElement? _findButtonByText(html.Element root, String text) {
-  for (final element in root.queryAll('button')) {
-    if (element.text.trim() == text) {
-      return element as html.ButtonElement;
+web.HTMLButtonElement? _findButtonByText(web.Element root, String text) {
+  for (final element in root.querySelectorAll('button').toElementList()) {
+    if ((element.textContent ?? '').trim() == text) {
+      return element as web.HTMLButtonElement;
     }
   }
   return null;
 }
 
-html.ButtonElement? _findExpanderForLabel(html.Element root, String label) {
-  for (final row in root.queryAll('.treeview-dropdown-select__row')) {
+web.HTMLButtonElement? _findExpanderForLabel(web.Element root, String label) {
+  for (final row in root
+      .querySelectorAll('.treeview-dropdown-select__row')
+      .toElementList()) {
     final labelElement = row.querySelector('.treeview-dropdown-select__label');
-    if (labelElement?.text.trim() == label) {
+    if ((labelElement?.textContent ?? '').trim() == label) {
       final expander = row.querySelector('.treeview-dropdown-select__expander');
-      return expander as html.ButtonElement?;
+      return expander as web.HTMLButtonElement?;
     }
   }
   return null;

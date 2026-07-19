@@ -5,7 +5,12 @@
 > do build verde, as correções foram aplicadas e o bundle release aprovou
 > 15/15 cenários E2E sem `pageerror`, `console.error` ou fallback persistente.
 > A implementação foi versionada em `01ff5e4` e enviada para `origin/ngx9`.
-> Iniciado em 2026-07-18. Complementa o plano
+> Em seguida, a homologação arquitetural abriu a etapa de eliminação da
+> fachada ampla `web_compat`, concluída em 2026-07-19: a fachada foi excluída,
+> todo o código importa `package:web` diretamente e a homologação repetiu
+> analyzer limpo, VM 52/52, dart2js 505/505, dart2wasm 505/505 e 15/15 E2E em
+> release. Iniciado em 2026-07-18.
+> Complementa o plano
 > [ngx_migration_plan.md](ngx_migration_plan.md).
 
 > Escopo de entrega confirmado: migração, testes, documentação, `git add`,
@@ -440,6 +445,48 @@ dialeto de `dart:html` não representa o estado final praticado na migração.
 Novos pontos devem usar `package:web` canônico, e a ponte deve diminuir
 progressivamente.
 
+### 12. Eliminação da fachada ampla antes do release 3.x
+
+Por solicitação explícita, a conclusão anterior de “manter e reduzir no longo
+prazo” foi endurecida: a fachada não deve sobreviver como API da linha 3.x. A
+auditoria encontrou 95 importadores em `lib`, 17 no example e 71 nos testes;
+`ui_test` já era independente. Ela também confirmou que `lib/web_compat.dart`
+não é reexportado pelos barrels principais. Como essa API nasceu apenas nesta
+prerelease, está bloqueada por `publish_to: none` e nunca chegou a um release
+estável, esta é a janela correta para removê-la sem perpetuar dívida pública.
+
+O desenho final não cria outro arquivo que combine e reexporte todo
+`package:web`. Os consumidores passam a importar a API canônica diretamente.
+Somente comportamentos adicionais comprovados ficam em módulos internos e
+temáticos: guards de representação seguros em dart2wasm, conversão de valores
+Dart para partes de Blob/File, sinks HTML com sanitização ou bypass *trusted*
+explicitamente nomeado e callbacks DOM que preservam a Zone. As fábricas de
+eventos que reproduzem bubbling legado não têm uso em produção e passam para
+suporte exclusivamente de teste.
+
+O primeiro lote concluiu os 17 arquivos do example: aliases viraram tipos
+`HTML*`, fábricas viraram construtores, `classes`/`text`/`append`/`parent`
+viraram `classList`/`textContent`/`appendChild`/`parentElement`, e o stream de
+resize usa `EventStreamProviders`. O analyzer do example ficou limpo.
+
+Os lotes seguintes migraram os 95 arquivos de `lib` e os 71 testes para
+imports diretos de `package:web`. Os comportamentos que exigiam adaptação
+ficaram nos módulos estreitos `lib/src/web_support/` (`js_type_guards.dart`,
+`blob_parts.dart`, `html_sinks.dart`, `zone_dom_callbacks.dart`,
+`dom_tokens.dart`), cada um com testes próprios em `test/web_support/`. As
+fábricas de eventos com defaults de bubbling legado saíram da API pública e
+viraram suporte exclusivo de teste em `test/support/web_event_factories.dart`.
+Com zero consumidores, `lib/web_compat.dart`,
+`lib/src/web_compat/web_compat.dart` e `test/web_compat/web_compat_test.dart`
+foram excluídos.
+
+A homologação final da Fase 3, em 2026-07-19, confirmou: `dart analyze` da
+raiz e do example sem problemas; conjunto VM da CI 52/52; suíte completa
+Chrome/dart2js 505/505 em 82 arquivos, sem falhas; suíte completa
+Chrome/dart2wasm 505/505, sem `SEVERE` nem `InvalidType`; e `ui_test/e2e`
+15/15 contra o bundle release servido com HTTP 200, sem `pageerror`,
+`console.error` ou fallback `Carregando...` persistente.
+
 ## Aprendizados e dificuldades
 
 1. **`is`/`as` com extension types não checam nada.** `x is html.Element`
@@ -589,7 +636,9 @@ Os resultados da migração base e da homologação release final são:
 - `limitless_ui/ngx9`: commit principal `3575fe7`
   (`Migrate limitless_ui to package:web`) e correções da homologação release
   em `01ff5e4` (`fix(web): make release example runtime-safe`), ambos enviados
-  para `origin/ngx9`. Este fechamento documental acompanha a entrega final.
+  para `origin/ngx9`. A Fase 3 (remoção da fachada `web_compat` e criação dos
+  módulos `web_support`) é entregue no commit que acompanha este fechamento
+  documental, também enviado para `origin/ngx9`.
 - Nenhum `dart pub publish`, upload ou publicação no pub.dev foi executado.
   A branch permanece protegida por `publish_to: none`. O único fluxo
   autorizado nesta execução é migrar, testar, documentar, adicionar,

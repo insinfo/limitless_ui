@@ -1,8 +1,10 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/messages_en.i18n.dart' as en;
 import 'package:limitless_ui_example/limitless_ui_example.dart';
+
+import '../../web_support/dom_tokens.dart';
 
 import 'datatable_demo_service.dart';
 
@@ -896,8 +898,8 @@ class DatatablePageComponent implements OnInit {
   gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
   gridGap: '1rem',
   customCardBuilder: (itemMap, itemInstance, row) {
-    final root = DivElement()..classes.add('my-card');
-    root.text = itemMap['feature']?.toString() ?? '';
+    final root = HTMLDivElement()..classList.add('my-card');
+    root.textContent = itemMap['feature']?.toString() ?? '';
     return root;
   },
 )''';
@@ -1121,10 +1123,10 @@ void openProcess(Map<String, dynamic> itemMap) {
       hideOnMobile: true,
       responsiveAutoHidePriority: 20,
       customRenderTitleHtml: (column) {
-        final root = SpanElement()
-          ..classes.addAll(<String>['d-inline-flex', 'align-items-center', 'gap-1']);
-        root.append(document.createElement('i')..className = 'ph ph-seal-check text-primary');
-        root.appendText('Situação');
+        final root = HTMLSpanElement()
+          ..classList.addAllTokens(<String>['d-inline-flex', 'align-items-center', 'gap-1']);
+        root.appendChild(document.createElement('i')..className = 'ph ph-seal-check text-primary');
+        root.appendChild(document.createTextNode('Situação'));
         return root;
       },
     ),
@@ -2392,88 +2394,92 @@ class ProductController {
     dynamic itemInstance,
     DatatableRow row,
   ) {
-    final root = DivElement()
-      ..classes.addAll(<String>[
+    final root = HTMLDivElement()
+      ..classList.addAllTokens(<String>[
         'datatable-api-card',
         _customCardToneClass(itemMap['health']?.toString() ?? ''),
       ]);
 
-    final header = DivElement()..classes.add('datatable-api-card__header');
+    final header = HTMLDivElement()
+      ..classList.add('datatable-api-card__header');
 
-    final eyebrow = SpanElement()
-      ..classes.add('datatable-api-card__eyebrow')
-      ..text = t.pages.datatable.customCardEyebrow;
+    final eyebrow = HTMLSpanElement()
+      ..classList.add('datatable-api-card__eyebrow')
+      ..textContent = t.pages.datatable.customCardEyebrow;
 
-    final title = createHeadingElement(6)
-      ..classes.add('datatable-api-card__title')
-      ..text = itemMap['feature']?.toString() ?? '';
+    final title = HTMLHeadingElement.h6()
+      ..classList.add('datatable-api-card__title')
+      ..textContent = itemMap['feature']?.toString() ?? '';
 
-    final owner = DivElement()
-      ..classes.add('datatable-api-card__meta')
-      ..text = '${t.pages.datatable.ownerPrefix}: ${itemMap['owner']}';
+    final owner = HTMLDivElement()
+      ..classList.add('datatable-api-card__meta')
+      ..textContent = '${t.pages.datatable.ownerPrefix}: ${itemMap['owner']}';
 
-    final badgeRow = DivElement()..classes.add('datatable-api-card__badges');
+    final badgeRow = HTMLDivElement()
+      ..classList.add('datatable-api-card__badges');
 
-    final body = DivElement()..classes.add('datatable-api-card__body');
+    final body = HTMLDivElement()..classList.add('datatable-api-card__body');
 
-    final statusBadge = SpanElement()
-      ..classes.addAll(<String>[
+    final statusBadge = HTMLSpanElement()
+      ..classList.addAllTokens(<String>[
         'datatable-api-card__badge',
         _statusBadgeClass(itemMap['status']?.toString() ?? ''),
       ])
-      ..text = itemMap['status']?.toString() ?? '';
+      ..textContent = itemMap['status']?.toString() ?? '';
 
-    final healthBadge = SpanElement()
-      ..classes.addAll(<String>[
+    final healthBadge = HTMLSpanElement()
+      ..classList.addAllTokens(<String>[
         'datatable-api-card__badge',
         _healthBadgeClass(itemMap['health']?.toString() ?? ''),
       ])
-      ..text = itemMap['health']?.toString() ?? '';
+      ..textContent = itemMap['health']?.toString() ?? '';
 
-    final summary = ParagraphElement()
-      ..classes.add('datatable-api-card__summary')
-      ..text = t.pages.datatable.customCardSummary;
+    final summary = HTMLParagraphElement()
+      ..classList.add('datatable-api-card__summary')
+      ..textContent = t.pages.datatable.customCardSummary;
 
-    final footer = DivElement()..classes.add('datatable-api-card__footer');
+    final footer = HTMLDivElement()
+      ..classList.add('datatable-api-card__footer');
 
-    final ownerMetric = DivElement()..classes.add('datatable-api-card__metric');
-    final ownerMetricLabel = SpanElement()
-      ..classes.add('datatable-api-card__metric-label')
-      ..text = 'Owner';
-    final ownerMetricValue = SpanElement()
-      ..classes.add('datatable-api-card__metric-value')
-      ..text = itemMap['owner']?.toString() ?? '';
+    final ownerMetric = HTMLDivElement()
+      ..classList.add('datatable-api-card__metric');
+    final ownerMetricLabel = HTMLSpanElement()
+      ..classList.add('datatable-api-card__metric-label')
+      ..textContent = 'Owner';
+    final ownerMetricValue = HTMLSpanElement()
+      ..classList.add('datatable-api-card__metric-value')
+      ..textContent = itemMap['owner']?.toString() ?? '';
 
-    final healthMetric = DivElement()
-      ..classes.add('datatable-api-card__metric');
-    final healthMetricLabel = SpanElement()
-      ..classes.add('datatable-api-card__metric-label')
-      ..text = 'Health';
-    final healthMetricValue = SpanElement()
-      ..classes.add('datatable-api-card__metric-value')
-      ..text = itemMap['health']?.toString() ?? '';
+    final healthMetric = HTMLDivElement()
+      ..classList.add('datatable-api-card__metric');
+    final healthMetricLabel = HTMLSpanElement()
+      ..classList.add('datatable-api-card__metric-label')
+      ..textContent = 'Health';
+    final healthMetricValue = HTMLSpanElement()
+      ..classList.add('datatable-api-card__metric-value')
+      ..textContent = itemMap['health']?.toString() ?? '';
 
     for (final child in <Element>[ownerMetricLabel, ownerMetricValue]) {
-      ownerMetric.append(child);
+      ownerMetric.appendChild(child);
     }
     for (final child in <Element>[healthMetricLabel, healthMetricValue]) {
-      healthMetric.append(child);
+      healthMetric.appendChild(child);
     }
 
     for (final child in <Element>[eyebrow, title]) {
-      header.append(child);
+      header.appendChild(child);
     }
     for (final child in <Element>[statusBadge, healthBadge]) {
-      badgeRow.append(child);
+      badgeRow.appendChild(child);
     }
     for (final child in <Element>[owner, badgeRow, summary]) {
-      body.append(child);
+      body.appendChild(child);
     }
     for (final child in <Element>[ownerMetric, healthMetric]) {
-      footer.append(child);
+      footer.appendChild(child);
     }
     for (final child in <Element>[header, body, footer]) {
-      root.append(child);
+      root.appendChild(child);
     }
 
     return root;
@@ -2484,14 +2490,14 @@ class ProductController {
     dynamic itemInstance,
   ) {
     final isDigital = (itemMap['digitalLabel']?.toString() ?? '') == 'Sim';
-    final badge = SpanElement()
-      ..classes.addAll(<String>[
+    final badge = HTMLSpanElement()
+      ..classList.addAllTokens(<String>[
         'datatable-process-lookup-badge',
         isDigital
             ? 'datatable-process-lookup-badge--primary'
             : 'datatable-process-lookup-badge--muted',
       ])
-      ..text = itemMap['digitalLabel']?.toString() ?? '';
+      ..textContent = itemMap['digitalLabel']?.toString() ?? '';
     return badge;
   }
 
@@ -2543,8 +2549,8 @@ class ProductController {
     Map<String, dynamic> itemMap,
     dynamic itemInstance,
   ) {
-    final root = DivElement()
-      ..classes.addAll(<String>[
+    final root = HTMLDivElement()
+      ..classList.addAllTokens(<String>[
         'datatable-sticky-demo-actions',
         'd-inline-flex',
         'align-items-center',
@@ -2553,9 +2559,9 @@ class ProductController {
         'w-100',
       ]);
 
-    final openAction = ButtonElement()
+    final openAction = HTMLButtonElement()
       ..type = 'button'
-      ..classes.addAll(<String>[
+      ..classList.addAllTokens(<String>[
         'btn',
         'btn-flat-primary',
         'border-transparent',
@@ -2563,13 +2569,14 @@ class ProductController {
         'btn-sm',
       ])
       ..title = i18n.isPortuguese ? 'Abrir processo' : 'Open process';
-    openAction.append(
-      SpanElement()..classes.addAll(<String>['ph', 'ph-folder-open']),
+    openAction.appendChild(
+      HTMLSpanElement()
+        ..classList.addAllTokens(<String>['ph', 'ph-folder-open']),
     );
 
-    final timelineAction = ButtonElement()
+    final timelineAction = HTMLButtonElement()
       ..type = 'button'
-      ..classes.addAll(<String>[
+      ..classList.addAllTokens(<String>[
         'btn',
         'btn-flat-primary',
         'border-transparent',
@@ -2577,31 +2584,34 @@ class ProductController {
         'btn-sm',
       ])
       ..title = i18n.isPortuguese ? 'Ver histórico' : 'Open timeline';
-    timelineAction.append(
-      SpanElement()
-        ..classes.addAll(<String>['ph', 'ph-clock-counter-clockwise']),
+    timelineAction.appendChild(
+      HTMLSpanElement()
+        ..classList.addAllTokens(<String>['ph', 'ph-clock-counter-clockwise']),
     );
 
     for (final action in <Element>[openAction, timelineAction]) {
-      root.append(action);
+      root.appendChild(action);
     }
     return root;
   }
 
   Element _buildHeaderTitleStatusElement(bool isPortuguese) {
-    final root = SpanElement()
-      ..classes.addAll(<String>[
+    final root = HTMLSpanElement()
+      ..classList.addAllTokens(<String>[
         'd-inline-flex',
         'align-items-center',
         'justify-content-center',
         'gap-1',
       ]);
 
-    root.append(
-      SpanElement()
-        ..classes.addAll(<String>['ph', 'ph-seal-check', 'text-primary']),
+    root.appendChild(
+      HTMLSpanElement()
+        ..classList
+            .addAllTokens(<String>['ph', 'ph-seal-check', 'text-primary']),
     );
-    root.appendText(isPortuguese ? 'Situação' : 'Status');
+    root.appendChild(
+      document.createTextNode(isPortuguese ? 'Situação' : 'Status'),
+    );
     return root;
   }
 

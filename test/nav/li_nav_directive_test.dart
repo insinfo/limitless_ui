@@ -6,12 +6,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_nav_directive_test.template.dart' as ng;
 
@@ -103,75 +106,81 @@ void main() {
 
     expect(host.activeId, 1);
 
-    final links = fixture.rootElement.queryAll('#main-nav button[linavlink]');
+    final links = fixture.rootElement
+        .querySelectorAll('#main-nav button[linavlink]')
+        .toElementList();
     final firstLink = links[0];
     final secondLink = links[1];
     final outlet = fixture.rootElement.querySelector('#main-outlet');
 
     expect(outlet, isNotNull);
-    expect(firstLink.classes.contains('active'), isTrue);
-    expect(secondLink.classes.contains('active'), isFalse);
-    expect(outlet!.text, contains('First content'));
-    expect(outlet.queryAll('.tab-pane'), hasLength(1));
+    expect(firstLink.classList.contains('active'), isTrue);
+    expect(secondLink.classList.contains('active'), isFalse);
+    expect(outlet!.textContent, contains('First content'));
+    expect(outlet.querySelectorAll('.tab-pane').toElementList(), hasLength(1));
   });
 
   test('click changes the active nav and updates the outlet', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final secondLink =
-        fixture.rootElement.queryAll('#main-nav button[linavlink]')[1];
+    final secondLink = fixture.rootElement
+        .querySelectorAll('#main-nav button[linavlink]')
+        .toElementList()[1];
 
     await fixture.update((_) {
-      secondLink.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      secondLink.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final outlet = fixture.rootElement.querySelector('#main-outlet');
     expect(host.activeId, 2);
-    expect(secondLink.classes.contains('active'), isTrue);
-    expect(outlet!.text, contains('Second content'));
+    expect(secondLink.classList.contains('active'), isTrue);
+    expect(outlet!.textContent, contains('Second content'));
   });
 
   test('navChange can prevent selection changes', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final secondLink =
-        fixture.rootElement.queryAll('#main-nav button[linavlink]')[1];
+    final secondLink = fixture.rootElement
+        .querySelectorAll('#main-nav button[linavlink]')
+        .toElementList()[1];
 
     host.preventSelection = true;
 
     await fixture.update((_) {
-      secondLink.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      secondLink.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final firstLink =
-        fixture.rootElement.queryAll('#main-nav button[linavlink]')[0];
+    final firstLink = fixture.rootElement
+        .querySelectorAll('#main-nav button[linavlink]')
+        .toElementList()[0];
     final outlet = fixture.rootElement.querySelector('#main-outlet');
     expect(host.activeId, 1);
-    expect(firstLink.classes.contains('active'), isTrue);
-    expect(outlet!.text, contains('First content'));
+    expect(firstLink.classList.contains('active'), isTrue);
+    expect(outlet!.textContent, contains('First content'));
   });
 
   test('Home and End keyboard shortcuts switch navs', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final links =
-        fixture.rootElement.queryAll('#keyboard-nav button[linavlink]');
+    final links = fixture.rootElement
+        .querySelectorAll('#keyboard-nav button[linavlink]')
+        .toElementList();
     final alphaLink = links[0];
     final gammaLink = links[2];
 
     await fixture.update((_) {
-      alphaLink.focus();
+      (alphaLink as web.HTMLElement).focus();
       _dispatchKey(alphaLink, 'End');
     });
     await _settle(fixture);
 
     expect(host.keyboardActiveId, 'gamma');
-    expect(html.document.activeElement == gammaLink, isTrue);
+    expect(web.document.activeElement == gammaLink, isTrue);
 
     await fixture.update((_) {
       _dispatchKey(gammaLink, 'Home');
@@ -179,7 +188,7 @@ void main() {
     await _settle(fixture);
 
     expect(host.keyboardActiveId, 'alpha');
-    expect(html.document.activeElement == alphaLink, isTrue);
+    expect(web.document.activeElement == alphaLink, isTrue);
   });
 }
 
@@ -188,7 +197,7 @@ Future<void> _settle(NgTestFixture<NavTestHostComponent> fixture) async {
   await fixture.update((_) {});
 }
 
-void _dispatchKey(html.Element element, String key) {
-  final event = html.liKeyboardEvent('keydown', key: key);
+void _dispatchKey(web.Element element, String key) {
+  final event = bubblingKeyboardEvent('keydown', key: key);
   element.dispatchEvent(event);
 }

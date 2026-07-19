@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -35,7 +35,7 @@ void main() {
   test('aplica o href inicial vindo do binding', () async {
     final fixture = await testBed.create();
     final link =
-        fixture.rootElement.querySelector('#link') as html.AnchorElement;
+        fixture.rootElement.querySelector('#link') as web.HTMLAnchorElement;
 
     expect(link.getAttribute('href'), '/details/42');
   });
@@ -48,7 +48,7 @@ void main() {
     });
 
     final link =
-        fixture.rootElement.querySelector('#link') as html.AnchorElement;
+        fixture.rootElement.querySelector('#link') as web.HTMLAnchorElement;
     expect(link.getAttribute('href'), '/details/99');
   });
 
@@ -60,7 +60,7 @@ void main() {
     });
 
     final link =
-        fixture.rootElement.querySelector('#link') as html.AnchorElement;
+        fixture.rootElement.querySelector('#link') as web.HTMLAnchorElement;
     expect(link.getAttribute('href'), '/details/42');
   });
 }

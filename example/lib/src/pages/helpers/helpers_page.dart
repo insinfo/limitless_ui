@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 @Component(
@@ -213,13 +213,13 @@ class HelpersPageComponent implements OnDestroy {
   String _escapeHtml(String value) => const HtmlEscape().convert(value);
 
   @ViewChild('loadingHost')
-  html.DivElement? loadingHost;
+  web.HTMLDivElement? loadingHost;
 
   @ViewChild('stackDemoModal')
   LiModalComponent? stackDemoModal;
 
   @ViewChild('modalLoadingHost')
-  html.DivElement? modalLoadingHost;
+  web.HTMLDivElement? modalLoadingHost;
 
   void _resetLoadingPreview() {
     _loadingTimer?.cancel();
@@ -229,14 +229,14 @@ class HelpersPageComponent implements OnDestroy {
 
   void _removeFullScreenDialogDemo() {
     final marker =
-        html.document.querySelector('[data-li-simple-fullscreen-demo="true"]');
-    final overlay = marker?.parent;
-    final root = overlay?.parent;
+        web.document.querySelector('[data-li-simple-fullscreen-demo="true"]');
+    final overlay = marker?.parentElement;
+    final root = overlay?.parentElement;
     root?.remove();
   }
 
   void _removeFullScreenAlertDemo() {
-    html.document.querySelector('.FullScreenAlert')?.remove();
+    web.document.querySelector('.FullScreenAlert')?.remove();
   }
 
   void _removeNarratedLoadingDemo() {
@@ -548,7 +548,7 @@ class HelpersPageComponent implements OnDestroy {
     );
   }
 
-  void showSimplePopover(html.Element target) {
+  void showSimplePopover(web.Element target) {
     LiSimplePopover.showWarning(
       target,
       t.pages.helpers.simplePopoverBody,
@@ -556,7 +556,7 @@ class HelpersPageComponent implements OnDestroy {
     helperState = t.pages.helpers.simplePopoverState;
   }
 
-  void showSweetPopover(html.Element target) {
+  void showSweetPopover(web.Element target) {
     SweetAlertPopover.showPopover(
       target,
       t.pages.helpers.sweetPopoverBody,

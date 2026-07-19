@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -10,6 +10,7 @@ import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
 import '../../directives/li_form_directive.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
@@ -58,7 +59,7 @@ class LiTimePickerTriggerContext {
 
   void toggle() => _component.toggleOpen();
 
-  void clear([html.Event? event]) => _component.clearFromTriggerTemplate(event);
+  void clear([web.Event? event]) => _component.clearFromTriggerTemplate(event);
 }
 
 @Directive(selector: 'template[liTimePickerTrigger]')
@@ -99,12 +100,12 @@ class LiTimePickerComponent
       StreamController<bool>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
-  StreamSubscription<html.Event>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
-  StreamSubscription<html.MouseEvent>? _documentMouseMoveSubscription;
-  StreamSubscription<html.MouseEvent>? _documentMouseUpSubscription;
-  StreamSubscription<html.TouchEvent>? _documentTouchMoveSubscription;
-  StreamSubscription<html.TouchEvent>? _documentTouchEndSubscription;
+  StreamSubscription<web.Event>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.MouseEvent>? _documentMouseMoveSubscription;
+  StreamSubscription<web.MouseEvent>? _documentMouseUpSubscription;
+  StreamSubscription<web.TouchEvent>? _documentTouchMoveSubscription;
+  StreamSubscription<web.TouchEvent>? _documentTouchEndSubscription;
   StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
@@ -203,22 +204,22 @@ class LiTimePickerComponent
   Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('triggerElement')
-  html.Element? triggerElement;
+  web.Element? triggerElement;
 
   @ViewChild('panelElement')
-  html.Element? panelElement;
+  web.Element? panelElement;
 
   @ViewChild('clockFaceElement')
-  html.Element? clockFaceElement;
+  web.Element? clockFaceElement;
 
   @ContentChild(LiTimePickerTriggerDirective)
   LiTimePickerTriggerDirective? triggerTemplate;
 
   @ViewChild('hourInput')
-  html.InputElement? hourInputElement;
+  web.HTMLInputElement? hourInputElement;
 
   @ViewChild('minuteInput')
-  html.InputElement? minuteInputElement;
+  web.HTMLInputElement? minuteInputElement;
 
   bool isOpen = false;
   TimePickerDialMode dialMode = TimePickerDialMode.hour;
@@ -507,12 +508,12 @@ class LiTimePickerComponent
     _open();
   }
 
-  void handleTriggerKeydown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleTriggerKeydown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    if ((event as html.KeyboardEvent).code == 'Enter' ||
+    if ((event as web.KeyboardEvent).code == 'Enter' ||
         (event).code == 'NumpadEnter' ||
         (event).code == 'Space' ||
         (event).key == ' ') {
@@ -619,12 +620,12 @@ class LiTimePickerComponent
     _commitMinuteInput();
   }
 
-  void onChipKeyDown(html.Event event, bool isHourField) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void onChipKeyDown(web.Event event, bool isHourField) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    if ((event as html.KeyboardEvent).key == 'Enter') {
+    if ((event as web.KeyboardEvent).key == 'Enter') {
       event.preventDefault();
       if (isHourField) {
         _commitHourInput();
@@ -662,23 +663,23 @@ class LiTimePickerComponent
     _markForCheck();
   }
 
-  void onClockMouseDown(html.MouseEvent event) {
+  void onClockMouseDown(web.MouseEvent event) {
     event.preventDefault();
-    _beginClockDrag(event.client.x.toDouble(), event.client.y.toDouble());
+    _beginClockDrag(event.clientX.toDouble(), event.clientY.toDouble());
   }
 
-  void onClockTouchStart(html.TouchEvent event) {
+  void onClockTouchStart(web.TouchEvent event) {
     final touches = event.touches;
-    if (touches.isEmpty) {
+    if (touches.length == 0) {
       return;
     }
 
     event.preventDefault();
-    final touch = touches.first;
+    final touch = touches.item(0)!;
     _beginClockDrag(touch.clientX.toDouble(), touch.clientY.toDouble());
   }
 
-  void onDialLabelClick(TimePickerDialLabel label, html.MouseEvent event) {
+  void onDialLabelClick(TimePickerDialLabel label, web.MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -726,7 +727,7 @@ class LiTimePickerComponent
     close();
   }
 
-  void clearFromTriggerTemplate([html.Event? event]) {
+  void clearFromTriggerTemplate([web.Event? event]) {
     event?.preventDefault();
     event?.stopPropagation();
     if (isDisabled) {
@@ -735,7 +736,7 @@ class LiTimePickerComponent
     clear();
   }
 
-  void clearFromTrigger(html.MouseEvent event) {
+  void clearFromTrigger(web.MouseEvent event) {
     clearFromTriggerTemplate(event);
   }
 
@@ -861,27 +862,32 @@ class LiTimePickerComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??=
+        web.EventStreamProvider<web.MouseEvent>('click')
+            .forTarget(web.document)
+            .listen((event) {
       if (!isOpen) {
         return;
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Node>() ?? false)) {
+      if (!(target?.isA<web.Node>() ?? false)) {
         close();
         return;
       }
 
       final clickedTrigger =
-          triggerElement?.contains(target as html.Node?) ?? false;
-      final clickedPanel =
-          panelElement?.contains(target as html.Node?) ?? false;
+          triggerElement?.contains(target as web.Node?) ?? false;
+      final clickedPanel = panelElement?.contains(target as web.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         close();
       }
     });
 
-    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+    _documentKeySubscription ??=
+        web.EventStreamProvider<web.KeyboardEvent>('keydown')
+            .forTarget(web.document)
+            .listen((event) {
       if (isOpen && event.key == 'Escape') {
         event.preventDefault();
         close();
@@ -905,17 +911,21 @@ class LiTimePickerComponent
 
   void _attachClockDragListeners() {
     _documentMouseMoveSubscription ??=
-        html.document.onMouseMove.listen((html.MouseEvent event) {
+        web.EventStreamProvider<web.MouseEvent>('mousemove')
+            .forTarget(web.document)
+            .listen((event) {
       if (!_isDraggingClock) {
         return;
       }
 
       event.preventDefault();
-      _queuePointerUpdate(event.client.x.toDouble(), event.client.y.toDouble());
+      _queuePointerUpdate(event.clientX.toDouble(), event.clientY.toDouble());
     });
 
     _documentMouseUpSubscription ??=
-        html.document.onMouseUp.listen((html.MouseEvent event) {
+        web.EventStreamProvider<web.MouseEvent>('mouseup')
+            .forTarget(web.document)
+            .listen((event) {
       if (!_isDraggingClock) {
         return;
       }
@@ -925,23 +935,27 @@ class LiTimePickerComponent
     });
 
     _documentTouchMoveSubscription ??=
-        html.document.onTouchMove.listen((html.TouchEvent event) {
+        web.EventStreamProvider<web.TouchEvent>('touchmove')
+            .forTarget(web.document)
+            .listen((event) {
       if (!_isDraggingClock) {
         return;
       }
 
       final touches = event.touches;
-      if (touches.isEmpty) {
+      if (touches.length == 0) {
         return;
       }
 
       event.preventDefault();
-      final touch = touches.first;
+      final touch = touches.item(0)!;
       _queuePointerUpdate(touch.clientX.toDouble(), touch.clientY.toDouble());
     });
 
     _documentTouchEndSubscription ??=
-        html.document.onTouchEnd.listen((html.TouchEvent event) {
+        web.EventStreamProvider<web.TouchEvent>('touchend')
+            .forTarget(web.document)
+            .listen((event) {
       if (!_isDraggingClock) {
         return;
       }
@@ -970,7 +984,7 @@ class LiTimePickerComponent
       return;
     }
 
-    _dragAnimationFrameId = html.window.liRequestAnimationFrame((_) {
+    _dragAnimationFrameId = requestAnimationFrameInZone((_) {
       _dragAnimationFrameId = null;
 
       final pendingX = _pendingPointerX;
@@ -989,7 +1003,7 @@ class LiTimePickerComponent
     _pendingPointerY = null;
 
     if (_dragAnimationFrameId != null) {
-      html.window.cancelAnimationFrame(_dragAnimationFrameId!);
+      web.window.cancelAnimationFrame(_dragAnimationFrameId!);
       _dragAnimationFrameId = null;
     }
 
@@ -1098,7 +1112,7 @@ class LiTimePickerComponent
     });
   }
 
-  void _selectAllText(html.InputElement? input) {
+  void _selectAllText(web.HTMLInputElement? input) {
     if (input == null) {
       return;
     }

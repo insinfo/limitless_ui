@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart';
 
 import 'package:limitless_ui/limitless_ui.dart';
 

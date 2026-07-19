@@ -5,12 +5,14 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'form_directives_integration_test.template.dart' as ng;
 
@@ -99,8 +101,8 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input =
-        fixture.rootElement.querySelector('#masked-input') as html.InputElement;
+    final input = fixture.rootElement.querySelector('#masked-input')
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       _typeSequentially(input, '1234');
@@ -134,7 +136,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement.querySelector('#string-mask-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       _typeSequentially(input, '12345678');
@@ -150,7 +152,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement.querySelector('#attribute-mask-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       _typeSequentially(input, '12345678');
@@ -166,7 +168,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement.querySelector('#scalar-mask-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       _typeSequentially(input, '4133334444');
@@ -183,49 +185,49 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement.querySelector('#required-native-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
     final validateButton = fixture.rootElement
-        .querySelector('#validate-native-input') as html.ButtonElement;
+        .querySelector('#validate-native-input') as web.HTMLButtonElement;
 
     await fixture.update((_) {
       validateButton.click();
     });
     await _settle(fixture);
 
-    final feedback = input.parent?.querySelector('.invalid-feedback');
+    final feedback = input.parentElement?.querySelector('.invalid-feedback');
 
     expect(host.requiredNativeValid, isFalse);
-    expect(html.document.activeElement == input, isTrue);
-    expect(input.classes.contains('is-invalid'), isTrue);
+    expect(web.document.activeElement == input, isTrue);
+    expect(input.classList.contains('is-invalid'), isTrue);
     expect(input.getAttribute('aria-invalid'), 'true');
     expect(feedback, isNotNull);
-    expect(feedback?.text, 'Campo requerido!');
+    expect(feedback?.textContent, 'Campo requerido!');
 
     await fixture.update((_) {
       input.value = 'ok';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(input.classes.contains('is-invalid'), isFalse);
-    expect(input.classes.contains('is-valid'), isTrue);
+    expect(input.classList.contains('is-invalid'), isFalse);
+    expect(input.classList.contains('is-valid'), isTrue);
     expect(input.getAttribute('aria-invalid'), 'false');
-    expect(feedback?.text, isEmpty);
+    expect(feedback?.textContent, isEmpty);
   });
 
   test('integra o accessor numerico via limitlessFormDirectives', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input =
-        fixture.rootElement.querySelector('#number-input') as html.InputElement;
+    final input = fixture.rootElement.querySelector('#number-input')
+        as web.HTMLInputElement;
 
     expect(input.value, '12.35');
 
     await fixture.update((_) {
       input.value = '9.5';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
@@ -238,13 +240,13 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement.querySelector('#datetime-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     expect(input.value, '2024-06-05T13:45');
 
     await fixture.update((_) {
       input.value = '2024-06-06T08:30';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
@@ -264,9 +266,9 @@ Future<void> _settle(
   await fixture.update((_) {});
 }
 
-void _typeSequentially(html.InputElement input, String text) {
+void _typeSequentially(web.HTMLInputElement input, String text) {
   for (final char in text.split('')) {
     input.value = '${input.value}$char';
-    input.dispatchEvent(html.liEvent('input', canBubble: true));
+    input.dispatchEvent(bubblingEvent('input', bubbles: true));
   }
 }

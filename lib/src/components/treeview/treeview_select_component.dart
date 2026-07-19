@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -10,6 +10,7 @@ import 'package:popper/popper.dart';
 import 'package:essential_core/essential_core.dart';
 
 import '../../core/overlay_positioning.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 import '../../directives/li_form_directive.dart';
 import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
@@ -116,8 +117,8 @@ class LiTreeviewSelectComponent
       StreamController<bool>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
-  StreamSubscription<html.Event>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.MouseEvent>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
   Timer? _searchDebounceTimer;
   bool _destroyed = false;
   bool _overlayRelayoutPending = false;
@@ -316,16 +317,16 @@ class LiTreeviewSelectComponent
   Stream<bool> get openChange => _openChangeController.stream;
 
   @ViewChild('triggerButton')
-  html.ButtonElement? triggerButtonElement;
+  web.HTMLButtonElement? triggerButtonElement;
 
   @ViewChild('dropdownPanel')
-  html.Element? dropdownPanelElement;
+  web.Element? dropdownPanelElement;
 
   @ViewChild('searchInput')
-  html.InputElement? searchInputElement;
+  web.HTMLInputElement? searchInputElement;
 
   @ViewChild('scrollContainer')
-  html.Element? scrollContainerElement;
+  web.Element? scrollContainerElement;
 
   @ContentChild(LiTreeviewSelectNodeDirective)
   LiTreeviewSelectNodeDirective? nodeTemplate;
@@ -829,7 +830,7 @@ class LiTreeviewSelectComponent
         label: resolvedNodeLabel(node),
       );
 
-  void clearSelection([html.Event? event]) {
+  void clearSelection([web.Event? event]) {
     event?.stopPropagation();
     if (isDisabled || !hasSelection) {
       return;
@@ -905,7 +906,7 @@ class LiTreeviewSelectComponent
     triggerButtonElement?.focus();
   }
 
-  void onPanelClick(html.Event event) {
+  void onPanelClick(web.Event event) {
     event.stopPropagation();
   }
 
@@ -1352,7 +1353,7 @@ class LiTreeviewSelectComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _overlayRelayoutPending = false;
       if (!dropdownOpen) {
         return;
@@ -1371,7 +1372,7 @@ class LiTreeviewSelectComponent
       return;
     }
 
-    final viewportHeight = html.window.innerHeight.toDouble();
+    final viewportHeight = web.window.innerHeight.toDouble();
     final triggerRect = trigger.getBoundingClientRect();
     final popupRect = popup.getBoundingClientRect();
     final opensUpward = popupRect.top < triggerRect.top;
@@ -1379,31 +1380,35 @@ class LiTreeviewSelectComponent
         ? triggerRect.top - 16
         : viewportHeight - triggerRect.bottom - 16;
     final nextHeight = math.max(160.0, availableHeight - 8);
-    scroll.style.maxHeight = '${nextHeight.floor()}px';
+    (scroll as web.HTMLElement).style.maxHeight = '${nextHeight.floor()}px';
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= web.EventStreamProviders.clickEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!dropdownOpen) {
         return;
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Node>() ?? false)) {
+      if (!(target?.isA<web.Node>() ?? false)) {
         closeDropdown();
         return;
       }
 
       final clickedTrigger =
-          triggerButtonElement?.contains(target as html.Node?) ?? false;
+          triggerButtonElement?.contains(target as web.Node?) ?? false;
       final clickedPanel =
-          dropdownPanelElement?.contains(target as html.Node?) ?? false;
+          dropdownPanelElement?.contains(target as web.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         closeDropdown();
       }
     });
 
-    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+    _documentKeySubscription ??= web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!dropdownOpen) {
         return;
       }

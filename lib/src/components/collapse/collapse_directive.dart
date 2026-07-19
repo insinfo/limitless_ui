@@ -1,6 +1,8 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 
 import 'package:ngx_dart/angular.dart';
 
@@ -17,13 +19,13 @@ class LiCollapseController implements OnDestroy {
 
   static const Duration _transitionDuration = Duration(milliseconds: 300);
 
-  final html.HtmlElement _element;
+  final web.HTMLElement _element;
   final StreamController<void> _shownController =
       StreamController<void>.broadcast();
   final StreamController<void> _hiddenController =
       StreamController<void>.broadcast();
 
-  StreamSubscription<html.Event>? _transitionSubscription;
+  StreamSubscription<web.Event>? _transitionSubscription;
   Timer? _transitionTimer;
 
   bool _animation = true;
@@ -103,7 +105,7 @@ class LiCollapseController implements OnDestroy {
     _collapsed = false;
     _collapsing = true;
 
-    _element.classes
+    _element.classList
       ..remove('collapse')
       ..remove('show')
       ..add('collapsing');
@@ -112,7 +114,7 @@ class LiCollapseController implements OnDestroy {
     _forceReflow();
 
     final targetSize = _expandedSize;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       if (!_collapsing || _collapsed) {
         return;
       }
@@ -128,7 +130,7 @@ class LiCollapseController implements OnDestroy {
     _collapsed = true;
     _collapsing = true;
 
-    _element.classes
+    _element.classList
       ..remove('collapse')
       ..remove('show')
       ..add('collapsing');
@@ -136,7 +138,7 @@ class LiCollapseController implements OnDestroy {
     _setDimension('${currentSize}px');
     _forceReflow();
 
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       if (!_collapsing || !_collapsed) {
         return;
       }
@@ -163,7 +165,7 @@ class LiCollapseController implements OnDestroy {
 
     _cancelPendingTransition();
     _collapsing = false;
-    _element.classes
+    _element.classList
       ..remove('collapsing')
       ..add('collapse')
       ..add('show');
@@ -192,25 +194,25 @@ class LiCollapseController implements OnDestroy {
   }
 
   void _applyStaticState() {
-    _element.classes
+    _element.classList
       ..remove('collapsing')
       ..add('collapse');
     _syncOrientationClass(collapsing: false);
     if (_collapsed) {
-      _element.classes.remove('show');
+      _element.classList.remove('show');
     } else {
-      _element.classes.add('show');
+      _element.classList.add('show');
     }
     _clearDimension();
   }
 
   void _syncOrientationClass({required bool collapsing}) {
     if (_horizontal) {
-      _element.classes.add('collapse-horizontal');
+      _element.classList.add('collapse-horizontal');
       return;
     }
 
-    _element.classes.remove('collapse-horizontal');
+    _element.classList.remove('collapse-horizontal');
     if (!collapsing) {
       _element.style.width = '';
     }
@@ -271,7 +273,7 @@ class LiCollapseDirective implements OnInit, OnDestroy {
     _horizontal = _config.horizontal;
   }
 
-  final html.HTMLElement _element;
+  final web.HTMLElement _element;
   final LiCollapseConfig _config;
   final StreamController<bool> _collapseChangeController =
       StreamController<bool>.broadcast();
@@ -355,13 +357,13 @@ class LiCollapseDirective implements OnInit, OnDestroy {
 class LiCollapseToggleDirective implements OnInit, OnDestroy {
   LiCollapseToggleDirective(this._host);
 
-  final html.HTMLElement _host;
+  final web.HTMLElement _host;
   final StreamController<bool> _collapseChangeController =
       StreamController<bool>.broadcast();
 
-  StreamSubscription<html.MouseEvent>? _clickSubscription;
+  StreamSubscription<web.MouseEvent>? _clickSubscription;
   LiCollapseController? _controller;
-  html.HtmlElement? _targetElement;
+  web.HTMLElement? _targetElement;
   bool _collapsed = true;
   bool _animation = true;
   bool _horizontal = false;
@@ -413,7 +415,7 @@ class LiCollapseToggleDirective implements OnInit, OnDestroy {
     _setCollapsed(nextCollapsed);
   }
 
-  void _handleClick(html.MouseEvent event) {
+  void _handleClick(web.MouseEvent event) {
     event.preventDefault();
     toggle();
   }
@@ -434,28 +436,28 @@ class LiCollapseToggleDirective implements OnInit, OnDestroy {
     _syncHostState();
   }
 
-  html.HtmlElement? _resolveTargetElement() {
+  web.HTMLElement? _resolveTargetElement() {
     final selector = _resolveTargetSelector();
     if (selector == null || selector.isEmpty) {
       return null;
     }
 
     if (selector.startsWith('#')) {
-      final byId = html.document.getElementById(selector.substring(1));
-      if ((byId?.isA<html.HtmlElement>() ?? false)) {
-        return byId as html.HtmlElement;
+      final byId = web.document.getElementById(selector.substring(1));
+      if ((byId?.isA<web.HTMLElement>() ?? false)) {
+        return byId as web.HTMLElement;
       }
     }
 
     try {
-      final bySelector = html.document.querySelector(selector);
-      if ((bySelector?.isA<html.HtmlElement>() ?? false)) {
-        return bySelector as html.HtmlElement;
+      final bySelector = web.document.querySelector(selector);
+      if ((bySelector?.isA<web.HTMLElement>() ?? false)) {
+        return bySelector as web.HTMLElement;
       }
     } catch (_) {
-      final byId = html.document.getElementById(selector);
-      if ((byId?.isA<html.HtmlElement>() ?? false)) {
-        return byId as html.HtmlElement;
+      final byId = web.document.getElementById(selector);
+      if ((byId?.isA<web.HTMLElement>() ?? false)) {
+        return byId as web.HTMLElement;
       }
     }
 
@@ -495,11 +497,11 @@ class LiCollapseToggleDirective implements OnInit, OnDestroy {
     }
 
     if (_collapsed) {
-      _host.classes.add('collapsed');
+      _host.classList.add('collapsed');
       return;
     }
 
-    _host.classes.remove('collapsed');
+    _host.classList.remove('collapsed');
   }
 
   @override

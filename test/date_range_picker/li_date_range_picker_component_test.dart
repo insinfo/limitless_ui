@@ -5,12 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:limitless_ui/src/web_support/dom_tokens.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_date_range_picker_component_test.template.dart' as ng;
 
@@ -195,18 +199,19 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final clearButton = html.document.queryAll('.drp-buttons .btn-light')[0]
-        as html.ButtonElement;
+    final clearButton = web.document
+        .querySelectorAll('.drp-buttons .btn-light')
+        .toElementList()[0] as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -225,12 +230,12 @@ void main() {
 
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     expect(host.userRange, isNull);
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -247,7 +252,7 @@ void main() {
     expect(host.userRange?.fim, DateTime(2026, 4, 18));
 
     final input = fixture.rootElement.querySelector('.date-range-field')
-        as html.InputElement;
+        as web.HTMLInputElement;
     expect(input.value, contains('14/04/2026'));
     expect(input.value, contains('18/04/2026'));
   });
@@ -280,10 +285,10 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -293,8 +298,8 @@ void main() {
         host.picker!.panelElement,
       );
       final panelRect = panel.getBoundingClientRect();
-      final viewportCenterX = html.window.innerWidth / 2;
-      final viewportCenterY = html.window.innerHeight / 2;
+      final viewportCenterX = web.window.innerWidth / 2;
+      final viewportCenterY = web.window.innerHeight / 2;
 
       expect(
         ((panelRect.left + (panelRect.width / 2)) - viewportCenterX).abs(),
@@ -325,10 +330,10 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -344,7 +349,7 @@ void main() {
         '.date-range-selection-grid-years .date-range-selection-item.active',
       );
       expect(yearButton, isNotNull);
-      yearButton!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      yearButton!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -357,7 +362,7 @@ void main() {
         '.date-range-selection-grid .date-range-selection-item.active',
       );
       expect(monthButton, isNotNull);
-      monthButton!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      monthButton!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -371,18 +376,20 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      final headers = html.document.queryAll('.date-range-panel-header');
+      final headers = web.document
+          .querySelectorAll('.date-range-panel-header')
+          .toElementList();
       final leftNext = headers[0].querySelector('.calendar-nav.next');
       expect(leftNext, isNotNull);
-      leftNext!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      leftNext!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -390,10 +397,12 @@ void main() {
     expect(host.picker!.rightMonth, DateTime(2026, 6, 1));
 
     await fixture.update((_) {
-      final headers = html.document.queryAll('.date-range-panel-header');
+      final headers = web.document
+          .querySelectorAll('.date-range-panel-header')
+          .toElementList();
       final rightPrev = headers[1].querySelector('.calendar-nav.prev');
       expect(rightPrev, isNotNull);
-      rightPrev!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      rightPrev!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -411,10 +420,10 @@ void main() {
 
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleAlias(fixture);
 
@@ -436,10 +445,10 @@ void main() {
     await _settleMobile(fixture);
 
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleMobile(fixture);
 
@@ -460,24 +469,26 @@ void main() {
     await _settlePresets(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
     expect(
-      html.document.queryAll('.date-range-open.is-open .drp-calendar'),
+      web.document
+          .querySelectorAll('.date-range-open.is-open .drp-calendar')
+          .toElementList(),
       isEmpty,
     );
 
-    final preset = html.document.querySelector(
+    final preset = web.document.querySelector(
       '[data-label="li_drp_preset"][data-value="last_7_days"]',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      preset.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      preset.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
@@ -492,57 +503,62 @@ void main() {
     final fixture = await presetsTestBed.create();
     await _settlePresets(fixture);
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
     expect(
-      html.document.queryAll('.date-range-open.is-open .drp-calendar'),
+      web.document
+          .querySelectorAll('.date-range-open.is-open .drp-calendar')
+          .toElementList(),
       isEmpty,
     );
 
-    final customRangeButton = html.document.querySelector(
+    final customRangeButton = web.document.querySelector(
       '[data-label="li_drp_range"]',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
       customRangeButton
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
     expect(
-      html.document.queryAll('.date-range-open.is-open .drp-calendar'),
+      web.document
+          .querySelectorAll('.date-range-open.is-open .drp-calendar')
+          .toElementList(),
       hasLength(2),
     );
-    expect(customRangeButton.classes.contains('active'), isTrue);
+    expect(customRangeButton.classList.contains('active'), isTrue);
     expect(
-      html.document
+      web.document
           .querySelector(
             '[data-label="li_drp_preset"][data-value="this_month"]',
           )!
-          .classes
+          .classList
+          .toDartSet()
           .contains('active'),
       isFalse,
     );
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.date-range-open.is-open',
-    ) as html.Element;
+    ) as web.Element;
     expect(
-      panel.classes.contains('date-range-open--with-preset-calendars'),
+      panel.classList.contains('date-range-open--with-preset-calendars'),
       isTrue,
     );
     expect(
-      panel.getBoundingClientRect().right <= html.window.innerWidth + 1,
+      panel.getBoundingClientRect().right <= web.window.innerWidth + 1,
       isTrue,
       reason: 'Preset calendar panel should stay inside the viewport.',
     );
     expect(
-      panel.getComputedStyle().overflowX,
+      web.window.getComputedStyle(panel).overflowX,
       isNot('visible'),
       reason:
           'Preset calendars should be clipped or scrolled inside the panel.',
@@ -557,21 +573,24 @@ void main() {
     });
     await _settlePresets(fixture);
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
     expect(
-      html.document.queryAll('.date-range-open.is-open .drp-calendar'),
+      web.document
+          .querySelectorAll('.date-range-open.is-open .drp-calendar')
+          .toElementList(),
       isEmpty,
     );
     expect(
-      html.document
+      web.document
           .querySelector('[data-label="li_drp_range"]')!
-          .classes
+          .classList
+          .toDartSet()
           .contains('active'),
       isTrue,
     );
@@ -586,21 +605,24 @@ void main() {
     });
     await _settlePresets(fixture);
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
     expect(
-      html.document.queryAll('.date-range-open.is-open .drp-calendar'),
+      web.document
+          .querySelectorAll('.date-range-open.is-open .drp-calendar')
+          .toElementList(),
       hasLength(2),
     );
     expect(
-      html.document
+      web.document
           .querySelector('[data-label="li_drp_range"]')!
-          .classes
+          .classList
+          .toDartSet()
           .contains('active'),
       isTrue,
     );
@@ -613,21 +635,25 @@ void main() {
     });
     await _settlePresets(fixture);
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
     expect(
-      html.document.queryAll('.date-range-open.is-open .drp-calendar'),
+      web.document
+          .querySelectorAll('.date-range-open.is-open .drp-calendar')
+          .toElementList(),
       hasLength(2),
     );
     expect(
-      html.document.queryAll(
-        '.date-range-open.is-open [data-label="li_drp_preset"]',
-      ),
+      web.document
+          .querySelectorAll(
+            '.date-range-open.is-open [data-label="li_drp_preset"]',
+          )
+          .toElementList(),
       hasLength(3),
     );
   });
@@ -640,19 +666,19 @@ void main() {
     await _settlePresets(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement
-        .querySelector('.date-range-wrapper .input-group') as html.Element;
+        .querySelector('.date-range-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
-    final preset = html.document.querySelector(
+    final preset = web.document.querySelector(
       '[data-label="li_drp_preset"][data-value="last_7_days"]',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      preset.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      preset.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
@@ -662,16 +688,18 @@ void main() {
     expect(host.picker!.draftFim, DateTime(2026, 6, 29));
     expect(host.picker!.isOpen, isTrue);
     expect(
-      html.document.queryAll('.date-range-open.is-open .drp-calendar'),
+      web.document
+          .querySelectorAll('.date-range-open.is-open .drp-calendar')
+          .toElementList(),
       hasLength(2),
     );
 
-    final applyButton = html.document.querySelector(
+    final applyButton = web.document.querySelector(
       '[data-label="li_drp_apply"]',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      applyButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      applyButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settlePresets(fixture);
 
@@ -711,20 +739,20 @@ Future<void> _settlePresets(
   await fixture.update((_) {});
 }
 
-html.Element _openDateRangePanel() {
-  final panel = html.document.querySelector('.date-range-open.is-open');
+web.Element _openDateRangePanel() {
+  final panel = web.document.querySelector('.date-range-open.is-open');
   expect(panel, isNotNull);
   return panel!;
 }
 
 bool _usesMobileDateRangeLayout() {
-  return html.window.innerWidth <= 767;
+  return web.window.innerWidth <= 767;
 }
 
-Future<html.Element> _waitForAlignedPanelElement(
+Future<web.Element> _waitForAlignedPanelElement(
   NgTestFixture<DateRangePickerTestHostComponent> fixture,
-  html.Element trigger,
-  html.Element? panelElement,
+  web.Element trigger,
+  web.Element? panelElement,
 ) async {
   expect(panelElement, isNotNull);
   final triggerRect = trigger.getBoundingClientRect();
@@ -748,15 +776,15 @@ Future<html.Element> _waitForAlignedPanelElement(
   fail(
     'Open panel did not align below the trigger. '
     'left diff: $leftDiff, top diff: $topDiff, '
-    'innerWidth: ${html.window.innerWidth}, '
-    'inline transform: ${panel.style.transform}, '
-    'computed transform: ${panel.getComputedStyle().transform}',
+    'innerWidth: ${web.window.innerWidth}, '
+    'inline transform: ${(panel as web.HTMLElement).style.transform}, '
+    'computed transform: ${web.window.getComputedStyle(panel).transform}',
   );
 }
 
-Future<html.Element> _waitForCenteredPanelElement(
+Future<web.Element> _waitForCenteredPanelElement(
   NgTestFixture<DateRangePickerTestHostComponent> fixture,
-  html.Element? panelElement,
+  web.Element? panelElement,
 ) async {
   expect(panelElement, isNotNull);
   final panel = panelElement!;
@@ -764,8 +792,8 @@ Future<html.Element> _waitForCenteredPanelElement(
   num centerYDiff = double.infinity;
 
   for (var attempt = 0; attempt < 8; attempt++) {
-    final innerWidth = html.window.innerWidth;
-    final innerHeight = html.window.innerHeight;
+    final innerWidth = web.window.innerWidth;
+    final innerHeight = web.window.innerHeight;
     expect(innerWidth, isNotNull);
     expect(innerHeight, isNotNull);
 
@@ -786,8 +814,8 @@ Future<html.Element> _waitForCenteredPanelElement(
   fail(
     'Open panel did not center in mobile layout. '
     'centerX diff: $centerXDiff, centerY diff: $centerYDiff, '
-    'innerWidth: ${html.window.innerWidth}, innerHeight: ${html.window.innerHeight}, '
-    'inline transform: ${panel.style.transform}, '
-    'computed transform: ${panel.getComputedStyle().transform}',
+    'innerWidth: ${web.window.innerWidth}, innerHeight: ${web.window.innerHeight}, '
+    'inline transform: ${(panel as web.HTMLElement).style.transform}, '
+    'computed transform: ${web.window.getComputedStyle(panel).transform}',
   );
 }

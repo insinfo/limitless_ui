@@ -6,7 +6,10 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import 'package:limitless_ui/src/web_support/zone_dom_callbacks.dart';
+
 import 'dart:typed_data';
 
 import 'package:limitless_ui/pdf_viewer.dart';
@@ -15,6 +18,9 @@ import 'package:limitless_ui/src/components/pdf_viewer/pdf_viewer_pdfjs_bridge.d
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_pdf_viewer_component_test.template.dart' as ng;
 import 'pdf_viewer_browser_test_fakes.dart';
@@ -108,7 +114,7 @@ void main() {
     final action =
         fixture.rootElement.querySelector('#projected-toolbar-action');
     expect(action, isNotNull);
-    expect(action!.text, contains('Validacao rapida'));
+    expect(action!.textContent, contains('Validacao rapida'));
   });
 
   test('loads a document through the PDF.js bridge and emits documentLoaded',
@@ -143,7 +149,7 @@ void main() {
     );
     expect(fakeBridge.documentRequests.single['cMapPacked'], isTrue);
 
-    final pages = fixture.rootElement.queryAll('.page');
+    final pages = fixture.rootElement.querySelectorAll('.page').toElementList();
     expect(pages, hasLength(2));
   });
 
@@ -202,18 +208,18 @@ void main() {
     await _settle(fixture);
 
     final trigger = fixture.rootElement.querySelector('[title="Abrir painel"]')
-        as html.ButtonElement?;
+        as web.HTMLButtonElement?;
     expect(trigger, isNotNull);
 
     await fixture.update((_) {
-      trigger!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final sidePanel =
         fixture.rootElement.querySelector('#projected-side-panel');
     expect(sidePanel, isNotNull);
-    expect(sidePanel!.text, contains('Painel fake'));
+    expect(sidePanel!.textContent, contains('Painel fake'));
   });
 
   test('downloadDocument uses getData and triggers a download anchor',
@@ -279,10 +285,10 @@ void main() {
     await _settle(fixture);
 
     final printFuture = host.viewer!.printDocument();
-    final printFrame =
-        await _waitForElement('#liPdfViewerPrintFrame') as html.IFrameElement;
+    final printFrame = await _waitForElement('#liPdfViewerPrintFrame')
+        as web.HTMLIFrameElement;
 
-    printFrame.dispatchEvent(html.liEvent('load'));
+    printFrame.dispatchEvent(bubblingEvent('load'));
     await printFuture;
     await _settle(fixture);
 
@@ -290,12 +296,12 @@ void main() {
     expect(browserBridge.createdUrls, hasLength(1));
     expect(browserBridge.printCalls, 1);
     expect(
-        html.document.body!.querySelector('#liPdfViewerPrintFrame'), isNotNull);
+        web.document.body!.querySelector('#liPdfViewerPrintFrame'), isNotNull);
 
-    html.window.dispatchEvent(html.liEvent('afterprint'));
+    web.window.dispatchEvent(bubblingEvent('afterprint'));
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('#liPdfViewerPrintFrame'), isNull);
+    expect(web.document.body!.querySelector('#liPdfViewerPrintFrame'), isNull);
     expect(
         browserBridge.revokedUrls, contains(browserBridge.createdUrls.single));
     expect(host.loadErrors, isEmpty);
@@ -327,10 +333,10 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final link =
-        await _waitForElement('.annotationLayer a') as html.AnchorElement;
+        await _waitForElement('.annotationLayer a') as web.HTMLAnchorElement;
     expect(link.getAttribute('href'), '#');
 
-    link.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+    link.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     await _settle(fixture);
 
     expect(state.getDestinationsCalls, 1);
@@ -363,8 +369,8 @@ void main() {
       '.li-pdf-viewer__overlay--error',
     );
     expect(errorOverlay, isNotNull);
-    expect(errorOverlay!.text, contains('Unable to load PDF:'));
-    expect(errorOverlay.text, contains('Falha fake ao carregar PDF'));
+    expect(errorOverlay!.textContent, contains('Unable to load PDF:'));
+    expect(errorOverlay.textContent, contains('Falha fake ao carregar PDF'));
   });
 }
 
@@ -379,16 +385,16 @@ Future<void> _settle(
 
 Future<void> _nextAnimationFrame() {
   final completer = Completer<void>();
-  html.window.liRequestAnimationFrame((_) {
+  requestAnimationFrameInZone((_) {
     completer.complete();
   });
   return completer.future;
 }
 
-Future<html.Element> _waitForElement(String selector,
+Future<web.Element> _waitForElement(String selector,
     {int maxFrames = 20}) async {
   for (var attempt = 0; attempt < maxFrames; attempt++) {
-    final element = html.document.body?.querySelector(selector);
+    final element = web.document.body?.querySelector(selector);
     if (element != null) {
       return element;
     }

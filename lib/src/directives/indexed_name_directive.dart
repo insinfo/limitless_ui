@@ -1,10 +1,10 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
 @Directive(selector: '[liIndexedName]')
 class LiIndexedNameDirective {
-  final Element _element;
+  final web.Element _element;
 
   LiIndexedNameDirective(this._element);
 

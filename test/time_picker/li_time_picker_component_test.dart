@@ -5,12 +5,14 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_time_picker_component_test.template.dart' as ng;
 
@@ -70,16 +72,16 @@ void main() {
     await _settle(fixture);
 
     final trigger = fixture.rootElement
-        .querySelector('.time-picker-wrapper .input-group') as html.Element;
+        .querySelector('.time-picker-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.time-picker-panel.is-open',
-    ) as html.Element;
+    ) as web.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final panelRect = panel.getBoundingClientRect();
 
@@ -92,18 +94,18 @@ void main() {
     await _settle(fixture);
 
     final trigger = fixture.rootElement
-        .querySelector('.time-picker-wrapper .input-group') as html.Element;
+        .querySelector('.time-picker-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.time-picker-panel.is-open',
-    ) as html.Element;
-    final footer = panel.querySelector('.time-picker-footer') as html.Element;
-    final footerStyle = footer.getComputedStyle();
+    ) as web.Element;
+    final footer = panel.querySelector('.time-picker-footer') as web.Element;
+    final footerStyle = web.window.getComputedStyle(footer);
     final panelRect = panel.getBoundingClientRect();
     final footerRect = footer.getBoundingClientRect();
 
@@ -145,14 +147,14 @@ void main() {
     await _settleMobile(fixture);
 
     final trigger = fixture.rootElement
-        .querySelector('.time-picker-wrapper .input-group') as html.Element;
+        .querySelector('.time-picker-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleMobile(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.time-picker-panel--mobile-modal.is-open',
     );
     expect(panel, isNotNull);
@@ -164,13 +166,13 @@ void main() {
     );
 
     final panelRect = panel.getBoundingClientRect();
-    final viewportWidth = html.window.innerWidth;
-    final viewportHeight = html.window.innerHeight;
+    final viewportWidth = web.window.innerWidth;
+    final viewportHeight = web.window.innerHeight;
     expect(panelRect.top.abs(), lessThanOrEqualTo(1));
     expect(panelRect.left.abs(), lessThanOrEqualTo(1));
     expect(panelRect.width, greaterThanOrEqualTo(viewportWidth - 1));
     expect(panelRect.height, greaterThanOrEqualTo(viewportHeight - 1));
-    expect(panel.getComputedStyle().overflow, 'hidden');
+    expect(web.window.getComputedStyle(panel).overflow, 'hidden');
   });
 }
 

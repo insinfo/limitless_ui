@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
@@ -58,13 +58,13 @@ class FileUploadPageComponent {
     accept="image/*,application/pdf">
 </li-file-upload>''';
 
-  List<html.File> attachments = <html.File>[];
-  List<html.File> coverFiles = <html.File>[];
-  List<html.File> compactFiles = <html.File>[];
-  List<html.File> mediaFiles = <html.File>[];
-  List<html.File> previewFiles = <html.File>[];
-  List<html.File> limitlessFiles = <html.File>[];
-  List<html.File> directiveFiles = <html.File>[];
+  List<web.File> attachments = <web.File>[];
+  List<web.File> coverFiles = <web.File>[];
+  List<web.File> compactFiles = <web.File>[];
+  List<web.File> mediaFiles = <web.File>[];
+  List<web.File> previewFiles = <web.File>[];
+  List<web.File> limitlessFiles = <web.File>[];
+  List<web.File> directiveFiles = <web.File>[];
   bool directiveDragOver = false;
 
   String get pageTitle => _isPt ? 'Extensions' : 'Extensions';
@@ -109,11 +109,11 @@ class FileUploadPageComponent {
       ? 'Nenhum evento recebido ainda.'
       : _joinFileNames(directiveFiles);
 
-  void onDirectiveFiles(List<html.File> files) {
-    directiveFiles = List<html.File>.from(files);
+  void onDirectiveFiles(List<web.File> files) {
+    directiveFiles = List<web.File>.from(files);
   }
 
-  String _joinFileNames(List<html.File> files) {
+  String _joinFileNames(List<web.File> files) {
     return files.map((file) => file.name).join(', ');
   }
 }

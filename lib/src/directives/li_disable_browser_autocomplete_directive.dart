@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -10,7 +10,7 @@ class LiDisableBrowserAutocompleteDirective implements OnInit, AfterChanges {
     _originalAutocomplete = _element.getAttribute('autocomplete');
   }
 
-  final html.Element _element;
+  final web.Element _element;
   String? _originalAutocomplete;
 
   /// Enables the autocomplete override.

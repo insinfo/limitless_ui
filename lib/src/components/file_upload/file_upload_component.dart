@@ -2,7 +2,7 @@
 
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -33,7 +33,7 @@ class LiFileUploadPreviewItem {
     this.previewResourceUrl,
   });
 
-  final html.File file;
+  final web.File file;
   final String kind;
   final String kindLabel;
   final String sizeLabel;
@@ -67,7 +67,7 @@ class LiFileUploadPreviewItem {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiFileUploadComponent
-    implements ControlValueAccessor<List<html.File>?>, AfterChanges, OnDestroy {
+    implements ControlValueAccessor<List<web.File>?>, AfterChanges, OnDestroy {
   static const num _minPreviewZoomLevel = 0.25;
   static const num _maxPreviewZoomLevel = 8;
   static const num _previewZoomFactor = 1.25;
@@ -82,12 +82,12 @@ class LiFileUploadComponent
   final LiFormDirective? _formDirective;
   final DomSanitizationService _domSanitizationService =
       DomSanitizationService();
-  final StreamController<List<html.File>> _filesChangeController =
-      StreamController<List<html.File>>.broadcast();
+  final StreamController<List<web.File>> _filesChangeController =
+      StreamController<List<web.File>>.broadcast();
   StreamSubscription<bool>? _formSubmissionSubscription;
-  StreamSubscription<html.Event>? _fullscreenChangeSubscription;
+  StreamSubscription<web.Event>? _fullscreenChangeSubscription;
 
-  List<html.File> _files = <html.File>[];
+  List<web.File> _files = <web.File>[];
 
   @Input()
   bool multiple = true;
@@ -189,22 +189,22 @@ class LiFileUploadComponent
   String listClass = '';
 
   @Output()
-  Stream<List<html.File>> get filesChange => _filesChangeController.stream;
+  Stream<List<web.File>> get filesChange => _filesChangeController.stream;
 
   @ViewChild('fileInput')
-  html.InputElement? fileInput;
+  web.HTMLInputElement? fileInput;
 
   @ViewChild('previewModal')
   LiModalComponent? previewModal;
 
   @ViewChild('previewZoomBody')
-  html.HtmlElement? previewZoomBodyElement;
+  web.HTMLElement? previewZoomBodyElement;
 
   @ViewChild('previewImage')
-  html.HtmlElement? previewImageElement;
+  web.HTMLElement? previewImageElement;
 
-  ChangeFunction<List<html.File>?> _onChange =
-      (List<html.File>? _, {String? rawValue}) {};
+  ChangeFunction<List<web.File>?> _onChange =
+      (List<web.File>? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
   bool _touched = false;
   bool _dirty = false;
@@ -470,9 +470,11 @@ class LiFileUploadComponent
       _runAutoValidation();
       _markForCheck();
     });
-    _fullscreenChangeSubscription ??=
-        html.document.onFullscreenChange.listen((_) {
-      final isBrowserFullscreen = html.document.fullscreenElement != null;
+    _fullscreenChangeSubscription ??= web
+        .EventStreamProviders.fullscreenChangeEvent
+        .forTarget(web.document)
+        .listen((_) {
+      final isBrowserFullscreen = web.document.fullscreenElement != null;
       if (!isBrowserFullscreen && isPreviewFullscreen) {
         isPreviewFullscreen = false;
       }
@@ -494,8 +496,8 @@ class LiFileUploadComponent
   @HostBinding('class.d-block')
   bool get hostClass => true;
 
-  void onDropzoneKeyDown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void onDropzoneKeyDown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
@@ -503,20 +505,20 @@ class LiFileUploadComponent
       return;
     }
 
-    if ((event as html.KeyboardEvent).key == 'Enter' || event.key == ' ') {
+    if ((event as web.KeyboardEvent).key == 'Enter' || event.key == ' ') {
       event.preventDefault();
       openPicker();
     }
   }
 
-  void onDropzoneClick(html.Event event) {
+  void onDropzoneClick(web.Event event) {
     if (disabled) {
       return;
     }
 
     final target = event.target;
-    if ((target?.isA<html.Element>() ?? false) &&
-        _isInteractiveTarget(target as html.Element)) {
+    if ((target?.isA<web.Element>() ?? false) &&
+        _isInteractiveTarget(target as web.Element)) {
       return;
     }
 
@@ -536,7 +538,7 @@ class LiFileUploadComponent
     _markForCheck();
   }
 
-  void onFilesSelected(List<html.File> files) {
+  void onFilesSelected(List<web.File> files) {
     if (disabled) {
       return;
     }
@@ -552,18 +554,18 @@ class LiFileUploadComponent
       closePreview();
     }
     _dirty = true;
-    final nextFiles = List<html.File>.from(_files)..removeAt(index);
+    final nextFiles = List<web.File>.from(_files)..removeAt(index);
     _setFiles(nextFiles, emitToForm: true);
   }
 
   void clear() {
     _dirty = true;
     closePreview();
-    _setFiles(const <html.File>[], emitToForm: true);
+    _setFiles(const <web.File>[], emitToForm: true);
   }
 
   @override
-  void registerOnChange(ChangeFunction<List<html.File>?> fn) {
+  void registerOnChange(ChangeFunction<List<web.File>?> fn) {
     _onChange = fn;
   }
 
@@ -573,8 +575,8 @@ class LiFileUploadComponent
   }
 
   @override
-  void writeValue(List<html.File>? value) {
-    _setFiles(value ?? const <html.File>[], emitToForm: false);
+  void writeValue(List<web.File>? value) {
+    _setFiles(value ?? const <web.File>[], emitToForm: false);
   }
 
   @override
@@ -696,16 +698,16 @@ class LiFileUploadComponent
     _refreshPreviewImageLayout();
   }
 
-  void onPreviewImageLoad(html.Event event) {
+  void onPreviewImageLoad(web.Event event) {
     final target = event.target;
-    if ((target?.isA<html.ImageElement>() ?? false)) {
-      _previewImageNaturalWidth = (target as html.ImageElement).naturalWidth;
+    if ((target?.isA<web.HTMLImageElement>() ?? false)) {
+      _previewImageNaturalWidth = (target as web.HTMLImageElement).naturalWidth;
       _previewImageNaturalHeight = target.naturalHeight;
     }
     _refreshPreviewImageLayout();
   }
 
-  void _consumeFiles(List<html.File> incoming) {
+  void _consumeFiles(List<web.File> incoming) {
     _markTouched();
     if (incoming.isEmpty) {
       return;
@@ -714,7 +716,7 @@ class LiFileUploadComponent
     _dirty = true;
 
     final normalizedIncoming =
-        multiple ? _mergeFiles(_files, incoming) : <html.File>[incoming.first];
+        multiple ? _mergeFiles(_files, incoming) : <web.File>[incoming.first];
 
     _setFiles(
       _applyMaxFiles(normalizedIncoming),
@@ -726,11 +728,11 @@ class LiFileUploadComponent
     }
   }
 
-  List<html.File> _mergeFiles(
-    List<html.File> current,
-    List<html.File> incoming,
+  List<web.File> _mergeFiles(
+    List<web.File> current,
+    List<web.File> incoming,
   ) {
-    final next = List<html.File>.from(current);
+    final next = List<web.File>.from(current);
     for (final file in incoming) {
       final alreadyExists = next.any((existing) =>
           existing.name == file.name &&
@@ -743,7 +745,7 @@ class LiFileUploadComponent
     return next;
   }
 
-  List<html.File> _applyMaxFiles(List<html.File> files) {
+  List<web.File> _applyMaxFiles(List<web.File> files) {
     if (maxFiles <= 0 || files.length <= maxFiles) {
       return files;
     }
@@ -751,13 +753,13 @@ class LiFileUploadComponent
   }
 
   void _setFiles(
-    List<html.File> value, {
+    List<web.File> value, {
     required bool emitToForm,
     Map<String, String>? validationErrors,
   }) {
     final resolvedErrors = validationErrors ?? _collectFileErrors(value);
     _disposePreviewUrls();
-    _files = List<html.File>.from(value);
+    _files = List<web.File>.from(value);
     fileErrors = Map<String, String>.unmodifiable(resolvedErrors);
     previewItems = _files.map((file) {
       final kind = LiFileType.getMimeClass(file);
@@ -785,7 +787,7 @@ class LiFileUploadComponent
     }
 
     if (emitToForm) {
-      final payload = List<html.File>.unmodifiable(_files);
+      final payload = List<web.File>.unmodifiable(_files);
       _filesChangeController.add(payload);
       _onChange(payload, rawValue: _files.length.toString());
       _markTouched();
@@ -794,7 +796,7 @@ class LiFileUploadComponent
     _markForCheck();
   }
 
-  Map<String, String> _collectFileErrors(List<html.File> files) {
+  Map<String, String> _collectFileErrors(List<web.File> files) {
     final errors = <String, String>{};
     for (final file in files) {
       final error = _validateFile(file);
@@ -805,7 +807,7 @@ class LiFileUploadComponent
     return errors;
   }
 
-  String? _validateFile(html.File file) {
+  String? _validateFile(web.File file) {
     if (maxSize > 0 && file.size > maxSize) {
       return isEnglishLocale
           ? 'File exceeds the maximum size of ${_formatBytes(maxSize)}.'
@@ -854,7 +856,7 @@ class LiFileUploadComponent
     return fileName.substring(lastDotIndex + 1);
   }
 
-  String _fileKey(html.File file) => '${file.name}-${file.size}-${file.type}';
+  String _fileKey(web.File file) => '${file.name}-${file.size}-${file.type}';
 
   String _kindLabel(String kind) {
     switch (kind) {
@@ -879,7 +881,7 @@ class LiFileUploadComponent
     }
   }
 
-  bool _isInteractiveTarget(html.Element target) {
+  bool _isInteractiveTarget(web.Element target) {
     return target.closest('button') != null ||
         target.closest('label') != null ||
         target.closest('input') != null ||
@@ -887,20 +889,20 @@ class LiFileUploadComponent
   }
 
   void _setBrowserFullscreen(bool enable) {
-    final root = html.document.documentElement;
+    final root = web.document.documentElement;
     if (root == null) {
       return;
     }
 
     if (enable) {
-      if (html.document.fullscreenElement == null) {
+      if (web.document.fullscreenElement == null) {
         unawaited(root.requestFullscreen().toDart);
       }
       return;
     }
 
-    if (html.document.fullscreenElement != null) {
-      html.document.exitFullscreen();
+    if (web.document.fullscreenElement != null) {
+      web.document.exitFullscreen();
     }
   }
 
@@ -927,16 +929,16 @@ class LiFileUploadComponent
 
     final body = previewZoomBodyElement;
     final image = previewImageElement;
-    if (body == null || image == null || !image.isA<html.ImageElement>()) {
+    if (body == null || image == null || !image.isA<web.HTMLImageElement>()) {
       return;
     }
 
     final naturalWidth = _previewImageNaturalWidth > 0
         ? _previewImageNaturalWidth
-        : (image as html.ImageElement).naturalWidth;
+        : (image as web.HTMLImageElement).naturalWidth;
     final naturalHeight = _previewImageNaturalHeight > 0
         ? _previewImageNaturalHeight
-        : (image as html.ImageElement).naturalHeight;
+        : (image as web.HTMLImageElement).naturalHeight;
     if (naturalWidth <= 0 || naturalHeight <= 0) {
       return;
     }
@@ -968,11 +970,11 @@ class LiFileUploadComponent
     _markForCheck();
   }
 
-  String? _createPreviewUrl(html.File file, String kind) {
+  String? _createPreviewUrl(web.File file, String kind) {
     if (kind != 'image' && kind != 'pdf') {
       return null;
     }
-    return html.Url.createObjectUrl(file);
+    return web.URL.createObjectURL(file);
   }
 
   SafeUrl? _createPreviewSafeUrl(String? previewUrl, String kind) {
@@ -993,7 +995,7 @@ class LiFileUploadComponent
     for (final item in previewItems) {
       final previewUrl = item.previewUrl;
       if (previewUrl != null && previewUrl.isNotEmpty) {
-        html.Url.revokeObjectUrl(previewUrl);
+        web.URL.revokeObjectURL(previewUrl);
       }
     }
   }

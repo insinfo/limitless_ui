@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:math';
 
 import 'pdf_viewer_page_view.dart';
@@ -32,7 +32,7 @@ class PdfViewerVisibilityController {
   }
 
   List<Map<String, dynamic>> getVisibleElements(
-    html.DivElement scrollElement,
+    web.HTMLDivElement scrollElement,
     List<PdfPageView> views, {
     bool sortByVisibility = true,
   }) {

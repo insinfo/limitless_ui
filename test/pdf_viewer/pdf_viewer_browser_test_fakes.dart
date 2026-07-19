@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/src/components/pdf_viewer/pdf_viewer_browser_bridge.dart';
 
@@ -9,12 +9,12 @@ class FakePdfViewerBrowserBridge implements LiPdfViewerBrowserBridge {
   int printCalls = 0;
 
   @override
-  void clickAnchor(html.AnchorElement anchor) {
+  void clickAnchor(web.HTMLAnchorElement anchor) {
     clickedDownloads.add(anchor.download);
   }
 
   @override
-  String createObjectUrlFromBlob(html.Blob blob) {
+  String createObjectUrlFromBlob(web.Blob blob) {
     final url = 'blob:fake-${createdUrls.length}';
     createdUrls.add(url);
     return url;

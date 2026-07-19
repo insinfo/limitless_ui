@@ -1905,10 +1905,25 @@ Most relevant inputs and features:
 <li-input
   label="CGM"
   type="number"
-  (inputBlur)="loadPersonByCode($event.target.value)"
-  (inputEnter)="loadPersonByCode($event.target.value)"
+  (inputBlur)="loadPersonByCodeFromEvent($event)"
+  (inputEnter)="loadPersonByCodeFromEvent($event)"
   [(ngModel)]="cgm">
 </li-input>
+```
+
+Keep the Web IDL event typed in Dart instead of reading `target.value`
+dynamically in the template:
+
+```dart
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
+
+void loadPersonByCodeFromEvent(web.Event event) {
+  final target = event.target;
+  if (target != null && target.isA<web.HTMLInputElement>()) {
+    loadPersonByCode((target as web.HTMLInputElement).value);
+  }
+}
 ```
 
 ### Password Input
@@ -3002,6 +3017,12 @@ Run browser and AngularDart tests in Chrome:
 dart run build_runner test -- -p chrome -j 1 test/alerts/alert_component_test.dart test/alerts/li_alert_component_test.dart test/progress_component_test.dart test/datatable/li_datatable_component_test.dart test/accordion/li_accordion_directive_test.dart test/dropdown/li_dropdown_directive_test.dart test/modal/li_modal_component_test.dart test/nav/li_nav_directive_test.dart test/popover/li_popover_component_test.dart test/scrollspy/li_scrollspy_directive_test.dart test/typeahead/li_typeahead_component_test.dart test/toast/li_toast_component_test.dart test/tooltip/li_tooltip_directive_test.dart test/wizard/li_wizard_component_test.dart
 ```
 
+Repeat the same list with `-c dart2wasm`; CI runs both compilers:
+
+```bash
+dart run build_runner test -- -p chrome -c dart2wasm -j 1 <test-files>
+```
+
 Run the real example-app Puppeteer E2E suite from the repository root after serving `example/web`:
 
 ```bash
@@ -3082,7 +3103,7 @@ This checklist is for a future releasable dependency configuration; it does not 
 
 - `dart analyze`
 - VM-safe tests
-- Chrome/browser tests
+- Chrome/browser tests with dart2js and dart2wasm
 - `dart pub publish --dry-run`
 - clean git state before publishing
 

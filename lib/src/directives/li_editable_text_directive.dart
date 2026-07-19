@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart'
@@ -29,10 +29,10 @@ class LiEditableTextDirective
     _keydownSubscription = _element.onKeyDown.listen(_handleKeyDown);
   }
 
-  final html.Element _element;
-  StreamSubscription<html.Event>? _inputSubscription;
-  StreamSubscription<html.Event>? _blurSubscription;
-  StreamSubscription<html.KeyboardEvent>? _keydownSubscription;
+  final web.Element _element;
+  StreamSubscription<web.Event>? _inputSubscription;
+  StreamSubscription<web.Event>? _blurSubscription;
+  StreamSubscription<web.KeyboardEvent>? _keydownSubscription;
   final _submitController = StreamController<String>.broadcast(sync: true);
 
   bool _disabled = false;
@@ -77,7 +77,7 @@ class LiEditableTextDirective
   @override
   void writeValue(String? value) {
     _value = value ?? '';
-    if ((_element as html.HtmlElement).innerText != _value) {
+    if ((_element as web.HTMLElement).innerText != _value) {
       _element.innerText = _value;
     }
     _syncEditableState();
@@ -99,14 +99,14 @@ class LiEditableTextDirective
     _syncEditableState();
   }
 
-  void _handleKeyDown(html.KeyboardEvent event) {
-    final code = event.keyCode;
-    if (liEditableTextSubmitOnEnter && code == html.KeyCode.ENTER) {
+  void _handleKeyDown(web.KeyboardEvent event) {
+    final key = event.key;
+    if (liEditableTextSubmitOnEnter && key == 'Enter') {
       event.preventDefault();
       _submit();
       return;
     }
-    if (liEditableTextSubmitOnEscape && code == html.KeyCode.ESC) {
+    if (liEditableTextSubmitOnEscape && key == 'Escape') {
       event.preventDefault();
       _submit();
       return;
@@ -116,17 +116,17 @@ class LiEditableTextDirective
     if (maxLength == null || _currentValue().length < maxLength) {
       return;
     }
-    const editingKeys = <int>{
-      html.KeyCode.BACKSPACE,
-      html.KeyCode.DELETE,
-      html.KeyCode.LEFT,
-      html.KeyCode.RIGHT,
-      html.KeyCode.UP,
-      html.KeyCode.DOWN,
-      html.KeyCode.HOME,
-      html.KeyCode.END,
+    const editingKeys = <String>{
+      'Backspace',
+      'Delete',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Home',
+      'End',
     };
-    if (!editingKeys.contains(code) && !_hasSelectedText()) {
+    if (!editingKeys.contains(key) && !_hasSelectedText()) {
       event.preventDefault();
     }
   }
@@ -143,12 +143,12 @@ class LiEditableTextDirective
   }
 
   String _currentValue() {
-    final text = (_element as html.HtmlElement).innerText;
+    final text = (_element as web.HTMLElement).innerText;
     return liEditableTextTrim ? text.trim() : text;
   }
 
   bool _hasSelectedText() {
-    final selection = html.window.getSelection();
+    final selection = web.window.getSelection();
     return selection != null &&
         selection.toString().isNotEmpty &&
         selection.anchorNode?.parentNode == _element;

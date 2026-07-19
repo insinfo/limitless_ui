@@ -6,7 +6,7 @@ import 'package:ngx_dart/angular.dart';
 import 'tree_view_base.dart';
 import 'treeview_settings.dart';
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 class LiTreeViewNodeContext {
   LiTreeViewNodeContext({
@@ -39,7 +39,7 @@ class LiTreeViewNodeDirective {
 )
 class LiTreeViewComponent {
   @ViewChild('treeContainer')
-  html.DivElement? treeContainer;
+  web.HTMLDivElement? treeContainer;
 
   @Input('searchPlaceholder')
   String searchPlaceholder = 'Digite e pressione enter para buscar';

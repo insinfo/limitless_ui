@@ -7,12 +7,15 @@ library;
 
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_tooltip_directive_test.template.dart' as ng;
 
@@ -173,7 +176,7 @@ void main() {
 
     await fixture.update((_) {
       hoverTrigger
-          .dispatchEvent(html.liMouseEvent('mouseenter', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('mouseenter', bubbles: true));
     });
     await _settleTooltip(fixture);
 
@@ -183,13 +186,13 @@ void main() {
     expect(tooltip!.getAttribute('data-label'), 'li_tooltip_panel');
     expect(tooltip.getAttribute('data-open'), 'true');
     expect(tooltip.querySelector('[data-label="li_tooltip_body"]'), isNotNull);
-    expect(tooltip.text, contains('Hover tooltip body'));
+    expect(tooltip.textContent, contains('Hover tooltip body'));
     expect(host.showCount, 1);
     expect(host.shownCount, 1);
 
     await fixture.update((_) {
       hoverTrigger
-          .dispatchEvent(html.liMouseEvent('mouseleave', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('mouseleave', bubbles: true));
     });
     await _settleTooltip(fixture);
 
@@ -214,8 +217,8 @@ void main() {
     final tooltip = _tooltipElement();
     expect(host.manualTooltip!.isOpen(), isTrue);
     expect(tooltip, isNotNull);
-    expect(tooltip!.classes.contains('tooltip-info'), isTrue);
-    expect(tooltip.text, contains('Manual tooltip body'));
+    expect(tooltip!.classList.contains('tooltip-info'), isTrue);
+    expect(tooltip.textContent, contains('Manual tooltip body'));
 
     await fixture.update((component) {
       component.manualTooltip!.toggle();
@@ -305,8 +308,8 @@ void main() {
 
     final tooltip = _tooltipElement();
     expect(tooltip, isNotNull);
-    expect(tooltip!.classes.contains('tooltip-config-demo'), isTrue);
-    expect(tooltip.text, contains('Tooltip driven by config defaults'));
+    expect(tooltip!.classList.contains('tooltip-config-demo'), isTrue);
+    expect(tooltip.textContent, contains('Tooltip driven by config defaults'));
   });
 
   test('container body appends tooltip outside local wrapper', () async {
@@ -345,7 +348,7 @@ void main() {
     final bodyTooltip = _tooltipElement();
     expect(bodyTooltip, isNotNull);
     expect(bodyWrapper!.contains(bodyTooltip), isFalse);
-    expect(html.document.body!.contains(bodyTooltip), isTrue);
+    expect(web.document.body!.contains(bodyTooltip), isTrue);
   });
 
   test('TemplateRef tooltip content renders rich DOM nodes', () async {
@@ -366,7 +369,8 @@ void main() {
 
     expect(tooltip, isNotNull);
     expect(templateBody, isNotNull);
-    expect(templateBody!.text, contains('Tooltip rendered from TemplateRef'));
+    expect(templateBody!.textContent,
+        contains('Tooltip rendered from TemplateRef'));
   });
 
   test('static API opens and closes tooltip imperatively', () async {
@@ -399,8 +403,8 @@ void main() {
     expect(opened, isTrue);
     expect(controller.isOpen(), isTrue);
     expect(tooltip, isNotNull);
-    expect(tooltip!.classes.contains('tooltip-static-demo'), isTrue);
-    expect(tooltip.text, contains('Static tooltip body'));
+    expect(tooltip!.classList.contains('tooltip-static-demo'), isTrue);
+    expect(tooltip.textContent, contains('Static tooltip body'));
 
     controller.close(false);
     await controller.closed;
@@ -434,40 +438,41 @@ void main() {
     expect(modalRoot, isNotNull);
     expect(
       int.parse(tooltipPortalHost!.style.zIndex),
-      greaterThan(int.parse(modalRoot!.style.zIndex)),
+      greaterThan(int.parse((modalRoot as web.HTMLElement).style.zIndex)),
     );
   });
 }
 
-void _click(html.Element element) {
-  element.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+void _click(web.Element element) {
+  element.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 void _clickById(String id) {
-  final element = html.document.body!.querySelector('#$id');
-  if ((element?.isA<html.Element>() ?? false)) {
+  final element = web.document.body!.querySelector('#$id');
+  if ((element?.isA<web.Element>() ?? false)) {
     _click(element!);
   }
 }
 
-html.DivElement? _tooltipElement() {
-  final tooltip = html.document.querySelector('.tooltip');
-  return (tooltip?.isA<html.DivElement>() ?? false)
-      ? tooltip as html.DivElement
+web.HTMLDivElement? _tooltipElement() {
+  final tooltip = web.document.querySelector('.tooltip');
+  return (tooltip?.isA<web.HTMLDivElement>() ?? false)
+      ? tooltip as web.HTMLDivElement
       : null;
 }
 
-html.DivElement? _tooltipPortalHost() {
-  final host = html.document.querySelector('.LiTooltipComponent');
-  return (host?.isA<html.DivElement>() ?? false)
-      ? host as html.DivElement
+web.HTMLDivElement? _tooltipPortalHost() {
+  final host = web.document.querySelector('.LiTooltipComponent');
+  return (host?.isA<web.HTMLDivElement>() ?? false)
+      ? host as web.HTMLDivElement
       : null;
 }
 
-html.Element? _modalRootByTitle(String titleText) {
-  final titles = html.document.body!.queryAll('.modal-title');
+web.Element? _modalRootByTitle(String titleText) {
+  final titles =
+      web.document.body!.querySelectorAll('.modal-title').toElementList();
   for (final title in titles) {
-    if (title.text.trim() != titleText) {
+    if ((title.textContent ?? '').trim() != titleText) {
       continue;
     }
     return title.closest('.modal');

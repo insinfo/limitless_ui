@@ -1,19 +1,20 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
 
 import '../core/overlay_positioning.dart';
+import '../web_support/zone_dom_callbacks.dart';
 
 @Directive(selector: '[liDropdownMenuPosition]')
 class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
-  final Element rootElement;
-  Element? _triggerElement;
-  Element? _menuElement;
+  final web.Element rootElement;
+  web.Element? _triggerElement;
+  web.Element? _menuElement;
   PopperAnchoredOverlay? _overlay;
-  StreamSubscription<KeyboardEvent>? _documentKeyDownSS;
+  StreamSubscription<web.KeyboardEvent>? _documentKeyDownSS;
   bool _overlayRelayoutPending = false;
 
   @Input('liDropdownMenuPosition')
@@ -58,35 +59,38 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     rootElement.onClick.listen(onRootClick);
 
     globalBodyClickSS =
-        document.querySelector('body')?.onClick.listen(onBodyClick);
-    _documentKeyDownSS = document.onKeyDown.listen(onDocumentKeyDown);
+        web.document.querySelector('body')?.onClick.listen(onBodyClick);
+    _documentKeyDownSS = web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen(onDocumentKeyDown);
     _setExpanded(false);
   }
 
-  void onRootClick(MouseEvent event) {
+  void onRootClick(web.MouseEvent event) {
     final target = event.target;
-    if (!(target?.isA<Element>() ?? false)) {
+    if (!(target?.isA<web.Element>() ?? false)) {
       return;
     }
 
-    if (_triggerElement != null && _triggerElement!.contains(target as Node?)) {
+    if (_triggerElement != null &&
+        _triggerElement!.contains(target as web.Node?)) {
       event.preventDefault();
       event.stopPropagation();
       toogle();
       return;
     }
 
-    if ((target as Element).closest('.li-dropdown-close') != null) {
+    if ((target as web.Element).closest('.li-dropdown-close') != null) {
       hide();
     }
   }
 
   void toogle() {
-    final shouldOpen = !rootElement.classes.contains('show');
-    rootElement.classes.toggle('show', shouldOpen);
+    final shouldOpen = !rootElement.classList.contains('show');
+    rootElement.classList.toggle('show', shouldOpen);
     final dropdownMenu = _menuElement;
     if (dropdownMenu != null) {
-      dropdownMenu.classes.toggle('show', shouldOpen);
+      dropdownMenu.classList.toggle('show', shouldOpen);
       _setExpanded(shouldOpen);
       if (!shouldOpen) {
         _overlayRelayoutPending = false;
@@ -99,20 +103,22 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
         _overlay?.startAutoUpdate();
         _scheduleOverlayUpdate();
       } else {
-        dropdownMenu.style.removeProperty('top');
-        dropdownMenu.style.removeProperty('left');
+        final style = (dropdownMenu as web.HTMLElement).style;
+        style.removeProperty('top');
+        style.removeProperty('left');
       }
     }
   }
 
   void hide() {
-    rootElement.classes.remove('show');
+    rootElement.classList.remove('show');
     final dropdownMenu = _menuElement;
     if (dropdownMenu != null) {
-      dropdownMenu.classes.remove('show');
+      dropdownMenu.classList.remove('show');
       if (!_usesBodyOverlay) {
-        dropdownMenu.style.removeProperty('top');
-        dropdownMenu.style.removeProperty('left');
+        final style = (dropdownMenu as web.HTMLElement).style;
+        style.removeProperty('top');
+        style.removeProperty('left');
       }
     }
     _overlayRelayoutPending = false;
@@ -120,8 +126,8 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     _setExpanded(false);
   }
 
-  void onBodyClick(MouseEvent event) {
-    var target = event.target as Element;
+  void onBodyClick(web.MouseEvent event) {
+    var target = event.target as web.Element;
     final clickedTrigger = _triggerElement?.contains(target) ?? false;
     final clickedMenu = _menuElement?.contains(target) ?? false;
     final clickedCloseAction = target.closest('.li-dropdown-close') != null;
@@ -136,15 +142,15 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     }
   }
 
-  void onDocumentKeyDown(KeyboardEvent event) {
-    if (!rootElement.classes.contains('show')) {
+  void onDocumentKeyDown(web.KeyboardEvent event) {
+    if (!rootElement.classList.contains('show')) {
       return;
     }
 
     if (event.key == 'Escape') {
       event.preventDefault();
       hide();
-      _triggerElement?.focus();
+      (_triggerElement as web.HTMLElement?)?.focus();
     }
   }
 
@@ -188,14 +194,14 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
   void _scheduleOverlayUpdate() {
     if (!_usesBodyOverlay ||
         _overlayRelayoutPending ||
-        !rootElement.classes.contains('show')) {
+        !rootElement.classList.contains('show')) {
       return;
     }
 
     _overlayRelayoutPending = true;
-    window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _overlayRelayoutPending = false;
-      if (!rootElement.classes.contains('show')) {
+      if (!rootElement.classList.contains('show')) {
         return;
       }
 

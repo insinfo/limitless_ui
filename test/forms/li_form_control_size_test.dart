@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:limitless_ui/src/web_support/dom_tokens.dart';
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -274,7 +274,7 @@ Set<String> _classes(
 ) {
   final element = fixture.rootElement.querySelector(selector);
   expect(element, isNotNull, reason: 'Missing element: $selector');
-  return element!.classes.toSet();
+  return element!.classList.toDartSet();
 }
 
 String? _attr(

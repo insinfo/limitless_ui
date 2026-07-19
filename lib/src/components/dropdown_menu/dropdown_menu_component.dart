@@ -1,10 +1,20 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 import 'dart:math';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
+
+List<web.Element> _queryElements(web.Element root, String selectors) {
+  final nodes = root.querySelectorAll(selectors);
+  return <web.Element>[
+    for (var index = 0; index < nodes.length; index++)
+      nodes.item(index)! as web.Element,
+  ];
+}
 
 /// Public directives used by the dropdown menu component.
 const liDropdownMenuDirectives = <Object>[
@@ -44,8 +54,8 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   final ChangeDetectorRef _changeDetectorRef;
 
-  StreamSubscription<html.Event>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.Event>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
   PopperAnchoredOverlay? _overlay;
   bool _overlayRelayoutPending = false;
   bool _inlineViewportRelayoutPending = false;
@@ -171,10 +181,10 @@ class LiDropdownMenuComponent implements OnDestroy {
   bool closeOtherMenusOnOpen = true;
 
   @ViewChild('triggerButton')
-  html.ButtonElement? triggerButtonElement;
+  web.HTMLButtonElement? triggerButtonElement;
 
   @ViewChild('menuElement')
-  html.Element? menuElement;
+  web.Element? menuElement;
 
   @Output()
   Stream<String> get valueChange => _valueChange.stream;
@@ -301,16 +311,16 @@ class LiDropdownMenuComponent implements OnDestroy {
       return false;
     }
 
-    return html.window.matchMedia('(max-width: $breakpoint)').matches;
+    return web.window.matchMedia('(max-width: $breakpoint)').matches;
   }
 
   bool get showsMobileModalHeader =>
       usesMobilePresentation && mobileMenuTitle.trim().isNotEmpty;
 
   double get _viewportHeight {
-    final windowHeight = html.window.innerHeight.toDouble();
+    final windowHeight = web.window.innerHeight.toDouble();
     final documentHeight =
-        html.document.documentElement?.clientHeight.toDouble() ?? 0;
+        web.document.documentElement?.clientHeight.toDouble() ?? 0;
     if (windowHeight > 0 && documentHeight > 0) {
       return min(windowHeight, documentHeight);
     }
@@ -374,7 +384,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     return _joinClasses(<String>[option.iconClass.trim(), 'me-2 mt-1']);
   }
 
-  void toggleDropdown(html.MouseEvent event) {
+  void toggleDropdown(web.MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -435,7 +445,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     _changeDetectorRef.markForCheck();
   }
 
-  void selectOption(LiDropdownMenuOption option, html.MouseEvent event) {
+  void selectOption(LiDropdownMenuOption option, web.MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -489,26 +499,30 @@ class LiDropdownMenuComponent implements OnDestroy {
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= web.EventStreamProviders.clickEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!isOpen) {
         return;
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Node>() ?? false)) {
+      if (!(target?.isA<web.Node>() ?? false)) {
         closeDropdown();
         return;
       }
 
       final clickedTrigger =
-          triggerButtonElement?.contains(target as html.Node?) ?? false;
-      final clickedMenu = menuElement?.contains(target as html.Node?) ?? false;
+          triggerButtonElement?.contains(target as web.Node?) ?? false;
+      final clickedMenu = menuElement?.contains(target as web.Node?) ?? false;
       if (!clickedTrigger && !clickedMenu) {
         closeDropdown();
       }
     });
 
-    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+    _documentKeySubscription ??= web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!isOpen) {
         return;
       }
@@ -536,7 +550,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     }
 
     _overlayRelayoutPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _overlayRelayoutPending = false;
       if (!isOpen) {
         return;
@@ -562,7 +576,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     }
 
     _inlineViewportRelayoutPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _inlineViewportRelayoutPending = false;
       if (!isOpen || usesMobilePresentation) {
         return;
@@ -593,14 +607,15 @@ class LiDropdownMenuComponent implements OnDestroy {
       final nextMaxHeight =
           menuRect.height > availableHeight ? '${availableHeight}px' : '';
       final menuItems = menu.querySelector('.li-dropdown-menu__items');
-      final itemContentHeight = menu
-          .queryAll('.li-dropdown-menu__items > *')
-          .fold<double>(0, (height, element) {
+      final itemContentHeight = _queryElements(
+        menu,
+        '.li-dropdown-menu__items > *',
+      ).fold<double>(0, (height, element) {
         return height + element.getBoundingClientRect().height;
       });
       final contentHeight = itemContentHeight > 0
           ? itemContentHeight.ceil()
-          : (menuItems?.isA<html.Element>() ?? false)
+          : (menuItems?.isA<web.Element>() ?? false)
               ? menuItems!.scrollHeight
               : menu.scrollHeight;
       final contentOverflows = contentHeight > menu.clientHeight + 4;

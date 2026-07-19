@@ -26,12 +26,16 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
+import 'package:limitless_ui/src/web_support/zone_dom_callbacks.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_dropdown_menu_body_mobile_test.template.dart' as ng;
 
@@ -100,13 +104,13 @@ void main() {
       await _settle(fixture);
 
       // container="body" => the panel is moved into the body portal.
-      final menu = html.document.querySelector(
+      final menu = web.document.querySelector(
         '.LiDropdownMenuComponent .li-dropdown-menu__menu--mobile-sheet.show',
       );
       expect(menu, isNotNull,
           reason: 'sheet panel must be portaled into the body overlay');
 
-      final style = (menu as html.Element).getComputedStyle();
+      final style = web.window.getComputedStyle((menu as web.Element));
       // The mobile sheet must keep its own layout after portaling.
       expect(style.display, 'flex',
           reason: 'portaled sheet must render as a flex panel, not '
@@ -120,7 +124,7 @@ void main() {
           reason: 'sheet must have a visible height, not collapse to 0');
       // A bottom sheet sits near the bottom of the viewport, never pinned to
       // the top-left corner like a broken absolute dropdown.
-      expect(rect.bottom, lessThanOrEqualTo(html.window.innerHeight.toDouble()),
+      expect(rect.bottom, lessThanOrEqualTo(web.window.innerHeight.toDouble()),
           reason: 'sheet stays within the viewport');
       expect(rect.top, greaterThan(0),
           reason: 'sheet is not stuck at the very top (0,0)');
@@ -137,13 +141,13 @@ void main() {
       _openMenu(fixture, 'body-modal');
       await _settle(fixture);
 
-      final menu = html.document.querySelector(
+      final menu = web.document.querySelector(
         '.LiDropdownMenuComponent .li-dropdown-menu__menu--mobile-modal.show',
       );
       expect(menu, isNotNull,
           reason: 'modal panel must be portaled into the body overlay');
 
-      final style = (menu as html.Element).getComputedStyle();
+      final style = web.window.getComputedStyle((menu as web.Element));
       expect(style.display, 'flex');
       expect(style.position, 'fixed');
 
@@ -154,9 +158,9 @@ void main() {
       // Centered modal: its center is near the viewport center.
       final centerX = rect.left + rect.width / 2;
       final centerY = rect.top + rect.height / 2;
-      expect((centerX - html.window.innerWidth / 2).abs(), lessThan(40),
+      expect((centerX - web.window.innerWidth / 2).abs(), lessThan(40),
           reason: 'modal should be horizontally centered');
-      expect((centerY - html.window.innerHeight / 2).abs(), lessThan(40),
+      expect((centerY - web.window.innerHeight / 2).abs(), lessThan(40),
           reason: 'modal should be vertically centered');
     },
   );
@@ -168,10 +172,12 @@ void main() {
     _openMenu(fixture, 'body-sheet');
     await _settle(fixture);
 
-    final items = html.document.queryAll(
-      '.LiDropdownMenuComponent .li-dropdown-menu__menu--mobile-sheet.show '
-      '.dropdown-item',
-    );
+    final items = web.document
+        .querySelectorAll(
+          '.LiDropdownMenuComponent .li-dropdown-menu__menu--mobile-sheet.show '
+          '.dropdown-item',
+        )
+        .toElementList();
     expect(items, hasLength(3));
     for (final item in items) {
       final rect = item.getBoundingClientRect();
@@ -186,8 +192,8 @@ void _openMenu(
   String ariaLabel,
 ) {
   final trigger = fixture.rootElement.querySelector('[aria-label="$ariaLabel"]')
-      as html.ButtonElement;
-  trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      as web.HTMLButtonElement;
+  trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 Future<void> _settle(
@@ -202,7 +208,7 @@ Future<void> _settle(
 
 Future<void> _nextAnimationFrame() {
   final completer = Completer<void>();
-  html.window.liRequestAnimationFrame((_) {
+  requestAnimationFrameInZone((_) {
     completer.complete();
   });
   return completer.future;

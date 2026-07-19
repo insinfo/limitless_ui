@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -13,7 +13,7 @@ import 'package:ngx_dart/angular.dart';
 class LiCarouselItemComponent {
   LiCarouselItemComponent(this._hostElement, this._changeDetectorRef);
 
-  final html.Element _hostElement;
+  final web.Element _hostElement;
   final ChangeDetectorRef _changeDetectorRef;
 
   @Input()

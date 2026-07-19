@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -145,7 +145,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final trigger = fixture.rootElement
-        .querySelector('[data-label="li_ms_toggle"]') as html.HtmlElement;
+        .querySelector('[data-label="li_ms_toggle"]') as web.HTMLElement;
 
     await fixture.update((_) => trigger.click());
 
@@ -161,7 +161,7 @@ void main() {
 
     host.prevent = true;
     final trigger = fixture.rootElement
-        .querySelector('[data-label="li_ms_toggle"]') as html.HtmlElement;
+        .querySelector('[data-label="li_ms_toggle"]') as web.HTMLElement;
 
     await fixture.update((_) => trigger.click());
 

@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngx_dart/angular.dart';
@@ -167,13 +167,13 @@ class LiNativeValidationFeedbackDirective implements AfterViewInit, OnDestroy {
     });
   }
 
-  final html.Element _element;
+  final web.Element _element;
   final NgControl _ngControl;
   final LiFormDirective? _formDirective;
   final List<StreamSubscription<dynamic>> _subscriptions =
       <StreamSubscription<dynamic>>[];
   StreamSubscription<bool>? _formSubmissionSubscription;
-  html.HtmlElement? _feedbackElement;
+  web.HTMLElement? _feedbackElement;
   bool _formSubmitted = false;
   bool _scheduled = false;
 
@@ -250,7 +250,7 @@ class LiNativeValidationFeedbackDirective implements AfterViewInit, OnDestroy {
     }
 
     if (control.invalid) {
-      _element.classes
+      _element.classList
         ..remove(liValidationValidClass)
         ..add(liValidationInvalidClass);
       _element.setAttribute('aria-invalid', 'true');
@@ -258,14 +258,14 @@ class LiNativeValidationFeedbackDirective implements AfterViewInit, OnDestroy {
       return;
     }
 
-    _element.classes.remove(liValidationInvalidClass);
+    _element.classList.remove(liValidationInvalidClass);
     _element.setAttribute('aria-invalid', 'false');
     _setFeedbackText('');
 
     if (_isEnabled(liValidationShowValid) && _hasRequiredValue(control.value)) {
-      _element.classes.add(liValidationValidClass);
+      _element.classList.add(liValidationValidClass);
     } else {
-      _element.classes.remove(liValidationValidClass);
+      _element.classList.remove(liValidationValidClass);
     }
   }
 
@@ -304,24 +304,24 @@ class LiNativeValidationFeedbackDirective implements AfterViewInit, OnDestroy {
     return liValidationDefaultMessage;
   }
 
-  html.HtmlElement? _resolveFeedbackElement() {
+  web.HTMLElement? _resolveFeedbackElement() {
     final selector = liValidationFeedbackSelector.trim();
-    final parent = _element.parent;
+    final parent = _element.parentElement;
     if (parent == null) {
       return null;
     }
 
     if (selector.isNotEmpty) {
       final existing = parent.querySelector(selector);
-      if ((existing?.isA<html.HtmlElement>() ?? false)) {
-        return existing as html.HtmlElement;
+      if ((existing?.isA<web.HTMLElement>() ?? false)) {
+        return existing as web.HTMLElement;
       }
     }
 
-    final created = html.createDivElement()
-      ..classes.add('invalid-feedback')
+    final created = web.HTMLDivElement()
+      ..classList.add('invalid-feedback')
       ..setAttribute('data-li-validation-feedback', 'true');
-    parent.append(created);
+    parent.appendChild(created);
     return created;
   }
 
@@ -330,11 +330,11 @@ class LiNativeValidationFeedbackDirective implements AfterViewInit, OnDestroy {
     if (feedbackElement == null) {
       return;
     }
-    feedbackElement.text = message;
+    feedbackElement.textContent = message;
   }
 
   void _clearVisualState() {
-    _element.classes
+    _element.classList
       ..remove(liValidationInvalidClass)
       ..remove(liValidationValidClass);
     _element.removeAttribute('aria-invalid');

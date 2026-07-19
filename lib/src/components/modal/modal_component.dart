@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -26,13 +26,13 @@ class LiModalComponent implements OnInit, OnDestroy {
 
   LiModalComponent(this.rootElement, this._changeDetectorRef);
 
-  final Element rootElement;
+  final web.Element rootElement;
   final ChangeDetectorRef _changeDetectorRef;
   final String _modalTitleId = 'li-modal-title-${_nextTitleId++}';
   bool _isOpen = false;
   int _stackZIndex = _baseZIndex;
-  StreamSubscription<KeyboardEvent>? _escSubscription;
-  Element? _previouslyFocusedElement;
+  StreamSubscription<web.KeyboardEvent>? _escSubscription;
+  web.Element? _previouslyFocusedElement;
 
   @Input()
   bool enableHeader = true;
@@ -163,23 +163,23 @@ class LiModalComponent implements OnInit, OnDestroy {
   String contentHostClass = '';
 
   @ViewChild('modalRootElement')
-  DivElement? modalRootElement;
+  web.HTMLDivElement? modalRootElement;
 
   @ViewChild('modalContent')
-  DivElement? modalContent;
+  web.HTMLDivElement? modalContent;
 
   @ViewChild('modalHeader')
-  DivElement? modalHeader;
+  web.HTMLDivElement? modalHeader;
 
   @ViewChild('modalBody')
-  DivElement? modalBody;
+  web.HTMLDivElement? modalBody;
 
   @ViewChild('modalTitleElement')
-  HtmlElement? modalTitleElement;
+  web.HTMLElement? modalTitleElement;
 
   @override
   void ngOnInit() {
-    document.body?.append(rootElement);
+    web.document.body?.appendChild(rootElement);
 
     rootElement.addEventListener('mousedown', _handleRootMouseDown.toJS);
 
@@ -188,11 +188,11 @@ class LiModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  void stopPropagation(Event event) {
+  void stopPropagation(web.Event event) {
     event.stopPropagation();
   }
 
-  void _handleRootMouseDown(Event event) {
+  void _handleRootMouseDown(web.Event event) {
     if (!closeOnBackdropClick || !_isTopmostModal) {
       return;
     }
@@ -202,24 +202,24 @@ class LiModalComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (event.isA<MouseEvent>() &&
-        _isScrollbarInteraction(event as MouseEvent, target)) {
+    if (event.isA<web.MouseEvent>() &&
+        _isScrollbarInteraction(event as web.MouseEvent, target)) {
       return;
     }
 
     close();
   }
 
-  bool _isScrollbarInteraction(MouseEvent event, EventTarget? target) {
-    if (!(target?.isA<Element>() ?? false)) {
+  bool _isScrollbarInteraction(web.MouseEvent event, web.EventTarget? target) {
+    if (!(target?.isA<web.HTMLElement>() ?? false)) {
       return false;
     }
 
-    final element = target as Element;
+    final element = target as web.HTMLElement;
     final rect = element.getBoundingClientRect();
-    final offsetX = event.client.x - rect.left;
-    final offsetY = event.client.y - rect.top;
-    final style = element.getComputedStyle();
+    final offsetX = event.clientX - rect.left;
+    final offsetY = event.clientY - rect.top;
+    final style = web.window.getComputedStyle(element);
     final hasVerticalScrollbar = element.scrollHeight > element.clientHeight ||
         element.offsetWidth > element.clientWidth ||
         style.overflowY == 'auto' ||
@@ -233,7 +233,7 @@ class LiModalComponent implements OnInit, OnDestroy {
         hasHorizontalScrollbar && offsetY >= element.clientHeight;
   }
 
-  DivElement backdropDiv = DivElement();
+  web.HTMLDivElement backdropDiv = web.HTMLDivElement();
 
   bool get shouldRenderContent => !lazyContent || _isOpen;
 
@@ -304,13 +304,15 @@ class LiModalComponent implements OnInit, OnDestroy {
         .join(' ');
   }
 
-  bool _isEscapeKey(KeyboardEvent event) {
-    return event.key == 'Escape' || event.keyCode == KeyCode.ESC;
+  bool _isEscapeKey(web.KeyboardEvent event) {
+    return event.key == 'Escape' || event.code == 'Escape';
   }
 
   void _bindEscapeListener() {
     _escSubscription?.cancel();
-    _escSubscription = document.onKeyDown.listen((KeyboardEvent event) {
+    _escSubscription = web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen((web.KeyboardEvent event) {
       if (!_isEscapeKey(event) || !_isTopmostModal || !closeOnEscape) {
         return;
       }
@@ -330,14 +332,14 @@ class LiModalComponent implements OnInit, OnDestroy {
   }
 
   void _rememberFocus() {
-    _previouslyFocusedElement = document.activeElement;
+    _previouslyFocusedElement = web.document.activeElement;
   }
 
   void _restoreFocus() {
     final previousElement = _previouslyFocusedElement;
-    if ((previousElement?.isA<HtmlElement>() ?? false) &&
-        document.body?.contains(previousElement) == true) {
-      previousElement!.focus();
+    if ((previousElement?.isA<web.HTMLElement>() ?? false) &&
+        web.document.body?.contains(previousElement) == true) {
+      (previousElement as web.HTMLElement).focus();
     }
     _previouslyFocusedElement = null;
   }
@@ -354,11 +356,11 @@ class LiModalComponent implements OnInit, OnDestroy {
   static void _syncBodyScrollLock() {
     final shouldLock = _openModalStack.any((modal) => modal.lockBodyScroll);
     if (shouldLock) {
-      document.body?.classes.add('modal-open');
+      web.document.body?.classList.add('modal-open');
       return;
     }
 
-    document.body?.classes.remove('modal-open');
+    web.document.body?.classList.remove('modal-open');
   }
 
   void _applyStackZIndex(int zIndex) {
@@ -398,8 +400,8 @@ class LiModalComponent implements OnInit, OnDestroy {
     _changeDetectorRef.markForCheck();
 
     backdropDiv.remove();
-    backdropDiv = DivElement()
-      ..classes.add('li-modal-backdrop')
+    backdropDiv = web.HTMLDivElement()
+      ..classList.add('li-modal-backdrop')
       ..setAttribute('data-label', 'li_mdl_backdrop')
       ..setAttribute('data-value', modalAutomationValue)
       ..setAttribute('data-open', 'true')
@@ -414,7 +416,7 @@ class LiModalComponent implements OnInit, OnDestroy {
     _applyStackZIndex(_stackZIndex);
 
     if (enableBackdrop) {
-      document.body?.append(backdropDiv);
+      web.document.body?.appendChild(backdropDiv);
     }
 
     modalRootElement?.style.display = 'block';

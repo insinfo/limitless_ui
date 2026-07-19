@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -191,41 +191,43 @@ void main() {
 
     final currencyInput = fixture.rootElement
             .querySelector('#currency-field li-currency-input input')
-        as html.InputElement;
+        as web.HTMLInputElement;
     final datatableTrigger = fixture.rootElement
             .querySelector('#reviewer-field .datatable-select-trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final primaryReviewerTrigger = fixture.rootElement
             .querySelector('#primary-reviewer-field .datatable-select-trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final treeviewTrigger = fixture.rootElement
             .querySelector('#workflow-field .treeview-dropdown-select__trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final workflowStagesTrigger = fixture.rootElement.querySelector(
             '#workflow-stages-field .treeview-dropdown-select__trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     expect(isValid, isFalse);
-    expect(currencyInput.classes.contains('is-invalid'), isTrue);
-    expect(datatableTrigger.classes.contains('is-invalid'), isTrue);
-    expect(primaryReviewerTrigger.classes.contains('is-invalid'), isTrue);
-    expect(treeviewTrigger.classes.contains('is-invalid'), isTrue);
-    expect(workflowStagesTrigger.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('Informe a pretensão salarial.'));
-    expect(fixture.rootElement.text, contains('Selecione um responsável.'));
+    expect(currencyInput.classList.contains('is-invalid'), isTrue);
+    expect(datatableTrigger.classList.contains('is-invalid'), isTrue);
+    expect(primaryReviewerTrigger.classList.contains('is-invalid'), isTrue);
+    expect(treeviewTrigger.classList.contains('is-invalid'), isTrue);
+    expect(workflowStagesTrigger.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent,
+        contains('Informe a pretensão salarial.'));
     expect(
-      fixture.rootElement.text,
+        fixture.rootElement.textContent, contains('Selecione um responsável.'));
+    expect(
+      fixture.rootElement.textContent,
       contains('Selecione um responsável principal.'),
     );
     expect(
-      fixture.rootElement.text,
+      fixture.rootElement.textContent,
       contains('Selecione uma etapa do workflow.'),
     );
     expect(
-      fixture.rootElement.text,
+      fixture.rootElement.textContent,
       contains('Selecione ao menos uma etapa paralela.'),
     );
-    expect(html.document.activeElement == currencyInput, isTrue);
+    expect(web.document.activeElement == currencyInput, isTrue);
   });
 
   test('clears validation once the three components receive valid values',
@@ -248,30 +250,30 @@ void main() {
 
     final currencyInput = fixture.rootElement
             .querySelector('#currency-field li-currency-input input')
-        as html.InputElement;
+        as web.HTMLInputElement;
     final datatableTrigger = fixture.rootElement
             .querySelector('#reviewer-field .datatable-select-trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final primaryReviewerTrigger = fixture.rootElement
             .querySelector('#primary-reviewer-field .datatable-select-trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final treeviewTrigger = fixture.rootElement
             .querySelector('#workflow-field .treeview-dropdown-select__trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final workflowStagesTrigger = fixture.rootElement.querySelector(
             '#workflow-stages-field .treeview-dropdown-select__trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
-    expect(currencyInput.classes.contains('is-invalid'), isFalse);
-    expect(datatableTrigger.classes.contains('is-invalid'), isFalse);
-    expect(primaryReviewerTrigger.classes.contains('is-invalid'), isFalse);
-    expect(treeviewTrigger.classes.contains('is-invalid'), isFalse);
-    expect(workflowStagesTrigger.classes.contains('is-invalid'), isFalse);
-    expect(currencyInput.classes.contains('is-valid'), isTrue);
-    expect(datatableTrigger.classes.contains('is-valid'), isTrue);
-    expect(primaryReviewerTrigger.classes.contains('is-valid'), isTrue);
-    expect(treeviewTrigger.classes.contains('is-valid'), isTrue);
-    expect(workflowStagesTrigger.classes.contains('is-valid'), isTrue);
+    expect(currencyInput.classList.contains('is-invalid'), isFalse);
+    expect(datatableTrigger.classList.contains('is-invalid'), isFalse);
+    expect(primaryReviewerTrigger.classList.contains('is-invalid'), isFalse);
+    expect(treeviewTrigger.classList.contains('is-invalid'), isFalse);
+    expect(workflowStagesTrigger.classList.contains('is-invalid'), isFalse);
+    expect(currencyInput.classList.contains('is-valid'), isTrue);
+    expect(datatableTrigger.classList.contains('is-valid'), isTrue);
+    expect(primaryReviewerTrigger.classList.contains('is-valid'), isTrue);
+    expect(treeviewTrigger.classList.contains('is-valid'), isTrue);
+    expect(workflowStagesTrigger.classList.contains('is-valid'), isTrue);
   });
 }
 

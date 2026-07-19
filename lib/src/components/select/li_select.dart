@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -10,6 +10,7 @@ import 'package:popper/popper.dart';
 
 import '../../core/li_before_open_event.dart';
 import '../../core/overlay_positioning.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 import '../../directives/li_form_directive.dart';
 import '../../exceptions/invalid_argument_exception.dart';
 import '../../validation/li_rule.dart';
@@ -63,7 +64,7 @@ class LiSelectTriggerContext {
 
   void toggle() => _component.toggleDropdown();
 
-  void clear([html.Event? event]) => _component.clearSelection(event);
+  void clear([web.Event? event]) => _component.clearSelection(event);
 }
 
 @Directive(selector: 'template[liSelectTrigger]')
@@ -94,7 +95,7 @@ class LiSelectComponent
         OnInit,
         OnDestroy,
         AfterContentInit {
-  final html.Element nativeElement;
+  final web.Element nativeElement;
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
 
@@ -124,8 +125,8 @@ class LiSelectComponent
   final StreamController<LiBeforeOpenEvent> _beforeOpenController =
       StreamController<LiBeforeOpenEvent>.broadcast(sync: true);
   bool _destroyed = false;
-  StreamSubscription<html.Event>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.Event>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
   StreamSubscription<bool>? _formSubmissionSubscription;
   bool _overlayRelayoutPending = false;
   dynamic _lastWrittenValue;
@@ -249,13 +250,13 @@ class LiSelectComponent
   LiSelectTriggerDirective? triggerTemplate;
 
   @ViewChild('dropdownContainer')
-  html.Element? dropdownContainerEle;
+  web.Element? dropdownContainerEle;
 
   @ViewChild('inputSearch')
-  html.InputElement? inputSearch;
+  web.HTMLInputElement? inputSearch;
 
   @ViewChild('dropdownButton')
-  html.Element? dropdownButtonElement;
+  web.Element? dropdownButtonElement;
 
   int currentIndex = -1;
   CustomSelectItem? currentValue;
@@ -401,7 +402,7 @@ class LiSelectComponent
     return visibleOptions * 25;
   }
 
-  html.Element get listElement => dropdownContainerEle!.querySelector('ul')!;
+  web.Element get listElement => dropdownContainerEle!.querySelector('ul')!;
 
   @override
   void ngAfterContentInit() {
@@ -568,8 +569,11 @@ class LiSelectComponent
   void closeDropdown({bool markForCheck = true}) {
     final wasOpen = dropdownOpen;
 
-    for (final element in dropdownContainerEle!.queryAll('li')) {
-      element.classes.remove('dropdown-item-hover');
+    final listItems = dropdownContainerEle!.querySelectorAll('li');
+    for (var index = 0; index < listItems.length; index++) {
+      (listItems.item(index)! as web.Element)
+          .classList
+          .remove('dropdown-item-hover');
     }
     currentIndex = -1;
     dropdownOpen = false;
@@ -588,7 +592,7 @@ class LiSelectComponent
     }
 
     if (wasOpen) {
-      dropdownButtonElement?.focus();
+      (dropdownButtonElement as web.HTMLElement?)?.focus();
     }
 
     if (wasOpen && !_destroyed) {
@@ -683,7 +687,7 @@ class LiSelectComponent
     _markForCheck();
   }
 
-  void clearSelection([html.Event? event]) {
+  void clearSelection([web.Event? event]) {
     event?.stopPropagation();
     if (isDisabled || currentValue == null) {
       return;
@@ -714,12 +718,12 @@ class LiSelectComponent
     }
   }
 
-  void handleTriggerKeydown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleTriggerKeydown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    if ((event as html.KeyboardEvent).code == 'Enter' ||
+    if ((event as web.KeyboardEvent).code == 'Enter' ||
         event.code == 'NumpadEnter' ||
         event.code == 'Space' ||
         event.key == ' ') {
@@ -742,19 +746,21 @@ class LiSelectComponent
       options[i].hover = i == currentIndex;
     }
 
-    for (final element in dropdownContainerEle!.queryAll('li')) {
-      element.classes.remove('dropdown-item-hover');
+    final listItems = dropdownContainerEle!.querySelectorAll('li');
+    for (var index = 0; index < listItems.length; index++) {
+      (listItems.item(index)! as web.Element)
+          .classList
+          .remove('dropdown-item-hover');
     }
 
-    dropdownContainerEle!
-        .queryAll('li')[currentIndex]
-        .classes
+    (listItems.item(currentIndex)! as web.Element)
+        .classList
         .add('dropdown-item-hover');
   }
 
   @HostListener('keydown')
-  void handleKeydownEvents(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleKeydownEvents(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
@@ -762,10 +768,10 @@ class LiSelectComponent
       return;
     }
 
-    _handleKeydownEvent(event as html.KeyboardEvent);
+    _handleKeydownEvent(event as web.KeyboardEvent);
   }
 
-  void _handleKeydownEvent(html.KeyboardEvent event) {
+  void _handleKeydownEvent(web.KeyboardEvent event) {
     if (event.code == 'Enter' || event.code == 'NumpadEnter') {
       event.preventDefault();
       if (dropdownOpen) {
@@ -852,12 +858,12 @@ class LiSelectComponent
     }
   }
 
-  void stopEventPropagation(html.Event event) {
+  void stopEventPropagation(web.Event event) {
     event.stopPropagation();
   }
 
-  void searchInputHandle(html.Event event) {
-    searchHandle((event.target as html.InputElement).value);
+  void searchInputHandle(web.Event event) {
+    searchHandle((event.target as web.HTMLInputElement).value);
   }
 
   @override
@@ -897,8 +903,9 @@ class LiSelectComponent
     );
     final desiredMaxHeight = '${availableListHeight.floor()}px';
 
-    if (listElement.style.maxHeight != desiredMaxHeight) {
-      listElement.style.maxHeight = desiredMaxHeight;
+    final listStyle = (listElement as web.HTMLElement).style;
+    if (listStyle.maxHeight != desiredMaxHeight) {
+      listStyle.maxHeight = desiredMaxHeight;
     }
   }
 
@@ -915,7 +922,7 @@ class LiSelectComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _overlayRelayoutPending = false;
       if (!dropdownOpen) {
         return;
@@ -925,35 +932,41 @@ class LiSelectComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??=
+        web.EventStreamProvider<web.MouseEvent>('click')
+            .forTarget(web.document)
+            .listen((event) {
       if (!dropdownOpen) {
         return;
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Node>() ?? false)) {
+      if (!(target?.isA<web.Node>() ?? false)) {
         closeDropdown();
         return;
       }
 
       final clickedTrigger =
-          dropdownButtonElement?.contains(target as html.Node?) ?? false;
+          dropdownButtonElement?.contains(target as web.Node?) ?? false;
       final clickedPanel =
-          dropdownContainerEle?.contains(target as html.Node?) ?? false;
+          dropdownContainerEle?.contains(target as web.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         closeDropdown();
       }
     });
 
-    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+    _documentKeySubscription ??=
+        web.EventStreamProvider<web.KeyboardEvent>('keydown')
+            .forTarget(web.document)
+            .listen((event) {
       if (!dropdownOpen) {
         return;
       }
 
       final target = event.target;
-      final isInsideOverlay = (target?.isA<html.Node>() ?? false) &&
-          ((dropdownButtonElement?.contains(target as html.Node?) ?? false) ||
-              (dropdownContainerEle?.contains(target as html.Node?) ?? false));
+      final isInsideOverlay = (target?.isA<web.Node>() ?? false) &&
+          ((dropdownButtonElement?.contains(target as web.Node?) ?? false) ||
+              (dropdownContainerEle?.contains(target as web.Node?) ?? false));
 
       final isNavigationKey = event.key == 'ArrowUp' ||
           event.key == 'ArrowDown' ||

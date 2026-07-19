@@ -5,12 +5,14 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_date_picker_component_test.template.dart' as ng;
 
@@ -68,15 +70,15 @@ void main() {
     await _settle(fixture);
 
     final trigger = fixture.rootElement
-        .querySelector('.date-picker-wrapper .input-group') as html.Element;
+        .querySelector('.date-picker-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector('.date-picker-open.is-open')
-        as html.Element;
+    final panel =
+        web.document.querySelector('.date-picker-open.is-open') as web.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final panelRect = panel.getBoundingClientRect();
 
@@ -114,14 +116,14 @@ void main() {
     await _settleMobile(fixture);
 
     final trigger = fixture.rootElement
-        .querySelector('.date-picker-wrapper .input-group') as html.Element;
+        .querySelector('.date-picker-wrapper .input-group') as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleMobile(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.date-picker-open--mobile-modal.is-open',
     );
     expect(panel, isNotNull);
@@ -133,13 +135,13 @@ void main() {
     );
 
     final panelRect = panel.getBoundingClientRect();
-    final viewportWidth = html.window.innerWidth;
-    final viewportHeight = html.window.innerHeight;
+    final viewportWidth = web.window.innerWidth;
+    final viewportHeight = web.window.innerHeight;
     expect(panelRect.top.abs(), lessThanOrEqualTo(1));
     expect(panelRect.left.abs(), lessThanOrEqualTo(1));
     expect(panelRect.width, greaterThanOrEqualTo(viewportWidth - 1));
     expect(panelRect.height, greaterThanOrEqualTo(viewportHeight - 1));
-    final panelStyle = panel.getComputedStyle();
+    final panelStyle = web.window.getComputedStyle(panel);
     expect(panelStyle.overflowX, 'hidden');
     expect(panelStyle.overflowY, 'auto');
   });

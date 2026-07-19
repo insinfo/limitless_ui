@@ -1,28 +1,32 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
+List<web.File> _filesFromList(web.FileList files) => <web.File>[
+      for (var index = 0; index < files.length; index++) files.item(index)!,
+    ];
+
 @Directive(selector: '[liFileSelect]')
 class LiFileSelectDirective implements OnDestroy {
-  final StreamController<List<html.File>> _filesChangeController =
-      StreamController<List<html.File>>.broadcast();
+  final StreamController<List<web.File>> _filesChangeController =
+      StreamController<List<web.File>>.broadcast();
 
   @Output()
-  Stream<List<html.File>> get filesChange => _filesChangeController.stream;
+  Stream<List<web.File>> get filesChange => _filesChangeController.stream;
 
   @HostListener('change', ['\$event'])
-  void onChange(html.Event event) {
+  void onChange(web.Event event) {
     final input = event.target;
-    if (!(input?.isA<html.InputElement>() ?? false)) {
-      _filesChangeController.add(const <html.File>[]);
+    if (!(input?.isA<web.HTMLInputElement>() ?? false)) {
+      _filesChangeController.add(const <web.File>[]);
       return;
     }
 
+    final files = (input as web.HTMLInputElement).files;
     _filesChangeController.add(
-      List<html.File>.from(
-          (input as html.InputElement).files?.toList() ?? const <html.File>[]),
+      files == null ? const <web.File>[] : _filesFromList(files),
     );
   }
 

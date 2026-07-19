@@ -6,12 +6,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_button_toggle_group_component_test.template.dart' as ng;
 
@@ -72,27 +75,28 @@ void main() {
     await _settle(fixture);
 
     final group = fixture.rootElement.querySelector('[role="group"]');
-    final buttons = fixture.rootElement.queryAll('button');
+    final buttons =
+        fixture.rootElement.querySelectorAll('button').toElementList();
 
     expect(group, isNotNull);
-    expect(group!.classes.contains('btn-group'), isTrue);
-    expect(group.classes.contains('btn-group-lg'), isTrue);
-    expect(group.classes.contains('custom-group'), isTrue);
+    expect(group!.classList.contains('btn-group'), isTrue);
+    expect(group.classList.contains('btn-group-lg'), isTrue);
+    expect(group.classList.contains('custom-group'), isTrue);
     expect(group.getAttribute('aria-label'), 'display-mode');
     expect(buttons, hasLength(3));
 
-    final activeButton = buttons[0] as html.ButtonElement;
-    final inactiveButton = buttons[1] as html.ButtonElement;
-    final disabledButton = buttons[2] as html.ButtonElement;
+    final activeButton = buttons[0] as web.HTMLButtonElement;
+    final inactiveButton = buttons[1] as web.HTMLButtonElement;
+    final disabledButton = buttons[2] as web.HTMLButtonElement;
 
-    expect(activeButton.classes.contains('btn-success'), isTrue);
-    expect(activeButton.classes.contains('rounded-pill'), isTrue);
-    expect(activeButton.classes.contains('custom-button'), isTrue);
+    expect(activeButton.classList.contains('btn-success'), isTrue);
+    expect(activeButton.classList.contains('rounded-pill'), isTrue);
+    expect(activeButton.classList.contains('custom-button'), isTrue);
     expect(activeButton.getAttribute('aria-pressed'), 'true');
     expect(activeButton.title, 'Exibir em grade');
-    expect(activeButton.querySelector('i')?.classes.contains('me-2'), isTrue);
+    expect(activeButton.querySelector('i')?.classList.contains('me-2'), isTrue);
 
-    expect(inactiveButton.classes.contains('btn-outline-secondary'), isTrue);
+    expect(inactiveButton.classList.contains('btn-outline-secondary'), isTrue);
     expect(inactiveButton.getAttribute('aria-pressed'), 'false');
 
     expect(disabledButton.disabled, isTrue);
@@ -106,22 +110,25 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final buttons = fixture.rootElement.queryAll('button');
-    final listButton = buttons[1] as html.ButtonElement;
+    final buttons =
+        fixture.rootElement.querySelectorAll('button').toElementList();
+    final listButton = buttons[1] as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      listButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      listButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final updatedButtons = fixture.rootElement.queryAll('button');
-    final updatedGridButton = updatedButtons[0] as html.ButtonElement;
-    final updatedListButton = updatedButtons[1] as html.ButtonElement;
+    final updatedButtons =
+        fixture.rootElement.querySelectorAll('button').toElementList();
+    final updatedGridButton = updatedButtons[0] as web.HTMLButtonElement;
+    final updatedListButton = updatedButtons[1] as web.HTMLButtonElement;
 
     expect(host.selectedValue, 'list');
     expect(updatedListButton.getAttribute('aria-pressed'), 'true');
-    expect(updatedListButton.classes.contains('btn-success'), isTrue);
-    expect(updatedGridButton.classes.contains('btn-outline-secondary'), isTrue);
+    expect(updatedListButton.classList.contains('btn-success'), isTrue);
+    expect(
+        updatedGridButton.classList.contains('btn-outline-secondary'), isTrue);
   });
 
   test('ignores clicks on the active option and on disabled options', () async {
@@ -129,13 +136,14 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final buttons = fixture.rootElement.queryAll('button');
-    final activeButton = buttons[0] as html.ButtonElement;
-    final disabledButton = buttons[2] as html.ButtonElement;
+    final buttons =
+        fixture.rootElement.querySelectorAll('button').toElementList();
+    final activeButton = buttons[0] as web.HTMLButtonElement;
+    final disabledButton = buttons[2] as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      activeButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
-      disabledButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      activeButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
+      disabledButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 

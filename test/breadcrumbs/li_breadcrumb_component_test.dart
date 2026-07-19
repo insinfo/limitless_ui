@@ -5,7 +5,6 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
@@ -54,14 +53,14 @@ void main() {
     expect(nav, isNotNull);
     expect(nav!.getAttribute('data-value'), 'dash');
     expect(shell, isNotNull);
-    expect(shell!.classes.contains('li-breadcrumb-nowrap'), isTrue);
-    expect(shell.classes.contains('line-demo'), isTrue);
+    expect(shell!.classList.contains('li-breadcrumb-nowrap'), isTrue);
+    expect(shell.classList.contains('line-demo'), isTrue);
     expect(shell.getAttribute('data-label'), 'li_breadcrumb_shell');
 
     expect(breadcrumb, isNotNull);
-    expect(breadcrumb!.classes.contains('breadcrumb-dash'), isTrue);
-    expect(breadcrumb.classes.contains('crumb-demo'), isTrue);
-    expect(breadcrumb.text, contains('Library'));
+    expect(breadcrumb!.classList.contains('breadcrumb-dash'), isTrue);
+    expect(breadcrumb.classList.contains('crumb-demo'), isTrue);
+    expect(breadcrumb.textContent, contains('Library'));
     expect(breadcrumb.getAttribute('data-label'), 'li_breadcrumb_list');
 
     expect(
@@ -80,16 +79,16 @@ void main() {
     final disabled = root.querySelector('#crumb-disabled');
 
     expect(current, isNotNull);
-    expect(current!.classes.contains('breadcrumb-item'), isTrue);
-    expect(current.classes.contains('active'), isTrue);
+    expect(current!.classList.contains('breadcrumb-item'), isTrue);
+    expect(current.classList.contains('active'), isTrue);
     expect(current.getAttribute('aria-current'), 'page');
     expect(current.getAttribute('data-label'), 'li_breadcrumb_item');
     expect(current.getAttribute('data-active'), 'true');
     expect(current.getAttribute('data-disabled'), 'false');
 
     expect(disabled, isNotNull);
-    expect(disabled!.classes.contains('breadcrumb-item'), isTrue);
-    expect(disabled.classes.contains('disabled'), isTrue);
+    expect(disabled!.classList.contains('breadcrumb-item'), isTrue);
+    expect(disabled.classList.contains('disabled'), isTrue);
     expect(disabled.getAttribute('aria-disabled'), 'true');
     expect(disabled.getAttribute('tabindex'), '-1');
     expect(disabled.getAttribute('data-label'), 'li_breadcrumb_item');

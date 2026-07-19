@@ -6,7 +6,8 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:limitless_ui/src/web_support/dom_tokens.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/quill_text_editor.dart';
 import 'package:limitless_ui/src/components/quill_text_editor/quill_text_editor_bridge.dart';
@@ -14,6 +15,8 @@ import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_quill_text_editor_component_test.template.dart' as ng;
 import 'quill_test_fakes.dart';
@@ -140,12 +143,13 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final toolbarAction = fixture.rootElement
-        .querySelector('[title="Inserir assinatura"]') as html.ButtonElement?;
+    final toolbarAction =
+        fixture.rootElement.querySelector('[title="Inserir assinatura"]')
+            as web.HTMLButtonElement?;
     expect(toolbarAction, isNotNull);
 
     await fixture.update((_) {
-      toolbarAction!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toolbarAction!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -164,7 +168,7 @@ void main() {
     final error =
         fixture.rootElement.querySelector('.li-quill-text-editor__error');
     expect(error, isNotNull);
-    expect(error!.text, contains('não está disponível'));
+    expect(error!.textContent, contains('não está disponível'));
   });
 
   test('keeps the same toolbar DOM when toggling visibility', () async {
@@ -182,7 +186,7 @@ void main() {
     expect(toolbarBefore, isNotNull);
     expect(boldButtonBefore, isNotNull);
     expect(headerSelectBefore, isNotNull);
-    expect(toolbarBefore!.classes,
+    expect(toolbarBefore!.classList.toDartSet(),
         isNot(contains('li-quill-text-editor__toolbar--hidden')));
 
     await fixture.update((_) {
@@ -197,7 +201,7 @@ void main() {
     expect(toolbarBefore == toolbarHidden, isTrue);
     expect(boldButtonBefore == boldButtonHidden, isTrue);
     expect(headerSelectBefore == headerSelectHidden, isTrue);
-    expect(toolbarHidden!.classes,
+    expect(toolbarHidden!.classList.toDartSet(),
         contains('li-quill-text-editor__toolbar--hidden'));
 
     await fixture.update((_) {
@@ -212,7 +216,7 @@ void main() {
     expect(toolbarBefore == toolbarAfter, isTrue);
     expect(boldButtonBefore == boldButtonAfter, isTrue);
     expect(headerSelectBefore == headerSelectAfter, isTrue);
-    expect(toolbarAfter!.classes,
+    expect(toolbarAfter!.classList.toDartSet(),
         isNot(contains('li-quill-text-editor__toolbar--hidden')));
   });
 
@@ -225,19 +229,20 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final orderedButtonBefore = fixture.rootElement
-        .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
-    final alignLeftButtonBefore = fixture.rootElement
-        .querySelector('[title="Alinhar à esquerda"]') as html.ButtonElement?;
+        .querySelector('.ql-list[value="ordered"]') as web.HTMLButtonElement?;
+    final alignLeftButtonBefore =
+        fixture.rootElement.querySelector('[title="Alinhar à esquerda"]')
+            as web.HTMLButtonElement?;
     final boldButtonBefore =
-        fixture.rootElement.querySelector('.ql-bold') as html.ButtonElement?;
+        fixture.rootElement.querySelector('.ql-bold') as web.HTMLButtonElement?;
     final headerSelectBefore = fixture.rootElement
-        .querySelector('select.ql-header') as html.SelectElement?;
+        .querySelector('select.ql-header') as web.HTMLSelectElement?;
     final sizeSelectBefore = fixture.rootElement.querySelector('select.ql-size')
-        as html.SelectElement?;
+        as web.HTMLSelectElement?;
     final colorSelectBefore = fixture.rootElement
-        .querySelector('select.ql-color') as html.SelectElement?;
+        .querySelector('select.ql-color') as web.HTMLSelectElement?;
     final backgroundSelectBefore = fixture.rootElement
-        .querySelector('select.ql-background') as html.SelectElement?;
+        .querySelector('select.ql-background') as web.HTMLSelectElement?;
 
     expect(orderedButtonBefore, isNotNull);
     expect(alignLeftButtonBefore, isNotNull);
@@ -260,19 +265,20 @@ void main() {
     await _settle(fixture);
 
     final orderedButtonAfter = fixture.rootElement
-        .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
-    final alignLeftButtonAfter = fixture.rootElement
-        .querySelector('[title="Alinhar à esquerda"]') as html.ButtonElement?;
+        .querySelector('.ql-list[value="ordered"]') as web.HTMLButtonElement?;
+    final alignLeftButtonAfter =
+        fixture.rootElement.querySelector('[title="Alinhar à esquerda"]')
+            as web.HTMLButtonElement?;
     final boldButtonAfter =
-        fixture.rootElement.querySelector('.ql-bold') as html.ButtonElement?;
+        fixture.rootElement.querySelector('.ql-bold') as web.HTMLButtonElement?;
     final headerSelectAfter = fixture.rootElement
-        .querySelector('select.ql-header') as html.SelectElement?;
+        .querySelector('select.ql-header') as web.HTMLSelectElement?;
     final sizeSelectAfter = fixture.rootElement.querySelector('select.ql-size')
-        as html.SelectElement?;
+        as web.HTMLSelectElement?;
     final colorSelectAfter = fixture.rootElement
-        .querySelector('select.ql-color') as html.SelectElement?;
+        .querySelector('select.ql-color') as web.HTMLSelectElement?;
     final backgroundSelectAfter = fixture.rootElement
-        .querySelector('select.ql-background') as html.SelectElement?;
+        .querySelector('select.ql-background') as web.HTMLSelectElement?;
 
     expect(orderedButtonBefore == orderedButtonAfter, isTrue);
     expect(alignLeftButtonBefore == alignLeftButtonAfter, isTrue);
@@ -288,7 +294,7 @@ void main() {
     expect(backgroundSelectAfter!.disabled, isTrue);
     expect(boldButtonAfter!.disabled, isFalse);
     expect(
-      (orderedButtonAfter.parent as html.Element).classes,
+      (orderedButtonAfter.parentElement as web.Element).classList.toDartSet(),
       contains('li-quill-text-editor__toolbar-item--disabled'),
     );
 
@@ -298,16 +304,16 @@ void main() {
     await _settle(fixture);
 
     final orderedButtonReset = fixture.rootElement
-        .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
+        .querySelector('.ql-list[value="ordered"]') as web.HTMLButtonElement?;
     final headerSelectReset = fixture.rootElement
-        .querySelector('select.ql-header') as html.SelectElement?;
+        .querySelector('select.ql-header') as web.HTMLSelectElement?;
 
     expect(orderedButtonBefore == orderedButtonReset, isTrue);
     expect(headerSelectBefore == headerSelectReset, isTrue);
     expect(orderedButtonReset!.disabled, isFalse);
     expect(headerSelectReset!.disabled, isFalse);
     expect(
-      (orderedButtonReset.parent as html.Element).classes,
+      (orderedButtonReset.parentElement as web.Element).classList.toDartSet(),
       isNot(contains('li-quill-text-editor__toolbar-item--disabled')),
     );
   });
@@ -358,9 +364,9 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final orderedButtonBefore = fixture.rootElement
-        .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
+        .querySelector('.ql-list[value="ordered"]') as web.HTMLButtonElement?;
     final boldButtonBefore =
-        fixture.rootElement.querySelector('.ql-bold') as html.ButtonElement?;
+        fixture.rootElement.querySelector('.ql-bold') as web.HTMLButtonElement?;
 
     expect(orderedButtonBefore, isNotNull);
     expect(boldButtonBefore, isNotNull);
@@ -373,16 +379,16 @@ void main() {
     await _settle(fixture);
 
     final orderedButtonAfter = fixture.rootElement
-        .querySelector('.ql-list[value="ordered"]') as html.ButtonElement?;
+        .querySelector('.ql-list[value="ordered"]') as web.HTMLButtonElement?;
 
     expect(fakeBridge.createdEditors, hasLength(1));
     expect(orderedButtonBefore == orderedButtonAfter, isTrue);
     expect(
-      (orderedButtonAfter!.parent as html.Element).getAttribute('hidden'),
+      (orderedButtonAfter!.parentElement as web.Element).getAttribute('hidden'),
       isNotNull,
     );
     expect(
-      (boldButtonBefore!.parent as html.Element).getAttribute('hidden'),
+      (boldButtonBefore!.parentElement as web.Element).getAttribute('hidden'),
       isNull,
     );
   });
@@ -509,46 +515,45 @@ void main() {
         fixture.rootElement.querySelector('.li-quill-text-editor__editor');
     expect(editorSurface, isNotNull);
 
-    final qlEditor = html.createDivElement()..classes.add('ql-editor');
+    final qlEditor = web.HTMLDivElement()..classList.add('ql-editor');
 
-    final orderedList = html.createOListElement();
-    final orderedItem = html.createLIElement()
+    final orderedList = web.HTMLOListElement();
+    final orderedItem = web.HTMLLIElement()
       ..setAttribute('data-list', 'ordered');
-    final orderedUi = html.createSpanElement()
-      ..classes.add('ql-ui')
+    final orderedUi = web.HTMLSpanElement()
+      ..classList.add('ql-ui')
       ..setAttribute('contenteditable', 'false');
     orderedItem
-      ..append(orderedUi)
-      ..appendText('Primeiro item');
-    orderedList.append(orderedItem);
+      ..appendChild(orderedUi)
+      ..appendChild(web.document.createTextNode('Primeiro item'));
+    orderedList.appendChild(orderedItem);
 
-    final bulletList = html.createUListElement();
-    final bulletItem = html.createLIElement()
-      ..setAttribute('data-list', 'bullet');
-    final bulletUi = html.createSpanElement()
-      ..classes.add('ql-ui')
+    final bulletList = web.HTMLUListElement();
+    final bulletItem = web.HTMLLIElement()..setAttribute('data-list', 'bullet');
+    final bulletUi = web.HTMLSpanElement()
+      ..classList.add('ql-ui')
       ..setAttribute('contenteditable', 'false');
     bulletItem
-      ..append(bulletUi)
-      ..appendText('Item com marcador');
-    bulletList.append(bulletItem);
+      ..appendChild(bulletUi)
+      ..appendChild(web.document.createTextNode('Item com marcador'));
+    bulletList.appendChild(bulletItem);
 
-    final rtlList = html.createOListElement();
-    final rtlItem = html.createLIElement()
+    final rtlList = web.HTMLOListElement();
+    final rtlItem = web.HTMLLIElement()
       ..setAttribute('data-list', 'ordered')
-      ..classes.add('ql-direction-rtl');
-    final rtlUi = html.createSpanElement()
-      ..classes.add('ql-ui')
+      ..classList.add('ql-direction-rtl');
+    final rtlUi = web.HTMLSpanElement()
+      ..classList.add('ql-ui')
       ..setAttribute('contenteditable', 'false');
     rtlItem
-      ..append(rtlUi)
-      ..appendText('عنصر');
-    rtlList.append(rtlItem);
+      ..appendChild(rtlUi)
+      ..appendChild(web.document.createTextNode('عنصر'));
+    rtlList.appendChild(rtlItem);
 
-    qlEditor.append(orderedList);
-    qlEditor.append(bulletList);
-    qlEditor.append(rtlList);
-    editorSurface!.append(qlEditor);
+    qlEditor.appendChild(orderedList);
+    qlEditor.appendChild(bulletList);
+    qlEditor.appendChild(rtlList);
+    editorSurface!.appendChild(qlEditor);
     await _settle(fixture);
 
     final orderedLegacyMarkerStyle = _pseudoStyle(orderedItem, '::before');
@@ -615,13 +620,13 @@ Future<void> _settle(
   await fixture.update();
 }
 
-html.StyleElement _appendHeadStyle(String cssText) {
-  final style = html.createStyleElement()..text = cssText;
-  html.document.head!.append(style);
+web.HTMLStyleElement _appendHeadStyle(String cssText) {
+  final style = web.HTMLStyleElement()..textContent = cssText;
+  web.document.head!.appendChild(style);
   return style;
 }
 
-html.CssStyleDeclaration _pseudoStyle(
-    html.Element element, String pseudoElement) {
-  return html.window.getComputedStyle(element, pseudoElement);
+web.CSSStyleDeclaration _pseudoStyle(
+    web.Element element, String pseudoElement) {
+  return web.window.getComputedStyle(element, pseudoElement);
 }

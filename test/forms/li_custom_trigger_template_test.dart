@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -13,6 +13,8 @@ import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_custom_trigger_template_test.template.dart' as ng;
 
@@ -172,14 +174,14 @@ void main() {
     await _settle(fixture);
     await _click(
       fixture,
-      html.document.querySelector(
+      web.document.querySelector(
         '[data-label^="li_select_item_"][data-value="approved"]',
       )!,
     );
     await _settle(fixture);
 
     expect(host.selectedStatus, 'approved');
-    expect(fixture.rootElement.querySelector('#select-trigger')!.text,
+    expect(fixture.rootElement.querySelector('#select-trigger')!.textContent,
         contains('Aprovado'));
   });
 
@@ -192,7 +194,7 @@ void main() {
     await _click(fixture, trigger);
     await _settle(fixture);
 
-    final dropdown = html.document
+    final dropdown = web.document
         .querySelector('.LiSelectComponent .dropdown-container.dropdown-open');
     expect(dropdown, isNotNull);
     expect(dropdown!.getBoundingClientRect().width,
@@ -208,14 +210,14 @@ void main() {
     await _settle(fixture);
     await _click(
       fixture,
-      html.document.querySelector(
+      web.document.querySelector(
         '[data-label^="li_ms_item_"][data-value="approved"]',
       )!,
     );
     await _settle(fixture);
 
     expect(host.selectedStatuses, contains('approved'));
-    expect(fixture.rootElement.querySelector('#multi-trigger')!.text,
+    expect(fixture.rootElement.querySelector('#multi-trigger')!.textContent,
         contains('Aprovado'));
   });
 
@@ -227,9 +229,8 @@ void main() {
         fixture, fixture.rootElement.querySelector('#datatable-trigger')!);
     await _settle(fixture, milliseconds: 140);
 
-    expect(
-        html.document.querySelector('.modal.show .modal-content'), isNotNull);
-    expect(html.document.querySelector('.modal.show')!.text,
+    expect(web.document.querySelector('.modal.show .modal-content'), isNotNull);
+    expect(web.document.querySelector('.modal.show')!.textContent,
         contains('Maria Silva'));
   });
 
@@ -242,14 +243,14 @@ void main() {
     await _settle(fixture);
     await _click(
       fixture,
-      html.document.querySelector(
+      web.document.querySelector(
         '[data-label="li_dp_day"][data-value="2026-06-15"]',
       )!,
     );
     await _settle(fixture);
 
     expect(host.dateValue, DateTime(2026, 6, 15));
-    expect(fixture.rootElement.querySelector('#date-trigger')!.text,
+    expect(fixture.rootElement.querySelector('#date-trigger')!.textContent,
         contains('15/06/2026'));
   });
 
@@ -262,25 +263,25 @@ void main() {
     await _settle(fixture);
     await _click(
       fixture,
-      html.document.querySelector(
+      web.document.querySelector(
         '[data-label="li_drp_day"][data-calendar="left"][data-value="2026-06-03"]',
       )!,
     );
     await _click(
       fixture,
-      html.document.querySelector(
+      web.document.querySelector(
         '[data-label="li_drp_day"][data-calendar="left"][data-value="2026-06-07"]',
       )!,
     );
     await _click(
       fixture,
-      html.document.querySelector('[data-label="li_drp_apply"]')!,
+      web.document.querySelector('[data-label="li_drp_apply"]')!,
     );
     await _settle(fixture);
 
     expect(host.rangeStart, DateTime(2026, 6, 3));
     expect(host.rangeEnd, DateTime(2026, 6, 7));
-    expect(fixture.rootElement.querySelector('#range-trigger')!.text,
+    expect(fixture.rootElement.querySelector('#range-trigger')!.textContent,
         contains('03/06/2026 - 07/06/2026'));
   });
 
@@ -293,28 +294,28 @@ void main() {
     await _settle(fixture);
     await _click(
       fixture,
-      html.document.querySelector(
+      web.document.querySelector(
         '[data-label="li_tp_dial_label"][data-value="10"]',
       )!,
     );
     await _click(
       fixture,
-      html.document.querySelector('[data-label="li_tp_apply"]')!,
+      web.document.querySelector('[data-label="li_tp_apply"]')!,
     );
     await _settle(fixture);
 
     expect(host.timeValue, const Duration(hours: 10, minutes: 30));
-    expect(fixture.rootElement.querySelector('#time-trigger')!.text,
+    expect(fixture.rootElement.querySelector('#time-trigger')!.textContent,
         contains('10:30'));
   });
 }
 
 Future<void> _click(
   NgTestFixture<CustomTriggerTemplateHostComponent> fixture,
-  html.Element element,
+  web.Element element,
 ) async {
   await fixture.update((_) {
-    element.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+    element.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
   });
 }
 

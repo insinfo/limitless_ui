@@ -1,17 +1,18 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
+
+import '../web_support/html_sinks.dart';
 
 /// Writes trusted HTML into the host element.
 @Directive(selector: '[liSafeInnerHtml]')
 class LiSafeInnerHtmlDirective {
-  final Element _element;
+  final web.Element _element;
 
   LiSafeInnerHtmlDirective(this._element);
 
   @Input()
   set liSafeInnerHtml(String? html) {
-    // ignore: unsafe_html
-    _element.setInnerHtml(html ?? '', treeSanitizer: NodeTreeSanitizer.trusted);
+    setTrustedHtml(_element, html ?? '');
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -17,24 +17,24 @@ const liNavDirectives = <Object>[
 
 bool _isValidNavId(Object? id) => id != null && id.toString().isNotEmpty;
 
-String _normalizedKey(html.KeyboardEvent event) {
+String _normalizedKey(web.KeyboardEvent event) {
   final key = event.key;
   if (key.isNotEmpty) {
     return key;
   }
 
-  switch (event.keyCode) {
-    case 35:
+  switch (event.code) {
+    case 'End':
       return 'End';
-    case 36:
+    case 'Home':
       return 'Home';
-    case 37:
+    case 'ArrowLeft':
       return 'ArrowLeft';
-    case 38:
+    case 'ArrowUp':
       return 'ArrowUp';
-    case 39:
+    case 'ArrowRight':
       return 'ArrowRight';
-    case 40:
+    case 'ArrowDown':
       return 'ArrowDown';
     default:
       return '';
@@ -227,11 +227,11 @@ class LiNavDirective implements AfterContentInit, OnDestroy {
     _updateActiveId(id, emitNavChange: false, emitActiveIdChange: true);
   }
 
-  void onFocusout(html.FocusEvent event) {
+  void onFocusout(web.FocusEvent event) {
     final relatedTarget = event.relatedTarget;
-    if ((relatedTarget?.isA<html.Element>() ?? false) &&
+    if ((relatedTarget?.isA<web.Element>() ?? false) &&
         _links.any((link) =>
-            link.nativeElement.contains(relatedTarget as html.Node?))) {
+            link.nativeElement.contains(relatedTarget as web.Node?))) {
       return;
     }
     _navigatingWithKeyboard = false;
@@ -239,12 +239,12 @@ class LiNavDirective implements AfterContentInit, OnDestroy {
   }
 
   @HostListener('focusout', ['\$event'])
-  void handleFocusout(html.FocusEvent event) => onFocusout(event);
+  void handleFocusout(web.FocusEvent event) => onFocusout(event);
 
   @HostListener('keydown', ['\$event'])
-  void handleKeydown(html.KeyboardEvent event) => onKeyDown(event);
+  void handleKeydown(web.KeyboardEvent event) => onKeyDown(event);
 
-  void onKeyDown(html.KeyboardEvent event) {
+  void onKeyDown(web.KeyboardEvent event) {
     if (!roles || keyboard == false) {
       return;
     }
@@ -256,7 +256,7 @@ class LiNavDirective implements AfterContentInit, OnDestroy {
     }
 
     var position = enabledLinks.indexWhere(
-      (link) => link.nativeElement == html.document.activeElement,
+      (link) => link.nativeElement == web.document.activeElement,
     );
     if (position < 0) {
       position = enabledLinks.indexWhere((link) => link.item.active);
@@ -472,7 +472,7 @@ class LiNavLinkDirective implements OnInit, OnDestroy {
 
   final LiNavItemDirective item;
   final LiNavDirective nav;
-  final html.Element nativeElement;
+  final web.Element nativeElement;
 
   @HostBinding('class.nav-link')
   bool hostNavLinkClass = true;
@@ -510,15 +510,16 @@ class LiNavLinkDirective implements OnInit, OnDestroy {
   }
 
   @HostBinding('attr.href')
-  String? get hostHref => nativeElement.isA<html.AnchorElement>() ? '' : null;
+  String? get hostHref =>
+      nativeElement.isA<web.HTMLAnchorElement>() ? '' : null;
 
   @HostBinding('attr.type')
   String? get hostType =>
-      nativeElement.isA<html.ButtonElement>() ? 'button' : null;
+      nativeElement.isA<web.HTMLButtonElement>() ? 'button' : null;
 
   @HostBinding('attr.disabled')
   String? get hostDisabledAttribute =>
-      nativeElement.isA<html.ButtonElement>() && item.disabled ? '' : null;
+      nativeElement.isA<web.HTMLButtonElement>() && item.disabled ? '' : null;
 
   @override
   void ngOnInit() {
@@ -526,15 +527,15 @@ class LiNavLinkDirective implements OnInit, OnDestroy {
   }
 
   @HostListener('click', ['\$event'])
-  void onClick(html.MouseEvent event) {
-    if (nativeElement.isA<html.AnchorElement>()) {
+  void onClick(web.MouseEvent event) {
+    if (nativeElement.isA<web.HTMLAnchorElement>()) {
       event.preventDefault();
     }
     nav.click(item);
   }
 
   void focus() {
-    nativeElement.focus();
+    (nativeElement as web.HTMLElement).focus();
   }
 
   @override
@@ -552,7 +553,7 @@ class _LiNavPaneView {
 
   final LiNavItemDirective item;
   final EmbeddedViewRef? viewRef;
-  final html.DivElement paneElement;
+  final web.HTMLDivElement paneElement;
 }
 
 @Directive(selector: '[liNavOutlet]')
@@ -563,7 +564,7 @@ class LiNavOutletDirective implements OnInit, OnDestroy {
     this._changeDetectorRef,
   );
 
-  final html.Element _hostElement;
+  final web.Element _hostElement;
   final ViewContainerRef _viewContainerRef;
   final ChangeDetectorRef _changeDetectorRef;
 
@@ -613,8 +614,8 @@ class LiNavOutletDirective implements OnInit, OnDestroy {
         continue;
       }
 
-      final pane = html.createDivElement()
-        ..classes.add('tab-pane')
+      final pane = web.HTMLDivElement()
+        ..classList.add('tab-pane')
         ..id = item.panelDomId
         ..setAttribute('aria-labelledby', item.domId);
       final role = paneRole ?? (nav.roles ? 'tabpanel' : null);
@@ -622,10 +623,10 @@ class LiNavOutletDirective implements OnInit, OnDestroy {
         pane.setAttribute('role', role);
       }
       if (item.active) {
-        pane.classes.add('active');
+        pane.classList.add('active');
       }
 
-      _hostElement.append(pane);
+      _hostElement.appendChild(pane);
 
       EmbeddedViewRef? viewRef;
       final template = item.content?.templateRef;
@@ -638,7 +639,7 @@ class LiNavOutletDirective implements OnInit, OnDestroy {
           viewRef.setLocal('active', item.active);
         }
         for (final rootNode in viewRef.rootNodes) {
-          pane.append(rootNode);
+          pane.appendChild(rootNode);
         }
       }
 

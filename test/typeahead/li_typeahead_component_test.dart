@@ -6,13 +6,17 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
+import 'package:limitless_ui/src/web_support/html_sinks.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_typeahead_component_test.template.dart' as ng;
 
@@ -172,21 +176,22 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.queryAll('input');
-    final basicInput = inputs[0] as html.InputElement;
+    final inputs =
+        fixture.rootElement.querySelectorAll('input').toElementList();
+    final basicInput = inputs[0] as web.HTMLInputElement;
 
     expect(host.userSelectedState, isNull);
 
     await fixture.update((_) {
       basicInput.focus();
       basicInput.value = 'ala';
-      basicInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      basicInput.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.basicTypeahead!.isPopupOpen(), isTrue);
-    expect(fixture.rootElement.text, contains('Alabama'));
-    expect(fixture.rootElement.text, contains('Alaska'));
+    expect(fixture.rootElement.textContent, contains('Alabama'));
+    expect(fixture.rootElement.textContent, contains('Alaska'));
 
     await fixture.update((_) {
       _dispatchKey(basicInput, 'ArrowDown');
@@ -204,12 +209,13 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.queryAll('input');
-    final focusInput = inputs[1] as html.InputElement;
+    final inputs =
+        fixture.rootElement.querySelectorAll('input').toElementList();
+    final focusInput = inputs[1] as web.HTMLInputElement;
 
     await fixture.update((_) {
       focusInput.focus();
-      focusInput.dispatchEvent(html.liEvent('focus'));
+      focusInput.dispatchEvent(bubblingEvent('focus'));
     });
     await _settle(fixture);
 
@@ -221,13 +227,14 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.queryAll('input');
-    final exactInput = inputs[2] as html.InputElement;
+    final inputs =
+        fixture.rootElement.querySelectorAll('input').toElementList();
+    final exactInput = inputs[2] as web.HTMLInputElement;
 
     await fixture.update((_) {
       exactInput.focus();
       exactInput.value = 'California';
-      exactInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      exactInput.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
@@ -240,13 +247,14 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.queryAll('input');
-    final strictInput = inputs[3] as html.InputElement;
+    final inputs =
+        fixture.rootElement.querySelectorAll('input').toElementList();
+    final strictInput = inputs[3] as web.HTMLInputElement;
 
     await fixture.update((_) {
       strictInput.focus();
       strictInput.value = 'Ark';
-      strictInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      strictInput.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
@@ -266,20 +274,21 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final inputs = fixture.rootElement.queryAll('input');
-    final asyncInput = inputs[4] as html.InputElement;
+    final inputs =
+        fixture.rootElement.querySelectorAll('input').toElementList();
+    final asyncInput = inputs[4] as web.HTMLInputElement;
 
     await fixture.update((_) {
       asyncInput.focus();
       asyncInput.value = 'san';
-      asyncInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      asyncInput.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
 
     await _settle(fixture, milliseconds: 260);
 
     expect(host.asyncTypeahead!.isPopupOpen(), isTrue);
-    expect(fixture.rootElement.innerHtml, contains('city-code'));
-    expect(fixture.rootElement.text, contains('San Francisco'));
+    expect(readHtml(fixture.rootElement), contains('city-code'));
+    expect(fixture.rootElement.textContent, contains('San Francisco'));
 
     await fixture.update((_) {
       _dispatchKey(asyncInput, 'Enter');
@@ -294,17 +303,18 @@ void main() {
   test('config service provides default values to nested typeahead', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final inputs = fixture.rootElement.queryAll('input');
-    final configuredInput = inputs[5] as html.InputElement;
+    final inputs =
+        fixture.rootElement.querySelectorAll('input').toElementList();
+    final configuredInput = inputs[5] as web.HTMLInputElement;
 
     await fixture.update((_) {
       configuredInput.focus();
-      configuredInput.dispatchEvent(html.liEvent('focus'));
+      configuredInput.dispatchEvent(bubblingEvent('focus'));
     });
     await _settle(fixture);
 
     expect(configuredInput.getAttribute('placeholder'), 'Configured typeahead');
-    expect(fixture.rootElement.text, contains('Alpha'));
+    expect(fixture.rootElement.textContent, contains('Alpha'));
   });
 }
 
@@ -316,7 +326,7 @@ Future<void> _settle(
   await fixture.update((_) {});
 }
 
-void _dispatchKey(html.Element element, String key) {
-  final event = html.liKeyboardEvent('keydown', key: key);
+void _dispatchKey(web.Element element, String key) {
+  final event = bubblingKeyboardEvent('keydown', key: key);
   element.dispatchEvent(event);
 }

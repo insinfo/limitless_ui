@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'dart:async';
 
@@ -244,8 +244,8 @@ class LiTagManagerComponent implements OnDestroy {
     return _isEnglishLocale ? 'Create new tag' : 'Criar nova etiqueta';
   }
 
-  void onSearchInput(html.Event event) {
-    final input = event.target as html.InputElement;
+  void onSearchInput(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
     _searchQuery = input.value.trim();
     _applySearchQuery(_searchQuery);
   }
@@ -274,7 +274,7 @@ class LiTagManagerComponent implements OnDestroy {
     _changeDetectorRef.markForCheck();
   }
 
-  void startEdit(LiTagManagerOptionView option, html.Event event) {
+  void startEdit(LiTagManagerOptionView option, web.Event event) {
     event.preventDefault();
     event.stopPropagation();
     if (isDisabled || !allowEdit) {
@@ -295,7 +295,7 @@ class LiTagManagerComponent implements OnDestroy {
     _changeDetectorRef.markForCheck();
   }
 
-  void requestDelete(LiTagManagerOptionView option, html.Event event) {
+  void requestDelete(LiTagManagerOptionView option, web.Event event) {
     event.preventDefault();
     event.stopPropagation();
     if (isDisabled || !allowDelete) {

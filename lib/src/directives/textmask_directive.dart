@@ -1,5 +1,5 @@
 import 'dart:js_interop';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngx_dart/angular.dart';
@@ -58,7 +58,7 @@ class LiTextMaskDirective implements OnDestroy {
   bool? _eagerInput;
   String? _escapeCharacterInput;
   late InteractiveTextMask _maskFormatter;
-  late final EventListener _inputListener;
+  late final web.EventListener _inputListener;
   var _lastValue = MaskedTextValue.collapsed('');
 
   @Input()
@@ -95,18 +95,18 @@ class LiTextMaskDirective implements OnDestroy {
   int maxLength = 14;
   bool eager = true;
   String escapeCharacter = r'\';
-  late InputElement inputElement;
-  final Element _el;
+  late web.HTMLInputElement inputElement;
+  final web.Element _el;
 
   LiTextMaskDirective(this._el) {
-    if (!_el.isA<InputElement>()) {
+    if (!_el.isA<web.HTMLInputElement>()) {
       throw Exception(
-          'LiTextMaskDirective has to be applied to an InputElement');
+          'LiTextMaskDirective has to be applied to an HTMLInputElement');
     }
-    inputElement = _el as InputElement;
+    inputElement = _el as web.HTMLInputElement;
     _configureMask();
     _lastValue = MaskedTextValue.collapsed(inputElement.value);
-    _inputListener = ((Event event) => _onChange()).toJS;
+    _inputListener = ((web.Event event) => _onChange()).toJS;
     inputElement.addEventListener('input', _inputListener, true.toJS);
   }
 
@@ -194,7 +194,7 @@ class LiTextMaskDirective implements OnDestroy {
   }
 
   void _applyCurrentValue() {
-    if (!_el.isA<InputElement>()) {
+    if (!_el.isA<web.HTMLInputElement>()) {
       return;
     }
 

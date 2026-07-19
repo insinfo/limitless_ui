@@ -1,15 +1,15 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
 abstract class LiPdfViewerBrowserBridge {
   const LiPdfViewerBrowserBridge();
 
-  String createObjectUrlFromBlob(html.Blob blob);
+  String createObjectUrlFromBlob(web.Blob blob);
 
   void revokeObjectUrl(String url);
 
-  void clickAnchor(html.AnchorElement anchor);
+  void clickAnchor(web.HTMLAnchorElement anchor);
 
   void printWindow(dynamic targetFrame);
 }
@@ -18,17 +18,17 @@ class DefaultLiPdfViewerBrowserBridge implements LiPdfViewerBrowserBridge {
   const DefaultLiPdfViewerBrowserBridge();
 
   @override
-  String createObjectUrlFromBlob(html.Blob blob) {
-    return html.Url.createObjectUrlFromBlob(blob);
+  String createObjectUrlFromBlob(web.Blob blob) {
+    return web.URL.createObjectURL(blob);
   }
 
   @override
   void revokeObjectUrl(String url) {
-    html.Url.revokeObjectUrl(url);
+    web.URL.revokeObjectURL(url);
   }
 
   @override
-  void clickAnchor(html.AnchorElement anchor) {
+  void clickAnchor(web.HTMLAnchorElement anchor) {
     anchor.click();
   }
 

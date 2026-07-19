@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -154,8 +154,8 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final root = fixture.rootElement;
-    final form = root.querySelector('form') as html.FormElement;
-    final button = root.querySelector('#validate') as html.ButtonElement;
+    final form = root.querySelector('form') as web.HTMLFormElement;
+    final button = root.querySelector('#validate') as web.HTMLButtonElement;
 
     await fixture.update((_) {
       button.click();
@@ -171,7 +171,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final root = fixture.rootElement;
-    final button = root.querySelector('#validate') as html.ButtonElement;
+    final button = root.querySelector('#validate') as web.HTMLButtonElement;
 
     await fixture.update((component) {
       component.firstName = 'Maria';
@@ -191,14 +191,15 @@ void main() {
     final fixture = await fieldTestBed.create();
     await _settleFieldFixture(fixture);
     final root = fixture.rootElement;
-    final button = root.querySelector('#validate-fields') as html.ButtonElement;
+    final button =
+        root.querySelector('#validate-fields') as web.HTMLButtonElement;
 
     await fixture.update((_) {
       button.click();
     });
     await _settleFieldFixture(fixture);
 
-    expect(html.document.activeElement?.id, 'custom-trigger');
+    expect(web.document.activeElement?.id, 'custom-trigger');
   });
 
   test('usa seletor de alvo explicito quando liFormFieldTarget foi definido',
@@ -206,7 +207,7 @@ void main() {
     final fixture = await fieldTestBed.create();
     await _settleFieldFixture(fixture);
     final root = fixture.rootElement;
-    final button = root.querySelector('#focus-fields') as html.ButtonElement;
+    final button = root.querySelector('#focus-fields') as web.HTMLButtonElement;
 
     await fixture.update((component) {
       component.customFieldInvalid = false;
@@ -219,7 +220,7 @@ void main() {
     });
     await _settleFieldFixture(fixture);
 
-    expect(html.document.activeElement?.id, 'selector-target');
+    expect(web.document.activeElement?.id, 'selector-target');
   });
 
   test('usa a ordem da pagina quando liFormFieldOrder nao foi informado',
@@ -227,14 +228,15 @@ void main() {
     final fixture = await domOrderTestBed.create();
     await _settleDomOrderFixture(fixture);
     final root = fixture.rootElement;
-    final button = root.querySelector('#focus-dom-order') as html.ButtonElement;
+    final button =
+        root.querySelector('#focus-dom-order') as web.HTMLButtonElement;
 
     await fixture.update((_) {
       button.click();
     });
     await _settleDomOrderFixture(fixture);
 
-    expect(html.document.activeElement?.id, 'dom-first-trigger');
+    expect(web.document.activeElement?.id, 'dom-first-trigger');
   });
 }
 

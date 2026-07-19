@@ -5,13 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_multi_select_component_test.template.dart' as ng;
 
@@ -128,7 +131,7 @@ class MultiSelectValidationTestHostComponent {
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
-    html.document.documentElement?.removeAttribute('data-color-theme');
+    web.document.documentElement?.removeAttribute('data-color-theme');
   });
 
   final testBed = NgTestBed<MultiSelectTestHostComponent>(
@@ -146,22 +149,24 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     expect(host.userSelectedChannels, isNull);
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final pushOption = html.document
-        .queryAll('.dropdown-container .dropdown-item')
-        .cast<html.Element>()
-        .firstWhere((element) => (element.text).contains('Push'));
+    final pushOption = web.document
+        .querySelectorAll('.dropdown-container .dropdown-item')
+        .toElementList()
+        .cast<web.Element>()
+        .firstWhere(
+            (element) => ((element.textContent ?? '')).contains('Push'));
 
     await fixture.update((_) {
-      pushOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      pushOption.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -174,7 +179,7 @@ void main() {
     );
 
     await fixture.update((_) {
-      pushOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      pushOption.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -192,7 +197,8 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    expect(fixture.rootElement.queryAll('.badge'), isNotEmpty);
+    expect(fixture.rootElement.querySelectorAll('.badge').toElementList(),
+        isNotEmpty);
     expect(host.userSelectedChannels, isNull);
 
     await fixture.update((_) {
@@ -203,7 +209,8 @@ void main() {
     expect(host.selectedChannels, isEmpty);
     expect(host.userSelectedChannels, isNull);
     expect(host.selectedChannelModels, isEmpty);
-    expect(fixture.rootElement.queryAll('.badge'), isEmpty);
+    expect(fixture.rootElement.querySelectorAll('.badge').toElementList(),
+        isEmpty);
   });
 
   test('clear button resets selected values without opening the dropdown',
@@ -212,14 +219,14 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final clearButton =
-        fixture.rootElement.querySelector('.dropdown-clear') as html.Element;
+        fixture.rootElement.querySelector('.dropdown-clear') as web.Element;
 
     expect(trigger.getAttribute('aria-expanded'), 'false');
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -232,16 +239,16 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.dropdown-container.dropdown-open',
-    ) as html.Element;
+    ) as web.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final panelRect = panel.getBoundingClientRect();
 
@@ -250,24 +257,24 @@ void main() {
   });
 
   test('keeps dark theme styling delegated to dropdown-menu classes', () async {
-    html.document.documentElement?.setAttribute('data-color-theme', 'dark');
+    web.document.documentElement?.setAttribute('data-color-theme', 'dark');
 
     final fixture = await testBed.create();
     await _settle(fixture);
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.dropdown-container.dropdown-open',
-    ) as html.Element;
+    ) as web.Element;
 
-    expect(panel.classes.contains('dropdown-menu'), isTrue);
-    expect(panel.style.backgroundColor, isEmpty);
+    expect(panel.classList.contains('dropdown-menu'), isTrue);
+    expect((panel as web.HTMLElement).style.backgroundColor, isEmpty);
     expect(panel.style.boxShadow, isEmpty);
     expect(panel.style.borderColor, isEmpty);
   });
@@ -276,8 +283,10 @@ void main() {
     final fixture = await compareTestBed.create();
     await _settleCompare(fixture);
 
-    expect(fixture.rootElement.queryAll('.badge').length, 1);
-    expect(fixture.rootElement.text, contains('Push'));
+    expect(
+        fixture.rootElement.querySelectorAll('.badge').toElementList().length,
+        1);
+    expect(fixture.rootElement.textContent, contains('Push'));
   });
 
   test('applies declarative validation rules on selection changes', () async {
@@ -287,42 +296,44 @@ void main() {
     final field =
         fixture.rootElement.querySelector('#validation-multi-select-field')!;
     final trigger =
-        field.querySelector('.dropdown-button') as html.ButtonElement;
-    final clearButton = field.querySelector('.dropdown-clear') as html.Element;
+        field.querySelector('.dropdown-button') as web.HTMLButtonElement;
+    final clearButton = field.querySelector('.dropdown-clear') as web.Element;
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleValidation(fixture);
 
     expect(host.selectedChannels, isEmpty);
-    expect(trigger.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('Selecione ao menos 2 canais.'));
+    expect(trigger.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent,
+        contains('Selecione ao menos 2 canais.'));
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleValidation(fixture);
 
-    final options = html.document
-        .queryAll('.dropdown-container.dropdown-open .dropdown-item')
-        .cast<html.Element>()
+    final options = web.document
+        .querySelectorAll('.dropdown-container.dropdown-open .dropdown-item')
+        .toElementList()
+        .cast<web.Element>()
         .toList(growable: false);
     final emailOption = options.firstWhere(
-      (element) => (element.text).contains('E-mail'),
+      (element) => ((element.textContent ?? '')).contains('E-mail'),
     );
     final pushOption = options.firstWhere(
-      (element) => (element.text).contains('Push'),
+      (element) => ((element.textContent ?? '')).contains('Push'),
     );
 
     await fixture.update((_) {
-      emailOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
-      pushOption.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      emailOption.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
+      pushOption.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleValidation(fixture);
 
     expect(host.selectedChannels, containsAll(<String>['email', 'push']));
-    expect(trigger.classes.contains('is-invalid'), isFalse);
+    expect(trigger.classList.contains('is-invalid'), isFalse);
   });
 }
 

@@ -28,12 +28,16 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
+import 'package:limitless_ui/src/web_support/zone_dom_callbacks.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_dropdown_menu_fullscreen_container_test.template.dart' as ng;
 
@@ -97,7 +101,7 @@ void main() {
       expect(host.contains(shownMenu), isFalse,
           reason: 'body-container menu should live under document.body');
       expect(
-        html.document.querySelector(
+        web.document.querySelector(
             '.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
         isNotNull,
         reason: 'body-container menu renders inside a body portal host',
@@ -130,8 +134,10 @@ void main() {
 
       // No stale body portal may keep a shown menu under document.body.
       expect(
-        html.document
-            .queryAll('.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
+        web.document
+            .querySelectorAll(
+                '.LiDropdownMenuComponent .li-dropdown-menu__menu.show')
+            .toElementList(),
         isEmpty,
         reason: 'switching to inline must not leave a shown body portal',
       );
@@ -150,7 +156,7 @@ void main() {
       _openMenu(fixture);
       await _settle(fixture);
       expect(
-        html.document.querySelector('.LiDropdownMenuComponent'),
+        web.document.querySelector('.LiDropdownMenuComponent'),
         isNotNull,
         reason: 'body portal host is created on first open',
       );
@@ -164,7 +170,7 @@ void main() {
       await _settle(fixture);
 
       expect(
-        html.document.querySelector('body > .LiDropdownMenuComponent'),
+        web.document.querySelector('body > .LiDropdownMenuComponent'),
         isNull,
         reason: 'stale body portal host must be disposed on container change',
       );
@@ -177,8 +183,10 @@ void main() {
       final shownMenu = _onlyShownMenu();
       expect(host.contains(shownMenu), isTrue);
       expect(
-        html.document
-            .queryAll('.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
+        web.document
+            .querySelectorAll(
+                '.LiDropdownMenuComponent .li-dropdown-menu__menu.show')
+            .toElementList(),
         isEmpty,
       );
     },
@@ -212,7 +220,7 @@ void main() {
       expect(host.contains(shownMenu), isFalse,
           reason: 'body-container menu must portal back to document.body');
       expect(
-        html.document.querySelector(
+        web.document.querySelector(
             '.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
         isNotNull,
       );
@@ -220,22 +228,24 @@ void main() {
   );
 }
 
-html.Element _fullscreenHost(
+web.Element _fullscreenHost(
   NgTestFixture<FullscreenDropdownTestHostComponent> fixture,
 ) {
   final host = fixture.rootElement.querySelector('#fullscreen-host');
   expect(host, isNotNull, reason: 'fullscreen host element must exist');
-  return host as html.Element;
+  return host as web.Element;
 }
 
 void _openMenu(NgTestFixture<FullscreenDropdownTestHostComponent> fixture) {
   final trigger = fixture.rootElement.querySelector('[aria-label="fs-zoom"]')
-      as html.ButtonElement;
-  trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      as web.HTMLButtonElement;
+  trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
-html.Element _onlyShownMenu() {
-  final shown = html.document.queryAll('.li-dropdown-menu__menu.show');
+web.Element _onlyShownMenu() {
+  final shown = web.document
+      .querySelectorAll('.li-dropdown-menu__menu.show')
+      .toElementList();
   expect(shown, hasLength(1),
       reason: 'exactly one dropdown menu should be visible');
   return shown.first;
@@ -255,7 +265,7 @@ Future<void> _settle(
 
 Future<void> _nextAnimationFrame() {
   final completer = Completer<void>();
-  html.window.liRequestAnimationFrame((_) {
+  requestAnimationFrameInZone((_) {
     completer.complete();
   });
   return completer.future;

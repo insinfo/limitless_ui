@@ -6,12 +6,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_carousel_component_test.template.dart' as ng;
 
@@ -68,12 +71,14 @@ void main() {
     await _settle(fixture);
 
     final carousel = fixture.rootElement.querySelector('li-carousel');
-    final indicators = fixture.rootElement.queryAll(
-      '.carousel-indicators button',
-    );
+    final indicators = fixture.rootElement
+        .querySelectorAll(
+          '.carousel-indicators button',
+        )
+        .toElementList();
     final nextControl = fixture.rootElement.querySelector(
       '.carousel-control-next',
-    ) as html.ButtonElement?;
+    ) as web.HTMLButtonElement?;
 
     expect(carousel, isNotNull);
     expect(carousel!.id, 'hero-carousel');
@@ -83,7 +88,7 @@ void main() {
     expect(indicators[0].getAttribute('data-bs-target'), '#hero-carousel');
     expect(indicators[0].getAttribute('aria-label'), 'Primeiro slide');
     expect(indicators[1].getAttribute('aria-label'), 'Slide 2');
-    expect(indicators[1].classes.contains('active'), isTrue);
+    expect(indicators[1].classList.contains('active'), isTrue);
     expect(indicators[1].getAttribute('aria-current'), 'true');
     expect(nextControl?.getAttribute('data-bs-slide'), 'next');
   });
@@ -95,10 +100,10 @@ void main() {
 
     final nextControl = fixture.rootElement.querySelector(
       '.carousel-control-next',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      nextControl.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      nextControl.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleTransition(fixture);
 
@@ -107,11 +112,10 @@ void main() {
 
     final previousControl = fixture.rootElement.querySelector(
       '.carousel-control-prev',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      previousControl
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      previousControl.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleTransition(fixture);
 
@@ -151,11 +155,10 @@ void main() {
 
     final previousControl = fixture.rootElement.querySelector(
       '.carousel-control-prev',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      previousControl
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      previousControl.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -168,10 +171,10 @@ void main() {
 
     final nextControl = fixture.rootElement.querySelector(
       '.carousel-control-next',
-    ) as html.ButtonElement;
+    ) as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      nextControl.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      nextControl.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -197,7 +200,7 @@ Future<void> _settleTransition(
   await fixture.update((_) {});
 }
 
-void _dispatchKeyboardEvent(html.Element target, String key) {
-  final event = html.liKeyboardEvent('keydown', key: key);
+void _dispatchKeyboardEvent(web.Element target, String key) {
+  final event = bubblingKeyboardEvent('keydown', key: key);
   target.dispatchEvent(event);
 }

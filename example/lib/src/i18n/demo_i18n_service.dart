@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart';
 
 import 'package:limitless_ui_example/messages.i18n.dart';
 import 'package:limitless_ui_example/messages_en.i18n.dart' as en;

@@ -1,7 +1,7 @@
 import 'dart:js_interop';
 import 'dart:async';
 
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -11,24 +11,24 @@ import 'package:ngx_dart/angular.dart';
 ///
 @Directive(selector: '[liClickOutside]')
 class LiClickOutsideDirective implements OnDestroy, OnInit {
-  Element nativeElement;
+  web.Element nativeElement;
   LiClickOutsideDirective(this.nativeElement);
 
   StreamSubscription? documentClickStreamSubscription;
 
-  StreamController<MouseEvent> liClickOutsideSC =
-      StreamController<MouseEvent>();
+  StreamController<web.MouseEvent> liClickOutsideSC =
+      StreamController<web.MouseEvent>();
 
   @Output('liClickOutside')
-  Stream<MouseEvent> get liClickOutside => liClickOutsideSC.stream;
+  Stream<web.MouseEvent> get liClickOutside => liClickOutsideSC.stream;
 
-  void onClick(MouseEvent event) {
+  void onClick(web.MouseEvent event) {
     final target = event.target;
-    if (!(target?.isA<Node>() ?? false)) {
+    if (!(target?.isA<web.Node>() ?? false)) {
       return;
     }
 
-    var clickedInside = nativeElement.contains(target as Node?);
+    var clickedInside = nativeElement.contains(target as web.Node?);
     if (!clickedInside) {
       liClickOutsideSC.add(event);
     }
@@ -41,6 +41,8 @@ class LiClickOutsideDirective implements OnDestroy, OnInit {
 
   @override
   void ngOnInit() {
-    documentClickStreamSubscription = document.onClick.listen(onClick);
+    documentClickStreamSubscription = web.EventStreamProviders.clickEvent
+        .forTarget(web.document)
+        .listen(onClick);
   }
 }

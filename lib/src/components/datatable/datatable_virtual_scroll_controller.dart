@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 import 'dart:math' as math;
 
 import 'datatable_css_utils.dart';
@@ -38,7 +38,7 @@ class DatatableVirtualScrollController {
     required bool isActive,
     required bool isGridActive,
     required int totalItems,
-    required HtmlElement? scrollContainer,
+    required web.HTMLElement? scrollContainer,
     required int fallbackContainerWidth,
     required int windowInnerHeight,
     required String viewportHeight,
@@ -109,7 +109,7 @@ class DatatableVirtualScrollController {
 
   bool _syncTableWindow({
     required int totalItems,
-    required HtmlElement? scrollContainer,
+    required web.HTMLElement? scrollContainer,
     required int viewportHeight,
     required int overscan,
     required int rowHeight,
@@ -167,7 +167,7 @@ class DatatableVirtualScrollController {
 
   bool _syncGridWindow({
     required int totalItems,
-    required HtmlElement? scrollContainer,
+    required web.HTMLElement? scrollContainer,
     required int fallbackContainerWidth,
     required int viewportHeight,
     required int overscan,
@@ -277,7 +277,7 @@ class DatatableVirtualScrollController {
   }
 
   int _resolveGridColumnCount({
-    required HtmlElement? scrollContainer,
+    required web.HTMLElement? scrollContainer,
     required int fallbackContainerWidth,
     required int gridMinItemWidth,
     required String gridTemplateColumns,
@@ -317,7 +317,7 @@ class DatatableVirtualScrollController {
   }
 
   bool _isPinnedToEnd({
-    required HtmlElement? scrollContainer,
+    required web.HTMLElement? scrollContainer,
     required int fallbackItemExtent,
     required int totalExtentUnits,
     required int viewportHeight,

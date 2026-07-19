@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -91,7 +91,8 @@ class AppComponent implements OnDestroy {
   AppComponent(this.i18n, this.theme, this._ngZone) {
     _rebuildViewModel();
     expandedSectionId = _resolveExpandedSectionId();
-    _resizeSubscription = window.onResize.listen((_) {
+    _resizeSubscription =
+        EventStreamProviders.resizeEvent.forTarget(window).listen((_) {
       _ngZone.run(_syncViewportState);
     });
   }
@@ -107,7 +108,7 @@ class AppComponent implements OnDestroy {
   Timer? _sidebarHoverOutTimer;
 
   @ViewChild('sidebarSearchInput')
-  InputElement? sidebarSearchInput;
+  HTMLInputElement? sidebarSearchInput;
 
   Messages get t => i18n.t;
 

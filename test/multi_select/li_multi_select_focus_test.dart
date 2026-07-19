@@ -5,13 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_multi_select_focus_test.template.dart' as ng;
 
@@ -62,12 +64,12 @@ void main() {
     await _settle(fixture);
 
     final trigger = fixture.rootElement.querySelector('.dropdown-button')
-        as html.ButtonElement;
-    final input =
-        fixture.rootElement.querySelector('input#external-input') as dynamic;
+        as web.HTMLButtonElement;
+    final input = fixture.rootElement.querySelector('input#external-input')
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -75,11 +77,11 @@ void main() {
 
     await fixture.update((_) {
       input.focus();
-      input.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      input.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement == input, isTrue);
+    expect(web.document.activeElement == input, isTrue);
     expect(trigger.getAttribute('aria-expanded'), 'false');
   });
 }

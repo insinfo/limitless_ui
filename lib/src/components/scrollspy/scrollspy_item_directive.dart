@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'dart:async';
 
@@ -88,7 +88,7 @@ class LiScrollSpyItemDirective implements OnInit, OnDestroy {
   }
 
   @HostListener('click', ['\$event'])
-  void onClick(html.MouseEvent event) {
+  void onClick(web.MouseEvent event) {
     if (fragment.isEmpty) {
       return;
     }

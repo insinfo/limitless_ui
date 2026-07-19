@@ -6,12 +6,14 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_accordion_directive_test.template.dart' as ng;
 
@@ -215,9 +217,9 @@ void main() {
           'shown:second',
         ]));
 
-    final collapseRegion = html.document.querySelector('#second-collapse');
+    final collapseRegion = web.document.querySelector('#second-collapse');
     expect(collapseRegion, isNotNull);
-    expect(collapseRegion!.classes.contains('show'), isTrue);
+    expect(collapseRegion!.classList.contains('show'), isTrue);
   });
 
   test('destroyOnHide removes and recreates template-backed body content',
@@ -311,10 +313,10 @@ void main() {
       isNotNull,
     );
 
-    html.Element? body = fixture.rootElement
+    web.Element? body = fixture.rootElement
         .querySelector('#component-accordion-host .accordion-body');
     expect(body, isNotNull);
-    expect(body!.classes.contains('p-0'), isFalse);
+    expect(body!.classList.contains('p-0'), isFalse);
 
     await fixture.update((component) {
       component.componentAccordionBodyPadding = false;
@@ -324,17 +326,17 @@ void main() {
     body = fixture.rootElement
         .querySelector('#component-accordion-host .accordion-body');
     expect(body, isNotNull);
-    expect(body!.classes.contains('p-0'), isTrue);
+    expect(body!.classList.contains('p-0'), isTrue);
   });
 
   test('component accordion can forward custom button classes', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    html.Element? button = fixture.rootElement
+    web.Element? button = fixture.rootElement
         .querySelector('#component-accordion-host .accordion-button');
     expect(button, isNotNull);
-    expect(button!.classes.contains('text-muted'), isFalse);
+    expect(button!.classList.contains('text-muted'), isFalse);
 
     await fixture.update((component) {
       component.componentAccordionButtonClass = 'text-muted';
@@ -344,17 +346,17 @@ void main() {
     button = fixture.rootElement
         .querySelector('#component-accordion-host .accordion-button');
     expect(button, isNotNull);
-    expect(button!.classes.contains('text-muted'), isTrue);
+    expect(button!.classList.contains('text-muted'), isTrue);
   });
 
   test('component accordion can disable semibold button text', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    html.Element? button = fixture.rootElement
+    web.Element? button = fixture.rootElement
         .querySelector('#component-accordion-host .accordion-button');
     expect(button, isNotNull);
-    expect(button!.classes.contains('fw-semibold'), isTrue);
+    expect(button!.classList.contains('fw-semibold'), isTrue);
 
     await fixture.update((component) {
       component.componentAccordionButtonSemibold = false;
@@ -364,7 +366,7 @@ void main() {
     button = fixture.rootElement
         .querySelector('#component-accordion-host .accordion-button');
     expect(button, isNotNull);
-    expect(button!.classes.contains('fw-semibold'), isFalse);
+    expect(button!.classList.contains('fw-semibold'), isFalse);
   });
 
   test('liCollapse toggles classes and emits lifecycle events', () async {
@@ -376,7 +378,7 @@ void main() {
 
     expect(panel, isNotNull);
     expect(toggleButton, isNotNull);
-    expect(panel!.classes.contains('show'), isFalse);
+    expect(panel!.classList.contains('show'), isFalse);
     expect(host.collapseShownCount, 0);
     expect(host.collapseHiddenCount, 0);
 
@@ -385,7 +387,7 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(panel.classes.contains('show'), isTrue);
+    expect(panel.classList.contains('show'), isTrue);
     expect(host.collapseShownCount, 1);
 
     await fixture.update((_) {
@@ -393,7 +395,7 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(panel.classes.contains('show'), isFalse);
+    expect(panel.classList.contains('show'), isFalse);
     expect(host.collapseHiddenCount, 1);
   });
 
@@ -407,9 +409,9 @@ void main() {
 
     expect(panel, isNotNull);
     expect(toggleButton, isNotNull);
-    expect(panel!.classes.contains('collapse'), isTrue);
-    expect(panel.classes.contains('show'), isFalse);
-    expect(toggleButton!.classes.contains('collapsed'), isTrue);
+    expect(panel!.classList.contains('collapse'), isTrue);
+    expect(panel.classList.contains('show'), isFalse);
+    expect(toggleButton!.classList.contains('collapsed'), isTrue);
     expect(toggleButton.getAttribute('aria-expanded'), 'false');
     expect(
         toggleButton.getAttribute('aria-controls'), 'selector-collapse-panel');
@@ -419,8 +421,8 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(panel.classes.contains('show'), isTrue);
-    expect(toggleButton.classes.contains('collapsed'), isFalse);
+    expect(panel.classList.contains('show'), isTrue);
+    expect(toggleButton.classList.contains('collapsed'), isFalse);
     expect(toggleButton.getAttribute('aria-expanded'), 'true');
 
     await fixture.update((_) {
@@ -428,14 +430,14 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(panel.classes.contains('show'), isFalse);
-    expect(toggleButton.classes.contains('collapsed'), isTrue);
+    expect(panel.classList.contains('show'), isFalse);
+    expect(toggleButton.classList.contains('collapsed'), isTrue);
     expect(toggleButton.getAttribute('aria-expanded'), 'false');
   });
 }
 
-void _click(html.Element element) {
-  element.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+void _click(web.Element element) {
+  element.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 Future<void> _settle(NgTestFixture<TestHostComponent> fixture) async {

@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'datatable_exporter.dart';
 import 'datatable_models.dart';
@@ -11,7 +11,7 @@ class DatatableExportController {
   Future<void> exportXlsx({
     required DatatableSettings settings,
     required List<DatatableRow> rows,
-    required DivElement? card,
+    required web.HTMLDivElement? card,
     required DatatableExportXlsxCallback? onExportXlsx,
   }) async {
     if (onExportXlsx != null) {
@@ -30,7 +30,7 @@ class DatatableExportController {
   Future<void> exportPdf({
     required DatatableSettings settings,
     required List<DatatableRow> rows,
-    required DivElement? card,
+    required web.HTMLDivElement? card,
     required DatatableExportPdfCallback? onExportPdf,
     bool isPrint = false,
     bool isDownload = true,

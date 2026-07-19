@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 //datatable_settings.dart
 
@@ -10,7 +10,7 @@ typedef RowStyleResolver = String? Function(
   dynamic itemInstance,
 );
 
-typedef DatatableCardBuilder = Element Function(
+typedef DatatableCardBuilder = web.Element Function(
   Map<String, dynamic> itemMap,
   dynamic itemInstance,
   DatatableRow row,

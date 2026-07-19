@@ -6,12 +6,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_toast_component_test.template.dart' as ng;
 
@@ -82,8 +85,8 @@ void main() {
 
     expect(host.basicToast, isNotNull);
     expect(host.basicToast!.isOpen, isTrue);
-    expect(fixture.rootElement.text, contains('Basic header'));
-    expect(fixture.rootElement.text, contains('Basic body'));
+    expect(fixture.rootElement.textContent, contains('Basic header'));
+    expect(fixture.rootElement.textContent, contains('Basic body'));
     expect(host.basicShown, 1);
     final toast = fixture.rootElement
         .querySelector('[data-label="li_toast"][data-value="basic-toast"]');
@@ -147,32 +150,32 @@ void main() {
 
     expect(host.toastService.toasts, hasLength(1));
     expect(
-      html.document.querySelector(
+      web.document.querySelector(
         '[data-label="li_toast_stack"][data-value="top-end"]',
       ),
       isNotNull,
     );
     expect(
-      html.document.querySelector(
+      web.document.querySelector(
         '[data-label="li_toast_stack_item"][data-value="stack-toast"]',
       ),
       isNotNull,
     );
-    expect(html.document.querySelector('.li-toast-stack .toast'), isNotNull);
+    expect(web.document.querySelector('.li-toast-stack .toast'), isNotNull);
 
-    final closeButton = html.document.querySelector(
+    final closeButton = web.document.querySelector(
       '[data-label="li_toast_stack_item"][data-value="stack-toast"] '
       '[data-label="li_toast_close"]',
     );
     expect(closeButton, isNotNull);
 
     await fixture.update((_) {
-      closeButton!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      closeButton!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.toastService.toasts, isEmpty);
-    expect(html.document.querySelector('.li-toast-stack .toast'), isNull);
+    expect(web.document.querySelector('.li-toast-stack .toast'), isNull);
   });
 
   test('usa header escurecido e close branco em toast sólido', () async {
@@ -180,20 +183,22 @@ void main() {
     await _settle(fixture);
 
     final solidToast = fixture.rootElement
-        .queryAll('.toast')
-        .cast<html.Element>()
-        .firstWhere((element) => (element.text).contains('Warning body'));
+        .querySelectorAll('.toast')
+        .toElementList()
+        .cast<web.Element>()
+        .firstWhere((element) =>
+            ((element.textContent ?? '')).contains('Warning body'));
     final header = solidToast.querySelector('.toast-header');
     final closeButton = solidToast.querySelector('.btn-close');
 
-    expect(solidToast.classes.contains('bg-warning'), isTrue);
-    expect(solidToast.classes.contains('text-white'), isTrue);
+    expect(solidToast.classList.contains('bg-warning'), isTrue);
+    expect(solidToast.classList.contains('text-white'), isTrue);
     expect(header, isNotNull);
-    expect(header!.classes.contains('bg-black'), isTrue);
-    expect(header.classes.contains('bg-opacity-10'), isTrue);
-    expect(header.classes.contains('text-white'), isTrue);
+    expect(header!.classList.contains('bg-black'), isTrue);
+    expect(header.classList.contains('bg-opacity-10'), isTrue);
+    expect(header.classList.contains('text-white'), isTrue);
     expect(closeButton, isNotNull);
-    expect(closeButton!.classes.contains('btn-close-white'), isTrue);
+    expect(closeButton!.classList.contains('btn-close-white'), isTrue);
   });
 }
 

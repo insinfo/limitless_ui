@@ -1,9 +1,11 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
+import '../web_support/html_sinks.dart';
+
 /// Unified directive that renders trusted HTML text and/or appends a trusted
-/// DOM [Node] into the host element in a single pass, avoiding the
+/// DOM [web.Node] into the host element in a single pass, avoiding the
 /// double-render / layout-thrashing caused by separate [liSafeInnerHtml] +
 /// [liSafeAppendHtml] directives fighting over the same element.
 ///
@@ -17,10 +19,10 @@ import 'package:ngx_dart/angular.dart';
 /// `setInnerHtml`.  When both are null/empty the element is cleared.
 @Directive(selector: '[liSafeHtml],[liSafeHtmlNode]')
 class LiSafeHtmlDirective {
-  final Element _element;
+  final web.Element _element;
 
   String? _html;
-  Node? _node;
+  web.Node? _node;
   bool _dirty = false;
 
   LiSafeHtmlDirective(this._element);
@@ -36,7 +38,7 @@ class LiSafeHtmlDirective {
   }
 
   @Input('liSafeHtmlNode')
-  set liSafeHtmlNode(Node? node) {
+  set liSafeHtmlNode(web.Node? node) {
     if (_node == node) {
       return;
     }
@@ -52,13 +54,12 @@ class LiSafeHtmlDirective {
     _dirty = false;
 
     if (_node != null) {
-      _element.nodes.clear();
-      _element.append(_node!);
+      _element.textContent = '';
+      _element.appendChild(_node!);
     } else if (_html != null && _html!.isNotEmpty) {
-      // ignore: unsafe_html
-      _element.setInnerHtml(_html!, treeSanitizer: NodeTreeSanitizer.trusted);
+      setTrustedHtml(_element, _html!);
     } else {
-      _element.nodes.clear();
+      _element.textContent = '';
     }
   }
 }

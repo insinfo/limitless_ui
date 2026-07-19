@@ -1,9 +1,11 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
+
+import '../web_support/zone_dom_callbacks.dart';
 
 /// Form/container helper that centralizes common validation UI flows.
 ///
@@ -23,7 +25,7 @@ class LiFormDirective {
     @Optional() @Self() this._ngForm,
   ]);
 
-  final html.Element _hostElement;
+  final web.Element _hostElement;
   final NgForm? _ngForm;
   final StreamController<bool> _submissionStateController =
       StreamController<bool>.broadcast(sync: true);
@@ -90,7 +92,7 @@ class LiFormDirective {
     markAllAsTouched();
     await Future<void>.microtask(() {});
     final nextFrame = Completer<void>();
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       if (!nextFrame.isCompleted) {
         nextFrame.complete();
       }
@@ -128,7 +130,7 @@ class LiFormDirective {
   Future<bool> focusFirstInvalidLater({bool scroll = true}) async {
     await Future<void>.microtask(() {});
     final nextFrame = Completer<void>();
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       if (!nextFrame.isCompleted) {
         nextFrame.complete();
       }
@@ -175,28 +177,30 @@ class LiFormDirective {
     }
   }
 
-  html.HtmlElement? _findFirstInvalidFocusTarget() {
+  web.HTMLElement? _findFirstInvalidFocusTarget() {
     final registeredTarget = _findFirstRegisteredInvalidFocusTarget();
     if (registeredTarget != null) {
       return registeredTarget;
     }
 
-    final focusableNodes = _hostElement.queryAll(focusableSelector);
-    for (final node in focusableNodes) {
-      if (!node.isA<html.HtmlElement>() || !_isFocusable(node)) {
+    final focusableNodes = _hostElement.querySelectorAll(focusableSelector);
+    for (var index = 0; index < focusableNodes.length; index++) {
+      final node = focusableNodes.item(index)! as web.Element;
+      if (!node.isA<web.HTMLElement>() || !_isFocusable(node)) {
         continue;
       }
 
       final invalidAncestor = node.closest(invalidSelector);
-      if ((invalidAncestor?.isA<html.Element>() ?? false) &&
+      if ((invalidAncestor?.isA<web.Element>() ?? false) &&
           _hostElement.contains(invalidAncestor) &&
           _isUsableInvalidCandidate(invalidAncestor!)) {
-        return node as html.HtmlElement;
+        return node as web.HTMLElement;
       }
     }
 
-    final invalidNodes = _hostElement.queryAll(invalidSelector);
-    for (final node in invalidNodes) {
+    final invalidNodes = _hostElement.querySelectorAll(invalidSelector);
+    for (var index = 0; index < invalidNodes.length; index++) {
+      final node = invalidNodes.item(index)! as web.Element;
       if (!_isUsableInvalidCandidate(node)) {
         continue;
       }
@@ -209,7 +213,7 @@ class LiFormDirective {
     return null;
   }
 
-  html.HtmlElement? _findFirstRegisteredInvalidFocusTarget() {
+  web.HTMLElement? _findFirstRegisteredInvalidFocusTarget() {
     if (_registeredFields.isEmpty) {
       return null;
     }
@@ -244,8 +248,8 @@ class LiFormDirective {
     return null;
   }
 
-  bool _isUsableInvalidCandidate(html.Element element) {
-    if (element == _hostElement || element.isA<html.FormElement>()) {
+  bool _isUsableInvalidCandidate(web.Element element) {
+    if (element == _hostElement || element.isA<web.HTMLFormElement>()) {
       return false;
     }
     if (element.hasAttribute('disabled') ||
@@ -255,21 +259,21 @@ class LiFormDirective {
     return true;
   }
 
-  html.HtmlElement? _resolveFocusTarget(html.Element element) {
+  web.HTMLElement? _resolveFocusTarget(web.Element element) {
     if (_isFocusable(element)) {
-      return element as html.HtmlElement;
+      return element as web.HTMLElement;
     }
 
     final nested = element.querySelector(focusableSelector);
-    if ((nested?.isA<html.HtmlElement>() ?? false) && _isFocusable(nested!)) {
-      return nested as html.HtmlElement;
+    if ((nested?.isA<web.HTMLElement>() ?? false) && _isFocusable(nested!)) {
+      return nested as web.HTMLElement;
     }
 
     return null;
   }
 
-  bool _isFocusable(html.Element element) {
-    if (!element.isA<html.HtmlElement>()) {
+  bool _isFocusable(web.Element element) {
+    if (!element.isA<web.HTMLElement>()) {
       return false;
     }
 
@@ -278,15 +282,15 @@ class LiFormDirective {
       return false;
     }
 
-    if (element.isA<html.InputElement>() ||
-        element.isA<html.TextAreaElement>() ||
-        element.isA<html.SelectElement>() ||
-        element.isA<html.ButtonElement>()) {
+    if (element.isA<web.HTMLInputElement>() ||
+        element.isA<web.HTMLTextAreaElement>() ||
+        element.isA<web.HTMLSelectElement>() ||
+        element.isA<web.HTMLButtonElement>()) {
       return true;
     }
 
-    if (element.isA<html.AnchorElement>()) {
-      return (element as html.AnchorElement).href.trim().isNotEmpty;
+    if (element.isA<web.HTMLAnchorElement>()) {
+      return (element as web.HTMLAnchorElement).href.trim().isNotEmpty;
     }
 
     final tabindex = element.getAttribute('tabindex');
@@ -309,7 +313,7 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
   static const String _defaultPreferredFocusTargetSelector =
       '[data-li-form-focus-target="true"]';
 
-  final html.Element _hostElement;
+  final web.Element _hostElement;
   final LiFormDirective? _form;
 
   int _registrationSequence = 0;
@@ -360,7 +364,7 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
     return _matchSelfOrDescendant(selector) != null;
   }
 
-  html.HtmlElement? resolveFocusTarget({
+  web.HTMLElement? resolveFocusTarget({
     required String defaultFocusableSelector,
   }) {
     if (!enabled) {
@@ -372,44 +376,44 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
         : focusableSelector.trim();
 
     final explicitTarget = _findMatchingSelfOrDescendant(targetSelector);
-    if ((explicitTarget?.isA<html.HtmlElement>() ?? false) &&
+    if ((explicitTarget?.isA<web.HTMLElement>() ?? false) &&
         _isFocusable(
-            explicitTarget as html.HtmlElement, resolvedFocusableSelector)) {
+            explicitTarget as web.HTMLElement, resolvedFocusableSelector)) {
       return explicitTarget;
     }
 
     final preferredTarget = _findMatchingSelfOrDescendant(
       _defaultPreferredFocusTargetSelector,
     );
-    if ((preferredTarget?.isA<html.HtmlElement>() ?? false) &&
+    if ((preferredTarget?.isA<web.HTMLElement>() ?? false) &&
         _isFocusable(
-            preferredTarget as html.HtmlElement, resolvedFocusableSelector)) {
+            preferredTarget as web.HTMLElement, resolvedFocusableSelector)) {
       return preferredTarget;
     }
 
-    if (_hostElement.isA<html.HtmlElement>() &&
+    if (_hostElement.isA<web.HTMLElement>() &&
         _isFocusable(
-            _hostElement as html.HtmlElement, resolvedFocusableSelector)) {
+            _hostElement as web.HTMLElement, resolvedFocusableSelector)) {
       return _hostElement;
     }
 
     final nestedTarget = _hostElement.querySelector(resolvedFocusableSelector);
-    if ((nestedTarget?.isA<html.HtmlElement>() ?? false) &&
+    if ((nestedTarget?.isA<web.HTMLElement>() ?? false) &&
         _isFocusable(
-            nestedTarget as html.HtmlElement, resolvedFocusableSelector)) {
+            nestedTarget as web.HTMLElement, resolvedFocusableSelector)) {
       return nestedTarget;
     }
 
     return null;
   }
 
-  html.Element? _matchSelfOrDescendant(String selector) {
+  web.Element? _matchSelfOrDescendant(String selector) {
     if (selector.trim().isEmpty) {
       return null;
     }
 
     final selfMatch = _findMatchingSelfOrDescendant(selector);
-    if (!(selfMatch?.isA<html.Element>() ?? false)) {
+    if (!(selfMatch?.isA<web.Element>() ?? false)) {
       return null;
     }
 
@@ -420,7 +424,7 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
     return selfMatch;
   }
 
-  html.Element? _findMatchingSelfOrDescendant(String selector) {
+  web.Element? _findMatchingSelfOrDescendant(String selector) {
     if (selector.trim().isEmpty) {
       return null;
     }
@@ -430,14 +434,14 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
     }
 
     final nested = _hostElement.querySelector(selector);
-    if ((nested?.isA<html.Element>() ?? false)) {
+    if ((nested?.isA<web.Element>() ?? false)) {
       return nested;
     }
 
     return null;
   }
 
-  bool _matchesSelector(html.Element element, String selector) {
+  bool _matchesSelector(web.Element element, String selector) {
     try {
       return element.matches(selector);
     } catch (_) {
@@ -445,7 +449,7 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
     }
   }
 
-  bool _isFocusable(html.HtmlElement element, String selector) {
+  bool _isFocusable(web.HTMLElement element, String selector) {
     if (_isDisabled(element)) {
       return false;
     }
@@ -458,7 +462,7 @@ class LiFormFieldDirective implements AfterChanges, OnDestroy {
     return tabindex != null && tabindex != '-1';
   }
 
-  bool _isDisabled(html.Element element) {
+  bool _isDisabled(web.Element element) {
     if (element.hasAttribute('disabled')) {
       return true;
     }

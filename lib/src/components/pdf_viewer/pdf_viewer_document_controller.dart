@@ -1,7 +1,9 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:typed_data';
 
 import 'package:ngx_dart/angular.dart';
+
+import '../../web_support/zone_dom_callbacks.dart';
 
 import 'pdf_viewer_page_view.dart';
 import 'pdf_viewer_pdfjs_bridge.dart';
@@ -28,7 +30,7 @@ class PdfViewerDocumentController {
 
   PDFDocumentProxy? document;
   final List<PdfPageView> pageViews = <PdfPageView>[];
-  html.IntersectionObserver? intersectionObserver;
+  ZoneIntersectionObserver? intersectionObserver;
   void Function(PdfPageView pageView)? onPageVisible;
   int totalPages = 0;
 
@@ -51,7 +53,7 @@ class PdfViewerDocumentController {
 
   Future<void> loadDocument({
     required dynamic source,
-    required html.DivElement? viewerElement,
+    required web.HTMLDivElement? viewerElement,
     required Map<String, String> requestHeaders,
     required String standardFontDataUrl,
     required String cMapUrl,
@@ -59,7 +61,7 @@ class PdfViewerDocumentController {
     required String? Function(String rawUrl)? sanitizeAnnotationUrl,
   }) async {
     await dispose();
-    viewerElement?.children.clear();
+    viewerElement?.textContent = '';
 
     final Map<String, dynamic> documentSource;
     if (source is String) {
@@ -102,7 +104,7 @@ class PdfViewerDocumentController {
   }
 
   Future<void> _setupPages(
-    html.DivElement? viewerElement, {
+    web.HTMLDivElement? viewerElement, {
     required String? Function(String rawUrl)? sanitizeAnnotationUrl,
   }) async {
     final activeDocument = document;
@@ -113,13 +115,13 @@ class PdfViewerDocumentController {
     final firstPdfPage = await activeDocument.getPageDart(1);
 
     for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
-      final pageDiv = html.createDivElement()
+      final pageDiv = web.HTMLDivElement()
         ..className = 'page'
         ..setAttribute('data-page-number', '$pageNum');
 
-      final wrapper = html.createDivElement()..className = 'canvasWrapper';
-      pageDiv.append(wrapper);
-      viewerElement.append(pageDiv);
+      final wrapper = web.HTMLDivElement()..className = 'canvasWrapper';
+      pageDiv.appendChild(wrapper);
+      viewerElement.appendChild(pageDiv);
 
       final pageView = PdfPageView(
         pageNum,
@@ -138,17 +140,12 @@ class PdfViewerDocumentController {
     _changeDetectorRef.markForCheck();
   }
 
-  void setupIntersectionObserver({html.DivElement? viewerContainer}) {
+  void setupIntersectionObserver({web.HTMLDivElement? viewerContainer}) {
     if (viewerContainer == null) {
       return;
     }
 
-    final options = <String, Object?>{
-      'root': viewerContainer,
-      'rootMargin': '1000px 0px 1000px 0px',
-    };
-
-    intersectionObserver = html.IntersectionObserver((entries, observer) {
+    intersectionObserver = ZoneIntersectionObserver((entries, observer) {
       for (final entry in entries) {
         if (!entry.isIntersecting) {
           continue;
@@ -169,7 +166,7 @@ class PdfViewerDocumentController {
           renderPage(pageView);
         }
       }
-    }, options);
+    }, root: viewerContainer, rootMargin: '1000px 0px 1000px 0px');
 
     for (final pageView in pageViews) {
       intersectionObserver!.observe(pageView.div);

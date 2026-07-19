@@ -1,5 +1,7 @@
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -26,7 +28,7 @@ class LiCurrencyInputComponent
         AfterViewInit,
         OnDestroy,
         AfterChanges {
-  final HTMLElement _hostElement;
+  final web.HTMLElement _hostElement;
   final LiFormDirective? _formDirective;
 
   LiCurrencyInputComponent(
@@ -113,7 +115,7 @@ class LiCurrencyInputComponent
   bool validateOnInput = true;
 
   @ViewChild('inputElement')
-  InputElement? inputElement;
+  web.HTMLInputElement? inputElement;
 
   String displayValue = '';
 
@@ -123,9 +125,9 @@ class LiCurrencyInputComponent
   bool _dirty = false;
   bool _formSubmitted = false;
   LiValidationIssue? _autoValidationIssue;
-  StreamSubscription<Event>? _hostFocusSubscription;
+  StreamSubscription<web.Event>? _hostFocusSubscription;
   StreamSubscription<bool>? _formSubmissionSubscription;
-  MutationObserver? _hostClassObserver;
+  ZoneMutationObserver? _hostClassObserver;
   List<LiRule> _effectiveRules = const <LiRule>[];
   Map<String, String> _effectiveMessages = const <String, String>{};
 
@@ -246,11 +248,11 @@ class LiCurrencyInputComponent
   void ngAfterViewInit() {
     _hostElement.tabIndex = -1;
     _hostFocusSubscription = _hostElement.onFocus.listen((_) {
-      if (document.activeElement == _hostElement) {
+      if (web.document.activeElement == _hostElement) {
         inputElement?.focus();
       }
     });
-    _hostClassObserver = MutationObserver((_, __) {
+    _hostClassObserver = ZoneMutationObserver((_, __) {
       _syncValidationClasses();
     })
       ..observe(
@@ -331,15 +333,15 @@ class LiCurrencyInputComponent
     }
 
     if (effectiveInvalid) {
-      input.classes.add('is-invalid');
+      input.classList.add('is-invalid');
     } else {
-      input.classes.remove('is-invalid');
+      input.classList.remove('is-invalid');
     }
 
     if (effectiveValid) {
-      input.classes.add('is-valid');
+      input.classList.add('is-valid');
     } else {
-      input.classes.remove('is-valid');
+      input.classList.remove('is-valid');
     }
 
     if (effectiveInvalid) {
@@ -415,10 +417,10 @@ class LiCurrencyInputComponent
   }
 
   bool get _hasHostInvalidState =>
-      _hostElement.classes.contains('is-invalid') ||
+      _hostElement.classList.contains('is-invalid') ||
       _hostElement.getAttribute('data-invalid') == 'true';
 
-  bool get _hasHostValidState => _hostElement.classes.contains('is-valid');
+  bool get _hasHostValidState => _hostElement.classList.contains('is-valid');
 
   @override
   void ngOnDestroy() {

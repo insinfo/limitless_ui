@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'dart:async';
 
@@ -168,7 +168,7 @@ class LiRatingComponent
     _onTouched();
   }
 
-  void handleKeyDown(html.KeyboardEvent event) {
+  void handleKeyDown(web.KeyboardEvent event) {
     if (!isInteractive) {
       return;
     }

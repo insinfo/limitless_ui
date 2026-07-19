@@ -1,7 +1,9 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/limitless_ui_example.dart';
+
+import '../../web_support/dom_tokens.dart';
 
 @Component(
   selector: 'protocol-workflow-page',
@@ -646,8 +648,8 @@ class ProtocolWorkflowPageComponent implements OnInit {
   static Map<String, dynamic> _asMap(dynamic item) =>
       Map<String, dynamic>.from(item as Map);
 
-  static html.SpanElement _textSpan(String text, {String? title}) {
-    final span = html.createSpanElement()..text = text;
+  static web.HTMLSpanElement _textSpan(String text, {String? title}) {
+    final span = web.HTMLSpanElement()..textContent = text;
     final normalizedTitle = title?.trim();
     if (normalizedTitle != null && normalizedTitle.isNotEmpty) {
       span.title = normalizedTitle;
@@ -655,14 +657,15 @@ class ProtocolWorkflowPageComponent implements OnInit {
     return span;
   }
 
-  static html.SpanElement _badge(
+  static web.HTMLSpanElement _badge(
     String text,
     String classes, {
     String? iconClass,
     String? title,
   }) {
-    final badge = html.createSpanElement()
-      ..classes.addAll(classes.split(' ').where((item) => item.isNotEmpty));
+    final badge = web.HTMLSpanElement()
+      ..classList
+          .addAllTokens(classes.split(' ').where((item) => item.isNotEmpty));
     final normalizedTitle = title?.trim();
     if (normalizedTitle != null && normalizedTitle.isNotEmpty) {
       badge.title = normalizedTitle;
@@ -670,18 +673,18 @@ class ProtocolWorkflowPageComponent implements OnInit {
 
     final normalizedIconClass = iconClass?.trim();
     if (normalizedIconClass != null && normalizedIconClass.isNotEmpty) {
-      badge.append(html.document.createElement('i')
-        ..classes.addAll(
+      badge.appendChild(web.document.createElement('i')
+        ..classList.addAllTokens(
           normalizedIconClass.split(' ').where((item) => item.isNotEmpty),
         )
-        ..classes.add('me-1'));
+        ..classList.add('me-1'));
     }
 
-    badge.appendText(text);
+    badge.appendChild(web.document.createTextNode(text));
     return badge;
   }
 
-  static html.Element _renderDigitalBadge(
+  static web.Element _renderDigitalBadge(
     Map<String, dynamic> itemMap,
     dynamic itemInstance,
   ) {
@@ -692,7 +695,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
     );
   }
 
-  static html.Element _renderStatusBadge(
+  static web.Element _renderStatusBadge(
     Map<String, dynamic> itemMap,
     dynamic itemInstance,
   ) {
@@ -703,7 +706,7 @@ class ProtocolWorkflowPageComponent implements OnInit {
     );
   }
 
-  static html.Element _renderSignatureBadge(
+  static web.Element _renderSignatureBadge(
     Map<String, dynamic> itemMap,
     dynamic itemInstance,
   ) {
@@ -727,13 +730,13 @@ class ProtocolWorkflowPageComponent implements OnInit {
           iconClass: 'ph ph-x-circle',
         );
       default:
-        return html.createSpanElement()
-          ..classes.addAll(<String>['text-muted', 'small'])
-          ..text = '-';
+        return web.HTMLSpanElement()
+          ..classList.addAllTokens(<String>['text-muted', 'small'])
+          ..textContent = '-';
     }
   }
 
-  static html.Element _renderAttachmentSignatureBadge(
+  static web.Element _renderAttachmentSignatureBadge(
     Map<String, dynamic> itemMap,
     dynamic itemInstance,
   ) {

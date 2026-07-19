@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'dart:async';
 
@@ -414,7 +414,7 @@ class LiPaginationComponent implements AfterChanges, AfterViewInit, OnDestroy {
     scheduleMicrotask(_refreshPaginationState);
   }
 
-  void selectPage(int requestedPage, [html.Event? event]) {
+  void selectPage(int requestedPage, [web.Event? event]) {
     event?.preventDefault();
     if (disabled || pageCount <= 0) {
       return;
@@ -423,7 +423,7 @@ class LiPaginationComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _updatePages(requestedPage, emitPageChange: true);
   }
 
-  void onPageItemClick(LiPaginationPageItem item, html.Event event) {
+  void onPageItemClick(LiPaginationPageItem item, web.Event event) {
     if (item.ellipsis) {
       event.preventDefault();
       return;

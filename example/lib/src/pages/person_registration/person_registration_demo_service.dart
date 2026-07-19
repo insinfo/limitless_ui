@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'dart:async';
 
@@ -61,7 +61,7 @@ class PersonRegistrationMockRequest {
   final bool publicProfile;
   final bool acceptTerms;
   final bool acceptPrivacy;
-  final List<html.File> attachments;
+  final List<web.File> attachments;
 }
 
 class PersonRegistrationMockResult {

@@ -1,6 +1,8 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/dom_tokens.dart';
 
 /// Lightweight DOM-based popover helper for quick warning messages.
 class LiSimplePopover {
@@ -8,7 +10,7 @@ class LiSimplePopover {
 
   /// Shows a warning popover anchored to [target].
   static void showWarning(
-    html.Element target,
+    web.Element target,
     String message, {
     String title = 'Warning',
     Duration timeout = const Duration(seconds: 3),
@@ -22,35 +24,36 @@ class LiSimplePopover {
   }
 
   static void _showPopover(
-    html.Element target,
+    web.Element target,
     String message, {
     required String title,
     required Duration timeout,
   }) {
-    html.document.querySelector('#$_popoverId')?.remove();
+    web.document.querySelector('#$_popoverId')?.remove();
 
-    final body = html.document.body;
+    final body = web.document.body;
     if (body == null) {
       return;
     }
 
-    final root = html.createDivElement()
-      ..id = _popoverId
-      ..classes.addAll(['popover', 'show', 'bs-popover-top'])
+    final root = addClassTokens(
+      web.HTMLDivElement()..id = _popoverId,
+      const <String>['popover', 'show', 'bs-popover-top'],
+    )
       ..style.position = 'fixed'
       ..style.margin = '0'
       ..style.maxWidth = '420px'
       ..style.zIndex = '10000'
       ..style.visibility = 'hidden';
 
-    final arrow = html.createDivElement()..classes.add('popover-arrow');
-    final header = html.createHeadingElement(3)
-      ..classes.add('popover-header')
-      ..text = title;
-    final content = html.createDivElement()
-      ..classes.add('popover-body')
+    final arrow = web.HTMLDivElement()..classList.add('popover-arrow');
+    final header = web.HTMLHeadingElement.h3()
+      ..classList.add('popover-header')
+      ..textContent = title;
+    final content = web.HTMLDivElement()
+      ..classList.add('popover-body')
       ..style.whiteSpace = 'pre-line'
-      ..text = message;
+      ..textContent = message;
 
     root
       ..append(arrow)
@@ -61,8 +64,8 @@ class LiSimplePopover {
     _positionPopover(root, arrow, target);
     root.style.visibility = 'visible';
 
-    StreamSubscription<html.MouseEvent>? clickSub;
-    StreamSubscription<html.KeyboardEvent>? keySub;
+    StreamSubscription<web.MouseEvent>? clickSub;
+    StreamSubscription<web.KeyboardEvent>? keySub;
     Timer? timer;
 
     void close() {
@@ -77,17 +80,21 @@ class LiSimplePopover {
       close();
     });
 
-    clickSub = html.document.onClick.listen((event) {
+    clickSub = web.EventStreamProvider<web.MouseEvent>('click')
+        .forTarget(web.document)
+        .listen((event) {
       final clickTarget = event.target;
-      if ((clickTarget?.isA<html.Element>() ?? false) &&
-          !root.contains(clickTarget as html.Node?) &&
+      if ((clickTarget?.isA<web.Element>() ?? false) &&
+          !root.contains(clickTarget as web.Node?) &&
           !target.contains(clickTarget)) {
         close();
       }
     });
 
-    keySub = html.document.onKeyDown.listen((event) {
-      if (event.keyCode == 27) {
+    keySub = web.EventStreamProvider<web.KeyboardEvent>('keydown')
+        .forTarget(web.document)
+        .listen((event) {
+      if (event.key == 'Escape') {
         close();
       }
     });
@@ -96,21 +103,21 @@ class LiSimplePopover {
   }
 
   static void _positionPopover(
-    html.DivElement popover,
-    html.DivElement arrow,
-    html.Element target,
+    web.HTMLDivElement popover,
+    web.HTMLDivElement arrow,
+    web.Element target,
   ) {
     final targetRect = target.getBoundingClientRect();
     final popoverRect = popover.getBoundingClientRect();
-    final viewportWidth = html.window.innerWidth;
-    final viewportHeight = html.window.innerHeight;
+    final viewportWidth = web.window.innerWidth;
+    final viewportHeight = web.window.innerHeight;
     const spacing = 10.0;
     const pagePadding = 8.0;
 
     final showAbove =
         targetRect.top >= popoverRect.height + spacing + pagePadding;
     final placementClass = showAbove ? 'bs-popover-top' : 'bs-popover-bottom';
-    popover.classes
+    popover.classList
       ..remove('bs-popover-top')
       ..remove('bs-popover-bottom')
       ..add(placementClass);

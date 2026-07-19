@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 class LiFileType {
   static const List<String> _mimeDoc = <String>[
@@ -49,7 +49,7 @@ class LiFileType {
     'application/x-7z-compressed',
   ];
 
-  static String getMimeClass(html.File file) {
+  static String getMimeClass(web.File file) {
     final type = file.type.toLowerCase();
     if (_mimePsd.contains(type) || type.startsWith('image/')) {
       return 'image';

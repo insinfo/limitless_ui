@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
@@ -225,7 +225,7 @@ SweetAlertPopover.showPopover(
 
   String get summaryText => popoverState.isEmpty ? idleState : popoverState;
 
-  void showQuickPopover(html.Element target) {
+  void showQuickPopover(web.Element target) {
     LiSimplePopover.showWarning(
       target,
       _isPt
@@ -239,7 +239,7 @@ SweetAlertPopover.showPopover(
         : 'Popover: simple helper shown';
   }
 
-  void showAnchoredPopover(html.Element target) {
+  void showAnchoredPopover(web.Element target) {
     SweetAlertPopover.showPopover(
       target,
       _isPt

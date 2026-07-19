@@ -5,12 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_tag_editor_component_test.template.dart' as ng;
 
@@ -49,24 +52,25 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final inputs = fixture.rootElement
-        .queryAll('input')
-        .cast<html.InputElement>()
+        .querySelectorAll('input')
+        .toElementList()
+        .cast<web.HTMLInputElement>()
         .toList(growable: false);
     final nameInput = inputs.first;
     final colorInput = inputs.last;
-    final saveButton =
-        fixture.rootElement.querySelector('.btn-primary') as html.ButtonElement;
+    final saveButton = fixture.rootElement.querySelector('.btn-primary')
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
       nameInput.value = 'Etiqueta Retro';
-      nameInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      nameInput.dispatchEvent(bubblingEvent('input', bubbles: true));
       colorInput.value = 'f4511e';
-      colorInput.dispatchEvent(html.liEvent('input', canBubble: true));
+      colorInput.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      saveButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      saveButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 

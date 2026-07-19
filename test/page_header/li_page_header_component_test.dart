@@ -5,11 +5,12 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_node_list.dart';
 
 import 'li_page_header_component_test.template.dart' as ng;
 
@@ -52,18 +53,18 @@ void main() {
   test('renders title, breadcrumb items and projected actions', () async {
     final fixture = await testBed.create();
     final root = fixture.rootElement;
-    final headers = root.queryAll('.page-header');
+    final headers = root.querySelectorAll('.page-header').toElementList();
     final firstHeader = headers.first;
 
-    expect(firstHeader.text, contains('Protocolo -'));
-    expect(firstHeader.text, contains('Incluir Processo'));
+    expect(firstHeader.textContent, contains('Protocolo -'));
+    expect(firstHeader.textContent, contains('Incluir Processo'));
 
     final breadcrumb = firstHeader.querySelector('.breadcrumb');
     expect(breadcrumb, isNotNull);
-    expect(breadcrumb!.classes.contains('breadcrumb-dash'), isTrue);
+    expect(breadcrumb!.classList.contains('breadcrumb-dash'), isTrue);
     expect(firstHeader.querySelector('#header-actions'), isNotNull);
     expect(
-      firstHeader.queryAll('.breadcrumb-item').length,
+      firstHeader.querySelectorAll('.breadcrumb-item').toElementList().length,
       greaterThanOrEqualTo(3),
     );
   });
@@ -72,11 +73,14 @@ void main() {
       () async {
     final fixture = await testBed.create();
     final root = fixture.rootElement;
-    final secondHeader = root.queryAll('.page-header').last;
+    final secondHeader =
+        root.querySelectorAll('.page-header').toElementList().last;
 
     expect(secondHeader.querySelector('#custom-bottom'), isNotNull);
-    expect(secondHeader.querySelector('#custom-bottom')!.text,
+    expect(secondHeader.querySelector('#custom-bottom')!.textContent,
         contains('Abas customizadas'));
-    expect(secondHeader.queryAll('.li-breadcrumb').length, 0);
+    expect(
+        secondHeader.querySelectorAll('.li-breadcrumb').toElementList().length,
+        0);
   });
 }

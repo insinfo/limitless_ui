@@ -1,6 +1,8 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -18,6 +20,14 @@ import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
 import '../../validation/li_validation_issue.dart';
 import 'li_multi_option.dart';
+
+List<web.Element> _queryElements(web.Element root, String selectors) {
+  final nodes = root.querySelectorAll(selectors);
+  return <web.Element>[
+    for (var index = 0; index < nodes.length; index++)
+      nodes.item(index)! as web.Element,
+  ];
+}
 
 class CustomMultiSelectItem {
   String text;
@@ -81,7 +91,7 @@ class LiMultiSelectTriggerContext {
 
   void toggle() => _component.toggleDropdown();
 
-  void clear([html.Event? event]) => _component.clearFromTriggerTemplate(event);
+  void clear([web.Event? event]) => _component.clearFromTriggerTemplate(event);
 
   void _ensureSelectionCache() {
     final signature = _currentSelectionSignature();
@@ -157,7 +167,7 @@ class LiMultiSelectComponent
         OnInit,
         OnDestroy,
         AfterContentInit {
-  final html.Element nativeElement;
+  final web.Element nativeElement;
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
   PopperAnchoredOverlay? _overlay;
@@ -460,13 +470,13 @@ class LiMultiSelectComponent
   }
 
   @ViewChild('dropdownContainer')
-  html.Element? dropdownContainerEle;
+  web.Element? dropdownContainerEle;
 
   @ViewChild('inputSearch')
-  html.InputElement? inputSearch;
+  web.HTMLInputElement? inputSearch;
 
   @ViewChild('dropdownButton')
-  html.Element? dropdownButtonElement;
+  web.HTMLElement? dropdownButtonElement;
 
   List<dynamic> get selectedValues =>
       options.where((opt) => opt.selected).map((e) => e.value).toList();
@@ -500,7 +510,8 @@ class LiMultiSelectComponent
     return mh;
   }
 
-  html.Element get listElement => dropdownContainerEle!.querySelector('ul')!;
+  web.HTMLUListElement get listElement =>
+      dropdownContainerEle!.querySelector('ul') as web.HTMLUListElement;
 
   /// dataSource
   @Input()
@@ -604,14 +615,16 @@ class LiMultiSelectComponent
   void closeDropdown({
     bool markForCheck = true,
     bool restoreFocus = false,
-    html.Element? preserveFocusTarget,
+    web.Element? preserveFocusTarget,
   }) {
     final wasOpen = dropdownOpen;
 
-    for (final element
-        in dropdownContainerEle?.queryAll('li') ?? const <html.Element>[]) {
-      if (element.classes.contains('dropdown-item-hover')) {
-        element.classes.remove('dropdown-item-hover');
+    final container = dropdownContainerEle;
+    for (final element in container == null
+        ? const <web.Element>[]
+        : _queryElements(container, 'li')) {
+      if (element.classList.contains('dropdown-item-hover')) {
+        element.classList.remove('dropdown-item-hover');
       }
     }
 
@@ -634,9 +647,9 @@ class LiMultiSelectComponent
     } else if (_canPreserveFocus(preserveFocusTarget)) {
       Future<void>.microtask(() {
         final focusTarget = preserveFocusTarget;
-        if ((focusTarget?.isA<html.HtmlElement>() ?? false) &&
+        if ((focusTarget?.isA<web.HTMLElement>() ?? false) &&
             focusTarget?.isConnected == true) {
-          focusTarget!.focus();
+          (focusTarget as web.HTMLElement).focus();
         }
       });
     }
@@ -682,7 +695,7 @@ class LiMultiSelectComponent
     _markForCheck();
   }
 
-  void onLiClickHandle(html.Event event, CustomMultiSelectItem value) {
+  void onLiClickHandle(web.Event event, CustomMultiSelectItem value) {
     if (isDisabled) {
       return;
     }
@@ -691,7 +704,7 @@ class LiMultiSelectComponent
     _toggleOptionSelection(value);
   }
 
-  void onCheckboxClickHandle(html.Event event, CustomMultiSelectItem option) {
+  void onCheckboxClickHandle(web.Event event, CustomMultiSelectItem option) {
     if (isDisabled) {
       return;
     }
@@ -714,12 +727,12 @@ class LiMultiSelectComponent
     }
   }
 
-  void handleTriggerKeydown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleTriggerKeydown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    if ((event as html.KeyboardEvent).code == 'Enter' ||
+    if ((event as web.KeyboardEvent).code == 'Enter' ||
         event.code == 'NumpadEnter' ||
         event.code == 'Space' ||
         event.key == ' ') {
@@ -761,7 +774,7 @@ class LiMultiSelectComponent
     _scheduleOverlayUpdate();
   }
 
-  void clearFromTriggerTemplate([html.Event? event]) {
+  void clearFromTriggerTemplate([web.Event? event]) {
     event?.preventDefault();
     event?.stopPropagation();
 
@@ -773,26 +786,25 @@ class LiMultiSelectComponent
     dropdownButtonElement?.focus();
   }
 
-  void clearSelection(html.Event event) {
+  void clearSelection(web.Event event) {
     clearFromTriggerTemplate(event);
   }
 
-  void closeDropdownFromOutside(html.MouseEvent event) {
+  void closeDropdownFromOutside(web.MouseEvent event) {
     final target = event.target;
     closeDropdown(
       restoreFocus: false,
-      preserveFocusTarget: (target?.isA<html.Element>() ?? false)
-          ? target as html.Element
-          : null,
+      preserveFocusTarget:
+          (target?.isA<web.Element>() ?? false) ? target as web.Element : null,
     );
   }
 
-  void stopEventPropagation(html.Event event) {
+  void stopEventPropagation(web.Event event) {
     event.stopPropagation();
   }
 
-  void searchInputHandle(html.Event event) {
-    searchHandle((event.target as html.InputElement).value);
+  void searchInputHandle(web.Event event) {
+    searchHandle((event.target as web.HTMLInputElement).value);
   }
 
   void _toggleOptionSelection(CustomMultiSelectItem option) {
@@ -812,21 +824,21 @@ class LiMultiSelectComponent
     _scheduleOverlayUpdate();
   }
 
-  bool _canPreserveFocus(html.Element? element) {
-    if (!(element?.isA<html.HtmlElement>() ?? false) ||
+  bool _canPreserveFocus(web.Element? element) {
+    if (!(element?.isA<web.HTMLElement>() ?? false) ||
         element?.isConnected != true) {
       return false;
     }
 
-    final tabIndex = (element as html.HtmlElement).tabIndex;
+    final tabIndex = (element as web.HTMLElement).tabIndex;
     if (tabIndex >= 0) {
       return true;
     }
 
-    return element.isA<html.InputElement>() ||
-        element.isA<html.ButtonElement>() ||
-        element.isA<html.SelectElement>() ||
-        element.isA<html.TextAreaElement>() ||
+    return element.isA<web.HTMLInputElement>() ||
+        element.isA<web.HTMLButtonElement>() ||
+        element.isA<web.HTMLSelectElement>() ||
+        element.isA<web.HTMLTextAreaElement>() ||
         element.hasAttribute('contenteditable');
   }
 
@@ -958,7 +970,7 @@ class LiMultiSelectComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _overlayRelayoutPending = false;
       if (!dropdownOpen) {
         return;

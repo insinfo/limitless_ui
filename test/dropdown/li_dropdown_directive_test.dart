@@ -6,12 +6,14 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
-
+import 'package:web/web.dart' as web;
+import 'package:limitless_ui/src/web_support/zone_dom_callbacks.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_dropdown_directive_test.template.dart' as ng;
 
@@ -225,24 +227,24 @@ void main() {
     expect(toggle, isNotNull);
     expect(dropdown, isNotNull);
     expect(menu, isNotNull);
-    expect(dropdown!.classes.contains('show'), isFalse);
-    expect(menu!.classes.contains('show'), isFalse);
+    expect(dropdown!.classList.contains('show'), isFalse);
+    expect(menu!.classList.contains('show'), isFalse);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(dropdown.classes.contains('show'), isTrue);
-    expect(menu.classes.contains('show'), isTrue);
+    expect(dropdown.classList.contains('show'), isTrue);
+    expect(menu.classList.contains('show'), isTrue);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(dropdown.classes.contains('show'), isFalse);
-    expect(menu.classes.contains('show'), isFalse);
+    expect(dropdown.classList.contains('show'), isFalse);
+    expect(menu.classList.contains('show'), isFalse);
   });
 
   test('Home and End move focus between enabled dropdown items', () async {
@@ -257,26 +259,26 @@ void main() {
     expect(thirdItem, isNotNull);
 
     await fixture.update((_) {
-      toggle!.focus();
+      (toggle as web.HTMLElement).focus();
       _dispatchKey(toggle, 'ArrowDown');
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement == firstItem, isTrue);
+    expect(web.document.activeElement == firstItem, isTrue);
 
     await fixture.update((_) {
       _dispatchKey(firstItem!, 'End');
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement == thirdItem, isTrue);
+    expect(web.document.activeElement == thirdItem, isTrue);
 
     await fixture.update((_) {
       _dispatchKey(thirdItem!, 'Home');
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement == firstItem, isTrue);
+    expect(web.document.activeElement == firstItem, isTrue);
   });
 
   test('autoClose inside ignores outside clicks and closes on inside click',
@@ -294,25 +296,25 @@ void main() {
     expect(outside, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(menu!.classes.contains('show'), isTrue);
+    expect(menu!.classList.contains('show'), isTrue);
 
     await fixture.update((_) {
-      outside!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      outside!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(menu.classes.contains('show'), isTrue);
+    expect(menu.classList.contains('show'), isTrue);
 
     await fixture.update((_) {
-      item!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      item!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(menu.classes.contains('show'), isFalse);
+    expect(menu.classList.contains('show'), isFalse);
   });
 
   test('container body moves the menu outside the local dropdown host',
@@ -328,12 +330,12 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(dropdown!.contains(menu), isFalse);
-    expect(html.document.body!.contains(menu), isTrue);
+    expect(web.document.body!.contains(menu), isTrue);
   });
 
   test('container body uses fallback placement near the right viewport edge',
@@ -347,11 +349,11 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final wrapper = menu!.parent!;
+    final wrapper = menu!.parentElement!;
     expect(
       wrapper.getAttribute('data-popper-placement'),
       'left-start',
@@ -368,7 +370,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -390,7 +392,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -412,11 +414,11 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final viewportWidth = (html.window.innerWidth).toDouble();
+    final viewportWidth = (web.window.innerWidth).toDouble();
     final menuRect = menu!.getBoundingClientRect();
 
     expect(menuRect.width, lessThanOrEqualTo(viewportWidth - 14));
@@ -440,15 +442,15 @@ void main() {
     expect(label, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final initialWrapper = menu!.parent;
+    final initialWrapper = menu!.parentElement;
     expect(initialWrapper, isNotNull);
-    expect(html.document.body!.contains(initialWrapper), isTrue);
+    expect(web.document.body!.contains(initialWrapper), isTrue);
 
-    final initialText = label!.text.trim();
+    final initialText = (label!.textContent ?? '').trim();
     expect(
       initialText,
       'DepartamentoSuperExtraordinariamenteExtensoDeRegistrosEDesenvolvimentoDePessoalComNomeMuitoLongo-637',
@@ -457,17 +459,17 @@ void main() {
     await _settle(fixture);
     await _settle(fixture);
 
-    expect(menu.parent == initialWrapper, isTrue);
-    expect(menu.classes.contains('show'), isTrue);
-    expect(html.document.body!.contains(initialWrapper), isTrue);
-    expect(label.text.trim(), initialText);
-    expect(menu.style.maxWidth, isNotEmpty);
+    expect(menu.parentElement == initialWrapper, isTrue);
+    expect(menu.classList.contains('show'), isTrue);
+    expect(web.document.body!.contains(initialWrapper), isTrue);
+    expect((label.textContent ?? '').trim(), initialText);
+    expect((menu as web.HTMLElement).style.maxWidth, isNotEmpty);
     expect(
       label.getBoundingClientRect().width,
       greaterThanOrEqualTo(menu.clientWidth.toDouble()),
     );
     expect(menu.style.whiteSpace, 'nowrap');
-    expect(item!.style.whiteSpace, 'nowrap');
+    expect((item as web.HTMLElement).style.whiteSpace, 'nowrap');
     expect(label.getAttribute('style'), contains('white-space: nowrap'));
   });
 
@@ -481,17 +483,17 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
     await _settle(fixture);
     await _settle(fixture);
 
-    final wrapper = menu!.parent;
+    final wrapper = menu!.parentElement;
     expect(wrapper, isNotNull);
 
     var styleMutationCount = 0;
-    final observer = html.MutationObserver((records, _) {
+    final observer = ZoneMutationObserver((records, _) {
       for (final record in records) {
         if (record.type == 'attributes' && record.attributeName == 'style') {
           styleMutationCount++;
@@ -526,19 +528,20 @@ void main() {
     expect(label, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
     await _settle(fixture);
 
-    final viewportWidth = (html.window.innerWidth).toDouble();
+    final viewportWidth = (web.window.innerWidth).toDouble();
     final menuRect = menu!.getBoundingClientRect();
-    expect(menu.style.width, 'max-content');
+    expect((menu as web.HTMLElement).style.width, 'max-content');
     expect(menu.style.maxWidth, contains('min(22rem,'));
     expect(menu.style.maxWidth, contains('100vw'));
     expect(menuRect.left, greaterThanOrEqualTo(7));
     expect(menuRect.right, lessThanOrEqualTo(viewportWidth - 7));
-    expect(label!.text.trim(), contains('SecretariaSuperExtraordinariamente'));
+    expect((label!.textContent ?? '').trim(),
+        contains('SecretariaSuperExtraordinariamente'));
   });
 
   test('body overlay adapta menu alto para nao sair da viewport', () async {
@@ -551,11 +554,11 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final viewportHeight = (html.window.innerHeight).toDouble();
+    final viewportHeight = (web.window.innerHeight).toDouble();
     final menuRect = menu!.getBoundingClientRect();
 
     expect(menuRect.height, lessThanOrEqualTo(viewportHeight - 14));
@@ -574,7 +577,7 @@ void main() {
     expect(menu, isNotNull);
 
     await fixture.update((_) {
-      toggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -597,8 +600,8 @@ void main() {
 
     expect(defaultToggle, isNotNull);
     expect(noCaretToggle, isNotNull);
-    expect(defaultToggle!.classes.contains('dropdown-toggle'), isTrue);
-    expect(noCaretToggle!.classes.contains('dropdown-toggle'), isFalse);
+    expect(defaultToggle!.classList.contains('dropdown-toggle'), isTrue);
+    expect(noCaretToggle!.classList.contains('dropdown-toggle'), isFalse);
   });
 
   test('submenu toggle opens nested menu without closing parent dropdown',
@@ -614,18 +617,18 @@ void main() {
         fixture.rootElement.querySelector('#theme-submenu-menu');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(rootMenu!.classes.contains('show'), isTrue);
-    expect(submenuHost!.classes.contains('show'), isTrue);
-    expect(submenuMenu!.classes.contains('show'), isTrue);
+    expect(rootMenu!.classList.contains('show'), isTrue);
+    expect(submenuHost!.classList.contains('show'), isTrue);
+    expect(submenuMenu!.classList.contains('show'), isTrue);
   });
 
   test('submenu nao fecha quando hover sintetico precede o click', () async {
@@ -639,25 +642,25 @@ void main() {
         fixture.rootElement.querySelector('#theme-submenu-menu');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuHost!.dispatchEvent(html.liMouseEvent('mouseenter'));
+      submenuHost!.dispatchEvent(bubblingMouseEvent('mouseenter'));
     });
     await _settle(fixture);
 
-    expect(submenuHost!.classes.contains('show'), isTrue);
-    expect(submenuMenu!.classes.contains('show'), isTrue);
+    expect(submenuHost!.classList.contains('show'), isTrue);
+    expect(submenuMenu!.classList.contains('show'), isTrue);
 
     await fixture.update((_) {
-      submenuToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(submenuHost.classes.contains('show'), isTrue);
-    expect(submenuMenu.classes.contains('show'), isTrue);
+    expect(submenuHost.classList.contains('show'), isTrue);
+    expect(submenuMenu.classList.contains('show'), isTrue);
   });
 
   test('closed submenu items are skipped by parent keyboard navigation',
@@ -670,26 +673,26 @@ void main() {
         fixture.rootElement.querySelector('#theme-submenu-toggle');
 
     await fixture.update((_) {
-      rootToggle!.focus();
+      (rootToggle as web.HTMLElement).focus();
       _dispatchKey(rootToggle, 'ArrowDown');
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement?.id, 'submenu-profile');
+    expect(web.document.activeElement?.id, 'submenu-profile');
 
     await fixture.update((_) {
       _dispatchKey(profile!, 'ArrowDown');
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement?.id, 'theme-submenu-toggle');
+    expect(web.document.activeElement?.id, 'theme-submenu-toggle');
 
     await fixture.update((_) {
       _dispatchKey(submenuToggle!, 'ArrowDown');
     });
     await _settle(fixture);
 
-    expect(html.document.activeElement?.id, 'submenu-logout');
+    expect(web.document.activeElement?.id, 'submenu-logout');
   });
 
   test('submenu item selection closes the parent dropdown by default',
@@ -704,22 +707,22 @@ void main() {
     final submenuItem = fixture.rootElement.querySelector('#theme-light');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuItem!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      submenuItem!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(rootMenu!.classes.contains('show'), isFalse);
-    expect(submenuHost!.classes.contains('show'), isFalse);
+    expect(rootMenu!.classList.contains('show'), isFalse);
+    expect(submenuHost!.classList.contains('show'), isFalse);
   });
 
   test('submenu start abre com ArrowLeft e fecha com ArrowRight', () async {
@@ -732,26 +735,26 @@ void main() {
     final submenuItem = fixture.rootElement.querySelector('#theme-light');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!.focus();
+      (submenuToggle as web.HTMLElement).focus();
       _dispatchKey(submenuToggle, 'ArrowLeft');
     });
     await _settle(fixture);
 
-    expect(submenuHost!.classes.contains('show'), isTrue);
-    expect(html.document.activeElement?.id, 'theme-light');
+    expect(submenuHost!.classList.contains('show'), isTrue);
+    expect(web.document.activeElement?.id, 'theme-light');
 
     await fixture.update((_) {
       _dispatchKey(submenuItem!, 'ArrowRight');
     });
     await _settle(fixture);
 
-    expect(submenuHost.classes.contains('show'), isFalse);
-    expect(html.document.activeElement?.id, 'theme-submenu-toggle');
+    expect(submenuHost.classList.contains('show'), isFalse);
+    expect(web.document.activeElement?.id, 'theme-submenu-toggle');
   });
 
   test('submenu emite openChange para estado controlado pelo consumidor',
@@ -765,17 +768,17 @@ void main() {
     final submenuItem = fixture.rootElement.querySelector('#theme-light');
 
     await fixture.update((_) {
-      rootToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      rootToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuToggle!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      submenuToggle!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
-      submenuItem!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      submenuItem!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -790,7 +793,7 @@ Future<void> _settle(NgTestFixture<DropdownTestHostComponent> fixture) async {
   await fixture.update((_) {});
 }
 
-void _dispatchKey(html.Element element, String key) {
-  final event = html.liKeyboardEvent('keydown', key: key);
+void _dispatchKey(web.Element element, String key) {
+  final event = bubblingKeyboardEvent('keydown', key: key);
   element.dispatchEvent(event);
 }

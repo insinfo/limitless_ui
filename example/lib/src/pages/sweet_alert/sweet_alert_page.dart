@@ -1,5 +1,6 @@
-import 'package:limitless_ui/web_compat.dart' as html;
 import 'package:limitless_ui_example/limitless_ui_example.dart';
+
+import '../../web_support/dom_tokens.dart';
 
 @Component(
   selector: 'sweet-alert-page',
@@ -88,7 +89,7 @@ await sweetAlertService.show(
   type: SweetAlertType.info,
   showCloseButton: true,
   onOpen: (popup) {
-    popup.classes.addAll(['border', 'border-primary']);
+    popup.classList.addAllTokens(['border', 'border-primary']);
   },
   onClose: (_) {
     logger.info('SweetAlert fechado');
@@ -996,7 +997,7 @@ class ReviewPageComponent {
       type: SweetAlertType.info,
       showCloseButton: true,
       onOpen: (popup) {
-        popup.classes.addAll(<String>['border', 'border-primary']);
+        popup.classList.addAllTokens(<String>['border', 'border-primary']);
         _setLastAction(
           'Callback onOpen disparado.',
           'onOpen callback fired.',

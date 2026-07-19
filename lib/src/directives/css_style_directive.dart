@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -16,7 +16,7 @@ import 'package:ngx_dart/angular.dart';
 /// ```
 @Directive(selector: '[liCssStyle]')
 class LiCssStyleDirective {
-  final Element _element;
+  final web.Element _element;
   String _lastCss = '';
 
   LiCssStyleDirective(this._element);
@@ -26,7 +26,7 @@ class LiCssStyleDirective {
     final css = value ?? '';
     if (_lastCss != css) {
       _lastCss = css;
-      _element.style.cssText = css;
+      (_element as web.HTMLElement).style.cssText = css;
     }
   }
 }

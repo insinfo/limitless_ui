@@ -5,13 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_selection_controls_components_test.template.dart' as ng;
 
@@ -86,11 +89,11 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final checkbox = fixture.rootElement.querySelector('li-checkbox input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       checkbox.checked = true;
-      checkbox.dispatchEvent(html.liEvent('change', canBubble: true));
+      checkbox.dispatchEvent(bubblingEvent('change', bubbles: true));
     });
     await _settle(fixture);
 
@@ -102,45 +105,46 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final checkbox = fixture.rootElement
-        .querySelector('input#required-checkbox') as html.InputElement;
+        .querySelector('input#required-checkbox') as web.HTMLInputElement;
 
     await fixture.update((_) {
-      checkbox.dispatchEvent(html.liEvent('blur', canBubble: true));
+      checkbox.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.requiredCheckboxValue, isFalse);
-    expect(checkbox.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('Confirme o aceite.'));
+    expect(checkbox.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent, contains('Confirme o aceite.'));
 
     await fixture.update((_) {
       checkbox.checked = true;
-      checkbox.dispatchEvent(html.liEvent('change', canBubble: true));
-      checkbox.dispatchEvent(html.liEvent('blur', canBubble: true));
+      checkbox.dispatchEvent(bubblingEvent('change', bubbles: true));
+      checkbox.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.requiredCheckboxValue, isTrue);
-    expect(checkbox.classes.contains('is-invalid'), isFalse);
+    expect(checkbox.classList.contains('is-invalid'), isFalse);
   });
 
   test('radio keeps the current value when clicked again by default', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final radios = fixture.rootElement.queryAll('li-radio input');
-    final publicRadio = radios[1] as html.InputElement;
+    final radios =
+        fixture.rootElement.querySelectorAll('li-radio input').toElementList();
+    final publicRadio = radios[1] as web.HTMLInputElement;
 
     await fixture.update((_) {
       publicRadio.checked = true;
-      publicRadio.dispatchEvent(html.liEvent('change', canBubble: true));
+      publicRadio.dispatchEvent(bubblingEvent('change', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.radioValue, 'public');
 
     await fixture.update((_) {
-      publicRadio.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      publicRadio.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -155,19 +159,20 @@ void main() {
     await _settle(fixture);
 
     final host = fixture.assertOnlyInstance;
-    final radios = fixture.rootElement.queryAll('li-radio input');
-    final publicRadio = radios[1] as html.InputElement;
+    final radios =
+        fixture.rootElement.querySelectorAll('li-radio input').toElementList();
+    final publicRadio = radios[1] as web.HTMLInputElement;
 
     await fixture.update((_) {
       publicRadio.checked = true;
-      publicRadio.dispatchEvent(html.liEvent('change', canBubble: true));
+      publicRadio.dispatchEvent(bubblingEvent('change', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.radioValue, 'public');
 
     await fixture.update((_) {
-      publicRadio.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      publicRadio.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -178,16 +183,17 @@ void main() {
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final radios = fixture.rootElement.queryAll('li-radio input');
-    final teamRadio = radios[0] as html.InputElement;
-    final publicRadio = radios[1] as html.InputElement;
+    final radios =
+        fixture.rootElement.querySelectorAll('li-radio input').toElementList();
+    final teamRadio = radios[0] as web.HTMLInputElement;
+    final publicRadio = radios[1] as web.HTMLInputElement;
 
     expect(teamRadio.checked, isTrue);
     expect(publicRadio.checked, isFalse);
 
     await fixture.update((_) {
       publicRadio.checked = true;
-      publicRadio.dispatchEvent(html.liEvent('change', canBubble: true));
+      publicRadio.dispatchEvent(bubblingEvent('change', bubbles: true));
     });
     await _settle(fixture);
 
@@ -201,11 +207,11 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final toggle = fixture.rootElement.querySelector('li-toggle input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       toggle.checked = true;
-      toggle.dispatchEvent(html.liEvent('change', canBubble: true));
+      toggle.dispatchEvent(bubblingEvent('change', bubbles: true));
     });
     await _settle(fixture);
 
@@ -213,7 +219,7 @@ void main() {
 
     await fixture.update((_) {
       toggle.checked = false;
-      toggle.dispatchEvent(html.liEvent('change', canBubble: true));
+      toggle.dispatchEvent(bubblingEvent('change', bubbles: true));
     });
     await _settle(fixture);
 

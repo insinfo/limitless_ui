@@ -1,10 +1,13 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
+
+import '../../web_support/html_sinks.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 import 'dart:math' as math;
 
 String _resolveLoadingOverlayColor() {
-  final theme = document.documentElement?.getAttribute('data-color-theme');
+  final theme = web.document.documentElement?.getAttribute('data-color-theme');
   return theme == 'dark' ? 'rgb(0 0 0 / 36%)' : 'rgb(255 255 255 / 48%)';
 }
 
@@ -12,37 +15,39 @@ class LiSimpleLoading {
   static const int defaultBodyZIndex = 500000;
   static const int defaultTargetZIndex = 50000;
 
-  Element _root = DivElement();
-  Element? _spinner;
-  Element? _target;
+  web.HTMLDivElement _root = web.HTMLDivElement();
+  web.HTMLDivElement? _spinner;
+  web.Element? _target;
 
-  StreamSubscription<Event>? _winScrollSub;
-  StreamSubscription<Event>? _containerScrollSub;
-  StreamSubscription<Event>? _resizeSub;
-  ResizeObserver? _ro;
+  StreamSubscription<web.Event>? _winScrollSub;
+  StreamSubscription<web.Event>? _containerScrollSub;
+  StreamSubscription<web.Event>? _resizeSub;
+  ZoneResizeObserver? _ro;
 
   double _safeMargin = 64; // px
-  EventTarget? _scrollContainer;
+  web.EventTarget? _scrollContainer;
 
   String _overlayColor() => _resolveLoadingOverlayColor();
 
-  int _resolvedZIndex(Element? target, int? zIndex) =>
+  int _resolvedZIndex(web.Element? target, int? zIndex) =>
       zIndex ?? (target == null ? defaultBodyZIndex : defaultTargetZIndex);
 
-  void _prepareTargetForOverlay(Element? target) {
-    if (target != null && target.getComputedStyle().position == 'static') {
-      target.style.position = 'relative';
+  void _prepareTargetForOverlay(web.Element? target) {
+    if (target != null &&
+        web.window.getComputedStyle(target).position == 'static' &&
+        target.isA<web.HTMLElement>()) {
+      (target as web.HTMLElement).style.position = 'relative';
     }
   }
 
-  DivElement _createRoot({
+  web.HTMLDivElement _createRoot({
     required String position,
     required int zIndex,
     required String height,
     String? background,
   }) {
-    final root = DivElement()
-      ..classes.add('li-simple-loading')
+    final root = web.HTMLDivElement()
+      ..classList.add('li-simple-loading')
       ..setAttribute('data-li-simple-loading', 'true')
       ..style.position = position
       ..style.left = '0'
@@ -58,13 +63,13 @@ class LiSimpleLoading {
     return root;
   }
 
-  void _mountOverlay(Element? target) {
+  void _mountOverlay(web.Element? target) {
     if (target != null) {
-      target.append(_root);
+      target.appendChild(_root);
       return;
     }
 
-    document.body?.append(_root);
+    web.document.body?.appendChild(_root);
   }
 
   void showOnBody({
@@ -73,11 +78,11 @@ class LiSimpleLoading {
   }) =>
       show(target: null, safeMargin: safeMargin, zIndex: zIndex);
 
-  void show({Element? target, double safeMargin = 64, int? zIndex}) {
+  void show({web.Element? target, double safeMargin = 64, int? zIndex}) {
     hide();
     _safeMargin = safeMargin;
 
-    _target = target ?? document.body;
+    _target = target ?? web.document.body;
     _prepareTargetForOverlay(target);
 
     _root = _createRoot(
@@ -87,32 +92,37 @@ class LiSimpleLoading {
       background: _overlayColor(),
     );
 
-    _spinner = DivElement()
-      ..classes.add('li-simple-loading__spinner')
-      ..setInnerHtml(
-        '<i class="ph-spinner ph-3x spinner text-primary"></i>',
-        treeSanitizer: NodeTreeSanitizer.trusted,
-      )
+    _spinner = web.HTMLDivElement()
+      ..classList.add('li-simple-loading__spinner')
       ..style.position = 'absolute'
       ..style.left = '50%'
       ..style.transform = 'translateX(-50%)';
+    setTrustedHtml(
+      _spinner!,
+      '<i class="ph-spinner ph-3x spinner text-primary"></i>',
+    );
     _spinner!.style.pointerEvents = 'none';
 
-    _root.append(_spinner!);
+    _root.appendChild(_spinner!);
     _mountOverlay(target);
 
     _scrollContainer = _findScrollableAncestor(_target!);
 
-    _winScrollSub = window.onScroll.listen((_) => _rafUpdate());
+    _winScrollSub = web.EventStreamProviders.scrollEvent
+        .forTarget(web.window)
+        .listen((_) => _rafUpdate());
 
-    if ((_scrollContainer?.isA<Element>() ?? false)) {
-      _containerScrollSub =
-          (_scrollContainer as Element).onScroll.listen((_) => _rafUpdate());
+    if ((_scrollContainer?.isA<web.Element>() ?? false)) {
+      _containerScrollSub = (_scrollContainer as web.Element)
+          .onScroll
+          .listen((_) => _rafUpdate());
     }
 
-    _resizeSub = window.onResize.listen((_) => _rafUpdate());
+    _resizeSub = web.EventStreamProviders.resizeEvent
+        .forTarget(web.window)
+        .listen((_) => _rafUpdate());
 
-    _ro = ResizeObserver((List<dynamic> entries, ResizeObserver observer) {
+    _ro = ZoneResizeObserver((_, __) {
       _rafUpdate();
     })
       ..observe(_target!);
@@ -122,7 +132,7 @@ class LiSimpleLoading {
 
   void _rafUpdate() {
     if (_target != null && _target!.isConnected == true) {
-      window.liRequestAnimationFrame((_) => _updateSpinnerPosition());
+      requestAnimationFrameInZone((_) => _updateSpinnerPosition());
     } else {
       hide();
     }
@@ -133,20 +143,21 @@ class LiSimpleLoading {
       return;
     }
 
-    final Rectangle<num> rect;
-    if (_target == document.body || _target == document.documentElement) {
-      rect = Rectangle<num>(
+    final math.Rectangle<num> rect;
+    if (_target == web.document.body ||
+        _target == web.document.documentElement) {
+      rect = math.Rectangle<num>(
         0,
         0,
-        window.innerWidth.toDouble(),
-        (document.documentElement?.scrollHeight ?? 0).toDouble(),
+        web.window.innerWidth.toDouble(),
+        (web.document.documentElement?.scrollHeight ?? 0).toDouble(),
       );
     } else {
       final r = _target!.getBoundingClientRect();
-      rect = Rectangle<num>(r.left, r.top, r.width, r.height);
+      rect = math.Rectangle<num>(r.left, r.top, r.width, r.height);
     }
 
-    final double viewportH = window.innerHeight.toDouble();
+    final double viewportH = web.window.innerHeight.toDouble();
     final double centerYViewport = (rect.top + rect.height / 2).toDouble();
     final double topClamp = _safeMargin;
     final double bottomClamp = viewportH - _safeMargin;
@@ -175,19 +186,19 @@ class LiSimpleLoading {
     _root.remove();
   }
 
-  EventTarget _findScrollableAncestor(Element start) {
-    Element? el = start;
-    while (el != null && el != document.body) {
-      final oy = el.getComputedStyle().overflowY;
+  web.EventTarget _findScrollableAncestor(web.Element start) {
+    web.Element? el = start;
+    while (el != null && el != web.document.body) {
+      final oy = web.window.getComputedStyle(el).overflowY;
       if (oy == 'auto' || oy == 'scroll') {
         return el;
       }
-      el = el.parent;
+      el = el.parentElement;
     }
-    return window;
+    return web.window;
   }
 
-  void showSimple({Element? target, int? zIndex}) {
+  void showSimple({web.Element? target, int? zIndex}) {
     hide();
     _prepareTargetForOverlay(target);
     _root = _createRoot(
@@ -201,7 +212,7 @@ class LiSimpleLoading {
     _root.style.alignItems = 'center';
     _root.style.justifyContent = 'center';
 
-    _root.appendHtml('''
+    appendSanitizedHtml(_root, '''
 <div>
 <i class="ph-spinner ph-3x spinner text-primary"></i>
 </div>
@@ -210,7 +221,7 @@ class LiSimpleLoading {
     _mountOverlay(target);
   }
 
-  void showHorizontal({Element? target, int? zIndex}) {
+  void showHorizontal({web.Element? target, int? zIndex}) {
     hide();
     _prepareTargetForOverlay(target);
     _root = _createRoot(
@@ -222,7 +233,8 @@ class LiSimpleLoading {
     var backColor = '#2196f3';
     var frontColor = '#fff';
 
-    _root.setInnerHtml(
+    setTrustedHtml(
+      _root,
       '''
 <style>
 .loader {
@@ -280,13 +292,12 @@ class LiSimpleLoading {
   <div class="loaderBar"></div>
 </div>
 ''',
-      treeSanitizer: NodeTreeSanitizer.trusted,
     );
 
     _mountOverlay(target);
   }
 
-  void showHorizontal2({Element? target, int? zIndex}) {
+  void showHorizontal2({web.Element? target, int? zIndex}) {
     hide();
     _prepareTargetForOverlay(target);
     _root = _createRoot(
@@ -295,7 +306,8 @@ class LiSimpleLoading {
       height: 'auto',
     );
 
-    _root.setInnerHtml(
+    setTrustedHtml(
+      _root,
       '''<style>
         .progress-container.indeterminate {
           background-color: #c6dafc
@@ -421,7 +433,6 @@ class LiSimpleLoading {
           </div>
         </div>
       </div>''',
-      treeSanitizer: NodeTreeSanitizer.trusted,
     );
 
     _mountOverlay(target);
@@ -465,8 +476,8 @@ class LiNarratedFullScreenLoading {
   final Duration stepDuration;
   final int zIndex;
 
-  Element _root = DivElement();
-  DivElement? _messageElement;
+  web.HTMLDivElement _root = web.HTMLDivElement();
+  web.HTMLDivElement? _messageElement;
   Timer? _messageTimer;
   int _currentMessageIndex = 0;
   bool _rotationStopped = false;
@@ -478,8 +489,8 @@ class LiNarratedFullScreenLoading {
 
     final resolvedZIndex = zIndex ?? this.zIndex;
 
-    _root = DivElement()
-      ..classes.add('li-narrated-full-screen-loading')
+    _root = web.HTMLDivElement()
+      ..classList.add('li-narrated-full-screen-loading')
       ..setAttribute('data-li-narrated-full-screen-loading', 'true')
       ..style.position = 'fixed'
       ..style.left = '0'
@@ -496,7 +507,8 @@ class LiNarratedFullScreenLoading {
     _root.style.setProperty('backdrop-filter', 'blur(2px)');
     _root.style.setProperty('-webkit-backdrop-filter', 'blur(2px)');
 
-    _root.setInnerHtml(
+    setTrustedHtml(
+      _root,
       '''
 <style>
 .li-narrated-full-screen-loading__shell {
@@ -616,20 +628,19 @@ class LiNarratedFullScreenLoading {
   </div>
 </div>
 ''',
-      treeSanitizer: NodeTreeSanitizer.trusted,
     );
 
     final titleElement =
         _root.querySelector('.li-narrated-full-screen-loading__title')
-            as DivElement?;
+            as web.HTMLDivElement?;
     _messageElement =
         _root.querySelector('.li-narrated-full-screen-loading__message')
-            as DivElement?;
+            as web.HTMLDivElement?;
 
-    titleElement?.text = title;
+    titleElement?.textContent = title;
     _applyCurrentMessage();
 
-    document.body?.append(_root);
+    web.document.body?.appendChild(_root);
     _startMessageRotation();
   }
 
@@ -638,7 +649,8 @@ class LiNarratedFullScreenLoading {
       return;
     }
 
-    _messageElement!.text = messages[_currentMessageIndex % messages.length];
+    _messageElement!.textContent =
+        messages[_currentMessageIndex % messages.length];
   }
 
   void _startMessageRotation() {
@@ -664,7 +676,7 @@ class LiNarratedFullScreenLoading {
       return;
     }
 
-    _messageElement!.text = message;
+    _messageElement!.textContent = message;
   }
 
   void hide() {
@@ -674,6 +686,6 @@ class LiNarratedFullScreenLoading {
     _rotationStopped = false;
     _currentMessageIndex = 0;
     _root.remove();
-    _root = DivElement();
+    _root = web.HTMLDivElement();
   }
 }

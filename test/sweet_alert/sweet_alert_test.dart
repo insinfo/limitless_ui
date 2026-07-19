@@ -5,9 +5,13 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:limitless_ui/src/web_support/dom_tokens.dart';
+import 'package:web/web.dart' as web;
+
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 void main() {
   setUp(_resetSweetAlertDom);
@@ -24,10 +28,10 @@ void main() {
 
     await _settle();
 
-    final popup = html.document.querySelector('.swal2-popup.swal2-modal');
+    final popup = web.document.querySelector('.swal2-popup.swal2-modal');
     expect(popup, isNotNull);
     final resolvedPopup = popup!;
-    final root = html.document.querySelector('[data-label="li_sa_root"]');
+    final root = web.document.querySelector('[data-label="li_sa_root"]');
     expect(root, isNotNull);
     expect(root!.getAttribute('data-open'), 'true');
     expect(resolvedPopup.getAttribute('data-label'), 'li_sa_popup');
@@ -41,16 +45,17 @@ void main() {
       resolvedPopup.querySelector('[data-label="li_sa_body"]'),
       isNotNull,
     );
-    expect(resolvedPopup.getComputedStyle().display, 'grid');
-    expect(resolvedPopup.classes.contains('swal2-icon-success'), isTrue);
+    expect(web.window.getComputedStyle(resolvedPopup).display, 'grid');
+    expect(resolvedPopup.classList.contains('swal2-icon-success'), isTrue);
     expect(
       resolvedPopup
           .querySelector('[data-label="li_sa_icon"]')
           ?.getAttribute('data-value'),
       'success',
     );
-    expect(resolvedPopup.text, contains('Deployment ready'));
-    expect(resolvedPopup.text, contains('The release summary is available.'));
+    expect(resolvedPopup.textContent, contains('Deployment ready'));
+    expect(resolvedPopup.textContent,
+        contains('The release summary is available.'));
     expect(
       resolvedPopup.querySelector('[data-label="li_sa_actions"]'),
       isNotNull,
@@ -60,18 +65,18 @@ void main() {
       isNotNull,
     );
     final confirmButton =
-        resolvedPopup.querySelector('.swal2-confirm') as html.ButtonElement?;
+        resolvedPopup.querySelector('.swal2-confirm') as web.HTMLButtonElement?;
     expect(confirmButton, isNotNull);
     expect(confirmButton!.getAttribute('data-label'), 'li_sa_confirm');
-    expect(confirmButton.classes.contains('btn'), isTrue);
-    expect(confirmButton.classes.contains('btn-primary'), isTrue);
+    expect(confirmButton.classList.contains('btn'), isTrue);
+    expect(confirmButton.classList.contains('btn-primary'), isTrue);
 
     _click('.swal2-confirm');
     final result = await future;
 
     expect(result.isConfirmed, isTrue);
     expect(result.isDismissed, isFalse);
-    expect(html.document.querySelector('.swal2-container'), isNull);
+    expect(web.document.querySelector('.swal2-container'), isNull);
   });
 
   test('confirm resolves as cancelled when the cancel button is used',
@@ -85,7 +90,7 @@ void main() {
 
     await _settle();
     final cancelButton =
-        html.document.querySelector('.swal2-cancel') as html.ButtonElement?;
+        web.document.querySelector('.swal2-cancel') as web.HTMLButtonElement?;
     expect(cancelButton, isNotNull);
     expect(cancelButton!.getAttribute('data-label'), 'li_sa_cancel');
     _click('.swal2-cancel');
@@ -170,7 +175,7 @@ void main() {
     );
 
     await _settle();
-    html.document.dispatchEvent(_createKeyEvent('keydown', key: 'Escape'));
+    web.document.dispatchEvent(_createKeyEvent('keydown', key: 'Escape'));
     final escapeResult = await escapeFuture;
     expect(escapeResult.dismissReason, SweetAlertDismissReason.escape);
 
@@ -202,18 +207,19 @@ void main() {
     _click('.swal2-confirm');
     await _settle();
 
-    final validationMessage = html.document
-        .querySelector('.swal2-validation-message') as html.Element;
+    final validationMessage =
+        web.document.querySelector('.swal2-validation-message') as web.Element;
     expect(validationMessage.getAttribute('data-label'), 'li_sa_validation');
-    expect(validationMessage.text, contains('Identifier is required'));
-    expect(validationMessage.getComputedStyle().display, isNot('none'));
+    expect(validationMessage.textContent, contains('Identifier is required'));
+    expect(
+        web.window.getComputedStyle(validationMessage).display, isNot('none'));
 
     final input =
-        html.document.querySelector('.swal2-input') as html.InputElement?;
+        web.document.querySelector('.swal2-input') as web.HTMLInputElement?;
     expect(input, isNotNull);
     input!
       ..value = 'batch-42'
-      ..dispatchEvent(html.liEvent('input', canBubble: true));
+      ..dispatchEvent(bubblingEvent('input', bubbles: true));
 
     _click('.swal2-confirm');
     final result = await future;
@@ -231,10 +237,10 @@ void main() {
 
     await _settle();
 
-    final textarea =
-        html.document.querySelector('.swal2-textarea') as html.TextAreaElement?;
+    final textarea = web.document.querySelector('.swal2-textarea')
+        as web.HTMLTextAreaElement?;
     expect(textarea, isNotNull);
-    expect(textarea!.classes.contains('form-control'), isTrue);
+    expect(textarea!.classList.contains('form-control'), isTrue);
     expect(textarea.rows, 4);
     expect(textarea.style.width, '100%');
     expect(textarea.style.minHeight, '7rem');
@@ -271,11 +277,11 @@ void main() {
 
     await _settle();
 
-    final textarea =
-        html.document.querySelector('.swal2-textarea') as html.TextAreaElement?;
+    final textarea = web.document.querySelector('.swal2-textarea')
+        as web.HTMLTextAreaElement?;
     expect(textarea, isNotNull);
-    expect(textarea!.classes.contains('li-swalert-textarea'), isTrue);
-    expect(textarea.classes.contains('form-control-lg'), isTrue);
+    expect(textarea!.classList.contains('li-swalert-textarea'), isTrue);
+    expect(textarea.classList.contains('form-control-lg'), isTrue);
     expect(textarea.rows, 6);
     expect(textarea.minLength, 10);
     expect(textarea.maxLength, 240);
@@ -297,15 +303,15 @@ void main() {
     );
 
     await _settle();
-    expect(html.document.querySelector('.swal2-toast'), isNotNull);
-    expect(html.document.body!.classes.contains('swal2-toast-shown'), isTrue);
+    expect(web.document.querySelector('.swal2-toast'), isNotNull);
+    expect(web.document.body!.classList.contains('swal2-toast-shown'), isTrue);
 
     final reason = await controller.closed;
     await _settle();
 
     expect(reason, SweetAlertDismissReason.timer);
-    expect(html.document.querySelector('.swal2-toast'), isNull);
-    expect(html.document.body!.classes.contains('swal2-toast-shown'), isFalse);
+    expect(web.document.querySelector('.swal2-toast'), isNull);
+    expect(web.document.body!.classList.contains('swal2-toast-shown'), isFalse);
   });
 
   test('error type renders the x-mark structure expected by Limitless CSS',
@@ -318,15 +324,15 @@ void main() {
 
     await _settle();
 
-    expect(html.document.querySelector('.swal2-icon.swal2-error .swal2-x-mark'),
+    expect(web.document.querySelector('.swal2-icon.swal2-error .swal2-x-mark'),
         isNotNull);
     expect(
-      html.document
+      web.document
           .querySelector('.swal2-icon.swal2-error .swal2-x-mark-line-left'),
       isNotNull,
     );
     expect(
-      html.document
+      web.document
           .querySelector('.swal2-icon.swal2-error .swal2-x-mark-line-right'),
       isNotNull,
     );
@@ -356,15 +362,17 @@ void main() {
 
     await _settle();
 
-    expect(html.document.querySelector('.swal2-container.swal2-center-end'),
+    expect(web.document.querySelector('.swal2-container.swal2-center-end'),
         isNotNull);
-    final actions = html.document.querySelector('.swal2-actions');
+    final actions = web.document.querySelector('.swal2-actions');
     expect(actions, isNotNull);
-    final actionButtons = actions!.children
-        .toList()
-        .where((element) => element.classes.contains('swal2-styled'))
-        .toList(growable: false);
-    expect(actionButtons.first.classes.contains('swal2-cancel'), isTrue);
+    final actionButtons =
+        web.JSImmutableListWrapper<web.HTMLCollection, web.Element>(
+      actions!.children,
+    )
+            .where((element) => element.classList.contains('swal2-styled'))
+            .toList(growable: false);
+    expect(actionButtons.first.classList.contains('swal2-cancel'), isTrue);
     expect(opened, isTrue);
 
     _click('.swal2-confirm');
@@ -388,7 +396,7 @@ void main() {
     await _settle();
 
     final select =
-        html.document.querySelector('.swal2-select') as html.SelectElement?;
+        web.document.querySelector('.swal2-select') as web.HTMLSelectElement?;
     expect(select, isNotNull);
     expect(select!.getAttribute('data-label'), 'li_sa_input');
     expect(select.getAttribute('data-value'), 'select');
@@ -421,8 +429,8 @@ void main() {
 
     await _settle();
     final radio =
-        html.document.querySelector('input[type="radio"][value="fast"]')
-            as html.RadioButtonInputElement?;
+        web.document.querySelector('input[type="radio"][value="fast"]')
+            as web.HTMLInputElement?;
     expect(radio, isNotNull);
     expect(radio!.getAttribute('data-label'), 'li_sa_input_radio');
     expect(radio.getAttribute('data-value'), 'fast');
@@ -439,8 +447,8 @@ void main() {
     );
 
     await _settle();
-    final checkbox = html.document.querySelector('input[type="checkbox"]')
-        as html.CheckboxInputElement?;
+    final checkbox = web.document.querySelector('input[type="checkbox"]')
+        as web.HTMLInputElement?;
     expect(checkbox, isNotNull);
     expect(checkbox!.getAttribute('data-label'), 'li_sa_input_checkbox');
     checkbox.checked = false;
@@ -458,8 +466,8 @@ void main() {
     );
 
     await _settle();
-    final range = html.document.querySelector('input[type="range"]')
-        as html.InputElement?;
+    final range = web.document.querySelector('input[type="range"]')
+        as web.HTMLInputElement?;
     expect(range, isNotNull);
     expect(range!.getAttribute('data-label'), 'li_sa_input');
     expect(range.getAttribute('data-value'), 'range');
@@ -471,14 +479,14 @@ void main() {
 }
 
 void _click(String selector) {
-  final element = html.document.querySelector(selector);
+  final element = web.document.querySelector(selector);
   expect(element, isNotNull);
-  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+  element!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 void _resetSweetAlertDom() {
   SweetAlert.dismissAll();
-  html.document.body?.classes.removeAll(
+  web.document.body?.classList.removeAllTokens(
     const <String>['swal2-shown', 'swal2-height-auto', 'swal2-toast-shown'],
   );
 }
@@ -487,9 +495,9 @@ Future<void> _settle() async {
   await Future<void>.delayed(const Duration(milliseconds: 40));
 }
 
-html.Event _createKeyEvent(
+web.Event _createKeyEvent(
   String type, {
   required String key,
   String? code,
 }) =>
-    html.liKeyboardEvent(type, key: key, code: code ?? key);
+    bubblingKeyboardEvent(type, key: key, code: code ?? key);

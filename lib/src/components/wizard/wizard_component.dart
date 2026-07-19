@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'dart:async';
 
@@ -246,7 +246,7 @@ class LiWizardComponent implements AfterContentInit, OnDestroy {
     _syncStepStates();
   }
 
-  Future<void> handleStepClick(int index, Event event) async {
+  Future<void> handleStepClick(int index, web.Event event) async {
     event.preventDefault();
     if (!allowStepClick || !_canOpenStep(index)) {
       return;

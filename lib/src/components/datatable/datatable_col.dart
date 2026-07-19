@@ -1,7 +1,7 @@
 //datatable_col.dart
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:popper/popper.dart';
 
@@ -15,7 +15,7 @@ typedef DatatableCellStyleResolver = String? Function(
 );
 
 typedef DatatableTitleRenderString = String Function(DatatableCol column);
-typedef DatatableTitleRenderHtml = Element Function(DatatableCol column);
+typedef DatatableTitleRenderHtml = web.Element Function(DatatableCol column);
 
 enum DatatableTitleTooltipDisplayMode { icon, title }
 
@@ -168,11 +168,11 @@ class _DatatableActionFloatingOverlay {
 
   final PopperController _controller;
   final PopperPortal portal;
-  final Element floatingElement;
+  final web.Element floatingElement;
 
   factory _DatatableActionFloatingOverlay.attach({
-    required Element referenceElement,
-    required Element floatingElement,
+    required web.Element referenceElement,
+    required web.Element floatingElement,
   }) {
     final portal = PopperPortal.attach(
       floatingElement: floatingElement,
@@ -297,7 +297,7 @@ class DatatableActionColumn extends DatatableCol {
   List<DatatableAction> get resolvedActions =>
       controller?.actions ?? List<DatatableAction>.unmodifiable(_actions);
 
-  Element _renderActionsCell(
+  web.Element _renderActionsCell(
     Map<String, dynamic> itemMap,
     dynamic itemInstance,
   ) {
@@ -321,7 +321,7 @@ class DatatableActionColumn extends DatatableCol {
     final resolvedLayout = _resolveActionLayout(actions);
 
     final classes = wrapActions ? '$containerClass flex-wrap' : containerClass;
-    final container = DivElement()
+    final container = web.HTMLDivElement()
       ..className = classes
       ..setAttribute('data-li-datatable-action-cell', 'true');
 
@@ -340,7 +340,7 @@ class DatatableActionColumn extends DatatableCol {
       final baseButtonClass = _resolveActionBaseButtonClass(action);
 
       if (useDesktopTextMobileIcon || useDesktopTextAndIconMobileIcon) {
-        container.append(
+        container.appendChild(
           _buildActionButton(
             action: action,
             context: context,
@@ -351,7 +351,7 @@ class DatatableActionColumn extends DatatableCol {
           ),
         );
 
-        container.append(
+        container.appendChild(
           _buildActionButton(
             action: action,
             context: context,
@@ -368,7 +368,7 @@ class DatatableActionColumn extends DatatableCol {
         continue;
       }
 
-      container.append(
+      container.appendChild(
         _buildActionButton(
           action: action,
           context: context,
@@ -382,7 +382,7 @@ class DatatableActionColumn extends DatatableCol {
     }
 
     if (resolvedLayout.overflowActions.isNotEmpty) {
-      container.append(
+      container.appendChild(
         _buildOverflowDropdown(
           actions: resolvedLayout.overflowActions,
           context: context,
@@ -444,15 +444,15 @@ class DatatableActionColumn extends DatatableCol {
     );
   }
 
-  Element _buildOverflowDropdown({
+  web.Element _buildOverflowDropdown({
     required List<DatatableAction> actions,
     required DatatableActionContext context,
   }) {
-    final wrapper = DivElement()
+    final wrapper = web.HTMLDivElement()
       ..className = 'dropdown datatable-action-overflow'
       ..setAttribute('data-li-datatable-action-overflow', 'true');
 
-    final toggleButton = ButtonElement()
+    final toggleButton = web.HTMLButtonElement()
       ..type = 'button'
       ..className = overflowButtonClass
       ..title = overflowButtonTitle ?? overflowButtonAriaLabel
@@ -462,35 +462,37 @@ class DatatableActionColumn extends DatatableCol {
 
     final normalizedOverflowIconClass = overflowButtonIconClass.trim();
     if (normalizedOverflowIconClass.isNotEmpty) {
-      toggleButton.append(
-        document.createElement('i')..className = normalizedOverflowIconClass,
+      toggleButton.appendChild(
+        web.document.createElement('i')
+          ..className = normalizedOverflowIconClass,
       );
     }
 
     if (!overflowButtonIconOnly && overflowButtonLabel.trim().isNotEmpty) {
       if (normalizedOverflowIconClass.isNotEmpty) {
         final iconElement = toggleButton.querySelector('i');
-        iconElement?.classes.add('me-2');
+        iconElement?.classList.add('me-2');
       }
-      toggleButton.appendText(overflowButtonLabel);
+      toggleButton
+          .appendChild(web.document.createTextNode(overflowButtonLabel));
     }
 
-    final menu = DivElement()
+    final menu = web.HTMLDivElement()
       ..className = overflowMenuClass
       ..setAttribute('data-li-datatable-action-overflow-menu', 'true');
 
     for (final action in actions) {
-      menu.append(
+      menu.appendChild(
         _buildOverflowMenuItem(action: action, context: context, menu: menu),
       );
     }
 
-    StreamSubscription<Event>? outsideClickSubscription;
-    StreamSubscription<KeyboardEvent>? escapeSubscription;
-    StreamSubscription<FocusEvent>? focusInSubscription;
+    StreamSubscription<web.Event>? outsideClickSubscription;
+    StreamSubscription<web.KeyboardEvent>? escapeSubscription;
+    StreamSubscription<web.FocusEvent>? focusInSubscription;
     _DatatableActionFloatingOverlay? overlay;
 
-    bool targetIsInsideOverflow(Node target) {
+    bool targetIsInsideOverflow(web.Node target) {
       return wrapper.contains(target) || menu.contains(target);
     }
 
@@ -500,8 +502,8 @@ class DatatableActionColumn extends DatatableCol {
     }
 
     void closeMenu() {
-      menu.classes.remove('show');
-      wrapper.classes.remove('show');
+      menu.classList.remove('show');
+      wrapper.classList.remove('show');
       toggleButton.setAttribute('aria-expanded', 'false');
       outsideClickSubscription?.cancel();
       outsideClickSubscription = null;
@@ -518,29 +520,34 @@ class DatatableActionColumn extends DatatableCol {
         floatingElement: menu,
       );
       overlay!.startAutoUpdate();
-      menu.classes.add('show');
-      wrapper.classes.add('show');
+      menu.classList.add('show');
+      wrapper.classList.add('show');
       toggleButton.setAttribute('aria-expanded', 'true');
       await overlay!.update();
-      outsideClickSubscription ??= document.onClick.listen((event) {
+      outsideClickSubscription ??= web.EventStreamProviders.clickEvent
+          .forTarget(web.document)
+          .listen((event) {
         final target = event.target;
-        if ((target?.isA<Node>() ?? false) &&
-            !targetIsInsideOverflow(target as Node)) {
+        if ((target?.isA<web.Node>() ?? false) &&
+            !targetIsInsideOverflow(target as web.Node)) {
           closeMenu();
         }
       });
-      escapeSubscription ??= document.onKeyDown.listen((event) {
+      escapeSubscription ??= web.EventStreamProviders.keyDownEvent
+          .forTarget(web.document)
+          .listen((event) {
         if (event.key == 'Escape') {
           closeMenu();
           toggleButton.focus();
         }
       });
-      focusInSubscription ??= const EventStreamProvider<FocusEvent>('focusin')
-          .forTarget(document)
-          .listen((event) {
+      focusInSubscription ??=
+          const web.EventStreamProvider<web.FocusEvent>('focusin')
+              .forTarget(web.document)
+              .listen((event) {
         final target = event.target;
-        if ((target?.isA<Node>() ?? false) &&
-            !targetIsInsideOverflow(target as Node)) {
+        if ((target?.isA<web.Node>() ?? false) &&
+            !targetIsInsideOverflow(target as web.Node)) {
           closeMenu();
         }
       });
@@ -549,24 +556,24 @@ class DatatableActionColumn extends DatatableCol {
     toggleButton.onClick.listen((event) {
       event.preventDefault();
       event.stopPropagation();
-      if (menu.classes.contains('show')) {
+      if (menu.classList.contains('show')) {
         closeMenu();
       } else {
         unawaited(openMenu());
       }
     });
 
-    wrapper.append(toggleButton);
+    wrapper.appendChild(toggleButton);
 
     return wrapper;
   }
 
-  Element _buildOverflowMenuItem({
+  web.Element _buildOverflowMenuItem({
     required DatatableAction action,
     required DatatableActionContext context,
-    required DivElement menu,
+    required web.HTMLDivElement menu,
   }) {
-    final button = ButtonElement()
+    final button = web.HTMLButtonElement()
       ..type = 'button'
       ..className =
           'dropdown-item cursor-pointer datatable-action-overflow-item'
@@ -576,11 +583,11 @@ class DatatableActionColumn extends DatatableCol {
 
     final iconClass = action.iconClass?.trim();
     if (iconClass != null && iconClass.isNotEmpty) {
-      button.append(
-        document.createElement('i')..className = '$iconClass me-2',
+      button.appendChild(
+        web.document.createElement('i')..className = '$iconClass me-2',
       );
     }
-    button.appendText(action.label);
+    button.appendChild(web.document.createTextNode(action.label));
 
     if (!_isActionEnabled(action, context)) {
       button.disabled = true;
@@ -589,14 +596,14 @@ class DatatableActionColumn extends DatatableCol {
     button.onClick.listen((event) {
       event.preventDefault();
       event.stopPropagation();
-      menu.classes.remove('show');
-      final wrapper = menu.parent;
-      if ((wrapper?.isA<Element>() ?? false)) {
-        wrapper!.classes.remove('show');
+      menu.classList.remove('show');
+      final wrapper = menu.parentElement;
+      if ((wrapper?.isA<web.Element>() ?? false)) {
+        wrapper!.classList.remove('show');
         final toggle = wrapper.querySelector(
           '[data-li-datatable-action-overflow-toggle="true"]',
         );
-        if ((toggle?.isA<Element>() ?? false)) {
+        if ((toggle?.isA<web.Element>() ?? false)) {
           toggle!.setAttribute('aria-expanded', 'false');
         }
       }
@@ -630,7 +637,7 @@ class DatatableActionColumn extends DatatableCol {
     }
   }
 
-  ButtonElement _buildActionButton({
+  web.HTMLButtonElement _buildActionButton({
     required DatatableAction action,
     required DatatableActionContext context,
     required String baseButtonClass,
@@ -648,7 +655,7 @@ class DatatableActionColumn extends DatatableCol {
       ...extraButtonClasses,
     ];
 
-    final button = ButtonElement()
+    final button = web.HTMLButtonElement()
       ..type = 'button'
       ..className =
           classNames.where((value) => value.trim().isNotEmpty).join(' ')
@@ -667,14 +674,14 @@ class DatatableActionColumn extends DatatableCol {
         if (renderLabel) 'me-2',
         ...extraIconClasses,
       ];
-      final icon = document.createElement('i')
+      final icon = web.document.createElement('i')
         ..className =
             iconClasses.where((value) => value.trim().isNotEmpty).join(' ');
-      button.append(icon);
+      button.appendChild(icon);
     }
 
     if (renderLabel) {
-      button.appendText(action.label);
+      button.appendChild(web.document.createTextNode(action.label));
     }
 
     button.onClick.listen((event) {
@@ -713,11 +720,11 @@ class DatatableCol {
   String value;
 
   /// HTML element appended to the table cell when using [customRenderHtml].
-  Element? htmlElement;
+  web.Element? htmlElement;
   dynamic instance;
   String title;
   String renderedTitle = '';
-  Element? titleHtmlElement;
+  web.Element? titleHtmlElement;
   DatatableFormat? format;
   String? styleCss;
   String? headerStyleCss;
@@ -768,7 +775,7 @@ class DatatableCol {
   String Function(Map<String, dynamic> itemMap, dynamic itemInstance)?
       customRenderString;
 
-  Element Function(Map<String, dynamic> itemMap, dynamic itemInstance)?
+  web.Element Function(Map<String, dynamic> itemMap, dynamic itemInstance)?
       customRenderHtml;
 
   /// Separator used when multiple values are rendered in the same column.

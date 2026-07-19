@@ -1,6 +1,8 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
@@ -44,20 +46,20 @@ class LiInputComponent
 
   static int _nextId = 0;
 
-  final html.HTMLElement _hostElement;
+  final web.HTMLElement _hostElement;
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
   final String _generatedId;
-  final StreamController<html.Event> _blurController =
-      StreamController<html.Event>.broadcast();
-  final StreamController<html.Event> _focusController =
-      StreamController<html.Event>.broadcast();
-  final StreamController<html.MouseEvent> _clickController =
-      StreamController<html.MouseEvent>.broadcast();
-  final StreamController<html.KeyboardEvent> _keydownController =
-      StreamController<html.KeyboardEvent>.broadcast();
-  final StreamController<html.KeyboardEvent> _enterController =
-      StreamController<html.KeyboardEvent>.broadcast();
+  final StreamController<web.Event> _blurController =
+      StreamController<web.Event>.broadcast();
+  final StreamController<web.Event> _focusController =
+      StreamController<web.Event>.broadcast();
+  final StreamController<web.MouseEvent> _clickController =
+      StreamController<web.MouseEvent>.broadcast();
+  final StreamController<web.KeyboardEvent> _keydownController =
+      StreamController<web.KeyboardEvent>.broadcast();
+  final StreamController<web.KeyboardEvent> _enterController =
+      StreamController<web.KeyboardEvent>.broadcast();
   StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
@@ -241,22 +243,22 @@ class LiInputComponent
   int rows = 3;
 
   @ViewChild('inputElement')
-  html.Element? inputElement;
+  web.Element? inputElement;
 
   @Output('inputBlur')
-  Stream<html.Event> get inputBlur => _blurController.stream;
+  Stream<web.Event> get inputBlur => _blurController.stream;
 
   @Output('inputFocus')
-  Stream<html.Event> get inputFocus => _focusController.stream;
+  Stream<web.Event> get inputFocus => _focusController.stream;
 
   @Output('inputClick')
-  Stream<html.MouseEvent> get inputClick => _clickController.stream;
+  Stream<web.MouseEvent> get inputClick => _clickController.stream;
 
   @Output('inputKeydown')
-  Stream<html.KeyboardEvent> get inputKeydown => _keydownController.stream;
+  Stream<web.KeyboardEvent> get inputKeydown => _keydownController.stream;
 
   @Output('inputEnter')
-  Stream<html.KeyboardEvent> get inputEnter => _enterController.stream;
+  Stream<web.KeyboardEvent> get inputEnter => _enterController.stream;
 
   String _value = '';
   bool _touched = false;
@@ -266,7 +268,7 @@ class LiInputComponent
   LiInputType? _resolvedLiInputType;
   List<LiRule> _effectiveRules = const <LiRule>[];
   Map<String, String> _effectiveMessages = const <String, String>{};
-  html.MutationObserver? _hostClassObserver;
+  ZoneMutationObserver? _hostClassObserver;
 
   ChangeFunction<String?> _onChange = (String? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
@@ -402,7 +404,7 @@ class LiInputComponent
 
   bool get isValid =>
       !isInvalid &&
-      (_effectiveAutoValid || _hostElement.classes.contains('is-valid'));
+      (_effectiveAutoValid || _hostElement.classList.contains('is-valid'));
 
   String get effectiveErrorText {
     final externalMessage = errorText.trim();
@@ -568,7 +570,7 @@ class LiInputComponent
       _markForCheck();
     });
 
-    _hostClassObserver = html.MutationObserver((_, __) {
+    _hostClassObserver = ZoneMutationObserver((_, __) {
       _syncValidationClasses();
       _markForCheck();
     })
@@ -598,7 +600,7 @@ class LiInputComponent
     _markForCheck();
   }
 
-  void handleBlur(html.Event event) {
+  void handleBlur(web.Event event) {
     _touched = true;
     _onTouched();
     _runAutoValidation();
@@ -606,20 +608,20 @@ class LiInputComponent
     _markForCheck();
   }
 
-  void handleFocus(html.Event event) {
+  void handleFocus(web.Event event) {
     _focusController.add(event);
   }
 
-  void handleClick(html.MouseEvent event) {
+  void handleClick(web.MouseEvent event) {
     _clickController.add(event);
   }
 
-  void handleKeydown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleKeydown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    _keydownController.add(event as html.KeyboardEvent);
+    _keydownController.add(event as web.KeyboardEvent);
     if (event.key == 'Enter' ||
         event.code == 'Enter' ||
         event.code == 'NumpadEnter') {
@@ -632,7 +634,7 @@ class LiInputComponent
     Future<void>.microtask(_focusInput);
   }
 
-  void handlePasswordToggleMouseDown(html.MouseEvent event) {
+  void handlePasswordToggleMouseDown(web.MouseEvent event) {
     event.preventDefault();
   }
 
@@ -651,23 +653,23 @@ class LiInputComponent
 
   void _focusInput() {
     final element = inputElement;
-    if ((element?.isA<html.InputElement>() ?? false)) {
-      element!.focus();
+    if ((element?.isA<web.HTMLInputElement>() ?? false)) {
+      (element as web.HTMLInputElement).focus();
       return;
     }
-    if ((element?.isA<html.TextAreaElement>() ?? false)) {
-      element!.focus();
+    if ((element?.isA<web.HTMLTextAreaElement>() ?? false)) {
+      (element as web.HTMLTextAreaElement).focus();
     }
   }
 
   void _syncInputValue() {
     final element = inputElement;
-    if ((element?.isA<html.InputElement>() ?? false)) {
-      (element as html.InputElement).value = _value;
+    if ((element?.isA<web.HTMLInputElement>() ?? false)) {
+      (element as web.HTMLInputElement).value = _value;
       return;
     }
-    if ((element?.isA<html.TextAreaElement>() ?? false)) {
-      (element as html.TextAreaElement).value = _value;
+    if ((element?.isA<web.HTMLTextAreaElement>() ?? false)) {
+      (element as web.HTMLTextAreaElement).value = _value;
     }
   }
 
@@ -681,15 +683,15 @@ class LiInputComponent
     final shouldShowValid = isValid;
 
     if (shouldShowInvalid) {
-      element.classes.add('is-invalid');
+      element.classList.add('is-invalid');
     } else {
-      element.classes.remove('is-invalid');
+      element.classList.remove('is-invalid');
     }
 
     if (shouldShowValid) {
-      element.classes.add('is-valid');
+      element.classList.add('is-valid');
     } else {
-      element.classes.remove('is-valid');
+      element.classList.remove('is-valid');
     }
 
     if (effectiveInvalid) {
@@ -819,7 +821,7 @@ class LiInputComponent
   }
 
   bool get _hasHostInvalidState =>
-      _hostElement.classes.contains('is-invalid') ||
+      _hostElement.classList.contains('is-invalid') ||
       _hostElement.getAttribute('data-invalid') == 'true';
 
   bool get _shouldShowValidation => liShouldShowValidation(

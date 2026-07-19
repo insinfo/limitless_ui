@@ -1,6 +1,8 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
@@ -233,12 +235,12 @@ class LiColorPickerComponent
       StreamController<LiColorPickerEvent>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
-  StreamSubscription<html.Event>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
-  StreamSubscription<html.MouseEvent>? _dragMouseMoveSubscription;
-  StreamSubscription<html.MouseEvent>? _dragMouseUpSubscription;
-  StreamSubscription<html.TouchEvent>? _dragTouchMoveSubscription;
-  StreamSubscription<html.TouchEvent>? _dragTouchEndSubscription;
+  StreamSubscription<web.Event>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.MouseEvent>? _dragMouseMoveSubscription;
+  StreamSubscription<web.MouseEvent>? _dragMouseUpSubscription;
+  StreamSubscription<web.TouchEvent>? _dragTouchMoveSubscription;
+  StreamSubscription<web.TouchEvent>? _dragTouchEndSubscription;
   int? _dragAnimationFrameId;
   math.Point<double>? _pendingDragPoint;
   String? _pendingDragTarget;
@@ -255,13 +257,13 @@ class LiColorPickerComponent
   String _selectionPaletteSignature = '';
   List<String> _palette = const <String>[];
 
-  html.Element? _draggerElement;
-  html.Element? _hueSliderElement;
-  html.Element? _alphaInnerElement;
-  html.Element? _alphaHandleElement;
-  html.InputElement? _textInputElement;
-  html.Element? _currentThumbInnerElement;
-  html.Element? _triggerPreviewInnerElement;
+  web.HTMLElement? _draggerElement;
+  web.HTMLElement? _hueSliderElement;
+  web.HTMLElement? _alphaInnerElement;
+  web.HTMLElement? _alphaHandleElement;
+  web.HTMLInputElement? _textInputElement;
+  web.HTMLElement? _currentThumbInnerElement;
+  web.HTMLElement? _triggerPreviewInnerElement;
 
   ChangeFunction<String?> _onChange = (String? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
@@ -408,19 +410,19 @@ class LiColorPickerComponent
       _pickerDragStopController.stream;
 
   @ViewChild('triggerElement')
-  html.Element? triggerElement;
+  web.Element? triggerElement;
 
   @ViewChild('panelElement')
-  html.Element? panelElement;
+  web.Element? panelElement;
 
   @ViewChild('colorAreaElement')
-  html.Element? colorAreaElement;
+  web.HTMLElement? colorAreaElement;
 
   @ViewChild('hueElement')
-  html.Element? hueElement;
+  web.Element? hueElement;
 
   @ViewChild('alphaElement')
-  html.Element? alphaElement;
+  web.Element? alphaElement;
 
   _LiColorValue? _committedColor;
   _LiColorValue? _draftColor;
@@ -684,8 +686,8 @@ class LiColorPickerComponent
     _autoCommitIfNeeded('initial');
   }
 
-  void onTextInput(html.Event event) {
-    final input = event.target as html.InputElement;
+  void onTextInput(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
     manualInputValue = input.value.trim();
 
     if (manualInputValue.isEmpty && allowEmpty) {
@@ -707,7 +709,7 @@ class LiColorPickerComponent
     _autoCommitIfNeeded('input');
   }
 
-  void onTextInputKeyDown(html.KeyboardEvent event) {
+  void onTextInputKeyDown(web.KeyboardEvent event) {
     if (event.key != 'Enter') {
       return;
     }
@@ -757,31 +759,31 @@ class LiColorPickerComponent
     _autoCommitIfNeeded('palette');
   }
 
-  void onPanelClick(html.Event event) {
+  void onPanelClick(web.Event event) {
     event.stopPropagation();
   }
 
-  void onColorMouseDown(html.MouseEvent event) {
+  void onColorMouseDown(web.MouseEvent event) {
     _startMouseDrag('color', event);
   }
 
-  void onColorTouchStart(html.TouchEvent event) {
+  void onColorTouchStart(web.TouchEvent event) {
     _startTouchDrag('color', event);
   }
 
-  void onHueMouseDown(html.MouseEvent event) {
+  void onHueMouseDown(web.MouseEvent event) {
     _startMouseDrag('hue', event);
   }
 
-  void onHueTouchStart(html.TouchEvent event) {
+  void onHueTouchStart(web.TouchEvent event) {
     _startTouchDrag('hue', event);
   }
 
-  void onAlphaMouseDown(html.MouseEvent event) {
+  void onAlphaMouseDown(web.MouseEvent event) {
     _startMouseDrag('alpha', event);
   }
 
-  void onAlphaTouchStart(html.TouchEvent event) {
+  void onAlphaTouchStart(web.TouchEvent event) {
     _startTouchDrag('alpha', event);
   }
 
@@ -986,7 +988,9 @@ class LiColorPickerComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= web.EventStreamProviders.clickEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!isOpen) {
         return;
       }
@@ -996,21 +1000,22 @@ class LiColorPickerComponent
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Node>() ?? false)) {
+      if (!(target?.isA<web.Node>() ?? false)) {
         close(commit: clickoutFiresChange, source: 'document');
         return;
       }
 
       final clickedTrigger =
-          triggerElement?.contains(target as html.Node?) ?? false;
-      final clickedPanel =
-          panelElement?.contains(target as html.Node?) ?? false;
+          triggerElement?.contains(target as web.Node?) ?? false;
+      final clickedPanel = panelElement?.contains(target as web.Node?) ?? false;
       if (!clickedTrigger && !clickedPanel) {
         close(commit: clickoutFiresChange, source: 'document');
       }
     });
 
-    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+    _documentKeySubscription ??= web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!isOpen) {
         return;
       }
@@ -1034,17 +1039,17 @@ class LiColorPickerComponent
     _stopDragging();
   }
 
-  void _startMouseDrag(String target, html.MouseEvent event) {
+  void _startMouseDrag(String target, web.MouseEvent event) {
     _startDrag(target, event, _pointerPositionFromMouseEvent(event));
   }
 
-  void _startTouchDrag(String target, html.TouchEvent event) {
+  void _startTouchDrag(String target, web.TouchEvent event) {
     _startDrag(target, event, _pointerPositionFromTouchEvent(event));
   }
 
   void _startDrag(
     String target,
-    html.Event event,
+    web.Event event,
     math.Point<double>? point,
   ) {
     if (isDisabled) {
@@ -1066,14 +1071,18 @@ class LiColorPickerComponent
 
   void _bindDragListeners() {
     _cancelDragListeners();
-    _dragMouseMoveSubscription =
-        html.document.onMouseMove.listen(_handleDocumentMouseMove);
-    _dragMouseUpSubscription =
-        html.document.onMouseUp.listen(_handleDocumentMouseUp);
-    _dragTouchMoveSubscription =
-        html.document.onTouchMove.listen(_handleDocumentTouchMove);
-    _dragTouchEndSubscription =
-        html.document.onTouchEnd.listen(_handleDocumentTouchEnd);
+    _dragMouseMoveSubscription = web.EventStreamProviders.mouseMoveEvent
+        .forTarget(web.document)
+        .listen(_handleDocumentMouseMove);
+    _dragMouseUpSubscription = web.EventStreamProviders.mouseUpEvent
+        .forTarget(web.document)
+        .listen(_handleDocumentMouseUp);
+    _dragTouchMoveSubscription = web.EventStreamProviders.touchMoveEvent
+        .forTarget(web.document)
+        .listen(_handleDocumentTouchMove);
+    _dragTouchEndSubscription = web.EventStreamProviders.touchEndEvent
+        .forTarget(web.document)
+        .listen(_handleDocumentTouchEnd);
   }
 
   void _cancelDragListeners() {
@@ -1087,7 +1096,7 @@ class LiColorPickerComponent
     _dragTouchEndSubscription = null;
   }
 
-  void _handleDocumentMouseMove(html.MouseEvent event) {
+  void _handleDocumentMouseMove(web.MouseEvent event) {
     final point = _pointerPositionFromMouseEvent(event);
     final target = _activeDragTarget;
     if (target == null) {
@@ -1098,11 +1107,11 @@ class LiColorPickerComponent
     _scheduleDragUpdate(point, target);
   }
 
-  void _handleDocumentMouseUp(html.MouseEvent _) {
+  void _handleDocumentMouseUp(web.MouseEvent _) {
     _stopDragging();
   }
 
-  void _handleDocumentTouchMove(html.TouchEvent event) {
+  void _handleDocumentTouchMove(web.TouchEvent event) {
     final point = _pointerPositionFromTouchEvent(event);
     final target = _activeDragTarget;
     if (point == null || target == null) {
@@ -1113,7 +1122,7 @@ class LiColorPickerComponent
     _scheduleDragUpdate(point, target);
   }
 
-  void _handleDocumentTouchEnd(html.TouchEvent _) {
+  void _handleDocumentTouchEnd(web.TouchEvent _) {
     _stopDragging();
   }
 
@@ -1134,7 +1143,7 @@ class LiColorPickerComponent
   }
 
   void _disableDocumentTextSelection() {
-    final body = html.document.body;
+    final body = web.document.body;
     if (body == null) {
       return;
     }
@@ -1147,7 +1156,7 @@ class LiColorPickerComponent
   }
 
   void _restoreDocumentTextSelection() {
-    final body = html.document.body;
+    final body = web.document.body;
     if (body == null) {
       return;
     }
@@ -1178,7 +1187,7 @@ class LiColorPickerComponent
       return;
     }
 
-    _dragAnimationFrameId = html.window.liRequestAnimationFrame((_) {
+    _dragAnimationFrameId = requestAnimationFrameInZone((_) {
       _dragAnimationFrameId = null;
       _flushPendingDragUpdate();
     });
@@ -1186,7 +1195,7 @@ class LiColorPickerComponent
 
   void _flushPendingDragUpdate() {
     if (_dragAnimationFrameId != null) {
-      html.window.cancelAnimationFrame(_dragAnimationFrameId!);
+      web.window.cancelAnimationFrame(_dragAnimationFrameId!);
       _dragAnimationFrameId = null;
     }
 
@@ -1203,20 +1212,20 @@ class LiColorPickerComponent
     _updateDrag(point, target);
   }
 
-  math.Point<double> _pointerPositionFromMouseEvent(html.MouseEvent event) {
+  math.Point<double> _pointerPositionFromMouseEvent(web.MouseEvent event) {
     return math.Point<double>(
       event.clientX.toDouble(),
       event.clientY.toDouble(),
     );
   }
 
-  math.Point<double>? _pointerPositionFromTouchEvent(html.TouchEvent event) {
+  math.Point<double>? _pointerPositionFromTouchEvent(web.TouchEvent event) {
     final touches = event.touches;
     final changedTouches = event.changedTouches;
-    final touch = touches.isNotEmpty
-        ? touches.first
-        : changedTouches.isNotEmpty
-            ? changedTouches.first
+    final touch = touches.length != 0
+        ? touches.item(0)
+        : changedTouches.length != 0
+            ? changedTouches.item(0)
             : null;
     if (touch == null) {
       return null;
@@ -1454,17 +1463,22 @@ class LiColorPickerComponent
   void _ensureInteractiveElementRefs() {
     final panel = panelElement;
     if (panel != null) {
-      _draggerElement ??= panel.querySelector('.sp-dragger');
-      _hueSliderElement ??= panel.querySelector('.sp-slider');
-      _alphaInnerElement ??= panel.querySelector('.sp-alpha-inner');
-      _alphaHandleElement ??= panel.querySelector('.sp-alpha-handle');
+      _draggerElement ??=
+          panel.querySelector('.sp-dragger') as web.HTMLElement?;
+      _hueSliderElement ??=
+          panel.querySelector('.sp-slider') as web.HTMLElement?;
+      _alphaInnerElement ??=
+          panel.querySelector('.sp-alpha-inner') as web.HTMLElement?;
+      _alphaHandleElement ??=
+          panel.querySelector('.sp-alpha-handle') as web.HTMLElement?;
       _textInputElement ??=
-          panel.querySelector('.sp-input') as html.InputElement?;
+          panel.querySelector('.sp-input') as web.HTMLInputElement?;
       _currentThumbInnerElement ??= panel.querySelector(
-          '.sp-initial .sp-thumb-el:first-child .sp-thumb-inner');
+        '.sp-initial .sp-thumb-el:first-child .sp-thumb-inner',
+      ) as web.HTMLElement?;
     }
     _triggerPreviewInnerElement ??=
-        triggerElement?.querySelector('.sp-preview-inner');
+        triggerElement?.querySelector('.sp-preview-inner') as web.HTMLElement?;
   }
 
   void _applyInteractiveDomState({required bool updateTriggerPreview}) {
@@ -2025,7 +2039,7 @@ class LiColorPickerComponent
     _unbindDocumentListeners();
     _cancelDragListeners();
     if (_dragAnimationFrameId != null) {
-      html.window.cancelAnimationFrame(_dragAnimationFrameId!);
+      web.window.cancelAnimationFrame(_dragAnimationFrameId!);
       _dragAnimationFrameId = null;
     }
     _overlay?.dispose();

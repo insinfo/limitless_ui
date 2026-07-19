@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -27,7 +27,7 @@ class LiFabShortcut {
   final bool shift;
   final String label;
 
-  bool matches(html.KeyboardEvent event) {
+  bool matches(web.KeyboardEvent event) {
     final normalizedKey = key.trim().toLowerCase();
     final matchesKey = event.key.toLowerCase() == normalizedKey ||
         (normalizedKey.length == 1 &&
@@ -169,7 +169,7 @@ class LiFabActionTemplateContext {
 
   String? get rel => fab.resolvedActionRel(action);
 
-  void select([html.Event? event]) => fab.handleActionClick(action, event);
+  void select([web.Event? event]) => fab.handleActionClick(action, event);
 }
 
 @Component(
@@ -181,7 +181,9 @@ class LiFabActionTemplateContext {
 )
 class LiFabComponent implements OnDestroy {
   LiFabComponent(this._changeDetectorRef) {
-    _keyboardSubscription = html.window.onKeyDown.listen(_handleWindowKeyDown);
+    _keyboardSubscription = web.EventStreamProviders.keyDownEvent
+        .forTarget(web.window)
+        .listen(_handleWindowKeyDown);
   }
 
   final ChangeDetectorRef _changeDetectorRef;
@@ -191,7 +193,7 @@ class LiFabComponent implements OnDestroy {
       StreamController<bool>.broadcast();
   late final LiFabTriggerTemplateContext triggerTemplateContext =
       LiFabTriggerTemplateContext(this);
-  StreamSubscription<html.KeyboardEvent>? _keyboardSubscription;
+  StreamSubscription<web.KeyboardEvent>? _keyboardSubscription;
 
   List<LiFabAction> _actions = const <LiFabAction>[];
   Map<LiFabAction, LiFabActionTemplateContext> _actionTemplateContexts =
@@ -445,7 +447,7 @@ class LiFabComponent implements OnDestroy {
       return;
     }
 
-    if (usesHoverToggle && !html.window.matchMedia('(hover: none)').matches) {
+    if (usesHoverToggle && !web.window.matchMedia('(hover: none)').matches) {
       return;
     }
 
@@ -468,7 +470,7 @@ class LiFabComponent implements OnDestroy {
     _setExpanded(false);
   }
 
-  void handleActionClick(LiFabAction action, [html.Event? event]) {
+  void handleActionClick(LiFabAction action, [web.Event? event]) {
     if (action.disabled) {
       event?.preventDefault();
       return;
@@ -571,17 +573,17 @@ class LiFabComponent implements OnDestroy {
     }
   }
 
-  void _handleWindowKeyDown(html.KeyboardEvent event) {
+  void _handleWindowKeyDown(web.KeyboardEvent event) {
     if (!enableKeyboardShortcuts || disabled) {
       return;
     }
 
     final target = event.target;
-    if ((target?.isA<html.InputElement>() ?? false) ||
-        (target?.isA<html.TextAreaElement>() ?? false) ||
-        (target?.isA<html.SelectElement>() ?? false) ||
-        (target?.isA<html.HtmlElement>() ?? false) &&
-            (target as html.HtmlElement).isContentEditable == true) {
+    if ((target?.isA<web.HTMLInputElement>() ?? false) ||
+        (target?.isA<web.HTMLTextAreaElement>() ?? false) ||
+        (target?.isA<web.HTMLSelectElement>() ?? false) ||
+        (target?.isA<web.HTMLElement>() ?? false) &&
+            (target as web.HTMLElement).isContentEditable == true) {
       return;
     }
 
@@ -644,16 +646,16 @@ class LiFabComponent implements OnDestroy {
 
     final target = resolvedActionTarget(action);
     if (href.startsWith('#')) {
-      html.window.location.hash = href.substring(1);
+      web.window.location.hash = href.substring(1);
       return;
     }
 
     if (target == '_blank') {
-      html.window.open(href, '_blank');
+      web.window.open(href, '_blank');
       return;
     }
 
-    html.window.location.assign(href);
+    web.window.location.assign(href);
   }
 
   void _setExpanded(bool value) {

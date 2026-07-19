@@ -6,12 +6,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:limitless_ui/src/web_support/dom_tokens.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_scrollspy_directive_test.template.dart' as ng;
 
@@ -76,7 +79,8 @@ void main() {
     expect(
         fixture.rootElement
             .querySelector('#item-overview')!
-            .classes
+            .classList
+            .toDartSet()
             .contains('active'),
         isTrue);
   });
@@ -92,9 +96,10 @@ void main() {
     expect(serviceFragment, isNotNull);
 
     await fixture.update((_) {
-      (container as html.Element).scrollTop =
-          serviceFragment!.offsetTop - container.offsetTop;
-      container.dispatchEvent(html.liEvent('scroll'));
+      (container as web.Element).scrollTop =
+          (serviceFragment as web.HTMLElement).offsetTop -
+              (container as web.HTMLElement).offsetTop;
+      container.dispatchEvent(bubblingEvent('scroll'));
     });
     await _settle(fixture);
 
@@ -102,7 +107,8 @@ void main() {
     expect(
         fixture.rootElement
             .querySelector('#item-service')!
-            .classes
+            .classList
+            .toDartSet()
             .contains('active'),
         isTrue);
   });
@@ -118,7 +124,7 @@ void main() {
 
     await fixture.update((_) {
       customizationItem!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -126,13 +132,15 @@ void main() {
     expect(
         fixture.rootElement
             .querySelector('#item-customization')!
-            .classes
+            .classList
+            .toDartSet()
             .contains('active'),
         isTrue);
     expect(
         fixture.rootElement
             .querySelector('#item-directive')!
-            .classes
+            .classList
+            .toDartSet()
             .contains('active'),
         isTrue);
   });

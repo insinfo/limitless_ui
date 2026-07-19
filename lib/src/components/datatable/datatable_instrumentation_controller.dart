@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'dart:async';
 
@@ -17,13 +17,13 @@ class DatatableInstrumentationController {
   /// User-provided label override.
   String label = '';
 
-  /// Event stream exposed by the component.
+  /// web.Event stream exposed by the component.
   Stream<LiDatatableInstrumentationEvent> get stream => _controller.stream;
 
   /// Emits an event when [enabled] is `true`.
   void emit(
     String stage, {
-    required Element rootElement,
+    required web.Element rootElement,
     int? elapsedMicroseconds,
     Map<String, Object?> details = const <String, Object?>{},
   }) {
@@ -52,7 +52,7 @@ class DatatableInstrumentationController {
     _controller.close();
   }
 
-  String _resolveLabel(Element rootElement) {
+  String _resolveLabel(web.Element rootElement) {
     final normalized = label.trim();
     if (normalized.isNotEmpty) {
       return normalized;

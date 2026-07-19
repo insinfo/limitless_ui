@@ -5,7 +5,7 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -13,6 +13,8 @@ import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_node_list.dart';
 
 import 'li_datatable_select_component_test.template.dart' as ng;
 
@@ -194,8 +196,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
-    expect(triggers.first.text, contains('Maria Silva'));
+    final triggers = fixture.rootElement
+        .querySelectorAll('.datatable-select-trigger')
+        .toElementList();
+    expect(triggers.first.textContent, contains('Maria Silva'));
     expect(fixture.assertOnlyInstance.userSelectedPerson, isNull);
   });
 
@@ -204,8 +208,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
-    final typedTrigger = triggers.first as html.ButtonElement;
+    final triggers = fixture.rootElement
+        .querySelectorAll('.datatable-select-trigger')
+        .toElementList();
+    final typedTrigger = triggers.first as web.HTMLButtonElement;
 
     await fixture.update((_) {
       typedTrigger.click();
@@ -213,8 +219,10 @@ void main() {
     await _settle(fixture, milliseconds: 140);
 
     final modalText =
-        html.document.querySelector('.modal.show .modal-content')?.text ?? '';
-    final modalRows = html.document.queryAll('.modal.show tbody tr');
+        web.document.querySelector('.modal.show .modal-content')?.textContent ??
+            '';
+    final modalRows =
+        web.document.querySelectorAll('.modal.show tbody tr').toElementList();
 
     expect(modalText, contains('Nome'));
     expect(modalText, contains('E-mail'));
@@ -234,7 +242,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final typedTrigger = fixture.rootElement
-        .querySelector('.datatable-select-trigger') as html.ButtonElement;
+        .querySelector('.datatable-select-trigger') as web.HTMLButtonElement;
 
     await fixture.update((_) {
       typedTrigger.click();
@@ -242,13 +250,14 @@ void main() {
     await _settle(fixture, milliseconds: 180);
 
     final modalBody =
-        html.document.querySelector('.modal.show .modal-header + div');
+        web.document.querySelector('.modal.show .modal-header + div');
     expect(modalBody, isNotNull);
-    expect(modalBody!.classes.contains('modal-body'), isFalse);
-    expect(modalBody.classes.contains('li-modal-body'), isFalse);
-    expect(modalBody.classes.contains('position-relative'), isFalse);
-    expect(modalBody.classes.contains('datatable-select-modal-body'), isFalse);
-    expect(modalBody.getComputedStyle().paddingTop, '0px');
+    expect(modalBody!.classList.contains('modal-body'), isFalse);
+    expect(modalBody.classList.contains('li-modal-body'), isFalse);
+    expect(modalBody.classList.contains('position-relative'), isFalse);
+    expect(
+        modalBody.classList.contains('datatable-select-modal-body'), isFalse);
+    expect(web.window.getComputedStyle(modalBody).paddingTop, '0px');
 
     expect(host.selectWithBuilders!.datatable!.responsiveCollapse, isTrue);
     expect(
@@ -260,9 +269,9 @@ void main() {
       isTrue,
     );
 
-    final toggleCell = html.document.querySelector(
+    final toggleCell = web.document.querySelector(
       '.modal.show tbody tr td.dtr-control',
-    ) as html.TableCellElement?;
+    ) as web.HTMLTableCellElement?;
     expect(toggleCell, isNotNull);
 
     await fixture.update((_) {
@@ -272,13 +281,13 @@ void main() {
 
     expect(host.userSelectedPerson, isNull);
     expect(
-      html.document.querySelector('.modal.show tbody tr.child'),
+      web.document.querySelector('.modal.show tbody tr.child'),
       isNotNull,
     );
 
-    final firstRow = html.document.querySelector(
+    final firstRow = web.document.querySelector(
       '.modal.show [data-label="li_dt_row_0"]',
-    ) as html.TableRowElement?;
+    ) as web.HTMLTableRowElement?;
     expect(firstRow, isNotNull);
 
     await fixture.update((_) {
@@ -297,8 +306,10 @@ void main() {
     });
     await _settle(fixture);
 
-    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
-    final typedTrigger = triggers.first as html.ButtonElement;
+    final triggers = fixture.rootElement
+        .querySelectorAll('.datatable-select-trigger')
+        .toElementList();
+    final typedTrigger = triggers.first as web.HTMLButtonElement;
 
     await fixture.update((_) {
       typedTrigger.click();
@@ -306,7 +317,8 @@ void main() {
     await _settle(fixture, milliseconds: 140);
 
     final modalText =
-        html.document.querySelector('.modal.show .modal-content')?.text ?? '';
+        web.document.querySelector('.modal.show .modal-content')?.textContent ??
+            '';
 
     expect(modalText, contains('Showing 0 to 3 of 3 entries, 1 page(s)'));
   });
@@ -316,16 +328,18 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
-    final customTrigger = triggers[1] as html.ButtonElement;
+    final triggers = fixture.rootElement
+        .querySelectorAll('.datatable-select-trigger')
+        .toElementList();
+    final customTrigger = triggers[1] as web.HTMLButtonElement;
 
     await fixture.update((_) {
       customTrigger.click();
     });
     await _settle(fixture);
 
-    final customButton = html.document.querySelector('#pick-custom-person')
-        as html.ButtonElement?;
+    final customButton = web.document.querySelector('#pick-custom-person')
+        as web.HTMLButtonElement?;
     expect(customButton, isNotNull);
 
     await fixture.update((_) {
@@ -336,7 +350,7 @@ void main() {
     expect(host.selectWithCustomContent!.selectedValue, 99);
     expect(host.userSelectedCustomPerson, 99);
     expect(host.selectWithCustomContent!.selectedLabel, 'Maria Silva');
-    expect(customTrigger.text, contains('Maria Silva'));
+    expect(customTrigger.textContent, contains('Maria Silva'));
   });
 
   test(
@@ -345,8 +359,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
-    final multipleTrigger = triggers[2] as html.ButtonElement;
+    final triggers = fixture.rootElement
+        .querySelectorAll('.datatable-select-trigger')
+        .toElementList();
+    final multipleTrigger = triggers[2] as web.HTMLButtonElement;
 
     await fixture.update((_) {
       multipleTrigger.click();
@@ -382,29 +398,31 @@ void main() {
           'Maria Silva',
           'Pedro Santos',
         ]));
-    expect(multipleTrigger.text, contains('Ana Souza'));
+    expect(multipleTrigger.textContent, contains('Ana Souza'));
 
     final chips = multipleTrigger
-        .queryAll('.datatable-select-chip')
+        .querySelectorAll('.datatable-select-chip')
+        .toElementList()
         .toList(growable: false);
     final visibleValueChips = chips
         .where((chip) =>
-            !chip.classes.contains('datatable-select-chip--hidden') &&
-            !chip.classes.contains('datatable-select-chip--muted'))
+            !chip.classList.contains('datatable-select-chip--hidden') &&
+            !chip.classList.contains('datatable-select-chip--muted'))
         .toList(growable: false);
     final hiddenValueChips = chips
         .where(
-          (chip) => chip.classes.contains('datatable-select-chip--hidden'),
+          (chip) => chip.classList.contains('datatable-select-chip--hidden'),
         )
         .toList(growable: false);
     final summaryChips = chips
-        .where((chip) => chip.classes.contains('datatable-select-chip--muted'))
+        .where(
+            (chip) => chip.classList.contains('datatable-select-chip--muted'))
         .toList(growable: false);
 
     expect(visibleValueChips, hasLength(2));
     expect(hiddenValueChips, hasLength(1));
     expect(summaryChips, hasLength(1));
-    expect(summaryChips.single.text.trim(), '+1');
+    expect((summaryChips.single.textContent ?? '').trim(), '+1');
   });
 
   test('passes custom datatable header and compact modal header to inner modal',
@@ -412,8 +430,10 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final triggers = fixture.rootElement.queryAll('.datatable-select-trigger');
-    final customHeaderTrigger = triggers[3] as html.ButtonElement;
+    final triggers = fixture.rootElement
+        .querySelectorAll('.datatable-select-trigger')
+        .toElementList();
+    final customHeaderTrigger = triggers[3] as web.HTMLButtonElement;
 
     await fixture.update((_) {
       customHeaderTrigger.click();
@@ -421,30 +441,28 @@ void main() {
     await _settle(fixture, milliseconds: 140);
 
     expect(
-      html.document
-          .querySelector('.modal.show .custom-datatable-select-header'),
+      web.document.querySelector('.modal.show .custom-datatable-select-header'),
       isNotNull,
     );
     expect(
-      html.document.querySelector('.modal.show .datatable-search-toolbar'),
+      web.document.querySelector('.modal.show .datatable-search-toolbar'),
       isNull,
     );
     expect(
-      html.document
-          .querySelector('.modal.show .custom-datatable-select-footer'),
+      web.document.querySelector('.modal.show .custom-datatable-select-footer'),
       isNotNull,
     );
     expect(
-      html.document.querySelector('.modal.show .dataTables_info'),
+      web.document.querySelector('.modal.show .dataTables_info'),
       isNull,
     );
     expect(
-      html.document
+      web.document
           .querySelector('.modal.show .modal-header.modal-header-compact'),
       isNotNull,
     );
     expect(
-      html.document
+      web.document
           .querySelector('.modal.show .modal-header.modal-header-small'),
       isNotNull,
     );

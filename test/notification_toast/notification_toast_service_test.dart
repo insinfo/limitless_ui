@@ -5,10 +5,12 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 void main() {
   test(
@@ -125,8 +127,8 @@ void main() {
     await controller.playOnceSafely();
     expect(playCount, 0);
 
-    html.document.body!.dispatchEvent(
-      html.liMouseEvent('click', canBubble: true),
+    web.document.body!.dispatchEvent(
+      bubblingMouseEvent('click', bubbles: true),
     );
     await Future<void>.delayed(const Duration(milliseconds: 20));
 

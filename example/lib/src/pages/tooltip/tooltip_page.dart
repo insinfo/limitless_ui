@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
@@ -117,7 +117,7 @@ class DemoTooltipDefaults {
   openDelay: 300,
   closeDelay: 600,
   onOpen: (tooltip) {
-    tooltip.classes.add('tooltip-aurora');
+    tooltip.classList.add('tooltip-aurora');
   },
   onClose: (_) {
     logger.info('Tooltip fechado');
@@ -143,7 +143,7 @@ await controller.closed;''';
   LiTooltipDirective? manualTooltip;
 
   @ViewChild('staticTooltipButton')
-  html.ButtonElement? staticTooltipButton;
+  web.HTMLButtonElement? staticTooltipButton;
 
   @ViewChild('targetedTooltip')
   LiTooltipDirective? targetedTooltip;

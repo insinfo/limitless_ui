@@ -6,12 +6,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_simple_helper_modal_stack_test.template.dart' as ng;
 
@@ -41,7 +44,7 @@ class TestHostComponent {
   LiModalComponent? modal;
 
   @ViewChild('loadingHost')
-  html.DivElement? loadingHost;
+  web.HTMLDivElement? loadingHost;
 
   final LiSimpleLoading loading = LiSimpleLoading();
   final LiNarratedFullScreenLoading narratedLoading =
@@ -92,7 +95,7 @@ void main() {
 
     final modalRoot = _modalRootByTitle('Helper modal');
     final modalBackdrop =
-        html.document.body!.querySelector('.li-modal-backdrop');
+        web.document.body!.querySelector('.li-modal-backdrop');
     expect(modalRoot, isNotNull);
     expect(modalBackdrop, isNotNull);
 
@@ -102,33 +105,33 @@ void main() {
     await _settle(fixture);
 
     final helperDialog =
-        html.document.body!.querySelector('.li-simple-dialog__modal');
+        web.document.body!.querySelector('.li-simple-dialog__modal');
     final helperBackdrop =
-        html.document.body!.querySelector('.li-simple-dialog__backdrop');
+        web.document.body!.querySelector('.li-simple-dialog__backdrop');
 
     expect(helperDialog, isNotNull);
     expect(helperBackdrop, isNotNull);
     expect(helperDialog!.getAttribute('data-label'), 'li_sd_modal');
     expect(helperDialog.getAttribute('data-open'), 'true');
     expect(helperBackdrop!.getAttribute('data-label'), 'li_sd_backdrop');
-    expect(
-        helperDialog.style.zIndex, '${LiSimpleDialogComponent.defaultZIndex}');
+    expect((helperDialog as web.HTMLElement).style.zIndex,
+        '${LiSimpleDialogComponent.defaultZIndex}');
     expect(
       int.parse(helperDialog.style.zIndex),
-      greaterThan(int.parse(modalRoot!.style.zIndex)),
+      greaterThan(int.parse((modalRoot as web.HTMLElement).style.zIndex)),
     );
     expect(
-      int.parse(helperBackdrop.style.zIndex),
-      greaterThan(int.parse(modalBackdrop!.style.zIndex)),
+      int.parse((helperBackdrop as web.HTMLElement).style.zIndex),
+      greaterThan(int.parse((modalBackdrop as web.HTMLElement).style.zIndex)),
     );
 
     final okButton = helperDialog.querySelector('button.BtnOk');
     expect(okButton, isNotNull);
-    okButton!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+    okButton!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     await _settle(fixture);
 
     expect(
-        html.document.body!.querySelector('.li-simple-dialog__modal'), isNull);
+        web.document.body!.querySelector('.li-simple-dialog__modal'), isNull);
   });
 
   test('LiSimpleLoading showOnBody fica acima de li-modal', () async {
@@ -148,12 +151,13 @@ void main() {
     });
     await _settle(fixture);
 
-    final overlay = html.document.body!.querySelector('.li-simple-loading');
+    final overlay = web.document.body!.querySelector('.li-simple-loading');
     expect(overlay, isNotNull);
-    expect(overlay!.style.zIndex, '${LiSimpleLoading.defaultBodyZIndex}');
+    expect((overlay as web.HTMLElement).style.zIndex,
+        '${LiSimpleLoading.defaultBodyZIndex}');
     expect(
       int.parse(overlay.style.zIndex),
-      greaterThan(int.parse(modalRoot!.style.zIndex)),
+      greaterThan(int.parse((modalRoot as web.HTMLElement).style.zIndex)),
     );
 
     await fixture.update((host) {
@@ -161,7 +165,7 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('.li-simple-loading'), isNull);
+    expect(web.document.body!.querySelector('.li-simple-loading'), isNull);
   });
 
   test('LiNarratedFullScreenLoading showOnBody fica acima de li-modal',
@@ -182,7 +186,7 @@ void main() {
     });
     await _settle(fixture);
 
-    final overlay = html.document.body!.querySelector(
+    final overlay = web.document.body!.querySelector(
       '.li-narrated-full-screen-loading',
     );
     final message = overlay?.querySelector(
@@ -190,13 +194,13 @@ void main() {
     );
 
     expect(overlay, isNotNull);
-    expect(
-        overlay!.style.zIndex, '${LiNarratedFullScreenLoading.defaultZIndex}');
+    expect((overlay as web.HTMLElement).style.zIndex,
+        '${LiNarratedFullScreenLoading.defaultZIndex}');
     expect(
       int.parse(overlay.style.zIndex),
-      greaterThan(int.parse(modalRoot!.style.zIndex)),
+      greaterThan(int.parse((modalRoot as web.HTMLElement).style.zIndex)),
     );
-    expect(message?.text.trim(), isNotEmpty);
+    expect((message?.textContent ?? '').trim(), isNotEmpty);
 
     await fixture.update((host) {
       host.narratedLoading.hide();
@@ -204,7 +208,7 @@ void main() {
     await _settle(fixture);
 
     expect(
-      html.document.body!.querySelector('.li-narrated-full-screen-loading'),
+      web.document.body!.querySelector('.li-narrated-full-screen-loading'),
       isNull,
     );
   });
@@ -230,18 +234,18 @@ void main() {
     });
     await _settle(fixture);
 
-    final pinnedMessage = html.document.body!
+    final pinnedMessage = web.document.body!
         .querySelector('.li-narrated-full-screen-loading__message');
     expect(pinnedMessage, isNotNull);
-    expect(pinnedMessage!.text, 'Pinned message');
+    expect(pinnedMessage!.textContent, 'Pinned message');
 
     await Future<void>.delayed(const Duration(milliseconds: 180));
     await _settle(fixture);
 
-    final messageAfterDelay = html.document.body!
+    final messageAfterDelay = web.document.body!
         .querySelector('.li-narrated-full-screen-loading__message');
     expect(messageAfterDelay, isNotNull);
-    expect(messageAfterDelay!.text, 'Pinned message');
+    expect(messageAfterDelay!.textContent, 'Pinned message');
 
     await fixture.update((host) {
       host.narratedLoading.hide();
@@ -249,7 +253,7 @@ void main() {
     await _settle(fixture);
 
     expect(
-      html.document.body!.querySelector('.li-narrated-full-screen-loading'),
+      web.document.body!.querySelector('.li-narrated-full-screen-loading'),
       isNull,
     );
   });
@@ -269,12 +273,12 @@ void main() {
     });
     await _settle(fixture);
 
-    final loadingHost = html.document.body!.querySelector('#loading-host');
+    final loadingHost = web.document.body!.querySelector('#loading-host');
     final overlay = loadingHost?.querySelector('.li-simple-loading');
 
     expect(loadingHost, isNotNull);
     expect(overlay, isNotNull);
-    expect(overlay!.style.position, 'absolute');
+    expect((overlay as web.HTMLElement).style.position, 'absolute');
     expect(overlay.style.zIndex, '${LiSimpleLoading.defaultTargetZIndex}');
 
     await fixture.update((host) {
@@ -287,9 +291,9 @@ void main() {
 }
 
 void _clickById(String id) {
-  final element = html.document.body!.querySelector('#$id');
+  final element = web.document.body!.querySelector('#$id');
   expect(element, isNotNull);
-  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+  element!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 Future<void> _settle<T>(NgTestFixture<T> fixture) async {
@@ -298,10 +302,11 @@ Future<void> _settle<T>(NgTestFixture<T> fixture) async {
   await Future<void>.delayed(const Duration(milliseconds: 30));
 }
 
-html.Element? _modalRootByTitle(String title) {
-  for (final modal in html.document.body!.queryAll('.modal')) {
+web.Element? _modalRootByTitle(String title) {
+  for (final modal
+      in web.document.body!.querySelectorAll('.modal').toElementList()) {
     final titleElement = modal.querySelector('.modal-title');
-    if (titleElement?.text.trim() == title) {
+    if ((titleElement?.textContent ?? '').trim() == title) {
       return modal;
     }
   }

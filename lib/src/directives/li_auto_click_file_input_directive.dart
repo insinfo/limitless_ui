@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -8,14 +8,14 @@ import 'package:ngx_dart/angular.dart';
 /// `true`.
 @Directive(selector: 'input[type=file][liAutoClickFileInput]')
 class LiAutoClickFileInputDirective implements AfterChanges, OnDestroy {
-  LiAutoClickFileInputDirective(html.Element hostElement) {
-    if (!hostElement.isA<html.HTMLInputElement>()) {
+  LiAutoClickFileInputDirective(web.Element hostElement) {
+    if (!hostElement.isA<web.HTMLInputElement>()) {
       throw StateError(
         'LiAutoClickFileInputDirective must be used on <input type="file">.',
       );
     }
 
-    final input = hostElement as html.HTMLInputElement;
+    final input = hostElement as web.HTMLInputElement;
     if (input.type.toLowerCase() != 'file') {
       throw StateError(
         'LiAutoClickFileInputDirective must be used on <input type="file">.',
@@ -24,19 +24,26 @@ class LiAutoClickFileInputDirective implements AfterChanges, OnDestroy {
 
     _input = input;
     _changeSubscription = _input.onChange.listen((_) {
+      final files = _input.files;
       _filesSelectedController.add(
-        List<html.File>.unmodifiable(
-            _input.files?.toList() ?? const <html.File>[]),
+        List<web.File>.unmodifiable(
+          files == null
+              ? const <web.File>[]
+              : <web.File>[
+                  for (var index = 0; index < files.length; index++)
+                    files.item(index)!,
+                ],
+        ),
       );
     });
   }
 
-  late final html.HTMLInputElement _input;
-  StreamSubscription<html.Event>? _changeSubscription;
+  late final web.HTMLInputElement _input;
+  StreamSubscription<web.Event>? _changeSubscription;
   bool _previousTrigger = false;
 
   final _filesSelectedController =
-      StreamController<List<html.File>>.broadcast(sync: true);
+      StreamController<List<web.File>>.broadcast(sync: true);
 
   /// When set to `true`, opens the native file picker once.
   @Input('liAutoClickFileInput')
@@ -44,8 +51,7 @@ class LiAutoClickFileInputDirective implements AfterChanges, OnDestroy {
 
   /// Emits the selected files after the native input changes.
   @Output('liFilesSelected')
-  Stream<List<html.File>> get liFilesSelected =>
-      _filesSelectedController.stream;
+  Stream<List<web.File>> get liFilesSelected => _filesSelectedController.stream;
 
   @override
   void ngAfterChanges() {

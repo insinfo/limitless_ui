@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'dart:collection';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'dart:math' as math;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
+
+import '../../web_support/js_type_guards.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 
 import 'scrollspy_config.dart';
 
@@ -36,7 +40,7 @@ class LiScrollSpyOptions {
   final List<Object> fragments;
   final Object? initialFragment;
   final LiScrollSpyProcessChanges? processChanges;
-  final html.Element? root;
+  final web.Element? root;
   final String? rootMargin;
   final String? scrollBehavior;
   final Object? threshold;
@@ -58,9 +62,9 @@ class LiScrollSpyFragmentState {
     required this.visible,
   });
 
-  final html.Element element;
+  final web.Element element;
   final String id;
-  final html.Rectangle<num> rect;
+  final math.Rectangle<num> rect;
   final bool visible;
 }
 
@@ -75,8 +79,8 @@ class LiScrollSpyState {
 
   final List<LiScrollSpyFragmentState> fragments;
   final LiScrollSpyOptions options;
-  final html.Element rootElement;
-  final html.Rectangle<num> rootRect;
+  final web.Element rootElement;
+  final math.Rectangle<num> rootRect;
   final LiScrollSpyService scrollSpy;
 }
 
@@ -152,7 +156,7 @@ class _ResolvedRootMargin {
 
 _ResolvedRootMargin _resolveRootMargin(
   String? rootMargin,
-  html.Rectangle<num> rootRect,
+  math.Rectangle<num> rootRect,
 ) {
   if (rootMargin == null || rootMargin.trim().isEmpty) {
     return const _ResolvedRootMargin(top: 0, right: 0, bottom: 0, left: 0);
@@ -229,18 +233,18 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
       : _config = config ?? LiScrollSpyConfig();
 
   final LiScrollSpyConfig _config;
-  final LinkedHashSet<html.Element> _fragments = LinkedHashSet<html.Element>();
+  final LinkedHashSet<web.Element> _fragments = LinkedHashSet<web.Element>();
   final LinkedHashSet<Object> _preRegisteredFragments = LinkedHashSet<Object>();
   final StreamController<String> _activeController =
       StreamController<String>.broadcast();
   final Map<String, Object?> _processContext = <String, Object?>{};
 
-  StreamSubscription<html.Event>? _rootScrollSubscription;
-  StreamSubscription<html.Event>? _windowScrollSubscription;
-  StreamSubscription<html.Event>? _windowResizeSubscription;
+  StreamSubscription<web.Event>? _rootScrollSubscription;
+  StreamSubscription<web.Event>? _windowScrollSubscription;
+  StreamSubscription<web.Event>? _windowResizeSubscription;
 
   LiScrollSpyOptions _options = const LiScrollSpyOptions();
-  html.Element? _rootElement;
+  web.Element? _rootElement;
   String _active = '';
   bool _started = false;
   bool _updateQueued = false;
@@ -259,18 +263,20 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
 
     _cleanup(resetActive: false);
     _options = options;
-    _rootElement = options.root ?? html.document.documentElement;
+    _rootElement = options.root ?? web.document.documentElement;
     _started = true;
 
-    if (_rootElement != null && _rootElement != html.document.documentElement) {
+    if (_rootElement != null && _rootElement != web.document.documentElement) {
       _rootScrollSubscription =
           _rootElement!.onScroll.listen((_) => _queueUpdate());
     } else {
-      _windowScrollSubscription =
-          html.window.onScroll.listen((_) => _queueUpdate());
+      _windowScrollSubscription = web.EventStreamProviders.scrollEvent
+          .forTarget(web.window)
+          .listen((_) => _queueUpdate());
     }
-    _windowResizeSubscription =
-        html.window.onResize.listen((_) => _queueUpdate());
+    _windowResizeSubscription = web.EventStreamProviders.resizeEvent
+        .forTarget(web.window)
+        .listen((_) => _queueUpdate());
 
     for (final fragment
         in _preRegisteredFragments.followedBy(options.fragments)) {
@@ -335,10 +341,10 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
         options?.behavior ?? _options.scrollBehavior ?? _config.scrollBehavior;
     final targetTop = _resolveTargetTop(rootElement, fragmentElement);
 
-    if (rootElement == html.document.documentElement ||
-        rootElement == html.document.body) {
-      html.document.documentElement?.scrollTop = targetTop;
-      html.document.body?.scrollTop = targetTop;
+    if (rootElement == web.document.documentElement ||
+        rootElement == web.document.body) {
+      web.document.documentElement?.scrollTop = targetTop;
+      web.document.body?.scrollTop = targetTop;
     } else {
       rootElement.scrollTop = targetTop;
     }
@@ -360,13 +366,13 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
     _activeController.close();
   }
 
-  html.Element? _resolveFragmentElement(Object? fragment) {
-    final rootElement = _rootElement ?? html.document.documentElement;
+  web.Element? _resolveFragmentElement(Object? fragment) {
+    final rootElement = _rootElement ?? web.document.documentElement;
     if (rootElement == null || fragment == null) {
       return null;
     }
 
-    final fragmentElement = html.liElementOrNull(fragment);
+    final fragmentElement = elementOrNull(fragment);
     if (fragmentElement != null) return fragmentElement;
 
     final id = fragment.toString().trim();
@@ -375,18 +381,19 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
     }
 
     return rootElement.querySelector('#$id') ??
-        html.document.querySelector('#$id');
+        web.document.querySelector('#$id');
   }
 
-  int _resolveTargetTop(
-      html.Element rootElement, html.Element fragmentElement) {
-    if (rootElement == html.document.documentElement ||
-        rootElement == html.document.body) {
+  int _resolveTargetTop(web.Element rootElement, web.Element fragmentElement) {
+    if (rootElement == web.document.documentElement ||
+        rootElement == web.document.body) {
       final rect = fragmentElement.getBoundingClientRect();
-      return (rect.top + html.window.pageYOffset).round();
+      return (rect.top + web.window.scrollY).round();
     }
 
-    return fragmentElement.offsetTop - rootElement.offsetTop;
+    final fragmentRect = fragmentElement.getBoundingClientRect();
+    final rootRect = rootElement.getBoundingClientRect();
+    return (fragmentRect.top - rootRect.top + rootElement.scrollTop).round();
   }
 
   void _queueUpdate() {
@@ -395,7 +402,7 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
     }
 
     _updateQueued = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _updateQueued = false;
       if (_disposed || !_started) {
         return;
@@ -416,7 +423,7 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
         .where((fragment) => fragment.id.trim().isNotEmpty)
         .map((fragment) {
       final r = fragment.getBoundingClientRect();
-      final rect = html.Rectangle<num>(r.left, r.top, r.width, r.height);
+      final rect = math.Rectangle<num>(r.left, r.top, r.width, r.height);
       return LiScrollSpyFragmentState(
         element: fragment,
         id: fragment.id,
@@ -438,23 +445,23 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
     processChanges(state, _setActive, _processContext);
   }
 
-  html.Rectangle<num> _measureRootRect(html.Element rootElement) {
-    if (rootElement == html.document.documentElement ||
-        rootElement == html.document.body) {
-      return html.Rectangle<num>(
+  math.Rectangle<num> _measureRootRect(web.Element rootElement) {
+    if (rootElement == web.document.documentElement ||
+        rootElement == web.document.body) {
+      return math.Rectangle<num>(
         0,
         0,
-        html.window.innerWidth.toDouble(),
-        html.window.innerHeight.toDouble(),
+        web.window.innerWidth.toDouble(),
+        web.window.innerHeight.toDouble(),
       );
     }
 
     final r = rootElement.getBoundingClientRect();
-    return html.Rectangle<num>(r.left, r.top, r.width, r.height);
+    return math.Rectangle<num>(r.left, r.top, r.width, r.height);
   }
 
   bool _isVisible(
-      html.Rectangle<num> fragmentRect, html.Rectangle<num> rootRect) {
+      math.Rectangle<num> fragmentRect, math.Rectangle<num> rootRect) {
     final effectiveRootRect = _effectiveRootRect(rootRect);
     final intersectionWidth = (fragmentRect.right < effectiveRootRect.right
             ? fragmentRect.right
@@ -485,9 +492,9 @@ class LiScrollSpyService implements LiScrollSpyRef, OnDestroy {
     return ratio >= _thresholdFloor;
   }
 
-  html.Rectangle<num> _effectiveRootRect(html.Rectangle<num> rootRect) {
+  math.Rectangle<num> _effectiveRootRect(math.Rectangle<num> rootRect) {
     final rootMargin = _resolveRootMargin(_options.rootMargin, rootRect);
-    return html.Rectangle<num>(
+    return math.Rectangle<num>(
       rootRect.left - rootMargin.left,
       rootRect.top - rootMargin.top,
       rootRect.width + rootMargin.left + rootMargin.right,

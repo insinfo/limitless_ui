@@ -1,9 +1,17 @@
 import 'dart:js_interop';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'datatable_col.dart';
 import 'datatable_collection_utils.dart';
 import 'datatable_css_utils.dart';
+
+List<web.Element> _queryElements(web.Element root, String selectors) {
+  final nodes = root.querySelectorAll(selectors);
+  return <web.Element>[
+    for (var index = 0; index < nodes.length; index++)
+      nodes.item(index)! as web.Element,
+  ];
+}
 
 /// Owns responsive datatable state and calculations.
 ///
@@ -103,20 +111,20 @@ class DatatableResponsiveController {
 
   /// Measures visible table header widths for auto-hide and fixed offsets.
   void syncColumnWidthCache({
-    required HtmlElement? tableElement,
+    required web.HTMLElement? tableElement,
     required bool showCheckboxToSelectRow,
   }) {
     if (tableElement == null) {
       return;
     }
 
-    final headerCells = tableElement.queryAll('thead th[data-key]');
+    final headerCells = _queryElements(tableElement, 'thead th[data-key]');
     for (final element in headerCells) {
-      if (!element.isA<TableCellElement>()) {
+      if (!element.isA<web.HTMLTableCellElement>()) {
         continue;
       }
-      final cell = element as TableCellElement;
-      if (cell.classes.contains('hide')) {
+      final cell = element as web.HTMLTableCellElement;
+      if (cell.classList.contains('hide')) {
         continue;
       }
 
@@ -142,10 +150,10 @@ class DatatableResponsiveController {
 
     final checkboxCell =
         tableElement.querySelector('thead th.datatable-first-col');
-    if (!(checkboxCell?.isA<TableCellElement>() ?? false)) {
+    if (!(checkboxCell?.isA<web.HTMLTableCellElement>() ?? false)) {
       return;
     }
-    final firstCol = checkboxCell as TableCellElement;
+    final firstCol = checkboxCell as web.HTMLTableCellElement;
 
     final rectWidth = firstCol.getBoundingClientRect().width.toDouble();
     final measuredWidth =

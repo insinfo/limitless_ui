@@ -4,10 +4,13 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 void main() {
   setUp(_resetSimpleDialogDom);
@@ -22,37 +25,37 @@ void main() {
 
     await _settle();
 
-    final input = html.document.querySelector('.li-simple-dialog__input')
-        as html.InputElement?;
+    final input = web.document.querySelector('.li-simple-dialog__input')
+        as web.HTMLInputElement?;
     expect(input, isNotNull);
     expect(
-      html.document
+      web.document
           .querySelector('[data-label="li_sd_root"]')
           ?.getAttribute('data-open'),
       'true',
     );
     expect(
-      html.document
+      web.document
           .querySelector('[data-label="li_sd_modal"]')
           ?.getAttribute('data-value'),
       'prompt',
     );
     expect(
-      html.document.querySelector('[data-label="li_sd_body"]'),
+      web.document.querySelector('[data-label="li_sd_body"]'),
       isNotNull,
     );
     expect(input!.getAttribute('data-label'), 'li_sd_input');
     expect(input.getAttribute('data-value'), 'text');
     expect(
-      html.document.querySelector('[data-label="li_sd_confirm"]'),
+      web.document.querySelector('[data-label="li_sd_confirm"]'),
       isNotNull,
     );
     expect(
-      html.document.querySelector('[data-label="li_sd_cancel"]'),
+      web.document.querySelector('[data-label="li_sd_cancel"]'),
       isNotNull,
     );
     expect(
-      html.document.querySelector('[data-label="li_sd_backdrop"]'),
+      web.document.querySelector('[data-label="li_sd_backdrop"]'),
       isNotNull,
     );
     expect(input.placeholder, 'release-2026');
@@ -62,7 +65,7 @@ void main() {
     final result = await future;
 
     expect(result, 'release-2026');
-    expect(html.document.querySelector('.li-simple-dialog-root'), isNull);
+    expect(web.document.querySelector('.li-simple-dialog-root'), isNull);
   });
 
   test('showPrompt resolves with null when cancelled', () async {
@@ -75,7 +78,7 @@ void main() {
     final result = await future;
 
     expect(result, isNull);
-    expect(html.document.querySelector('.li-simple-dialog-root'), isNull);
+    expect(web.document.querySelector('.li-simple-dialog-root'), isNull);
   });
 
   test('showPrompt supports textarea config and validation', () async {
@@ -103,10 +106,10 @@ void main() {
 
     await _settle();
 
-    final textarea = html.document.querySelector('.li-simple-dialog__textarea')
-        as html.TextAreaElement?;
+    final textarea = web.document.querySelector('.li-simple-dialog__textarea')
+        as web.HTMLTextAreaElement?;
     expect(textarea, isNotNull);
-    expect(textarea!.classes.contains('correction-reason'), isTrue);
+    expect(textarea!.classList.contains('correction-reason'), isTrue);
     expect(textarea.getAttribute('data-label'), 'li_sd_input');
     expect(textarea.getAttribute('data-value'), 'textarea');
     expect(textarea.rows, 6);
@@ -116,9 +119,11 @@ void main() {
 
     _click('.BtnOk');
     await _settle();
-    expect(textarea.classes.contains('is-invalid'), isTrue);
+    expect(textarea.classList.contains('is-invalid'), isTrue);
     expect(
-      html.document.querySelector('[data-label="li_sd_validation"]')!.text,
+      web.document
+          .querySelector('[data-label="li_sd_validation"]')!
+          .textContent,
       contains('Reason is required'),
     );
 
@@ -127,7 +132,7 @@ void main() {
     final result = await future;
 
     expect(result, 'Wrong dispatch selected.');
-    expect(html.document.querySelector('.li-simple-dialog-root'), isNull);
+    expect(web.document.querySelector('.li-simple-dialog-root'), isNull);
   });
 
   test('showConfirm exposes stable automation hooks', () async {
@@ -141,28 +146,28 @@ void main() {
     await _settle();
 
     expect(
-      html.document
+      web.document
           .querySelector('[data-label="li_sd_root"]')
           ?.getAttribute('data-value'),
       'confirm',
     );
     expect(
-      html.document
+      web.document
           .querySelector('[data-label="li_sd_modal"]')
           ?.getAttribute('data-open'),
       'true',
     );
     expect(
-      html.document.querySelector('[data-label="li_sd_title"]'),
+      web.document.querySelector('[data-label="li_sd_title"]'),
       isNotNull,
     );
     expect(
-      html.document
+      web.document
           .querySelector('[data-label="li_sd_cancel"][data-value="confirm"]'),
       isNotNull,
     );
     expect(
-      html.document
+      web.document
           .querySelector('[data-label="li_sd_confirm"][data-value="confirm"]'),
       isNotNull,
     );
@@ -171,18 +176,21 @@ void main() {
     final result = await future;
 
     expect(result, isTrue);
-    expect(html.document.querySelector('.li-simple-dialog-root'), isNull);
+    expect(web.document.querySelector('.li-simple-dialog-root'), isNull);
   });
 }
 
 void _click(String selector) {
-  final element = html.document.querySelector(selector);
+  final element = web.document.querySelector(selector);
   expect(element, isNotNull);
-  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+  element!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 void _resetSimpleDialogDom() {
-  html.document.queryAll('.li-simple-dialog-root').forEach((element) {
+  web.document
+      .querySelectorAll('.li-simple-dialog-root')
+      .toElementList()
+      .forEach((element) {
     element.remove();
   });
 }

@@ -1,12 +1,15 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
+
+import '../../web_support/blob_parts.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 
 import '../dropdown_menu/dropdown_menu_component.dart';
 import '../modal/modal_component.dart';
@@ -383,7 +386,7 @@ class LiPdfViewerComponent
   }
 
   final ChangeDetectorRef _changeDetectorRef;
-  final html.HTMLElement _hostElement;
+  final web.HTMLElement _hostElement;
   final PdfPageViewCache _pageViewCache =
       PdfPageViewCache(liPdfViewerDefaultCacheSize);
   final PdfViewerVisibilityController visibilityController =
@@ -542,13 +545,13 @@ class LiPdfViewerComponent
   }
 
   @ViewChild('viewer')
-  html.DivElement? viewer;
+  web.HTMLDivElement? viewer;
 
   @ViewChild('toolbarContainer')
-  html.DivElement? toolbarContainer;
+  web.HTMLDivElement? toolbarContainer;
 
   @ViewChild('viewerContainer')
-  html.DivElement? viewerContainer;
+  web.HTMLDivElement? viewerContainer;
 
   @ViewChild('goToPageModal')
   LiModalComponent? goToPageModal;
@@ -604,31 +607,31 @@ class LiPdfViewerComponent
   double? _pendingScale;
   Point<num>? _pendingOrigin;
   Timer? _zoomDebounceTimer;
-  html.ResizeObserver? _resizeObserver;
+  ZoneResizeObserver? _resizeObserver;
   String goToPageInputText = '';
   List<LiPdfViewerToolbarAction> leadingCustomToolbarActions =
       const <LiPdfViewerToolbarAction>[];
   List<LiPdfViewerToolbarAction> trailingCustomToolbarActions =
       const <LiPdfViewerToolbarAction>[];
 
-  StreamSubscription<html.KeyboardEvent>? _keyDownSub;
-  StreamSubscription<html.Event>? _scrollSub;
-  StreamSubscription<html.WheelEvent>? _wheelSub;
-  StreamSubscription<html.PointerEvent>? _pointerDownSub;
-  StreamSubscription<html.PointerEvent>? _pointerMoveSub;
-  StreamSubscription<html.PointerEvent>? _pointerUpSub;
-  StreamSubscription<html.PointerEvent>? _pointerCancelSub;
-  StreamSubscription<html.TouchEvent>? _touchStartSub;
-  StreamSubscription<html.TouchEvent>? _touchMoveSub;
-  StreamSubscription<html.TouchEvent>? _touchEndSub;
-  StreamSubscription<html.TouchEvent>? _touchCancelSub;
-  StreamSubscription<html.Event>? _fullscreenChangeSub;
-  StreamSubscription<html.Event>? _webkitFullscreenChangeSub;
-  StreamSubscription<html.Event>? _afterPrintSubscription;
-  StreamSubscription<html.Event>? _windowResizeSub;
+  StreamSubscription<web.KeyboardEvent>? _keyDownSub;
+  StreamSubscription<web.Event>? _scrollSub;
+  StreamSubscription<web.WheelEvent>? _wheelSub;
+  StreamSubscription<web.PointerEvent>? _pointerDownSub;
+  StreamSubscription<web.PointerEvent>? _pointerMoveSub;
+  StreamSubscription<web.PointerEvent>? _pointerUpSub;
+  StreamSubscription<web.PointerEvent>? _pointerCancelSub;
+  StreamSubscription<web.TouchEvent>? _touchStartSub;
+  StreamSubscription<web.TouchEvent>? _touchMoveSub;
+  StreamSubscription<web.TouchEvent>? _touchEndSub;
+  StreamSubscription<web.TouchEvent>? _touchCancelSub;
+  StreamSubscription<web.Event>? _fullscreenChangeSub;
+  StreamSubscription<web.Event>? _webkitFullscreenChangeSub;
+  StreamSubscription<web.Event>? _afterPrintSubscription;
+  StreamSubscription<web.Event>? _windowResizeSub;
 
-  final Map<int, html.PointerEvent> _activeTouchPointers =
-      <int, html.PointerEvent>{};
+  final Map<int, web.PointerEvent> _activeTouchPointers =
+      <int, web.PointerEvent>{};
   double? _pinchStartDistance;
   double? _pinchStartScale;
   double? _touchPinchStartDistance;
@@ -640,9 +643,9 @@ class LiPdfViewerComponent
   bool _mousePanCandidate = false;
   bool _isMousePanning = false;
   String? _previousBodyOverflow;
-  html.Element? _fallbackFullscreenParent;
-  html.Element? _fallbackFullscreenNextElementSibling;
-  html.IFrameElement? _printFrame;
+  web.Element? _fallbackFullscreenParent;
+  web.Element? _fallbackFullscreenNextElementSibling;
+  web.HTMLIFrameElement? _printFrame;
   String? _printObjectUrl;
 
   final Map<double, String> _scaleToValueMap = <double, String>{
@@ -681,7 +684,7 @@ class LiPdfViewerComponent
       resolvedSidePanelTitle != null || enableSidePanelCloseButton;
 
   bool get isMobileViewport =>
-      html.window.matchMedia('(max-width: 767.98px)').matches;
+      web.window.matchMedia('(max-width: 767.98px)').matches;
 
   bool get shouldShowInlineSidePanel =>
       hasSidePanelTemplate &&
@@ -768,7 +771,7 @@ class LiPdfViewerComponent
   bool get useDesktopOverflowMenu => _toolbarWidth > 0 && _toolbarWidth < 760;
 
   Object? get _nativeFullscreenElement {
-    final document = html.document as JSObject;
+    final document = web.document as JSObject;
     if (document.has('fullscreenElement')) {
       return document.getProperty('fullscreenElement'.toJS);
     }
@@ -801,7 +804,7 @@ class LiPdfViewerComponent
     _scrollSub =
         viewerContainer?.onScroll.listen((_) => _scheduleScrollUpdate());
 
-    _resizeObserver = html.ResizeObserver((entries, observer) {
+    _resizeObserver = ZoneResizeObserver((entries, observer) {
       _updateToolbarResponsiveState();
       if (viewerContainer?.clientWidth != null &&
           viewerContainer!.clientWidth > 0 &&
@@ -830,32 +833,43 @@ class LiPdfViewerComponent
       final delta = event.deltaY < 0 ? 1.1 : 1 / 1.1;
       final next =
           (_scale * delta).clamp(liPdfViewerMinScale, liPdfViewerMaxScale);
-      _scheduleZoom(next, Point<num>(event.client.x, event.client.y));
+      _scheduleZoom(next, Point<num>(event.clientX, event.clientY));
     });
 
-    _pointerDownSub = viewerContainer?.on['pointerdown']
-        .cast<html.PointerEvent>()
-        .listen(_handlePointerDown);
-    _pointerMoveSub = viewerContainer?.on['pointermove']
-        .cast<html.PointerEvent>()
-        .listen(_handlePointerMove);
-    _pointerUpSub = viewerContainer?.on['pointerup']
-        .cast<html.PointerEvent>()
-        .listen(_handlePointerEnd);
-    _pointerCancelSub = viewerContainer?.on['pointercancel']
-        .cast<html.PointerEvent>()
-        .listen(_handlePointerEnd);
+    _pointerDownSub = viewerContainer == null
+        ? null
+        : web.EventStreamProvider<web.PointerEvent>('pointerdown')
+            .forTarget(viewerContainer!)
+            .listen(_handlePointerDown);
+    _pointerMoveSub = viewerContainer == null
+        ? null
+        : web.EventStreamProvider<web.PointerEvent>('pointermove')
+            .forTarget(viewerContainer!)
+            .listen(_handlePointerMove);
+    _pointerUpSub = viewerContainer == null
+        ? null
+        : web.EventStreamProvider<web.PointerEvent>('pointerup')
+            .forTarget(viewerContainer!)
+            .listen(_handlePointerEnd);
+    _pointerCancelSub = viewerContainer == null
+        ? null
+        : web.EventStreamProvider<web.PointerEvent>('pointercancel')
+            .forTarget(viewerContainer!)
+            .listen(_handlePointerEnd);
     _touchStartSub = viewerContainer?.onTouchStart.listen(_handleTouchStart);
     _touchMoveSub = viewerContainer?.onTouchMove.listen(_handleTouchMove);
     _touchEndSub = viewerContainer?.onTouchEnd.listen(_handleTouchEnd);
     _touchCancelSub = viewerContainer?.onTouchCancel.listen(_handleTouchEnd);
-    _fullscreenChangeSub = html.document.on['fullscreenchange']
-        .cast<html.Event>()
-        .listen((_) => _syncFullscreenState());
-    _webkitFullscreenChangeSub = html.document.on['webkitfullscreenchange']
-        .cast<html.Event>()
-        .listen((_) => _syncFullscreenState());
-    _windowResizeSub = html.window.onResize.listen((_) {
+    _fullscreenChangeSub =
+        web.EventStreamProvider<web.Event>('fullscreenchange')
+            .forTarget(web.document)
+            .listen((_) => _syncFullscreenState());
+    _webkitFullscreenChangeSub =
+        web.EventStreamProvider<web.Event>('webkitfullscreenchange')
+            .forTarget(web.document)
+            .listen((_) => _syncFullscreenState());
+    _windowResizeSub =
+        web.EventStreamProviders.resizeEvent.forTarget(web.window).listen((_) {
       _syncSidePanelPresentationState();
       _changeDetectorRef.markForCheck();
     });
@@ -967,14 +981,14 @@ class LiPdfViewerComponent
 
   void zoomInBtnClick() => zoomIn();
 
-  void zoomIn([html.MouseEvent? event]) => _scheduleZoom(
+  void zoomIn([web.MouseEvent? event]) => _scheduleZoom(
         (_scale * 1.2).clamp(liPdfViewerMinScale, liPdfViewerMaxScale),
-        event == null ? null : Point<num>(event.client.x, event.client.y),
+        event == null ? null : Point<num>(event.clientX, event.clientY),
       );
 
-  void zoomOut([html.MouseEvent? event]) => _scheduleZoom(
+  void zoomOut([web.MouseEvent? event]) => _scheduleZoom(
         (_scale / 1.2).clamp(liPdfViewerMinScale, liPdfViewerMaxScale),
-        event == null ? null : Point<num>(event.client.x, event.client.y),
+        event == null ? null : Point<num>(event.clientX, event.clientY),
       );
 
   void fitContent() => _setScale('page-width');
@@ -993,9 +1007,9 @@ class LiPdfViewerComponent
     Timer.run(() {
       goToPageModal?.open();
       Timer.run(() {
-        final input = html.document.getElementById('pdfGoToPageInput');
-        if ((input?.isA<html.InputElement>() ?? false)) {
-          (input as html.InputElement)
+        final input = web.document.getElementById('pdfGoToPageInput');
+        if ((input?.isA<web.HTMLInputElement>() ?? false)) {
+          (input as web.HTMLInputElement)
             ..focus()
             ..select();
         }
@@ -1053,8 +1067,8 @@ class LiPdfViewerComponent
 
   void previousPage() => scrollToPage(max(currentPage - 1, 1));
 
-  void onChangePageHandle(html.Event event) {
-    final pageNum = int.tryParse((event.target as html.InputElement).value);
+  void onChangePageHandle(web.Event event) {
+    final pageNum = int.tryParse((event.target as web.HTMLInputElement).value);
     if (pageNum != null) {
       scrollToPage(pageNum);
     }
@@ -1118,16 +1132,17 @@ class LiPdfViewerComponent
 
     try {
       final data = await document.getDataDart();
-      final blob = html.liBlob(<Object>[data], 'application/pdf');
+      final blob = blobFromDartParts(<Object>[data], type: 'application/pdf');
       final blobUrl = liPdfViewerBrowserBridge.createObjectUrlFromBlob(blob);
 
-      final anchor = html.createAnchorElement(href: blobUrl)
+      final anchor = web.HTMLAnchorElement()
+        ..href = blobUrl
         ..style.display = 'none'
         ..download = downloadFileName.trim().isEmpty
             ? 'document.pdf'
             : downloadFileName.trim();
 
-      html.document.body?.append(anchor);
+      web.document.body?.appendChild(anchor);
       liPdfViewerBrowserBridge.clickAnchor(anchor);
       anchor.remove();
 
@@ -1147,7 +1162,7 @@ class LiPdfViewerComponent
 
     try {
       final data = await document.getDataDart();
-      final blob = html.liBlob(<Object>[data], 'application/pdf');
+      final blob = blobFromDartParts(<Object>[data], type: 'application/pdf');
 
       if (_printObjectUrl != null) {
         liPdfViewerBrowserBridge.revokeObjectUrl(_printObjectUrl!);
@@ -1155,15 +1170,17 @@ class LiPdfViewerComponent
       _printFrame?.remove();
 
       _printObjectUrl = liPdfViewerBrowserBridge.createObjectUrlFromBlob(blob);
-      _printFrame = html.createIFrameElement()
+      _printFrame = web.HTMLIFrameElement()
         ..id = 'liPdfViewerPrintFrame'
         ..name = 'liPdfViewerPrintFrame'
         ..src = _printObjectUrl ?? ''
         ..style.display = 'none';
 
-      html.document.body?.append(_printFrame!);
+      web.document.body?.appendChild(_printFrame!);
       _afterPrintSubscription?.cancel();
-      _afterPrintSubscription = html.window.on['afterprint'].listen((_) {
+      _afterPrintSubscription = web.EventStreamProvider<web.Event>('afterprint')
+          .forTarget(web.window)
+          .listen((_) {
         _disposePrintArtifacts();
       });
 
@@ -1171,7 +1188,7 @@ class LiPdfViewerComponent
       try {
         Object? targetFrame = _printFrame?.contentWindow;
         targetFrame ??=
-            ((html.window as JSObject).getProperty('frames'.toJS) as JSObject?)
+            ((web.window as JSObject).getProperty('frames'.toJS) as JSObject?)
                 ?.getProperty('liPdfViewerPrintFrame'.toJS);
         if (targetFrame == null) {
           throw StateError('Print frame is not available.');
@@ -1667,7 +1684,7 @@ class LiPdfViewerComponent
       return;
     }
     _zoomRafPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _zoomRafPending = false;
       final nextScale = _pendingScale;
       if (nextScale == null) {
@@ -1697,7 +1714,7 @@ class LiPdfViewerComponent
     _renderingQueue.clear(cancelActive: true);
     _pageViewCache.clear(destroyPages: true);
     await _documentController.dispose();
-    viewer?.children.clear();
+    viewer?.textContent = '';
     currentPage = 1;
     _lastScrollTop = 0;
     _isScrollingDown = true;
@@ -1826,7 +1843,7 @@ class LiPdfViewerComponent
     if (_scrollRafId != null) {
       return;
     }
-    _scrollRafId = html.window.liRequestAnimationFrame((_) {
+    _scrollRafId = requestAnimationFrameInZone((_) {
       _scrollRafId = null;
       _onScroll();
     });
@@ -1837,7 +1854,7 @@ class LiPdfViewerComponent
     if (scrollRafId == null) {
       return;
     }
-    html.window.cancelAnimationFrame(scrollRafId);
+    web.window.cancelAnimationFrame(scrollRafId);
     _scrollRafId = null;
   }
 
@@ -1981,7 +1998,7 @@ class LiPdfViewerComponent
   }
 
   Future<void> _exitNativeFullscreen() async {
-    final document = html.document as JSObject;
+    final document = web.document as JSObject;
     try {
       if (document.has('exitFullscreen')) {
         final result = document.callMethod('exitFullscreen'.toJS);
@@ -2001,15 +2018,15 @@ class LiPdfViewerComponent
     if (_isFallbackFullscreen) {
       return;
     }
-    final body = html.document.body;
+    final body = web.document.body;
     _previousBodyOverflow = body?.style.overflow;
     body?.style.overflow = 'hidden';
-    _fallbackFullscreenParent = _hostElement.parent;
+    _fallbackFullscreenParent = _hostElement.parentElement;
     _fallbackFullscreenNextElementSibling = _hostElement.nextElementSibling;
-    if (body != null && _hostElement.parent != body) {
-      body.append(_hostElement);
+    if (body != null && _hostElement.parentElement != body) {
+      body.appendChild(_hostElement);
     }
-    _hostElement.classes.add('pdf-viewer-viewport-fullscreen');
+    _hostElement.classList.add('pdf-viewer-viewport-fullscreen');
     _isFallbackFullscreen = true;
   }
 
@@ -2017,19 +2034,19 @@ class LiPdfViewerComponent
     if (!_isFallbackFullscreen) {
       return;
     }
-    _hostElement.classes.remove('pdf-viewer-viewport-fullscreen');
+    _hostElement.classList.remove('pdf-viewer-viewport-fullscreen');
     final parent = _fallbackFullscreenParent;
-    if (parent != null && _hostElement.parent != parent) {
+    if (parent != null && _hostElement.parentElement != parent) {
       final next = _fallbackFullscreenNextElementSibling;
-      if (next != null && next.parent == parent) {
+      if (next != null && next.parentElement == parent) {
         parent.insertBefore(_hostElement, next);
       } else {
-        parent.append(_hostElement);
+        parent.appendChild(_hostElement);
       }
     }
     _fallbackFullscreenParent = null;
     _fallbackFullscreenNextElementSibling = null;
-    final body = html.document.body;
+    final body = web.document.body;
     body?.style.overflow = _previousBodyOverflow ?? '';
     _previousBodyOverflow = null;
     _isFallbackFullscreen = false;
@@ -2040,7 +2057,7 @@ class LiPdfViewerComponent
       _exitFallbackFullscreen();
     }
     if (!_isNativeFullscreenActive && !_isFallbackFullscreen) {
-      _hostElement.classes.remove('pdf-viewer-viewport-fullscreen');
+      _hostElement.classList.remove('pdf-viewer-viewport-fullscreen');
     }
     _syncActionOptions();
     _changeDetectorRef.markForCheck();
@@ -2151,12 +2168,12 @@ class LiPdfViewerComponent
     sidePanelModal?.close();
   }
 
-  void _handleKeyDown(html.KeyboardEvent event) {
+  void _handleKeyDown(web.KeyboardEvent event) {
     if (!allowKeyboardShortcuts) {
       return;
     }
-    if ((event.target?.isA<html.InputElement>() ?? false) ||
-        (event.target?.isA<html.TextAreaElement>() ?? false)) {
+    if ((event.target?.isA<web.HTMLInputElement>() ?? false) ||
+        (event.target?.isA<web.HTMLTextAreaElement>() ?? false)) {
       return;
     }
 
@@ -2194,7 +2211,7 @@ class LiPdfViewerComponent
     }
   }
 
-  void _handlePointerDown(html.PointerEvent event) {
+  void _handlePointerDown(web.PointerEvent event) {
     if (event.pointerType == 'mouse') {
       if (!_canStartMousePan(event)) {
         return;
@@ -2203,7 +2220,7 @@ class LiPdfViewerComponent
       viewerContainer?.focus();
       _mousePanPointerId = event.pointerId;
       _capturePointer(event.pointerId);
-      _mousePanStartPoint = Point<num>(event.client.x, event.client.y);
+      _mousePanStartPoint = Point<num>(event.clientX, event.clientY);
       _mousePanStartScrollTop = (viewerContainer?.scrollTop ?? 0).round();
       _mousePanStartScrollLeft = (viewerContainer?.scrollLeft ?? 0).round();
       _mousePanCandidate = true;
@@ -2220,7 +2237,7 @@ class LiPdfViewerComponent
     if (_activeTouchPointers.length == 1) {
       _mousePanPointerId = pointerId;
       _capturePointer(pointerId);
-      _mousePanStartPoint = Point<num>(event.client.x, event.client.y);
+      _mousePanStartPoint = Point<num>(event.clientX, event.clientY);
       _mousePanStartScrollTop = (viewerContainer?.scrollTop ?? 0).round();
       _mousePanStartScrollLeft = (viewerContainer?.scrollLeft ?? 0).round();
       _mousePanCandidate = true;
@@ -2235,7 +2252,7 @@ class LiPdfViewerComponent
     }
   }
 
-  void _handlePointerMove(html.PointerEvent event) {
+  void _handlePointerMove(web.PointerEvent event) {
     if (event.pointerType == 'mouse') {
       _handleMousePanMove(event);
       return;
@@ -2273,7 +2290,7 @@ class LiPdfViewerComponent
     _scheduleZoom(nextScale, currentCenter);
   }
 
-  void _handlePointerEnd(html.PointerEvent event) {
+  void _handlePointerEnd(web.PointerEvent event) {
     if (event.pointerType == 'mouse') {
       _endMousePan(event.pointerId);
       return;
@@ -2309,7 +2326,7 @@ class LiPdfViewerComponent
     }
   }
 
-  void _handleTouchStart(html.TouchEvent event) {
+  void _handleTouchStart(web.TouchEvent event) {
     if (_activeTouchPointers.length >= 2) {
       event.preventDefault();
       return;
@@ -2321,11 +2338,12 @@ class LiPdfViewerComponent
       return;
     }
     event.preventDefault();
-    _touchPinchStartDistance = _distanceBetweenTouches(touches[0], touches[1]);
+    _touchPinchStartDistance =
+        _distanceBetweenTouches(touches.item(0)!, touches.item(1)!);
     _touchPinchStartScale = _scale;
   }
 
-  void _handleTouchMove(html.TouchEvent event) {
+  void _handleTouchMove(web.TouchEvent event) {
     final touches = event.touches;
     if (touches.length < 2) {
       return;
@@ -2342,13 +2360,15 @@ class LiPdfViewerComponent
       return;
     }
 
-    final currentDistance = _distanceBetweenTouches(touches[0], touches[1]);
-    final currentCenter = _centerBetweenTouches(touches[0], touches[1]);
+    final currentDistance =
+        _distanceBetweenTouches(touches.item(0)!, touches.item(1)!);
+    final currentCenter =
+        _centerBetweenTouches(touches.item(0)!, touches.item(1)!);
     final nextScale = startScale * (currentDistance / startDistance);
     _scheduleZoom(nextScale, currentCenter);
   }
 
-  void _handleTouchEnd(html.TouchEvent event) {
+  void _handleTouchEnd(web.TouchEvent event) {
     if (_activeTouchPointers.length >= 2) {
       return;
     }
@@ -2358,11 +2378,12 @@ class LiPdfViewerComponent
       _touchPinchStartScale = null;
       return;
     }
-    _touchPinchStartDistance = _distanceBetweenTouches(touches[0], touches[1]);
+    _touchPinchStartDistance =
+        _distanceBetweenTouches(touches.item(0)!, touches.item(1)!);
     _touchPinchStartScale = _scale;
   }
 
-  bool _canStartMousePan(html.PointerEvent event) {
+  bool _canStartMousePan(web.PointerEvent event) {
     if (event.button == 1) {
       return true;
     }
@@ -2372,7 +2393,7 @@ class LiPdfViewerComponent
     return event.ctrlKey || event.metaKey || _isPanModeEnabled;
   }
 
-  void _handleMousePanMove(html.PointerEvent event) {
+  void _handleMousePanMove(web.PointerEvent event) {
     final startPoint = _mousePanStartPoint;
     final container = viewerContainer;
     if (container == null ||
@@ -2382,14 +2403,14 @@ class LiPdfViewerComponent
       return;
     }
 
-    final deltaX = event.client.x - startPoint.x;
-    final deltaY = event.client.y - startPoint.y;
+    final deltaX = event.clientX - startPoint.x;
+    final deltaY = event.clientY - startPoint.y;
     if (!_isMousePanning) {
       if (deltaX.abs() < 3 && deltaY.abs() < 3) {
         return;
       }
       _isMousePanning = true;
-      container.classes.add('mouse-panning');
+      container.classList.add('mouse-panning');
     }
 
     event.preventDefault();
@@ -2404,7 +2425,7 @@ class LiPdfViewerComponent
       return;
     }
     _releasePointer(_mousePanPointerId);
-    viewerContainer?.classes.remove('mouse-panning');
+    viewerContainer?.classList.remove('mouse-panning');
     _mousePanPointerId = null;
     _mousePanStartPoint = null;
     _mousePanStartScrollTop = 0;
@@ -2437,14 +2458,14 @@ class LiPdfViewerComponent
     } catch (_) {}
   }
 
-  double _distanceBetweenTouches(html.Touch first, html.Touch second) {
+  double _distanceBetweenTouches(web.Touch first, web.Touch second) {
     return sqrt(
       pow(first.clientX - second.clientX, 2) +
           pow(first.clientY - second.clientY, 2),
     ).toDouble();
   }
 
-  Point<num> _centerBetweenTouches(html.Touch first, html.Touch second) {
+  Point<num> _centerBetweenTouches(web.Touch first, web.Touch second) {
     return Point<num>(
       (first.clientX + second.clientX) / 2,
       (first.clientY + second.clientY) / 2,
@@ -2458,8 +2479,8 @@ class LiPdfViewerComponent
     final pointers =
         _activeTouchPointers.values.take(2).toList(growable: false);
     return sqrt(
-      pow(pointers[0].client.x - pointers[1].client.x, 2) +
-          pow(pointers[0].client.y - pointers[1].client.y, 2),
+      pow(pointers[0].clientX - pointers[1].clientX, 2) +
+          pow(pointers[0].clientY - pointers[1].clientY, 2),
     ).toDouble();
   }
 
@@ -2470,8 +2491,8 @@ class LiPdfViewerComponent
     final pointers =
         _activeTouchPointers.values.take(2).toList(growable: false);
     return Point<num>(
-      (pointers[0].client.x + pointers[1].client.x) / 2,
-      (pointers[0].client.y + pointers[1].client.y) / 2,
+      (pointers[0].clientX + pointers[1].clientX) / 2,
+      (pointers[0].clientY + pointers[1].clientY) / 2,
     );
   }
 

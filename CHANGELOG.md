@@ -4,9 +4,11 @@
   `dart:js_interop`, and moved the framework dependencies to the ngx9
   development line. The package and example now compile for both dart2js and
   dart2wasm.
-- Added a transitional, tested `web_compat` facade for the small set of legacy
-  DOM semantics that have no direct one-to-one replacement. New code should
-  prefer canonical Web IDL names and APIs from `package:web`.
+- Removed the transitional public `web_compat` facade before the first stable
+  3.x release. Library and example sources now import `package:web` directly,
+  expose canonical Web IDL types and use native DOM operations. Only narrow
+  internal modules remain for Dart2Wasm-safe type guards, Dart-to-Blob
+  conversion, explicit sanitized/trusted HTML sinks and Zone-bound callbacks.
 - Updated the example and browser documentation to the `package:web` API, and
   fixed migration regressions in DOM sanitization, typed-array Blob creation,
   live DOM collections, event defaults, Zone-bound callbacks and JS identity.

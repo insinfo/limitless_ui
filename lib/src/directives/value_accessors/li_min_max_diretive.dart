@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 import 'package:ngx_dart/angular.dart';
 
 /// Clamps numeric input values to the configured `liMin` and `liMax` range.
@@ -9,8 +9,8 @@ import 'package:ngx_dart/angular.dart';
 /// back into the allowed interval.
 @Directive(selector: '[liMinMax]')
 class LiMinMaxDirective {
-  late InputElement inputElement;
-  final Element _el;
+  late web.HTMLInputElement inputElement;
+  final web.Element _el;
 
   /// Minimum allowed numeric value.
   @Input('liMin')
@@ -21,15 +21,18 @@ class LiMinMaxDirective {
   double? liMax;
 
   LiMinMaxDirective(this._el) {
-    if (!_el.isA<InputElement>()) {
-      throw Exception('LiMinMaxDirective has to be applied to an InputElement');
+    if (!_el.isA<web.HTMLInputElement>()) {
+      throw Exception(
+          'LiMinMaxDirective has to be applied to an HTMLInputElement');
     }
-    inputElement = _el as InputElement;
+    inputElement = _el as web.HTMLInputElement;
 
     inputElement.onKeyUp.listen((e) {
-      final valorAtual = double.tryParse((e.target as InputElement).value) ?? 0;
-      if (e.keyCode >= 48 && e.keyCode <= 57 ||
-          e.keyCode >= 96 && e.keyCode <= 105) {
+      final valorAtual =
+          double.tryParse((e.target as web.HTMLInputElement).value) ?? 0;
+      final isDigitKey = RegExp(r'^\d$').hasMatch(e.key) ||
+          RegExp(r'^Numpad\d$').hasMatch(e.code);
+      if (isDigitKey) {
         final min = liMin;
         final max = liMax;
         if (min != null && valorAtual < min) {

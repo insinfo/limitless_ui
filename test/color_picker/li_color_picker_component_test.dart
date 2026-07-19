@@ -5,12 +5,14 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_color_picker_component_test.template.dart' as ng;
 
@@ -69,16 +71,16 @@ void main() {
 
     final trigger = fixture.rootElement.querySelector(
       '.color-picker-trigger .sp-replacer',
-    ) as html.Element;
+    ) as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.sp-container:not(.sp-hidden)',
-    ) as html.Element;
+    ) as web.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final panelRect = panel.getBoundingClientRect();
 
@@ -92,10 +94,10 @@ void main() {
 
     final trigger = fixture.rootElement.querySelector(
       '.color-picker-trigger .sp-replacer',
-    ) as html.Element;
+    ) as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleMobile(fixture);
 
@@ -117,20 +119,20 @@ void main() {
 
     final trigger = fixture.rootElement.querySelector(
       '.color-picker-trigger .sp-replacer',
-    ) as html.Element;
+    ) as web.Element;
     final outside = fixture.rootElement.querySelector(
       '#outside-target',
-    ) as html.Element;
+    ) as web.Element;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.sp-container:not(.sp-hidden)',
-    ) as html.Element;
-    final colorArea = panel.querySelector('.sp-color') as html.Element;
+    ) as web.Element;
+    final colorArea = panel.querySelector('.sp-color') as web.Element;
     final rect = colorArea.getBoundingClientRect();
 
     final startX = (rect.left + (rect.width * 0.3)).round();
@@ -140,43 +142,43 @@ void main() {
 
     await fixture.update((_) {
       colorArea.dispatchEvent(
-        html.liMouseEvent(
+        bubblingMouseEvent(
           'mousedown',
           clientX: startX,
           clientY: startY,
           button: 0,
-          canBubble: true,
+          bubbles: true,
         ),
       );
-      html.document.dispatchEvent(
-        html.liMouseEvent(
+      web.document.dispatchEvent(
+        bubblingMouseEvent(
           'mousemove',
           clientX: endX,
           clientY: endY,
           button: 0,
-          canBubble: true,
+          bubbles: true,
         ),
       );
-      html.document.dispatchEvent(
-        html.liMouseEvent(
+      web.document.dispatchEvent(
+        bubblingMouseEvent(
           'mouseup',
           clientX: endX,
           clientY: endY,
           button: 0,
-          canBubble: true,
+          bubbles: true,
         ),
       );
     });
     await _settle(fixture);
 
-    expect(panel.classes.contains('sp-hidden'), isFalse);
+    expect(panel.classList.contains('sp-hidden'), isFalse);
 
     await fixture.update((_) {
-      outside.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      outside.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(panel.classes.contains('sp-hidden'), isTrue);
+    expect(panel.classList.contains('sp-hidden'), isTrue);
   });
 }
 

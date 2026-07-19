@@ -5,13 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart';
-
+import 'package:web/web.dart';
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_datatable_component_test.template.dart' as ng;
 
@@ -213,7 +215,7 @@ class CustomHeaderTestHostComponent extends TestHostComponent {
           key: 'acoes',
           title: 'Ações',
           customRenderHtml: (itemMap, itemInstance) =>
-              SpanElement()..text = 'LEGACY',
+              HTMLSpanElement()..textContent = 'LEGACY',
         ),
       ],
     );
@@ -279,9 +281,9 @@ class HeaderTitleTestHostComponent extends TestHostComponent {
             useNativeTitle: true,
           ),
           responsiveAutoHidePriority: 20,
-          customRenderTitleHtml: (column) => SpanElement()
+          customRenderTitleHtml: (column) => HTMLSpanElement()
             ..className = 'header-html-marker'
-            ..text = 'Idade HTML',
+            ..textContent = 'Idade HTML',
         ),
         DatatableCol(
           key: 'acoes',
@@ -294,9 +296,9 @@ class HeaderTitleTestHostComponent extends TestHostComponent {
             title: 'Ações rápidas',
             body: 'Use esta coluna para editar ou remover o item.',
           ),
-          customRenderTitleHtml: (column) => SpanElement()
+          customRenderTitleHtml: (column) => HTMLSpanElement()
             ..className = 'header-html-fallback'
-            ..text = 'Fallback HTML',
+            ..textContent = 'Fallback HTML',
         ),
       ],
       responsiveControlColumnKey: 'nome',
@@ -410,11 +412,11 @@ void main() {
     );
 
     expect(nomeHeader, isNotNull);
-    expect(nomeHeader!.text, contains('Nome exibido'));
+    expect(nomeHeader!.textContent, contains('Nome exibido'));
 
     expect(idadeHeader, isNotNull);
     expect(idadeHeader!.querySelector('.header-html-marker'), isNotNull);
-    expect(idadeHeader.text, contains('Idade HTML'));
+    expect(idadeHeader.textContent, contains('Idade HTML'));
     expect(
       idadeHeader
           .querySelector('[title="Tooltip nativo do navegador para a idade."]'),
@@ -427,14 +429,14 @@ void main() {
       isNotNull,
     );
     expect(acoesHeader.getAttribute('style'), contains('text-align: center'));
-    expect(acoesHeader.text, isNot(contains('Fallback HTML')));
+    expect(acoesHeader.textContent, isNot(contains('Fallback HTML')));
 
     final tooltipHost = nomeHeader.querySelector(
       '[data-header-help="tooltip-inline"]',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     final popoverButton = acoesHeader.querySelector(
       'button[data-header-help="popover"]',
-    ) as ButtonElement?;
+    ) as HTMLButtonElement?;
 
     expect(tooltipHost, isNotNull);
     expect(popoverButton, isNotNull);
@@ -444,15 +446,15 @@ void main() {
 
     final tooltip = document.body!.querySelector('.tooltip');
     expect(tooltip, isNotNull);
-    expect(tooltip!.text, contains('identificar o arquivo original'));
+    expect(tooltip!.textContent, contains('identificar o arquivo original'));
 
     popoverButton!.click();
     await _settleTable(fixture);
 
     final popover = document.body!.querySelector('.popover');
     expect(popover, isNotNull);
-    expect(popover!.text, contains('Ações rápidas'));
-    expect(popover.text, contains('editar ou remover o item'));
+    expect(popover!.textContent, contains('Ações rápidas'));
+    expect(popover.textContent, contains('editar ou remover o item'));
   });
 
   test('DatatableActionColumn nao entra nas colunas exportaveis por padrao',
@@ -482,18 +484,24 @@ void main() {
     final fixture = await cardTemplateTestBed.create();
     await _settleTable(fixture);
 
-    final templateCards = fixture.rootElement.queryAll(
-      '.grid-card-template-marker',
-    );
-    final defaultCardBodies = fixture.rootElement.queryAll(
-      '.grid-layout .grid-item > .card-body',
-    );
-    final defaultCardFooters = fixture.rootElement.queryAll(
-      '.grid-layout .grid-item > .card-footer',
-    );
+    final templateCards = fixture.rootElement
+        .querySelectorAll(
+          '.grid-card-template-marker',
+        )
+        .toElementList();
+    final defaultCardBodies = fixture.rootElement
+        .querySelectorAll(
+          '.grid-layout .grid-item > .card-body',
+        )
+        .toElementList();
+    final defaultCardFooters = fixture.rootElement
+        .querySelectorAll(
+          '.grid-layout .grid-item > .card-footer',
+        )
+        .toElementList();
 
     expect(templateCards, hasLength(2));
-    expect(templateCards.first.text, contains('Ana'));
+    expect(templateCards.first.textContent, contains('Ana'));
     expect(templateCards.first.getAttribute('data-row'), '0');
     expect(defaultCardBodies, isEmpty);
     expect(defaultCardFooters, isEmpty);
@@ -547,7 +555,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final toggleCell = fixture.rootElement.querySelector(
       'tbody tr td.dtr-control',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(toggleCell, isNotNull);
     expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isTrue);
@@ -681,7 +689,7 @@ void main() {
     await fixture.update((component) {
       component.table!.dataTableFilter.searchString = 'Ana';
       component.table!.handleSearchInputKeypress(
-        liKeyboardEvent('keypress', keyCode: KeyCode.ENTER),
+        bubblingKeyboardEvent('keypress', key: 'Enter', code: 'Enter'),
       );
     });
 
@@ -723,7 +731,7 @@ void main() {
     );
 
     final nextButton = fixture.rootElement.querySelector('#custom-footer-next')
-        as ButtonElement?;
+        as HTMLButtonElement?;
     expect(nextButton, isNotNull);
 
     await fixture.update((_) {
@@ -742,8 +750,8 @@ void main() {
     final info = fixture.rootElement.querySelector('.dataTables_info');
 
     expect(info, isNotNull);
-    expect(info!.text, contains('página(s)'));
-    expect(info.text, isNot(contains('paginas')));
+    expect(info!.textContent, contains('página(s)'));
+    expect(info.textContent, isNot(contains('paginas')));
   });
 
   test('renderiza resumo de paginacao em ingles por locale', () async {
@@ -755,7 +763,8 @@ void main() {
     final info = fixture.rootElement.querySelector('.dataTables_info');
 
     expect(info, isNotNull);
-    expect(info!.text, contains('Showing 0 to 10 of 25 entries, 3 page(s)'));
+    expect(info!.textContent,
+        contains('Showing 0 to 10 of 25 entries, 3 page(s)'));
   });
 
   test('renderiza template de célula por chave da coluna e mantém clique',
@@ -764,14 +773,16 @@ void main() {
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final buttons = fixture.rootElement.queryAll('.cell-action-btn');
+    final buttons = fixture.rootElement
+        .querySelectorAll('.cell-action-btn')
+        .toElementList();
     expect(buttons, isNotEmpty);
     expect(buttons.length, 2);
-    expect(buttons.first.text, contains('Ana'));
+    expect(buttons.first.textContent, contains('Ana'));
     expect(fixture.text, isNot(contains('LEGACY')));
 
     await fixture.update((_) {
-      (buttons.first as ButtonElement).click();
+      (buttons.first as HTMLButtonElement).click();
     });
 
     expect(host.lastOpenedName, 'Ana');
@@ -852,7 +863,7 @@ void main() {
 
     final toggleCell = fixture.rootElement.querySelector(
       'tbody tr td.dtr-control',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(
         host.table!.hasResponsiveHiddenColumns(host.table!.rows.first), isTrue);
@@ -883,7 +894,7 @@ void main() {
 
     final toggleCell = fixture.rootElement.querySelector(
       'tbody tr td.dtr-control',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(
       host.table!.hasResponsiveHiddenColumns(host.table!.rows.first),
@@ -1101,9 +1112,9 @@ void main() {
       renderedRow.responsiveHiddenColumns.map((column) => column.key),
       isNot(contains('acoes')),
     );
-    expect(nomeHeader!.classes.contains('hide'), isTrue);
-    expect(idadeHeader!.classes.contains('hide'), isFalse);
-    expect(acoesHeader!.classes.contains('hide'), isFalse);
+    expect(nomeHeader!.classList.contains('hide'), isTrue);
+    expect(idadeHeader!.classList.contains('hide'), isFalse);
+    expect(acoesHeader!.classList.contains('hide'), isFalse);
   });
 
   test('nao trata largura percentual como pixels no auto-hide', () async {
@@ -1162,8 +1173,8 @@ void main() {
 
     expect(hiddenKeys, contains('detalhes'));
     expect(hiddenKeys, isNot(contains('acoes')));
-    expect(detalhesHeader!.classes.contains('hide'), isTrue);
-    expect(acoesHeader!.classes.contains('hide'), isFalse);
+    expect(detalhesHeader!.classList.contains('hide'), isTrue);
+    expect(acoesHeader!.classList.contains('hide'), isFalse);
   });
 
   test('trata coluna auto-ocultada como desmarcada e permite forcar exibicao',
@@ -1212,7 +1223,7 @@ void main() {
     expect(host.table!.isColumnEffectivelyVisible(nomeCol), isFalse);
     expect(host.table!.isRuntimeResponsiveHidden(nomeCol), isTrue);
     expect(nomeHeader, isNotNull);
-    expect(nomeHeader!.classes.contains('hide'), isTrue);
+    expect(nomeHeader!.classList.contains('hide'), isTrue);
 
     await fixture.update((component) {
       component.table!.changeVisibilityOfCol(nomeCol);
@@ -1225,7 +1236,7 @@ void main() {
     expect(host.table!.isColumnEffectivelyVisible(nomeCol), isTrue);
     expect(host.table!.isRuntimeResponsiveHidden(nomeCol), isFalse);
     expect(nomeHeader, isNotNull);
-    expect(nomeHeader!.classes.contains('hide'), isFalse);
+    expect(nomeHeader!.classList.contains('hide'), isFalse);
   });
 
   test(
@@ -1269,7 +1280,7 @@ void main() {
 
     final toggleCell = fixture.rootElement.querySelector(
       'tbody tr td.dtr-control',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(toggleCell, isNotNull);
     expect(host.table!.renderedRows.first.responsiveControlColumnKey, 'acoes');
@@ -1326,7 +1337,7 @@ void main() {
 
     final toggleCell = fixture.rootElement.querySelector(
       'tbody tr td.dtr-control',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(toggleCell, isNotNull);
     expect(toggleCell!.getAttribute('data-label'), 'li_dt_col_0');
@@ -1340,7 +1351,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final selectAllCheckbox = fixture.rootElement.querySelector(
       'thead .datatable-first-col input.form-check-input',
-    ) as CheckboxInputElement?;
+    ) as HTMLInputElement?;
 
     expect(selectAllCheckbox, isNotNull);
 
@@ -1409,13 +1420,13 @@ void main() {
 
     final groupRow = fixture.rootElement.querySelector(
       'tbody tr.datatable-group-title-row',
-    ) as TableRowElement?;
+    ) as HTMLTableRowElement?;
 
     expect(groupRow, isNotNull);
     expect(groupRow!.querySelector('input.form-check-input'), isNull);
-    expect(groupRow.queryAll('td'), hasLength(1));
-    expect(groupRow.text, contains('Compras'));
-    expect(groupRow.text, contains('Compra direta'));
+    expect(groupRow.querySelectorAll('td').toElementList(), hasLength(1));
+    expect(groupRow.textContent, contains('Compras'));
+    expect(groupRow.textContent, contains('Compra direta'));
   });
 
   test('select all com agrupamento seleciona apenas linhas normais', () async {
@@ -1467,7 +1478,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final selectAllCheckbox = fixture.rootElement.querySelector(
       'thead .datatable-first-col input.form-check-input',
-    ) as CheckboxInputElement?;
+    ) as HTMLInputElement?;
 
     expect(selectAllCheckbox, isNotNull);
     expect(
@@ -1654,8 +1665,8 @@ void main() {
     final fixture = await testBed.create();
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
-    final select = SelectElement()
-      ..append(OptionElement()
+    final select = HTMLSelectElement()
+      ..appendChild(HTMLOptionElement()
         ..text = '20'
         ..value = '20'
         ..selected = true);
@@ -1679,8 +1690,8 @@ void main() {
     });
     await _settleTable(fixture);
     final host = fixture.assertOnlyInstance;
-    final select = SelectElement()
-      ..append(OptionElement()
+    final select = HTMLSelectElement()
+      ..appendChild(HTMLOptionElement()
         ..text = '20'
         ..value = '20'
         ..selected = true);
@@ -1787,7 +1798,7 @@ void main() {
           ..settings = DatatableSettings(
             customCardBuilder: (itemMap, itemInstance, row) {
               customCardBuilderCalls++;
-              return DivElement()..text = 'card pesado';
+              return HTMLDivElement()..textContent = 'card pesado';
             },
             colsDefinitions: <DatatableCol>[
               DatatableCol(key: 'nome', title: 'Nome'),
@@ -1820,7 +1831,9 @@ void main() {
     await _settleTable(fixture);
 
     final gridContainer = fixture.rootElement.querySelector('.grid-container');
-    final gridItems = fixture.rootElement.queryAll('.grid-layout .grid-item');
+    final gridItems = fixture.rootElement
+        .querySelectorAll('.grid-layout .grid-item')
+        .toElementList();
     final tableContainer =
         fixture.rootElement.querySelector('.datatable-scroll');
 
@@ -1848,7 +1861,7 @@ void main() {
     );
 
     expect(emptyState, isNotNull);
-    expect(emptyState!.text, 'No records found');
+    expect(emptyState!.textContent, 'No records found');
   });
 
   test('renderiza estado vazio do grid em ingles por locale', () async {
@@ -1867,7 +1880,7 @@ void main() {
     );
 
     expect(emptyState, isNotNull);
-    expect(emptyState!.text, 'Empty list');
+    expect(emptyState!.textContent, 'Empty list');
   });
 
   test('desmonta a view inativa ao alternar entre tabela e grid', () async {
@@ -1923,7 +1936,7 @@ void main() {
 
     final firstCardColumn = fixture.rootElement.querySelector(
       '.grid-layout .datatable-grid-default-card__field',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
 
     expect(firstCardColumn, isNotNull);
     expect(firstCardColumn!.style.width, isEmpty);
@@ -1999,15 +2012,15 @@ void main() {
 
     final headerCell = fixture.rootElement.querySelector(
       'thead th[data-key="nome"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
     final dataCell = fixture.rootElement.querySelector(
       'tbody tr td[data-label="li_dt_col_0"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(headerCell, isNotNull);
     expect(dataCell, isNotNull);
-    expect(headerCell!.classes.contains('nome-header'), isTrue);
-    expect(dataCell!.classes.contains('nome-cell'), isTrue);
+    expect(headerCell!.classList.contains('nome-header'), isTrue);
+    expect(dataCell!.classList.contains('nome-cell'), isTrue);
     expect(headerCell.style.width, '220px');
     expect(headerCell.style.minWidth, '220px');
     expect(headerCell.style.textAlign, 'center');
@@ -2027,9 +2040,9 @@ void main() {
         gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
         gridGap: '2rem',
         customCardBuilder: (itemMap, itemInstance, row) {
-          return DivElement()
-            ..classes.add('custom-grid-card')
-            ..text = '${itemMap['nome']} (${itemMap['idade']})';
+          return HTMLDivElement()
+            ..classList.add('custom-grid-card')
+            ..textContent = '${itemMap['nome']} (${itemMap['idade']})';
         },
       );
     });
@@ -2041,9 +2054,12 @@ void main() {
     });
     await _settleTable(fixture);
 
-    final customCards = fixture.rootElement.queryAll('.custom-grid-card');
-    final customCardWrappers =
-        fixture.rootElement.queryAll('.datatable-custom-card');
+    final customCards = fixture.rootElement
+        .querySelectorAll('.custom-grid-card')
+        .toElementList();
+    final customCardWrappers = fixture.rootElement
+        .querySelectorAll('.datatable-custom-card')
+        .toElementList();
 
     expect(customCards, hasLength(2));
     expect(customCardWrappers, hasLength(2));
@@ -2146,8 +2162,8 @@ void main() {
     expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isFalse);
     expect(solicitanteHeader, isNotNull);
     expect(assuntoHeader, isNotNull);
-    expect(solicitanteHeader!.classes.contains('hide'), isFalse);
-    expect(assuntoHeader!.classes.contains('hide'), isFalse);
+    expect(solicitanteHeader!.classList.contains('hide'), isFalse);
+    expect(assuntoHeader!.classList.contains('hide'), isFalse);
   });
 
   test('ignora largura esticada anterior ao recalcular auto-hide no resize',
@@ -2230,8 +2246,8 @@ void main() {
     expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isFalse);
     expect(solicitanteHeader, isNotNull);
     expect(assuntoHeader, isNotNull);
-    expect(solicitanteHeader!.classes.contains('hide'), isFalse);
-    expect(assuntoHeader!.classes.contains('hide'), isFalse);
+    expect(solicitanteHeader!.classList.contains('hide'), isFalse);
+    expect(assuntoHeader!.classList.contains('hide'), isFalse);
   });
 
   test('mantem a coluna de acoes fixada a direita durante scroll horizontal',
@@ -2295,21 +2311,21 @@ void main() {
 
     final headerCell = fixture.rootElement.querySelector(
       'thead th[data-key="acoes"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
     final dataCell = fixture.rootElement.querySelector(
       'tbody tr td[data-label="li_dt_col_4"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(headerCell, isNotNull);
     expect(dataCell, isNotNull);
-    expect(headerCell!.classes.contains('datatable-fixed-col'), isTrue);
-    expect(headerCell.classes.contains('datatable-fixed-col--right'), isTrue);
-    expect(dataCell!.classes.contains('datatable-fixed-col'), isTrue);
-    expect(dataCell.classes.contains('datatable-fixed-col--right'), isTrue);
+    expect(headerCell!.classList.contains('datatable-fixed-col'), isTrue);
+    expect(headerCell.classList.contains('datatable-fixed-col--right'), isTrue);
+    expect(dataCell!.classList.contains('datatable-fixed-col'), isTrue);
+    expect(dataCell.classList.contains('datatable-fixed-col--right'), isTrue);
     expect(headerCell.style.right, '0px');
     expect(dataCell.style.right, '0px');
-    expect(headerCell.getComputedStyle().position, 'sticky');
-    expect(dataCell.getComputedStyle().position, 'sticky');
+    expect(window.getComputedStyle(headerCell).position, 'sticky');
+    expect(window.getComputedStyle(dataCell).position, 'sticky');
   });
 
   test('renderiza e executa DatatableActionColumn declarativa', () async {
@@ -2339,32 +2355,36 @@ void main() {
 
     final actionHeader = fixture.rootElement.querySelector(
       'thead th[data-key="acoes"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
     final actionButton = fixture.rootElement.querySelector(
       '.datatable-action-cell button',
-    ) as ButtonElement?;
+    ) as HTMLButtonElement?;
     final actionIcon =
-        actionButton?.querySelector('i.ph.ph-eye') as HtmlElement?;
+        actionButton?.querySelector('i.ph.ph-eye') as HTMLElement?;
     expect(actionHeader, isNotNull);
     expect(actionHeader!.getAttribute('style'), contains('text-align: center'));
     expect(actionButton, isNotNull);
     expect(
-      fixture.rootElement.queryAll(
-        '[data-li-datatable-action-cell="true"]',
-      ),
+      fixture.rootElement
+          .querySelectorAll(
+            '[data-li-datatable-action-cell="true"]',
+          )
+          .toElementList(),
       hasLength(2),
     );
     expect(
-      fixture.rootElement.queryAll('[data-li-datatable-action="true"]'),
+      fixture.rootElement
+          .querySelectorAll('[data-li-datatable-action="true"]')
+          .toElementList(),
       hasLength(2),
     );
     expect(
       actionButton!.getAttribute('data-li-datatable-action'),
       'true',
     );
-    expect(actionButton.text, contains('Abrir'));
+    expect(actionButton.textContent, contains('Abrir'));
     expect(actionIcon, isNotNull);
-    expect(actionIcon!.classes.contains('me-2'), isTrue);
+    expect(actionIcon!.classList.contains('me-2'), isTrue);
 
     await fixture.update((_) {
       actionButton.click();
@@ -2407,10 +2427,10 @@ void main() {
 
     final actionHeader = fixture.rootElement.querySelector(
       'thead th[data-key="acoes"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
     final actionCell = fixture.rootElement.querySelector(
       'tbody tr td[data-label="li_dt_col_1"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(actionHeader, isNotNull);
     expect(actionCell, isNotNull);
@@ -2466,13 +2486,17 @@ void main() {
 
     expect(host.table!.isSaliPagedPerformanceProfile, isTrue);
     expect(
-      fixture.rootElement.queryAll(
-        '[data-li-datatable-action-cell="true"]',
-      ),
+      fixture.rootElement
+          .querySelectorAll(
+            '[data-li-datatable-action-cell="true"]',
+          )
+          .toElementList(),
       hasLength(2),
     );
     expect(
-      fixture.rootElement.queryAll('[data-li-datatable-action="true"]'),
+      fixture.rootElement
+          .querySelectorAll('[data-li-datatable-action="true"]')
+          .toElementList(),
       hasLength(2),
     );
     expect(drawEvents, isNotEmpty);
@@ -2510,10 +2534,10 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final trueCell = fixture.rootElement.querySelector(
       'tbody tr[data-index="0"] td[data-label="li_dt_col_1"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
     final falseCell = fixture.rootElement.querySelector(
       'tbody tr[data-index="1"] td[data-label="li_dt_col_1"]',
-    ) as TableCellElement?;
+    ) as HTMLTableCellElement?;
 
     expect(host.table!.isSaliPagedPerformanceProfile, isTrue);
     expect(host.table!.rows.first.columns[1].htmlElement, isNotNull);
@@ -2521,8 +2545,8 @@ void main() {
     expect(trueCell, isNotNull);
     expect(falseCell, isNotNull);
     expect(trueCell!.querySelector('.badge.bg-primary'), isNotNull);
-    expect(trueCell.text.trim(), 'Sim');
-    expect(falseCell!.text.trim(), 'Não');
+    expect((trueCell.textContent ?? '').trim(), 'Sim');
+    expect((falseCell!.textContent ?? '').trim(), 'Não');
     expect(fixture.text, isNot(contains('<span')));
   });
 
@@ -2613,19 +2637,19 @@ void main() {
 
     final actionButton = fixture.rootElement.querySelector(
       '.datatable-action-cell button',
-    ) as ButtonElement?;
+    ) as HTMLButtonElement?;
     expect(actionButton, isNotNull);
     expect(
-      actionButton!.classes.contains('btn-link'),
+      actionButton!.classList.contains('btn-link'),
       isTrue,
     );
-    expect(actionButton.classes.contains('btn-icon'), isTrue);
+    expect(actionButton.classList.contains('btn-icon'), isTrue);
     expect(
-      actionButton.classes.contains('datatable-action-button--icon-only'),
+      actionButton.classList.contains('datatable-action-button--icon-only'),
       isTrue,
     );
     expect(actionButton.querySelector('i.ph-heart'), isNotNull);
-    expect(actionButton.text.trim(), isEmpty);
+    expect((actionButton.textContent ?? '').trim(), isEmpty);
   });
 
   test('mantem acoes fixas visiveis e envia excedente para dropdown', () async {
@@ -2675,12 +2699,12 @@ void main() {
 
     final visibleButton = fixture.rootElement.querySelector(
       '.datatable-action-cell > button[data-li-datatable-action="true"]',
-    ) as ButtonElement?;
+    ) as HTMLButtonElement?;
     final overflowToggle = fixture.rootElement.querySelector(
       '[data-li-datatable-action-overflow-toggle="true"]',
-    ) as ButtonElement?;
+    ) as HTMLButtonElement?;
     expect(visibleButton, isNotNull);
-    expect(visibleButton!.text, contains('Visualizar'));
+    expect(visibleButton!.textContent, contains('Visualizar'));
     expect(overflowToggle, isNotNull);
 
     await fixture.update((_) {
@@ -2690,20 +2714,22 @@ void main() {
 
     final overflowMenu = document.body?.querySelector(
       '[data-li-datatable-action-overflow-menu="true"]',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
 
     expect(overflowMenu, isNotNull);
-    expect(overflowMenu!.classes.contains('show'), isTrue);
-    expect(overflowMenu.text, contains('Arquivar'));
-    expect(overflowMenu.text, contains('Excluir'));
+    expect(overflowMenu!.classList.contains('show'), isTrue);
+    expect(overflowMenu.textContent, contains('Arquivar'));
+    expect(overflowMenu.textContent, contains('Excluir'));
 
-    final overflowButtons = overflowMenu.queryAll(
-      'button[data-li-datatable-action="true"]',
-    );
+    final overflowButtons = overflowMenu
+        .querySelectorAll(
+          'button[data-li-datatable-action="true"]',
+        )
+        .toElementList();
     expect(overflowButtons, hasLength(2));
 
     await fixture.update((_) {
-      (overflowButtons.first as ButtonElement).click();
+      (overflowButtons.first as HTMLButtonElement).click();
     });
     await _settleTable(fixture);
 
@@ -2712,9 +2738,9 @@ void main() {
     expect(deleted, 0);
     final closedOverflowMenu = document.body?.querySelector(
       '[data-li-datatable-action-overflow-menu="true"]',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     expect(closedOverflowMenu, isNotNull);
-    expect(closedOverflowMenu!.classes.contains('show'), isFalse);
+    expect(closedOverflowMenu!.classList.contains('show'), isFalse);
   });
 
   test(
@@ -2788,22 +2814,25 @@ void main() {
 
     final actionCell = fixture.rootElement.querySelector(
       '.datatable-action-cell',
-    ) as HtmlElement?;
-    final actionButtons = actionCell!.queryAll('button').cast<ButtonElement>();
+    ) as HTMLElement?;
+    final actionButtons = actionCell!
+        .querySelectorAll('button')
+        .toElementList()
+        .cast<HTMLButtonElement>();
     final desktopButton = actionButtons.first;
     final mobileButton = actionButtons.last;
 
     expect(actionButtons, hasLength(2));
-    expect(desktopButton.text.trim(), 'Abrir');
-    expect(desktopButton.classes.contains('d-none'), isTrue);
-    expect(desktopButton.classes.contains('d-md-inline-flex'), isTrue);
+    expect((desktopButton.textContent ?? '').trim(), 'Abrir');
+    expect(desktopButton.classList.contains('d-none'), isTrue);
+    expect(desktopButton.classList.contains('d-md-inline-flex'), isTrue);
     expect(desktopButton.querySelector('i'), isNull);
-    expect(desktopButton.classes.contains('btn-icon'), isFalse);
+    expect(desktopButton.classList.contains('btn-icon'), isFalse);
 
-    expect(mobileButton.text.trim(), isEmpty);
-    expect(mobileButton.classes.contains('btn-icon'), isTrue);
-    expect(mobileButton.classes.contains('d-inline-flex'), isTrue);
-    expect(mobileButton.classes.contains('d-md-none'), isTrue);
+    expect((mobileButton.textContent ?? '').trim(), isEmpty);
+    expect(mobileButton.classList.contains('btn-icon'), isTrue);
+    expect(mobileButton.classList.contains('d-inline-flex'), isTrue);
+    expect(mobileButton.classList.contains('d-md-none'), isTrue);
     expect(mobileButton.querySelector('i.ph.ph-eye'), isNotNull);
   });
 
@@ -2835,27 +2864,30 @@ void main() {
 
     final actionCell = fixture.rootElement.querySelector(
       '.datatable-action-cell',
-    ) as HtmlElement?;
-    final actionButtons = actionCell!.queryAll('button').cast<ButtonElement>();
+    ) as HTMLElement?;
+    final actionButtons = actionCell!
+        .querySelectorAll('button')
+        .toElementList()
+        .cast<HTMLButtonElement>();
     final desktopButton = actionButtons.first;
     final mobileButton = actionButtons.last;
     final desktopIcon =
-        desktopButton.querySelector('i.ph.ph-eye') as HtmlElement?;
+        desktopButton.querySelector('i.ph.ph-eye') as HTMLElement?;
     final mobileIcon =
-        mobileButton.querySelector('i.ph.ph-eye') as HtmlElement?;
+        mobileButton.querySelector('i.ph.ph-eye') as HTMLElement?;
 
     expect(actionButtons, hasLength(2));
-    expect(desktopButton.text.trim(), 'Abrir');
-    expect(desktopButton.classes.contains('d-none'), isTrue);
-    expect(desktopButton.classes.contains('d-md-inline-flex'), isTrue);
-    expect(desktopButton.classes.contains('btn-icon'), isFalse);
+    expect((desktopButton.textContent ?? '').trim(), 'Abrir');
+    expect(desktopButton.classList.contains('d-none'), isTrue);
+    expect(desktopButton.classList.contains('d-md-inline-flex'), isTrue);
+    expect(desktopButton.classList.contains('btn-icon'), isFalse);
     expect(desktopIcon, isNotNull);
-    expect(desktopIcon!.classes.contains('me-2'), isTrue);
+    expect(desktopIcon!.classList.contains('me-2'), isTrue);
 
-    expect(mobileButton.text.trim(), isEmpty);
-    expect(mobileButton.classes.contains('btn-icon'), isTrue);
-    expect(mobileButton.classes.contains('d-inline-flex'), isTrue);
-    expect(mobileButton.classes.contains('d-md-none'), isTrue);
+    expect((mobileButton.textContent ?? '').trim(), isEmpty);
+    expect(mobileButton.classList.contains('btn-icon'), isTrue);
+    expect(mobileButton.classList.contains('d-inline-flex'), isTrue);
+    expect(mobileButton.classList.contains('d-md-none'), isTrue);
     expect(mobileIcon, isNotNull);
   });
 
@@ -2887,12 +2919,15 @@ void main() {
 
     final actionCell = fixture.rootElement.querySelector(
       '.datatable-action-cell',
-    ) as HtmlElement?;
-    final actionButtons = actionCell!.queryAll('button').cast<ButtonElement>();
+    ) as HTMLElement?;
+    final actionButtons = actionCell!
+        .querySelectorAll('button')
+        .toElementList()
+        .cast<HTMLButtonElement>();
 
     expect(actionButtons, hasLength(2));
-    expect(actionButtons.first.classes.contains('btn-sm'), isTrue);
-    expect(actionButtons.last.classes.contains('btn-sm'), isTrue);
+    expect(actionButtons.first.classList.contains('btn-sm'), isTrue);
+    expect(actionButtons.last.classList.contains('btn-sm'), isTrue);
   });
 
   test('permite atualizar DatatableActionColumn via controller', () async {
@@ -2922,9 +2957,9 @@ void main() {
 
     var actionButton = fixture.rootElement.querySelector(
       '.datatable-action-cell button',
-    ) as ButtonElement?;
+    ) as HTMLButtonElement?;
     expect(actionButton, isNotNull);
-    expect(actionButton!.text, contains('Visualizar'));
+    expect(actionButton!.textContent, contains('Visualizar'));
 
     await fixture.update((component) {
       controller.setActions(<DatatableAction>[
@@ -2939,9 +2974,9 @@ void main() {
 
     actionButton = fixture.rootElement.querySelector(
       '.datatable-action-cell button',
-    ) as ButtonElement?;
+    ) as HTMLButtonElement?;
     expect(actionButton, isNotNull);
-    expect(actionButton!.text, contains('Editar'));
+    expect(actionButton!.textContent, contains('Editar'));
   });
 
   test('virtualiza a tabela renderizando apenas a janela visivel', () async {
@@ -2966,7 +3001,8 @@ void main() {
     await _settleTable(fixture);
 
     final host = fixture.assertOnlyInstance;
-    final bodyRows = fixture.rootElement.queryAll('tbody > tr');
+    final bodyRows =
+        fixture.rootElement.querySelectorAll('tbody > tr').toElementList();
 
     expect(host.table!.rows.length, lessThan(20));
     expect(bodyRows.length, lessThan(24));
@@ -2974,7 +3010,7 @@ void main() {
 
     final scrollContainer = fixture.rootElement.querySelector(
       '.datatable-scroll',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     expect(scrollContainer, isNotNull);
 
     scrollContainer!.scrollTop = 1200;
@@ -3031,43 +3067,47 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final scrollContainer = fixture.rootElement.querySelector(
       '.datatable-scroll',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     final table = fixture.rootElement.querySelector(
       'table.dataTable',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     final sortingHeader = fixture.rootElement.querySelector(
       'table.datatable-fast-table thead th.sorting[data-key="digitalLabel"]',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
 
     expect(host.table!.isVirtualScrollActive, isFalse);
     expect(host.table!.hasResponsiveCollapsedColumns, isFalse);
     expect(host.table!.rows, hasLength(30));
     expect(scrollContainer, isNotNull);
-    expect(scrollContainer!.classes.contains('datatable-scroll--virtual'),
+    expect(scrollContainer!.classList.contains('datatable-scroll--virtual'),
         isFalse);
     expect(table, isNotNull);
-    expect(table!.classes.contains('datatable-fast-table'), isTrue);
-    expect(table.classes.contains('datatable-table-layout-fixed'), isFalse);
-    expect(table.getComputedStyle().getPropertyValue('table-layout'), 'auto');
+    expect(table!.classList.contains('datatable-fast-table'), isTrue);
+    expect(table.classList.contains('datatable-table-layout-fixed'), isFalse);
+    expect(window.getComputedStyle(table).getPropertyValue('table-layout'),
+        'auto');
     expect(sortingHeader, isNotNull);
 
     final titleShell = sortingHeader!.querySelector(
       '.datatable-header-title-shell',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     final titleContent = sortingHeader.querySelector(
       '.datatable-header-title-content',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     expect(titleShell, isNotNull);
     expect(titleContent, isNotNull);
 
     final paddingRight = double.tryParse(
-          sortingHeader.getComputedStyle().paddingRight.replaceAll('px', ''),
+          window
+              .getComputedStyle(sortingHeader)
+              .paddingRight
+              .replaceAll('px', ''),
         ) ??
         0;
 
     expect(paddingRight, greaterThanOrEqualTo(30));
-    expect(titleShell!.getComputedStyle().display, isNot('block'));
-    expect(titleContent!.getComputedStyle().overflow, isNot('hidden'));
+    expect(window.getComputedStyle(titleShell!).display, isNot('block'));
+    expect(window.getComputedStyle(titleContent!).overflow, isNot('hidden'));
 
     await fixture.update((component) {
       component.fixedTableLayout = true;
@@ -3076,28 +3116,28 @@ void main() {
 
     final fixedTable = fixture.rootElement.querySelector(
       'table.datatable-fast-table',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     final fixedSortingHeader = fixture.rootElement.querySelector(
       'table.datatable-table-layout-fixed thead th.sorting[data-key="digitalLabel"]',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     expect(fixedSortingHeader, isNotNull);
 
     final fixedTitleShell = fixedSortingHeader!.querySelector(
       '.datatable-header-title-shell',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     final fixedTitleContent = fixedSortingHeader.querySelector(
       '.datatable-header-title-content',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     final fixedHeaderRect = fixedSortingHeader.getBoundingClientRect();
     final fixedShellRect = fixedTitleShell!.getBoundingClientRect();
 
     expect(fixedTable, isNotNull);
     expect(
-        fixedTable!.classes.contains('datatable-table-layout-fixed'), isTrue);
-    expect(fixedTable.getComputedStyle().getPropertyValue('table-layout'),
+        fixedTable!.classList.contains('datatable-table-layout-fixed'), isTrue);
+    expect(window.getComputedStyle(fixedTable).getPropertyValue('table-layout'),
         'fixed');
-    expect(fixedTitleShell.getComputedStyle().display, 'block');
-    expect(fixedTitleContent!.getComputedStyle().overflow, 'hidden');
+    expect(window.getComputedStyle(fixedTitleShell).display, 'block');
+    expect(window.getComputedStyle(fixedTitleContent!).overflow, 'hidden');
     expect(fixedShellRect.right, lessThanOrEqualTo(fixedHeaderRect.right - 20));
   });
 
@@ -3182,19 +3222,19 @@ void main() {
 
     final scrollContainer = fixture.rootElement.querySelector(
       '.datatable-scroll',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
     final headerCell = fixture.rootElement.querySelector(
       'thead th[data-key="nome"]',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
 
     expect(scrollContainer, isNotNull);
     expect(
-      scrollContainer!.classes.contains('datatable-scroll--sticky-header'),
+      scrollContainer!.classList.contains('datatable-scroll--sticky-header'),
       isTrue,
     );
     expect(headerCell, isNotNull);
-    expect(headerCell!.getComputedStyle().position, 'sticky');
-    expect(headerCell.getComputedStyle().top, '0px');
+    expect(window.getComputedStyle(headerCell!).position, 'sticky');
+    expect(window.getComputedStyle(headerCell).top, '0px');
   });
 
   test('mantem a janela virtual estavel quando o scroll chega ao fim',
@@ -3222,7 +3262,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final scrollContainer = fixture.rootElement.querySelector(
       '.datatable-scroll',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
 
     expect(scrollContainer, isNotNull);
 
@@ -3273,10 +3313,12 @@ void main() {
     await _settleTable(fixture);
 
     final host = fixture.assertOnlyInstance;
-    final gridItems = fixture.rootElement.queryAll('.grid-layout .grid-item');
+    final gridItems = fixture.rootElement
+        .querySelectorAll('.grid-layout .grid-item')
+        .toElementList();
     final gridScrollContainer = fixture.rootElement.querySelector(
       '.datatable-grid-scroll',
-    ) as HtmlElement?;
+    ) as HTMLElement?;
 
     expect(fixture.rootElement.querySelector('.datatable-scroll'), isNull);
     expect(gridScrollContainer, isNotNull);

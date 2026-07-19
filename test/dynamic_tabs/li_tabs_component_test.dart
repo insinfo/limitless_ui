@@ -6,7 +6,7 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -43,10 +43,9 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    html.Element? tabContent =
-        fixture.rootElement.querySelector('.tab-content');
+    web.Element? tabContent = fixture.rootElement.querySelector('.tab-content');
     expect(tabContent, isNotNull);
-    expect(tabContent!.classes.contains('p-1'), isTrue);
+    expect(tabContent!.classList.contains('p-1'), isTrue);
     final tabs = fixture.rootElement.querySelector('li-tabsx');
     final navLink = fixture.rootElement.querySelector(
       '[data-label="li_tab_link"][data-value="0"]',
@@ -77,7 +76,7 @@ void main() {
 
     tabContent = fixture.rootElement.querySelector('.tab-content');
     expect(tabContent, isNotNull);
-    expect(tabContent!.classes.contains('p-1'), isFalse);
+    expect(tabContent!.classList.contains('p-1'), isFalse);
   });
 }
 

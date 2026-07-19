@@ -6,13 +6,17 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import 'package:limitless_ui/src/web_support/zone_dom_callbacks.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_node_list.dart';
 
 import 'li_datatable_action_overflow_benchmark_test.template.dart' as ng;
 
@@ -138,7 +142,7 @@ void main() {
 
     final toggle = fixture.rootElement.querySelector(
       '[data-li-datatable-action-overflow-toggle="true"]',
-    ) as html.ButtonElement?;
+    ) as web.HTMLButtonElement?;
     expect(toggle, isNotNull);
 
     final result = await _runOverflowBenchmark(
@@ -152,9 +156,11 @@ void main() {
     expect(result.averageMilliseconds, lessThanOrEqualTo(120));
     expect(result.p95Milliseconds, lessThanOrEqualTo(220));
     expect(
-      html.document.body?.queryAll(
-        '[data-li-datatable-action-overflow-menu="true"].show',
-      ),
+      web.document.body
+          ?.querySelectorAll(
+            '[data-li-datatable-action-overflow-menu="true"].show',
+          )
+          .toElementList(),
       isEmpty,
     );
   });
@@ -162,7 +168,7 @@ void main() {
 
 Future<DatatableActionOverflowBenchmarkResult> _runOverflowBenchmark({
   required NgTestFixture<DatatableActionOverflowBenchmarkHostComponent> fixture,
-  required html.ButtonElement toggle,
+  required web.HTMLButtonElement toggle,
 }) async {
   const cycles = 24;
   final durations = <double>[];
@@ -173,23 +179,25 @@ Future<DatatableActionOverflowBenchmarkResult> _runOverflowBenchmark({
     toggle.click();
     await _settleBenchmark(fixture);
 
-    final openMenu = html.document.body?.querySelector(
+    final openMenu = web.document.body?.querySelector(
       '[data-li-datatable-action-overflow-menu="true"]',
-    ) as html.HtmlElement?;
+    ) as web.HTMLElement?;
     expect(openMenu, isNotNull);
-    expect(openMenu!.classes.contains('show'), isTrue);
+    expect(openMenu!.classList.contains('show'), isTrue);
     expect(
-      openMenu.queryAll('button[data-li-datatable-action="true"]'),
+      openMenu
+          .querySelectorAll('button[data-li-datatable-action="true"]')
+          .toElementList(),
       hasLength(2),
     );
 
     toggle.click();
     await _settleBenchmark(fixture);
 
-    final closedMenu = html.document.body?.querySelector(
+    final closedMenu = web.document.body?.querySelector(
       '[data-li-datatable-action-overflow-menu="true"]',
-    ) as html.HtmlElement?;
-    expect(closedMenu?.classes.contains('show') ?? false, isFalse);
+    ) as web.HTMLElement?;
+    expect(closedMenu?.classList.contains('show') ?? false, isFalse);
 
     stopwatch.stop();
     durations.add(
@@ -206,11 +214,15 @@ Future<DatatableActionOverflowBenchmarkResult> _runOverflowBenchmark({
     averageMilliseconds: totalMilliseconds / cycles,
     p95Milliseconds: sortedDurations[p95Index],
     maxMilliseconds: sortedDurations.last,
-    portalHosts:
-        html.document.body?.queryAll('.DatatableActionOverflowPortal').length ??
-            0,
-    menuElements: html.document.body
-            ?.queryAll('[data-li-datatable-action-overflow-menu="true"]')
+    portalHosts: web.document.body
+            ?.querySelectorAll('.DatatableActionOverflowPortal')
+            .toElementList()
+            .length ??
+        0,
+    menuElements: web.document.body
+            ?.querySelectorAll(
+                '[data-li-datatable-action-overflow-menu="true"]')
+            .toElementList()
             .length ??
         0,
   );
@@ -227,7 +239,7 @@ Future<void> _settleBenchmark(
 
 Future<num> _nextAnimationFrameTime() {
   final completer = Completer<num>();
-  html.window.liRequestAnimationFrame((timestamp) {
+  requestAnimationFrameInZone((timestamp) {
     completer.complete(timestamp);
   });
   return completer.future;

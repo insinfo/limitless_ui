@@ -5,13 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_slider_component_test.template.dart' as ng;
 
@@ -89,11 +92,12 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final sliders = fixture.rootElement.queryAll('li-slider');
-    final handle = sliders.first.querySelector('.noUi-handle') as html.Element;
+    final sliders =
+        fixture.rootElement.querySelectorAll('li-slider').toElementList();
+    final handle = sliders.first.querySelector('.noUi-handle') as web.Element;
 
     await fixture.update((_) {
-      handle.focus();
+      (handle as web.HTMLElement).focus();
       _dispatchKey(handle, 'ArrowRight');
     });
     await _settle(fixture);
@@ -113,16 +117,20 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final sliders = fixture.rootElement.queryAll('li-slider');
+    final sliders =
+        fixture.rootElement.querySelectorAll('li-slider').toElementList();
     final rangeSlider = sliders[1];
-    final handles = rangeSlider.queryAll('.noUi-handle');
+    final handles =
+        rangeSlider.querySelectorAll('.noUi-handle').toElementList();
     final upperHandle = handles[1];
 
-    expect(rangeSlider.queryAll('.noUi-tooltip').length, 2);
-    expect(rangeSlider.queryAll('.noUi-value').length, 4);
+    expect(rangeSlider.querySelectorAll('.noUi-tooltip').toElementList().length,
+        2);
+    expect(
+        rangeSlider.querySelectorAll('.noUi-value').toElementList().length, 4);
 
     await fixture.update((_) {
-      upperHandle.focus();
+      (upperHandle as web.HTMLElement).focus();
       _dispatchKey(upperHandle, 'ArrowLeft');
     });
     await _settle(fixture);
@@ -133,9 +141,10 @@ void main() {
   test('connect upper renders the connector from handle to the end', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final sliders = fixture.rootElement.queryAll('li-slider');
+    final sliders =
+        fixture.rootElement.querySelectorAll('li-slider').toElementList();
     final upperSlider = sliders[2];
-    final connect = upperSlider.querySelector('.noUi-connect') as html.Element;
+    final connect = upperSlider.querySelector('.noUi-connect') as web.Element;
     final style = connect.getAttribute('style') ?? '';
 
     expect(style, contains('left: 30.0000%'));
@@ -146,11 +155,13 @@ void main() {
       () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final sliders = fixture.rootElement.queryAll('li-slider');
+    final sliders =
+        fixture.rootElement.querySelectorAll('li-slider').toElementList();
     final customPipsSlider = sliders[3];
     final labels = customPipsSlider
-        .queryAll('.noUi-value')
-        .map((element) => element.text.trim())
+        .querySelectorAll('.noUi-value')
+        .toElementList()
+        .map((element) => (element.textContent ?? '').trim())
         .toList();
 
     expect(labels, orderedEquals(<String>['Start', 'Alpha', 'Beta', 'Live']));
@@ -162,21 +173,21 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final slider = fixture.rootElement.querySelector('li-slider')!;
-    final handle = slider.querySelector('.noUi-handle') as html.Element;
+    final handle = slider.querySelector('.noUi-handle') as web.Element;
 
     await fixture.update((_) {
       _dispatchMouse(handle, 'mousedown');
     });
     await _settle(fixture);
 
-    expect(handle.classes.contains('li-slider__handle--active'), isTrue);
+    expect(handle.classList.contains('li-slider__handle--active'), isTrue);
 
     await fixture.update((_) {
-      _dispatchMouse(html.document.body!, 'mouseup');
+      _dispatchMouse(web.document.body!, 'mouseup');
     });
     await _settle(fixture);
 
-    expect(handle.classes.contains('li-slider__handle--active'), isFalse);
+    expect(handle.classList.contains('li-slider__handle--active'), isFalse);
   });
 }
 
@@ -187,12 +198,12 @@ Future<void> _settle(
   await fixture.update((_) {});
 }
 
-void _dispatchKey(html.Element element, String key) {
-  final event = html.liKeyboardEvent('keydown', key: key);
+void _dispatchKey(web.Element element, String key) {
+  final event = bubblingKeyboardEvent('keydown', key: key);
   element.dispatchEvent(event);
 }
 
-void _dispatchMouse(html.Element element, String type) {
-  final event = html.liMouseEvent(type, clientX: 120, clientY: 20);
+void _dispatchMouse(web.Element element, String type) {
+  final event = bubblingMouseEvent(type, clientX: 120, clientY: 20);
   element.dispatchEvent(event);
 }

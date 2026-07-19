@@ -6,12 +6,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_wizard_component_test.template.dart' as ng;
 
@@ -93,7 +96,8 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    expect(_currentStepItem(fixture.rootElement)?.text, contains('Account'));
+    expect(_currentStepItem(fixture.rootElement)?.textContent,
+        contains('Account'));
     expect(_currentBody(fixture.rootElement)?.querySelector('#step-account'),
         isNotNull);
 
@@ -104,7 +108,7 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Next')!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -112,14 +116,17 @@ void main() {
     expect(host.stepChangeCount, 1);
     expect(host.lastPreviousIndex, 0);
     expect(host.lastCurrentIndex, 1);
-    expect(fixture.rootElement.queryAll('.steps li.done'), hasLength(1));
+    expect(
+        fixture.rootElement.querySelectorAll('.steps li.done').toElementList(),
+        hasLength(1));
     expect(_pseudoContent(fixture.rootElement, '.steps li.done .number'),
         contains('\\ea30'));
-    expect(_currentStepItem(fixture.rootElement)?.text, contains('Profile'));
+    expect(_currentStepItem(fixture.rootElement)?.textContent,
+        contains('Profile'));
 
     await fixture.update((_) {
       _findStepLinkByText(fixture.rootElement, 'Account')!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -127,7 +134,8 @@ void main() {
     expect(host.stepChangeCount, 2);
     expect(host.lastPreviousIndex, 1);
     expect(host.lastCurrentIndex, 0);
-    expect(_currentStepItem(fixture.rootElement)?.text, contains('Account'));
+    expect(_currentStepItem(fixture.rootElement)?.textContent,
+        contains('Account'));
   });
 
   test('blocks forward navigation while validation rejects the change',
@@ -138,7 +146,7 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Next')!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -164,13 +172,13 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Next')!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Next')!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -179,7 +187,7 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Finish')!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -192,7 +200,7 @@ void main() {
 
     await fixture.update((_) {
       _findButtonByText(fixture.rootElement, 'Finish')!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -201,39 +209,39 @@ void main() {
   });
 }
 
-html.Element? _currentStepItem(html.Element root) {
+web.Element? _currentStepItem(web.Element root) {
   return root.querySelector('.steps li.current');
 }
 
-html.Element? _currentBody(html.Element root) {
+web.Element? _currentBody(web.Element root) {
   return root.querySelector('.content .body.current');
 }
 
-html.ButtonElement? _findButtonByText(html.Element root, String text) {
-  for (final element in root.queryAll('button')) {
-    if ((element.text).trim() == text) {
-      return element as html.ButtonElement;
+web.HTMLButtonElement? _findButtonByText(web.Element root, String text) {
+  for (final element in root.querySelectorAll('button').toElementList()) {
+    if (((element.textContent ?? '')).trim() == text) {
+      return element as web.HTMLButtonElement;
     }
   }
   return null;
 }
 
-html.AnchorElement? _findStepLinkByText(html.Element root, String text) {
-  for (final element in root.queryAll('.steps a')) {
-    if ((element.text).contains(text)) {
-      return element as html.AnchorElement;
+web.HTMLAnchorElement? _findStepLinkByText(web.Element root, String text) {
+  for (final element in root.querySelectorAll('.steps a').toElementList()) {
+    if (((element.textContent ?? '')).contains(text)) {
+      return element as web.HTMLAnchorElement;
     }
   }
   return null;
 }
 
-String _pseudoContent(html.Element root, String selector) {
+String _pseudoContent(web.Element root, String selector) {
   final element = root.querySelector(selector);
   if (element == null) {
     return '';
   }
 
-  final content = element.getComputedStyle('::after').content;
+  final content = web.window.getComputedStyle(element, '::after').content;
   if (content.length >= 2 && content.startsWith('"') && content.endsWith('"')) {
     final unquoted = content.substring(1, content.length - 1);
     if (unquoted.runes.length == 1) {

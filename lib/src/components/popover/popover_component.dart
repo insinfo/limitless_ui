@@ -1,10 +1,14 @@
-import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'dart:js_interop';
+import 'dart:math' as math;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
 
+import '../../web_support/dom_tokens.dart';
+import '../../web_support/html_sinks.dart';
+import '../../web_support/js_type_guards.dart';
 import 'popover_config.dart';
 
 /// Public directives used by the popover component.
@@ -22,12 +26,12 @@ class _LiPopoverFloatingOverlay {
 
   final PopperController _controller;
   final PopperPortal? portal;
-  final html.Element floatingElement;
+  final web.Element floatingElement;
 
   factory _LiPopoverFloatingOverlay.attach({
-    required html.Element referenceElement,
-    required html.Element floatingElement,
-    required html.Element localContainer,
+    required web.Element referenceElement,
+    required web.Element floatingElement,
+    required web.Element localContainer,
     required bool appendToBody,
     PopperOptions popperOptions = const PopperOptions(),
     PopperPortalOptions portalOptions = const PopperPortalOptions(),
@@ -40,8 +44,8 @@ class _LiPopoverFloatingOverlay {
         options: portalOptions,
       );
     } else {
-      localContainer.append(floatingElement);
-      floatingElement.style
+      localContainer.appendChild(floatingElement);
+      (floatingElement as web.HTMLElement).style
         ..position = 'fixed'
         ..pointerEvents = 'auto'
         ..zIndex = portalOptions.floatingZIndex;
@@ -112,7 +116,7 @@ class LiPopoverComponent implements OnDestroy {
     'manual',
   };
 
-  final html.Element _hostElement;
+  final web.Element _hostElement;
   final ViewContainerRef _viewContainerRef;
   final LiPopoverConfig _config;
   final StreamController<void> _shownController =
@@ -121,13 +125,13 @@ class LiPopoverComponent implements OnDestroy {
       StreamController<void>.broadcast();
 
   _LiPopoverFloatingOverlay? _overlay;
-  html.DivElement? _popoverElement;
-  html.HeadingElement? _popoverHeaderElement;
-  html.DivElement? _popoverBodyElement;
-  StreamSubscription<html.MouseEvent>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
-  StreamSubscription<html.MouseEvent>? _popoverMouseEnterSubscription;
-  StreamSubscription<html.MouseEvent>? _popoverMouseLeaveSubscription;
+  web.HTMLDivElement? _popoverElement;
+  web.HTMLHeadingElement? _popoverHeaderElement;
+  web.HTMLDivElement? _popoverBodyElement;
+  StreamSubscription<web.MouseEvent>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.MouseEvent>? _popoverMouseEnterSubscription;
+  StreamSubscription<web.MouseEvent>? _popoverMouseLeaveSubscription;
   Timer? _showTimer;
   Timer? _hideTimer;
   Timer? _shownTimer;
@@ -163,9 +167,9 @@ class LiPopoverComponent implements OnDestroy {
   Object? _templateContext;
   bool _usesExplicitOpenContext = false;
   LiPopoverPopperOptions _popperOptions = defaultLiPopoverPopperOptions;
-  html.Element? _positionTargetElement;
+  web.Element? _positionTargetElement;
   String? _positionTargetSelector;
-  html.Rectangle<num>? _stableAnchorRect;
+  math.Rectangle<num>? _stableAnchorRect;
   late final String _popoverId = 'li-popover-${_nextId++}';
 
   @Input()
@@ -262,7 +266,7 @@ class LiPopoverComponent implements OnDestroy {
       final selector = value.trim();
       _positionTargetSelector = selector.isEmpty ? null : selector;
       _positionTargetElement = null;
-    } else if (html.liElementOrNull(value) case final element?) {
+    } else if (elementOrNull(value) case final element?) {
       _positionTargetElement = element;
       _positionTargetSelector = null;
     } else {
@@ -380,7 +384,7 @@ class LiPopoverComponent implements OnDestroy {
   bool get _closeOnOutsideClick =>
       _autoCloseMode == 'true' || _autoCloseMode == 'outside';
 
-  html.Element? get _defaultReferenceElement {
+  web.Element? get _defaultReferenceElement {
     final children = _hostElement.children;
     if (children.length != 0) {
       return children.item(0);
@@ -389,14 +393,14 @@ class LiPopoverComponent implements OnDestroy {
     return null;
   }
 
-  html.Element get _referenceElement {
+  web.Element get _referenceElement {
     if (_positionTargetElement != null) {
       return _positionTargetElement!;
     }
 
     final selector = _positionTargetSelector;
     if (selector != null) {
-      final target = html.document.querySelector(selector);
+      final target = web.document.querySelector(selector);
       if (target != null) {
         _positionTargetElement = target;
         return target;
@@ -456,7 +460,7 @@ class LiPopoverComponent implements OnDestroy {
   }
 
   @HostListener('focusin', ['\$event'])
-  void onFocusIn(html.Event event) {
+  void onFocusIn(web.Event event) {
     if (_isManual || !_supportsFocus) {
       return;
     }
@@ -470,14 +474,14 @@ class LiPopoverComponent implements OnDestroy {
   }
 
   @HostListener('focusout', ['\$event'])
-  void onFocusOut(html.FocusEvent event) {
+  void onFocusOut(web.FocusEvent event) {
     if (_isManual || !_supportsFocus) {
       return;
     }
 
     final relatedTarget = event.relatedTarget;
-    if ((relatedTarget?.isA<html.Element>() ?? false) &&
-        _hostElement.contains(relatedTarget as html.Node?)) {
+    if ((relatedTarget?.isA<web.Element>() ?? false) &&
+        _hostElement.contains(relatedTarget as web.Node?)) {
       return;
     }
 
@@ -486,7 +490,7 @@ class LiPopoverComponent implements OnDestroy {
   }
 
   @HostListener('click', ['\$event'])
-  void onClick(html.MouseEvent event) {
+  void onClick(web.MouseEvent event) {
     if (_isManual || !_supportsClick) {
       return;
     }
@@ -633,17 +637,17 @@ class LiPopoverComponent implements OnDestroy {
     _bindDocumentListeners();
 
     if (animation) {
-      popoverElement.classes.remove('show');
+      popoverElement.classList.remove('show');
       Future<void>.delayed(Duration.zero, () {
         if (_visible && _popoverElement != null) {
-          _popoverElement!.classes.add('show');
+          _popoverElement!.classList.add('show');
         }
       });
       _shownTimer = Timer(_animationDuration, _emitShownIfVisible);
       return;
     }
 
-    popoverElement.classes.add('show');
+    popoverElement.classList.add('show');
     _shownController.add(null);
   }
 
@@ -664,7 +668,7 @@ class LiPopoverComponent implements OnDestroy {
     }
 
     if (animation && withAnimation) {
-      popoverElement.classes.remove('show');
+      popoverElement.classList.remove('show');
       _shownTimer = Timer(_animationDuration, _destroyPopover);
       return;
     }
@@ -684,44 +688,46 @@ class LiPopoverComponent implements OnDestroy {
       return;
     }
 
-    final popoverElement = html.createDivElement()
-      ..id = _popoverId
-      ..classes.addAll(const <String>['popover', 'bs-popover-auto'])
+    final popoverElement = addClassTokens(
+      web.HTMLDivElement()..id = _popoverId,
+      const <String>['popover', 'bs-popover-auto'],
+    )
       ..setAttribute('role', 'tooltip')
       ..setAttribute('data-label', 'li_popover_panel')
       ..setAttribute('data-open', 'true')
       ..style.pointerEvents = 'auto';
 
     if (animation) {
-      popoverElement.classes.add('fade');
+      popoverElement.classList.add('fade');
     }
 
     final popoverClassNames = _popoverClassNames;
     if (popoverClassNames.isNotEmpty) {
-      popoverElement.classes.addAll(popoverClassNames);
+      addClassTokens(popoverElement, popoverClassNames);
     }
 
-    final popoverArrowElement = html.createDivElement()
-      ..classes.add('popover-arrow')
+    final popoverArrowElement = web.HTMLDivElement()
+      ..classList.add('popover-arrow')
       ..setAttribute('data-label', 'li_popover_arrow');
     if (popoverClassNames.isNotEmpty) {
-      popoverArrowElement.classes.addAll(
+      addClassTokens(
+        popoverArrowElement,
         popoverClassNames.where((className) => className.startsWith('border-')),
       );
     }
 
-    final popoverHeaderElement = html.createHeadingElement(3)
-      ..classes.add('popover-header')
+    final popoverHeaderElement = web.HTMLHeadingElement.h3()
+      ..classList.add('popover-header')
       ..setAttribute('data-label', 'li_popover_header');
-    final popoverBodyElement = html.createDivElement()
-      ..classes.add('popover-body')
+    final popoverBodyElement = web.HTMLDivElement()
+      ..classList.add('popover-body')
       ..setAttribute('data-label', 'li_popover_body')
       ..style.whiteSpace = 'pre-line';
 
     popoverElement
-      ..append(popoverArrowElement)
-      ..append(popoverHeaderElement)
-      ..append(popoverBodyElement);
+      ..appendChild(popoverArrowElement)
+      ..appendChild(popoverHeaderElement)
+      ..appendChild(popoverBodyElement);
 
     _popoverElement = popoverElement;
     _popoverHeaderElement = popoverHeaderElement;
@@ -746,7 +752,7 @@ class LiPopoverComponent implements OnDestroy {
     );
   }
 
-  PopperOptions _buildPopperOptions(html.Element arrowElement) {
+  PopperOptions _buildPopperOptions(web.Element arrowElement) {
     final baseOptions = PopperOptions(
       placement: _resolvedPlacement,
       fallbackPlacements: _fallbackPlacements,
@@ -762,10 +768,11 @@ class LiPopoverComponent implements OnDestroy {
             layout.middlewareData['arrow'] ?? const <String, dynamic>{};
         final placement = layout.placement.toLowerCase();
 
-        arrowElement.style.position = 'absolute';
+        final arrowStyle = (arrowElement as web.HTMLElement).style;
+        arrowStyle.position = 'absolute';
 
         if (placement.startsWith('top') || placement.startsWith('bottom')) {
-          arrowElement.style
+          arrowStyle
             ..left = '${((arrowData['x'] as num?) ?? 0).toStringAsFixed(2)}px'
             ..right = ''
             ..top = ''
@@ -773,7 +780,7 @@ class LiPopoverComponent implements OnDestroy {
           return;
         }
 
-        arrowElement.style
+        arrowStyle
           ..top = '${((arrowData['y'] as num?) ?? 0).toStringAsFixed(2)}px'
           ..bottom = ''
           ..left = ''
@@ -786,7 +793,7 @@ class LiPopoverComponent implements OnDestroy {
         }
         final r = reference.getBoundingClientRect();
         return _stableAnchorRect =
-            html.Rectangle<num>(r.left, r.top, r.width, r.height);
+            math.Rectangle<num>(r.left, r.top, r.width, r.height);
       },
       onLayout: _handleLayout,
     );
@@ -809,7 +816,7 @@ class LiPopoverComponent implements OnDestroy {
       return;
     }
 
-    final showClassPresent = popoverElement.classes.contains('show');
+    final showClassPresent = popoverElement.classList.contains('show');
     _overlay?.stopAutoUpdate();
     _overlay?.dispose();
     _overlay = null;
@@ -823,7 +830,7 @@ class LiPopoverComponent implements OnDestroy {
     _popoverBodyElement = null;
     _ensurePopover();
     if (showClassPresent) {
-      _popoverElement?.classes.add('show');
+      _popoverElement?.classList.add('show');
     }
     _overlay?.startAutoUpdate();
     _overlay?.update();
@@ -895,7 +902,7 @@ class LiPopoverComponent implements OnDestroy {
     }
 
     popoverElement.setAttribute('data-popper-placement', layout.placement);
-    popoverElement.classes
+    popoverElement.classList
       ..remove('bs-popover-top')
       ..remove('bs-popover-bottom')
       ..remove('bs-popover-start')
@@ -935,16 +942,18 @@ class LiPopoverComponent implements OnDestroy {
     popoverHeaderElement.className = 'popover-header';
     if (hasCustomTheme) {
       if (backgroundClassNames.isNotEmpty) {
-        popoverHeaderElement.classes.addAll(backgroundClassNames);
+        addClassTokens(popoverHeaderElement, backgroundClassNames);
       }
       if (textClassNames.isNotEmpty) {
-        popoverHeaderElement.classes.addAll(textClassNames);
+        addClassTokens(popoverHeaderElement, textClassNames);
         if (textClassNames.contains('text-white')) {
-          popoverHeaderElement.classes.addAll(
+          addClassTokens(
+            popoverHeaderElement,
             const <String>['border-white', 'border-opacity-25'],
           );
         } else if (textClassNames.contains('text-black')) {
-          popoverHeaderElement.classes.addAll(
+          addClassTokens(
+            popoverHeaderElement,
             const <String>['border-black', 'border-opacity-10'],
           );
         }
@@ -952,7 +961,7 @@ class LiPopoverComponent implements OnDestroy {
     }
 
     if (hasTitle) {
-      if (popoverHeaderElement.parent == null) {
+      if (popoverHeaderElement.parentElement == null) {
         popoverElement.insertBefore(popoverHeaderElement, popoverBodyElement);
       }
 
@@ -964,22 +973,18 @@ class LiPopoverComponent implements OnDestroy {
           assignView: (view) => _titleView = view,
         );
       } else if (_allowHtml) {
-        // ignore: unsafe_html
-        popoverHeaderElement.setInnerHtml(
-          _title,
-          treeSanitizer: html.NodeTreeSanitizer.trusted,
-        );
+        setTrustedHtml(popoverHeaderElement, _title);
       } else {
-        popoverHeaderElement.text = _title;
+        popoverHeaderElement.textContent = _title;
       }
     } else {
-      popoverHeaderElement.nodes.clear();
+      popoverHeaderElement.textContent = '';
       popoverHeaderElement.remove();
     }
 
     popoverBodyElement.className = 'popover-body';
     if (hasCustomTheme && textClassNames.isNotEmpty) {
-      popoverBodyElement.classes.addAll(textClassNames);
+      addClassTokens(popoverBodyElement, textClassNames);
     }
 
     if (_bodyTemplate != null) {
@@ -993,19 +998,15 @@ class LiPopoverComponent implements OnDestroy {
     }
 
     if (_allowHtml) {
-      // ignore: unsafe_html
-      popoverBodyElement.setInnerHtml(
-        _body,
-        treeSanitizer: html.NodeTreeSanitizer.trusted,
-      );
+      setTrustedHtml(popoverBodyElement, _body);
       return;
     }
 
-    popoverBodyElement.text = _body;
+    popoverBodyElement.textContent = _body;
   }
 
   void _syncTemplateContent(
-    html.Element container, {
+    web.Element container, {
     required TemplateRef? template,
     required EmbeddedViewRef? currentView,
     required void Function(EmbeddedViewRef? view) assignView,
@@ -1016,14 +1017,13 @@ class LiPopoverComponent implements OnDestroy {
       assignView: assignView,
     );
     if (contentView == null) {
-      container.nodes.clear();
-      container.text = '';
+      container.textContent = '';
       return;
     }
 
-    container.nodes.clear();
+    container.textContent = '';
     for (final node in contentView.rootNodes) {
-      container.append(node);
+      container.appendChild(node);
     }
     contentView.markForCheck();
   }
@@ -1071,10 +1071,10 @@ class LiPopoverComponent implements OnDestroy {
     contentView.markForCheck();
   }
 
-  html.Element _resolveOverlayContainer() {
-    return _referenceElement.parent ??
-        _hostElement.parent ??
-        html.document.body!;
+  web.Element _resolveOverlayContainer() {
+    return _referenceElement.parentElement ??
+        _hostElement.parentElement ??
+        web.document.body!;
   }
 
   int _resolveOverlayZIndex() {
@@ -1092,17 +1092,19 @@ class LiPopoverComponent implements OnDestroy {
     return _defaultOverlayZIndex;
   }
 
-  html.Element? _resolveOwningModalElement() {
+  web.Element? _resolveOwningModalElement() {
     return _referenceElement.closest('.modal') ??
         _hostElement.closest('.modal');
   }
 
   int? _highestOpenModalZIndex() {
-    final openModals = html.document.queryAll('.modal[data-status="open"]');
     int? highestZIndex;
 
-    for (final modal in openModals) {
-      final zIndex = _parseElementZIndex(modal);
+    final openModals =
+        web.document.querySelectorAll('.modal[data-status="open"]');
+    for (var index = 0; index < openModals.length; index++) {
+      final modal = openModals.item(index);
+      final zIndex = _parseElementZIndex(elementOrNull(modal));
       if (zIndex == null) {
         continue;
       }
@@ -1114,46 +1116,54 @@ class LiPopoverComponent implements OnDestroy {
     return highestZIndex;
   }
 
-  int? _parseElementZIndex(html.Element? element) {
+  int? _parseElementZIndex(web.Element? element) {
     if (element == null) {
       return null;
     }
 
-    final inlineZIndex = int.tryParse(element.style.zIndex.trim());
+    final inlineZIndex =
+        int.tryParse((element as web.HTMLElement).style.zIndex.trim());
     if (inlineZIndex != null) {
       return inlineZIndex;
     }
 
-    final computedZIndex =
-        int.tryParse(element.getComputedStyle().zIndex.trim());
+    final computedZIndex = int.tryParse(
+      web.window.getComputedStyle(element).zIndex.trim(),
+    );
     return computedZIndex;
   }
 
   void _bindDocumentListeners() {
     if (_closeOnEscape) {
-      _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
-        if (event.key == 'Escape' || event.keyCode == 27) {
+      _documentKeySubscription ??=
+          web.EventStreamProvider<web.KeyboardEvent>('keydown')
+              .forTarget(web.document)
+              .listen((event) {
+        if (event.key == 'Escape') {
           close(false);
         }
       });
     }
 
     if (_closeOnInsideClick || _closeOnOutsideClick) {
-      _documentClickSubscription ??= html.document.onClick.listen((event) {
+      _documentClickSubscription ??=
+          web.EventStreamProvider<web.MouseEvent>('click')
+              .forTarget(web.document)
+              .listen((event) {
         if (!_visible) {
           return;
         }
 
         final target = event.target;
-        if (!(target?.isA<html.Element>() ?? false)) {
+        if (!(target?.isA<web.Element>() ?? false)) {
           return;
         }
 
         final popoverElement = _popoverElement;
         final clickedInsidePopover = popoverElement != null &&
-            popoverElement.contains(target as html.Node?);
+            popoverElement.contains(target as web.Node?);
         final clickedOnReference =
-            _referenceElement.contains(target as html.Node?);
+            _referenceElement.contains(target as web.Node?);
         final clickedOnHost = _hostElement.contains(target);
 
         if (clickedInsidePopover) {
@@ -1286,8 +1296,7 @@ class LiPopoverComponent implements OnDestroy {
   exportAs: 'liPopover',
 )
 class LiPopoverDirective implements OnDestroy {
-  LiPopoverDirective(
-      html.Element hostElement, ViewContainerRef viewContainerRef,
+  LiPopoverDirective(web.Element hostElement, ViewContainerRef viewContainerRef,
       [@Optional() LiPopoverConfig? config])
       : _popover = LiPopoverComponent(hostElement, viewContainerRef, config);
 
@@ -1398,17 +1407,17 @@ class LiPopoverDirective implements OnDestroy {
   }
 
   @HostListener('focusin', ['\$event'])
-  void onFocusIn(html.Event event) {
+  void onFocusIn(web.Event event) {
     _popover.onFocusIn(event);
   }
 
   @HostListener('focusout', ['\$event'])
-  void onFocusOut(html.FocusEvent event) {
+  void onFocusOut(web.FocusEvent event) {
     _popover.onFocusOut(event);
   }
 
   @HostListener('click', ['\$event'])
-  void onClick(html.MouseEvent event) {
+  void onClick(web.MouseEvent event) {
     _popover.onClick(event);
   }
 

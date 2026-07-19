@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -10,7 +10,7 @@ import 'scrollspy_directive.dart';
 class LiScrollSpyFragmentDirective implements OnInit, OnDestroy {
   LiScrollSpyFragmentDirective(this._element, this._scrollSpy);
 
-  final html.Element _element;
+  final web.Element _element;
   final LiScrollSpyDirective _scrollSpy;
 
   String _id = '';

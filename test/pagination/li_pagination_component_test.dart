@@ -5,12 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_pagination_component_test.template.dart' as ng;
 
@@ -86,8 +89,8 @@ void main() {
     final wrapper = fixture.rootElement.querySelector('#basic-wrapper');
 
     expect(wrapper, isNotNull);
-    expect(wrapper!.text, contains('...'));
-    expect(wrapper.text, contains('10'));
+    expect(wrapper!.textContent, contains('...'));
+    expect(wrapper.textContent, contains('10'));
     final pagination = wrapper.querySelector('[data-label="li_pagination"]');
     expect(pagination, isNotNull);
     expect(pagination!.getAttribute('data-value'), '1');
@@ -106,8 +109,7 @@ void main() {
     expect(fourthPageLink, isNotNull);
 
     await fixture.update((_) {
-      fourthPageLink!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      fourthPageLink!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -115,7 +117,7 @@ void main() {
     expect(host.changeCount, 1);
     final activeItem = wrapper.querySelector('.page-item.active');
     expect(activeItem, isNotNull);
-    expect(activeItem!.text, contains('4'));
+    expect(activeItem!.textContent, contains('4'));
     expect(
       wrapper
           .querySelector('[data-label="li_pagination"]')!
@@ -133,8 +135,8 @@ void main() {
     expect(wrapper, isNotNull);
     final customPage = wrapper!.querySelector('.custom-page[data-page="2"]');
     expect(customPage, isNotNull);
-    expect(customPage!.text, contains('Pg 2'));
-    expect(customPage.classes.contains('fw-bold'), isTrue);
+    expect(customPage!.textContent, contains('Pg 2'));
+    expect(customPage.classList.contains('fw-bold'), isTrue);
   });
 
   test('does not emit changes while disabled', () async {
@@ -147,7 +149,7 @@ void main() {
     expect(thirdPageLink, isNotNull);
 
     await fixture.update((_) {
-      thirdPageLink!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      thirdPageLink!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -160,10 +162,10 @@ Future<void> _settle(NgTestFixture<PaginationTestHostComponent> fixture) async {
   await fixture.update((_) {});
 }
 
-html.AnchorElement? _findLinkByText(html.Element root, String text) {
-  for (final element in root.queryAll('a.page-link')) {
-    if ((element.text).trim() == text) {
-      return element as html.AnchorElement;
+web.HTMLAnchorElement? _findLinkByText(web.Element root, String text) {
+  for (final element in root.querySelectorAll('a.page-link').toElementList()) {
+    if (((element.textContent ?? '')).trim() == text) {
+      return element as web.HTMLAnchorElement;
     }
   }
   return null;

@@ -6,12 +6,14 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_offcanvas_component_test.template.dart' as ng;
 
@@ -160,35 +162,35 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    expect(html.document.body!.querySelector('#lazy-body'), isNull);
+    expect(web.document.body!.querySelector('#lazy-body'), isNull);
 
     await fixture.update((_) {
       _clickById('open-basic');
     });
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('#lazy-body'), isNotNull);
+    expect(web.document.body!.querySelector('#lazy-body'), isNotNull);
     expect(host.basicOffcanvas!.isOpen, isTrue);
-    expect(html.document.body!.classes.contains('offcanvas-open'), isTrue);
+    expect(web.document.body!.classList.contains('offcanvas-open'), isTrue);
 
     await fixture.update((_) {
       _clickById('close-basic');
     });
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('#lazy-body'), isNull);
+    expect(web.document.body!.querySelector('#lazy-body'), isNull);
     expect(host.basicOffcanvas!.isOpen, isFalse);
     expect(host.closeCount, 1);
-    expect(html.document.body!.classes.contains('offcanvas-open'), isFalse);
+    expect(web.document.body!.classList.contains('offcanvas-open'), isFalse);
   });
 
   test('startOpen opens immediately and applies autofocus', () async {
     final fixture = await startOpenTestBed.create();
     await _settle(fixture);
 
-    final startFocus = html.document.body!.querySelector('#start-focus');
+    final startFocus = web.document.body!.querySelector('#start-focus');
     expect(startFocus, isNotNull);
-    expect(html.document.activeElement, equals(startFocus));
+    expect(web.document.activeElement, equals(startFocus));
   });
 
   test('supports custom header and projected footer', () async {
@@ -200,15 +202,15 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('#custom-body'), isNotNull);
+    expect(web.document.body!.querySelector('#custom-body'), isNotNull);
     expect(
-      html.document.body!.querySelector('#custom-footer-button'),
+      web.document.body!.querySelector('#custom-footer-button'),
       isNotNull,
     );
     expect(
-      html.document.body!
+      web.document.body!
           .querySelector('.offcanvas-header .offcanvas-title')
-          ?.text,
+          ?.textContent,
       contains('Custom header'),
     );
   });
@@ -219,13 +221,13 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    expect(html.document.body!.querySelector('#service-body'), isNull);
+    expect(web.document.body!.querySelector('#service-body'), isNull);
 
     final ref = host.offcanvasService.open('service-panel');
     await _settle(fixture);
 
     expect(ref.isOpen, isTrue);
-    expect(html.document.body!.querySelector('#service-body'), isNotNull);
+    expect(web.document.body!.querySelector('#service-body'), isNotNull);
     expect(host.shownCount, 1);
 
     ref.close();
@@ -270,22 +272,23 @@ void main() {
     await _settle(fixture);
 
     final defaultContent =
-        html.document.body!.querySelector('#default-body-content');
+        web.document.body!.querySelector('#default-body-content');
     final customContent =
-        html.document.body!.querySelector('#custom-body-content');
+        web.document.body!.querySelector('#custom-body-content');
 
     expect(defaultContent, isNotNull);
     expect(customContent, isNotNull);
 
-    final defaultBodyWrapper = defaultContent!.parent;
-    final customBodyWrapper = customContent!.parent;
+    final defaultBodyWrapper = defaultContent!.parentElement;
+    final customBodyWrapper = customContent!.parentElement;
 
     expect(defaultBodyWrapper, isNotNull);
     expect(customBodyWrapper, isNotNull);
-    expect(defaultBodyWrapper!.classes.contains('offcanvas-body'), isTrue);
-    expect(customBodyWrapper!.classes.contains('offcanvas-body'), isFalse);
-    expect(customBodyWrapper.classes.contains('li-offcanvas-contents'), isTrue);
-    expect(customBodyWrapper.classes.contains('custom-body-shell'), isTrue);
+    expect(defaultBodyWrapper!.classList.contains('offcanvas-body'), isTrue);
+    expect(customBodyWrapper!.classList.contains('offcanvas-body'), isFalse);
+    expect(
+        customBodyWrapper.classList.contains('li-offcanvas-contents'), isTrue);
+    expect(customBodyWrapper.classList.contains('custom-body-shell'), isTrue);
   });
 
   test('renders offcanvas panel as a flex column shell', () async {
@@ -297,19 +300,19 @@ void main() {
     });
     await _settle(fixture);
 
-    final panel = html.document.body!.querySelector('.offcanvas.show');
+    final panel = web.document.body!.querySelector('.offcanvas.show');
     expect(panel, isNotNull);
 
-    final computedStyle = panel!.getComputedStyle();
+    final computedStyle = web.window.getComputedStyle(panel!);
     expect(computedStyle.display, 'flex');
     expect(computedStyle.flexDirection, 'column');
   });
 }
 
 void _clickById(String id) {
-  final element = html.document.body!.querySelector('#$id');
+  final element = web.document.body!.querySelector('#$id');
   expect(element, isNotNull);
-  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+  element!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 Future<void> _settle(NgTestFixture<dynamic> fixture) async {

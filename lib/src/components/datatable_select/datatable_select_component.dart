@@ -1,6 +1,8 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngx_dart/angular.dart';
@@ -147,7 +149,7 @@ class LiDatatableSelectTriggerContext {
     _toggle?.call();
   }
 
-  void clear([html.Event? event]) {
+  void clear([web.Event? event]) {
     event?.preventDefault();
     event?.stopPropagation();
     final component = _component;
@@ -573,7 +575,7 @@ class LiDatatableSelectComponent
   LiDataTableComponent? datatable;
 
   @ViewChild('triggerButton')
-  html.Element? triggerButtonElement;
+  web.HTMLElement? triggerButtonElement;
 
   @ContentChild(LiDatatableSelectTriggerDirective)
   LiDatatableSelectTriggerDirective? triggerTemplate;
@@ -816,12 +818,12 @@ class LiDatatableSelectComponent
     openModal();
   }
 
-  void handleTriggerKeydown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleTriggerKeydown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    if ((event as html.KeyboardEvent).code == 'Enter' ||
+    if ((event as web.KeyboardEvent).code == 'Enter' ||
         (event).code == 'NumpadEnter' ||
         (event).code == 'Space' ||
         (event).key == ' ') {
@@ -967,7 +969,7 @@ class LiDatatableSelectComponent
 
   /// Handles the clear icon click, preventing the event from reaching the
   /// trigger button (which would re-open the modal).
-  void onClearClick(html.MouseEvent event) {
+  void onClearClick(web.MouseEvent event) {
     event.stopPropagation();
     clear(emitUserValueChange: true);
   }
@@ -1337,7 +1339,7 @@ class LiDatatableSelectComponent
     }
 
     Future<void>.microtask(() {
-      html.window.liRequestAnimationFrame((_) {
+      requestAnimationFrameInZone((_) {
         _syncDatatableSelection();
       });
     });

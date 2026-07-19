@@ -1,5 +1,5 @@
 // ignore_for_file: unnecessary_import, implementation_imports
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_forms/src/directives/control_value_accessor.dart'
@@ -48,13 +48,13 @@ const selectValueAccessorCustom = ExistingProvider.forToken(
 class LiSelectControlValueAccessor extends Object
     with TouchHandler, ChangeHandler<dynamic>
     implements ControlValueAccessor<Object?> {
-  final SelectElement _element;
+  final web.HTMLSelectElement _element;
   Object? value;
   final Map<String, Object?> _optionMap = <String, Object?>{};
   num _idCounter = 0;
 
-  LiSelectControlValueAccessor(HTMLElement element)
-      : _element = element as SelectElement;
+  LiSelectControlValueAccessor(web.HTMLElement element)
+      : _element = element as web.HTMLSelectElement;
 
   @HostListener('change')
   void handleChange() {
@@ -127,12 +127,12 @@ class LiSelectControlValueAccessor extends Object
   selector: 'option',
 )
 class LiNgSelectOption implements OnDestroy {
-  final OptionElement _element;
+  final web.HTMLOptionElement _element;
   final LiSelectControlValueAccessor? _select;
   late final String id;
 
-  LiNgSelectOption(HTMLElement element, @Optional() @Host() this._select)
-      : _element = element as OptionElement {
+  LiNgSelectOption(web.HTMLElement element, @Optional() @Host() this._select)
+      : _element = element as web.HTMLOptionElement {
     if (_select != null) id = _select._registerOption();
   }
 

@@ -5,12 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_input_component_test.template.dart' as ng;
 
@@ -227,54 +230,54 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input =
-        fixture.rootElement.querySelector('input#name-input') as dynamic;
+    final input = fixture.rootElement.querySelector('input#name-input')
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       input.value = 'Maria';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.name, 'Maria');
-    expect(fixture.rootElement.text, contains('Required field'));
+    expect(fixture.rootElement.textContent, contains('Required field'));
   });
 
   test('applies and clears required validation classes after blur', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
-    final input =
-        fixture.rootElement.querySelector('input#name-input') as dynamic;
+    final input = fixture.rootElement.querySelector('input#name-input')
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(input.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('Name is required'));
+    expect(input.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent, contains('Name is required'));
 
     await fixture.update((_) {
       input.value = 'Joao';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(input.classes.contains('is-invalid'), isFalse);
-    expect(fixture.rootElement.text, contains('Looks good'));
+    expect(input.classList.contains('is-invalid'), isFalse);
+    expect(fixture.rootElement.textContent, contains('Looks good'));
   });
 
   test('applies the declarative mask while updating ngModel', () async {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input =
-        fixture.rootElement.querySelector('input#cpf-input') as dynamic;
+    final input = fixture.rootElement.querySelector('input#cpf-input')
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       input.value = '12345678901';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
@@ -286,12 +289,12 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input =
-        fixture.rootElement.querySelector('input#protocol-input') as dynamic;
+    final input = fixture.rootElement.querySelector('input#protocol-input')
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       input.value = '123456';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
@@ -303,27 +306,27 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final input = fixture.rootElement.querySelector('input#protocol-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
       input.value = '123';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(input.classes.contains('is-invalid'), isTrue);
-    expect(
-        fixture.rootElement.text, contains('Protocol must contain 6 digits'));
+    expect(input.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent,
+        contains('Protocol must contain 6 digits'));
 
     await fixture.update((_) {
       input.value = '123456';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(input.classes.contains('is-invalid'), isFalse);
+    expect(input.classList.contains('is-invalid'), isFalse);
   });
 
   test('applies declarative liType and liMessages validation rules', () async {
@@ -331,26 +334,27 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement
-        .querySelector('input#validation-cpf-input') as html.InputElement;
+        .querySelector('input#validation-cpf-input') as web.HTMLInputElement;
 
     await fixture.update((_) {
       input.value = '123';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.validatedCpf, '123');
-    expect(input.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('CPF invalido customizado'));
+    expect(input.classList.contains('is-invalid'), isTrue);
+    expect(
+        fixture.rootElement.textContent, contains('CPF invalido customizado'));
 
     await fixture.update((_) {
       input.value = '52998224725';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.validatedCpf, '529.982.247-25');
-    expect(input.classes.contains('is-invalid'), isFalse);
+    expect(input.classList.contains('is-invalid'), isFalse);
   });
 
   test(
@@ -361,17 +365,18 @@ void main() {
     final host = fixture.assertOnlyInstance;
     final input =
         fixture.rootElement.querySelector('input#default-validation-cpf-input')
-            as html.InputElement;
+            as web.HTMLInputElement;
 
     await fixture.update((_) {
       input.value = '123';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.defaultValidatedCpf, '123');
-    expect(input.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('CPF invalido customizado'));
+    expect(input.classList.contains('is-invalid'), isTrue);
+    expect(
+        fixture.rootElement.textContent, contains('CPF invalido customizado'));
   });
 
   test('renders numeric attributes for number inputs', () async {
@@ -379,7 +384,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement.querySelector('input#quantity-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     expect(input.getAttribute('min'), '1');
     expect(input.getAttribute('max'), '99');
@@ -387,7 +392,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = '12';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
@@ -398,9 +403,9 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final input = fixture.rootElement.querySelector('input#password-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
     final toggle = fixture.rootElement
-        .querySelector('.li-input__password-toggle') as html.ButtonElement;
+        .querySelector('.li-input__password-toggle') as web.HTMLButtonElement;
 
     expect(input.type, 'password');
     expect(toggle.getAttribute('aria-label'), 'Mostrar senha');
@@ -414,11 +419,11 @@ void main() {
     expect(input.getAttribute('enterkeyhint'), 'done');
     expect(input.getAttribute('title'), 'Password field');
     expect(input.getAttribute('minlength'), '8');
-    expect(
-        toggle.classes.contains('li-input__password-toggle--overlay'), isTrue);
+    expect(toggle.classList.contains('li-input__password-toggle--overlay'),
+        isTrue);
 
     await fixture.update((_) {
-      toggle.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -430,15 +435,15 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final input = fixture.rootElement.querySelector('input#password-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
     final hostElement = input.closest('li-input')!;
 
     await fixture.update((_) {
-      hostElement.focus();
+      (hostElement as web.HTMLElement).focus();
     });
     await _settle(fixture);
 
-    final activeElement = html.document.activeElement;
+    final activeElement = web.document.activeElement;
     expect(activeElement?.id, 'password-input');
   });
 
@@ -448,10 +453,11 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input = fixture.rootElement
-        .querySelector('input#signature-password-input') as html.InputElement;
-    final toggle = input.parent!.querySelector('.li-input__password-toggle')
-        as html.ButtonElement;
+    final input =
+        fixture.rootElement.querySelector('input#signature-password-input')
+            as web.HTMLInputElement;
+    final toggle = input.parentElement!
+        .querySelector('.li-input__password-toggle') as web.HTMLButtonElement;
 
     expect(input.type, 'text');
     expect(input.getAttribute('autocomplete'), 'new-password');
@@ -466,7 +472,7 @@ void main() {
 
     await fixture.update((_) {
       input.value = 'Token#2040';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
@@ -474,7 +480,7 @@ void main() {
     expect(input.value, '•' * host.signaturePassword.length);
 
     await fixture.update((_) {
-      toggle.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      toggle.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -487,26 +493,26 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement
-        .querySelector('input#deferred-password-input') as html.InputElement;
+        .querySelector('input#deferred-password-input') as web.HTMLInputElement;
 
     await fixture.update((_) {
       input.value = 'abc';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.deferredPassword, 'abc');
-    expect(input.classes.contains('is-invalid'), isFalse);
-    expect(fixture.rootElement.text,
+    expect(input.classList.contains('is-invalid'), isFalse);
+    expect(fixture.rootElement.textContent,
         isNot(contains('Use ao menos uma letra maiuscula.')));
 
     await fixture.update((_) {
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(input.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text,
+    expect(input.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent,
         contains('Use ao menos uma letra maiuscula.'));
   });
 
@@ -515,48 +521,49 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
-    final input = fixture.rootElement
-        .querySelector('input#validated-password-input') as html.InputElement;
+    final input =
+        fixture.rootElement.querySelector('input#validated-password-input')
+            as web.HTMLInputElement;
 
     await fixture.update((_) {
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
-    expect(input.classes.contains('is-invalid'), isTrue);
-    expect(fixture.rootElement.text, contains('Informe a senha.'));
+    expect(input.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent, contains('Informe a senha.'));
 
     await fixture.update((_) {
       input.value = 'abc123';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.validatedPassword, 'abc123');
-    expect(fixture.rootElement.text,
+    expect(fixture.rootElement.textContent,
         contains('Use ao menos uma letra maiuscula e um numero.'));
 
     await fixture.update((_) {
       input.value = 'Abc123';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.validatedPassword, 'Abc123');
-    expect(fixture.rootElement.text,
+    expect(fixture.rootElement.textContent,
         contains('Adicione um caractere ! na senha.'));
 
     await fixture.update((_) {
       input.value = 'Abc123!';
-      input.dispatchEvent(html.liEvent('input', canBubble: true));
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('input', bubbles: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.validatedPassword, 'Abc123!');
-    expect(input.classes.contains('is-invalid'), isFalse);
+    expect(input.classList.contains('is-invalid'), isFalse);
   });
 
   test('emits focus, click, blur, keydown and enter outputs', () async {
@@ -564,15 +571,15 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input = fixture.rootElement.querySelector('input#name-input')
-        as html.InputElement;
+        as web.HTMLInputElement;
 
     await fixture.update((_) {
-      input.dispatchEvent(html.liEvent('focus', canBubble: true));
-      input.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      input.dispatchEvent(bubblingEvent('focus', bubbles: true));
+      input.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
       input.dispatchEvent(createKeyEvent('keydown', key: 'A'));
       input.dispatchEvent(
           createKeyEvent('keydown', key: 'Enter', code: 'Enter'));
-      input.dispatchEvent(html.liEvent('blur', canBubble: true));
+      input.dispatchEvent(bubblingEvent('blur', bubbles: true));
     });
     await _settle(fixture);
 
@@ -589,9 +596,9 @@ Future<void> _settle(NgTestFixture<InputTestHostComponent> fixture) async {
   await fixture.update((_) {});
 }
 
-html.Event createKeyEvent(
+web.Event createKeyEvent(
   String type, {
   required String key,
   String? code,
 }) =>
-    html.liKeyboardEvent(type, key: key, code: code ?? key);
+    bubblingKeyboardEvent(type, key: key, code: code ?? key);

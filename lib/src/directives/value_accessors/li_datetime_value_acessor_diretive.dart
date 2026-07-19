@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/angular_forms.dart';
@@ -19,10 +19,10 @@ import 'package:ngx_forms/angular_forms.dart';
   ],
 )
 class LiDateTimeValueAccessor implements ControlValueAccessor {
-  final InputElement _element;
+  final web.HTMLInputElement _element;
 
-  LiDateTimeValueAccessor(HTMLElement element)
-      : _element = element as InputElement;
+  LiDateTimeValueAccessor(web.HTMLElement element)
+      : _element = element as web.HTMLInputElement;
 
   @HostListener('change')
   @HostListener('input')

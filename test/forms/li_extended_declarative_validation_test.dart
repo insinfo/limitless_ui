@@ -6,7 +6,8 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+import 'package:limitless_ui/src/web_support/blob_parts.dart';
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
@@ -89,7 +90,7 @@ class ExtendedDeclarativeValidationTestHostComponent {
   String approvalMode = '';
   DateTime? selectedDate;
   Duration? selectedTime;
-  List<html.File> files = <html.File>[];
+  List<web.File> files = <web.File>[];
   bool? lastValidationResult;
   String uploadPreviewMode = 'compact';
   bool uploadPreviewModal = true;
@@ -133,7 +134,7 @@ void main() {
     await _settle(fixture);
 
     final validateButton = fixture.rootElement
-        .querySelector('#validate-extended') as html.ButtonElement;
+        .querySelector('#validate-extended') as web.HTMLButtonElement;
 
     await fixture.update((_) {
       validateButton.click();
@@ -141,24 +142,27 @@ void main() {
     await _settle(fixture);
 
     final radioFieldset = fixture.rootElement
-        .querySelector('#approval-field fieldset') as html.Element;
-    final dateInput = fixture.rootElement
-        .querySelector('#date-field input.form-control') as html.InputElement;
-    final timeInput = fixture.rootElement
-        .querySelector('#time-field input.form-control') as html.InputElement;
+        .querySelector('#approval-field fieldset') as web.Element;
+    final dateInput =
+        fixture.rootElement.querySelector('#date-field input.form-control')
+            as web.HTMLInputElement;
+    final timeInput =
+        fixture.rootElement.querySelector('#time-field input.form-control')
+            as web.HTMLInputElement;
     final uploadDropzone = fixture.rootElement
             .querySelector('#upload-field .li-file-upload__dropzone')
-        as html.Element;
+        as web.Element;
 
-    expect(radioFieldset.classes.contains('is-invalid'), isTrue);
-    expect(dateInput.classes.contains('is-invalid'), isTrue);
-    expect(timeInput.classes.contains('is-invalid'), isTrue);
-    expect(uploadDropzone.classes.contains('is-invalid'), isTrue);
-    expect(
-        fixture.rootElement.text, contains('Selecione um modo de aprovacao.'));
-    expect(fixture.rootElement.text, contains('Selecione uma data.'));
-    expect(fixture.rootElement.text, contains('Selecione um horario.'));
-    expect(fixture.rootElement.text, contains('Adicione ao menos um anexo.'));
+    expect(radioFieldset.classList.contains('is-invalid'), isTrue);
+    expect(dateInput.classList.contains('is-invalid'), isTrue);
+    expect(timeInput.classList.contains('is-invalid'), isTrue);
+    expect(uploadDropzone.classList.contains('is-invalid'), isTrue);
+    expect(fixture.rootElement.textContent,
+        contains('Selecione um modo de aprovacao.'));
+    expect(fixture.rootElement.textContent, contains('Selecione uma data.'));
+    expect(fixture.rootElement.textContent, contains('Selecione um horario.'));
+    expect(fixture.rootElement.textContent,
+        contains('Adicione ao menos um anexo.'));
   });
 
   test('renders selected files inside the dashed upload area', () async {
@@ -173,8 +177,8 @@ void main() {
     );
 
     await fixture.update((host) {
-      host.files = <html.File>[
-        html.liFile(<Object>['demo'], 'comprovante.pdf',
+      host.files = <web.File>[
+        fileFromDartParts(<Object>['demo'], 'comprovante.pdf',
             type: 'application/pdf'),
       ];
     });
@@ -182,7 +186,7 @@ void main() {
 
     final uploadDropzone = fixture.rootElement
             .querySelector('#upload-field .li-file-upload__dropzone')
-        as html.Element;
+        as web.Element;
     final preview = uploadDropzone.querySelector('.li-file-upload__preview');
     final clearButton = fixture.rootElement.querySelector(
       '#upload-field .fileinput-remove-button',
@@ -192,8 +196,8 @@ void main() {
     expect(preview, isNotNull);
     expect(clearButton, isNotNull);
     expect(previewStatus, isNotNull);
-    expect(previewStatus?.text.trim(), isEmpty);
-    expect(uploadDropzone.text, contains('comprovante.pdf'));
+    expect((previewStatus?.textContent ?? '').trim(), isEmpty);
+    expect(uploadDropzone.textContent, contains('comprovante.pdf'));
   });
 
   test('opens the native picker when clicking the dashed dropzone area',
@@ -203,12 +207,12 @@ void main() {
 
     final uploadDropzone = fixture.rootElement
             .querySelector('#upload-field .li-file-upload__dropzone')
-        as html.Element;
+        as web.Element;
     final fileInput = fixture.rootElement.querySelector(
       '#upload-field input.file-input',
-    ) as html.InputElement;
+    ) as web.HTMLInputElement;
     var clickCount = 0;
-    late final StreamSubscription<html.MouseEvent> subscription;
+    late final StreamSubscription<web.MouseEvent> subscription;
     subscription = fileInput.onClick.listen((_) {
       clickCount += 1;
     });
@@ -217,7 +221,7 @@ void main() {
     });
 
     await fixture.update((_) {
-      uploadDropzone.click();
+      (uploadDropzone as web.HTMLElement).click();
     });
     await _settle(fixture);
 
@@ -230,8 +234,8 @@ void main() {
 
     await fixture.update((host) {
       host.uploadPreviewMode = 'thumbnails';
-      host.files = <html.File>[
-        html.liFile(<Object>['demo'], 'comprovante.pdf',
+      host.files = <web.File>[
+        fileFromDartParts(<Object>['demo'], 'comprovante.pdf',
             type: 'application/pdf'),
       ];
     });
@@ -239,12 +243,12 @@ void main() {
 
     final uploadDropzone = fixture.rootElement
             .querySelector('#upload-field .li-file-upload__dropzone')
-        as html.Element;
+        as web.Element;
     final previewFrame =
         uploadDropzone.querySelector('.li-file-upload__thumb-frame');
     final previewButton =
         uploadDropzone.querySelector('.li-file-upload__action--preview')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
 
     expect(previewFrame, isNotNull);
 
@@ -254,11 +258,11 @@ void main() {
     await _settle(fixture);
 
     final modalViewer =
-        html.document.body?.querySelector('.li-file-upload__modal-viewer');
+        web.document.body?.querySelector('.li-file-upload__modal-viewer');
     final fullscreenButton =
-        html.document.body?.querySelector('.btn-kv-fullscreen');
+        web.document.body?.querySelector('.btn-kv-fullscreen');
     final modalFrame =
-        html.document.body?.querySelector('.li-file-upload__modal-frame');
+        web.document.body?.querySelector('.li-file-upload__modal-frame');
 
     expect(modalViewer, isNotNull);
     expect(fullscreenButton, isNotNull);
@@ -272,23 +276,25 @@ void main() {
 
     await fixture.update((host) {
       host.uploadPreviewMode = 'limitless';
-      host.files = <html.File>[
-        html.liFile(<Object>['demo'], 'copilot-color.png', type: 'image/png'),
+      host.files = <web.File>[
+        fileFromDartParts(<Object>['demo'], 'copilot-color.png',
+            type: 'image/png'),
       ];
     });
     await _settle(fixture);
 
     final uploadDropzone = fixture.rootElement
             .querySelector('#upload-field .li-file-upload__dropzone')
-        as html.Element;
+        as web.Element;
     final limitlessCard =
         uploadDropzone.querySelector('.li-file-upload__card--limitless');
     final overlay =
         uploadDropzone.querySelector('.li-file-upload__card-overlay');
     final footerBar =
         uploadDropzone.querySelector('.li-file-upload__footer-bar');
-    final footerPreview = uploadDropzone
-        .querySelector('.li-file-upload__footer-preview') as html.ButtonElement;
+    final footerPreview =
+        uploadDropzone.querySelector('.li-file-upload__footer-preview')
+            as web.HTMLButtonElement;
 
     expect(limitlessCard, isNotNull);
     expect(overlay, isNotNull);
@@ -300,24 +306,25 @@ void main() {
     await _settle(fixture);
 
     final modalImage =
-        html.document.body?.querySelector('.li-file-upload__modal-image');
-    final rotateButton = html.document.body?.querySelector('.btn-kv-rotate')
-        as html.ButtonElement?;
+        web.document.body?.querySelector('.li-file-upload__modal-image');
+    final rotateButton = web.document.body?.querySelector('.btn-kv-rotate')
+        as web.HTMLButtonElement?;
     final fullscreenButton =
-        html.document.body?.querySelector('.btn-kv-fullscreen');
-    final borderlessButton = html.document.body
-        ?.querySelector('.btn-kv-borderless') as html.ButtonElement?;
-    final zoomInButton = html.document.body
-        ?.querySelector('.li-file-upload__zoom-in') as html.ButtonElement?;
+        web.document.body?.querySelector('.btn-kv-fullscreen');
+    final borderlessButton = web.document.body
+        ?.querySelector('.btn-kv-borderless') as web.HTMLButtonElement?;
+    final zoomInButton = web.document.body
+        ?.querySelector('.li-file-upload__zoom-in') as web.HTMLButtonElement?;
     final zoomBodyBefore =
-        html.document.body?.querySelector('.li-file-upload__zoom-body');
+        web.document.body?.querySelector('.li-file-upload__zoom-body');
 
     expect(modalImage, isNotNull);
     expect(rotateButton, isNotNull);
     expect(fullscreenButton, isNotNull);
     expect(borderlessButton, isNotNull);
     expect(zoomInButton, isNotNull);
-    expect(zoomBodyBefore?.style.overflowX, anyOf('hidden', ''));
+    expect((zoomBodyBefore as web.HTMLElement?)?.style.overflowX,
+        anyOf('hidden', ''));
 
     await fixture.update((_) {
       zoomInButton!.click();
@@ -325,16 +332,17 @@ void main() {
     await _settle(fixture);
 
     final zoomBodyAfter =
-        html.document.body?.querySelector('.li-file-upload__zoom-body');
-    expect(zoomBodyAfter?.style.overflowX, 'auto');
+        web.document.body?.querySelector('.li-file-upload__zoom-body');
+    expect((zoomBodyAfter as web.HTMLElement?)?.style.overflowX, 'auto');
 
     await fixture.update((_) {
       rotateButton!.click();
     });
     await _settle(fixture);
 
-    final rotatedImage = html.document.body
-        ?.querySelector('.li-file-upload__modal-image') as html.ImageElement?;
+    final rotatedImage =
+        web.document.body?.querySelector('.li-file-upload__modal-image')
+            as web.HTMLImageElement?;
     expect(rotatedImage?.style.transform, contains('rotate(90deg)'));
 
     await fixture.update((_) {
@@ -342,7 +350,7 @@ void main() {
     });
     await _settle(fixture);
 
-    final borderlessShell = html.document.body?.querySelector(
+    final borderlessShell = web.document.body?.querySelector(
       '.li-file-upload__zoom-shell--borderless',
     );
     expect(borderlessShell, isNotNull);

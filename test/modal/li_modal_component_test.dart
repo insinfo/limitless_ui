@@ -6,11 +6,15 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_modal_component_test.template.dart' as ng;
 
@@ -213,17 +217,17 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('#lazy-body'), isNull);
-    expect(html.document.body!.querySelector('#eager-body'), isNotNull);
+    expect(web.document.body!.querySelector('#lazy-body'), isNull);
+    expect(web.document.body!.querySelector('#eager-body'), isNotNull);
 
     await fixture.update((_) {
       _clickById('open-lazy');
     });
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('#lazy-body'), isNotNull);
+    expect(web.document.body!.querySelector('#lazy-body'), isNotNull);
     expect(host.lazyModal!.isOpen, isTrue);
-    expect(html.document.body!.classes.contains('modal-open'), isTrue);
+    expect(web.document.body!.classList.contains('modal-open'), isTrue);
     final lazyDialog = _modalDialogByTitle('Lazy');
     expect(lazyDialog, isNotNull);
     final lazyModal = _closestAncestorWithClass(lazyDialog!, 'modal');
@@ -238,7 +242,7 @@ void main() {
     expect(lazyModal.querySelector('[data-label="li_mdl_body"]'), isNotNull);
     expect(lazyModal.querySelector('[data-label="li_mdl_footer"]'), isNotNull);
     expect(
-      html.document.body!.querySelector('[data-label="li_mdl_backdrop"]'),
+      web.document.body!.querySelector('[data-label="li_mdl_backdrop"]'),
       isNotNull,
     );
 
@@ -247,10 +251,10 @@ void main() {
     });
     await _settle(fixture);
 
-    expect(html.document.body!.querySelector('#lazy-body'), isNull);
+    expect(web.document.body!.querySelector('#lazy-body'), isNull);
     expect(host.lazyModal!.isOpen, isFalse);
     expect(host.lazyCloseCount, 1);
-    expect(html.document.body!.classes.contains('modal-open'), isFalse);
+    expect(web.document.body!.classList.contains('modal-open'), isFalse);
     expect(lazyModal.getAttribute('data-open'), 'false');
   });
 
@@ -258,24 +262,25 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final startOpenBody = html.document.body!.querySelector('#start-open-body');
+    final startOpenBody = web.document.body!.querySelector('#start-open-body');
     expect(startOpenBody, isNotNull);
 
     final bootstrapBody = _closestAncestorWithClass(
-      startOpenBody as html.Element,
+      startOpenBody as web.Element,
       'modal-body',
     );
     expect(bootstrapBody, isNotNull);
-    expect(bootstrapBody!.classes.contains('li-modal-body'), isFalse);
+    expect(bootstrapBody!.classList.contains('li-modal-body'), isFalse);
 
-    final openModal = html.document.body!
-        .queryAll('[data-status="open"]')
+    final openModal = web.document.body!
+        .querySelectorAll('[data-status="open"]')
+        .toElementList()
         .where((element) => element.querySelector('#start-open-body') != null);
 
     expect(openModal, isNotEmpty);
     expect(openModal.first.getAttribute('data-label'), 'li_mdl');
     expect(openModal.first.getAttribute('data-open'), 'true');
-    expect(html.document.body!.classes.contains('modal-open'), isTrue);
+    expect(web.document.body!.classList.contains('modal-open'), isTrue);
   });
 
   test('compactHeader only applies the compact class when enabled', () async {
@@ -287,8 +292,8 @@ void main() {
 
     expect(eagerHeader, isNotNull);
     expect(compactHeader, isNotNull);
-    expect(eagerHeader!.classes.contains('modal-header-compact'), isFalse);
-    expect(compactHeader!.classes.contains('modal-header-compact'), isTrue);
+    expect(eagerHeader!.classList.contains('modal-header-compact'), isFalse);
+    expect(compactHeader!.classList.contains('modal-header-compact'), isTrue);
   });
 
   test('smallHeader only applies the small class when enabled', () async {
@@ -300,8 +305,8 @@ void main() {
 
     expect(eagerHeader, isNotNull);
     expect(smallHeader, isNotNull);
-    expect(eagerHeader!.classes.contains('modal-header-small'), isFalse);
-    expect(smallHeader!.classes.contains('modal-header-small'), isTrue);
+    expect(eagerHeader!.classList.contains('modal-header-small'), isFalse);
+    expect(smallHeader!.classList.contains('modal-header-small'), isTrue);
   });
 
   test('wide sizes map to the new intermediate dialog classes', () async {
@@ -316,16 +321,16 @@ void main() {
     expect(xxxlDialog, isNotNull);
     expect(fluidDialog, isNotNull);
 
-    expect(xxlDialog!.classes.contains('modal-xxl'), isTrue);
-    expect(xxxlDialog!.classes.contains('modal-xxxl'), isTrue);
-    expect(fluidDialog!.classes.contains('modal-fluid'), isTrue);
+    expect(xxlDialog!.classList.contains('modal-xxl'), isTrue);
+    expect(xxxlDialog!.classList.contains('modal-xxxl'), isTrue);
+    expect(fluidDialog!.classList.contains('modal-fluid'), isTrue);
 
     final xxlHeader = _modalHeaderByTitle('XXL');
     final xxxlHeader = _modalHeaderByTitle('XXXL');
     expect(xxlHeader, isNotNull);
     expect(xxxlHeader, isNotNull);
-    expect(xxlHeader!.classes.contains('bg-purple'), isTrue);
-    expect(xxxlHeader!.classes.contains('bg-teal'), isTrue);
+    expect(xxlHeader!.classList.contains('bg-purple'), isTrue);
+    expect(xxxlHeader!.classList.contains('bg-teal'), isTrue);
   });
 
   test('supports projected header/footer and custom dimensions', () async {
@@ -342,22 +347,21 @@ void main() {
     });
     await _settle(fixture);
 
-    final projectedTitle =
-        html.document.body!.querySelector('#projected-title');
-    final projectedBody = html.document.body!.querySelector('#projected-body');
+    final projectedTitle = web.document.body!.querySelector('#projected-title');
+    final projectedBody = web.document.body!.querySelector('#projected-body');
     final projectedFooterAction =
-        html.document.body!.querySelector('#projected-footer-action');
+        web.document.body!.querySelector('#projected-footer-action');
 
     expect(projectedTitle, isNotNull);
     expect(projectedBody, isNotNull);
     expect(projectedFooterAction, isNotNull);
 
     final projectedDialog = _closestAncestorWithClass(
-      projectedBody as html.Element,
+      projectedBody as web.Element,
       'modal-dialog',
     );
     expect(projectedDialog, isNotNull);
-    expect(projectedDialog!.style.maxWidth, '520px');
+    expect((projectedDialog as web.HTMLElement).style.maxWidth, '520px');
     expect(projectedDialog.style.width, '100%');
     expect(projectedDialog.style.height, '420px');
 
@@ -386,12 +390,12 @@ void main() {
     await _settle(fixture);
 
     final templatedBody =
-        html.document.body!.querySelector('#template-content-body');
+        web.document.body!.querySelector('#template-content-body');
     final fallbackBody =
-        html.document.body!.querySelector('#template-fallback-body');
+        web.document.body!.querySelector('#template-fallback-body');
 
     expect(templatedBody, isNotNull);
-    expect(templatedBody!.text, 'Template body from input');
+    expect(templatedBody!.textContent, 'Template body from input');
     expect(fallbackBody, isNull);
 
     final hostWrapper =
@@ -414,18 +418,18 @@ void main() {
     });
     await _settle(fixture);
 
-    final content = html.document.body!.querySelector('#flush-body-content');
+    final content = web.document.body!.querySelector('#flush-body-content');
     expect(content, isNotNull);
 
     final layoutBody = _closestAncestorWithClass(
-      content as html.Element,
+      content as web.Element,
       'li-modal-body',
     );
     expect(layoutBody, isNotNull);
-    expect(layoutBody!.classes.contains('modal-body'), isFalse);
-    expect(layoutBody.classes.contains('custom-flush-body'), isTrue);
+    expect(layoutBody!.classList.contains('modal-body'), isFalse);
+    expect(layoutBody.classList.contains('custom-flush-body'), isTrue);
 
-    final style = layoutBody.getComputedStyle();
+    final style = web.window.getComputedStyle(layoutBody);
     expect(style.paddingTop, '0px');
     expect(style.flexGrow, '1');
     expect(style.minHeight, '0px');
@@ -445,14 +449,14 @@ void main() {
     });
     await _settle(fixture);
 
-    final content = html.document.body!.querySelector('#raw-body-content');
+    final content = web.document.body!.querySelector('#raw-body-content');
     expect(content, isNotNull);
 
-    final wrapper = (content as html.Element).parent;
+    final wrapper = (content as web.Element).parentElement;
     expect(wrapper, isNotNull);
-    expect(wrapper!.classes.contains('li-modal-body'), isFalse);
-    expect(wrapper.classes.contains('modal-body'), isFalse);
-    expect(wrapper.classes.contains('position-relative'), isFalse);
+    expect(wrapper!.classList.contains('li-modal-body'), isFalse);
+    expect(wrapper.classList.contains('modal-body'), isFalse);
+    expect(wrapper.classList.contains('position-relative'), isFalse);
   });
 
   test('escape closes only the topmost modal in the stack', () async {
@@ -535,13 +539,15 @@ void main() {
     expect(stackARoot, isNotNull);
     expect(stackBRoot, isNotNull);
 
-    expect(int.parse(stackARoot!.style.zIndex),
-        lessThan(int.parse(stackBRoot!.style.zIndex)));
+    expect(int.parse((stackARoot as web.HTMLElement).style.zIndex),
+        lessThan(int.parse((stackBRoot as web.HTMLElement).style.zIndex)));
 
-    final backdrops = html.document.body!.queryAll('.li-modal-backdrop');
+    final backdrops = web.document.body!
+        .querySelectorAll('.li-modal-backdrop')
+        .toElementList();
     expect(backdrops.length, 2);
-    expect(int.parse(backdrops[0].style.zIndex),
-        lessThan(int.parse(backdrops[1].style.zIndex)));
+    expect(int.parse((backdrops[0] as web.HTMLElement).style.zIndex),
+        lessThan(int.parse((backdrops[1] as web.HTMLElement).style.zIndex)));
   });
 
   test('modal-full keeps the modal body vertically scrollable', () async {
@@ -553,7 +559,7 @@ void main() {
     });
     await _settle(fixture);
 
-    final content = html.document.body!.querySelector('#full-body-content');
+    final content = web.document.body!.querySelector('#full-body-content');
     expect(content, isNotNull);
 
     final fullBodyContent = content!;
@@ -562,7 +568,7 @@ void main() {
 
     final resolvedModalBody = modalBody!;
 
-    final style = resolvedModalBody.getComputedStyle();
+    final style = web.window.getComputedStyle(resolvedModalBody);
     expect(style.overflowY, 'auto');
 
     await fixture.update((host) {
@@ -588,8 +594,10 @@ void main() {
     expect(fullContent, isNotNull);
     expect(fullHeader, isNotNull);
 
-    expect(fullContent!.getComputedStyle().borderTopLeftRadius, isNot('0px'));
-    expect(fullHeader!.getComputedStyle().borderTopLeftRadius, isNot('0px'));
+    expect(web.window.getComputedStyle(fullContent!).borderTopLeftRadius,
+        isNot('0px'));
+    expect(web.window.getComputedStyle(fullHeader!).borderTopLeftRadius,
+        isNot('0px'));
 
     await fixture.update((host) {
       host.fullModal?.close();
@@ -615,8 +623,9 @@ void main() {
     expect(fullContent, isNotNull);
     expect(fullHeader, isNotNull);
 
-    expect(fullContent!.getComputedStyle().borderTopLeftRadius, '0px');
-    expect(fullHeader!.getComputedStyle().borderTopLeftRadius, '0px');
+    expect(
+        web.window.getComputedStyle(fullContent!).borderTopLeftRadius, '0px');
+    expect(web.window.getComputedStyle(fullHeader!).borderTopLeftRadius, '0px');
 
     await fixture.update((host) {
       host.fullShellModal?.close();
@@ -626,14 +635,14 @@ void main() {
 }
 
 void _clickById(String id) {
-  final element = html.document.body!.querySelector('#$id');
+  final element = web.document.body!.querySelector('#$id');
   expect(element, isNotNull);
-  element!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+  element!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
 void _dispatchEscapeKeydown() {
-  final event = html.liKeyboardEvent('keydown', key: 'Escape');
-  html.document.dispatchEvent(event);
+  final event = bubblingKeyboardEvent('keydown', key: 'Escape');
+  web.document.dispatchEvent(event);
 }
 
 Future<void> _settle<T>(NgTestFixture<T> fixture) async {
@@ -641,32 +650,33 @@ Future<void> _settle<T>(NgTestFixture<T> fixture) async {
   await fixture.update((_) {});
 }
 
-html.Element? _closestAncestorWithClass(
-    html.Element element, String className) {
-  html.Element? current = element;
+web.Element? _closestAncestorWithClass(web.Element element, String className) {
+  web.Element? current = element;
   while (current != null) {
-    if (current.classes.contains(className)) {
+    if (current.classList.contains(className)) {
       return current;
     }
-    current = current.parent;
+    current = current.parentElement;
   }
   return null;
 }
 
-html.Element? _modalHeaderByTitle(String title) {
-  for (final header in html.document.body!.queryAll('.modal-header')) {
+web.Element? _modalHeaderByTitle(String title) {
+  for (final header
+      in web.document.body!.querySelectorAll('.modal-header').toElementList()) {
     final titleElement = header.querySelector('.modal-title');
-    if (titleElement?.text.trim() == title) {
+    if ((titleElement?.textContent ?? '').trim() == title) {
       return header;
     }
   }
   return null;
 }
 
-html.Element? _modalDialogByTitle(String title) {
-  for (final dialog in html.document.body!.queryAll('.modal-dialog')) {
+web.Element? _modalDialogByTitle(String title) {
+  for (final dialog
+      in web.document.body!.querySelectorAll('.modal-dialog').toElementList()) {
     final titleElement = dialog.querySelector('.modal-title');
-    if (titleElement?.text.trim() == title) {
+    if ((titleElement?.textContent ?? '').trim() == title) {
       return dialog;
     }
   }

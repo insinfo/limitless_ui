@@ -76,7 +76,7 @@ jobs:
         if: env.CODECOV_TOKEN == ''
         run: echo "CODECOV_TOKEN is not configured; skipping Codecov upload."
 
-      - name: Run browser and AngularDart tests without coverage
+      - name: Run browser tests with dart2js and dart2wasm
         env:
           CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: |
@@ -90,7 +90,11 @@ jobs:
           )
           printf '%s\n' "${VM_SAFE_TESTS[@]}" > /tmp/vm_safe_tests.txt
           mapfile -t BROWSER_TESTS < <(find test -name '*_test.dart' | sort | grep -vxF -f /tmp/vm_safe_tests.txt)
-          CHROME_EXECUTABLE=/tmp/chrome-no-sandbox dart run build_runner test -- -p chrome -j 1 "${BROWSER_TESTS[@]}"
+          for compiler in dart2js dart2wasm; do
+            echo "Running browser suite with $compiler"
+            CHROME_EXECUTABLE=/tmp/chrome-no-sandbox \
+              dart run build_runner test -- -p chrome -c "$compiler" -j 1 "${BROWSER_TESTS[@]}"
+          done
 
       - name: Run example Puppeteer E2E tests
         env:

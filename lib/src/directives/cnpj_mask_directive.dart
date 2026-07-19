@@ -1,5 +1,5 @@
 import 'dart:js_interop';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngx_dart/angular.dart';
@@ -12,19 +12,19 @@ import 'package:ngx_dart/angular.dart';
 @Directive(selector: '[liCnpjMask]')
 class LiCnpjMaskDirective implements OnDestroy {
   final InteractiveTextMask _mask = InteractiveTextMask.cnpjAlphanumeric();
-  late InputElement inputElement;
-  final Element _el;
-  late final EventListener _inputListener;
+  late web.HTMLInputElement inputElement;
+  final web.Element _el;
+  late final web.EventListener _inputListener;
   var _lastValue = MaskedTextValue.collapsed('');
 
   LiCnpjMaskDirective(this._el) {
-    if (!_el.isA<InputElement>()) {
+    if (!_el.isA<web.HTMLInputElement>()) {
       throw Exception(
-          'LiCnpjMaskDirective has to be applied to an InputElement');
+          'LiCnpjMaskDirective has to be applied to an HTMLInputElement');
     }
-    inputElement = _el as InputElement;
+    inputElement = _el as web.HTMLInputElement;
     _lastValue = MaskedTextValue.collapsed(inputElement.value);
-    _inputListener = ((Event event) => _onChange()).toJS;
+    _inputListener = ((web.Event event) => _onChange()).toJS;
     inputElement.addEventListener('input', _inputListener, true.toJS);
   }
 

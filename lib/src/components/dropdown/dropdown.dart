@@ -1,12 +1,22 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 import 'dart:math' as math;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:popper/popper.dart';
 
 import 'dropdown_config.dart';
+
+List<web.HTMLElement> _queryElements(web.Element root, String selectors) {
+  final nodes = root.querySelectorAll(selectors);
+  return <web.HTMLElement>[
+    for (var index = 0; index < nodes.length; index++)
+      nodes.item(index)! as web.HTMLElement,
+  ];
+}
 
 /// Public directives used by dropdown APIs.
 const liDropdownDirectives = <Object>[
@@ -21,7 +31,7 @@ const liDropdownDirectives = <Object>[
   LiDropdownSubmenuMenuDirective,
 ];
 
-String _normalizedDropdownKey(html.KeyboardEvent event) {
+String _normalizedDropdownKey(web.KeyboardEvent event) {
   final key = event.key;
   if (key.isNotEmpty) {
     return key;
@@ -89,7 +99,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     @Optional() LiDropdownConfig? config,
   ]) : _config = config ?? LiDropdownConfig();
 
-  final html.Element _hostElement;
+  final web.Element _hostElement;
   final ChangeDetectorRef _changeDetectorRef;
   final LiDropdownConfig _config;
   final StreamController<bool> _openChangeController =
@@ -100,9 +110,9 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   LiDropdownMenuDirective? _menu;
   LiDropdownAnchorDirective? _anchor;
   PopperController? _popperController;
-  html.DivElement? _bodyContainer;
-  StreamSubscription<html.MouseEvent>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  web.HTMLDivElement? _bodyContainer;
+  StreamSubscription<web.MouseEvent>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
 
   bool _open = false;
   bool _positioningRefreshPending = false;
@@ -322,22 +332,22 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     open();
   }
 
-  void onKeyDown(html.KeyboardEvent event) {
+  void onKeyDown(web.KeyboardEvent event) {
     final key = _normalizedDropdownKey(event);
     final itemElements = _enabledItemElements;
     final isFromAnchor =
-        _anchor?.nativeElement.contains(event.target as html.Node?) ?? false;
+        _anchor?.nativeElement.contains(event.target as web.Node?) ?? false;
 
     var position = -1;
-    html.Element? currentItem;
+    web.Element? currentItem;
 
     for (var index = 0; index < itemElements.length; index++) {
       final item = itemElements[index];
-      if (item == html.document.activeElement) {
+      if (item == web.document.activeElement) {
         position = index;
       }
-      if ((event.target?.isA<html.Element>() ?? false) &&
-          item.contains(event.target as html.Element)) {
+      if ((event.target?.isA<web.Element>() ?? false) &&
+          item.contains(event.target as web.Element)) {
         currentItem = item;
       }
     }
@@ -396,7 +406,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     }
   }
 
-  List<html.Element> get _enabledItemElements => _items
+  List<web.HTMLElement> get _enabledItemElements => _items
       .where((item) => !item.disabled && item.isNavigable)
       .map((item) => item.nativeElement)
       .toList(growable: false);
@@ -484,22 +494,24 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _destroyDocumentHandlers();
 
     if (_autoCloseMode != 'false') {
-      _documentClickSubscription = html.document.onClick.listen((event) {
+      _documentClickSubscription = web.EventStreamProviders.clickEvent
+          .forTarget(web.document)
+          .listen((event) {
         if (!_open) {
           return;
         }
 
         final target = event.target;
-        if (!(target?.isA<html.Element>() ?? false)) {
+        if (!(target?.isA<web.Element>() ?? false)) {
           return;
         }
 
         final clickedAnchor = _anchor != null &&
-            _anchor!.nativeElement.contains(target as html.Node?);
-        final clickedMenu = _menu != null &&
-            _menu!.nativeElement.contains(target as html.Node?);
+            _anchor!.nativeElement.contains(target as web.Node?);
+        final clickedMenu =
+            _menu != null && _menu!.nativeElement.contains(target as web.Node?);
         final clickedSubmenuToggle =
-            (target as html.Element).closest('.li-dropdown-submenu__toggle') !=
+            (target as web.Element).closest('.li-dropdown-submenu__toggle') !=
                 null;
 
         if (clickedAnchor) {
@@ -523,7 +535,9 @@ class LiDropdownDirective implements OnInit, OnDestroy {
       });
     }
 
-    _documentKeySubscription = html.document.onKeyDown.listen((event) {
+    _documentKeySubscription = web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!_open) {
         return;
       }
@@ -549,13 +563,13 @@ class LiDropdownDirective implements OnInit, OnDestroy {
 
     _resetContainer();
     if (container == 'body') {
-      final wrapper = _bodyContainer ??= html.createDivElement();
+      final wrapper = _bodyContainer ??= web.HTMLDivElement();
       wrapper.style
         ..position = 'absolute'
         ..zIndex = '1055';
       menu.style.position = 'static';
-      wrapper.append(menu);
-      html.document.body?.append(wrapper);
+      wrapper.appendChild(menu);
+      web.document.body?.appendChild(wrapper);
     }
 
     _applyCustomDropdownClass(_dropdownClass, null);
@@ -564,7 +578,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   void _resetContainer() {
     final menu = _menu?.nativeElement;
     if (menu != null && container == 'body' && _bodyContainer != null) {
-      _hostElement.append(menu);
+      _hostElement.appendChild(menu);
     }
     _bodyContainer?.remove();
     _bodyContainer = null;
@@ -657,8 +671,8 @@ class LiDropdownDirective implements OnInit, OnDestroy {
 
   void _writeStablePopperLayout(
     PopperLayout layout,
-    html.Element floatingElement,
-    html.Element? arrowElement,
+    web.Element floatingElement,
+    web.Element? arrowElement,
   ) {
     final styleSignature = <Object?>[
       layout.strategy == PopperStrategy.fixed ? 'fixed' : 'absolute',
@@ -674,7 +688,10 @@ class LiDropdownDirective implements OnInit, OnDestroy {
 
     _lastAppliedFloatingStyleSignature = styleSignature;
 
-    final style = floatingElement.style;
+    if (!floatingElement.isA<web.HTMLElement>()) {
+      return;
+    }
+    final style = (floatingElement as web.HTMLElement).style;
 
     _writeStyleValue(
       style.position,
@@ -728,7 +745,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   }
 
   void _writeAttributeValue(
-    html.Element element,
+    web.Element element,
     String attributeName,
     String nextValue,
   ) {
@@ -739,7 +756,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   }
 
   void _toggleAttribute(
-    html.Element element,
+    web.Element element,
     String attributeName,
     bool enabled,
   ) {
@@ -761,7 +778,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     }
 
     _positioningRefreshPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _positioningRefreshPending = false;
       if (!_open) {
         return;
@@ -786,14 +803,14 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     }
 
     _viewportAdaptationPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _viewportAdaptationPending = false;
       if (!_open) {
         return;
       }
 
       final menuRect = menu.getBoundingClientRect();
-      final menuIsVisible = menu.classes.contains('show') &&
+      final menuIsVisible = menu.classList.contains('show') &&
           (menuRect.width > 0 || menuRect.height > 0);
       if (!menuIsVisible) {
         _scheduleViewportAdaptation();
@@ -807,11 +824,11 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     });
   }
 
-  bool _applyViewportAdaptationStyles(html.Element menu) {
+  bool _applyViewportAdaptationStyles(web.HTMLElement menu) {
     _captureViewportAdaptationBaseline(menu);
 
-    final viewportWidth = html.window.innerWidth.toDouble();
-    final viewportHeight = html.window.innerHeight.toDouble();
+    final viewportWidth = web.window.innerWidth.toDouble();
+    final viewportHeight = web.window.innerHeight.toDouble();
     if (viewportWidth <= 0 || viewportHeight <= 0) {
       return false;
     }
@@ -918,7 +935,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     return true;
   }
 
-  void _captureViewportAdaptationBaseline(html.Element menu) {
+  void _captureViewportAdaptationBaseline(web.HTMLElement menu) {
     if (_menuViewportBaselineCaptured) {
       return;
     }
@@ -966,23 +983,23 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     }
 
     if (oldClass != null && oldClass.isNotEmpty) {
-      target.classes.remove(oldClass);
+      target.classList.remove(oldClass);
     }
     if (newClass != null && newClass.isNotEmpty) {
-      target.classes.add(newClass);
+      target.classList.add(newClass);
     }
   }
 
   void _applyPlacementClasses() {
     final placement = _firstPlacement;
     final isDropup = _isDropup(placement);
-    _hostElement.classes
+    _hostElement.classList
       ..remove('dropdown')
       ..remove('dropup')
       ..add(isDropup ? 'dropup' : 'dropdown');
 
     if (_bodyContainer != null) {
-      _bodyContainer!.classes
+      _bodyContainer!.classList
         ..remove('dropdown')
         ..remove('dropup')
         ..add(isDropup ? 'dropup' : 'dropdown');
@@ -1009,7 +1026,7 @@ class LiDropdownMenuDirective implements OnInit, OnDestroy {
   LiDropdownMenuDirective(this.dropdown, this.nativeElement);
 
   final LiDropdownDirective dropdown;
-  final html.Element nativeElement;
+  final web.HTMLElement nativeElement;
 
   @HostBinding('class.dropdown-menu')
   bool hostDropdownMenuClass = true;
@@ -1023,7 +1040,7 @@ class LiDropdownMenuDirective implements OnInit, OnDestroy {
   }
 
   @HostListener('keydown', ['\$event'])
-  void onKeyDown(html.KeyboardEvent event) {
+  void onKeyDown(web.KeyboardEvent event) {
     dropdown.onKeyDown(event);
   }
 
@@ -1047,7 +1064,7 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   static final List<LiDropdownSubmenuDirective> _openSubmenus =
       <LiDropdownSubmenuDirective>[];
 
-  final html.Element hostElement;
+  final web.Element hostElement;
   final ChangeDetectorRef _changeDetectorRef;
   final LiDropdownDirective? dropdown;
   final StreamController<bool> _openChangeController =
@@ -1056,7 +1073,7 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   LiDropdownSubmenuToggleDirective? _toggle;
   LiDropdownSubmenuMenuDirective? _menu;
   StreamSubscription<bool>? _dropdownOpenChangeSubscription;
-  StreamSubscription<html.MouseEvent>? _documentClickSubscription;
+  StreamSubscription<web.MouseEvent>? _documentClickSubscription;
 
   bool _open = false;
   bool _openedByHover = false;
@@ -1196,34 +1213,36 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
     _enabledMenuItems.lastOrNull?.focus();
   }
 
-  List<html.Element> get _enabledMenuItems {
+  List<web.HTMLElement> get _enabledMenuItems {
     final menuElement = _menu?.nativeElement;
     if (menuElement == null) {
-      return const <html.Element>[];
+      return const <web.HTMLElement>[];
     }
 
-    return menuElement.queryAll('.dropdown-item:not(.disabled)');
+    return _queryElements(menuElement, '.dropdown-item:not(.disabled)');
   }
 
   void _bindDocumentClick() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= web.EventStreamProviders.clickEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!_open) {
         return;
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Element>() ?? false)) {
+      if (!(target?.isA<web.Element>() ?? false)) {
         closeSubmenu();
         return;
       }
 
-      if (!hostElement.contains(target as html.Node?)) {
+      if (!hostElement.contains(target as web.Node?)) {
         closeSubmenu();
         return;
       }
 
       final clickedToggle =
-          (target as html.Element).closest('.li-dropdown-submenu__toggle') !=
+          (target as web.Element).closest('.li-dropdown-submenu__toggle') !=
               null;
       final clickedMenuItem = target.closest('.dropdown-item') != null;
       if (closeOnItemClick && !clickedToggle && clickedMenuItem) {
@@ -1288,12 +1307,12 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   bool get _canUseHoverInteraction {
     try {
       final supportsFineHover =
-          html.window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+          web.window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       if (supportsFineHover) {
         return true;
       }
 
-      final maxTouchPoints = html.window.navigator.maxTouchPoints;
+      final maxTouchPoints = web.window.navigator.maxTouchPoints;
       return maxTouchPoints <= 0;
     } catch (_) {
       return true;
@@ -1313,7 +1332,7 @@ class LiDropdownSubmenuToggleDirective implements OnInit, OnDestroy {
   LiDropdownSubmenuToggleDirective(this.submenu, this.nativeElement);
 
   final LiDropdownSubmenuDirective submenu;
-  final html.Element nativeElement;
+  final web.HTMLElement nativeElement;
 
   @HostBinding('class.li-dropdown-submenu__toggle')
   bool hostSubmenuToggleClass = true;
@@ -1333,14 +1352,14 @@ class LiDropdownSubmenuToggleDirective implements OnInit, OnDestroy {
   }
 
   @HostListener('click', ['\$event'])
-  void onClick(html.MouseEvent event) {
+  void onClick(web.MouseEvent event) {
     event.preventDefault();
     event.stopPropagation();
     submenu.toggleSubmenu();
   }
 
   @HostListener('keydown', ['\$event'])
-  void onKeyDown(html.KeyboardEvent event) {
+  void onKeyDown(web.KeyboardEvent event) {
     switch (_normalizedDropdownKey(event)) {
       case ' ':
       case 'Enter':
@@ -1384,7 +1403,7 @@ class LiDropdownSubmenuMenuDirective implements OnInit, OnDestroy {
 
   final LiDropdownSubmenuDirective submenu;
   final LiDropdownDirective dropdown;
-  final html.Element nativeElement;
+  final web.HTMLElement nativeElement;
 
   @HostBinding('class.dropdown-menu')
   bool hostDropdownMenuClass = true;
@@ -1401,7 +1420,7 @@ class LiDropdownSubmenuMenuDirective implements OnInit, OnDestroy {
   }
 
   @HostListener('keydown', ['\$event'])
-  void onKeyDown(html.KeyboardEvent event) {
+  void onKeyDown(web.KeyboardEvent event) {
     switch (_normalizedDropdownKey(event)) {
       case 'Escape':
         submenu.closeSubmenu(focusToggle: true);
@@ -1434,7 +1453,7 @@ class LiDropdownAnchorDirective implements OnInit, OnDestroy {
   LiDropdownAnchorDirective(this.dropdown, this.nativeElement);
 
   final LiDropdownDirective dropdown;
-  final html.Element nativeElement;
+  final web.HTMLElement nativeElement;
 
   bool _showCaret = true;
 
@@ -1460,7 +1479,7 @@ class LiDropdownAnchorDirective implements OnInit, OnDestroy {
   }
 
   @HostListener('keydown', ['\$event'])
-  void onKeyDown(html.KeyboardEvent event) {
+  void onKeyDown(web.KeyboardEvent event) {
     dropdown.onKeyDown(event);
   }
 
@@ -1478,7 +1497,7 @@ class LiDropdownToggleDirective extends LiDropdownAnchorDirective {
   );
 
   @HostListener('click', ['\$event'])
-  void onClick(html.MouseEvent event) {
+  void onClick(web.MouseEvent event) {
     event.preventDefault();
     dropdown.toggle();
   }
@@ -1492,7 +1511,7 @@ class LiDropdownItemDirective implements OnInit, OnDestroy {
     @Optional() this.submenuMenu,
   ]);
 
-  final html.Element nativeElement;
+  final web.HTMLElement nativeElement;
   final LiDropdownDirective dropdown;
   final LiDropdownSubmenuMenuDirective? submenuMenu;
 
@@ -1525,7 +1544,7 @@ class LiDropdownItemDirective implements OnInit, OnDestroy {
 
   @HostBinding('attr.disabled')
   String? get hostDisabledAttribute =>
-      nativeElement.isA<html.ButtonElement>() && disabled ? '' : null;
+      nativeElement.isA<web.HTMLButtonElement>() && disabled ? '' : null;
 
   @override
   void ngOnInit() {

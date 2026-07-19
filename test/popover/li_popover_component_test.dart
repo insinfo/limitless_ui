@@ -7,13 +7,16 @@ library;
 
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:popper/popper.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_popover_component_test.template.dart' as ng;
 
@@ -305,8 +308,8 @@ void main() {
     expect(
         popover.querySelector('[data-label="li_popover_header"]'), isNotNull);
     expect(popover.querySelector('[data-label="li_popover_body"]'), isNotNull);
-    expect(popover.text, contains('Click title'));
-    expect(popover.text, contains('Click body'));
+    expect(popover.textContent, contains('Click title'));
+    expect(popover.textContent, contains('Click body'));
 
     await fixture.update((_) {
       _click(outsideTarget!);
@@ -341,21 +344,21 @@ void main() {
     await _settlePopover(fixture);
 
     final arrow = _popoverArrowElement();
-    final header = html.document.querySelector('.popover .popover-header');
-    final body = html.document.querySelector('.popover .popover-body');
+    final header = web.document.querySelector('.popover .popover-header');
+    final body = web.document.querySelector('.popover .popover-body');
 
     expect(host.manualPopover!.isOpen(), isTrue);
     expect(_popoverElement(), isNotNull);
-    expect(_popoverElement()!.text, contains('Manual body'));
+    expect(_popoverElement()!.textContent, contains('Manual body'));
     expect(arrow, isNotNull);
     expect(header, isNotNull);
     expect(body, isNotNull);
-    expect(arrow!.classes.contains('border-primary'), isTrue);
-    expect(header!.classes.contains('bg-primary'), isTrue);
-    expect(header.classes.contains('text-white'), isTrue);
-    expect(header.classes.contains('border-white'), isTrue);
-    expect(header.classes.contains('border-opacity-25'), isTrue);
-    expect(body!.classes.contains('text-white'), isTrue);
+    expect(arrow!.classList.contains('border-primary'), isTrue);
+    expect(header!.classList.contains('bg-primary'), isTrue);
+    expect(header.classList.contains('text-white'), isTrue);
+    expect(header.classList.contains('border-white'), isTrue);
+    expect(header.classList.contains('border-opacity-25'), isTrue);
+    expect(body!.classList.contains('text-white'), isTrue);
     expect(arrow.style.left, isNotEmpty);
     expect(arrow.style.right, isEmpty);
     expect(arrow.style.bottom, isEmpty);
@@ -503,7 +506,7 @@ void main() {
 
     expect(host.insidePopover!.isOpen(), isTrue);
 
-    final insideButton = html.document.querySelector('#inside-close');
+    final insideButton = web.document.querySelector('#inside-close');
 
     expect(insideButton, isNotNull);
 
@@ -534,7 +537,7 @@ void main() {
 
     expect(host.outsidePopover!.isOpen(), isTrue);
 
-    final insideButton = html.document.querySelector('#outside-inside');
+    final insideButton = web.document.querySelector('#outside-inside');
 
     expect(insideButton, isNotNull);
 
@@ -572,7 +575,7 @@ void main() {
 
     expect(popover, isNotNull);
     expect(bodyWrapper!.contains(popover), isFalse);
-    expect(html.document.body!.contains(popover), isTrue);
+    expect(web.document.body!.contains(popover), isTrue);
   });
 
   test('seta usa o offset principal do CSS do placement', () async {
@@ -657,8 +660,8 @@ void main() {
     final popover = _popoverElement();
 
     expect(popover, isNotNull);
-    expect(popover!.classes.contains('popover-config-demo'), isTrue);
-    expect(html.document.body!.contains(popover), isTrue);
+    expect(popover!.classList.contains('popover-config-demo'), isTrue);
+    expect(web.document.body!.contains(popover), isTrue);
   });
 
   test('hook de popperOptions pode sobrescrever placement base', () async {
@@ -676,7 +679,7 @@ void main() {
     final popover = _popoverElement();
 
     expect(popover, isNotNull);
-    expect(popover!.classes.contains('bs-popover-bottom'), isTrue);
+    expect(popover!.classList.contains('bs-popover-bottom'), isTrue);
   });
 
   test('popover em modal renderiza acima do z-index do modal', () async {
@@ -702,7 +705,7 @@ void main() {
     expect(modalRoot, isNotNull);
     expect(
       int.parse(popoverPortalHost!.style.zIndex),
-      greaterThan(int.parse(modalRoot!.style.zIndex)),
+      greaterThan(int.parse((modalRoot as web.HTMLElement).style.zIndex)),
     );
   });
 
@@ -723,8 +726,8 @@ void main() {
 
     expect(host.directivePopover!.isOpen(), isTrue);
     expect(popover, isNotNull);
-    expect(popover!.text, contains('Directive title'));
-    expect(popover.text, contains('Directive body'));
+    expect(popover!.textContent, contains('Directive title'));
+    expect(popover.textContent, contains('Directive body'));
 
     await fixture.update((component) {
       component.directivePopover!.close(false);
@@ -771,39 +774,40 @@ PopperOptions forceBottomPopoverPlacement(PopperOptions options) {
   );
 }
 
-void _click(html.Element element) {
-  element.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+void _click(web.Element element) {
+  element.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
 }
 
-void _focusIn(html.Element element) {
-  element.dispatchEvent(html.liEvent('focusin', canBubble: true));
+void _focusIn(web.Element element) {
+  element.dispatchEvent(bubblingEvent('focusin', bubbles: true));
 }
 
 void _clickById(String id) {
-  final element = html.document.body!.querySelector('#$id');
-  if ((element?.isA<html.Element>() ?? false)) {
+  final element = web.document.body!.querySelector('#$id');
+  if ((element?.isA<web.Element>() ?? false)) {
     _click(element!);
   }
 }
 
-html.DivElement? _popoverElement() {
-  final popover = html.document.querySelector('.popover');
-  return (popover?.isA<html.DivElement>() ?? false)
-      ? popover as html.DivElement
+web.HTMLDivElement? _popoverElement() {
+  final popover = web.document.querySelector('.popover');
+  return (popover?.isA<web.HTMLDivElement>() ?? false)
+      ? popover as web.HTMLDivElement
       : null;
 }
 
-html.DivElement? _popoverPortalHost() {
-  final host = html.document.querySelector('.LiPopoverComponent');
-  return (host?.isA<html.DivElement>() ?? false)
-      ? host as html.DivElement
+web.HTMLDivElement? _popoverPortalHost() {
+  final host = web.document.querySelector('.LiPopoverComponent');
+  return (host?.isA<web.HTMLDivElement>() ?? false)
+      ? host as web.HTMLDivElement
       : null;
 }
 
-html.Element? _modalRootByTitle(String titleText) {
-  final titles = html.document.body!.queryAll('.modal-title');
+web.Element? _modalRootByTitle(String titleText) {
+  final titles =
+      web.document.body!.querySelectorAll('.modal-title').toElementList();
   for (final title in titles) {
-    if (title.text.trim() != titleText) {
+    if ((title.textContent ?? '').trim() != titleText) {
       continue;
     }
     return title.closest('.modal');
@@ -811,21 +815,21 @@ html.Element? _modalRootByTitle(String titleText) {
   return null;
 }
 
-html.DivElement? _popoverArrowElement() {
-  final arrow = html.document.querySelector('.popover .popover-arrow');
-  return (arrow?.isA<html.DivElement>() ?? false)
-      ? arrow as html.DivElement
+web.HTMLDivElement? _popoverArrowElement() {
+  final arrow = web.document.querySelector('.popover .popover-arrow');
+  return (arrow?.isA<web.HTMLDivElement>() ?? false)
+      ? arrow as web.HTMLDivElement
       : null;
 }
 
 String? _popoverTitleText() {
-  final title = html.document.querySelector('.popover .template-popover-title');
-  return title?.text.trim();
+  final title = web.document.querySelector('.popover .template-popover-title');
+  return (title?.textContent ?? '').trim();
 }
 
 String? _popoverBodyText() {
-  final body = html.document.querySelector('.popover .template-popover-body');
-  return body?.text.trim();
+  final body = web.document.querySelector('.popover .template-popover-body');
+  return (body?.textContent ?? '').trim();
 }
 
 Future<void> _settlePopover(NgTestFixture<TestHostComponent> fixture) async {

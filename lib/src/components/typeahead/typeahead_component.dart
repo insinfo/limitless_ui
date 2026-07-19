@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -9,6 +9,7 @@ import 'package:ngx_forms/ngx_forms.dart';
 import 'package:popper/popper.dart';
 
 import '../../directives/safe_inner_html_directive.dart';
+import '../../web_support/zone_dom_callbacks.dart';
 import 'typeahead_config.dart';
 import 'typeahead_highlight_component.dart';
 
@@ -101,8 +102,8 @@ class LiTypeaheadComponent
       StreamController<LiTypeaheadSelectItemEvent<dynamic>>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
-  StreamSubscription<html.Event>? _documentClickSubscription;
-  StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
+  StreamSubscription<web.MouseEvent>? _documentClickSubscription;
+  StreamSubscription<web.KeyboardEvent>? _documentKeySubscription;
   Timer? _debounceTimer;
   bool _overlayRelayoutPending = false;
   int _searchRequestId = 0;
@@ -216,13 +217,13 @@ class LiTypeaheadComponent
       _selectController.stream;
 
   @ViewChild('inputElement')
-  html.InputElement? inputElement;
+  web.HTMLInputElement? inputElement;
 
   @ViewChild('popupElement')
-  html.Element? popupElement;
+  web.HTMLElement? popupElement;
 
   @ViewChild('resultsList')
-  html.Element? resultsListElement;
+  web.HTMLElement? resultsListElement;
 
   late final String popupId;
   late final String _idPrefix;
@@ -377,12 +378,12 @@ class LiTypeaheadComponent
     _scheduleSearch();
   }
 
-  void handleKeydown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleKeydown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    if ((event as html.KeyboardEvent).key == 'ArrowDown') {
+    if ((event as web.KeyboardEvent).key == 'ArrowDown') {
       event.preventDefault();
       if (!popupOpen) {
         _scheduleSearch(immediate: true);
@@ -440,7 +441,7 @@ class LiTypeaheadComponent
     dismissPopup();
   }
 
-  void preventPopupBlur(html.Event event) {
+  void preventPopupBlur(web.Event event) {
     event.preventDefault();
   }
 
@@ -847,7 +848,7 @@ class LiTypeaheadComponent
     }
 
     _overlayRelayoutPending = true;
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       _overlayRelayoutPending = false;
       if (!popupOpen) {
         return;
@@ -866,7 +867,7 @@ class LiTypeaheadComponent
       return;
     }
 
-    final viewportHeight = html.window.innerHeight.toDouble();
+    final viewportHeight = web.window.innerHeight.toDouble();
     final inputRect = input.getBoundingClientRect();
     final popupRect = popup.getBoundingClientRect();
     final opensUpward = popupRect.top < inputRect.top;
@@ -878,27 +879,29 @@ class LiTypeaheadComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= web.EventStreamProviders.clickEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!popupOpen) {
         return;
       }
 
       final target = event.target;
-      if (!(target?.isA<html.Node>() ?? false)) {
+      if (!(target?.isA<web.Node>() ?? false)) {
         dismissPopup();
         return;
       }
 
-      final clickedInput =
-          inputElement?.contains(target as html.Node?) ?? false;
-      final clickedPopup =
-          popupElement?.contains(target as html.Node?) ?? false;
+      final clickedInput = inputElement?.contains(target as web.Node?) ?? false;
+      final clickedPopup = popupElement?.contains(target as web.Node?) ?? false;
       if (!clickedInput && !clickedPopup) {
         dismissPopup();
       }
     });
 
-    _documentKeySubscription ??= html.document.onKeyDown.listen((event) {
+    _documentKeySubscription ??= web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!popupOpen || event.key != 'Escape') {
         return;
       }

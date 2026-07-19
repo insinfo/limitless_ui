@@ -1,9 +1,10 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui_example/limitless_ui_example.dart';
 
 import '../datatable/datatable_demo_service.dart';
+import '../../web_support/dom_tokens.dart';
 
 class InboxDemoTabOption {
   const InboxDemoTabOption({
@@ -271,13 +272,13 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     _loadWorkItems();
   }
 
-  void onRequesterInput(html.Event event) {
-    final input = event.target as html.InputElement;
+  void onRequesterInput(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
     requesterQuery = input.value;
   }
 
-  void onResponsibleInput(html.Event event) {
-    final input = event.target as html.InputElement;
+  void onResponsibleInput(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
     responsibleQuery = input.value;
   }
 
@@ -289,8 +290,8 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
     selectedSubjectId = value?.toString() ?? '';
   }
 
-  void onListCodeInput(html.Event event) {
-    final input = event.target as html.InputElement;
+  void onListCodeInput(web.Event event) {
+    final input = event.target as web.HTMLInputElement;
     listCodeFilter = input.value.trim();
   }
 
@@ -688,17 +689,17 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           responsiveAutoHideRequired: true,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
-            final wrapper = html.createDivElement()
-              ..classes.addAll(<String>['d-flex', 'flex-column']);
-            final title = html.createSpanElement()
-              ..classes.addAll(<String>['fw-semibold', 'text-body'])
-              ..text = itemMap['fullCode']?.toString() ?? '';
-            final subtitle = html.createSpanElement()
-              ..classes.addAll(<String>['small', 'text-muted'])
-              ..text = '$listLabel ${itemMap['listCode'] ?? '-'}';
+            final wrapper = web.HTMLDivElement()
+              ..classList.addAllTokens(<String>['d-flex', 'flex-column']);
+            final title = web.HTMLSpanElement()
+              ..classList.addAllTokens(<String>['fw-semibold', 'text-body'])
+              ..textContent = itemMap['fullCode']?.toString() ?? '';
+            final subtitle = web.HTMLSpanElement()
+              ..classList.addAllTokens(<String>['small', 'text-muted'])
+              ..textContent = '$listLabel ${itemMap['listCode'] ?? '-'}';
             wrapper
-              ..append(title)
-              ..append(subtitle);
+              ..appendChild(title)
+              ..appendChild(subtitle);
             return wrapper;
           },
         ),
@@ -749,11 +750,11 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           responsiveAutoHidePriority: 40,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
-            final wrapper = html.createDivElement()
-              ..classes
-                  .addAll(<String>['d-flex', 'align-items-center', 'gap-2']);
-            final avatar = html.createSpanElement()
-              ..classes.addAll(<String>[
+            final wrapper = web.HTMLDivElement()
+              ..classList.addAllTokens(
+                  <String>['d-flex', 'align-items-center', 'gap-2']);
+            final avatar = web.HTMLSpanElement()
+              ..classList.addAllTokens(<String>[
                 'd-inline-flex',
                 'align-items-center',
                 'justify-content-center',
@@ -766,24 +767,25 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
               ..style.height = '2rem'
               ..style.background = '#0f4c81'
               ..style.flex = '0 0 2rem'
-              ..text = itemMap['responsibleInitials']?.toString() ?? '--';
-            final copy = html.createDivElement()
-              ..classes.addAll(<String>['d-flex', 'flex-column']);
+              ..textContent =
+                  itemMap['responsibleInitials']?.toString() ?? '--';
+            final copy = web.HTMLDivElement()
+              ..classList.addAllTokens(<String>['d-flex', 'flex-column']);
             copy
-              ..append(
-                html.createSpanElement()
-                  ..classes.addAll(<String>['fw-semibold', 'text-body'])
-                  ..text =
+              ..appendChild(
+                web.HTMLSpanElement()
+                  ..classList.addAllTokens(<String>['fw-semibold', 'text-body'])
+                  ..textContent =
                       itemMap['responsibleName']?.toString() ?? ownerEmptyLabel,
               )
-              ..append(
-                html.createSpanElement()
-                  ..classes.addAll(<String>['small', 'text-muted'])
-                  ..text = itemMap['queueLaneLabel']?.toString() ?? '',
+              ..appendChild(
+                web.HTMLSpanElement()
+                  ..classList.addAllTokens(<String>['small', 'text-muted'])
+                  ..textContent = itemMap['queueLaneLabel']?.toString() ?? '',
               );
             wrapper
-              ..append(avatar)
-              ..append(copy);
+              ..appendChild(avatar)
+              ..appendChild(copy);
             return wrapper;
           },
         ),
@@ -793,13 +795,14 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           responsiveAutoHidePriority: 50,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
-            final wrapper = html.createDivElement()
-              ..classes.addAll(<String>['d-flex', 'flex-wrap', 'gap-1']);
+            final wrapper = web.HTMLDivElement()
+              ..classList
+                  .addAllTokens(<String>['d-flex', 'flex-wrap', 'gap-1']);
             final tags = itemMap['tags'] as List<dynamic>? ?? const <dynamic>[];
             if (tags.isEmpty) {
-              return html.createSpanElement()
-                ..classes.add('text-muted')
-                ..text = '-';
+              return web.HTMLSpanElement()
+                ..classList.add('text-muted')
+                ..textContent = '-';
             }
 
             for (final rawTag in tags) {
@@ -810,10 +813,10 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
               final tag = rawTag.map(
                 (dynamic key, dynamic value) => MapEntry(key.toString(), value),
               );
-              wrapper.append(
-                html.createSpanElement()
-                  ..classes.addAll(<String>['badge', 'rounded-pill'])
-                  ..text = tag['name']?.toString() ?? ''
+              wrapper.appendChild(
+                web.HTMLSpanElement()
+                  ..classList.addAllTokens(<String>['badge', 'rounded-pill'])
+                  ..textContent = tag['name']?.toString() ?? ''
                   ..style.background =
                       tag['color']?.toString() ?? liDefaultTagColor,
               );
@@ -829,47 +832,52 @@ class WorkQueuePageComponent implements OnInit, DoCheck {
           responsiveAutoHideRequired: true,
           customRenderHtml:
               (Map<String, dynamic> itemMap, dynamic itemInstance) {
-            final previewButton = html.createButtonElement()
+            final previewButton = web.HTMLButtonElement()
               ..type = 'button'
               ..title = previewLabel
-              ..classes.addAll(<String>[
+              ..classList.addAllTokens(<String>[
                 'btn',
                 'btn-flat-primary',
                 'border-transparent',
                 'btn-icon',
                 'btn-sm',
-              ])
-              ..appendHtml('<i class="ph ph-eye"></i>');
-            previewButton.onClick.listen((html.MouseEvent event) {
+              ]);
+            previewButton.appendChild(
+              web.document.createElement('i')..className = 'ph ph-eye',
+            );
+            previewButton.onClick.listen((web.MouseEvent event) {
               event.stopPropagation();
               _ngZone.run(() {
                 openRecordPreview(itemMap);
               });
             });
 
-            final tagButton = html.createButtonElement()
+            final tagButton = web.HTMLButtonElement()
               ..type = 'button'
               ..title = labelsLabel
-              ..classes.addAll(<String>[
+              ..classList.addAllTokens(<String>[
                 'btn',
                 'btn-flat-primary',
                 'border-transparent',
                 'btn-icon',
                 'btn-sm',
-              ])
-              ..appendHtml('<i class="ph ph-tag"></i>');
-            tagButton.onClick.listen((html.MouseEvent event) {
+              ]);
+            tagButton.appendChild(
+              web.document.createElement('i')..className = 'ph ph-tag',
+            );
+            tagButton.onClick.listen((web.MouseEvent event) {
               event.stopPropagation();
               _ngZone.run(() {
                 openTagManager(itemMap);
               });
             });
 
-            final wrapper = html.createDivElement()
-              ..classes.addAll(<String>['d-flex', 'flex-wrap', 'gap-1']);
+            final wrapper = web.HTMLDivElement()
+              ..classList
+                  .addAllTokens(<String>['d-flex', 'flex-wrap', 'gap-1']);
             wrapper
-              ..append(previewButton)
-              ..append(tagButton);
+              ..appendChild(previewButton)
+              ..appendChild(tagButton);
             return wrapper;
           },
         ),

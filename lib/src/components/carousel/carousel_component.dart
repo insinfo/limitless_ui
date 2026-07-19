@@ -1,5 +1,7 @@
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/zone_dom_callbacks.dart';
 
 import 'package:ngx_dart/angular.dart';
 
@@ -244,7 +246,7 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
   }
 
   @HostListener('keydown', ['\$event'])
-  void onKeyDown(html.KeyboardEvent event) {
+  void onKeyDown(web.KeyboardEvent event) {
     if (!keyboardEnabled || !canNavigate) {
       return;
     }
@@ -262,27 +264,27 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
   }
 
   @HostListener('touchstart', ['\$event'])
-  void onTouchStart(html.TouchEvent event) {
-    if (!touchEnabled || event.touches.isEmpty) {
+  void onTouchStart(web.TouchEvent event) {
+    if (!touchEnabled || event.touches.length == 0) {
       return;
     }
 
-    _touchStartX = event.touches.first.clientX;
+    _touchStartX = event.touches.item(0)!.clientX;
   }
 
   @HostListener('touchend', ['\$event'])
-  void onTouchEnd(html.TouchEvent event) {
+  void onTouchEnd(web.TouchEvent event) {
     if (!touchEnabled || _touchStartX == null) {
       return;
     }
 
     final changedTouches = event.changedTouches;
-    if (changedTouches.isEmpty) {
+    if (changedTouches.length == 0) {
       _touchStartX = null;
       return;
     }
 
-    final endX = changedTouches.first.clientX;
+    final endX = changedTouches.item(0)!.clientX;
     final deltaX = endX - _touchStartX!;
     _touchStartX = null;
 
@@ -364,7 +366,7 @@ class LiCarouselComponent implements AfterContentInit, OnDestroy {
       isPrev: !isNext,
     );
 
-    html.window.liRequestAnimationFrame((_) {
+    requestAnimationFrameInZone((_) {
       nextItem.forceReflow();
 
       currentItem.setState(

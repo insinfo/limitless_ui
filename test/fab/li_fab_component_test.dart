@@ -5,12 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_fab_component_test.template.dart' as ng;
 
@@ -104,7 +107,7 @@ class FabTemplateTestHostComponent {
 void main() {
   tearDown(disposeAnyRunningTest);
   tearDown(() {
-    html.window.location.hash = '';
+    web.window.location.hash = '';
   });
   tearDown(_removeInjectedFabIconStyles);
 
@@ -120,19 +123,21 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.fab-menu-btn')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final runAction = fixture.rootElement.queryAll(
-      '.fab-menu-inner .btn',
-    )[0] as html.ButtonElement;
+    final runAction = fixture.rootElement
+        .querySelectorAll(
+          '.fab-menu-inner .btn',
+        )
+        .toElementList()[0] as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      runAction.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      runAction.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -146,7 +151,7 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     await fixture.update((_) {
-      host.fab!.triggerShortcut(key: 'r', ctrl: true, keyCode: 82);
+      host.fab!.triggerShortcut(key: 'r', ctrl: true);
     });
     await _settle(fixture);
 
@@ -158,19 +163,19 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.fab-menu-btn')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final link = fixture.rootElement.querySelector('a[href="#docs"]')
-        as html.AnchorElement;
+        as web.HTMLAnchorElement;
     expect(link, isNotNull);
 
     await fixture.update((_) {
-      link.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      link.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -183,24 +188,24 @@ void main() {
     await _settleTemplate(fixture);
 
     expect(
-      fixture.rootElement.querySelector('.custom-trigger-content')?.text,
+      fixture.rootElement.querySelector('.custom-trigger-content')?.textContent,
       contains('Abrir ações'),
     );
 
     final trigger = fixture.rootElement.querySelector('.li-fab__trigger')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settleTemplate(fixture);
 
     expect(
-      fixture.rootElement.querySelector('.custom-trigger-content')?.text,
+      fixture.rootElement.querySelector('.custom-trigger-content')?.textContent,
       contains('Fechar ações'),
     );
     expect(
-      fixture.rootElement.querySelector('.custom-action-content')?.text,
+      fixture.rootElement.querySelector('.custom-action-content')?.textContent,
       contains('Run'),
     );
   });
@@ -213,10 +218,10 @@ void main() {
     _injectFabIconStyles();
 
     final triggerIcon = fixture.rootElement
-        .querySelector('.custom-trigger-icon') as html.Element;
+        .querySelector('.custom-trigger-icon') as web.Element;
 
-    expect(triggerIcon.getComputedStyle().position, 'static');
-    expect(triggerIcon.getComputedStyle().transform, 'none');
+    expect(web.window.getComputedStyle(triggerIcon).position, 'static');
+    expect(web.window.getComputedStyle(triggerIcon).transform, 'none');
   });
 }
 
@@ -233,13 +238,13 @@ Future<void> _settleTemplate(
 }
 
 void _injectFabIconStyles() {
-  if (html.document.head!.querySelector('#fab-icon-style-test') != null) {
+  if (web.document.head!.querySelector('#fab-icon-style-test') != null) {
     return;
   }
 
-  final style = html.createStyleElement()
+  final style = web.HTMLStyleElement()
     ..id = 'fab-icon-style-test'
-    ..text = '''
+    ..textContent = '''
 .fab-menu-btn i {
   position: absolute;
   top: 50%;
@@ -250,9 +255,9 @@ void _injectFabIconStyles() {
 }
 ''';
 
-  html.document.head!.append(style);
+  web.document.head!.appendChild(style);
 }
 
 void _removeInjectedFabIconStyles() {
-  html.document.head!.querySelector('#fab-icon-style-test')?.remove();
+  web.document.head!.querySelector('#fab-icon-style-test')?.remove();
 }

@@ -6,11 +6,17 @@
 library;
 
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import 'package:limitless_ui/src/web_support/zone_dom_callbacks.dart';
+
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_dropdown_menu_component_test.template.dart' as ng;
 
@@ -207,11 +213,12 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final trigger = fixture.rootElement
-        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+    final trigger =
+        fixture.rootElement.querySelector('[aria-label="inline-actions"]')
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -221,7 +228,7 @@ void main() {
 
     expect(inlineMenu, isNotNull);
     expect(
-      html.document.querySelector(
+      web.document.querySelector(
           '.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
       isNull,
     );
@@ -232,18 +239,18 @@ void main() {
     await _settle(fixture);
 
     final trigger = fixture.rootElement
-        .querySelector('[aria-label="body-actions"]') as html.ButtonElement;
+        .querySelector('[aria-label="body-actions"]') as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final menuNode = html.document.querySelector(
+    final menuNode = web.document.querySelector(
       '.LiDropdownMenuComponent .li-dropdown-menu__menu.show',
     );
     expect(menuNode, isNotNull);
-    final menu = menuNode as html.Element;
+    final menu = menuNode as web.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final menuRect = menu.getBoundingClientRect();
 
@@ -261,10 +268,10 @@ void main() {
 
     final trigger = fixture.rootElement
             .querySelector('[aria-label="fitting-inline-actions"]')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -272,12 +279,12 @@ void main() {
       '.li-dropdown-menu__menu.show',
     );
     expect(menuNode, isNotNull);
-    final menu = menuNode as html.Element;
+    final menu = menuNode as web.Element;
     final menuItems =
-        menu.querySelector('.li-dropdown-menu__items') as html.Element;
+        menu.querySelector('.li-dropdown-menu__items') as web.Element;
 
-    expect(menu.style.maxHeight, isEmpty);
-    expect(menuItems.style.maxHeight, '12rem');
+    expect((menu as web.HTMLElement).style.maxHeight, isEmpty);
+    expect((menuItems as web.HTMLElement).style.maxHeight, '12rem');
   });
 
   test('enables vertical scrolling when max-height clips long content',
@@ -287,23 +294,23 @@ void main() {
 
     final trigger =
         fixture.rootElement.querySelector('[aria-label="long-body-actions"]')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final menuNode = html.document.querySelector(
+    final menuNode = web.document.querySelector(
       '.LiDropdownMenuComponent .li-dropdown-menu__menu.show',
     );
     expect(menuNode, isNotNull);
-    final menu = menuNode as html.Element;
+    final menu = menuNode as web.Element;
     final menuItems =
-        menu.querySelector('.li-dropdown-menu__items') as html.Element;
+        menu.querySelector('.li-dropdown-menu__items') as web.Element;
 
-    expect(menu.style.maxHeight, isEmpty);
-    expect(menuItems.style.maxHeight, '6rem');
+    expect((menu as web.HTMLElement).style.maxHeight, isEmpty);
+    expect((menuItems as web.HTMLElement).style.maxHeight, '6rem');
     expect(menuItems.style.overflowY, 'auto');
   });
 
@@ -313,10 +320,10 @@ void main() {
 
     final trigger =
         fixture.rootElement.querySelector('[aria-label="mobile-modal-actions"]')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -324,12 +331,12 @@ void main() {
       '.li-dropdown-menu__menu--mobile-modal.show',
     );
     expect(menuNode, isNotNull);
-    final menu = menuNode as html.Element;
+    final menu = menuNode as web.Element;
 
     expect(menu.getAttribute('role'), 'dialog');
     expect(menu.getAttribute('aria-modal'), 'true');
-    expect(menu.style.maxHeight, endsWith('px'));
-    expect(menu.querySelector('.li-dropdown-menu__mobile-title')!.text,
+    expect((menu as web.HTMLElement).style.maxHeight, endsWith('px'));
+    expect(menu.querySelector('.li-dropdown-menu__mobile-title')!.textContent,
         'Escolha uma acao');
     expect(
       menu.querySelector('.li-dropdown-menu__items'),
@@ -347,10 +354,10 @@ void main() {
 
     final trigger =
         fixture.rootElement.querySelector('[aria-label="mobile-sheet-actions"]')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -358,11 +365,11 @@ void main() {
       '.li-dropdown-menu__menu--mobile-sheet.show',
     );
     expect(menuNode, isNotNull);
-    final menu = menuNode as html.Element;
+    final menu = menuNode as web.Element;
 
     expect(menu.getAttribute('role'), 'dialog');
     expect(menu.getAttribute('aria-modal'), 'true');
-    expect(menu.style.maxHeight, endsWith('px'));
+    expect((menu as web.HTMLElement).style.maxHeight, endsWith('px'));
     expect(
       menu.querySelector('.li-dropdown-menu__items'),
       isNotNull,
@@ -381,21 +388,21 @@ void main() {
 
     final trigger =
         fixture.rootElement.querySelector('[aria-label="mobile-sheet-actions"]')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final footerButton = fixture.rootElement
-        .querySelector('#mobile-footer-action') as html.ButtonElement?;
+        .querySelector('#mobile-footer-action') as web.HTMLButtonElement?;
 
     expect(footerButton, isNotNull);
-    expect(footerButton!.text, contains('Validação avançada'));
+    expect(footerButton!.textContent, contains('Validação avançada'));
 
     await fixture.update((_) {
-      footerButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      footerButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -410,22 +417,23 @@ void main() {
 
     final trigger = fixture.rootElement
             .querySelector('[aria-label="near-viewport-edge-actions"]')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final host = trigger.parent as html.Element;
+    final host = trigger.parentElement as web.Element;
     final menuNode =
         fixture.rootElement.querySelector('.li-dropdown-menu__menu.show');
     expect(menuNode, isNotNull);
-    final menu = menuNode as html.Element;
-    final items =
-        menu.querySelector('.li-dropdown-menu__items') as html.Element;
+    final menu = menuNode as web.Element;
+    final items = menu.querySelector('.li-dropdown-menu__items') as web.Element;
 
-    expect(host.classes.contains('dropdown') || host.classes.contains('dropup'),
+    expect(
+        host.classList.contains('dropdown') ||
+            host.classList.contains('dropup'),
         isTrue);
     expect(items, isNotNull);
   });
@@ -434,11 +442,12 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final trigger = fixture.rootElement
-        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+    final trigger =
+        fixture.rootElement.querySelector('[aria-label="inline-actions"]')
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -460,11 +469,12 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final trigger = fixture.rootElement
-        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+    final trigger =
+        fixture.rootElement.querySelector('[aria-label="inline-actions"]')
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -473,8 +483,8 @@ void main() {
       isNotNull,
     );
 
-    html.document.body!
-        .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+    web.document.body!
+        .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     await _settle(fixture);
 
     expect(
@@ -488,20 +498,21 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final inlineTrigger = fixture.rootElement
-        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+    final inlineTrigger =
+        fixture.rootElement.querySelector('[aria-label="inline-actions"]')
+            as web.HTMLButtonElement;
     final bodyTrigger = fixture.rootElement
-        .querySelector('[aria-label="body-actions"]') as html.ButtonElement;
+        .querySelector('[aria-label="body-actions"]') as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      inlineTrigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      inlineTrigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.inlineMenu!.isOpen, isTrue);
 
     await fixture.update((_) {
-      bodyTrigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      bodyTrigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -519,27 +530,31 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
 
-    final inlineTrigger = fixture.rootElement
-        .querySelector('[aria-label="inline-actions"]') as html.ButtonElement;
+    final inlineTrigger =
+        fixture.rootElement.querySelector('[aria-label="inline-actions"]')
+            as web.HTMLButtonElement;
     final persistentTrigger =
         fixture.rootElement.querySelector('[aria-label="persistent-actions"]')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      inlineTrigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      inlineTrigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     await fixture.update((_) {
       persistentTrigger
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+          .dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.inlineMenu!.isOpen, isTrue);
     expect(host.persistentMenu!.isOpen, isTrue);
     expect(
-      fixture.rootElement.queryAll('.li-dropdown-menu__menu.show').length,
+      fixture.rootElement
+          .querySelectorAll('.li-dropdown-menu__menu.show')
+          .toElementList()
+          .length,
       2,
     );
   });
@@ -550,27 +565,29 @@ void main() {
     final host = fixture.assertOnlyInstance;
 
     final trigger = fixture.rootElement
-        .querySelector('[aria-label="body-actions"]') as html.ButtonElement;
+        .querySelector('[aria-label="body-actions"]') as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final option = html.document
-        .queryAll(
+    final option = web.document
+        .querySelectorAll(
             '.LiDropdownMenuComponent .li-dropdown-menu__menu.show .dropdown-item')
-        .cast<html.ButtonElement>()
-        .firstWhere((element) => (element.text).contains('Limpar'));
+        .toElementList()
+        .cast<web.HTMLButtonElement>()
+        .firstWhere(
+            (element) => ((element.textContent ?? '')).contains('Limpar'));
 
     await fixture.update((_) {
-      option.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      option.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     expect(host.selectedValue, 'clear');
     expect(
-      html.document.querySelector(
+      web.document.querySelector(
           '.LiDropdownMenuComponent .li-dropdown-menu__menu.show'),
       isNull,
     );
@@ -585,21 +602,20 @@ void main() {
 
     final trigger = fixture.rootElement
             .querySelector('[aria-label="disabled-option-actions"]')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final disabledOption = fixture.rootElement.querySelector(
             '.li-dropdown-menu__menu.show .dropdown-item[disabled]')
-        as html.ButtonElement?;
+        as web.HTMLButtonElement?;
     expect(disabledOption, isNotNull);
 
     await fixture.update((_) {
-      disabledOption!
-          .dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      disabledOption!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -613,20 +629,20 @@ void main() {
 
     final trigger =
         fixture.rootElement.querySelector('[aria-label="keep-open-actions"]')
-            as html.ButtonElement;
+            as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
     final option = fixture.rootElement
             .querySelector('.li-dropdown-menu__menu.show .dropdown-item')
-        as html.ButtonElement?;
+        as web.HTMLButtonElement?;
     expect(option, isNotNull);
 
     await fixture.update((_) {
-      option!.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      option!.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -649,13 +665,13 @@ Future<void> _settle(
 
 Future<void> _nextAnimationFrame() {
   final completer = Completer<void>();
-  html.window.liRequestAnimationFrame((_) {
+  requestAnimationFrameInZone((_) {
     completer.complete();
   });
   return completer.future;
 }
 
 void _dispatchEscapeKeydown() {
-  final event = html.liKeyboardEvent('keydown', key: 'Escape');
-  html.document.dispatchEvent(event);
+  final event = bubblingKeyboardEvent('keydown', key: 'Escape');
+  web.document.dispatchEvent(event);
 }

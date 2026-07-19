@@ -1,4 +1,4 @@
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -13,7 +13,7 @@ import 'scrollspy_service.dart';
 class LiScrollSpyDirective implements AfterViewInit, OnDestroy, LiScrollSpyRef {
   LiScrollSpyDirective(this._element, this._service, this._changeDetectorRef);
 
-  final html.Element _element;
+  final web.Element _element;
   final LiScrollSpyService _service;
   final ChangeDetectorRef _changeDetectorRef;
 

@@ -1,12 +1,15 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart';
+import 'package:web/web.dart' as web;
 
 import 'package:popper/popper.dart';
 
+import '../../web_support/dom_tokens.dart';
+import '../../web_support/html_sinks.dart';
+
 class SweetAlertPopover {
   static void showPopover(
-    Element target,
+    web.Element target,
     String message, {
     String title = 'Atenção',
     String? popoverClass,
@@ -20,42 +23,44 @@ class SweetAlertPopover {
 
     final id = 'popover441630';
 
-    final olds = document.queryAll('#$id');
-    if (olds.isNotEmpty) {
-      for (final old in olds) {
-        old.remove();
-      }
+    final olds = web.document.querySelectorAll('#$id');
+    for (var index = 0; index < olds.length; index++) {
+      (olds.item(index) as web.Element?)?.remove();
     }
 
-    final rootPopover = DivElement();
+    final rootPopover = web.HTMLDivElement();
     rootPopover.setAttribute('id', id);
-    rootPopover.classes.addAll(['popover', 'bs-popover-auto', 'fade', 'show']);
+    addClassTokens(
+      rootPopover,
+      const <String>['popover', 'bs-popover-auto', 'fade', 'show'],
+    );
     rootPopover.setAttribute('data-label', 'li_sa_popover');
     rootPopover.setAttribute('data-value', id);
     rootPopover.setAttribute('data-open', 'true');
     final popoverClassNames = _classNames(popoverClass);
     if (popoverClassNames.isNotEmpty) {
-      rootPopover.classes.addAll(popoverClassNames);
+      addClassTokens(rootPopover, popoverClassNames);
     }
     rootPopover.setAttribute('data-popper-placement', 'top');
     rootPopover.style.position = 'fixed';
     rootPopover.style.margin = '0px';
     rootPopover.style.zIndex = '10000';
 
-    final popoverArrow = DivElement();
-    popoverArrow.classes.add('popover-arrow');
+    final popoverArrow = web.HTMLDivElement();
+    popoverArrow.classList.add('popover-arrow');
     popoverArrow.setAttribute('data-label', 'li_sa_popover_arrow');
-    popoverArrow.classes.addAll(
+    addClassTokens(
+      popoverArrow,
       popoverClassNames.where((className) => className.startsWith('border-')),
     );
     rootPopover.append(popoverArrow);
     popoverArrow.style.position = 'absolute';
     popoverArrow.style.left = '0px';
 
-    final popoverHeader = createHeadingElement(3);
-    popoverHeader.classes.add('popover-header');
+    final popoverHeader = web.HTMLHeadingElement.h3();
+    popoverHeader.classList.add('popover-header');
     popoverHeader.setAttribute('data-label', 'li_sa_popover_header');
-    popoverHeader.text = title;
+    popoverHeader.textContent = title;
     _applyCustomTheme(
       header: popoverHeader,
       body: null,
@@ -63,10 +68,10 @@ class SweetAlertPopover {
     );
     rootPopover.append(popoverHeader);
 
-    final popoverBody = DivElement();
-    popoverBody.classes.add('popover-body');
+    final popoverBody = web.HTMLDivElement();
+    popoverBody.classList.add('popover-body');
     popoverBody.setAttribute('data-label', 'li_sa_popover_body');
-    popoverBody.innerHtml = message;
+    setTrustedHtml(popoverBody, message);
     popoverBody.style.whiteSpace = 'pre-line';
     _applyCustomTheme(
       header: null,
@@ -76,11 +81,10 @@ class SweetAlertPopover {
     rootPopover.append(popoverBody);
     rootPopover.style.maxWidth = '420px';
 
-    // ignore: unsafe_html
-    // rootPopover.setInnerHtml(template,
-    //     treeSanitizer: NodeTreeSanitizer.trusted);
-
-    document.body!.classes.addAll(['swal2-toast-shown', 'swal2-shown']);
+    addClassTokens(
+      web.document.body!,
+      const <String>['swal2-toast-shown', 'swal2-shown'],
+    );
     final overlay = PopperAnchoredOverlay.attach(
       referenceElement: target,
       floatingElement: rootPopover,
@@ -103,7 +107,7 @@ class SweetAlertPopover {
         arrowPadding: const PopperInsets.all(10),
         onLayout: (layout) {
           rootPopover.setAttribute('data-popper-placement', layout.placement);
-          rootPopover.classes
+          rootPopover.classList
             ..remove('bs-popover-top')
             ..remove('bs-popover-bottom')
             ..remove('bs-popover-start')
@@ -117,12 +121,16 @@ class SweetAlertPopover {
     overlay.update();
     Future<void>.delayed(Duration.zero, overlay.update);
 
-    StreamSubscription? ssoc, ssokd;
+    StreamSubscription<web.MouseEvent>? ssoc;
+    StreamSubscription<web.KeyboardEvent>? ssokd;
     Timer? closeTimer;
 
     void close() {
       target.removeAttribute('data-popover');
-      document.body!.classes.removeAll(['swal2-toast-shown', 'swal2-shown']);
+      removeClassTokens(
+        web.document.body!,
+        const <String>['swal2-toast-shown', 'swal2-shown'],
+      );
       overlay.dispose();
       ssoc?.cancel();
       ssokd?.cancel();
@@ -138,17 +146,21 @@ class SweetAlertPopover {
     }
 
     Future.delayed(const Duration(milliseconds: 250), () {
-      ssoc = document.onClick.listen((event) {
+      ssoc = web.EventStreamProvider<web.MouseEvent>('click')
+          .forTarget(web.document)
+          .listen((event) {
         final te = event.target;
-        if ((te?.isA<Element>() ?? false) &&
-            !rootPopover.contains(te as Node?) &&
+        if ((te?.isA<web.Element>() ?? false) &&
+            !rootPopover.contains(te as web.Node?) &&
             !target.contains(te)) {
           close();
         }
       });
 
-      ssokd = document.onKeyDown.listen((event) {
-        if (event.keyCode == 27) {
+      ssokd = web.EventStreamProvider<web.KeyboardEvent>('keydown')
+          .forTarget(web.document)
+          .listen((event) {
+        if (event.key == 'Escape') {
           close();
         }
       });
@@ -160,7 +172,7 @@ class SweetAlertPopover {
   }
 
   static void _normalizeArrowOffset(
-      HtmlElement arrowElement, String placement) {
+      web.HTMLElement arrowElement, String placement) {
     final insetValues = _expandInsetValues(
       arrowElement.style.getPropertyValue('inset'),
     );
@@ -243,8 +255,8 @@ class SweetAlertPopover {
   }
 
   static void _applyCustomTheme({
-    HeadingElement? header,
-    DivElement? body,
+    web.HTMLHeadingElement? header,
+    web.HTMLDivElement? body,
     required List<String> popoverClassNames,
   }) {
     if (!popoverClassNames.contains('popover-custom')) {
@@ -260,16 +272,18 @@ class SweetAlertPopover {
 
     if (header != null) {
       if (backgroundClassNames.isNotEmpty) {
-        header.classes.addAll(backgroundClassNames);
+        addClassTokens(header, backgroundClassNames);
       }
       if (textClassNames.isNotEmpty) {
-        header.classes.addAll(textClassNames);
+        addClassTokens(header, textClassNames);
         if (textClassNames.contains('text-white')) {
-          header.classes.addAll(
+          addClassTokens(
+            header,
             const <String>['border-white', 'border-opacity-25'],
           );
         } else if (textClassNames.contains('text-black')) {
-          header.classes.addAll(
+          addClassTokens(
+            header,
             const <String>['border-black', 'border-opacity-10'],
           );
         }
@@ -277,7 +291,7 @@ class SweetAlertPopover {
     }
 
     if (body != null && textClassNames.isNotEmpty) {
-      body.classes.addAll(textClassNames);
+      addClassTokens(body, textClassNames);
     }
   }
 }

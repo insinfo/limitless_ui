@@ -3,7 +3,10 @@
 import 'dart:js_interop';
 import 'dart:async';
 import 'dart:convert';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
+
+import '../../web_support/dom_tokens.dart';
+import '../../web_support/html_sinks.dart';
 
 enum LiDialogColor { DANGER, PRIMARY, SUCCESS, WARNING, INFO, PINK }
 
@@ -72,10 +75,9 @@ class LiSimpleDialogComponent {
     </div>
      ''';
     // ignore: omit_local_variable_types
-    html.DivElement root = html.createDivElement();
-    html.document.querySelector('body')?.append(root);
-    // ignore: unsafe_html
-    root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
+    web.HTMLDivElement root = web.HTMLDivElement();
+    web.document.querySelector('body')?.append(root);
+    setTrustedHtml(root, template);
   }
 
   static void showFullScreenAlert(String message,
@@ -88,13 +90,12 @@ class LiSimpleDialogComponent {
         </div>
     </div>
      ''';
-    html.document.querySelector('.FullScreenAlert')?.remove();
+    web.document.querySelector('.FullScreenAlert')?.remove();
     // ignore: omit_local_variable_types
-    html.DivElement root = html.createDivElement();
-    root.classes.add('FullScreenAlert');
-    html.document.querySelector('body')?.append(root);
-    // ignore: unsafe_html
-    root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
+    web.HTMLDivElement root = web.HTMLDivElement();
+    root.classList.add('FullScreenAlert');
+    web.document.querySelector('body')?.append(root);
+    setTrustedHtml(root, template);
   }
 
   static void showAlert(
@@ -126,17 +127,16 @@ class LiSimpleDialogComponent {
     </div>
         <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_sd_backdrop" data-value="alert" data-open="true"></div>
     ''';
-    var root = html.createDivElement();
-    root.classes.add('li-simple-dialog-root');
+    var root = web.HTMLDivElement();
+    root.classList.add('li-simple-dialog-root');
     root
       ..setAttribute('data-label', 'li_sd_root')
       ..setAttribute('data-value', 'alert')
       ..setAttribute('data-open', 'true');
-    html.document.querySelector('body')?.append(root);
-    // ignore: unsafe_html
-    root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
+    web.document.querySelector('body')?.append(root);
+    setTrustedHtml(root, template);
     if (subMessage != null) {
-      var btnEle = html.createDivElement();
+      var btnEle = web.HTMLDivElement();
       btnEle
         ..setAttribute('data-label', 'li_sd_detail_toggle')
         ..setAttribute('data-value', 'alert');
@@ -144,42 +144,30 @@ class LiSimpleDialogComponent {
           'style', 'padding-top:15px;padding-bottom:5px;cursor: pointer;');
       var t =
           '<label class="text-muted" style="cursor: pointer;">$detailLabel  </label> <a class="list-icons-item dropdown-toggle" data-toggle="dropdown" ></a>';
-      // ignore: unsafe_html
-      btnEle.setInnerHtml(t, treeSanitizer: html.NodeTreeSanitizer.trusted);
+      setTrustedHtml(btnEle, t);
       root.querySelector('.modal-body')?.append(btnEle);
 
-      var container = html.createDivElement();
-      container.classes.add('modal-detail');
+      var container = web.HTMLDivElement();
+      container.classList.add('modal-detail');
       container
         ..setAttribute('data-label', 'li_sd_detail')
         ..setAttribute('data-value', 'alert');
       root.querySelector('.modal-body')?.append(container);
 
       btnEle.onClick.listen((e) {
-        var el = e.target as html.HtmlElement;
-        if (el
-                .closest('.modal-body')
-                ?.querySelector('.modal-detail')
-                ?.style
-                .display ==
-            'none') {
-          el
-              .closest('.modal-body')
-              ?.querySelector('.modal-detail')
-              ?.style
-              .display = 'block';
+        var el = e.target as web.HTMLElement;
+        final detail = el.closest('.modal-body')?.querySelector('.modal-detail')
+            as web.HTMLElement?;
+        if (detail?.style.display == 'none') {
+          detail?.style.display = 'block';
         } else {
-          el
-              .closest('.modal-body')
-              ?.querySelector('.modal-detail')
-              ?.style
-              .display = 'none';
+          detail?.style.display = 'none';
         }
       });
 
       container.style.overflow = 'hidden';
       container.style.display = 'none';
-      container.innerHtml = subMessage;
+      setTrustedHtml(container, subMessage);
     }
     root.querySelector('button.BtnOk')?.onClick.listen((e) {
       if (okAction != null) {
@@ -189,7 +177,7 @@ class LiSimpleDialogComponent {
     });
 
     Future.delayed(Duration(milliseconds: 40), () {
-      root.querySelector('.modal')?.focus();
+      (root.querySelector('.modal') as web.HTMLElement?)?.focus();
     });
   }
 
@@ -227,15 +215,14 @@ class LiSimpleDialogComponent {
     </div>
         <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_sd_backdrop" data-value="confirm" data-open="true"></div>
     ''';
-    final root = html.createDivElement();
-    root.classes.add('li-simple-dialog-root');
+    final root = web.HTMLDivElement();
+    root.classList.add('li-simple-dialog-root');
     root
       ..setAttribute('data-label', 'li_sd_root')
       ..setAttribute('data-value', 'confirm')
       ..setAttribute('data-open', 'true');
-    html.document.querySelector('body')?.append(root);
-    // ignore: unsafe_html
-    root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
+    web.document.querySelector('body')?.append(root);
+    setTrustedHtml(root, template);
     root.querySelector('button.BtnCancel')?.onClick.listen((e) {
       if (cancelAction != null) {
         cancelAction();
@@ -252,7 +239,7 @@ class LiSimpleDialogComponent {
     });
 
     Future.delayed(Duration(milliseconds: 40), () {
-      root.querySelector('.modal')?.focus();
+      (root.querySelector('.modal') as web.HTMLElement?)?.focus();
     });
 
     return comp.future;
@@ -310,24 +297,23 @@ class LiSimpleDialogComponent {
     </div>
         <div class="modal-backdrop fade show li-simple-dialog__backdrop" style="z-index:$backdropZIndex;" data-label="li_sd_backdrop" data-value="prompt" data-open="true"></div>
     ''';
-    final root = html.createDivElement();
-    root.classes.add('li-simple-dialog-root');
+    final root = web.HTMLDivElement();
+    root.classList.add('li-simple-dialog-root');
     root
       ..setAttribute('data-label', 'li_sd_root')
       ..setAttribute('data-value', 'prompt')
       ..setAttribute('data-open', 'true');
-    html.document.querySelector('body')?.append(root);
-    // ignore: unsafe_html
-    root.setInnerHtml(template, treeSanitizer: html.NodeTreeSanitizer.trusted);
+    web.document.querySelector('body')?.append(root);
+    setTrustedHtml(root, template);
 
-    final input = root.querySelector('#$inputId') as html.HtmlElement?;
-    if ((input?.isA<html.InputElement>() ?? false)) {
-      (input as html.InputElement)
+    final input = root.querySelector('#$inputId') as web.HTMLElement?;
+    if ((input?.isA<web.HTMLInputElement>() ?? false)) {
+      (input as web.HTMLInputElement)
         ..placeholder = inputPlaceholder ?? ''
         ..value = inputValue
         ..autocomplete = inputConfig?.autocomplete ?? 'off';
-    } else if ((input?.isA<html.TextAreaElement>() ?? false)) {
-      (input as html.TextAreaElement)
+    } else if ((input?.isA<web.HTMLTextAreaElement>() ?? false)) {
+      (input as web.HTMLTextAreaElement)
         ..placeholder = inputPlaceholder ?? ''
         ..value = inputValue
         ..rows = inputConfig?.rows ?? 4;
@@ -338,28 +324,29 @@ class LiSimpleDialogComponent {
 
     Future<void> confirm() async {
       final value = _readPromptValue(input);
-      final validationMessage = root
-          .querySelector('.li-simple-dialog__validation') as html.DivElement?;
+      final validationMessage =
+          root.querySelector('.li-simple-dialog__validation')
+              as web.HTMLDivElement?;
 
       if (inputValidator != null) {
         final validation = await inputValidator(value);
         if (validation != null && validation.trim().isNotEmpty) {
           if (validationMessage != null) {
             validationMessage
-              ..text = validation
+              ..textContent = validation
               ..style.display = 'block';
           }
-          input?.classes.add('is-invalid');
+          input?.classList.add('is-invalid');
           return;
         }
       }
 
       if (validationMessage != null) {
         validationMessage
-          ..text = ''
+          ..textContent = ''
           ..style.display = 'none';
       }
-      input?.classes.remove('is-invalid');
+      input?.classList.remove('is-invalid');
       confirmAction?.call(value);
       root.remove();
       if (!comp.isCompleted) {
@@ -378,11 +365,11 @@ class LiSimpleDialogComponent {
       confirm();
     });
     input?.onKeyDown.listen((event) {
-      final isEnter = event.key == 'Enter' || event.keyCode == 13;
+      final isEnter = event.key == 'Enter';
       if (!isEnter) {
         return;
       }
-      if (input.isA<html.TextAreaElement>() &&
+      if (input.isA<web.HTMLTextAreaElement>() &&
           !event.ctrlKey &&
           !event.metaKey) {
         return;
@@ -410,12 +397,12 @@ class LiSimpleDialogComponent {
     }
   }
 
-  static String _readPromptValue(html.HtmlElement? input) {
-    if ((input?.isA<html.InputElement>() ?? false)) {
-      return (input as html.InputElement).value;
+  static String _readPromptValue(web.HTMLElement? input) {
+    if ((input?.isA<web.HTMLInputElement>() ?? false)) {
+      return (input as web.HTMLInputElement).value;
     }
-    if ((input?.isA<html.TextAreaElement>() ?? false)) {
-      return (input as html.TextAreaElement).value;
+    if ((input?.isA<web.HTMLTextAreaElement>() ?? false)) {
+      return (input as web.HTMLTextAreaElement).value;
     }
     return '';
   }
@@ -423,7 +410,7 @@ class LiSimpleDialogComponent {
   static String _escapeHtml(String value) => const HtmlEscape().convert(value);
 
   static void _applyInputConfig(
-    html.HtmlElement input,
+    web.HTMLElement input,
     LiSimpleDialogInputConfig? inputConfig,
   ) {
     if (inputConfig == null) {
@@ -432,7 +419,7 @@ class LiSimpleDialogComponent {
 
     final className = inputConfig.className?.trim();
     if (className != null && className.isNotEmpty) {
-      input.classes.addAll(className.split(RegExp(r'\s+')));
+      addClassTokens(input, className.split(RegExp(r'\s+')));
     }
     for (final entry
         in (inputConfig.style ?? const <String, String>{}).entries) {
@@ -449,8 +436,8 @@ class LiSimpleDialogComponent {
       }
     }
 
-    if (input.isA<html.TextAreaElement>()) {
-      final textArea = input as html.TextAreaElement;
+    if (input.isA<web.HTMLTextAreaElement>()) {
+      final textArea = input as web.HTMLTextAreaElement;
       if (inputConfig.rows != null) {
         textArea.rows = inputConfig.rows!;
       }
@@ -466,8 +453,8 @@ class LiSimpleDialogComponent {
       return;
     }
 
-    if (input.isA<html.InputElement>()) {
-      final inputEl = input as html.InputElement;
+    if (input.isA<web.HTMLInputElement>()) {
+      final inputEl = input as web.HTMLInputElement;
       if (inputConfig.minLength != null) {
         inputEl.minLength = inputConfig.minLength!;
       }

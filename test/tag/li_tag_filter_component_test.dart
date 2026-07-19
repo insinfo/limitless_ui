@@ -5,13 +5,16 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
+import '../support/web_node_list.dart';
 
 import 'li_tag_filter_component_test.template.dart' as ng;
 
@@ -68,25 +71,26 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.li-tag-filter__button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
-    expect(fixture.rootElement.text, contains('Apoio previdenciário'));
+    expect(fixture.rootElement.textContent, contains('Apoio previdenciário'));
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final options = html.document
-        .queryAll('.li-tag-filter__panel--open .li-tag-filter__option')
-        .cast<html.Element>()
+    final options = web.document
+        .querySelectorAll('.li-tag-filter__panel--open .li-tag-filter__option')
+        .toElementList()
+        .cast<web.Element>()
         .toList(growable: false);
     final assessoria = options.firstWhere(
-      (element) => (element.text).contains('Assessoria'),
+      (element) => ((element.textContent ?? '')).contains('Assessoria'),
     );
 
     await fixture.update((_) {
-      assessoria.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      assessoria.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -103,10 +107,10 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final clearButton =
-        fixture.rootElement.querySelector('.dropdown-clear') as html.Element;
+        fixture.rootElement.querySelector('.dropdown-clear') as web.Element;
 
     await fixture.update((_) {
-      clearButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      clearButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
@@ -123,18 +127,20 @@ void main() {
     await _settle(fixture);
 
     final trigger = fixture.rootElement.querySelector('.li-tag-filter__button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
     final selection = fixture.rootElement
-        .querySelector('.li-tag-filter__selection') as html.Element;
-    final badges =
-        fixture.rootElement.queryAll('.li-tag-filter__selection-badge');
+        .querySelector('.li-tag-filter__selection') as web.Element;
+    final badges = fixture.rootElement
+        .querySelectorAll('.li-tag-filter__selection-badge')
+        .toElementList();
     final badgeRows = badges
         .map((element) => element.getBoundingClientRect().top.round())
         .toSet();
 
-    expect(trigger.classes.contains('li-tag-filter__button--wrapped'), isTrue);
     expect(
-      selection.classes.contains('li-tag-filter__selection--wrapped'),
+        trigger.classList.contains('li-tag-filter__button--wrapped'), isTrue);
+    expect(
+      selection.classList.contains('li-tag-filter__selection--wrapped'),
       isTrue,
     );
     expect(badgeRows.length, greaterThan(1));
@@ -146,17 +152,17 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final trigger = fixture.rootElement.querySelector('.li-tag-filter__button')
-        as html.ButtonElement;
+        as web.HTMLButtonElement;
 
     await fixture.update((_) {
-      trigger.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      trigger.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 
-    final panel = html.document.querySelector(
+    final panel = web.document.querySelector(
       '.li-tag-filter__panel--open',
-    ) as html.Element;
-    final reloadButton = panel.querySelector('.btn-icon') as html.Element;
+    ) as web.Element;
+    final reloadButton = panel.querySelector('.btn-icon') as web.Element;
     final triggerRect = trigger.getBoundingClientRect();
     final panelRect = panel.getBoundingClientRect();
 
@@ -164,7 +170,7 @@ void main() {
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
 
     await fixture.update((_) {
-      reloadButton.dispatchEvent(html.liMouseEvent('click', canBubble: true));
+      reloadButton.dispatchEvent(bubblingMouseEvent('click', bubbles: true));
     });
     await _settle(fixture);
 

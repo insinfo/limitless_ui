@@ -1,9 +1,11 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
+
+import '../../web_support/zone_dom_callbacks.dart';
 
 import '../../directives/li_form_directive.dart';
 import '../../validation/li_built_in_input_types.dart';
@@ -43,20 +45,20 @@ class LiPasswordInputComponent
 
   static int _nextId = 0;
 
-  final html.HTMLElement _hostElement;
+  final web.HTMLElement _hostElement;
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
   final String _generatedId;
-  final StreamController<html.Event> _blurController =
-      StreamController<html.Event>.broadcast();
-  final StreamController<html.Event> _focusController =
-      StreamController<html.Event>.broadcast();
-  final StreamController<html.MouseEvent> _clickController =
-      StreamController<html.MouseEvent>.broadcast();
-  final StreamController<html.KeyboardEvent> _keydownController =
-      StreamController<html.KeyboardEvent>.broadcast();
-  final StreamController<html.KeyboardEvent> _enterController =
-      StreamController<html.KeyboardEvent>.broadcast();
+  final StreamController<web.Event> _blurController =
+      StreamController<web.Event>.broadcast();
+  final StreamController<web.Event> _focusController =
+      StreamController<web.Event>.broadcast();
+  final StreamController<web.MouseEvent> _clickController =
+      StreamController<web.MouseEvent>.broadcast();
+  final StreamController<web.KeyboardEvent> _keydownController =
+      StreamController<web.KeyboardEvent>.broadcast();
+  final StreamController<web.KeyboardEvent> _enterController =
+      StreamController<web.KeyboardEvent>.broadcast();
   StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
@@ -198,22 +200,22 @@ class LiPasswordInputComponent
   bool floatingLabel = false;
 
   @ViewChild('inputElement')
-  html.InputElement? inputElement;
+  web.HTMLInputElement? inputElement;
 
   @Output('inputBlur')
-  Stream<html.Event> get inputBlur => _blurController.stream;
+  Stream<web.Event> get inputBlur => _blurController.stream;
 
   @Output('inputFocus')
-  Stream<html.Event> get inputFocus => _focusController.stream;
+  Stream<web.Event> get inputFocus => _focusController.stream;
 
   @Output('inputClick')
-  Stream<html.MouseEvent> get inputClick => _clickController.stream;
+  Stream<web.MouseEvent> get inputClick => _clickController.stream;
 
   @Output('inputKeydown')
-  Stream<html.KeyboardEvent> get inputKeydown => _keydownController.stream;
+  Stream<web.KeyboardEvent> get inputKeydown => _keydownController.stream;
 
   @Output('inputEnter')
-  Stream<html.KeyboardEvent> get inputEnter => _enterController.stream;
+  Stream<web.KeyboardEvent> get inputEnter => _enterController.stream;
 
   String _realValue = '';
   bool _passwordVisible = false;
@@ -225,7 +227,7 @@ class LiPasswordInputComponent
   LiInputType? _resolvedLiInputType;
   List<LiRule> _effectiveRules = const <LiRule>[];
   Map<String, String> _effectiveMessages = const <String, String>{};
-  html.MutationObserver? _hostClassObserver;
+  ZoneMutationObserver? _hostClassObserver;
 
   ChangeFunction<String?> _onChange = (String? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
@@ -320,7 +322,7 @@ class LiPasswordInputComponent
 
   bool get isValid =>
       !isInvalid &&
-      (_effectiveAutoValid || _hostElement.classes.contains('is-valid'));
+      (_effectiveAutoValid || _hostElement.classList.contains('is-valid'));
 
   String get effectiveErrorText {
     final externalMessage = errorText.trim();
@@ -443,7 +445,7 @@ class LiPasswordInputComponent
       _markForCheck();
     });
 
-    _hostClassObserver = html.MutationObserver((_, __) {
+    _hostClassObserver = ZoneMutationObserver((_, __) {
       _syncValidationClasses();
       _markForCheck();
     })
@@ -458,7 +460,7 @@ class LiPasswordInputComponent
     _rebuildValidationConfig(normalizeCurrentValue: false);
   }
 
-  void handleInput(html.Event event) {
+  void handleInput(web.Event event) {
     final field = inputElement;
     if (field == null || disabled || readonly || _updatingView) {
       return;
@@ -491,7 +493,7 @@ class LiPasswordInputComponent
     _replaceRange(diff.start, diff.endOld, inserted);
   }
 
-  void handlePaste(html.ClipboardEvent event) {
+  void handlePaste(web.ClipboardEvent event) {
     if (disabled || readonly || _passwordVisible) {
       return;
     }
@@ -508,19 +510,19 @@ class LiPasswordInputComponent
     _replaceRange(start, end, text);
   }
 
-  void handleCut(html.Event event) {
+  void handleCut(web.Event event) {
     if (!_passwordVisible) {
       event.preventDefault();
     }
   }
 
-  void handleDrop(html.Event event) {
+  void handleDrop(web.Event event) {
     if (!_passwordVisible) {
       event.preventDefault();
     }
   }
 
-  void handleBlur(html.Event event) {
+  void handleBlur(web.Event event) {
     _touched = true;
     _onTouched();
     _runAutoValidation();
@@ -528,20 +530,20 @@ class LiPasswordInputComponent
     _markForCheck();
   }
 
-  void handleFocus(html.Event event) {
+  void handleFocus(web.Event event) {
     _focusController.add(event);
   }
 
-  void handleClick(html.MouseEvent event) {
+  void handleClick(web.MouseEvent event) {
     _clickController.add(event);
   }
 
-  void handleKeydown(html.Event event) {
-    if (!event.isA<html.KeyboardEvent>()) {
+  void handleKeydown(web.Event event) {
+    if (!event.isA<web.KeyboardEvent>()) {
       return;
     }
 
-    _keydownController.add(event as html.KeyboardEvent);
+    _keydownController.add(event as web.KeyboardEvent);
     if (event.key == 'Enter' ||
         event.code == 'Enter' ||
         event.code == 'NumpadEnter') {
@@ -599,7 +601,7 @@ class LiPasswordInputComponent
     Future<void>.microtask(_focusInput);
   }
 
-  void handlePasswordToggleMouseDown(html.MouseEvent event) {
+  void handlePasswordToggleMouseDown(web.MouseEvent event) {
     event.preventDefault();
   }
 
@@ -677,15 +679,15 @@ class LiPasswordInputComponent
     final shouldShowValid = isValid;
 
     if (shouldShowInvalid) {
-      field.classes.add('is-invalid');
+      field.classList.add('is-invalid');
     } else {
-      field.classes.remove('is-invalid');
+      field.classList.remove('is-invalid');
     }
 
     if (shouldShowValid) {
-      field.classes.add('is-valid');
+      field.classList.add('is-valid');
     } else {
-      field.classes.remove('is-valid');
+      field.classList.remove('is-valid');
     }
 
     if (effectiveInvalid) {
@@ -828,7 +830,7 @@ class LiPasswordInputComponent
   }
 
   bool get _hasHostInvalidState =>
-      _hostElement.classes.contains('is-invalid') ||
+      _hostElement.classList.contains('is-invalid') ||
       _hostElement.getAttribute('data-invalid') == 'true';
 
   bool get _shouldShowValidation => liShouldShowValidation(

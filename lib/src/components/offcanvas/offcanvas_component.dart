@@ -1,6 +1,6 @@
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:ngx_dart/angular.dart';
 
@@ -135,7 +135,7 @@ class LiOffcanvasComponent
   static int _bodyScrollLockCount = 0;
   static String? _previousBodyOverflow;
 
-  final html.Element rootElement;
+  final web.Element rootElement;
   final ChangeDetectorRef _changeDetectorRef;
 
   final _onOpenCtrl = StreamController<void>.broadcast();
@@ -144,10 +144,10 @@ class LiOffcanvasComponent
   final _onHiddenCtrl = StreamController<void>.broadcast();
   final _onDismissCtrl = StreamController<LiOffcanvasDismissReason>.broadcast();
 
-  StreamSubscription<html.KeyboardEvent>? _keydownSubscription;
+  StreamSubscription<web.KeyboardEvent>? _keydownSubscription;
   Timer? _shownTimer;
   Timer? _hiddenTimer;
-  html.Element? _previouslyFocusedElement;
+  web.Element? _previouslyFocusedElement;
   bool _lockedBodyScroll = false;
   bool _pendingFocus = false;
   String? _registeredOffcanvasId;
@@ -228,7 +228,7 @@ class LiOffcanvasComponent
   LiOffcanvasHeaderDirective? customHeader;
 
   @ViewChild('panel')
-  html.DivElement? panelElement;
+  web.HTMLDivElement? panelElement;
 
   bool get hasCustomHeader => customHeader != null;
 
@@ -331,7 +331,7 @@ class LiOffcanvasComponent
 
   @override
   void ngOnInit() {
-    html.document.body?.append(rootElement);
+    web.document.body?.appendChild(rootElement);
     _syncServiceRegistration();
 
     if (startOpen) {
@@ -360,7 +360,7 @@ class LiOffcanvasComponent
     }
 
     _hiddenTimer?.cancel();
-    _previouslyFocusedElement = html.document.activeElement;
+    _previouslyFocusedElement = web.document.activeElement;
     isRendered = true;
     isOpen = true;
     _pendingFocus = true;
@@ -399,11 +399,11 @@ class LiOffcanvasComponent
     _onDismissCtrl.add(reason);
   }
 
-  void stopPropagation(html.Event event) {
+  void stopPropagation(web.Event event) {
     event.stopPropagation();
   }
 
-  void onBackdropMouseDown(html.MouseEvent event) {
+  void onBackdropMouseDown(web.MouseEvent event) {
     if (!enableBackdrop || !closeOnBackdropClick) {
       return;
     }
@@ -448,7 +448,9 @@ class LiOffcanvasComponent
 
   void _bindKeyboardListener() {
     _keydownSubscription?.cancel();
-    _keydownSubscription = html.document.onKeyDown.listen((event) {
+    _keydownSubscription = web.EventStreamProviders.keyDownEvent
+        .forTarget(web.document)
+        .listen((event) {
       if (!isOpen || !keyboard || event.key != 'Escape') {
         return;
       }
@@ -473,22 +475,24 @@ class LiOffcanvasComponent
         _firstFocusable(panel) ??
         panel;
 
-    if (focusTarget.isA<html.HtmlElement>()) {
-      focusTarget.focus();
+    if (focusTarget.isA<web.HTMLElement>()) {
+      (focusTarget as web.HTMLElement).focus();
     }
   }
 
-  html.HtmlElement? _firstFocusable(html.Element root) {
+  web.HTMLElement? _firstFocusable(web.Element root) {
     const selector =
         'a[href], button:not([disabled]), textarea:not([disabled]), '
         'input:not([disabled]), select:not([disabled]), '
         '[tabindex]:not([tabindex="-1"])';
 
-    for (final candidate in root.queryAll(selector)) {
-      if (!candidate.isA<html.HtmlElement>()) {
+    final candidates = root.querySelectorAll(selector);
+    for (var index = 0; index < candidates.length; index++) {
+      final candidate = candidates.item(index)! as web.Element;
+      if (!candidate.isA<web.HTMLElement>()) {
         continue;
       }
-      final element = candidate as html.HtmlElement;
+      final element = candidate as web.HTMLElement;
       if (element.hidden.isTruthy.toDart || element.tabIndex == -1) {
         continue;
       }
@@ -501,9 +505,9 @@ class LiOffcanvasComponent
   void _restoreFocus() {
     final previous = _previouslyFocusedElement;
     _previouslyFocusedElement = null;
-    if ((previous?.isA<html.HtmlElement>() ?? false) &&
+    if ((previous?.isA<web.HTMLElement>() ?? false) &&
         previous!.isConnected == true) {
-      previous.focus();
+      (previous as web.HTMLElement).focus();
     }
   }
 
@@ -512,14 +516,14 @@ class LiOffcanvasComponent
       return;
     }
 
-    final body = html.document.body;
+    final body = web.document.body;
     if (body == null) {
       return;
     }
 
     if (_bodyScrollLockCount == 0) {
       _previousBodyOverflow = body.style.overflow;
-      body.classes.add('offcanvas-open');
+      body.classList.add('offcanvas-open');
       body.style.overflow = 'hidden';
     }
 
@@ -532,11 +536,11 @@ class LiOffcanvasComponent
       return;
     }
 
-    final body = html.document.body;
+    final body = web.document.body;
     _bodyScrollLockCount = (_bodyScrollLockCount - 1).clamp(0, 1 << 20);
 
     if (body != null && _bodyScrollLockCount == 0) {
-      body.classes.remove('offcanvas-open');
+      body.classList.remove('offcanvas-open');
       body.style.overflow = _previousBodyOverflow ?? '';
       _previousBodyOverflow = null;
     }

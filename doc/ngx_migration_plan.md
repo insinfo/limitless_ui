@@ -6,7 +6,12 @@
 > terminar com sucesso; as correções foram concluídas e a homologação final
 > aprovou 15/15 cenários E2E em release, sem erros do navegador nem fallback
 > persistente. A implementação foi versionada em `01ff5e4` e enviada para
-> `origin/ngx9`; nenhuma publicação foi realizada. Plano criado em 2026-07-18.
+> `origin/ngx9`. Em seguida foi aberta e concluída, em 2026-07-19, a Fase 3
+> para eliminar a fachada ampla `web_compat` antes do primeiro release 3.x:
+> `lib`, testes e example importam `package:web` diretamente, os arquivos da
+> fachada foram excluídos e a homologação repetiu analyzer limpo, VM 52/52,
+> Chrome dart2js 505/505, Chrome dart2wasm 505/505 e 15/15 E2E em release.
+> Nenhuma publicação foi realizada. Plano criado em 2026-07-18.
 
 > **Limite desta execução:** migrar, testar, documentar, fazer `git add`,
 > `git commit` e `git push`. **Não executar `dart pub publish` e não publicar
@@ -164,6 +169,38 @@ Web IDL canônicos de `package:web`, reduzindo a fachada gradualmente. O guia
 oficial permite adaptadores pequenos quando falta uma semântica, mas não
 recomenda recriar todo `dart:html`. A investigação desta rodada não confirmou
 novo bug funcional no `popper_dart`.
+
+## Fase 3 — eliminação da fachada ampla `web_compat` (concluída)
+
+A fachada cumpriu a função de permitir a migração incremental, mas não integra
+o estado final. Ela não é reexportada pelos barrels principais e surgiu apenas
+nesta prerelease 3.0 com `publish_to: none`; portanto, será removida antes de
+qualquer release estável.
+
+- [x] Inventariar os consumidores: 95 arquivos em `lib`, 17 no example e 71
+  testes importavam a fachada; `ui_test` não dependia dela.
+- [x] Definir a arquitetura final sem novo barrel: `package:web` direto e
+  apenas módulos estreitos para guards seguros em Wasm, partes de Blob/File,
+  sinks HTML explícitos e callbacks DOM ligados à Zone.
+- [x] Migrar o example para tipos/construtores Web IDL e operações DOM
+  canônicas; analyzer do example limpo.
+- [x] Migrar todos os arquivos de `lib` e os testes para imports diretos,
+  removendo aliases, fábricas de elementos, `classes`, `queryAll`, `KeyCode` e
+  streams herdados da fachada. Nenhuma referência a `web_compat` restou fora
+  dos registros históricos (este plano, o relatório e o CHANGELOG).
+- [x] Mover fábricas com defaults de bubbling para suporte exclusivamente de
+  teste (`test/support/web_event_factories.dart`), com nomes explícitos e sem
+  reexportar `package:web`; os módulos estreitos de produção ficaram em
+  `lib/src/web_support/` (guards Wasm-safe, partes de Blob, sinks HTML e
+  callbacks DOM ligados à Zone).
+- [x] Excluir `lib/web_compat.dart`, `lib/src/web_compat/web_compat.dart` e os
+  testes da antiga fachada depois de zero consumidores.
+- [x] Executar analyzer, suítes completas dart2js/dart2wasm e os 15 E2E em
+  release. Resultado em 2026-07-19: `dart analyze` da raiz e do example sem
+  problemas; conjunto VM 52/52; Chrome dart2js 505/505 (82 arquivos, exit 0);
+  Chrome dart2wasm 505/505 sem `SEVERE` nem `InvalidType`; `ui_test/e2e`
+  15/15 contra o bundle release servido em `:8081`, sem `pageerror` nem
+  `console.error`. Documentado, commitado e enviado sem publicar no pub.dev.
 
 ## Política de manutenção entre linhas
 

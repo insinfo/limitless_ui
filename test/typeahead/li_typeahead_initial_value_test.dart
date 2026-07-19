@@ -5,13 +5,15 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
+import 'package:web/web.dart' as web;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_typeahead_initial_value_test.template.dart' as ng;
 
@@ -63,7 +65,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input =
-        fixture.rootElement.querySelector('input') as html.InputElement;
+        fixture.rootElement.querySelector('input') as web.HTMLInputElement;
 
     // Nothing to resolve against yet, so the raw value stands in for the label.
     expect(input.value, 'sfo');
@@ -84,7 +86,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input =
-        fixture.rootElement.querySelector('input') as html.InputElement;
+        fixture.rootElement.querySelector('input') as web.HTMLInputElement;
 
     await fixture.update((_) {
       host.loadCities();
@@ -106,7 +108,7 @@ void main() {
     await _settle(fixture);
     final host = fixture.assertOnlyInstance;
     final input =
-        fixture.rootElement.querySelector('input') as html.InputElement;
+        fixture.rootElement.querySelector('input') as web.HTMLInputElement;
 
     await fixture.update((_) {
       host.loadCities();
@@ -117,7 +119,7 @@ void main() {
     // Clearing the field goes through the same model-emit path a user edit does.
     await fixture.update((_) {
       input.value = '';
-      input.dispatchEvent(html.liEvent('input'));
+      input.dispatchEvent(bubblingEvent('input'));
     });
     await _settle(fixture);
     expect(host.selectedCity, isNull);

@@ -5,13 +5,13 @@
 @TestOn('browser')
 library;
 
-import 'package:limitless_ui/web_compat.dart' as html;
-
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngx_dart/angular.dart';
 import 'package:ngx_forms/ngx_forms.dart';
 import 'package:ngx_test/ngx_test.dart';
 import 'package:test/test.dart';
+
+import '../support/web_event_factories.dart';
 
 import 'li_tag_filter_initial_value_test.template.dart' as ng;
 
@@ -90,7 +90,7 @@ void main() {
     final option =
         host.filter!.options.firstWhere((option) => option.value == 1);
     await fixture.update((_) {
-      host.filter!.toggleOptionFromUi(option, html.liMouseEvent('click'));
+      host.filter!.toggleOptionFromUi(option, bubblingMouseEvent('click'));
     });
     await _settle(fixture);
 
