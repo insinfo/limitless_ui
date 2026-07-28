@@ -2,7 +2,7 @@
 import 'dart:html' as html;
 import 'dart:js_util' as js_util;
 
-import 'package:js/js.dart' show allowInterop;
+import 'package:js/js.dart' show allowInterop, allowInteropCaptureThis;
 
 import 'quill_interop.dart' as quill;
 
@@ -110,6 +110,46 @@ class DefaultLiQuillTextEditorBridge implements LiQuillTextEditorBridge {
     } catch (_) {}
   }
 
+  static const String _getTableBetterPatchMarker =
+      '_liQuillGetTableBetterPatched';
+
+  // quill-table-better replaces Quill's global `modules/toolbar` with a
+  // subclass whose click/change listeners destructure
+  // `this.getTableBetter()` — undefined on editors created without the
+  // `table-better` module, which kills every toolbar control on them.
+  // Wrapping getTableBetter to return `{}` instead keeps those editors
+  // working; all call sites guard `cellSelection?.` internally.
+  void _patchTableBetterToolbar() {
+    try {
+      final toolbarClass = quill.Quill.import('modules/toolbar');
+      if (toolbarClass == null) {
+        return;
+      }
+      final proto = js_util.getProperty<Object?>(
+        toolbarClass as Object,
+        'prototype',
+      );
+      if (proto == null ||
+          js_util.hasProperty(proto, _getTableBetterPatchMarker)) {
+        return;
+      }
+      final original = js_util.getProperty<Object?>(proto, 'getTableBetter');
+      if (original == null) {
+        return;
+      }
+      js_util.setProperty(
+        proto,
+        'getTableBetter',
+        allowInteropCaptureThis((Object self) {
+          final module =
+              js_util.callMethod<Object?>(original, 'call', <Object?>[self]);
+          return module ?? js_util.newObject();
+        }),
+      );
+      js_util.setProperty(proto, _getTableBetterPatchMarker, true);
+    } catch (_) {}
+  }
+
   @override
   LiQuillTextEditorHandle createEditor({
     required html.Element container,
@@ -119,6 +159,7 @@ class DefaultLiQuillTextEditorBridge implements LiQuillTextEditorBridge {
     String? placeholder,
     required bool readOnly,
   }) {
+    _patchTableBetterToolbar();
     final editor = quill.Quill(
       container,
       quill.QuillOptions(
