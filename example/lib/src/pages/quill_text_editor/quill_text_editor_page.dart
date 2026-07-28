@@ -20,6 +20,8 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
 class QuillTextEditorPageComponent {
   QuillTextEditorPageComponent(this.i18n);
 
+  String htmlValueSimple = 'Simple hello';
+
   final DemoI18nService i18n;
   Messages get t => i18n.t;
   bool get isPt => i18n.isPortuguese;

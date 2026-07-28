@@ -188,7 +188,8 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
   List<Map<String, dynamic>> getContentsAsDart() => _editor.getContentsAsDart();
 
   @override
-  dynamic convertHtml(String html) => _editor.clipboard.convert(html);
+  dynamic convertHtml(String html) =>
+      _editor.clipboard.convert(quill.ClipboardConvertInput(html: html));
 
   @override
   LiQuillBridgeSelection? getSelection({bool focus = false}) {
