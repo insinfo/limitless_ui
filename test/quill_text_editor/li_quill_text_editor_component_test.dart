@@ -164,9 +164,7 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
-    final modules =
-        fakeBridge.createEditorCalls.single['modules'] as Map<String, dynamic>;
-    expect(modules['uploader'], <String, dynamic>{'mimetypes': <String>[]});
+    expect(fakeBridge.createEditorCalls.single['blockImages'], isTrue);
     expect(fakeBridge.createdEditors.single.imageInsertsBlocked, isTrue);
   });
 
@@ -179,9 +177,7 @@ void main() {
     );
     await _settle(fixture);
 
-    final modules =
-        fakeBridge.createEditorCalls.single['modules'] as Map<String, dynamic>;
-    expect(modules.containsKey('uploader'), isFalse);
+    expect(fakeBridge.createEditorCalls.single['blockImages'], isFalse);
     expect(fakeBridge.createdEditors.single.imageInsertsBlocked, isFalse);
   });
 

@@ -74,6 +74,7 @@ abstract class LiQuillTextEditorBridge {
     required Map<String, dynamic> modules,
     String? placeholder,
     required bool readOnly,
+    required bool blockImages,
   });
 }
 
@@ -160,13 +161,25 @@ class DefaultLiQuillTextEditorBridge implements LiQuillTextEditorBridge {
     required Map<String, dynamic> modules,
     String? placeholder,
     required bool readOnly,
+    required bool blockImages,
   }) {
     _patchTableBetterToolbar();
+    final effectiveModules = Map<String, dynamic>.from(modules);
+    if (blockImages) {
+      // Quill expands module options with lodash `merge`, which merges
+      // arrays by index — an empty `mimetypes` list would be silently
+      // discarded in favor of the default png/jpeg whitelist. Replacing
+      // the upload handler is the reliable way to drop pasted/dropped
+      // image files.
+      effectiveModules['uploader'] = <String, dynamic>{
+        'handler': allowInterop((Object? range, Object? files) {}),
+      };
+    }
     final editor = quill.Quill(
       container,
       quill.QuillOptions(
         theme: theme,
-        modules: quill.jsify(modules),
+        modules: quill.jsify(effectiveModules),
         placeholder: placeholder,
         readOnly: readOnly,
         bounds: bounds,

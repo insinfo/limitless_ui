@@ -98,7 +98,10 @@ const String _fakeQuillScript = r'''
 Object _fakeQuillState() =>
     js_util.getProperty<Object>(html.window, '__fakeQuill');
 
-LiQuillTextEditorHandle _createEditor(DefaultLiQuillTextEditorBridge bridge) {
+LiQuillTextEditorHandle _createEditor(
+  DefaultLiQuillTextEditorBridge bridge, {
+  bool blockImages = false,
+}) {
   final container = html.DivElement();
   return bridge.createEditor(
     container: container,
@@ -106,7 +109,15 @@ LiQuillTextEditorHandle _createEditor(DefaultLiQuillTextEditorBridge bridge) {
     theme: 'snow',
     modules: <String, dynamic>{},
     readOnly: false,
+    blockImages: blockImages,
   );
+}
+
+Object _lastInstanceModules() {
+  final instance =
+      js_util.getProperty<Object>(_fakeQuillState(), 'lastInstance');
+  final options = js_util.getProperty<Object>(instance, 'options');
+  return js_util.getProperty<Object>(options, 'modules');
 }
 
 void main() {
@@ -220,6 +231,42 @@ void main() {
         same(patched),
       );
     });
+  });
+
+  test('replaces the uploader handler when blockImages is true', () {
+    const bridge = DefaultLiQuillTextEditorBridge();
+    _createEditor(bridge, blockImages: true);
+
+    final uploader = js_util.getProperty<Object?>(
+      _lastInstanceModules(),
+      'uploader',
+    );
+    expect(uploader, isNotNull);
+    final handler = js_util.getProperty<Object?>(uploader!, 'handler');
+    expect(handler, isNotNull);
+    // A no-op handler must simply swallow the files. An empty `mimetypes`
+    // list is NOT a substitute: Quill merges module options with lodash
+    // `merge`, which merges arrays by index and keeps the default
+    // png/jpeg whitelist when given an empty list.
+    js_util.callMethod<void>(
+      handler!,
+      'call',
+      <Object?>[null, js_util.newObject<Object>(), js_util.newObject<Object>()],
+    );
+    expect(
+      js_util.hasProperty(_fakeQuillState(), 'lastSetContents'),
+      isFalse,
+    );
+  });
+
+  test('leaves the uploader module alone when blockImages is false', () {
+    const bridge = DefaultLiQuillTextEditorBridge();
+    _createEditor(bridge);
+
+    expect(
+      js_util.getProperty<Object?>(_lastInstanceModules(), 'uploader'),
+      isNull,
+    );
   });
 
   test('blockImageInserts registers an img matcher returning a fresh delta',

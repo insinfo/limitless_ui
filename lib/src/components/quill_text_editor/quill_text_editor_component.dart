@@ -893,11 +893,6 @@ class LiQuillTextEditorComponent
         };
       }
     }
-    if (!enableImages) {
-      modules['uploader'] = <String, dynamic>{
-        'mimetypes': <String>[],
-      };
-    }
 
     try {
       errorMessage = null;
@@ -908,6 +903,7 @@ class LiQuillTextEditorComponent
         modules: modules,
         placeholder: placeholder.trim().isEmpty ? null : placeholder.trim(),
         readOnly: readOnly,
+        blockImages: !enableImages,
       );
       _initialized = true;
       if (!enableImages) {
