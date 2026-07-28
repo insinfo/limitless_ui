@@ -47,6 +47,8 @@ abstract class LiQuillTextEditorHandle {
 
   void deleteText(int index, int length, [String source = 'user']);
 
+  void blockImageInserts();
+
   void format(String name, dynamic value, [String source = 'user']);
 
   void focus();
@@ -268,6 +270,24 @@ class _JsLiQuillTextEditorHandle implements LiQuillTextEditorHandle {
   @override
   void deleteText(int index, int length, [String source = 'user']) {
     _editor.deleteText(index, length, source);
+  }
+
+  // Strips `<img>` elements from everything that flows through the
+  // clipboard matchers: pasted HTML and the HTML written via
+  // `writeValue`/`convertHtml`. Image files are blocked separately by
+  // creating the editor with an empty uploader mimetype list.
+  @override
+  void blockImageInserts() {
+    final deltaClass = quill.Quill.import('delta');
+    if (deltaClass == null) {
+      return;
+    }
+    _editor.clipboard.addMatcher(
+      'img',
+      allowInterop((Object? node, Object? delta) =>
+          js_util.callConstructor<Object>(
+              deltaClass as Object, const <Object?>[])),
+    );
   }
 
   @override

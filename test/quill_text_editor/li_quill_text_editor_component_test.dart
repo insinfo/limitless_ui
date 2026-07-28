@@ -31,6 +31,7 @@ import 'quill_test_fakes.dart';
         [updateModelOnBlur]="updateModelOnBlur"
         [enableTableSupport]="enableTableSupport"
         [enableTableButton]="enableTableButton"
+        [enableImages]="enableImages"
         [enableDestructiveToolbarRebuild]="enableDestructiveToolbarRebuild"
         [disabledToolbarItemIds]="disabledToolbarItemIds"
         [hiddenToolbarItemIds]="hiddenToolbarItemIds"
@@ -54,6 +55,7 @@ class QuillTextEditorTestHostComponent {
   bool updateModelOnBlur = false;
   bool enableTableSupport = true;
   bool enableTableButton = true;
+  bool enableImages = true;
   bool enableDestructiveToolbarRebuild = false;
   List<String> disabledToolbarItemIds = const <String>[];
   List<String> hiddenToolbarItemIds = const <String>[];
@@ -153,6 +155,35 @@ void main() {
 
     expect(host.toolbarActionClicks, 1);
     expect(host.modelValue, contains('[assinado]'));
+  });
+
+  test('keeps images enabled by default', () async {
+    final fakeBridge = FakeLiQuillTextEditorBridge();
+    setLiQuillTextEditorBridgeForTesting(fakeBridge);
+
+    final fixture = await testBed.create();
+    await _settle(fixture);
+
+    final modules =
+        fakeBridge.createEditorCalls.single['modules'] as Map<String, dynamic>;
+    expect(modules.containsKey('uploader'), isFalse);
+    expect(fakeBridge.createdEditors.single.imageInsertsBlocked, isFalse);
+  });
+
+  test('blocks image files and pasted img elements when enableImages is false',
+      () async {
+    final fakeBridge = FakeLiQuillTextEditorBridge();
+    setLiQuillTextEditorBridgeForTesting(fakeBridge);
+
+    final fixture = await testBed.create(
+      beforeChangeDetection: (host) => host.enableImages = false,
+    );
+    await _settle(fixture);
+
+    final modules =
+        fakeBridge.createEditorCalls.single['modules'] as Map<String, dynamic>;
+    expect(modules['uploader'], <String, dynamic>{'mimetypes': <String>[]});
+    expect(fakeBridge.createdEditors.single.imageInsertsBlocked, isTrue);
   });
 
   test('shows a localized error when Quill is unavailable', () async {

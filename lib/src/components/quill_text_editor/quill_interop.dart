@@ -121,6 +121,7 @@ class Clipboard {
   // Quill 2.x expects `{ html, text }`; passing a raw string silently
   // produces an empty delta.
   external dynamic convert(ClipboardConvertInput input);
+  external void addMatcher(dynamic selector, Function callback);
 }
 
 @JS()

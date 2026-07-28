@@ -598,6 +598,7 @@ class LiQuillTextEditorComponent
   bool _hasPendingUserChange = false;
   bool _enableTableSupport = false;
   bool _enableTableButton = false;
+  bool _enableImages = true;
   bool _enableDestructiveToolbarRebuild = false;
   bool _destructiveToolbarRebuildScheduled = false;
   int _appliedToolbarConfigurationSignature = 0;
@@ -655,6 +656,22 @@ class LiQuillTextEditorComponent
   }
 
   bool get enableTableButton => _enableTableButton;
+
+  /// Whether images may enter the editor content. Enabled by default.
+  ///
+  /// When disabled, pasted or dropped image files are ignored, `<img>`
+  /// elements are stripped from pasted HTML and from HTML written through
+  /// `ngModel`/`writeValue`. Content already in the editor is left alone.
+  @Input()
+  set enableImages(bool value) {
+    if (_enableImages == value) {
+      return;
+    }
+    _enableImages = value;
+    _handleToolbarConfigurationInputChanged(syncToolbarItems: false);
+  }
+
+  bool get enableImages => _enableImages;
 
   @Input()
   set enableDestructiveToolbarRebuild(bool value) {
@@ -876,6 +893,11 @@ class LiQuillTextEditorComponent
         };
       }
     }
+    if (!enableImages) {
+      modules['uploader'] = <String, dynamic>{
+        'mimetypes': <String>[],
+      };
+    }
 
     try {
       errorMessage = null;
@@ -888,6 +910,9 @@ class LiQuillTextEditorComponent
         readOnly: readOnly,
       );
       _initialized = true;
+      if (!enableImages) {
+        _quill!.blockImageInserts();
+      }
       _syncEditorNameAttribute();
       _wireEditorEvents();
       _applyPendingHtmlValue();
@@ -1127,6 +1152,7 @@ class LiQuillTextEditorComponent
     return Object.hashAll(<Object?>[
       enableTableSupport,
       enableTableButton,
+      enableImages,
       Object.hashAll(tableMenus),
       Object.hashAll(_hiddenToolbarItemIds.toList()..sort()),
       Object.hashAll(

@@ -145,6 +145,7 @@ class QuillTextEditorPageComponent {
   bool updateModelOnBlur = false;
   bool enableTableSupport = true;
   bool enableTableButton = true;
+  bool enableImages = true;
   bool enableDestructiveToolbarRebuild = true;
   bool disableOrderedList = false;
   bool disableHeadings = false;
@@ -210,6 +211,7 @@ class QuillTextEditorPageComponent {
   String get destructiveModeLabel => isPt
       ? 'Modo destrutivo da toolbar'
       : 'Destructive toolbar mode';
+  String get enableImagesLabel => isPt ? 'Permitir imagens' : 'Allow images';
   String get disableOrderedListLabel =>
       isPt ? 'Desativar lista ordenada' : 'Disable ordered list';
   String get disableHeadingsLabel =>
