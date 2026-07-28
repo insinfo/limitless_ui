@@ -598,7 +598,7 @@ class LiQuillTextEditorComponent
   bool _hasPendingUserChange = false;
   bool _enableTableSupport = false;
   bool _enableTableButton = false;
-  bool _enableImages = true;
+  bool _enableImages = false;
   bool _enableDestructiveToolbarRebuild = false;
   bool _destructiveToolbarRebuildScheduled = false;
   int _appliedToolbarConfigurationSignature = 0;
@@ -657,9 +657,9 @@ class LiQuillTextEditorComponent
 
   bool get enableTableButton => _enableTableButton;
 
-  /// Whether images may enter the editor content. Enabled by default.
+  /// Whether images may enter the editor content. Disabled by default.
   ///
-  /// When disabled, pasted or dropped image files are ignored, `<img>`
+  /// While disabled, pasted or dropped image files are ignored, `<img>`
   /// elements are stripped from pasted HTML and from HTML written through
   /// `ngModel`/`writeValue`. Content already in the editor is left alone.
   @Input()

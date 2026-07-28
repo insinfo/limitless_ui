@@ -145,7 +145,7 @@ class QuillTextEditorPageComponent {
   bool updateModelOnBlur = false;
   bool enableTableSupport = true;
   bool enableTableButton = true;
-  bool enableImages = true;
+  bool enableImages = false;
   bool enableDestructiveToolbarRebuild = true;
   bool disableOrderedList = false;
   bool disableHeadings = false;

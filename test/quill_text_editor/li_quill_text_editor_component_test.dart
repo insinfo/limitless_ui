@@ -55,7 +55,7 @@ class QuillTextEditorTestHostComponent {
   bool updateModelOnBlur = false;
   bool enableTableSupport = true;
   bool enableTableButton = true;
-  bool enableImages = true;
+  bool enableImages = false;
   bool enableDestructiveToolbarRebuild = false;
   List<String> disabledToolbarItemIds = const <String>[];
   List<String> hiddenToolbarItemIds = const <String>[];
@@ -157,7 +157,7 @@ void main() {
     expect(host.modelValue, contains('[assinado]'));
   });
 
-  test('keeps images enabled by default', () async {
+  test('blocks image files and pasted img elements by default', () async {
     final fakeBridge = FakeLiQuillTextEditorBridge();
     setLiQuillTextEditorBridgeForTesting(fakeBridge);
 
@@ -166,24 +166,23 @@ void main() {
 
     final modules =
         fakeBridge.createEditorCalls.single['modules'] as Map<String, dynamic>;
-    expect(modules.containsKey('uploader'), isFalse);
-    expect(fakeBridge.createdEditors.single.imageInsertsBlocked, isFalse);
+    expect(modules['uploader'], <String, dynamic>{'mimetypes': <String>[]});
+    expect(fakeBridge.createdEditors.single.imageInsertsBlocked, isTrue);
   });
 
-  test('blocks image files and pasted img elements when enableImages is false',
-      () async {
+  test('allows images when enableImages is true', () async {
     final fakeBridge = FakeLiQuillTextEditorBridge();
     setLiQuillTextEditorBridgeForTesting(fakeBridge);
 
     final fixture = await testBed.create(
-      beforeChangeDetection: (host) => host.enableImages = false,
+      beforeChangeDetection: (host) => host.enableImages = true,
     );
     await _settle(fixture);
 
     final modules =
         fakeBridge.createEditorCalls.single['modules'] as Map<String, dynamic>;
-    expect(modules['uploader'], <String, dynamic>{'mimetypes': <String>[]});
-    expect(fakeBridge.createdEditors.single.imageInsertsBlocked, isTrue);
+    expect(modules.containsKey('uploader'), isFalse);
+    expect(fakeBridge.createdEditors.single.imageInsertsBlocked, isFalse);
   });
 
   test('shows a localized error when Quill is unavailable', () async {
