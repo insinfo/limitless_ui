@@ -1,0 +1,105 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+
+      <div class="ms-lg-auto mt-3 mt-lg-0 d-flex flex-wrap gap-2 align-items-center">
+        <a (click)="desativarTodos()" class="btn btn-danger cursor-pointer">
+          <i class="ph-warning me-2"></i>
+          Desativar todos
+        </a>
+
+        <button class="btn btn-primary" (click)="register()">
+          <i class="ph-file-plus me-2"></i>
+          Cadastrar
+        </button>
+
+        <button *ngIf="isAdmin" class="btn btn-outline-primary" (click)="deleteAction()">
+          <i class="ph-trash me-2"></i>
+          Deletar
+        </button>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumbLabel"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-body pb-0">
+        <p class="text-muted mb-0">{{ demoIntro }}</p>
+      </div>
+
+      <div class="row px-3 pt-3 g-3">
+        <div class="col-md-4 col-xxl-2" title="Filtrar por situação">
+          <label class="form-label">Ativo</label>
+          <div class="form-control-feedback form-control-feedback-start">
+            <select class="form-control form-select" [ngModel]="ativoFilterValue"
+              (ngModelChange)="onAtivoFilterChange($event)">
+              <option value="">Todos</option>
+              <option value="true">Sim</option>
+              <option value="false">Não</option>
+            </select>
+            <div class="form-control-feedback-icon">
+              <i class="ph ph-broom cursor-pointer" (click)="limparAtivoFilter()"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-8 col-xxl-4">
+          <label class="form-label">Como refletir a mutação na tela</label>
+          <select class="form-control form-select" [ngModel]="refreshModeName"
+            (ngModelChange)="changeRefreshMode($event)">
+            <option value="refreshImmediate">datatable.refresh(immediate: true) — síncrono</option>
+            <option value="refresh">datatable.refresh() — no próximo frame</option>
+            <option value="reassignData">datatable.data = orgaos</option>
+            <option value="reload">listar() — nova consulta ao servidor</option>
+            <option value="none">nenhum — a tela fica desatualizada</option>
+          </select>
+        </div>
+
+        <div class="col-md-4 col-xxl-3 d-flex align-items-end">
+          <button type="button" class="btn btn-outline-primary w-100"
+            id="aplicar-refresh" (click)="aplicarRefresh()">
+            <i class="ph ph-arrows-clockwise me-2"></i>
+            Aplicar refresh() agora
+          </button>
+        </div>
+      </div>
+
+      <li-datatable #datatable [dataTableFilter]="filtros" [data]="orgaos" [settings]="dtConfig"
+        [responsiveCollapse]="true" [disableRowClick]="true" [searchInFields]="searchInFields"
+        (dataRequest)="onRequestData($event)" (limitChange)="onRequestData($event)"
+        (searchRequest)="onRequestData($event)" (onRowClick)="onSelectOrgao($event)"
+        [showCheckboxToSelectRow]="isAdmin" [showExportMenu]="true"
+        [enableGridMode]="true"></li-datatable>
+
+      <div class="card-body pt-3">
+        <div class="bg-light rounded border p-3">
+          <div>{{ modelStateLog }}</div>
+          <div *ngIf="eventLog.length > 0" class="mt-1">{{ eventLog }}</div>
+          <div class="text-muted mt-2">
+            Escolha <code>nenhum</code> e clique em Habilitar/Desabilitar: o modelo acima muda, a linha
+            não. Depois volte para <code>refresh</code> e clique de novo — a célula
+            <code>ativo</code>, o rótulo do botão e a cor acompanham o modelo, e os checkboxes marcados
+            continuam marcados.
+          </div>
+          <div class="text-muted mt-2">
+            No modo <code>immediate: true</code> a reconstrução das linhas é síncrona: o log acima
+            mostra o valor já reconstruído lido do datatable na linha seguinte à chamada. Com o
+            <code>refresh()</code> normal, nesse mesmo ponto a linha ainda seria a do desenho anterior,
+            porque o redesenho fica agendado para o próximo animation frame. Nos dois casos a escrita no
+            DOM acontece no ciclo de detecção de mudanças.
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body pt-0">
+        <li-highlight [code]="pageSnippet" language="dart"></li-highlight>
+      </div>
+    </div>
+  </div>
+</div>

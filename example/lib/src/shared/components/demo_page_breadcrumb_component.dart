@@ -63,6 +63,7 @@ class DemoPageBreadcrumbComponent {
   static const Set<String> _dataPaths = <String>{
     'datatable',
     'datatable-process-lookup',
+    'lista-orgao',
     'protocol-workflow',
     'datatable-select',
     'work-queue',

@@ -429,6 +429,59 @@ void requireStateFirst(LiBeforeOpenEvent event) {
 
 The stream is synchronous, following the same shape as `liNav`'s `LiNavChangeEvent`. `preventDefault()` must therefore be called from the handler itself: after an `await` it runs too late, because the dropdown has already opened. To gate opening on asynchronous work, prevent the default, run the work, and call `openDropdown()` when it resolves.
 
+### Redrawing a `li-datatable` after mutating an item in place
+
+`li-datatable` renders from rows it built during the previous draw, and caches them under a signature that only tracks the `DataFrame` identity, its length, and the layout inputs. Mutating an item instance therefore changes nothing the component can observe: the row keeps the value read from `toMap()` at build time and the screen stays stale.
+
+This is the common case for an action column whose button flips a field of the row's own object:
+
+```dart
+@ViewChild('orgaoTable')
+LiDataTableComponent? orgaoTable;
+
+final orgaos = <Orgao>[...];
+
+late final DataFrame<Orgao> orgaoTableData =
+    DataFrame<Orgao>(items: orgaos, totalRecords: orgaos.length);
+
+Future<void> toggleAtivo(Orgao orgao) async {
+  orgao.ativo = !orgao.ativo;
+  await orgaoService.updateAtivo(orgao.id, orgao.ativo);
+
+  // The list and the DataFrame are the same objects — no Angular binding
+  // changed. refresh() is what rebuilds the rows from the current data.
+  orgaoTable?.refresh();
+}
+```
+
+`refresh()` bumps the internal cache revision and schedules the rebuild on the next animation frame. Row selection and responsive row expansion survive it, keyed the same way as virtual-scroll selection (`DatatableSettings.rowKeyResolver`), so toggling a field does not clear checkboxes that a delete/bulk action depends on. Sorting, paging, and the active search filter are untouched.
+
+The same applies to cells built in Dart. A `customRenderHtml` column produces a detached element with its own listeners; `refresh()` rebuilds that element from the mutated instance, and the listener bound to the new element keeps working:
+
+```dart
+DatatableCol(
+  key: 'habilitar',
+  title: 'Habilitar/Desabilitar',
+  customRenderHtml: (map, item) {
+    final orgao = item as Orgao;
+    final div = DivElement();
+    div.append(ButtonElement()
+      ..text = orgao.ativo ? 'Desabilitar' : 'Habilitar'
+      ..onClick.listen((event) {
+        event.stopPropagation(); // keeps the datatable rowClick from firing
+        toggleAtivo(orgao);
+      }));
+    return div;
+  },
+),
+```
+
+Pass `refresh(immediate: true)` to rebuild synchronously, so `rows` and `renderedRows` already carry the new values when the call returns — useful when the caller inspects them right away, or when the rebuild must not be deferred past the current turn. Writing the rebuilt rows to the DOM still happens on the next change-detection pass in both cases; call `ChangeDetectorRef.detectChanges()` when the DOM must be up to date within the same turn.
+
+`update()` is kept as an alias for `refresh()`. Reassigning the input (`table.data = items`) also forces the rebuild, since the setter invalidates the same cache — but it is only necessary when the frame itself changed.
+
+A full screen built around this is in the example app under **Dados → Lista de Órgãos** (`#/lista-orgao`), with a selector that switches between `refresh()`, `refresh(immediate: true)`, reassigning `data`, reloading from the service, and doing nothing.
+
 ### Loading a `li-datatable-select` list on demand
 
 The `li-datatable-select` modal renders its content lazily, so the inner datatable only exists once the modal opens. That datatable never asks for data on its own — it emits `dataRequest` only when the user paginates, sorts, or searches — so a screen that simply stops preloading the list would open an empty modal.

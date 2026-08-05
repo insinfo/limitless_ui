@@ -208,6 +208,8 @@ class AppComponent implements OnDestroy {
   String get dataLabel => i18n.isPortuguese ? 'Dados' : 'Data';
   String get datatableProcessLookupLabel =>
       i18n.isPortuguese ? 'Datatable Processos' : 'Process datatable';
+  String get listaOrgaoLabel =>
+      i18n.isPortuguese ? 'Lista de Órgãos' : 'Department list';
   String get protocolWorkflowLabel =>
       i18n.isPortuguese ? 'Fluxo de protocolo' : 'Protocol workflow';
   String get utilitiesLabel => i18n.isPortuguese ? 'Utilitários' : 'Utilities';
@@ -439,6 +441,11 @@ class AppComponent implements OnDestroy {
               label: datatableProcessLookupLabel,
               iconClass: 'ph-file-search',
               url: DemoRoutePaths.datatableProcessLookup.toUrl(),
+            ),
+            DemoNavItem(
+              label: listaOrgaoLabel,
+              iconClass: 'ph-buildings',
+              url: DemoRoutePaths.listaOrgao.toUrl(),
             ),
             DemoNavItem(
               label: protocolWorkflowLabel,

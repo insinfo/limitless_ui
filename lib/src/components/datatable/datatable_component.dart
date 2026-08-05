@@ -163,6 +163,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   int? _cachedGridRowsSignature;
   List<DatatableRow>? _cachedTableRows;
   List<DatatableRow>? _cachedGridRows;
+  Map<Object, _DatatableRowUiState>? _pendingRefreshRowState;
   bool _visible = true;
   double _responsiveAvailableWidthCache = 0;
   bool _responsiveCollapseViewportActiveCache = false;
@@ -707,16 +708,108 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _instrumentationController.close();
   }
 
-  void update() {
+  /// Discards the cached rows and redraws the table from the current [data].
+  ///
+  /// Call this after mutating item instances in place — the typical case is an
+  /// action column whose button flips a field of the bound object, e.g.
+  /// `orgao.ativo = !orgao.ativo`. The datatable renders from rows built during
+  /// the previous draw, so a mutation on the instance alone is invisible until
+  /// those rows are rebuilt.
+  ///
+  /// Row selection and responsive row expansion are preserved across the
+  /// rebuild, keyed the same way as virtual-scroll selection (see
+  /// [DatatableSettings.rowKeyResolver]). Sorting, paging and the active search
+  /// filter are left untouched.
+  ///
+  /// The rebuild is coalesced into the next animation frame. Pass
+  /// `immediate: true` to rebuild synchronously, so [rows] and [renderedRows]
+  /// already carry the new values when the call returns — useful when the
+  /// caller inspects them right after, or when the redraw must not be deferred
+  /// past the current turn. Writing the rebuilt rows to the DOM still happens
+  /// on the next change-detection pass in both cases; call
+  /// `ChangeDetectorRef.detectChanges()` if the DOM must be up to date within
+  /// the same turn.
+  void refresh({bool immediate = false}) {
+    _pendingRefreshRowState = _captureRowUiState();
     _manualRowsRevision++;
     _emitInstrumentation(
-      'update.called',
+      'refresh.called',
       details: <String, Object?>{
         'manualRowsRevision': _manualRowsRevision,
         'items': _data.items.length,
+        'immediate': immediate,
+        'preservedRowState': _pendingRefreshRowState?.length ?? 0,
       },
     );
-    scheduleDraw(force: true, reason: 'update()');
+
+    if (immediate && _canDrawNow) {
+      if (_drawAnimationFrameId != null) {
+        window.cancelAnimationFrame(_drawAnimationFrameId!);
+        _drawAnimationFrameId = null;
+        _drawScheduled = false;
+      }
+      draw(reason: 'refresh(immediate)');
+      return;
+    }
+
+    scheduleDraw(force: true, reason: 'refresh()');
+  }
+
+  /// Alias kept for backwards compatibility; prefer [refresh].
+  void update() {
+    refresh();
+  }
+
+  /// Snapshots selection/expansion of the current rows so [refresh] can restore
+  /// it onto the freshly built row objects.
+  Map<Object, _DatatableRowUiState>? _captureRowUiState() {
+    if (rows.isEmpty) {
+      return null;
+    }
+
+    Map<Object, _DatatableRowUiState>? captured;
+    for (final row in rows) {
+      if (row.type != DatatableRowType.normal) {
+        continue;
+      }
+      if (!row.selected && !row.isExpanded) {
+        continue;
+      }
+      captured ??= <Object, _DatatableRowUiState>{};
+      captured[_selectionController.selectionKeyForRow(
+        row,
+        rowKeyResolver: settings.rowKeyResolver,
+      )] = _DatatableRowUiState(
+        selected: row.selected,
+        expanded: row.isExpanded,
+      );
+    }
+
+    return captured;
+  }
+
+  /// Reapplies the snapshot taken by [_captureRowUiState] to [rowsToSync].
+  void _applyPendingRefreshRowState(List<DatatableRow> rowsToSync) {
+    final pending = _pendingRefreshRowState;
+    _pendingRefreshRowState = null;
+    if (pending == null) {
+      return;
+    }
+
+    for (final row in rowsToSync) {
+      if (row.type != DatatableRowType.normal) {
+        continue;
+      }
+      final state = pending[_selectionController.selectionKeyForRow(
+        row,
+        rowKeyResolver: settings.rowKeyResolver,
+      )];
+      if (state == null) {
+        continue;
+      }
+      row.selected = state.selected;
+      row.isExpanded = state.expanded;
+    }
   }
 
   bool get _canDrawNow {
@@ -1377,6 +1470,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     );
 
     if (_lastRowsSignature == signature) {
+      _applyPendingRefreshRowState(rows);
       renderedRows = _rebuildRenderedRows(
         reason: '$reason:signature-match',
         rowsToRender: rows,
@@ -1405,6 +1499,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     renderedRows = <DatatableRenderedRow>[];
 
     if (settings.colsDefinitions.isEmpty) {
+      _applyPendingRefreshRowState(rows);
       _lastRowsSignature = signature;
       drawPagination();
       _syncTemplateContexts();
@@ -1428,6 +1523,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     final cachedRows = _resolveCachedRowsForCurrentMode(buildSignature);
     if (cachedRows != null) {
       rows = cachedRows;
+      _applyPendingRefreshRowState(rows);
       _applyVirtualSelectionState(rows);
       renderedRows = _rebuildRenderedRows(
         reason: '$reason:rows-cache-hit',
@@ -1457,6 +1553,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
     final buildResult = _buildRows(reason: reason);
     rows = buildResult.rows;
+    _applyPendingRefreshRowState(rows);
     _applyVirtualSelectionState(rows);
     renderedRows = buildResult.renderedRows;
     _cacheRowsForCurrentMode(buildSignature, rows);
@@ -2947,4 +3044,16 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       collapseActive: _isResponsiveCollapseActive,
     );
   }
+}
+
+/// Per-row interaction state carried across a [LiDataTableComponent.refresh]
+/// rebuild.
+class _DatatableRowUiState {
+  const _DatatableRowUiState({
+    required this.selected,
+    required this.expanded,
+  });
+
+  final bool selected;
+  final bool expanded;
 }

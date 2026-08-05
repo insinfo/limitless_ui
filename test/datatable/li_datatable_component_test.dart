@@ -334,6 +334,156 @@ class CardTemplateTestHostComponent extends TestHostComponent {
   }
 }
 
+class Orgao implements SerializeBase {
+  Orgao({
+    required this.id,
+    required this.nome,
+    required this.sigla,
+    required this.ativo,
+  });
+
+  final int id;
+  String nome;
+  String sigla;
+  bool ativo;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'nome': nome,
+      'sigla': sigla,
+      'ativo': ativo,
+    };
+  }
+}
+
+@Component(
+  selector: 'test-refresh-host',
+  template: '''
+    <li-datatable
+      [dataTableFilter]="filter"
+      [data]="orgaoData"
+      [settings]="settings"
+      [searchInFields]="searchInFields">
+    </li-datatable>
+  ''',
+  directives: [coreDirectives, LiDataTableComponent],
+)
+class RefreshTestHostComponent extends TestHostComponent {
+  RefreshTestHostComponent() {
+    searchInFields = <DatatableSearchField>[];
+    settings = DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(key: 'nome', title: 'Nome'),
+        DatatableCol(key: 'sigla', title: 'Sigla'),
+        DatatableCol(
+          key: 'ativo',
+          title: 'Situação',
+          customRenderString: (itemMap, _) =>
+              itemMap['ativo'] == true ? 'Ativo' : 'Inativo',
+        ),
+        DatatableActionColumn(
+          key: 'acoes',
+          title: 'Ações',
+          actions: <DatatableAction>[
+            DatatableAction(
+              label: 'Alternar',
+              onTap: (ctx) => toggleAtivo(ctx.itemInstance as Orgao),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  final List<Orgao> orgaos = <Orgao>[
+    Orgao(id: 1, nome: 'Secretaria de Saúde', sigla: 'SMS', ativo: true),
+    Orgao(id: 2, nome: 'Secretaria de Educação', sigla: 'SME', ativo: true),
+  ];
+
+  late DataFrame<Orgao> orgaoData = DataFrame<Orgao>(
+    items: orgaos,
+    totalRecords: orgaos.length,
+  );
+
+  bool refreshOnToggle = true;
+
+  void toggleAtivo(Orgao orgao) {
+    orgao.ativo = !orgao.ativo;
+    if (refreshOnToggle) {
+      table!.refresh();
+    }
+  }
+}
+
+/// Reproduz o padrão de uma tela real: a coluna de alternância é um botão
+/// criado em `customRenderHtml` com listener nativo (`onClick.listen`), fora do
+/// sistema de bindings do Angular, e a situação é exibida por
+/// `DatatableFormat.bool`.
+@Component(
+  selector: 'test-custom-html-refresh-host',
+  template: '''
+    <li-datatable
+      [dataTableFilter]="filter"
+      [data]="orgaoData"
+      [settings]="settings"
+      [searchInFields]="searchInFields"
+      [responsiveCollapse]="true"
+      [disableRowClick]="true"
+      [showCheckboxToSelectRow]="true">
+    </li-datatable>
+  ''',
+  directives: [coreDirectives, LiDataTableComponent],
+)
+class CustomHtmlRefreshTestHostComponent extends RefreshTestHostComponent {
+  CustomHtmlRefreshTestHostComponent() {
+    searchInFields = <DatatableSearchField>[];
+    settings = DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(key: 'nome', title: 'Nome'),
+        DatatableCol(
+          key: 'ativo',
+          title: 'ativo',
+          format: DatatableFormat.bool,
+        ),
+        DatatableCol(
+          key: 'Habilitar/Desabilitar',
+          title: 'Habilitar/Desabilitar',
+          customRenderHtml: (map, item) {
+            final orgao = item as Orgao;
+            final div = DivElement();
+            final btn = ButtonElement()
+              ..type = 'button'
+              ..className = 'toggle-ativo-btn'
+              ..innerHtml = orgao.ativo ? 'Desabilitar' : 'Habilitar'
+              ..onClick.listen((event) {
+                event.stopPropagation();
+                orgao.ativo = !orgao.ativo;
+                toggleFromCustomHtml();
+              });
+            div.append(btn);
+            return div;
+          },
+        ),
+      ],
+      responsiveControlColumnKey: 'nome',
+    );
+  }
+
+  int toggleCount = 0;
+
+  /// Espelha o `updateAtivo` da tela real: o redesenho acontece depois de um
+  /// `await` (a chamada de serviço).
+  Future<void> toggleFromCustomHtml() async {
+    toggleCount++;
+    await Future<void>.delayed(Duration.zero);
+    if (refreshOnToggle) {
+      table!.refresh();
+    }
+  }
+}
+
 class _FakeKeyPressEvent {
   _FakeKeyPressEvent(this.keyCode);
 
@@ -360,6 +510,229 @@ void main() {
   final cardTemplateTestBed = NgTestBed<CardTemplateTestHostComponent>(
     ng.CardTemplateTestHostComponentNgFactory,
   );
+  final refreshTestBed = NgTestBed<RefreshTestHostComponent>(
+    ng.RefreshTestHostComponentNgFactory,
+  );
+  final customHtmlRefreshTestBed =
+      NgTestBed<CustomHtmlRefreshTestHostComponent>(
+    ng.CustomHtmlRefreshTestHostComponentNgFactory,
+  );
+
+  test(
+      'botao de customRenderHtml com onClick nativo alterna e refresh() '
+      'redesenha a celula', () async {
+    final fixture = await customHtmlRefreshTestBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    ButtonElement? toggleButton() => fixture.rootElement.querySelector(
+          'tbody tr:first-child .toggle-ativo-btn',
+        ) as ButtonElement?;
+
+    String? ativoCellText() => fixture.rootElement
+        .querySelector('tbody tr:first-child td[data-value="ativo"]')
+        ?.text
+        ?.trim();
+
+    expect(toggleButton(), isNotNull);
+    expect(toggleButton()!.text?.trim(), 'Desabilitar');
+    final initialAtivoText = ativoCellText();
+
+    await fixture.update((_) {
+      toggleButton()!.click();
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    expect(host.toggleCount, 1);
+    expect(host.orgaos.first.ativo, isFalse);
+    expect(toggleButton()!.text?.trim(), 'Habilitar');
+    expect(ativoCellText(), isNot(initialAtivoText));
+
+    // O botao redesenhado continua funcional: o listener nativo do novo
+    // elemento tambem alterna e redesenha.
+    await fixture.update((_) {
+      toggleButton()!.click();
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    expect(host.toggleCount, 2);
+    expect(host.orgaos.first.ativo, isTrue);
+    expect(toggleButton()!.text?.trim(), 'Desabilitar');
+    expect(ativoCellText(), initialAtivoText);
+  });
+
+  test(
+      'sem refresh(), o botao de customRenderHtml deixa a celula desatualizada',
+      () async {
+    final fixture = await customHtmlRefreshTestBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.refreshOnToggle = false;
+    });
+
+    await fixture.update((_) {
+      (fixture.rootElement.querySelector(
+        'tbody tr:first-child .toggle-ativo-btn',
+      ) as ButtonElement)
+          .click();
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    expect(host.orgaos.first.ativo, isFalse);
+    expect(
+      (fixture.rootElement.querySelector(
+        'tbody tr:first-child .toggle-ativo-btn',
+      ) as ButtonElement)
+          .text
+          ?.trim(),
+      'Desabilitar',
+      reason:
+          'sem refresh() a celula mantem o HTML construido no draw anterior',
+    );
+
+    await fixture.update((component) {
+      component.table!.refresh();
+    });
+    await _settleTable(fixture);
+
+    expect(
+      (fixture.rootElement.querySelector(
+        'tbody tr:first-child .toggle-ativo-btn',
+      ) as ButtonElement)
+          .text
+          ?.trim(),
+      'Habilitar',
+    );
+  });
+
+  test('refresh() preserva a selecao com botao de customRenderHtml', () async {
+    final fixture = await customHtmlRefreshTestBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.table!.onSelect(MouseEvent('click'), component.table!.rows[0]);
+    });
+    expect(host.table!.getAllSelected<Orgao>(), hasLength(1));
+
+    await fixture.update((_) {
+      (fixture.rootElement.querySelector(
+        'tbody tr:first-child .toggle-ativo-btn',
+      ) as ButtonElement)
+          .click();
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    expect(host.table!.rows[0].selected, isTrue);
+    expect(host.table!.getAllSelected<Orgao>(), hasLength(1));
+  });
+
+  test('refresh() redesenha a tabela apos mutar a instancia do item', () async {
+    final fixture = await refreshTestBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    var situacaoCells = fixture.rootElement
+        .querySelectorAll('tbody td[data-value="ativo"]')
+        .map((cell) => cell.text?.trim())
+        .toList();
+    expect(situacaoCells, <String>['Ativo', 'Ativo']);
+
+    // Mutar a instancia sem refresh nao altera o que ja foi desenhado.
+    await fixture.update((component) {
+      component.refreshOnToggle = false;
+      component.orgaos.first.ativo = false;
+    });
+    await _settleTable(fixture);
+
+    situacaoCells = fixture.rootElement
+        .querySelectorAll('tbody td[data-value="ativo"]')
+        .map((cell) => cell.text?.trim())
+        .toList();
+    expect(situacaoCells, <String>['Ativo', 'Ativo']);
+
+    await fixture.update((component) {
+      component.table!.refresh();
+    });
+    await _settleTable(fixture);
+
+    situacaoCells = fixture.rootElement
+        .querySelectorAll('tbody td[data-value="ativo"]')
+        .map((cell) => cell.text?.trim())
+        .toList();
+    expect(situacaoCells, <String>['Inativo', 'Ativo']);
+    expect(host.orgaos.first.ativo, isFalse);
+  });
+
+  test('coluna de acao alterna o item e refresh() reflete na tela', () async {
+    final fixture = await refreshTestBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final actionButton = fixture.rootElement.querySelector(
+      'tbody tr:first-child .datatable-action-cell button',
+    ) as ButtonElement?;
+    expect(actionButton, isNotNull);
+
+    await fixture.update((_) {
+      actionButton!.click();
+    });
+    await _settleTable(fixture);
+
+    expect(host.orgaos.first.ativo, isFalse);
+    expect(
+      fixture.rootElement
+          .querySelector('tbody tr:first-child td[data-value="ativo"]')
+          ?.text
+          ?.trim(),
+      'Inativo',
+    );
+  });
+
+  test('refresh() preserva a selecao das linhas', () async {
+    final fixture = await refreshTestBed.create();
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((component) {
+      component.table!.onSelect(MouseEvent('click'), component.table!.rows[1]);
+    });
+    expect(host.table!.getAllSelected<Orgao>(), hasLength(1));
+
+    await fixture.update((component) {
+      component.orgaos[1].ativo = false;
+      component.table!.refresh();
+    });
+    await _settleTable(fixture);
+
+    expect(host.table!.rows[0].selected, isFalse);
+    expect(host.table!.rows[1].selected, isTrue);
+    expect(host.table!.getAllSelected<Orgao>().single.id, 2);
+  });
+
+  test('refresh(immediate: true) redesenha sem esperar o proximo frame',
+      () async {
+    final fixture = await refreshTestBed.create();
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.orgaos.first.ativo = false;
+      component.table!.refresh(immediate: true);
+
+      expect(
+        component.table!.rows.first.columns
+            .firstWhere((column) => column.key == 'ativo')
+            .value,
+        'Inativo',
+      );
+    });
+  });
 
   test('renderiza cabecalhos e linhas iniciais', () async {
     final fixture = await testBed.create();

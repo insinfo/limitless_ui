@@ -79,6 +79,8 @@ class DatatablePageComponent implements OnInit {
     _stickyColumnsTableSettingsEn = _buildStickyColumnsTableSettings(false);
     _headerTitleTableSettingsPt = _buildHeaderTitleTableSettings(true);
     _headerTitleTableSettingsEn = _buildHeaderTitleTableSettings(false);
+    _orgaoTableSettingsPt = _buildOrgaoTableSettings(true);
+    _orgaoTableSettingsEn = _buildOrgaoTableSettings(false);
     _searchFieldsPt = _buildSearchFields(Messages());
     _searchFieldsEn = _buildSearchFields(en.MessagesEn());
     _processLookupSearchFields = _buildProcessLookupSearchFields();
@@ -112,6 +114,8 @@ class DatatablePageComponent implements OnInit {
   late final DatatableSettings _stickyColumnsTableSettingsEn;
   late final DatatableSettings _headerTitleTableSettingsPt;
   late final DatatableSettings _headerTitleTableSettingsEn;
+  late final DatatableSettings _orgaoTableSettingsPt;
+  late final DatatableSettings _orgaoTableSettingsEn;
   late final List<DatatableSearchField> _searchFieldsPt;
   late final List<DatatableSearchField> _searchFieldsEn;
   late final List<DatatableSearchField> _processLookupSearchFields;
@@ -146,6 +150,9 @@ class DatatablePageComponent implements OnInit {
   DatatableSettings get headerTitleTableSettings => i18n.isPortuguese
       ? _headerTitleTableSettingsPt
       : _headerTitleTableSettingsEn;
+
+  DatatableSettings get orgaoTableSettings =>
+      i18n.isPortuguese ? _orgaoTableSettingsPt : _orgaoTableSettingsEn;
 
   List<DatatableSearchField> get searchFields =>
       i18n.isPortuguese ? _searchFieldsPt : _searchFieldsEn;
@@ -652,6 +659,87 @@ class DatatablePageComponent implements OnInit {
     );
   }
 
+  /// Tabela da demo de `refresh()`: as ações mutam a instância de [Orgao] e a
+  /// coluna `ativo` só muda na tela depois que `refresh()` reconstrói as linhas.
+  DatatableSettings _buildOrgaoTableSettings(bool isPortuguese) {
+    return DatatableSettings(
+      colsDefinitions: <DatatableCol>[
+        DatatableCol(
+          key: 'nome',
+          title: isPortuguese ? 'Nome' : 'Name',
+          minWidth: '240px',
+        ),
+        DatatableCol(
+          key: 'sigla',
+          title: isPortuguese ? 'Sigla' : 'Acronym',
+          width: '120px',
+          textAlign: 'center',
+          titleTextAlign: 'center',
+        ),
+        DatatableCol(
+          key: 'ativo',
+          title: isPortuguese ? 'Ativo' : 'Active',
+          width: '120px',
+          textAlign: 'center',
+          titleTextAlign: 'center',
+          format: DatatableFormat.bool,
+        ),
+        // Botão criado em Dart com listener nativo (`onClick.listen`), fora dos
+        // bindings do Angular: é exatamente o caso em que só `refresh()`
+        // atualiza a célula, já que o HTML da linha foi montado no draw
+        // anterior.
+        DatatableCol(
+          key: 'habilitar',
+          title: isPortuguese ? 'Habilitar/Desabilitar' : 'Enable/Disable',
+          width: '180px',
+          textAlign: 'center',
+          titleTextAlign: 'center',
+          customRenderHtml: (itemMap, item) {
+            final orgao = item as Orgao;
+            final container = DivElement();
+            final button = ButtonElement()
+              ..type = 'button'
+              ..classes.addAll(<String>[
+                'btn',
+                'border-transparent',
+                'btn-sm',
+                orgao.ativo ? 'btn-flat-danger' : 'btn-flat-success',
+              ])
+              ..text = orgao.ativo
+                  ? (isPortuguese ? 'Desabilitar' : 'Disable')
+                  : (isPortuguese ? 'Habilitar' : 'Enable')
+              ..onClick.listen((event) {
+                // Interrompe o rowClick do datatable.
+                event.stopPropagation();
+                toggleOrgaoAtivo(orgao);
+              });
+            container.append(button);
+            return container;
+          },
+        ),
+        DatatableActionColumn(
+          key: 'actions',
+          title: isPortuguese ? 'Ações' : 'Actions',
+          width: '130px',
+          titleTextAlign: 'center',
+          responsiveAutoHideRequired: true,
+          actions: <DatatableAction>[
+            DatatableAction(
+              label: isPortuguese ? 'Alternar' : 'Toggle',
+              iconClass: 'ph ph-arrows-clockwise',
+              appearance: DatatableActionAppearance.linkIcon,
+              size: 'sm',
+              responsiveMode:
+                  DatatableActionResponsiveMode.desktopTextMobileIcon,
+              onTap: (ctx) => toggleOrgaoAtivo(ctx.itemInstance as Orgao),
+            ),
+          ],
+        ),
+      ],
+      responsiveControlColumnKey: 'nome',
+    );
+  }
+
   List<DatatableSearchField> _buildSearchFields(dynamic t) {
     return <DatatableSearchField>[
       DatatableSearchField(
@@ -799,6 +887,9 @@ class DatatablePageComponent implements OnInit {
   @ViewChild('headerTitleDemoTable')
   LiDataTableComponent? headerTitleDemoTable;
 
+  @ViewChild('orgaoRefreshDemoTable')
+  LiDataTableComponent? orgaoRefreshDemoTable;
+
   @ViewChild('lazyDatatableModal')
   LiModalComponent? lazyDatatableModal;
 
@@ -814,6 +905,7 @@ class DatatablePageComponent implements OnInit {
   final Filters multiSortFilters = Filters(limit: 8, offset: 0);
   final Filters stickyColumnsFilters = Filters(limit: 5, offset: 0);
   final Filters headerTitleFilters = Filters(limit: 4, offset: 0);
+  final Filters orgaoFilters = Filters(limit: 10, offset: 0);
   final List<int> customGridLimitOptions = const <int>[4, 8, 12];
   final List<int> processLookupLimitOptions = const <int>[12, 24, 48];
   final List<int> stickyColumnsLimitOptions = const <int>[5, 10, 15];
@@ -829,9 +921,58 @@ class DatatablePageComponent implements OnInit {
   bool showProcessLookupActionColumnDemo = false;
   bool showHeaderTitleDemo = false;
   bool showGroupedDemo = false;
+  bool showOrgaoRefreshDemo = false;
   bool datatableGridMode = false;
   bool singleSelectionOnly = false;
   String datatableEventLog = '';
+
+  /// Instâncias mutáveis da demo de `refresh()`.
+  ///
+  /// A lista e o [DataFrame] nunca são recriados: só o campo `ativo` de cada
+  /// item muda, então nenhum binding do Angular é invalidado e a tabela
+  /// depende de `refresh()` para redesenhar.
+  final List<Orgao> orgaos = <Orgao>[
+    Orgao(
+      id: 1,
+      nome: 'Secretaria Municipal de Saúde',
+      sigla: 'SMS',
+      ativo: true,
+    ),
+    Orgao(
+      id: 2,
+      nome: 'Secretaria Municipal de Educação',
+      sigla: 'SME',
+      ativo: true,
+    ),
+    Orgao(
+      id: 3,
+      nome: 'Secretaria Municipal de Obras',
+      sigla: 'SMO',
+      ativo: false,
+    ),
+    Orgao(
+      id: 4,
+      nome: 'Procuradoria Geral do Município',
+      sigla: 'PGM',
+      ativo: true,
+    ),
+    Orgao(
+      id: 5,
+      nome: 'Controladoria Geral do Município',
+      sigla: 'CGM',
+      ativo: false,
+    ),
+  ];
+
+  late final DataFrame<Orgao> orgaoTableData = DataFrame<Orgao>(
+    items: orgaos,
+    totalRecords: orgaos.length,
+  );
+
+  /// Permite desligar a chamada de `refresh()` para mostrar a tela
+  /// desatualizada em relação ao modelo.
+  bool callRefreshOnOrgaoToggle = true;
+  String orgaoRefreshLog = '';
   final String overviewSnippet = '''<li-datatable
   [dataTableFilter]="filters"
   [data]="tableData"
@@ -1169,6 +1310,82 @@ void openProcess(Map<String, dynamic> itemMap) {
       {{ ctx.column.title }}
     </span>
   </template>
+</li-datatable>''';
+  final String orgaoRefreshDartSnippet =
+      '''class Orgao implements SerializeBase {
+  Orgao({required this.nome, required this.sigla, required this.ativo});
+
+  String nome;
+  String sigla;
+  bool ativo;
+
+  @override
+  Map<String, dynamic> toMap() =>
+      {'nome': nome, 'sigla': sigla, 'ativo': ativo};
+}
+
+@ViewChild('orgaoTable')
+LiDataTableComponent? orgaoTable;
+
+final orgaos = <Orgao>[...];
+
+late final DataFrame<Orgao> orgaoTableData =
+    DataFrame<Orgao>(items: orgaos, totalRecords: orgaos.length);
+
+final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'nome', title: 'Nome'),
+    DatatableCol(key: 'sigla', title: 'Sigla'),
+    DatatableCol(key: 'ativo', title: 'Ativo', format: DatatableFormat.bool),
+    // Botão em Dart com listener nativo, fora dos bindings do Angular.
+    DatatableCol(
+      key: 'habilitar',
+      title: 'Habilitar/Desabilitar',
+      customRenderHtml: (map, item) {
+        final orgao = item as Orgao;
+        final div = DivElement();
+        final btn = ButtonElement()
+          ..type = 'button'
+          ..classes.addAll(
+              ['btn', 'btn-sm', orgao.ativo ? 'btn-flat-danger' : 'btn-flat-success'])
+          ..text = orgao.ativo ? 'Desabilitar' : 'Habilitar'
+          ..onClick.listen((event) {
+            event.stopPropagation();
+            toggleAtivo(orgao);
+          });
+        div.append(btn);
+        return div;
+      },
+    ),
+    DatatableActionColumn(
+      key: 'actions',
+      title: 'Ações',
+      actions: <DatatableAction>[
+        DatatableAction(
+          label: 'Alternar',
+          onTap: (ctx) => toggleAtivo(ctx.itemInstance as Orgao),
+        ),
+      ],
+    ),
+  ],
+);
+
+Future<void> toggleAtivo(Orgao orgao) async {
+  orgao.ativo = !orgao.ativo;
+  await orgaoService.updateAtivo(orgao.id, orgao.ativo);
+
+  // A lista e o DataFrame continuam os mesmos: só refresh() reconstrói
+  // as linhas (e o HTML de customRenderHtml) com o novo valor de `ativo`.
+  orgaoTable?.refresh();
+
+  // Use refresh(immediate: true) quando o DOM precisar estar atualizado
+  // logo depois da chamada, sem esperar o próximo frame.
+}''';
+  final String orgaoRefreshHtmlSnippet = '''<li-datatable #orgaoTable
+  [dataTableFilter]="orgaoFilters"
+  [data]="orgaoTableData"
+  [settings]="settings"
+  [showExportMenu]="false">
 </li-datatable>''';
   final String productModelSnippet = '''import 'serialize_base.dart';
 
@@ -1539,6 +1756,49 @@ class ProductController {
 
     showProcessLookupActionColumnDemo = false;
     _flushView();
+  }
+
+  void onOrgaoRefreshDemoExpanded(bool expanded) {
+    showOrgaoRefreshDemo = expanded;
+    _flushView();
+  }
+
+  /// Muta a instância e pede o redesenho — sem `refresh()` a linha continua
+  /// mostrando o valor antigo mesmo com o modelo já atualizado.
+  void toggleOrgaoAtivo(Orgao orgao) {
+    orgao.ativo = !orgao.ativo;
+
+    orgaoRefreshLog = i18n.isPortuguese
+        ? 'Modelo: ${orgao.sigla}.ativo = ${orgao.ativo}'
+            '${callRefreshOnOrgaoToggle ? ' — refresh() chamado, tela redesenhada.' : ' — refresh() NÃO chamado, a tela segue desatualizada.'}'
+        : 'Model: ${orgao.sigla}.ativo = ${orgao.ativo}'
+            '${callRefreshOnOrgaoToggle ? ' — refresh() called, table redrawn.' : ' — refresh() NOT called, the table stays stale.'}';
+
+    if (callRefreshOnOrgaoToggle) {
+      orgaoRefreshDemoTable?.refresh();
+    }
+
+    _flushView();
+  }
+
+  void toggleCallRefreshOnOrgaoToggle(Event event) {
+    final checkbox = event.target as CheckboxInputElement;
+    callRefreshOnOrgaoToggle = checkbox.checked ?? false;
+    _flushView();
+  }
+
+  void refreshOrgaoTableManually() {
+    orgaoRefreshDemoTable?.refresh();
+    orgaoRefreshLog = i18n.isPortuguese
+        ? 'refresh() chamado manualmente: a tabela foi reconstruída a partir das instâncias atuais.'
+        : 'refresh() called manually: the table was rebuilt from the current instances.';
+    _flushView();
+  }
+
+  String get orgaoModelStateLog {
+    final state =
+        orgaos.map((orgao) => '${orgao.sigla}=${orgao.ativo}').join(', ');
+    return i18n.isPortuguese ? 'Modelo atual: $state' : 'Current model: $state';
   }
 
   Future<void> onHeaderTitleDemoExpanded(bool expanded) async {
@@ -2630,6 +2890,29 @@ class ProductController {
       ? 'Adia o exemplo de títulos customizados até a expansão para cortar instâncias permanentes do datatable.'
       : 'Defers the custom title example until expansion to cut permanent datatable instances.';
 
+  String get orgaoRefreshDemoTitle => i18n.isPortuguese
+      ? 'refresh(): redesenhar após mutar a instância'
+      : 'refresh(): redraw after mutating the instance';
+
+  String get orgaoRefreshDemoIntro => i18n.isPortuguese
+      ? 'A tabela lista instâncias de Orgao (SerializeBase). A ação da linha altera orgao.ativo no próprio objeto — nenhum binding do Angular muda, então é refresh() que reconstrói as linhas a partir dos dados atuais.'
+      : 'The table lists Orgao instances (SerializeBase). The row action flips orgao.ativo on the object itself — no Angular binding changes, so refresh() is what rebuilds the rows from the current data.';
+
+  String get orgaoRefreshAccordionDescription => i18n.isPortuguese
+      ? 'Mostra por que uma coluna de ação que muda o modelo precisa de refresh() para refletir na tela.'
+      : 'Shows why an action column that mutates the model needs refresh() to show up on screen.';
+
+  String get orgaoRefreshToggleLabel => i18n.isPortuguese
+      ? 'Chamar refresh() ao alternar'
+      : 'Call refresh() when toggling';
+
+  String get orgaoRefreshManualButtonLabel =>
+      i18n.isPortuguese ? 'Chamar refresh() agora' : 'Call refresh() now';
+
+  String get orgaoRefreshHint => i18n.isPortuguese
+      ? 'Desmarque a opção acima, alterne uma linha e compare: o modelo muda, a tela não. Depois use o botão para chamar refresh() e ver a tabela alinhar com o modelo.'
+      : 'Uncheck the option above, toggle a row, and compare: the model changes, the screen does not. Then use the button to call refresh() and watch the table catch up with the model.';
+
   String get groupedAccordionDescription => i18n.isPortuguese
       ? 'Move o agrupamento com seleção para carga sob demanda, preservando a demo sem mantê-la sempre renderizada.'
       : 'Moves grouping with selection to on-demand loading, preserving the demo without keeping it always rendered.';
@@ -2816,4 +3099,41 @@ class ProductController {
 
   String multiSortDirectionLabel(String direction) =>
       direction == 'desc' ? 'Decrescente' : 'Crescente';
+}
+
+/// Modelo usado na demo de `refresh()`.
+///
+/// As ações da tabela mutam a instância (`ativo = !ativo`) em vez de trocar a
+/// lista, que é justamente o cenário em que `refresh()` é necessário.
+class Orgao implements SerializeBase {
+  Orgao({
+    required this.id,
+    required this.nome,
+    required this.sigla,
+    required this.ativo,
+  });
+
+  final int id;
+  String nome;
+  String sigla;
+  bool ativo;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'nome': nome,
+      'sigla': sigla,
+      'ativo': ativo,
+    };
+  }
+
+  factory Orgao.fromMap(Map<String, dynamic> map) {
+    return Orgao(
+      id: map['id'] as int,
+      nome: map['nome'] as String,
+      sigla: map['sigla'] as String,
+      ativo: map['ativo'] as bool,
+    );
+  }
 }
