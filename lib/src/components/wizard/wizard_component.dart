@@ -70,6 +70,13 @@ class LiWizardStepComponent {
 
   final ChangeDetectorRef _changeDetectorRef;
 
+  /// Applies the theme's `body` class to the step host.
+  ///
+  /// The Limitless theme styles `.wizard > .content > .body` with a horizontal
+  /// padding. Set this to `false` when the wizard is rendered inside a
+  /// container that already provides its own padding — a modal, for instance —
+  /// so the step content stays aligned with the surrounding chrome.
+  @Input()
   @HostBinding('class.body')
   bool bodyClass = true;
 
@@ -162,6 +169,14 @@ class LiWizardComponent implements AfterContentInit, OnDestroy {
 
   @Input()
   bool showActions = true;
+
+  /// Extra classes applied to the content container, next to `content`.
+  ///
+  /// Defaults to the theme's `mb-3` spacing. Set it to an empty string to drop
+  /// the bottom margin — useful when the wizard sits inside a modal whose
+  /// footer already provides the spacing — or to any other utility classes.
+  @Input()
+  String contentClass = 'mb-3';
 
   @Input()
   String previousLabel = 'Previous';

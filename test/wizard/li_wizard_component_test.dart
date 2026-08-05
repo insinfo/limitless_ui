@@ -80,6 +80,25 @@ class WizardTestHostComponent {
   }
 }
 
+@Component(
+  selector: 'wizard-chrome-test-host',
+  template: '''
+    <li-wizard #wizard [contentClass]="contentClass">
+      <li-wizard-step title="Only" [bodyClass]="bodyClass">
+        <div id="step-only">Only body</div>
+      </li-wizard-step>
+    </li-wizard>
+  ''',
+  directives: [coreDirectives, liWizardDirectives],
+)
+class WizardChromeTestHostComponent {
+  @ViewChild('wizard')
+  LiWizardComponent? wizard;
+
+  String contentClass = 'mb-3';
+  bool bodyClass = true;
+}
+
 void main() {
   tearDown(disposeAnyRunningTest);
 
@@ -151,6 +170,41 @@ void main() {
         isNotNull);
     expect(_currentBody(fixture.rootElement)?.querySelector('#step-profile'),
         isNull);
+  });
+
+  test('content and step body classes can be turned off', () async {
+    // Both classes come from the Limitless theme: `.wizard > .content` carries
+    // the `mb-3` spacing and `.content > .body` carries a horizontal padding.
+    // A wizard rendered inside a container that already provides its own
+    // chrome — a modal, typically — needs to drop them, and doing it from the
+    // outside is impossible: `.content` belongs to this component's template,
+    // and the step's `body` class is a host binding that wins over any
+    // `[class.body]` written by the parent.
+    final chromeBed = NgTestBed<WizardChromeTestHostComponent>(
+      ng.WizardChromeTestHostComponentNgFactory,
+    );
+    final fixture = await chromeBed.create();
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await fixture.update((_) {});
+
+    final content = fixture.rootElement.querySelector('.content')!;
+    final step = fixture.rootElement.querySelector('li-wizard-step')!;
+    expect(content.classes, contains('mb-3'));
+    expect(step.classes, contains('body'));
+
+    await fixture.update((component) {
+      component.contentClass = '';
+      component.bodyClass = false;
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await fixture.update((_) {});
+
+    expect(content.classes, isNot(contains('mb-3')));
+    expect(content.classes, contains('content'),
+        reason: 'the structural class must survive');
+    expect(step.classes, isNot(contains('body')));
+    expect(step.querySelector('#step-only'), isNotNull,
+        reason: 'dropping the classes must not affect projection');
   });
 
   test('emits finish only after beforeFinish allows completion', () async {

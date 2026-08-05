@@ -25,7 +25,7 @@
   </ul>
 </div>
 
-<div class="content mb-3" *ngIf="hasSteps">
+<div class="content" [ngClass]="contentClass" *ngIf="hasSteps">
   <ng-content></ng-content>
 </div>
 
