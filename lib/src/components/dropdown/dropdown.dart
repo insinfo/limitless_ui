@@ -7,6 +7,7 @@ import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
 
 import 'dropdown_config.dart';
+import '../../core/outside_click.dart';
 
 /// Public directives used by dropdown APIs.
 const liDropdownDirectives = <Object>[
@@ -484,7 +485,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _destroyDocumentHandlers();
 
     if (_autoCloseMode != 'false') {
-      _documentClickSubscription = html.document.onClick.listen((event) {
+      _documentClickSubscription = listenOutsideClick((event) {
         if (!_open) {
           return;
         }
@@ -1208,7 +1209,7 @@ class LiDropdownSubmenuDirective implements OnInit, OnDestroy {
   }
 
   void _bindDocumentClick() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!_open) {
         return;
       }

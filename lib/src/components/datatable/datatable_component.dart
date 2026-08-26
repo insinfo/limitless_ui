@@ -169,6 +169,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   bool _responsiveCollapseViewportActiveCache = false;
   bool _responsiveCollapseContainerActiveCache = false;
   bool _responsiveCollapseActiveCache = false;
+  String? _stickySurfaceBackground;
   final DatatableSelectionController _selectionController =
       DatatableSelectionController();
   final DatatableResponsiveController _responsiveController =
@@ -490,6 +491,12 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   @Input()
   String toggleColumnsButtonTitle = 'Clique para exibir ou ocultar uma coluna';
+
+  @Input()
+  String expandRowDetailsLabel = 'Mostrar os demais dados da linha';
+
+  @Input()
+  String collapseRowDetailsLabel = 'Ocultar os demais dados da linha';
 
   @Input()
   String showAllColumnsLabel = 'Exibir tudo';
@@ -889,7 +896,9 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
           (column) => column.visibility && !isRuntimeResponsiveHidden(column),
         )
         .length;
-    return visibleColumnCount + (showCheckboxToSelectRow ? 1 : 0);
+    return visibleColumnCount +
+        (showCheckboxToSelectRow ? 1 : 0) +
+        (showResponsiveControlColumn ? 1 : 0);
   }
 
   int get virtualTopSpacerHeight => _virtualScrollController.topSpacerHeight;
@@ -2614,6 +2623,57 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       _areResponsiveFeaturesActive &&
       (_isResponsiveCollapseActive || _autoHiddenColumnKeys.isNotEmpty);
 
+  /// Whether the dedicated expand/collapse column is currently rendered.
+  ///
+  /// It only exists while there is something to collapse, so the table keeps
+  /// its full width on desktop.
+  bool get showResponsiveControlColumn =>
+      settings.responsiveControlMode ==
+          DatatableResponsiveControlMode.column &&
+      !gridMode &&
+      hasResponsiveCollapsedColumns;
+
+  String resolveResponsiveControlLabel(DatatableRenderedRow view) {
+    return view.row.isExpanded
+        ? collapseRowDetailsLabel
+        : expandRowDetailsLabel;
+  }
+
+  /// Whether a click on the row body opens the responsive details instead of
+  /// being reported through [onRowClick].
+  bool get expandsResponsiveDetailsOnRowClick =>
+      settings.responsiveDetailsTrigger ==
+          DatatableResponsiveDetailsTrigger.row &&
+      hasResponsiveCollapsedColumns;
+
+  bool isRowInteractive(DatatableRenderedRow view) {
+    if (view.row.type == DatatableRowType.groupTitle) {
+      return false;
+    }
+
+    if (expandsResponsiveDetailsOnRowClick && view.hasResponsiveHiddenColumns) {
+      return true;
+    }
+
+    return !disableRowClick;
+  }
+
+  /// Routes a click landing on the row itself rather than on the control.
+  void onRowElementClick(DatatableRenderedRow view) {
+    if (expandsResponsiveDetailsOnRowClick && view.hasResponsiveHiddenColumns) {
+      toggleResponsiveRowDetails(view);
+      return;
+    }
+
+    rowClickHandler(view.row);
+  }
+
+  int resolveChildRowColspan(DatatableRenderedRow view) {
+    return view.row.columns.length +
+        (showCheckboxToSelectRow ? 1 : 0) +
+        (showResponsiveControlColumn ? 1 : 0);
+  }
+
   bool isFixedColumn(DatatableCol column) {
     return _responsiveController.isFixedColumn(
       column: column,
@@ -2672,15 +2732,35 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   bool isResponsiveControlColumn(
       DatatableRenderedRow view, DatatableCol column) {
-    if (!view.hasResponsiveHiddenColumns) {
+    if (!view.hasResponsiveHiddenColumns || showResponsiveControlColumn) {
       return false;
     }
 
     return view.responsiveControlColumnKey == column.key;
   }
 
+  /// Keyboard parity for the expand/collapse control, which lives on a cell
+  /// rather than a button.
+  void onResponsiveControlKeydown(KeyboardEvent event, dynamic viewOrRow) {
+    if (event.key != 'Enter' && event.key != ' ' && event.key != 'Spacebar') {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    toggleResponsiveRowDetails(viewOrRow);
+  }
+
   void onResponsiveControlClick(MouseEvent event, dynamic viewOrRow) {
     event.stopPropagation();
+    toggleResponsiveRowDetails(viewOrRow);
+  }
+
+  /// Expands or collapses the responsive details of [viewOrRow].
+  ///
+  /// Rows with nothing hidden fall back to the regular row click so the
+  /// control cell never swallows the interaction.
+  void toggleResponsiveRowDetails(dynamic viewOrRow) {
     final DatatableRenderedRow view;
     if (viewOrRow is DatatableRenderedRow) {
       view = viewOrRow;
@@ -3011,6 +3091,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       responsiveEnabled: _areResponsiveFeaturesActive,
       collapseActive: _isResponsiveCollapseActive,
     );
+    _syncStickySurfaceBackground();
 
     if (gridMode || settings.colsDefinitions.isEmpty) {
       stopwatch?.stop();
@@ -3043,6 +3124,88 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       responsiveEnabled: _areResponsiveFeaturesActive,
       collapseActive: _isResponsiveCollapseActive,
     );
+  }
+
+  /// Publishes the real background painted behind the table as
+  /// `--li-datatable-sticky-bg`.
+  ///
+  /// Sticky cells have to be opaque to occlude what scrolls under them, and a
+  /// guess like `--card-bg` shows up as a grey patch whenever the table sits
+  /// on a different surface — inside a modal, most visibly. Reading the
+  /// nearest painted ancestor keeps the sticky cells the same colour as the
+  /// surface they float over.
+  void _syncStickySurfaceBackground() {
+    final needsOpaqueCells = _responsiveController.leftFixedCount > 0 ||
+        _responsiveController.rightFixedCount > 0 ||
+        isStickyTableHeaderOnVirtualScrollActive;
+    if (!needsOpaqueCells) {
+      return;
+    }
+
+    final resolved = _resolveSurfaceBackgroundColor(scrollContainer);
+    if (resolved == _stickySurfaceBackground) {
+      return;
+    }
+
+    _stickySurfaceBackground = resolved;
+    if (resolved == null) {
+      rootElement.style.removeProperty('--li-datatable-sticky-bg');
+      return;
+    }
+
+    rootElement.style.setProperty('--li-datatable-sticky-bg', resolved);
+  }
+
+  /// Walks up from [start] looking for the first ancestor that actually paints
+  /// a background, so transparent wrappers are seen through.
+  static String? _resolveSurfaceBackgroundColor(Element? start) {
+    var current = start;
+    var depth = 0;
+    while (current != null && depth < 32) {
+      final backgroundColor = current.getComputedStyle().backgroundColor.trim();
+      if (_isOpaqueColor(backgroundColor)) {
+        return backgroundColor;
+      }
+
+      current = current.parent;
+      depth++;
+    }
+
+    return null;
+  }
+
+  static bool _isOpaqueColor(String color) {
+    final normalized = color.trim().toLowerCase();
+    if (normalized.isEmpty || normalized == 'transparent') {
+      return false;
+    }
+
+    final alpha = _resolveColorAlpha(normalized);
+    return alpha == null || alpha >= 1;
+  }
+
+  /// Reads the alpha out of the notations `getComputedStyle` hands back —
+  /// `rgba(r, g, b, a)` and the space separated `rgb(r g b / a)`. Returns null
+  /// when the notation carries no alpha channel, which means fully opaque.
+  static double? _resolveColorAlpha(String color) {
+    final legacyAlpha = RegExp(
+      r'^(?:rgba|hsla)\([^,]+,[^,]+,[^,]+,\s*([0-9.]+)\s*\)$',
+    ).firstMatch(color);
+    if (legacyAlpha != null) {
+      return double.tryParse(legacyAlpha.group(1)!);
+    }
+
+    final modernAlpha = RegExp(r'/\s*([0-9.]+)(%?)\s*\)$').firstMatch(color);
+    if (modernAlpha == null) {
+      return null;
+    }
+
+    final value = double.tryParse(modernAlpha.group(1)!);
+    if (value == null) {
+      return null;
+    }
+
+    return modernAlpha.group(2) == '%' ? value / 100 : value;
   }
 }
 

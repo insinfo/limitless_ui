@@ -346,7 +346,14 @@
     position: absolute;
     top: 0;
     left: 50%;
-    transform: translate(-50%, -100%);
+    // Centrado na ponta do ponteiro, não empurrado para fora dela. Com
+    // `translate(-50%, -100%)` o disco ficava inteiro acima da ponta, e o
+    // centro dele caía meia altura de disco além — desalinhado da etiqueta.
+    // Compensar isso pelo comprimento do ponteiro não funciona: o ponteiro é
+    // medido em porcentagem do relógio, que muda de 17rem para 15.5rem no
+    // mobile, e o disco é fixo em rem. Centrando na ponta, basta o ponteiro
+    // ter o raio do anel e o encaixe é exato em qualquer tamanho.
+    transform: translate(-50%, -50%);
     z-index: 4;
     pointer-events: none;
 }
@@ -394,6 +401,17 @@
     z-index: 2;
     border-radius: 50%;
     transition: color 0.16s ease;
+}
+
+// O anel interno (0 e 13–23) fica menor que o externo, como no relógio do
+// Material Design: as duas voltas cabem sem encostar e a leitura não compete
+// com a hora principal. A classe já era aplicada pelo componente, mas não
+// tinha regra nenhuma — os dois anéis saíam do mesmo tamanho.
+.time-picker-dial-label-inner {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.9375rem;
+    color: rgba(var(--body-color-rgb, 31, 41, 55), 0.72);
 }
 
 .time-picker-dial-label.active {

@@ -1,52 +1,135 @@
+/* Barra de rolagem do app de exemplo.
+ *
+ * O desenho vale para qualquer superfície que role, aplicado pelo seletor
+ * universal e não por uma lista de classes. A lista anterior deixava de fora
+ * tudo que a lib cria em runtime — os menus de dropdown são portados para o
+ * body e nunca carregaram `.dropdown-menu-scrollable`, então caíam na barra
+ * padrão grossa do navegador. Como `*` tem especificidade zero, qualquer regra
+ * de classe abaixo continua vencendo.
+ *
+ * As regras `::-webkit-scrollbar` NÃO podem ficar dentro de
+ * `@supports selector(::-webkit-scrollbar)`: `selector()` só aceita seletores
+ * padronizados, e o Chrome responde `false` para o pseudo-elemento prefixado
+ * mesmo suportando-o. Envolvê-las nesse @supports desliga o bloco inteiro.
+ *
+ * Os nomes das variáveis são os mesmos que os temas em `themes/` sobrescrevem;
+ * não renomeie sem atualizar os cinco arquivos de lá.
+ */
 :root {
-  --app-scrollbar-size: 0.5rem;
-  --app-scrollbar-size-compact: 0.375rem;
-  --app-scrollbar-light-track: var(--gray-300);
+  --app-scrollbar-size: 0.625rem;
+  /* Recuo transparente do polegar dentro da calha: é o que faz a barra ler
+   * como um trilho fino e arredondado em vez de um canal cheio. */
+  --app-scrollbar-inset: 3px;
+  --app-scrollbar-inset-hover: 2px;
+
+  /* `initial` deixa a variável inválida de propósito, então o `var()` que a
+   * consome cai no fallback — a cor da superfície que rola. Um tema que queira
+   * trilho próprio é só atribuir uma cor aqui. */
+  --app-scrollbar-light-track: initial;
   --app-scrollbar-light-thumb: rgba(31, 41, 55, 0.28);
   --app-scrollbar-light-thumb-hover: rgba(31, 41, 55, 0.48);
-  --app-scrollbar-dark-track: transparent;
+  --app-scrollbar-dark-track: initial;
   --app-scrollbar-dark-thumb: rgba(255, 255, 255, 0.28);
   --app-scrollbar-dark-thumb-hover: rgba(255, 255, 255, 0.42);
+
+  --app-scrollbar-track: var(--app-scrollbar-light-track);
+  --app-scrollbar-thumb: var(--app-scrollbar-light-thumb);
+  --app-scrollbar-thumb-hover: var(--app-scrollbar-light-thumb-hover);
 }
 
-html,
-body,
-.custom-scrollbars,
-.scrollbar-theme-light,
-.content-inner,
-.table-responsive,
-.table-scrollable,
-.datatable-scroll,
-.datatable-scroll-wrap,
-.dropdown-menu-scrollable,
-.modal-body,
-.offcanvas-body,
-.overflow-auto,
-.form-control-content,
-.tokenfield-suggest-list,
-.multiselect-container,
-.autoComplete_wrapper > ul,
-.select2-results > .select2-results__options,
-.dual-listbox .dual-listbox__available,
-.dual-listbox .dual-listbox__selected,
-.gridjs-wrapper,
-.document-editor-container,
-.ql-editor,
-.trumbowyg-editor,
-.trumbowyg-textarea {
-  scrollbar-width: thin;
-  scrollbar-color: var(--app-scrollbar-light-thumb) var(--app-scrollbar-light-track);
+/* Tema escuro: troca automática, sem depender de classe no elemento. */
+[data-color-theme='dark'],
+html[data-color-theme='dark'] {
+  --app-scrollbar-track: var(--app-scrollbar-dark-track);
+  --app-scrollbar-thumb: var(--app-scrollbar-dark-thumb);
+  --app-scrollbar-thumb-hover: var(--app-scrollbar-dark-thumb-hover);
 }
 
+/* Superfícies escuras dentro do tema claro. As variáveis são herdadas, então
+ * qualquer coisa que role dentro delas também acompanha. */
 .scrollbar-theme-dark,
+.sidebar-dark,
 .sidebar-content,
 .nav-sidebar,
-.dropdown-menu-dark,
-.dropdown-menu-dark .dropdown-menu-scrollable {
-  scrollbar-width: thin;
-  scrollbar-color: var(--app-scrollbar-dark-thumb) var(--app-scrollbar-dark-track);
+.dropdown-menu-dark {
+  --app-scrollbar-surface: var(--sidebar-bg, #252b36);
+  --app-scrollbar-track: var(--app-scrollbar-dark-track);
+  --app-scrollbar-thumb: var(--app-scrollbar-dark-thumb);
+  --app-scrollbar-thumb-hover: var(--app-scrollbar-dark-thumb-hover);
 }
 
+/* A calha nunca pode ser transparente. O tema declara
+ * `background-clip: padding-box` em superfícies flutuantes como
+ * `.dropdown-menu`, e a área da barra fica fora do padding box — o fundo do
+ * menu não chega ali, então uma calha transparente mostra o conteúdo atrás
+ * dele.
+ *
+ * A cor sai de uma cadeia resolvida no próprio elemento que rola, já que
+ * variável personalizada é herdada: dentro de um menu `--dropdown-bg` está em
+ * escopo, num modal `--modal-bg`, num card `--card-bg`, e no resto da página
+ * sobra `--body-bg`. Superfícies escuras dentro do tema claro fixam
+ * `--app-scrollbar-surface`, que vem antes na cadeia. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-scrollbar-thumb)
+    var(
+      --app-scrollbar-track,
+      var(
+        --app-scrollbar-surface,
+        var(--dropdown-bg, var(--modal-bg, var(--card-bg, var(--body-bg, #fff))))
+      )
+    );
+}
+
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-track {
+  background-color: var(
+    --app-scrollbar-track,
+    var(
+      --app-scrollbar-surface,
+      var(--dropdown-bg, var(--modal-bg, var(--card-bg, var(--body-bg, #fff))))
+    )
+  );
+}
+
+*::-webkit-scrollbar {
+  width: var(--app-scrollbar-size);
+  height: var(--app-scrollbar-size);
+}
+
+/* O polegar é quem carrega o desenho fino: recuado por uma borda transparente
+ * com `background-clip: padding-box`, revelando o trilho opaco atrás. */
+*::-webkit-scrollbar-thumb {
+  background-color: var(--app-scrollbar-thumb);
+  background-clip: padding-box;
+  border: var(--app-scrollbar-inset) solid transparent;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--app-scrollbar-thumb-hover);
+  border-width: var(--app-scrollbar-inset-hover);
+}
+
+/* O Chrome não recorta a barra de rolagem pelo `border-radius` do elemento, e
+ * a calha (~10px) é mais larga que o raio do menu (~6px), então a faixa opaca
+ * cobre o canto arredondado e ele fica quadrado.
+ *
+ * A saída é fazer o fundo do próprio elemento alcançar a calha, porque esse
+ * fundo é recortado pelo raio. O tema declara `background-clip: padding-box`
+ * em superfícies flutuantes, e a área da barra fica fora do padding box — é a
+ * razão de o fundo não chegar lá. Trazendo o clip para `border-box` o canto
+ * volta a ser arredondado, e a calha continua opaca porque agora é o próprio
+ * fundo do menu que a preenche. */
+.dropdown-menu,
+.popover,
+.offcanvas,
+.modal-content {
+  background-clip: border-box;
+}
+
+/* Rolagem sem barra visível. */
 .nav-tabs-responsive,
 .scrollbar-hidden {
   scrollbar-width: none;
@@ -55,154 +138,4 @@ body,
 .nav-tabs-responsive::-webkit-scrollbar,
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
-}
-
-@supports selector(::-webkit-scrollbar) {
-  html::-webkit-scrollbar,
-  body::-webkit-scrollbar,
-  .custom-scrollbars::-webkit-scrollbar,
-  .scrollbar-theme-light::-webkit-scrollbar,
-  .content-inner::-webkit-scrollbar,
-  .table-responsive::-webkit-scrollbar,
-  .table-scrollable::-webkit-scrollbar,
-  .datatable-scroll::-webkit-scrollbar,
-  .datatable-scroll-wrap::-webkit-scrollbar,
-  .dropdown-menu-scrollable::-webkit-scrollbar,
-  .modal-body::-webkit-scrollbar,
-  .offcanvas-body::-webkit-scrollbar,
-  .overflow-auto::-webkit-scrollbar,
-  .form-control-content::-webkit-scrollbar,
-  .tokenfield-suggest-list::-webkit-scrollbar,
-  .multiselect-container::-webkit-scrollbar,
-  .autoComplete_wrapper > ul::-webkit-scrollbar,
-  .select2-results > .select2-results__options::-webkit-scrollbar,
-  .dual-listbox .dual-listbox__available::-webkit-scrollbar,
-  .dual-listbox .dual-listbox__selected::-webkit-scrollbar,
-  .gridjs-wrapper::-webkit-scrollbar,
-  .document-editor-container::-webkit-scrollbar,
-  .ql-editor::-webkit-scrollbar,
-  .trumbowyg-editor::-webkit-scrollbar,
-  .trumbowyg-textarea::-webkit-scrollbar {
-    width: var(--app-scrollbar-size);
-    height: var(--app-scrollbar-size);
-  }
-
-  html::-webkit-scrollbar-track,
-  body::-webkit-scrollbar-track,
-  .custom-scrollbars::-webkit-scrollbar-track,
-  .scrollbar-theme-light::-webkit-scrollbar-track,
-  .content-inner::-webkit-scrollbar-track,
-  .table-responsive::-webkit-scrollbar-track,
-  .table-scrollable::-webkit-scrollbar-track,
-  .datatable-scroll::-webkit-scrollbar-track,
-  .datatable-scroll-wrap::-webkit-scrollbar-track,
-  .dropdown-menu-scrollable::-webkit-scrollbar-track,
-  .modal-body::-webkit-scrollbar-track,
-  .offcanvas-body::-webkit-scrollbar-track,
-  .overflow-auto::-webkit-scrollbar-track,
-  .form-control-content::-webkit-scrollbar-track,
-  .tokenfield-suggest-list::-webkit-scrollbar-track,
-  .multiselect-container::-webkit-scrollbar-track,
-  .autoComplete_wrapper > ul::-webkit-scrollbar-track,
-  .select2-results > .select2-results__options::-webkit-scrollbar-track,
-  .dual-listbox .dual-listbox__available::-webkit-scrollbar-track,
-  .dual-listbox .dual-listbox__selected::-webkit-scrollbar-track,
-  .gridjs-wrapper::-webkit-scrollbar-track,
-  .document-editor-container::-webkit-scrollbar-track,
-  .ql-editor::-webkit-scrollbar-track,
-  .trumbowyg-editor::-webkit-scrollbar-track,
-  .trumbowyg-textarea::-webkit-scrollbar-track {
-    background: var(--app-scrollbar-light-track);
-  }
-
-  html::-webkit-scrollbar-thumb,
-  body::-webkit-scrollbar-thumb,
-  .custom-scrollbars::-webkit-scrollbar-thumb,
-  .scrollbar-theme-light::-webkit-scrollbar-thumb,
-  .content-inner::-webkit-scrollbar-thumb,
-  .table-responsive::-webkit-scrollbar-thumb,
-  .table-scrollable::-webkit-scrollbar-thumb,
-  .datatable-scroll::-webkit-scrollbar-thumb,
-  .datatable-scroll-wrap::-webkit-scrollbar-thumb,
-  .dropdown-menu-scrollable::-webkit-scrollbar-thumb,
-  .modal-body::-webkit-scrollbar-thumb,
-  .offcanvas-body::-webkit-scrollbar-thumb,
-  .overflow-auto::-webkit-scrollbar-thumb,
-  .form-control-content::-webkit-scrollbar-thumb,
-  .tokenfield-suggest-list::-webkit-scrollbar-thumb,
-  .multiselect-container::-webkit-scrollbar-thumb,
-  .autoComplete_wrapper > ul::-webkit-scrollbar-thumb,
-  .select2-results > .select2-results__options::-webkit-scrollbar-thumb,
-  .dual-listbox .dual-listbox__available::-webkit-scrollbar-thumb,
-  .dual-listbox .dual-listbox__selected::-webkit-scrollbar-thumb,
-  .gridjs-wrapper::-webkit-scrollbar-thumb,
-  .document-editor-container::-webkit-scrollbar-thumb,
-  .ql-editor::-webkit-scrollbar-thumb,
-  .trumbowyg-editor::-webkit-scrollbar-thumb,
-  .trumbowyg-textarea::-webkit-scrollbar-thumb {
-    background-color: var(--app-scrollbar-light-thumb);
-    border-radius: 999px;
-  }
-
-  html::-webkit-scrollbar-thumb:hover,
-  body::-webkit-scrollbar-thumb:hover,
-  .custom-scrollbars::-webkit-scrollbar-thumb:hover,
-  .scrollbar-theme-light::-webkit-scrollbar-thumb:hover,
-  .content-inner::-webkit-scrollbar-thumb:hover,
-  .table-responsive::-webkit-scrollbar-thumb:hover,
-  .table-scrollable::-webkit-scrollbar-thumb:hover,
-  .datatable-scroll::-webkit-scrollbar-thumb:hover,
-  .datatable-scroll-wrap::-webkit-scrollbar-thumb:hover,
-  .dropdown-menu-scrollable::-webkit-scrollbar-thumb:hover,
-  .modal-body::-webkit-scrollbar-thumb:hover,
-  .offcanvas-body::-webkit-scrollbar-thumb:hover,
-  .overflow-auto::-webkit-scrollbar-thumb:hover,
-  .form-control-content::-webkit-scrollbar-thumb:hover,
-  .tokenfield-suggest-list::-webkit-scrollbar-thumb:hover,
-  .multiselect-container::-webkit-scrollbar-thumb:hover,
-  .autoComplete_wrapper > ul::-webkit-scrollbar-thumb:hover,
-  .select2-results > .select2-results__options::-webkit-scrollbar-thumb:hover,
-  .dual-listbox .dual-listbox__available::-webkit-scrollbar-thumb:hover,
-  .dual-listbox .dual-listbox__selected::-webkit-scrollbar-thumb:hover,
-  .gridjs-wrapper::-webkit-scrollbar-thumb:hover,
-  .document-editor-container::-webkit-scrollbar-thumb:hover,
-  .ql-editor::-webkit-scrollbar-thumb:hover,
-  .trumbowyg-editor::-webkit-scrollbar-thumb:hover,
-  .trumbowyg-textarea::-webkit-scrollbar-thumb:hover {
-    background-color: var(--app-scrollbar-light-thumb-hover);
-  }
-
-  .scrollbar-theme-dark::-webkit-scrollbar,
-  .sidebar-content::-webkit-scrollbar,
-  .nav-sidebar::-webkit-scrollbar,
-  .dropdown-menu-dark::-webkit-scrollbar,
-  .dropdown-menu-dark .dropdown-menu-scrollable::-webkit-scrollbar {
-    width: var(--app-scrollbar-size-compact);
-    height: var(--app-scrollbar-size-compact);
-  }
-
-  .scrollbar-theme-dark::-webkit-scrollbar-track,
-  .sidebar-content::-webkit-scrollbar-track,
-  .nav-sidebar::-webkit-scrollbar-track,
-  .dropdown-menu-dark::-webkit-scrollbar-track,
-  .dropdown-menu-dark .dropdown-menu-scrollable::-webkit-scrollbar-track {
-    background: var(--app-scrollbar-dark-track);
-  }
-
-  .scrollbar-theme-dark::-webkit-scrollbar-thumb,
-  .sidebar-content::-webkit-scrollbar-thumb,
-  .nav-sidebar::-webkit-scrollbar-thumb,
-  .dropdown-menu-dark::-webkit-scrollbar-thumb,
-  .dropdown-menu-dark .dropdown-menu-scrollable::-webkit-scrollbar-thumb {
-    background-color: var(--app-scrollbar-dark-thumb);
-    border-radius: 999px;
-  }
-
-  .scrollbar-theme-dark::-webkit-scrollbar-thumb:hover,
-  .sidebar-content::-webkit-scrollbar-thumb:hover,
-  .nav-sidebar::-webkit-scrollbar-thumb:hover,
-  .dropdown-menu-dark::-webkit-scrollbar-thumb:hover,
-  .dropdown-menu-dark .dropdown-menu-scrollable::-webkit-scrollbar-thumb:hover {
-    background-color: var(--app-scrollbar-dark-thumb-hover);
-  }
 }

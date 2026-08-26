@@ -6,6 +6,7 @@
 library;
 
 import 'dart:html' as html;
+import 'dart:math' as math;
 
 import 'package:limitless_ui/limitless_ui.dart';
 import 'package:ngdart/angular.dart';
@@ -85,6 +86,145 @@ void main() {
 
     expect((panelRect.left - triggerRect.left).abs(), lessThanOrEqualTo(1.5));
     expect((panelRect.top - triggerRect.bottom).abs(), lessThanOrEqualTo(1.5));
+  });
+
+  test('aneis do relogio 24h nao se sobrepoem', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((_) {
+      host.picker!.toggleOpen();
+    });
+    await _settle(fixture);
+
+    final labels = host.picker!.visibleDialLabels;
+    final outer = labels.firstWhere((label) => !label.isInnerRing);
+    final inner = labels.firstWhere((label) => label.isInnerRing);
+
+    double radiusOf(TimePickerDialLabel label) {
+      final dx = label.leftPercent - 50;
+      final dy = label.topPercent - 50;
+      return math.sqrt(dx * dx + dy * dy);
+    }
+
+    final clock = html.document.querySelector('.time-picker-clock')
+        as html.Element;
+    final width = clock.getBoundingClientRect().width;
+    final separation = (radiusOf(outer) - radiusOf(inner)) / 100 * width;
+
+    final outerLabel = html.document.querySelector(
+      '.time-picker-dial-label:not(.time-picker-dial-label-inner)',
+    ) as html.Element;
+    final innerLabel = html.document.querySelector(
+      '.time-picker-dial-label-inner',
+    ) as html.Element;
+
+    // A etiqueta interna precisa ser menor que a externa, e a distância entre
+    // os raios precisa passar da soma das metades das alturas — senão os dois
+    // anéis se encostam, que era o caso quando a classe do anel interno não
+    // tinha nenhuma regra de CSS.
+    final outerHeight = outerLabel.getBoundingClientRect().height;
+    final innerHeight = innerLabel.getBoundingClientRect().height;
+
+    expect(innerHeight, lessThan(outerHeight));
+    expect(separation, greaterThan((outerHeight + innerHeight) / 2));
+  });
+
+  test('disco do seletor cai em cima da etiqueta, nos dois aneis', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    Future<void> selectHour(int hour24) async {
+      await fixture.update((_) {
+        host.picker!.draftHour24 = hour24;
+      });
+      await _settle(fixture);
+    }
+
+    Future<void> expectSelectorOverLabel(int hour24) async {
+      await selectHour(hour24);
+
+      final selector = html.document.querySelector(
+        '.time-picker-selector-label',
+      ) as html.Element;
+      final active = html.document.querySelector(
+        '.time-picker-dial-label.active',
+      );
+
+      expect(active, isNotNull, reason: 'nenhuma etiqueta ativa para $hour24');
+
+      final selectorRect = selector.getBoundingClientRect();
+      final labelRect = active!.getBoundingClientRect();
+      final dx = (selectorRect.left + selectorRect.width / 2) -
+          (labelRect.left + labelRect.width / 2);
+      final dy = (selectorRect.top + selectorRect.height / 2) -
+          (labelRect.top + labelRect.height / 2);
+
+      expect(dx.abs(), lessThanOrEqualTo(1.5),
+          reason: 'seletor fora do eixo x em $hour24');
+      expect(dy.abs(), lessThanOrEqualTo(1.5),
+          reason: 'seletor fora do eixo y em $hour24');
+    }
+
+    await fixture.update((_) {
+      host.picker!.toggleOpen();
+    });
+    await _settle(fixture);
+
+    // Anel externo, nos quatro quadrantes.
+    await expectSelectorOverLabel(12);
+    await expectSelectorOverLabel(3);
+    await expectSelectorOverLabel(6);
+    await expectSelectorOverLabel(9);
+
+    // Anel interno, que é onde o desencontro aparecia.
+    await expectSelectorOverLabel(0);
+    await expectSelectorOverLabel(15);
+    await expectSelectorOverLabel(18);
+    await expectSelectorOverLabel(21);
+  });
+
+  test('fronteira de clique entre os aneis acompanha o desenho', () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    await fixture.update((_) {
+      host.picker!.toggleOpen();
+    });
+    await _settle(fixture);
+
+    final clock = html.document.querySelector('.time-picker-clock')
+        as html.Element;
+    final rect = clock.getBoundingClientRect();
+    final centerX = rect.left + rect.width / 2;
+    final centerY = rect.top + rect.height / 2;
+    final halfWidth = rect.width / 2;
+
+    Future<void> pressAtRadius(double fraction) async {
+      await fixture.update((_) {
+        host.picker!.clockFaceElement!.dispatchEvent(
+          html.MouseEvent(
+            'mousedown',
+            canBubble: true,
+            clientX: centerX.round(),
+            clientY: (centerY - halfWidth * fraction).round(),
+          ),
+        );
+      });
+      await _settle(fixture);
+    }
+
+    // 12 horas, logo acima do centro. Perto da borda é o anel externo (12);
+    // perto do centro é o interno (0). O limiar antigo era 0.72 do raio, então
+    // 0.70 caía no anel interno mesmo estando visualmente no externo.
+    await pressAtRadius(0.70);
+    expect(host.picker!.draftHour24, 12);
+
+    await pressAtRadius(0.35);
+    expect(host.picker!.draftHour24, 0);
   });
 
   test('renders footer separator across the panel', () async {

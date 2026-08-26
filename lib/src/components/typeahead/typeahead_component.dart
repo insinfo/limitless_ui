@@ -10,6 +10,7 @@ import 'package:popper/popper.dart';
 import '../../directives/safe_inner_html_directive.dart';
 import 'typeahead_config.dart';
 import 'typeahead_highlight_component.dart';
+import '../../core/outside_click.dart';
 
 class LiTypeaheadItem {
   LiTypeaheadItem({
@@ -877,7 +878,7 @@ class LiTypeaheadComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!popupOpen) {
         return;
       }

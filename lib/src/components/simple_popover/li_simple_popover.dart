@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import '../../core/outside_click.dart';
 
 /// Lightweight DOM-based popover helper for quick warning messages.
 class LiSimplePopover {
@@ -76,7 +77,7 @@ class LiSimplePopover {
       close();
     });
 
-    clickSub = html.document.onClick.listen((event) {
+    clickSub = listenOutsideClick((event) {
       final clickTarget = event.target;
       if (clickTarget is html.Element &&
           !root.contains(clickTarget) &&

@@ -77,9 +77,111 @@ class TestHostComponent {
 }
 
 void main() {
-  tearDown(disposeAnyRunningTest);
+  tearDown(() {
+    LiSimpleLoading.defaultBodyZIndex = 500000;
+    LiSimpleLoading.defaultTargetZIndex = 50000;
+    LiSimpleLoading.debugAssertSingleShow = false;
+    LiNarratedFullScreenLoading.resetDefaultZIndex();
+    return disposeAnyRunningTest();
+  });
 
   final testBed = NgTestBed<TestHostComponent>(ng.TestHostComponentNgFactory);
+
+  test('z-index padrao pode ser realinhado pela aplicacao sem tocar chamadas',
+      () async {
+    LiSimpleLoading.defaultTargetZIndex = 500000;
+
+    final host = html.DivElement()..style.height = '80px';
+    html.document.body!.append(host);
+    final loading = LiSimpleLoading();
+
+    try {
+      loading.show(target: host);
+
+      final overlay = host.querySelector('[data-li-simple-loading]');
+      expect(overlay, isNotNull);
+      expect(overlay!.style.zIndex, '500000');
+
+      // Um zIndex explícito continua tendo prioridade sobre o padrão.
+      loading.hide();
+      loading.show(target: host, zIndex: 1234);
+      expect(
+        host.querySelector('[data-li-simple-loading]')!.style.zIndex,
+        '1234',
+      );
+    } finally {
+      loading.hide();
+      host.remove();
+    }
+  });
+
+  test('narrated loading acompanha o z-index do overlay simples', () {
+    LiSimpleLoading.defaultBodyZIndex = 900000;
+    expect(LiNarratedFullScreenLoading.defaultZIndex, 900001);
+
+    LiNarratedFullScreenLoading.defaultZIndex = 500200;
+    expect(LiNarratedFullScreenLoading.defaultZIndex, 500200);
+
+    // Um valor explícito não é mais arrastado pelo overlay simples.
+    LiSimpleLoading.defaultBodyZIndex = 500000;
+    expect(LiNarratedFullScreenLoading.defaultZIndex, 500200);
+
+    LiNarratedFullScreenLoading.resetDefaultZIndex();
+    expect(LiNarratedFullScreenLoading.defaultZIndex, 500001);
+  });
+
+  test('isVisible acompanha o ciclo de vida do overlay', () {
+    final host = html.DivElement()..style.height = '80px';
+    html.document.body!.append(host);
+    final loading = LiSimpleLoading();
+
+    try {
+      expect(loading.isVisible, isFalse);
+
+      loading.show(target: host);
+      expect(loading.isVisible, isTrue);
+
+      loading.hide();
+      expect(loading.isVisible, isFalse);
+
+      loading.showSimple(target: host);
+      expect(loading.isVisible, isTrue);
+
+      loading.hide();
+      expect(loading.isVisible, isFalse);
+    } finally {
+      loading.hide();
+      host.remove();
+    }
+  });
+
+  test('debugAssertSingleShow denuncia show duplicado sem alterar o padrao',
+      () {
+    final host = html.DivElement()..style.height = '80px';
+    html.document.body!.append(host);
+    final loading = LiSimpleLoading();
+
+    try {
+      // Padrão: mostrar duas vezes apenas rearma o overlay, e não sobra
+      // nenhum órfão no DOM.
+      loading.show(target: host);
+      loading.show(target: host);
+      expect(host.querySelectorAll('[data-li-simple-loading]'), hasLength(1));
+      loading.hide();
+      expect(host.querySelectorAll('[data-li-simple-loading]'), isEmpty);
+
+      LiSimpleLoading.debugAssertSingleShow = true;
+      loading.show(target: host);
+      expect(
+        () => loading.show(target: host),
+        throwsA(isA<AssertionError>()),
+      );
+    } finally {
+      LiSimpleLoading.debugAssertSingleShow = false;
+      loading.hide();
+      host.remove();
+    }
+  });
 
   test('LiSimpleDialogComponent abre acima de li-modal', () async {
     final fixture = await testBed.create();

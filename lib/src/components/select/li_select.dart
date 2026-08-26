@@ -16,6 +16,7 @@ import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
 import '../../validation/li_validation_issue.dart';
 import 'li_option.dart';
+import '../../core/outside_click.dart';
 
 class CustomSelectItem {
   String text;
@@ -916,7 +917,7 @@ class LiSelectComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!dropdownOpen) {
         return;
       }

@@ -119,6 +119,22 @@ void resetOverlayViewportConstraints({
   floating.style.removeProperty('overscroll-behavior');
 }
 
+/// The height the overlay would take with no cap applied.
+///
+/// Once a `max-height` is in place the layout rect reports the *clamped*
+/// height, which reads as "it fits" and would make the very next layout pass
+/// drop the cap — leaving the overlay overflowing the viewport again. The
+/// element's own `scrollHeight` still measures the content, so the larger of
+/// the two is what the cap has to be decided against.
+double _resolveNaturalFloatingHeight(
+  html.Element floating,
+  PopperLayout layout,
+) {
+  final layoutHeight = layout.floatingRect.height.toDouble();
+  final contentHeight = floating.scrollHeight.toDouble();
+  return contentHeight > layoutHeight ? contentHeight : layoutHeight;
+}
+
 void normalizeOverlayVerticalPosition({
   required html.Element? floatingElement,
   required PopperLayout layout,
@@ -172,7 +188,7 @@ void constrainOverlayHeightToViewport({
   final basePlacement = layout.placement.split('-').first;
   final referenceTop = layout.referenceRect.top.toDouble();
   final referenceHeight = layout.referenceRect.height.toDouble();
-  final floatingHeight = layout.floatingRect.height.toDouble();
+  final floatingHeight = _resolveNaturalFloatingHeight(floating, layout);
   final availableAbove = referenceTop - viewportPadding - gap;
   final availableBelow =
       viewportHeight - referenceTop - referenceHeight - viewportPadding - gap;

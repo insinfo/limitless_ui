@@ -20,6 +20,132 @@ This is not a toy setup. The goal is a structure that can support real CRUD modu
 
 Important terminology note: in Dart servers, "multithreaded" usually means **multi-isolate**. Dart isolates do not share memory the way native OS threads do. That is the correct mental model for scalable Dart backend processes.
 
+## Responsive datatable, fixed columns and menus in `1.0.0-dev.40`
+
+`li-datatable` already collapsed columns on narrow screens, but three details of that mode only showed up in real phone use — and one of them came from the way the Limitless theme declares its variables.
+
+### Where the expand control lives
+
+When columns collapse, the datatable has to put the expand control (the triangle) in some visible cell of the row. The old rule preferred the first column marked `responsiveAutoHideRequired` — a flag `DatatableActionColumn` sets to `true` by default, precisely so the actions never disappear into auto-hide.
+
+The side effect was bad: on every table built with the declarative action column, the control landed **in the actions cell**. Since each action button calls `stopPropagation()` on click, the only part of the cell that still opened the row was the sliver of padding holding the triangle — a few pixels, right next to the buttons. On a phone it was nearly impossible to hit without firing an action by mistake.
+
+The rule now matches DataTables' own `inline` mode: **first visible column**, skipping columns that declare themselves ineligible through the new `DatatableCol.responsiveControlEligible`:
+
+```dart
+/// Whether the column can host the responsive expand/collapse control.
+///
+/// Columns packed with interactive content — action columns above all — opt
+/// out so the control never has to share its hit area with a button.
+bool responsiveControlEligible = true;
+```
+
+`DatatableActionColumn` passes `false`. The control then lands on a data cell (typically the record number), and its full width becomes the hit area. To pick the cell by hand, `DatatableSettings.responsiveControlColumnKey` still takes priority over everything.
+
+### `responsiveControlMode`: a column just for the control
+
+Sharing the cell with content covers the common case but not every one: if the first column also holds a link or a clickable badge, the competition is back. That is what `DatatableResponsiveControlMode.column` is for, the equivalent of DataTables' `responsive.details.type: 'column'`:
+
+```dart
+DatatableSettings(
+  colsDefinitions: columns,
+  responsiveControlMode: DatatableResponsiveControlMode.column,
+);
+```
+
+The datatable then renders a dedicated column, **ahead of the selection checkbox**, with a 2.75rem hit area (3rem on phones) centred on the cell. The column only exists while something is collapsed, so the table keeps its full width on desktop; the details row's `colspan` and the virtual-scroll spacers already account for it.
+
+The cell keeps its native `cell` role — as DataTables does — and is keyboard reachable (`tabindex="0"`, Enter/Space), carrying `aria-expanded` and an accessible name from two new inputs:
+
+```html
+<li-datatable
+  [settings]="settings"
+  [data]="data"
+  expandRowDetailsLabel="Show the remaining row data"
+  collapseRowDetailsLabel="Hide the remaining row data">
+</li-datatable>
+```
+
+### `responsiveDetailsTrigger`: what opens the details
+
+By default only the control opens the details row, which leaves a click anywhere else in the row free for the screen's own `onRowClick` — opening the record, for instance. When the screen has no use for the row click, the whole row can become the hit area:
+
+```dart
+DatatableSettings(
+  colsDefinitions: columns,
+  responsiveDetailsTrigger: DatatableResponsiveDetailsTrigger.row,
+);
+```
+
+Both modes coexist with `onRowClick`: in `row`, a row with **nothing** collapsed still reports through `onRowClick`, so desktop behaviour is unchanged — only a collapsed row trades the click for expansion. The pointer cursor shows even with `disableRowClick` set, because expanding is still available.
+
+The two settings are independent: the dedicated column can run with `control` (the control is the only way in, and the row click stays with the screen) or with `row` (the dedicated column is just a more visible target, and the whole row opens too).
+
+### The grey block behind a fixed column
+
+A fixed cell (`fixedPosition`) needs an opaque background to occlude the columns passing under it during horizontal scrolling. That background used to be guessed:
+
+```css
+background-color: var(--card-bg, var(--body-bg, #fff));
+```
+
+The guess works inside a card and fails everywhere else. The Limitless theme declares `--card-bg` **inside its own `.card` rule**, not on `:root`:
+
+```css
+.card {
+    --card-bg: var(--white);
+    /* ... */
+}
+```
+
+So the variable only exists in the scope of a `.card`. A table inside a `li-modal` has no `.card` ancestor, the chain falls through to `--body-bg` — `#f1f4f9` in the light theme — and the fixed column paints the page's grey over the modal's white. The same holds for `--modal-bg`, scoped to `.modal`, and for any other surface the theme resolves through a scoped variable.
+
+That is why the fix does not swap one variable for another: the datatable walks up from its scroll container to the first ancestor that **actually paints** a background and publishes that colour as `--li-datatable-sticky-bg`, used by the fixed columns and the sticky header. Reading the painted colour is what makes this follow the theme instead of guessing at it: it lands on `--card-bg` in a card, `--modal-bg` in a modal, a `.bg-light` utility's colour where one is used, and the dark-mode values of all of them — without the datatable having to know which surface it was dropped into.
+
+To force a specific colour, set the variable:
+
+```css
+.my-screen li-datatable {
+    --li-datatable-sticky-bg: var(--card-bg);
+}
+```
+
+### Menus that do not fit the screen
+
+The column-visibility menu, the export menu and the row action menu are portaled to the `body` when they open, and nothing capped their height: on a short screen the menu ran past the edge and the entries outside it were unreachable — the reported case being the column list's "Exibir tudo" button ending up above the top of the window.
+
+All three are now fitted to the space available next to their trigger and scroll internally. The row action menu also gained placement fallbacks (it was pinned to `bottom-end` with no flip) and modal-aware stacking, so it no longer opens behind the modal that contains the table.
+
+### Opening one overlay now closes the others
+
+The reported case was the column list and a row's action menu sitting on screen together, but the problem applied to **every** overlay in the library.
+
+All of them detected outside clicks in the *bubble* phase. A trigger that calls `stopPropagation()` on its own click is therefore invisible to any overlay already open — and both datatable menus do exactly that, the action menu because the click must not become a row click. Nothing closed anything.
+
+Detection now goes through a single helper, `listenOutsideClick`, subscribing in the **capture** phase. Capture walks document → target ahead of bubbling, so the click is seen regardless of what the target does with propagation afterwards:
+
+```dart
+StreamSubscription<html.MouseEvent> listenOutsideClick(
+  void Function(html.MouseEvent event) onClick,
+) {
+  return const html.EventStreamProvider<html.MouseEvent>('click')
+      .forTarget(html.document, useCapture: true)
+      .listen(onClick);
+}
+```
+
+It covers `li-select`, `li-multi-select` (through `liClickOutside`), `li-treeview-select`, `li-tag-filter`, `li-typeahead`, `li-dropdown-menu`, `liDropdown` and its submenus, `li-date-picker`, `li-date-range-picker`, `li-time-picker`, `li-color-picker`, `li-popover`, `li-tooltip`, `li-simple-popover`, the sweet-alert popover, and the datatable's own menus.
+
+Clicking an overlay's own trigger or panel is unchanged: every handler already started by asking "was the click inside me?", so running ahead of the target changes nothing — toggling from the trigger still toggles instead of closing and reopening.
+
+The height fitting applies to every overlay in the library:
+
+The height fitting applies to every overlay in the library: `constrainOverlayHeightToViewport` used to cancel itself out one layout pass after it applied — it measured the **already capped** height, concluded the panel fitted, and removed the cap, letting it overflow again. This affected `li-color-picker`, `li-date-picker`, `li-date-range-picker` and `li-time-picker` whenever the panel had no CSS-fixed height. The natural height is now taken from the element's `scrollHeight` when that is larger, so the decision is stable across passes.
+
+### Where to see it running
+
+On the `Dados > Datatable` page of the example app, the "Ações via DatatableActionColumn (Dart)" accordion carries a switch for `responsiveControlMode` and another for `responsiveDetailsTrigger` — narrow the window and toggle both live. The "Colunas fixadas dentro de um modal" accordion shows a fixed column over a modal's background.
+
 ## 1. What you are building
 
 The target system has three packages:

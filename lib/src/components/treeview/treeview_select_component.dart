@@ -16,6 +16,7 @@ import '../../validation/li_validation.dart';
 import '../../validation/li_validation_issue.dart';
 import 'tree_view_base.dart';
 import 'treeview_settings.dart';
+import '../../core/outside_click.dart';
 
 typedef LiTreeViewPageLoader = FutureOr<TreeViewLoadResult> Function(
   TreeViewLoadRequest request,
@@ -1382,7 +1383,7 @@ class LiTreeviewSelectComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!dropdownOpen) {
         return;
       }

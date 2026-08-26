@@ -12,6 +12,7 @@ import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
 import '../../validation/li_validation_issue.dart';
+import '../../core/outside_click.dart';
 
 enum DatePickerViewMode { day, month, year }
 
@@ -793,7 +794,7 @@ class LiDatePickerComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!isOpen) {
         return;
       }

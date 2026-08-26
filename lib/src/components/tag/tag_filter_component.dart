@@ -11,6 +11,7 @@ import 'package:popper/popper.dart';
 import '../../core/overlay_positioning.dart';
 import '../../directives/css_style_directive.dart';
 import 'tag_models.dart';
+import '../../core/outside_click.dart';
 
 class LiTagFilterOptionView {
   LiTagFilterOptionView({
@@ -696,7 +697,7 @@ class LiTagFilterComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!dropdownOpen) {
         return;
       }

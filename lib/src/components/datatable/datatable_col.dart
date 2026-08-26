@@ -4,6 +4,9 @@ import 'dart:html';
 
 import 'package:popper/popper.dart';
 
+import '../../core/outside_click.dart';
+import '../../core/overlay_positioning.dart';
+
 export 'datatable_style.dart';
 
 import 'datatable_style.dart';
@@ -175,20 +178,28 @@ class _DatatableActionFloatingOverlay {
   }) {
     final portal = PopperPortal.attach(
       floatingElement: floatingElement,
-      options: const PopperPortalOptions(
+      options: resolveModalAwarePortalOptions(
         hostClassName: 'DatatableActionOverflowPortal',
-        floatingZIndex: '1080',
+        referenceElement: referenceElement,
+        baseHostZIndex: 10000,
+        baseFloatingZIndex: 1080,
       ),
     );
 
     final controller = PopperController(
       referenceElement: referenceElement,
       floatingElement: floatingElement,
-      options: const PopperOptions(
+      options: PopperOptions(
         placement: 'bottom-end',
+        fallbackPlacements: const <String>[
+          'top-end',
+          'bottom-start',
+          'top-start',
+        ],
         strategy: PopperStrategy.fixed,
-        offset: PopperOffset(mainAxis: 4),
-        padding: PopperInsets.all(8),
+        offset: const PopperOffset(mainAxis: 4),
+        padding: const PopperInsets.all(8),
+        onLayout: (layout) => _handleLayout(floatingElement, layout),
       ),
     );
 
@@ -199,11 +210,27 @@ class _DatatableActionFloatingOverlay {
     );
   }
 
+  /// Keeps the menu anchored to the toggle and scrollable when the viewport
+  /// is too short to show every action.
+  static void _handleLayout(Element floatingElement, PopperLayout layout) {
+    normalizeOverlayVerticalPosition(
+      floatingElement: floatingElement,
+      layout: layout,
+      gap: 4,
+    );
+    constrainOverlayHeightToViewport(
+      floatingElement: floatingElement,
+      layout: layout,
+      gap: 4,
+    );
+  }
+
   Future<PopperLayout?> update() => _controller.update();
 
   void startAutoUpdate() => _controller.startAutoUpdate();
 
   void dispose() {
+    resetOverlayViewportConstraints(floatingElement: floatingElement);
     _controller.dispose();
     portal.dispose();
   }
@@ -278,6 +305,7 @@ class DatatableActionColumn extends DatatableCol {
     super.hideOnMobile = false,
     super.responsiveAutoHideRequired = true,
     super.responsiveAutoHidePriority,
+    super.responsiveControlEligible = false,
     super.fixedPosition,
     super.showAsFooterOnCard = false,
     super.customRenderTitleString,
@@ -521,7 +549,7 @@ class DatatableActionColumn extends DatatableCol {
       wrapper.classes.add('show');
       toggleButton.setAttribute('aria-expanded', 'true');
       await overlay!.update();
-      outsideClickSubscription ??= document.onClick.listen((event) {
+      outsideClickSubscription ??= listenOutsideClick((event) {
         final target = event.target;
         if (target is Node && !targetIsInsideOverflow(target)) {
           closeMenu();
@@ -756,6 +784,13 @@ class DatatableCol {
   /// of the automatic hiding cycle.
   int? responsiveAutoHidePriority;
 
+  /// Whether the column can host the inline expand/collapse control used by
+  /// the responsive collapse mode.
+  ///
+  /// Columns packed with interactive content — action buttons above all — opt
+  /// out so the control never has to share its hit area with a button.
+  bool responsiveControlEligible = true;
+
   /// Keeps the column sticky on the chosen side during horizontal scrolling.
   DatatableFixedColumnPosition? fixedPosition;
 
@@ -821,6 +856,7 @@ class DatatableCol {
     this.hideOnMobile = false,
     this.responsiveAutoHideRequired = false,
     this.responsiveAutoHidePriority,
+    this.responsiveControlEligible = true,
     this.fixedPosition,
     this.showAsFooterOnCard = false,
     this.type = DatatableColType.normal,

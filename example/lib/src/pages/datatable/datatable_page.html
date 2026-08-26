@@ -397,13 +397,31 @@
                       <li-highlight [code]="actionColumnDartSnippet" language="dart"></li-highlight>
                     </div>
 
+                    <div class="form-check mb-3">
+                      <input class="form-check-input" type="checkbox" id="process-lookup-control-column-toggle"
+                        [checked]="processLookupUseDedicatedControlColumn"
+                        (change)="toggleProcessLookupControlColumnMode($event)" />
+                      <label class="form-check-label" for="process-lookup-control-column-toggle">
+                        {{ processLookupControlColumnToggleLabel }}
+                      </label>
+                    </div>
+
+                    <div class="form-check mb-3">
+                      <input class="form-check-input" type="checkbox" id="process-lookup-row-click-toggle"
+                        [checked]="processLookupExpandOnRowClick"
+                        (change)="toggleProcessLookupExpandOnRowClick($event)" />
+                      <label class="form-check-label" for="process-lookup-row-click-toggle">
+                        {{ processLookupExpandOnRowClickToggleLabel }}
+                      </label>
+                    </div>
+
                     <li-datatable #processLookupActionColumnDemoTable *ngIf="showProcessLookupActionColumnDemo"
                       [dataTableFilter]="processLookupActionColumnFilters"
                       [data]="processLookupActionColumnTableData"
                       [settings]="processLookupActionColumnTableSettings"
                       [searchInFields]="processLookupSearchFields" [limitPerPageOptions]="processLookupLimitOptions"
                       [responsiveAutoHideColumns]="true" [responsiveCollapse]="true"
-                      [responsiveCollapseByContainer]="true" [showCheckboxToSelectRow]="false"
+                      [responsiveCollapseByContainer]="true" [showCheckboxToSelectRow]="true"
                       [showExportMenu]="false" [disableRowClick]="true"
                       (dataRequest)="onProcessLookupActionColumnTableRequest($event)"
                       (limitChange)="onProcessLookupActionColumnTableRequest($event)"
@@ -649,6 +667,24 @@
                 </template>
               </li-accordion-item>
 
+              <li-accordion-item [header]="stickyColumnsModalDemoTitle"
+                [description]="stickyColumnsModalDemoIntro">
+                <template li-accordion-body>
+                  <div class="card-body pt-4">
+                    <div class="d-flex flex-wrap gap-2 align-items-start justify-content-between mb-3">
+                      <div>
+                        <h6 class="mb-2">{{ stickyColumnsModalDemoTitle }}</h6>
+                        <p class="text-muted mb-0">{{ stickyColumnsModalDemoIntro }}</p>
+                      </div>
+                      <button class="btn btn-sm btn-primary" type="button"
+                        (click)="openStickyColumnsModal()">
+                        {{ openStickyColumnsModalLabel }}
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </li-accordion-item>
+
               <li-accordion-item [header]="t.pages.datatable.gridPreviewTitle"
                 [description]="t.pages.datatable.gridPreviewDescription"
                 (expandedChange)="onGridPreviewDemoExpanded($event)">
@@ -705,6 +741,32 @@
                 </button>
               </div>
 
+              <!-- Mesma montagem da tela de Acompanhamento Especial do SALI: sem
+                   [dialogScrollable], sem .modal-body aninhado, e o conteúdo projetado
+                   direto. Assim o diálogo cresce com o conteúdo e quem rola é o overlay
+                   .modal, levando o cabeçalho junto — em vez de rolagem interna ao
+                   .modal-body com o cabeçalho fixo. O [enableModalBodyClass]="false"
+                   tira o padding do .modal-body, que sobraria porque o datatable já traz
+                   o próprio espaçamento. -->
+              <li-modal #stickyColumnsModal [title-text]="stickyColumnsModalDemoTitle"
+                size="xtra-large" [lazyContent]="true"
+                [enableShadow]="true" [enableModalBodyClass]="false">
+                <li-datatable [dataTableFilter]="stickyColumnsModalFilters"
+                  [data]="stickyColumnsModalTableData" [settings]="stickyColumnsModalTableSettings"
+                  [searchInFields]="stickyColumnsSearchFields" [disableRowClick]="true"
+                  [showCheckboxToSelectRow]="false"
+                  [searchPlaceholder]="stickyColumnsSearchPlaceholder"
+                  (dataRequest)="onStickyColumnsModalTableRequest($event)"
+                  (limitChange)="onStickyColumnsModalTableRequest($event)"
+                  (searchRequest)="onStickyColumnsModalTableRequest($event)">
+                </li-datatable>
+
+                <div *ngIf="stickyColumnsModalActionLog.length > 0"
+                  class="bg-light rounded border p-3 m-3 mt-0">
+                  {{ stickyColumnsModalActionLog }}
+                </div>
+              </li-modal>
+
               <li-modal #lazyDatatableModal [title-text]="t.pages.datatable.modalTitle" size="xtra-large"
                 [lazyContent]="true" [dialogScrollable]="true" [enableShadow]="true" [enableModalBodyClass]="false">
                 <div class="modal-body">
@@ -744,6 +806,11 @@
                       <li>{{ t.pages.datatable.optionTwo }}</li>
                       <li>{{ t.pages.datatable.optionThree }}</li>
                       <li>{{ t.pages.datatable.optionFour }}</li>
+                      <li>
+                        <code>responsiveControlMode</code> e
+                        <code>responsiveDetailsTrigger</code> definem onde fica o
+                        controle de expandir e o que abre o detalhe no mobile.
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -885,6 +952,38 @@
                       <div class="mt-3">
                         <li-highlight [code]="gridCardTemplateHtmlSnippet" language="html"></li-highlight>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">7. Controle do detalhe responsivo no mobile</h6>
+                      <p class="text-muted mb-3">
+                        Escolhe onde fica o controle de expandir (<code>responsiveControlMode</code>) e o que abre a
+                        linha de detalhes (<code>responsiveDetailsTrigger</code>). Por padrão o controle divide a
+                        primeira célula visível elegível e só ele abre o detalhe, deixando o clique na linha livre
+                        para <code>onRowClick</code>.
+                      </p>
+                      <li-highlight [code]="responsiveControlDartSnippet" language="dart"></li-highlight>
+                      <div class="mt-3">
+                        <li-highlight [code]="responsiveControlHtmlSnippet" language="html"></li-highlight>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-xl-6">
+                  <div class="card h-100 mb-0">
+                    <div class="card-body">
+                      <h6 class="mb-2">8. Fundo das colunas fixadas</h6>
+                      <p class="text-muted mb-3">
+                        Uma coluna fixada precisa de fundo opaco para tapar o que passa por baixo dela. Como o tema
+                        escopa <code>--card-bg</code> dentro da regra <code>.card</code>, uma tabela em modal ficava
+                        com o cinza da página; agora a cor vem do fundo realmente pintado atrás da tabela.
+                      </p>
+                      <li-highlight [code]="stickyBackgroundCssSnippet" language="css"></li-highlight>
                     </div>
                   </div>
                 </div>

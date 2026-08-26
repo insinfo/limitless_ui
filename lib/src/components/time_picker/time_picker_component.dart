@@ -13,6 +13,7 @@ import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
 import '../../validation/li_validation_issue.dart';
+import '../../core/outside_click.dart';
 
 enum TimePickerDialMode { hour, minute }
 
@@ -431,16 +432,20 @@ class LiTimePickerComponent
 
   double get handTransformDegrees => handDegrees;
 
+  /// Comprimento do ponteiro, igual ao raio do anel em que o valor está.
+  ///
+  /// O disco do seletor é centrado na ponta do ponteiro (veja
+  /// `.time-picker-selector`), então ponteiro no raio do anel faz o disco cair
+  /// exatamente sobre a etiqueta, sem número mágico e sem depender do tamanho
+  /// do relógio nem do disco.
   double get handLengthPercent {
     if (isMinuteMode) {
-      return 31;
+      return _outerDialRadiusPercent;
     }
 
-    if (_isInnerHourSelection) {
-      return 18;
-    }
-
-    return 31;
+    return _isInnerHourSelection
+        ? _innerDialRadiusPercent
+        : _outerDialRadiusPercent;
   }
 
   bool get showFloatingSelector => true;
@@ -459,22 +464,39 @@ class LiTimePickerComponent
       ? (use24Hour ? _hourDialLabels24 : _hourDialLabels)
       : _minuteDialLabels;
 
+  /// Raio do anel externo, em porcentagem da largura do relógio.
+  static const double _outerDialRadiusPercent = 40;
+
+  /// Raio do anel interno (horas 0 e 13–23 no modo 24h).
+  ///
+  /// Puxado para dentro o bastante para os dois anéis não se encostarem: as
+  /// etiquetas externas têm 2.5rem e as internas 2rem, então a distância entre
+  /// os raios precisa passar de ~2.25rem.
+  static const double _innerDialRadiusPercent = 21;
+
+  /// Fronteira entre os anéis para o hit-test, no meio do caminho entre os
+  /// dois raios. Derivada dos raios de propósito: com um valor solto aqui, um
+  /// clique podia cair no anel interno estando visualmente mais perto do
+  /// externo.
+  static const double _dialRingBoundaryPercent =
+      (_outerDialRadiusPercent + _innerDialRadiusPercent) / 2;
+
   List<TimePickerDialLabel> get _hourDialLabels => _buildDialLabels(
         const <int>[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
         (int value) => '$value',
-        radiusPercent: 40,
+        radiusPercent: _outerDialRadiusPercent,
       );
 
   List<TimePickerDialLabel> get _hourDialLabels24 => <TimePickerDialLabel>[
         ..._buildDialLabels(
           const <int>[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
           (int value) => _twoDigits(value),
-          radiusPercent: 40,
+          radiusPercent: _outerDialRadiusPercent,
         ),
         ..._buildDialLabels(
           const <int>[0, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
           (int value) => _twoDigits(value),
-          radiusPercent: 24,
+          radiusPercent: _innerDialRadiusPercent,
           isInnerRing: true,
         ),
       ];
@@ -482,7 +504,7 @@ class LiTimePickerComponent
   List<TimePickerDialLabel> get _minuteDialLabels => _buildDialLabels(
         List<int>.generate(12, (int index) => index * 5),
         (int value) => _twoDigits(value),
-        radiusPercent: 40,
+        radiusPercent: _outerDialRadiusPercent,
       );
 
   void toggleOpen() {
@@ -860,7 +882,7 @@ class LiTimePickerComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!isOpen) {
         return;
       }
@@ -1005,7 +1027,10 @@ class LiTimePickerComponent
     final angleDegrees = math.atan2(dy, dx) * 180 / math.pi;
     final normalizedDegrees = (angleDegrees + 90 + 360) % 360;
     final distance = math.sqrt(dx * dx + dy * dy);
-    final isInnerCircle = distance < (rect.width / 2) * 0.72;
+    // `radiusPercent` é porcentagem da largura, então em frações do raio a
+    // fronteira é `percent / 50`.
+    final isInnerCircle =
+        distance < (rect.width / 2) * (_dialRingBoundaryPercent / 50);
 
     if (isHourMode) {
       final rawHour = (normalizedDegrees / 30).round() % 12;

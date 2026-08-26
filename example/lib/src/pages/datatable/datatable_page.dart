@@ -77,6 +77,10 @@ class DatatablePageComponent implements OnInit {
     _multiSortTableSettings = _buildMultiSortTableSettings();
     _stickyColumnsTableSettingsPt = _buildStickyColumnsTableSettings(true);
     _stickyColumnsTableSettingsEn = _buildStickyColumnsTableSettings(false);
+    _stickyColumnsModalTableSettingsPt =
+        _buildStickyColumnsModalTableSettings(true);
+    _stickyColumnsModalTableSettingsEn =
+        _buildStickyColumnsModalTableSettings(false);
     _headerTitleTableSettingsPt = _buildHeaderTitleTableSettings(true);
     _headerTitleTableSettingsEn = _buildHeaderTitleTableSettings(false);
     _orgaoTableSettingsPt = _buildOrgaoTableSettings(true);
@@ -112,6 +116,8 @@ class DatatablePageComponent implements OnInit {
   late final DatatableSettings _multiSortTableSettings;
   late final DatatableSettings _stickyColumnsTableSettingsPt;
   late final DatatableSettings _stickyColumnsTableSettingsEn;
+  late final DatatableSettings _stickyColumnsModalTableSettingsPt;
+  late final DatatableSettings _stickyColumnsModalTableSettingsEn;
   late final DatatableSettings _headerTitleTableSettingsPt;
   late final DatatableSettings _headerTitleTableSettingsEn;
   late final DatatableSettings _orgaoTableSettingsPt;
@@ -146,6 +152,10 @@ class DatatablePageComponent implements OnInit {
   DatatableSettings get stickyColumnsTableSettings => i18n.isPortuguese
       ? _stickyColumnsTableSettingsPt
       : _stickyColumnsTableSettingsEn;
+
+  DatatableSettings get stickyColumnsModalTableSettings => i18n.isPortuguese
+      ? _stickyColumnsModalTableSettingsPt
+      : _stickyColumnsModalTableSettingsEn;
 
   DatatableSettings get headerTitleTableSettings => i18n.isPortuguese
       ? _headerTitleTableSettingsPt
@@ -509,6 +519,86 @@ class DatatablePageComponent implements OnInit {
     );
   }
 
+  /// Mesmas colunas do demo de colunas fixadas, mas com a coluna de ações
+  /// montada por [DatatableActionColumn] e apenas uma ação inline — o resto vai
+  /// para o menu de excedente, como na inbox do SALI. Dentro do modal isso
+  /// exercita as duas correções do menu: empilhamento acima do modal e altura
+  /// ajustada à viewport quando a lista não cabe.
+  DatatableSettings _buildStickyColumnsModalTableSettings(bool isPortuguese) {
+    final settings = _buildStickyColumnsTableSettings(isPortuguese);
+    settings.colsDefinitions
+      ..removeWhere((column) => column.key == 'actions')
+      ..add(
+        DatatableActionColumn(
+          key: 'actions',
+          title: isPortuguese ? 'Ações' : 'Actions',
+          fixedPosition: DatatableFixedColumnPosition.right,
+          maxVisibleActions: 1,
+          overflowButtonTitle: isPortuguese ? 'Mais ações' : 'More actions',
+          actions: <DatatableAction>[
+            DatatableAction(
+              label: isPortuguese ? 'Abrir' : 'Open',
+              iconClass: 'ph ph-eye',
+              appearance: DatatableActionAppearance.linkIcon,
+              iconOnly: true,
+              onTap: (ctx) => _logStickyColumnsModalAction(
+                isPortuguese ? 'Abrir' : 'Open',
+                ctx,
+              ),
+            ),
+            for (final label in _stickyColumnsModalOverflowActions(isPortuguese))
+              DatatableAction(
+                label: label.label,
+                iconClass: label.iconClass,
+                onTap: (ctx) => _logStickyColumnsModalAction(label.label, ctx),
+              ),
+          ],
+        ),
+      );
+
+    return settings;
+  }
+
+  List<({String label, String iconClass})> _stickyColumnsModalOverflowActions(
+    bool isPortuguese,
+  ) {
+    if (!isPortuguese) {
+      return const <({String label, String iconClass})>[
+        (label: 'Dispatch', iconClass: 'ph ph-note-pencil'),
+        (label: 'Attach file', iconClass: 'ph ph-paperclip'),
+        (label: 'Dispatches and attachments', iconClass: 'ph ph-chat-text'),
+        (label: 'Manage owner', iconClass: 'ph ph-user'),
+        (label: 'Tags', iconClass: 'ph ph-tag'),
+        (label: 'Attached processes', iconClass: 'ph ph-stack'),
+        (label: 'Related processes', iconClass: 'ph ph-link'),
+        (label: 'Special tracking', iconClass: 'ph ph-binoculars'),
+      ];
+    }
+
+    return const <({String label, String iconClass})>[
+      (label: 'Despachar', iconClass: 'ph ph-note-pencil'),
+      (label: 'Anexar arquivo', iconClass: 'ph ph-paperclip'),
+      (label: 'Despachos e anexos', iconClass: 'ph ph-chat-text'),
+      (label: 'Gerenciar responsável', iconClass: 'ph ph-user'),
+      (label: 'Etiquetas', iconClass: 'ph ph-tag'),
+      (label: 'Processos apensados', iconClass: 'ph ph-stack'),
+      (label: 'Processos relacionados', iconClass: 'ph ph-link'),
+      (label: 'Acompanhamento Especial', iconClass: 'ph ph-binoculars'),
+    ];
+  }
+
+  void _logStickyColumnsModalAction(
+    String label,
+    DatatableActionContext ctx,
+  ) {
+    stickyColumnsModalActionLog = i18n.isPortuguese
+        ? '$label em ${ctx.itemMap['protocol']}'
+        : '$label on ${ctx.itemMap['protocol']}';
+    _flushView();
+  }
+
+  String stickyColumnsModalActionLog = '';
+
   DatatableSettings _buildStickyColumnsTableSettings(bool isPortuguese) {
     return DatatableSettings(
       colsDefinitions: <DatatableCol>[
@@ -566,8 +656,10 @@ class DatatablePageComponent implements OnInit {
         DatatableCol(
           key: 'actions',
           title: isPortuguese ? 'Ações' : 'Actions',
-          width: '168px',
-          minWidth: '168px',
+          // Dois btn-sm btn-icon com gap-2 dão ~72px; com o padding de célula
+          // do tema (20px de cada lado) 120px já sobra folga.
+          width: '120px',
+          minWidth: '120px',
           textAlign: 'center',
           titleTextAlign: 'center',
           nowrap: true,
@@ -893,6 +985,9 @@ class DatatablePageComponent implements OnInit {
   @ViewChild('lazyDatatableModal')
   LiModalComponent? lazyDatatableModal;
 
+  @ViewChild('stickyColumnsModal')
+  LiModalComponent? stickyColumnsModal;
+
   final Filters filters = Filters(limit: 5, offset: 0);
   final Filters readonlyFilters = Filters(limit: 3, offset: 0);
   final Filters gridPreviewFilters = Filters(limit: 4, offset: 0);
@@ -1175,6 +1270,48 @@ Future<void> onTableRequest(Filters nextFilters) async {
     [responsiveAutoHideColumns]="true">
   </li-datatable>
 </div>''';
+  final String responsiveControlDartSnippet =
+      '''final settings = DatatableSettings(
+  colsDefinitions: <DatatableCol>[
+    DatatableCol(key: 'codigo', title: 'Código'),
+    DatatableCol(key: 'assunto', title: 'Assunto', hideOnMobile: true),
+    // A coluna de ações já sai da disputa pelo controle de expandir
+    // (responsiveControlEligible = false), então o triângulo nunca cai
+    // em cima dos botões. Qualquer coluna pode fazer o mesmo.
+    DatatableActionColumn(key: 'acoes', title: 'Ações', actions: acoes),
+  ],
+
+  // Onde fica o controle de expandir:
+  //   inline (padrão) -> primeira coluna visível elegível
+  //   column          -> coluna dedicada, antes do checkbox de seleção
+  responsiveControlMode: DatatableResponsiveControlMode.column,
+
+  // O que abre o detalhe:
+  //   control (padrão) -> só o controle; o clique na linha fica para onRowClick
+  //   row              -> clique em qualquer ponto de uma linha recolhida
+  responsiveDetailsTrigger: DatatableResponsiveDetailsTrigger.control,
+
+  // Opcional: escolhe a dedo a coluna que hospeda o controle inline.
+  // responsiveControlColumnKey: 'codigo',
+);''';
+  final String responsiveControlHtmlSnippet = '''<li-datatable
+  [dataTableFilter]="filters"
+  [data]="tableData"
+  [settings]="settings"
+  [responsiveCollapse]="true"
+  [responsiveCollapseByContainer]="true"
+  expandRowDetailsLabel="Mostrar os demais dados da linha"
+  collapseRowDetailsLabel="Ocultar os demais dados da linha"
+  (onRowClick)="abrirRegistro(\$event)">
+</li-datatable>''';
+  final String stickyBackgroundCssSnippet =
+      '''/* O fundo das colunas fixadas e do header sticky é resolvido em runtime:
+   o datatable lê o fundo realmente pintado pelo ancestral mais próximo e o
+   publica em --li-datatable-sticky-bg. Isso acerta card, modal, .bg-light e
+   modo escuro sem configuração. Defina a variável só para forçar outra cor. */
+.minha-tela li-datatable {
+    --li-datatable-sticky-bg: var(--card-bg);
+}''';
   final String cellTemplateDartSnippet = '''final settings = DatatableSettings(
   colsDefinitions: <DatatableCol>[
     DatatableCol(key: 'processCode', title: 'Código'),
@@ -1668,6 +1805,52 @@ class ProductController {
     await _loadStickyColumnsTable();
   }
 
+  final Filters stickyColumnsModalFilters = Filters(limit: 5, offset: 0);
+  late DataFrame<Map<String, dynamic>> stickyColumnsModalTableData =
+      DataFrame<Map<String, dynamic>>(
+    items: <Map<String, dynamic>>[],
+    totalRecords: 0,
+  );
+
+  Future<void> onStickyColumnsModalTableRequest(Filters nextFilters) async {
+    stickyColumnsModalFilters.fillFromFilters(nextFilters);
+    await _loadStickyColumnsModalTable();
+  }
+
+  Future<void> openStickyColumnsModal() async {
+    stickyColumnsModal?.open();
+    _flushView();
+    await Future<void>.delayed(Duration.zero);
+    await _loadStickyColumnsModalTable();
+    _flushView();
+  }
+
+  Future<void> _loadStickyColumnsModalTable() async {
+    stickyColumnsModalTableData =
+        await _stickyColumnsDemoService.query(stickyColumnsModalFilters);
+    _flushView();
+  }
+
+  String get stickyColumnsModalDemoTitle => i18n.isPortuguese
+      ? 'Colunas fixadas dentro de um modal'
+      : 'Fixed columns inside a modal';
+
+  String get stickyColumnsModalDemoIntro => i18n.isPortuguese
+      ? 'A coluna fixada precisa de fundo opaco para tapar o que passa por '
+          'baixo dela. Fora de um card o tema não expõe --card-bg, então o '
+          'datatable resolve o fundo realmente pintado atrás dele e o publica '
+          'em --li-datatable-sticky-bg: role a tabela na horizontal e a coluna '
+          'Ações acompanha o branco do modal, sem o retângulo cinza da página.'
+      : 'A fixed column needs an opaque background to occlude what scrolls '
+          'under it. Outside a card the theme does not expose --card-bg, so the '
+          'datatable resolves the background actually painted behind it and '
+          'publishes it as --li-datatable-sticky-bg: scroll the table '
+          'horizontally and the Actions column follows the modal background '
+          'instead of showing the page grey block.';
+
+  String get openStickyColumnsModalLabel =>
+      i18n.isPortuguese ? 'Abrir no modal' : 'Open in a modal';
+
   void onGroupedSelectionChange(List<dynamic> selectedRows) {
     groupedSelectionLog = selectedRows.isEmpty
         ? 'Nenhum item selecionado.'
@@ -1780,6 +1963,42 @@ class ProductController {
 
     _flushView();
   }
+
+  bool processLookupUseDedicatedControlColumn = false;
+
+  void toggleProcessLookupControlColumnMode(Event event) {
+    final checkbox = event.target as CheckboxInputElement;
+    processLookupUseDedicatedControlColumn = checkbox.checked ?? false;
+    _processLookupActionColumnTableSettings.responsiveControlMode =
+        processLookupUseDedicatedControlColumn
+            ? DatatableResponsiveControlMode.column
+            : DatatableResponsiveControlMode.inline;
+    processLookupActionColumnDemoTable?.update();
+    _flushView();
+  }
+
+  String get processLookupControlColumnToggleLabel => i18n.isPortuguese
+      ? 'Coluna dedicada para o controle de expandir (responsiveControlMode)'
+      : 'Dedicated column for the expand control (responsiveControlMode)';
+
+  bool processLookupExpandOnRowClick = false;
+
+  void toggleProcessLookupExpandOnRowClick(Event event) {
+    final checkbox = event.target as CheckboxInputElement;
+    processLookupExpandOnRowClick = checkbox.checked ?? false;
+    _processLookupActionColumnTableSettings.responsiveDetailsTrigger =
+        processLookupExpandOnRowClick
+            ? DatatableResponsiveDetailsTrigger.row
+            : DatatableResponsiveDetailsTrigger.control;
+    processLookupActionColumnDemoTable?.update();
+    _flushView();
+  }
+
+  String get processLookupExpandOnRowClickToggleLabel => i18n.isPortuguese
+      ? 'Clique em qualquer ponto da linha abre o detalhe '
+          '(responsiveDetailsTrigger)'
+      : 'A click anywhere in the row opens the details '
+          '(responsiveDetailsTrigger)';
 
   void toggleCallRefreshOnOrgaoToggle(Event event) {
     final checkbox = event.target as CheckboxInputElement;

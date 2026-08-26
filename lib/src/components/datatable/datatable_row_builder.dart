@@ -255,7 +255,7 @@ class DatatableRowBuilder {
         final normalizedRequestedControlColumnKey =
             responsiveControlColumnKey?.trim();
         DatatableCol? fallbackVisibleColumn;
-        DatatableCol? requiredVisibleColumn;
+        DatatableCol? eligibleVisibleColumn;
         DatatableCol? requestedVisibleColumn;
 
         for (final candidate in row.columns) {
@@ -273,13 +273,13 @@ class DatatableRowBuilder {
             requestedVisibleColumn ??= candidate;
           }
 
-          if (candidate.responsiveAutoHideRequired) {
-            requiredVisibleColumn ??= candidate;
+          if (candidate.responsiveControlEligible) {
+            eligibleVisibleColumn ??= candidate;
           }
         }
 
         controlColumnKey = requestedVisibleColumn?.key ??
-            requiredVisibleColumn?.key ??
+            eligibleVisibleColumn?.key ??
             fallbackVisibleColumn?.key;
       }
 

@@ -153,6 +153,11 @@
             [attr.data-label]="'li_dt_table'">
             <thead>
                 <tr role="row">
+                    <th *ngIf="showResponsiveControlColumn"
+                        class="datatable-control-col"
+                        scope="col"
+                        [attr.aria-label]="expandRowDetailsLabel"
+                        [attr.data-label]="'li_dt_hcontrol'"></th>
                     <th *ngIf="showCheckboxToSelectRow"
                         class="datatable-first-col"
                         [attr.data-label]="'li_dt_hcheck'">
@@ -255,7 +260,7 @@
                     <td [attr.colspan]="virtualSpacerColspan.toString()" [style.height.px]="virtualTopSpacerHeight"></td>
                 </tr>
                 <template ngFor let-view [ngForOf]="renderedRows" let-idxR="index" [ngForTrackBy]="trackByRenderedRow">
-                    <tr [class.cursor-pointer]="disableRowClick == false && view.row.type != DatatableRowType.groupTitle"
+                    <tr [class.cursor-pointer]="isRowInteractive(view)"
                         [class.dt-hasChild]="view.row.isExpanded && view.hasResponsiveHiddenColumns"
                         [class.dtr-expanded]="view.row.isExpanded && view.hasResponsiveHiddenColumns"
                         [class.datatable-group-title-row]="view.row.type == DatatableRowType.groupTitle"
@@ -263,7 +268,17 @@
                         [attr.data-label]="'li_dt_row_' + idxR.toString()"
                         [attr.data-value]="view.row.index.toString()"
                         [liCssStyle]="view.row.styleCss"
-                        (click)="rowClickHandler(view.row)">
+                        (click)="onRowElementClick(view)">
+                        <td *ngIf="showResponsiveControlColumn && view.row.type == DatatableRowType.normal"
+                            class="datatable-control-col dtr-control"
+                            [class.dtr-control--empty]="!view.hasResponsiveHiddenColumns"
+                            [attr.tabindex]="view.hasResponsiveHiddenColumns ? '0' : null"
+                            [attr.aria-expanded]="view.hasResponsiveHiddenColumns ? view.row.isExpanded.toString() : null"
+                            [attr.aria-label]="view.hasResponsiveHiddenColumns ? resolveResponsiveControlLabel(view) : null"
+                            [attr.data-label]="'li_dt_control'"
+                            [attr.data-value]="view.row.index.toString()"
+                            (keydown)="onResponsiveControlKeydown($event, view)"
+                            (click)="onResponsiveControlClick($event, view)"></td>
                         <td *ngIf="showCheckboxToSelectRow && view.row.type == DatatableRowType.normal"
                             class="datatable-first-col" (click)="$event.stopPropagation()">
                             <input class="cursor-pointer form-check-input m-0 me-3" (click)="onSelect($event, view.row)"
@@ -283,9 +298,12 @@
                             [class.dtr-control]="isResponsiveControlColumn(view, column)"
                             [class.datatable-group-title-cell]="view.row.type == DatatableRowType.groupTitle"
                             [attr.aria-expanded]="isResponsiveControlColumn(view, column) ? view.row.isExpanded.toString() : null"
+                            [attr.aria-label]="isResponsiveControlColumn(view, column) ? resolveResponsiveControlLabel(view) : null"
+                            [attr.tabindex]="isResponsiveControlColumn(view, column) ? '0' : null"
                             [attr.colspan]="column.colspan.toString()" [liCssStyle]="resolvedCellStyleCss(column, idxC)"
                             [attr.data-label]="'li_dt_col_' + idxC.toString()"
                             [attr.data-value]="column.key"
+                            (keydown)="isResponsiveControlColumn(view, column) ? onResponsiveControlKeydown($event, view) : null"
                             (click)="isResponsiveControlColumn(view, column) ? onResponsiveControlClick($event, view) : null">
                             <template [ngIf]="hasCellTemplateFor(column)">
                                 <template [ngTemplateOutlet]="resolveCellTemplateFor(column)"
@@ -307,7 +325,7 @@
                         <td class="child"
                             [attr.data-label]="'li_dt_child_cell'"
                             [attr.data-value]="view.row.index.toString()"
-                            [attr.colspan]="(view.row.columns.length + (showCheckboxToSelectRow ? 1 : 0)).toString()">
+                            [attr.colspan]="resolveChildRowColspan(view).toString()">
                             <ul class="dtr-details">
                                 <li *ngFor="let column of view.responsiveHiddenColumns; let idxHidden = index; trackBy: trackByColumnKey"
                                     [attr.data-dtr-index]="idxHidden.toString()"

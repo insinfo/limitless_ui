@@ -9,6 +9,7 @@ import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
 import '../../directives/css_style_directive.dart';
+import '../../core/outside_click.dart';
 
 class _LiColorValue {
   const _LiColorValue({
@@ -984,7 +985,7 @@ class LiColorPickerComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!isOpen) {
         return;
       }

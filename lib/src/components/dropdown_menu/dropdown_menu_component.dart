@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
+import '../../core/outside_click.dart';
 
 /// Public directives used by the dropdown menu component.
 const liDropdownMenuDirectives = <Object>[
@@ -488,7 +489,7 @@ class LiDropdownMenuComponent implements OnDestroy {
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!isOpen) {
         return;
       }
@@ -501,7 +502,11 @@ class LiDropdownMenuComponent implements OnDestroy {
 
       final clickedTrigger = triggerButtonElement?.contains(target) ?? false;
       final clickedMenu = menuElement?.contains(target) ?? false;
-      if (!clickedTrigger && !clickedMenu) {
+      // Abrir outro menu é decisão de quem abre, através do
+      // `closeOtherMenusOnOpen` dele — que chama `_closeOtherOpenMenus()`.
+      // Fechar aqui atropelaria a composição de toolbar coordenada, em que
+      // vários menus ficam abertos de propósito.
+      if (!clickedTrigger && !clickedMenu && !_clickedAnotherMenuTrigger(target)) {
         closeDropdown();
       }
     });
@@ -613,6 +618,16 @@ class LiDropdownMenuComponent implements OnDestroy {
         _changeDetectorRef.markForCheck();
       }
     });
+  }
+
+  /// Se o clique caiu no gatilho de outro `li-dropdown-menu` desta página.
+  bool _clickedAnotherMenuTrigger(html.Node target) {
+    if (target is! html.Element) {
+      return false;
+    }
+
+    final trigger = target.closest('[data-label="li_dm_btn_toggle"]');
+    return trigger != null && !identical(trigger, triggerButtonElement);
   }
 
   void _closeOtherOpenMenus() {

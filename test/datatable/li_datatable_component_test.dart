@@ -6,6 +6,7 @@
 library;
 
 import 'dart:html';
+import 'dart:js_util' as js_util;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:limitless_ui/limitless_ui.dart';
@@ -52,6 +53,7 @@ import 'li_datatable_component_test.template.dart' as ng;
         (limitChange)="onLimitChange(\$event)"
         (searchRequest)="onSearchRequest(\$event)"
         (instrumentation)="onInstrumentation(\$event)"
+        (onRowClick)="onRowClicked(\$event)"
         (selectAll)="onSelectedRows(\$event)">
       </li-datatable>
     </div>
@@ -129,6 +131,7 @@ class TestHostComponent {
   Filters? lastLimitChange;
   Filters? lastSearchRequest;
   List<dynamic>? lastSelectedRows;
+  dynamic lastRowClick;
   final List<LiDatatableInstrumentationEvent> instrumentationEvents =
       <LiDatatableInstrumentationEvent>[];
   DatatableExportPdfCallback? onExportPdfCallback;
@@ -151,6 +154,10 @@ class TestHostComponent {
 
   void onSelectedRows(List<dynamic> rows) {
     lastSelectedRows = List<dynamic>.from(rows);
+  }
+
+  void onRowClicked(dynamic instance) {
+    lastRowClick = instance;
   }
 
   void onInstrumentation(LiDatatableInstrumentationEvent event) {
@@ -1716,6 +1723,383 @@ void main() {
     expect(host.table!.renderedRows.first.responsiveControlColumnKey, 'nome');
   });
 
+  test('menu de visibilidade de colunas rola quando nao cabe na viewport',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          for (var index = 0; index < 40; index++)
+            DatatableCol(key: 'col$index', title: 'Coluna $index'),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final toggle = fixture.rootElement.querySelector(
+      '[data-label="li_dt_cols_btn"]',
+    ) as ButtonElement?;
+    final menu = fixture.rootElement.querySelector(
+      '[data-label="li_dt_cols_panel"]',
+    ) as HtmlElement?;
+
+    expect(toggle, isNotNull);
+    expect(menu, isNotNull);
+
+    // The test page carries no Bootstrap stylesheet, so `.dropdown-item` is
+    // laid out inline here; blocking the entries reproduces the real stacked
+    // panel, which is taller than the viewport at 40 columns.
+    for (final item in menu!.querySelectorAll('.dropdown-item')) {
+      (item as HtmlElement).style
+        ..display = 'block'
+        ..height = '32px';
+    }
+
+    await fixture.update((_) {
+      toggle!.click();
+    });
+    await _settleFrames();
+
+    expect(menu.classes.contains('show'), isTrue);
+
+    final maxHeight = menu.style.maxHeight;
+    expect(maxHeight, isNotEmpty);
+    expect(
+      double.parse(maxHeight.replaceAll('px', '')),
+      lessThanOrEqualTo(window.innerHeight!.toDouble()),
+    );
+    expect(menu.style.overflowY, 'auto');
+    expect(menu.scrollHeight, greaterThan(menu.clientHeight));
+
+    // Closing hands the menu back its natural height.
+    await fixture.update((_) {
+      toggle!.click();
+    });
+    await _settleFrames();
+
+    expect(menu.style.maxHeight, isEmpty);
+    expect(menu.style.overflowY, isEmpty);
+  });
+
+  test('abrir o menu de acoes fecha o menu de colunas e vice-versa', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            maxVisibleActions: 0,
+            actions: <DatatableAction>[
+              DatatableAction(label: 'Abrir', onTap: (context) {}),
+              DatatableAction(label: 'Editar', onTap: (context) {}),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    final columnsToggle = fixture.rootElement.querySelector(
+      '[data-label="li_dt_cols_btn"]',
+    ) as ButtonElement?;
+    final columnsMenu = fixture.rootElement.querySelector(
+      '[data-label="li_dt_cols_panel"]',
+    ) as HtmlElement?;
+    final actionsToggle = fixture.rootElement.querySelector(
+      '[data-li-datatable-action-overflow-toggle="true"]',
+    ) as ButtonElement?;
+
+    expect(columnsToggle, isNotNull);
+    expect(columnsMenu, isNotNull);
+    expect(actionsToggle, isNotNull);
+
+    await fixture.update((_) {
+      columnsToggle!.click();
+    });
+    await _settleFrames();
+
+    expect(columnsMenu!.classes.contains('show'), isTrue);
+
+    // O gatilho do menu de ações chama stopPropagation(), então só a detecção
+    // em fase de captura enxerga este clique e fecha o menu de colunas.
+    await fixture.update((_) {
+      actionsToggle!.click();
+    });
+    await _settleFrames();
+
+    final actionsMenu = document.querySelector(
+      '[data-li-datatable-action-overflow-menu="true"]',
+    ) as HtmlElement?;
+
+    expect(actionsMenu, isNotNull);
+    expect(actionsMenu!.classes.contains('show'), isTrue);
+    expect(columnsMenu.classes.contains('show'), isFalse);
+
+    // E o caminho inverso.
+    await fixture.update((_) {
+      columnsToggle!.click();
+    });
+    await _settleFrames();
+
+    expect(columnsMenu.classes.contains('show'), isTrue);
+    expect(actionsMenu.classes.contains('show'), isFalse);
+  });
+
+  test('coluna de acoes nao recebe o controle responsivo inline', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade', hideOnMobile: true),
+          DatatableActionColumn(
+            key: 'acoes',
+            title: 'Ações',
+            actions: <DatatableAction>[
+              DatatableAction(label: 'Abrir', onTap: (context) {}),
+            ],
+          ),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.responsiveCollapse = true;
+      component.table!.responsiveCollapseMaxWidth = 100000;
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(host.table!.renderedRows.first.responsiveControlColumnKey, 'nome');
+
+    final toggleCell = fixture.rootElement.querySelector(
+      'tbody tr td.dtr-control',
+    ) as TableCellElement?;
+
+    expect(toggleCell, isNotNull);
+    expect(toggleCell!.getAttribute('data-value'), 'nome');
+
+    await fixture.update((_) {
+      toggleCell.click();
+    });
+
+    expect(host.table!.rows.first.isExpanded, isTrue);
+    expect(fixture.rootElement.querySelector('tbody tr.child'), isNotNull);
+  });
+
+  test('modo column adiciona uma coluna dedicada para o controle responsivo',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade', hideOnMobile: true),
+        ],
+        responsiveControlMode: DatatableResponsiveControlMode.column,
+      );
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(host.table!.showResponsiveControlColumn, isFalse);
+    expect(
+      fixture.rootElement.querySelector('thead th.datatable-control-col'),
+      isNull,
+    );
+
+    await fixture.update((component) {
+      component.responsiveCollapse = true;
+      component.table!.responsiveCollapseMaxWidth = 100000;
+    });
+    await _settleTable(fixture);
+
+    expect(host.table!.showResponsiveControlColumn, isTrue);
+    expect(
+      fixture.rootElement.querySelector('thead th.datatable-control-col'),
+      isNotNull,
+    );
+
+    final controlCell = fixture.rootElement.querySelector(
+      'tbody tr td.datatable-control-col.dtr-control',
+    ) as TableCellElement?;
+
+    // Keeps the native cell role, the way DataTables does, and stays
+    // keyboard reachable.
+    expect(controlCell, isNotNull);
+    expect(controlCell!.getAttribute('role'), isNull);
+    expect(controlCell.getAttribute('tabindex'), '0');
+    expect(controlCell.getAttribute('aria-expanded'), 'false');
+
+    // The control leads the row, ahead of the selection checkbox.
+    final firstRowCells = fixture.rootElement
+        .querySelectorAll('tbody tr:first-child > td')
+        .cast<TableCellElement>()
+        .toList(growable: false);
+    expect(firstRowCells.first, same(controlCell));
+    expect(
+      firstRowCells[1].classes.contains('datatable-first-col'),
+      isTrue,
+    );
+
+    // The control owns its own cell, so no data cell doubles as the toggle.
+    expect(
+      fixture.rootElement.querySelector('tbody tr td[data-value="nome"]')!
+          .classes
+          .contains('dtr-control'),
+      isFalse,
+    );
+
+    await fixture.update((_) {
+      controlCell.click();
+    });
+
+    expect(host.table!.rows.first.isExpanded, isTrue);
+    expect(controlCell.getAttribute('aria-expanded'), 'true');
+
+    final childCell = fixture.rootElement.querySelector(
+      'tbody tr.child td.child',
+    ) as TableCellElement?;
+
+    // Two data columns plus the selection checkbox and the control column.
+    expect(childCell, isNotNull);
+    expect(childCell!.getAttribute('colspan'), '4');
+
+    await fixture.update((_) {
+      controlCell.click();
+    });
+
+    expect(host.table!.rows.first.isExpanded, isFalse);
+  });
+
+  test('por padrao o clique na linha nao abre o detalhe responsivo', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade', hideOnMobile: true),
+          DatatableCol(key: 'setor', title: 'Setor', hideOnMobile: true),
+        ],
+      );
+    });
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.responsiveCollapse = true;
+      component.table!.responsiveCollapseMaxWidth = 100000;
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    // 'nome' hosts the control, so a click there would toggle: use 'setor',
+    // a plain cell of the same row.
+    final plainCell = fixture.rootElement.querySelector(
+      'tbody tr td[data-value="setor"]',
+    ) as TableCellElement?;
+
+    expect(plainCell, isNotNull);
+
+    await fixture.update((_) {
+      plainCell!.click();
+    });
+
+    expect(host.table!.rows.first.isExpanded, isFalse);
+    expect(fixture.rootElement.querySelector('tbody tr.child'), isNull);
+    expect(host.lastRowClick, same(host.table!.rows.first.instance));
+  });
+
+  test('responsiveDetailsTrigger row abre o detalhe pelo clique na linha',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade', hideOnMobile: true),
+          DatatableCol(key: 'setor', title: 'Setor', hideOnMobile: true),
+        ],
+        responsiveDetailsTrigger: DatatableResponsiveDetailsTrigger.row,
+      );
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    // Nothing collapsed yet: the row click is still reported to the consumer.
+    await fixture.update((_) {
+      (fixture.rootElement.querySelector('tbody tr td[data-value="nome"]')
+              as TableCellElement)
+          .click();
+    });
+
+    expect(host.lastRowClick, same(host.table!.rows.first.instance));
+    expect(host.table!.rows.first.isExpanded, isFalse);
+
+    await fixture.update((component) {
+      component.lastRowClick = null;
+      component.responsiveCollapse = true;
+      component.table!.responsiveCollapseMaxWidth = 100000;
+    });
+    await _settleTable(fixture);
+
+    final plainCell = fixture.rootElement.querySelector(
+      'tbody tr td[data-value="setor"]',
+    ) as TableCellElement?;
+
+    expect(plainCell, isNotNull);
+
+    await fixture.update((_) {
+      plainCell!.click();
+    });
+
+    expect(host.table!.rows.first.isExpanded, isTrue);
+    expect(fixture.rootElement.querySelector('tbody tr.child'), isNotNull);
+    expect(host.lastRowClick, isNull);
+
+    await fixture.update((_) {
+      plainCell!.click();
+    });
+
+    expect(host.table!.rows.first.isExpanded, isFalse);
+  });
+
+  test('modo column alterna o detalhe pelo teclado', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.searchInFields = <DatatableSearchField>[];
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(key: 'nome', title: 'Nome'),
+          DatatableCol(key: 'idade', title: 'Idade', hideOnMobile: true),
+        ],
+        responsiveControlMode: DatatableResponsiveControlMode.column,
+      );
+    });
+    await _settleTable(fixture);
+
+    await fixture.update((component) {
+      component.responsiveCollapse = true;
+      component.table!.responsiveCollapseMaxWidth = 100000;
+    });
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    final controlCell = fixture.rootElement.querySelector(
+      'tbody tr td.datatable-control-col.dtr-control',
+    ) as TableCellElement?;
+
+    expect(controlCell, isNotNull);
+    expect(controlCell!.getAttribute('tabindex'), '0');
+
+    await fixture.update((_) {
+      controlCell.dispatchEvent(_keyboardEvent('keydown', 'Enter'));
+    });
+
+    expect(host.table!.rows.first.isExpanded, isTrue);
+  });
+
   test('onSelectAll marca e desmarca todas as linhas pelo checkbox do header',
       () async {
     final fixture = await testBed.create();
@@ -2611,6 +2995,55 @@ void main() {
     expect(assuntoHeader, isNotNull);
     expect(solicitanteHeader!.classes.contains('hide'), isFalse);
     expect(assuntoHeader!.classes.contains('hide'), isFalse);
+  });
+
+  test('coluna fixada herda o fundo realmente pintado atras da tabela',
+      () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.tableContainerStyle =
+          'width: 480px; background-color: rgb(12, 34, 56);';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'processo',
+            title: 'Processo',
+            width: '320px',
+            minWidth: '320px',
+          ),
+          DatatableCol(
+            key: 'acoes',
+            title: 'Ações',
+            width: '320px',
+            minWidth: '320px',
+            fixedPosition: DatatableFixedColumnPosition.right,
+            customRenderString: (itemMap, itemInstance) => 'Abrir',
+          ),
+        ],
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+
+    final wrapper = fixture.rootElement.querySelector('li-datatable')
+        as HtmlElement?;
+    final fixedCell = fixture.rootElement.querySelector(
+      'tbody td[data-value="acoes"]',
+    ) as TableCellElement?;
+
+    expect(fixedCell, isNotNull);
+    expect(fixedCell!.classes.contains('datatable-fixed-col'), isTrue);
+    expect(wrapper, isNotNull);
+    expect(
+      wrapper!.style.getPropertyValue('--li-datatable-sticky-bg'),
+      'rgb(12, 34, 56)',
+    );
+    expect(
+      fixedCell.getComputedStyle().backgroundColor,
+      'rgb(12, 34, 56)',
+    );
   });
 
   test('mantem a coluna de acoes fixada a direita durante scroll horizontal',
@@ -3689,6 +4122,23 @@ int _maxDetailInt(
   }
   values.sort();
   return values.last;
+}
+
+KeyboardEvent _keyboardEvent(String type, String key) {
+  return js_util.callConstructor(
+    js_util.getProperty(window, 'KeyboardEvent'),
+    <Object>[
+      type,
+      js_util.jsify(<String, Object>{'key': key, 'bubbles': true}),
+    ],
+  ) as KeyboardEvent;
+}
+
+Future<void> _settleFrames({int frames = 3}) async {
+  for (var index = 0; index < frames; index++) {
+    await window.animationFrame;
+  }
+  await Future<void>.delayed(const Duration(milliseconds: 20));
 }
 
 Future<void> _settleTable(NgTestFixture<TestHostComponent> fixture) async {

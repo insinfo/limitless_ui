@@ -129,6 +129,7 @@ Recent picker/overlay updates in `limitless_ui` are focused on modal-safe behavi
 - `li-tooltip` and `li-popover` now keep body-mounted overlays above modal/backdrop stacks.
 - `li-date-picker`, `li-date-range-picker`, `li-time-picker`, and `li-color-picker` support adaptive mobile presentation via `mobilePresentation` and `mobileHeightBreakpoint`. Date, date-range, and time pickers default to fullscreen mobile modals so picker panels keep a stable size while the user selects values.
 - The example modal page includes dedicated overlay labs (fields, pickers, and stacked modal-on-modal scenarios) to visually validate z-index and viewport clamping.
+- Outside-click detection runs in the capture phase for every overlay, so opening one closes the others even when a trigger stops the click from propagating. Panels are also fitted to the space left next to their trigger and scroll internally instead of running off a short viewport.
 
 For modal demos in the example app, overlay field surfaces were simplified to remove decorative wrapper backgrounds, keeping focus on overlay behavior instead of container chrome.
 
@@ -1131,6 +1132,18 @@ The barrel export in [lib/limitless_ui.dart](lib/limitless_ui.dart) exposes thes
   `LiQuillToolbarAction`, `LiQuillToolbarItem`,
   `LiQuillToolbarOption`, and `liQuillTextEditorDirectives`.
 
+## Recent additions in `1.0.0-dev.40`
+
+- Only one overlay stays open at a time again. Every overlay in the library detects outside clicks through the shared `listenOutsideClick` helper, which subscribes in the **capture** phase. Detection used to run in the bubble phase, so any trigger calling `stopPropagation()` on its own click — the datatable's column and row-action menus do, the latter to keep the click from becoming a row click — was invisible to every other open overlay, and it stayed on screen. This affected `li-select`, `li-multi-select` (through `liClickOutside`), `li-treeview-select`, `li-tag-filter`, `li-typeahead`, `li-dropdown-menu`, `liDropdown` and its submenus, `li-date-picker`, `li-date-range-picker`, `li-time-picker`, `li-color-picker`, `li-popover`, `li-tooltip`, and the datatable's own menus. No behaviour changed for a click on an overlay's own trigger or panel: each handler already asked "was the click inside me?" first.
+- `li-datatable` gained `DatatableSettings.responsiveControlMode` (dedicated column for the responsive expand control, ahead of the selection checkbox) and `DatatableSettings.responsiveDetailsTrigger` (whether only the control opens the details row, or a click anywhere in a collapsed row does). The control no longer lands on the action column, and columns can opt out through `DatatableCol.responsiveControlEligible`.
+- Fixed the grey block behind a fixed datatable column on any surface other than a card. The theme scopes `--card-bg` to its `.card` rule, so a table inside a modal fell through to the page background; the datatable now resolves the background actually painted behind it and publishes it as `--li-datatable-sticky-bg`.
+- Overlay panels are fitted to the viewport and scroll internally when they do not fit. `constrainOverlayHeightToViewport` used to undo its own cap one layout pass later, which affected every picker whose panel had no CSS-fixed height.
+
+- `LiSimpleLoading.defaultBodyZIndex`/`defaultTargetZIndex` and `LiNarratedFullScreenLoading.defaultZIndex` are configurable now, so an application can align the helpers with its own stacking scale from `main()` without touching call sites. `LiSimpleLoading.isVisible` and the opt-in `debugAssertSingleShow` were added for codebases that require one `hide()` per `show()`.
+- Documented the two `li-modal` scroll modes and the `.modal-body` nesting trap behind `dialogScrollable`, under "Scrolling a `li-modal`" below.
+
+See `doc-pt_BR.md` / `doc.md` for the full write-up.
+
 ## Recent additions in `1.0.0-dev.23`
 
 - Fixed `liDropdown` body-attached overlays on narrow/mobile viewports so long organization switcher menus no longer enter a redraw/reposition loop while Popper and viewport adaptation settle the menu size.
@@ -2044,6 +2057,85 @@ Most relevant inputs and features:
 - `getHtml()`, `getPlainText()`, `getDeltaJson()`, `setDeltaJson(...)`, `format(...)`, and `insertTextAtSelection(...)` expose imperative editor APIs without reaching into JS interop directly.
 
 When `enableTableSupport` is used, keep the editor in a container with enough horizontal room for the `quill-table-better` contextual table menu. The plugin positions `.ql-table-menus-container` from the Quill container geometry, and very narrow side-by-side layouts can make the menu clamp to the left edge instead of appearing visually centered above the selected table. Prefer a full-width editor area for table-heavy flows, or move previews/metadata below the editor on constrained pages. The component styles keep the Quill container overflow visible so the table menu can overlap the toolbar when it needs to; host page CSS should not put the editor inside clipping wrappers.
+
+### Loading helper stacking, and using the helpers correctly
+
+`LiSimpleLoading.defaultBodyZIndex` (500000, full-screen overlay) and
+`defaultTargetZIndex` (50000, overlay scoped to an element) are mutable
+`static int`s. That exists for risk-free adoption: an application that already
+has its own stacking scale aligns the library once in `main()`, without
+touching a single call site.
+
+```dart
+void main() {
+  // Adopt the library with behaviour identical to what the screen had.
+  LiSimpleLoading.defaultTargetZIndex = 500000;
+  // Above an app alert that sits at 500100.
+  LiNarratedFullScreenLoading.defaultZIndex = 500200;
+  runApp(...);
+}
+```
+
+`LiNarratedFullScreenLoading.defaultZIndex` tracks
+`LiSimpleLoading.defaultBodyZIndex + 1` dynamically until assigned, so moving
+the plain overlay carries the narrated one along in any initialization order;
+`resetDefaultZIndex()` restores the derivation. Since a default parameter value
+must be constant, `showOnBody`'s `zIndex` became optional — passing an explicit
+value still works.
+
+**One detail that looks like style but is not:** `show()` calls `hide()` before
+mounting. That is resource cleanup, not API idempotence. `show()` allocates
+three `StreamSubscription`s and a `ResizeObserver` into fields and reassigns
+`_root`; a second `show()` without `hide()` overwrites those fields, the old
+listeners are never cancelled, and the previous `_root` is orphaned in the DOM
+with no reference left that could remove it. The result is not a visible bug —
+it is a z-index 500000 curtain stuck on the page.
+
+For codebases whose convention is one `hide()` per `show()`, without giving up
+that cleanup, there is `LiSimpleLoading.debugAssertSingleShow`:
+
+```dart
+LiSimpleLoading.debugAssertSingleShow = true;
+```
+
+Turned on, showing over an already visible overlay trips an `AssertionError` —
+which only runs in development, so release cost is zero and the bookkeeping
+still applies. Off by default on purpose: re-showing is legitimate, two
+overlapping loads on the same table both call `show()`, and
+`LiDataTableComponent.showLoading()` is exactly that case.
+
+`LiSimpleLoading.isVisible` exposes the state, useful in tests and automation.
+The overlays also carry `class="li-simple-loading"` with
+`data-li-simple-loading="true"` (the narrated one uses
+`data-li-narrated-full-screen-loading`), giving a stable selector to wait on
+instead of scanning `querySelectorAll('div')` comparing computed z-index, which
+breaks silently the moment that value changes.
+
+### Scrolling a `li-modal`: the whole dialog, or just the body
+
+Two distinct behaviours, one line apart:
+
+- **Without `dialogScrollable`** (the default): the dialog grows with its
+  content and the `.modal` overlay scrolls, carrying the header along. This is
+  what most screens want.
+- **With `[dialogScrollable]="true"`**: the theme pins `.modal-content` to
+  `max-height: 100%` and scrolling moves inside `.modal-body`, with the header
+  fixed at the top.
+
+The trap is in the second case. `.modal-body` only gets a bounded height by
+being a **direct flex child** of `.modal-content` — that is where its
+`flex: 1 1 auto` comes from. Declaring your own `<div class="modal-body">`
+inside the projected content matches the `.modal-dialog-scrollable .modal-body`
+selector and does receive `overflow-y: auto`, but with an unbounded height:
+there is nothing to scroll, and `.modal-content`'s `overflow: hidden` merely
+clips the excess. The symptom misleads, because it only shows once the content
+grows — a five-row table fits, the same datatable in grid mode does not.
+
+When internal scrolling is what you want, let `li-modal`'s own `#modalBody` be
+the `.modal-body` (that is the default, `enableModalBodyClass` is already
+`true`) and project the content directly. Use `[enableModalBodyClass]="false"`
+when the content brings its own spacing and the body padding would be
+redundant — but then do not recreate a `.modal-body` inside it.
 
 ### Narrated Full Screen Loading
 

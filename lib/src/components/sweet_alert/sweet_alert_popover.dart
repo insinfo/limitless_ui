@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:popper/popper.dart';
+import '../../core/outside_click.dart';
 
 class SweetAlertPopover {
   static void showPopover(
@@ -137,7 +138,7 @@ class SweetAlertPopover {
     }
 
     Future.delayed(const Duration(milliseconds: 250), () {
-      ssoc = document.onClick.listen((event) {
+      ssoc = listenOutsideClick((event) {
         final te = event.target;
         if (te is Element &&
             !rootPopover.contains(te) &&

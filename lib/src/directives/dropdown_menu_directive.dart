@@ -4,6 +4,7 @@ import 'dart:html';
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
 
+import '../core/outside_click.dart';
 import '../core/overlay_positioning.dart';
 
 @Directive(selector: '[liDropdownMenuPosition]')
@@ -56,8 +57,7 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     _menuElement = rootElement.querySelector('.dropdown-menu');
     rootElement.onClick.listen(onRootClick);
 
-    globalBodyClickSS =
-        document.querySelector('body')?.onClick.listen(onBodyClick);
+    globalBodyClickSS = listenOutsideClick(onBodyClick);
     _documentKeyDownSS = document.onKeyDown.listen(onDocumentKeyDown);
     _setExpanded(false);
   }
@@ -90,6 +90,7 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
       if (!shouldOpen) {
         _overlayRelayoutPending = false;
         _overlay?.stopAutoUpdate();
+        resetOverlayViewportConstraints(floatingElement: dropdownMenu);
         return;
       }
 
@@ -109,6 +110,7 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     final dropdownMenu = _menuElement;
     if (dropdownMenu != null) {
       dropdownMenu.classes.remove('show');
+      resetOverlayViewportConstraints(floatingElement: dropdownMenu);
       if (!_usesBodyOverlay) {
         dropdownMenu.style.removeProperty('top');
         dropdownMenu.style.removeProperty('left');
@@ -120,7 +122,12 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
   }
 
   void onBodyClick(MouseEvent event) {
-    var target = event.target as Element;
+    final target = event.target;
+    if (target is! Element) {
+      hide();
+      return;
+    }
+
     final clickedTrigger = _triggerElement?.contains(target) ?? false;
     final clickedMenu = _menuElement?.contains(target) ?? false;
     final clickedCloseAction = target.closest('.li-dropdown-close') != null;
@@ -178,6 +185,11 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
 
   void _handleOverlayLayout(PopperLayout layout) {
     normalizeOverlayVerticalPosition(
+      floatingElement: _menuElement,
+      layout: layout,
+      gap: 4,
+    );
+    constrainOverlayHeightToViewport(
       floatingElement: _menuElement,
       layout: layout,
       gap: 4,

@@ -5,6 +5,7 @@ import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
 
 import 'popover_config.dart';
+import '../../core/outside_click.dart';
 
 /// Public directives used by the popover component.
 const liPopoverDirectives = <Object>[
@@ -1131,7 +1132,7 @@ class LiPopoverComponent implements OnDestroy {
     }
 
     if (_closeOnInsideClick || _closeOnOutsideClick) {
-      _documentClickSubscription ??= html.document.onClick.listen((event) {
+      _documentClickSubscription ??= listenOutsideClick((event) {
         if (!_visible) {
           return;
         }

@@ -4,12 +4,41 @@ import 'dart:math' as math;
 
 String _resolveLoadingOverlayColor() {
   final theme = document.documentElement?.attributes['data-color-theme'];
-  return theme == 'dark' ? 'rgb(0 0 0 / 36%)' : 'rgb(255 255 255 / 48%)';
+  return theme == 'dark' ? 'rgb(15 23 42 / 72%)' : 'rgb(248 250 252 / 78%)';
 }
 
 class LiSimpleLoading {
-  static const int defaultBodyZIndex = 500000;
-  static const int defaultTargetZIndex = 50000;
+  /// Stacking order of a full-screen overlay (`show` with no target).
+  ///
+  /// Mutable so an application can align the library with a stacking scale it
+  /// already has, from `main()`, without touching call sites:
+  ///
+  /// ```dart
+  /// LiSimpleLoading.defaultBodyZIndex = 500000;
+  /// ```
+  static int defaultBodyZIndex = 500000;
+
+  /// Stacking order of an overlay scoped to a target element.
+  ///
+  /// Lower than [defaultBodyZIndex] because it only has to cover its own
+  /// container, not the whole page. Mutable for the same reason.
+  static int defaultTargetZIndex = 50000;
+
+  /// When true, showing over an overlay that is already visible trips an
+  /// assertion instead of silently re-arming it.
+  ///
+  /// Off by default: re-showing is legitimate — two overlapping loads on the
+  /// same table both call `show`, and the second one simply re-arms the same
+  /// overlay. Turn it on from `main()` in a codebase whose convention is that
+  /// every `show` is paired with its own `hide`, and the violation surfaces in
+  /// development. Assertions are stripped from release builds, so the
+  /// bookkeeping below still runs there.
+  static bool debugAssertSingleShow = false;
+
+  bool _visible = false;
+
+  /// Whether an overlay from this instance is currently mounted.
+  bool get isVisible => _visible;
 
   Element _root = DivElement();
   Element? _spinner;
@@ -68,10 +97,11 @@ class LiSimpleLoading {
 
   void showOnBody({
     double safeMargin = 64,
-    int zIndex = defaultBodyZIndex,
+    int? zIndex,
   }) => show(target: null, safeMargin: safeMargin, zIndex: zIndex);
 
   void show({Element? target, double safeMargin = 64, int? zIndex}) {
+    _assertNotAlreadyVisible('show');
     hide();
     _safeMargin = safeMargin;
 
@@ -115,7 +145,17 @@ class LiSimpleLoading {
     })
       ..observe(_target!);
 
+    _visible = true;
     _rafUpdate();
+  }
+
+  void _assertNotAlreadyVisible(String method) {
+    assert(
+      !debugAssertSingleShow || !_visible,
+      'LiSimpleLoading.$method() foi chamado com um overlay desta instância '
+      'ainda visível. Chame hide() antes, ou desligue '
+      'LiSimpleLoading.debugAssertSingleShow.',
+    );
   }
 
   void _rafUpdate() {
@@ -153,6 +193,7 @@ class LiSimpleLoading {
   }
 
   void hide() {
+    _visible = false;
     _winScrollSub?.cancel();
     _containerScrollSub?.cancel();
     _resizeSub?.cancel();
@@ -183,6 +224,7 @@ class LiSimpleLoading {
   }
 
   void showSimple({Element? target, int? zIndex}) {
+    _assertNotAlreadyVisible('showSimple');
     hide();
     _prepareTargetForOverlay(target);
     _root = _createRoot(
@@ -203,9 +245,11 @@ class LiSimpleLoading {
 ''');
 
     _mountOverlay(target);
+    _visible = true;
   }
 
   void showHorizontal({Element? target, int? zIndex}) {
+    _assertNotAlreadyVisible('showHorizontal');
     hide();
     _prepareTargetForOverlay(target);
     _root = _createRoot(
@@ -279,9 +323,11 @@ class LiSimpleLoading {
     );
 
     _mountOverlay(target);
+    _visible = true;
   }
 
   void showHorizontal2({Element? target, int? zIndex}) {
+    _assertNotAlreadyVisible('showHorizontal2');
     hide();
     _prepareTargetForOverlay(target);
     _root = _createRoot(
@@ -420,11 +466,32 @@ class LiSimpleLoading {
     );
 
     _mountOverlay(target);
+    _visible = true;
   }
 }
 
 class LiNarratedFullScreenLoading {
-  static const int defaultZIndex = LiSimpleLoading.defaultBodyZIndex + 1;
+  static int? _defaultZIndexOverride;
+
+  /// Stacking order of the narrated overlay.
+  ///
+  /// Follows [LiSimpleLoading.defaultBodyZIndex] by one so it always covers the
+  /// plain loading curtain, including when an application moves that value.
+  /// Assign it to pin an explicit order instead — an application whose own
+  /// alert sits above the curtain has to raise this to stay on top of it:
+  ///
+  /// ```dart
+  /// LiNarratedFullScreenLoading.defaultZIndex = 500200;
+  /// ```
+  static int get defaultZIndex =>
+      _defaultZIndexOverride ?? LiSimpleLoading.defaultBodyZIndex + 1;
+
+  static set defaultZIndex(int value) => _defaultZIndexOverride = value;
+
+  /// Drops an explicit [defaultZIndex], going back to following
+  /// [LiSimpleLoading.defaultBodyZIndex].
+  static void resetDefaultZIndex() => _defaultZIndexOverride = null;
+
   static const List<String> defaultPdfMessages = <String>[
     'Preparando documento...',
     'Analisando conteudo...',
@@ -438,14 +505,14 @@ class LiNarratedFullScreenLoading {
     required this.title,
     required this.messages,
     this.stepDuration = const Duration(milliseconds: 1600),
-    this.zIndex = defaultZIndex,
-  });
+    int? zIndex,
+  }) : zIndex = zIndex ?? defaultZIndex;
 
   factory LiNarratedFullScreenLoading.pdfGeneration({
     String title = 'Gerando PDF',
     List<String>? messages,
     Duration stepDuration = const Duration(milliseconds: 1600),
-    int zIndex = defaultZIndex,
+    int? zIndex,
   }) {
     return LiNarratedFullScreenLoading(
       title: title,

@@ -6,6 +6,7 @@ import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
 import 'tooltip_config.dart';
+import '../../core/outside_click.dart';
 
 /// Public directives used by tooltip APIs.
 const liTooltipDirectives = <Object>[
@@ -1008,7 +1009,7 @@ class _LiTooltipOverlay implements OnDestroy {
     }
 
     if (_closeOnInsideClick || _closeOnOutsideClick) {
-      _documentClickSubscription ??= html.document.onClick.listen((event) {
+      _documentClickSubscription ??= listenOutsideClick((event) {
         if (!_visible) {
           return;
         }

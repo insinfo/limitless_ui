@@ -250,6 +250,85 @@ Capacidades principais:
 - APIs `getHtml()`, `getPlainText()`, `getDeltaJson()`, `setDeltaJson(...)`, `format(...)` e `insertTextAtSelection(...)`;
 - opção `updateModelOnBlur` para reduzir a frequência de atualização de `ngModel` em telas pesadas.
 
+### Empilhamento e uso correto dos helpers de loading
+
+`LiSimpleLoading.defaultBodyZIndex` (500000, overlay de tela cheia) e
+`defaultTargetZIndex` (50000, overlay preso a um elemento) passaram a ser
+`static int` mutáveis. Isso existe para adoção sem risco: uma aplicação que já
+tem uma escala de empilhamento própria alinha a lib uma vez no `main()`, sem
+encostar em nenhuma chamada.
+
+```dart
+void main() {
+  // Adota a lib com o comportamento idêntico ao que a tela já tinha.
+  LiSimpleLoading.defaultTargetZIndex = 500000;
+  // Acima de um alerta próprio que fica em 500100.
+  LiNarratedFullScreenLoading.defaultZIndex = 500200;
+  runApp(...);
+}
+```
+
+`LiNarratedFullScreenLoading.defaultZIndex` acompanha
+`LiSimpleLoading.defaultBodyZIndex + 1` dinamicamente enquanto não for
+atribuído, então mover o overlay simples arrasta o narrado junto em qualquer
+ordem de inicialização; `resetDefaultZIndex()` volta a derivar. Como valor
+padrão de parâmetro precisa ser constante, o `zIndex` de `showOnBody` virou
+opcional — passar um valor explícito continua funcionando.
+
+**Um detalhe que parece estilo mas não é:** `show()` chama `hide()` antes de
+montar. Isso não é idempotência de API, é liberação de recurso. `show()` aloca
+três `StreamSubscription` e um `ResizeObserver` em campos e reatribui `_root`;
+um segundo `show()` sem `hide()` sobrescreve esses campos, os listeners antigos
+nunca são cancelados e o `_root` anterior fica órfão no DOM — sem nenhuma
+referência capaz de removê-lo. O resultado não é um bug visível, é uma cortina
+de z-index 500000 presa na tela.
+
+Para quem quer a convenção "um `hide()` para cada `show()`" sem abrir mão dessa
+limpeza, existe `LiSimpleLoading.debugAssertSingleShow`:
+
+```dart
+LiSimpleLoading.debugAssertSingleShow = true;
+```
+
+Ligada, mostrar sobre um overlay já visível dispara `AssertionError` — que só
+roda em desenvolvimento, então o custo em release é zero e a contabilidade
+continua valendo. Desligada por padrão de propósito: remostrar é legítimo, dois
+carregamentos sobrepostos na mesma tabela chamam `show()` os dois, e
+`LiDataTableComponent.showLoading()` é exatamente esse caso.
+
+`LiSimpleLoading.isVisible` expõe o estado, útil em teste e em automação. E os
+overlays carregam `class="li-simple-loading"` com
+`data-li-simple-loading="true"` (o narrado usa
+`data-li-narrated-full-screen-loading`), o que dá um seletor estável para
+esperar o loading sumir — bem melhor que varrer `querySelectorAll('div')`
+comparando z-index computado, que quebra silenciosamente assim que o valor muda.
+
+### Rolagem de um `li-modal`: o diálogo inteiro ou só o corpo
+
+São dois comportamentos distintos e a escolha é uma linha:
+
+- **Sem `dialogScrollable`** (padrão): o diálogo cresce com o conteúdo e quem
+  rola é o overlay `.modal`, levando o cabeçalho junto. É o que a maioria das
+  telas quer.
+- **Com `[dialogScrollable]="true"`**: o tema prende o `.modal-content` em
+  `max-height: 100%` e a rolagem passa a ser interna ao `.modal-body`, com o
+  cabeçalho fixo no topo.
+
+A armadilha está no segundo caso. O `.modal-body` só ganha altura limitada
+sendo **filho flex direto** do `.modal-content` — é de lá que vem o
+`flex: 1 1 auto`. Declarar um `<div class="modal-body">` próprio dentro do
+conteúdo projetado casa o seletor `.modal-dialog-scrollable .modal-body` e
+recebe o `overflow-y: auto`, mas com altura livre: não há o que rolar, e o
+`overflow: hidden` do `.modal-content` apenas corta o excesso. O sintoma engana,
+porque só aparece quando o conteúdo cresce — uma tabela de cinco linhas cabe, o
+mesmo datatable em modo grade não.
+
+Se precisar de rolagem interna, deixe o `#modalBody` do próprio `li-modal` ser o
+`.modal-body` (é o padrão, `enableModalBodyClass` já vem `true`) e projete o
+conteúdo direto. Use `[enableModalBodyClass]="false"` quando o conteúdo já traz
+o próprio espaçamento e o padding do corpo sobraria — mas aí não recrie um
+`.modal-body` por dentro.
+
 ### `LiNarratedFullScreenLoading`
 
 `LiNarratedFullScreenLoading` é um helper imperativo para fluxos mais longos no navegador, quando a aplicação precisa de uma overlay fullscreen com mensagens rotativas de status. Ele é exportado pelo barrel principal `package:limitless_ui/limitless_ui.dart`, então pode ser usado ao lado de `LiSimpleLoading` e `LiSimpleDialogComponent` sem uma superfície extra de import.
@@ -381,6 +460,132 @@ Por baixo dos dois casos acima está o `li-modal`, que agora expõe `open` além
 ```
 
 Vale um cuidado ao adotar `lazyContent` num modal que já existe: o conteúdo é destruído ao fechar e recriado a cada abertura. Um `@ViewChild` que aponte para dentro do modal fica nulo enquanto ele está fechado, e qualquer busca feita no `ngOnInit` do conteúdo passa a rodar a cada abertura.
+
+## Datatable responsivo, colunas fixadas e menus em `1.0.0-dev.40`
+
+O `li-datatable` já recolhia colunas em telas estreitas, mas três detalhes do modo responsivo só apareciam no uso real em celular — e um deles vinha do jeito como o tema Limitless declara suas variáveis.
+
+### Onde fica o controle de expandir
+
+Quando colunas são recolhidas, o datatable precisa colocar o controle de expandir (o triângulo) em alguma célula visível da linha. A regra antiga preferia a primeira coluna marcada com `responsiveAutoHideRequired` — e o `DatatableActionColumn` marca isso como `true` por padrão, justamente para que as ações nunca sumam no auto-hide.
+
+O efeito colateral era ruim: em toda tabela montada com a coluna de ações declarativa, o controle caía **na célula de ações**. Como cada botão de ação chama `stopPropagation()` no clique, a única parte da célula que ainda abria a linha era a tirinha de padding onde o triângulo é desenhado — poucos pixels, encostados nos botões. No celular era quase impossível acertar sem disparar uma ação por engano.
+
+A regra agora é a mesma do `inline` do DataTables: **primeira coluna visível**, pulando as que se declaram inelegíveis pelo novo `DatatableCol.responsiveControlEligible`:
+
+```dart
+/// Se a coluna pode hospedar o controle de expandir.
+///
+/// Colunas cheias de conteúdo interativo — a de ações acima de tudo — saem
+/// dessa disputa para o controle nunca dividir área de toque com um botão.
+bool responsiveControlEligible = true;
+```
+
+O `DatatableActionColumn` passa `false`. Com isso o controle cai numa célula de dados (tipicamente o número do processo), e a largura inteira dela vira área de toque. Quem quiser escolher a dedo continua com o `DatatableSettings.responsiveControlColumnKey`, que tem prioridade sobre tudo.
+
+### `responsiveControlMode`: uma coluna só para o controle
+
+Dividir a célula com o conteúdo resolve o caso comum, mas não todos: se a primeira coluna também tiver um link ou um badge clicável, a disputa volta. Para isso existe o `DatatableResponsiveControlMode.column`, equivalente ao `responsive.details.type: 'column'` do DataTables:
+
+```dart
+DatatableSettings(
+  colsDefinitions: colunas,
+  responsiveControlMode: DatatableResponsiveControlMode.column,
+);
+```
+
+O datatable passa a renderizar uma coluna dedicada, **antes do checkbox de seleção**, com uma área de toque de 2.75rem (3rem no mobile) centrada na célula. A coluna só existe enquanto há algo recolhido, então no desktop a tabela mantém a largura inteira; o `colspan` da linha de detalhes e os espaçadores do virtual scroll já contam com ela.
+
+A célula mantém o `role` nativo de `cell` — como o DataTables faz — e é alcançável por teclado (`tabindex="0"`, Enter/Espaço), com `aria-expanded` e um nome acessível vindo de dois inputs novos:
+
+```html
+<li-datatable
+  [settings]="settings"
+  [data]="dados"
+  expandRowDetailsLabel="Mostrar os demais dados da linha"
+  collapseRowDetailsLabel="Ocultar os demais dados da linha">
+</li-datatable>
+```
+
+### `responsiveDetailsTrigger`: quem abre o detalhe
+
+Por padrão só o controle abre a linha de detalhes, o que deixa o clique no resto da linha livre para o `onRowClick` da tela — abrir o registro, por exemplo. Quando a tela não usa o clique na linha para nada, dá para transformar a linha inteira em área de toque:
+
+```dart
+DatatableSettings(
+  colsDefinitions: colunas,
+  responsiveDetailsTrigger: DatatableResponsiveDetailsTrigger.row,
+);
+```
+
+Os dois modos convivem com o `onRowClick`: em `row`, uma linha **sem** colunas recolhidas continua emitindo `onRowClick` normalmente, então o comportamento no desktop não muda — só a linha recolhida troca o clique pela expansão. O cursor de ponteiro aparece mesmo com `disableRowClick` ligado, porque expandir continua disponível.
+
+Os dois modos são independentes: dá para usar a coluna dedicada com `control` (o controle é o único jeito de abrir, e o clique na linha fica para a tela) ou com `row` (a coluna dedicada é só um alvo mais visível, e a linha toda também abre).
+
+### O fundo cinza atrás da coluna fixada
+
+Uma célula fixada (`fixedPosition`) precisa de fundo opaco para tapar as colunas que passam por baixo dela na rolagem horizontal. Esse fundo era chutado assim:
+
+```css
+background-color: var(--card-bg, var(--body-bg, #fff));
+```
+
+O chute funciona dentro de um card e falha em todo o resto. O tema Limitless declara `--card-bg` **dentro da própria regra `.card`**, não no `:root`:
+
+```css
+.card {
+    --card-bg: var(--white);
+    /* ... */
+}
+```
+
+Ou seja: a variável só existe no escopo de um `.card`. Uma tabela dentro de um `li-modal` não tem `.card` como ancestral, a cadeia cai no `--body-bg` — que é `#f1f4f9` no tema claro — e a coluna fixada pinta o cinza da página por cima do branco do modal. O mesmo vale para o `--modal-bg`, que é escopado em `.modal`, e para qualquer outra superfície que o tema resolva por variável escopada.
+
+Por isso a correção não troca uma variável por outra: o datatable sobe do container de rolagem até o primeiro ancestral que **realmente pinta** um fundo e publica a cor em `--li-datatable-sticky-bg`, usada pelas colunas fixadas e pelo header sticky. Ler a cor pintada é o que faz isso seguir o tema em vez de adivinhar: dá `--card-bg` dentro de um card, `--modal-bg` dentro de um modal, a cor de um `.bg-light` onde ele for usado, e os valores de modo escuro de todos eles — sem o datatable precisar saber em que superfície foi solto.
+
+Para forçar uma cor específica, basta definir a variável:
+
+```css
+.minha-tela li-datatable {
+    --li-datatable-sticky-bg: var(--card-bg);
+}
+```
+
+### Menus que não cabem na tela
+
+O menu de visibilidade de colunas, o de exportação e o de ações da linha são portados para o `body` quando abrem, e nada limitava a altura deles: numa tela baixa o menu passava da borda e as entradas de fora ficavam inalcançáveis — o caso relatado foi o botão "Exibir tudo" da lista de colunas parando acima do topo da janela.
+
+Os três agora são ajustados ao espaço disponível ao lado do gatilho e rolam por dentro. O menu de ações da linha também ganhou fallback de posicionamento (estava preso em `bottom-end`, sem virar para cima) e empilhamento ciente de modal, então não abre mais atrás do modal que contém a tabela.
+
+### Abrir um overlay agora fecha os outros
+
+O caso relatado foi a lista de colunas e o menu de ações de uma linha ficando na tela ao mesmo tempo, mas o problema valia para **todos** os overlays da lib.
+
+Todos detectavam clique-fora na fase de *bubble*. Um gatilho que chama `stopPropagation()` no próprio clique fica, portanto, invisível para qualquer overlay já aberto — e os dois menus do datatable fazem isso, o de ações porque o clique não pode virar clique de linha. Resultado: nada fechava nada.
+
+A detecção passou a ser feita por um helper único, `listenOutsideClick`, que assina na fase de **captura**. A captura percorre documento → alvo antes do bubble, então o clique é visto independentemente do que o alvo faça com a propagação depois:
+
+```dart
+StreamSubscription<html.MouseEvent> listenOutsideClick(
+  void Function(html.MouseEvent event) onClick,
+) {
+  return const html.EventStreamProvider<html.MouseEvent>('click')
+      .forTarget(html.document, useCapture: true)
+      .listen(onClick);
+}
+```
+
+Alcança `li-select`, `li-multi-select` (pelo `liClickOutside`), `li-treeview-select`, `li-tag-filter`, `li-typeahead`, `li-dropdown-menu`, `liDropdown` e seus submenus, `li-date-picker`, `li-date-range-picker`, `li-time-picker`, `li-color-picker`, `li-popover`, `li-tooltip`, `li-simple-popover`, o popover do sweet alert e os menus do próprio datatable.
+
+Clicar no próprio gatilho ou painel continua igual: todo handler já começava perguntando "o clique foi dentro de mim?", então rodar antes do alvo não muda o resultado — alternar pelo gatilho continua alternando, em vez de fechar e reabrir.
+
+O ajuste de altura vale para todos os overlays da lib:
+
+O ajuste de altura vale para todos os overlays da lib: o `constrainOverlayHeightToViewport` se auto-cancelava uma passada de layout depois de aplicar — media a altura **já limitada**, concluía que o painel cabia e removia o limite, deixando-o transbordar de novo. Isso afetava `li-color-picker`, `li-date-picker`, `li-date-range-picker` e `li-time-picker` sempre que o painel não tinha altura fixa em CSS. A altura natural agora vem do `scrollHeight` do elemento quando ele é maior, então a decisão é estável entre passadas.
+
+### Onde ver funcionando
+
+Na página `Dados > Datatable` do app de exemplo, no acordeão "Ações via DatatableActionColumn (Dart)", há um switch para o `responsiveControlMode` e outro para o `responsiveDetailsTrigger` — dá para estreitar a janela e alternar os dois ao vivo. O acordeão "Colunas fixadas dentro de um modal" mostra a coluna fixada sobre o fundo do modal.
 
 ## 1. O que você está construindo
 

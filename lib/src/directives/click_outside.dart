@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:ngdart/angular.dart';
+import '../core/outside_click.dart';
 
 ///
 /// uma diretiva angular para detectar cliques fora de um objeto
@@ -40,6 +41,6 @@ class LiClickOutsideDirective implements OnDestroy, OnInit {
 
   @override
   void ngOnInit() {
-    documentClickStreamSubscription = document.onClick.listen(onClick);
+    documentClickStreamSubscription = listenOutsideClick(onClick);
   }
 }

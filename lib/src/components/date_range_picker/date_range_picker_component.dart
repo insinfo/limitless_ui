@@ -8,6 +8,7 @@ import 'package:ngforms/ngforms.dart'
 import 'package:popper/popper.dart';
 
 import '../../core/overlay_positioning.dart';
+import '../../core/outside_click.dart';
 
 enum DateRangePickerViewMode { day, month, year }
 
@@ -1044,7 +1045,7 @@ class LiDateRangePickerComponent
   }
 
   void _bindDocumentListeners() {
-    _documentClickSubscription ??= html.document.onClick.listen((event) {
+    _documentClickSubscription ??= listenOutsideClick((event) {
       if (!isOpen) {
         return;
       }
