@@ -123,7 +123,7 @@ jobs:
           RUN_EXAMPLE_E2E=true \
           UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 \
           CHROME_EXECUTABLE=/tmp/chrome-no-sandbox \
-          dart test ui_test/e2e/puppeteer_test.dart
+          dart test ui_test/e2e/ -j 1
 
       - name: Validate pub package
         run: dart pub publish --dry-run
