@@ -1,0 +1,210 @@
+<div class="demo-page">
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">
+          Loop de layout
+          <span class="fw-normal">— Acompanhamento Especial</span>
+        </h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb currentLabel="Loop de layout"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-body">
+        <p class="text-muted mb-2">
+          Réplica da tela <strong>Protocolo &gt; Acompanhamento Especial</strong> do SALI, com os
+          mesmos inputs de responsividade que ela usa. Serve para reproduzir o loop infinito de
+          layout que aparecia com zoom em 110%.
+        </p>
+        <p class="text-muted mb-0">
+          O ciclo: as colunas não cabem, o auto-hide esconde uma, a tabela encurta, a barra de
+          rolagem da página some e o container devolve ~16px — aí tudo cabe de novo, as colunas
+          voltam, a barra volta, e o ciclo recomeça a cada frame. Com zoom em 110% a altura da
+          página caía exatamente em cima desse limiar. O botão abaixo reproduz essa realimentação
+          sem depender da altura da janela.
+        </p>
+      </div>
+
+      <div class="row px-3 pb-3 g-3">
+        <div class="col-md-4">
+          <div class="form-check">
+            <input id="chkLimitarLargura" class="form-check-input" type="checkbox"
+              [attr.data-id]="'chkLimitarLargura'" [checked]="limitarLargura"
+              (change)="mudarLimiteDeLargura(!limitarLargura)" />
+            <label class="form-check-label" for="chkLimitarLargura">
+              Limitar a largura da tabela
+            </label>
+          </div>
+          <small class="text-muted d-block mb-2">
+            Desligado, a tabela ocupa a largura toda, como no SALI. Ligue para colocá-la na
+            fresta onde o ciclo se fecha.
+          </small>
+          <input id="inpLarguraContainer" type="number" class="form-control" min="240" max="1600"
+            step="4" [attr.data-id]="'inpLarguraContainer'" [disabled]="!limitarLargura"
+            [ngModel]="larguraDoContainer"
+            (ngModelChange)="mudarLargura($event.toString())" />
+        </div>
+
+        <div class="col-md-4 d-flex flex-column justify-content-center">
+          <div class="form-check">
+            <input id="chkSimularBarra" class="form-check-input" type="checkbox"
+              [attr.data-id]="'chkSimularBarra'" [checked]="simularBarraDeRolagem"
+              (change)="mudarSimulacao(!simularBarraDeRolagem)" />
+            <label class="form-check-label" for="chkSimularBarra">
+              Simular a barra de rolagem da página
+            </label>
+          </div>
+          <small class="text-muted">
+            Enquanto houver coluna escondida o container ganha {{ larguraDaBarraDeRolagem }}px —
+            é o que a barra de rolagem devolve quando a tabela encurta.
+          </small>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-center">
+          <button type="button" class="btn btn-outline-primary" [attr.data-id]="'btnZerarContadores'"
+            (click)="zerarContadores()">
+            <i class="ph ph-arrow-counter-clockwise me-2"></i>
+            Zerar contadores
+          </button>
+        </div>
+      </div>
+
+      <div class="px-3 pb-3">
+        <div [ngClass]="classeDoResumo" [attr.data-id]="'msgEstadoDoLayout'"
+          [attr.data-value]="pareceEmLoop ? 'loop' : 'estavel'">
+          <strong>{{ resumoDoEstado }}</strong>
+        </div>
+      </div>
+
+      <div class="row px-3 pb-3 g-3">
+        <div class="col-6 col-lg-3">
+          <div class="border rounded p-2">
+            <div class="text-muted small">Redesenhos no último segundo</div>
+            <div class="fs-4 fw-semibold" [attr.data-id]="'vlrRedesenhosPorSegundo'"
+              [attr.data-value]="redesenhosNoUltimoSegundo.toString()">
+              {{ redesenhosNoUltimoSegundo }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="border rounded p-2">
+            <div class="text-muted small">Redesenhos desde o reset</div>
+            <div class="fs-4 fw-semibold" [attr.data-id]="'vlrRedesenhosTotais'"
+              [attr.data-value]="redesenhos.toString()">
+              {{ redesenhos }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="border rounded p-2">
+            <div class="text-muted small">Mudanças de auto-hide</div>
+            <div class="fs-4 fw-semibold" [attr.data-id]="'vlrMudancasAutoHide'"
+              [attr.data-value]="mudancasDeAutoHide.toString()">
+              {{ mudancasDeAutoHide }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <div class="border rounded p-2">
+            <div class="text-muted small">Largura efetiva</div>
+            <div class="fs-4 fw-semibold" [attr.data-id]="'vlrLarguraEfetiva'"
+              [attr.data-value]="larguraEfetiva.toString()">
+              {{ larguraEfetiva }}px
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-3 pb-3">
+        <span class="text-muted">Colunas escondidas agora:</span>
+        <span class="fw-semibold" [attr.data-id]="'vlrColunasEscondidas'"
+          [attr.data-value]="colunasEscondidasLabel">
+          {{ colunasEscondidasLabel }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Mesmo arranjo da tela real: abas no cabeçalho do card e o datatable
+         irmão do `card-body`, encostado na borda. -->
+    <div class="card" [attr.style]="estiloDoContainer" [attr.data-id]="'containerDaTabela'">
+      <div class="card-header p-0 border-0 rounded-top overflow-hidden">
+        <ul class="nav nav-tabs nav-tabs-highlight m-0" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link cursor-pointer" [class.active]="ehAbaDoSetor"
+              [attr.aria-selected]="ehAbaDoSetor ? 'true' : 'false'"
+              [attr.data-id]="'abaAcompanhamentoSetor'" (click)="abrirAba('SETOR')">
+              <i class="ph ph-binoculars me-1"></i>
+              Acompanhados pelo setor
+            </a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link cursor-pointer" [class.active]="ehAbaPessoal"
+              [attr.aria-selected]="ehAbaPessoal ? 'true' : 'false'"
+              [attr.data-id]="'abaAcompanhamentoPessoal'" (click)="abrirAba('PESSOAL')">
+              <i class="ph ph-star me-1"></i>
+              Meus favoritos
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <li-datatable #datatable [attr.data-id]="'datatableAcompanhamentoEspecial'" [data]="tabela"
+        [settings]="colunas" [dataTableFilter]="filtros" (dataRequest)="paginar($event)"
+        [requestDataOnItemsPerPageChange]="true" [limitPerPageOptions]="opcoesPorPagina"
+        [showCheckboxToSelectRow]="false" [disableRowClick]="true" [showExportMenu]="false"
+        [enableGridMode]="false" [responsiveCollapse]="true"
+        [responsiveCollapseMaxWidth]="576"
+        [responsiveAutoHideColumns]="true" [debugInstrumentation]="true"
+        debugInstrumentationLabel="acompanhamento-especial"
+        (instrumentation)="aoInstrumentar($event)">
+      </li-datatable>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h6 class="mb-2">A tela do SALI</h6>
+        <li-highlight [code]="snippetDaTela" language="html"></li-highlight>
+
+        <h6 class="mb-2 mt-4">O que foi corrigido</h6>
+        <ul class="mb-0 ps-3 text-muted">
+          <li>
+            O auto-hide ganhou histerese: a coluna escondida só volta quando sobram 24px, e não
+            assim que os 16px da barra de rolagem reaparecem.
+          </li>
+          <li>
+            A largura medida é arredondada e mudanças abaixo de meio pixel são ignoradas — com zoom
+            fracionário (110%, 125%) o <code>getBoundingClientRect</code> oscilava nas últimas casas
+            decimais e cada frame parecia um layout novo.
+          </li>
+          <li>
+            Um <code>ResizeObserver</code> acompanha o container. O controle de largura acima não
+            dispara <code>resize</code> nenhum — a janela não muda de tamanho — e mesmo assim a
+            tabela reage.
+          </li>
+          <li>
+            Um guarda corta a corrente depois de 8 redesenhos responsivos seguidos. Só um evento de
+            verdade (resize, dados novos, settings novos, interação, o container mudando de
+            largura) volta a medir. É a rede de segurança: nenhum arranjo de CSS trava mais a tela.
+          </li>
+        </ul>
+
+        <h6 class="mb-2 mt-4">Do lado da aplicação</h6>
+        <p class="text-muted mb-0">
+          Vale matar a causa na origem: <code>scrollbar-gutter: stable</code> no
+          <code>html</code> reserva o espaço da barra de rolagem para sempre, então ela aparecer
+          ou sumir deixa de mexer na largura do container. Não substitui a histerese — o container
+          muda de tamanho por outros motivos — mas elimina o gatilho que travou a tela do SALI.
+        </p>
+        <li-highlight [code]="snippetDaBarraDeRolagem" language="css"></li-highlight>
+      </div>
+    </div>
+  </div>
+</div>

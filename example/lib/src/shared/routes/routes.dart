@@ -34,6 +34,8 @@ import 'package:limitless_ui_example/src/pages/lista_orgao/lista_orgao_page.temp
     as lista_orgao_page;
 import 'package:limitless_ui_example/src/pages/datatable_select/datatable_select_page.template.dart'
     as datatable_select_page;
+import 'package:limitless_ui_example/src/pages/datatable_layout_loop/datatable_layout_loop_page.template.dart'
+    as datatable_layout_loop_page;
 import 'package:limitless_ui_example/src/pages/protocol_workflow/protocol_workflow_page.template.dart'
     as protocol_workflow_page;
 import 'package:limitless_ui_example/src/pages/date_picker/date_picker_page.template.dart'
@@ -280,6 +282,12 @@ class DemoRoutes {
     component: datatable_select_page.DatatableSelectPageComponentNgFactory,
   );
 
+  static final datatableLayoutLoop = RouteDefinition(
+    routePath: DemoRoutePaths.datatableLayoutLoop,
+    component:
+        datatable_layout_loop_page.DatatableLayoutLoopPageComponentNgFactory,
+  );
+
   static final workQueue = RouteDefinition(
     routePath: DemoRoutePaths.workQueue,
     component: work_queue_page.WorkQueuePageComponentNgFactory,
@@ -387,6 +395,7 @@ class DemoRoutes {
     listaOrgao,
     protocolWorkflow,
     datatableSelect,
+    datatableLayoutLoop,
     workQueue,
     toast,
     notification,

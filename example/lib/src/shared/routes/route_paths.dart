@@ -37,6 +37,8 @@ class DemoRoutePaths {
   static final listaOrgao = RoutePath(path: 'lista-orgao');
   static final protocolWorkflow = RoutePath(path: 'protocol-workflow');
   static final datatableSelect = RoutePath(path: 'datatable-select');
+  static final datatableLayoutLoop =
+      RoutePath(path: 'datatable-layout-loop');
   static final workQueue = RoutePath(path: 'work-queue');
   static final toast = RoutePath(path: 'toast');
   static final notification = RoutePath(path: 'notification');

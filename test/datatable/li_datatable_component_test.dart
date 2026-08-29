@@ -160,8 +160,28 @@ class TestHostComponent {
     lastRowClick = instance;
   }
 
+  /// Reproduz a realimentacao da barra de rolagem da pagina.
+  ///
+  /// Esconder colunas encurta a tabela, a barra de rolagem some e o container
+  /// fica mais largo -- larguras em que as colunas cabem de novo. Alternar as
+  /// duas larguras a cada mudanca do auto-hide e exatamente o loop de layout
+  /// que travava a tela com zoom em 110%.
+  bool simulateScrollbarFeedback = false;
+  String hiddenColumnsContainerStyle = 'width: 480px;';
+  String allColumnsContainerStyle = 'width: 300px;';
+
   void onInstrumentation(LiDatatableInstrumentationEvent event) {
     instrumentationEvents.add(event);
+
+    if (!simulateScrollbarFeedback ||
+        event.stage != 'responsiveAutoHideSync.changed') {
+      return;
+    }
+
+    final hiddenColumns = event.details['autoHiddenColumns'] as int? ?? 0;
+    tableContainerStyle = hiddenColumns > 0
+        ? hiddenColumnsContainerStyle
+        : allColumnsContainerStyle;
   }
 }
 
@@ -2911,6 +2931,357 @@ void main() {
     expect(assuntoHeader, isNotNull);
     expect(solicitanteHeader!.classes.contains('hide'), isFalse);
     expect(assuntoHeader!.classes.contains('hide'), isFalse);
+  });
+
+  test('esconde a coluna cujo conteudo excede a largura declarada', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 420px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'processo',
+            title: 'Processo',
+            width: '120px',
+            minWidth: '120px',
+            responsiveAutoHideRequired: true,
+          ),
+          // Declarada estreita, mas o conteudo e uma palavra unica que nao
+          // quebra: o minimo real dela e muito maior que os 60px declarados.
+          // Somando as declaradas (120+60+120=300) tudo caberia nos 420px e
+          // nada seria escondido -- e a tabela ganharia rolagem horizontal.
+          // So medindo o minimo de verdade o auto-hide sabe que nao cabe.
+          DatatableCol(
+            key: 'gigante',
+            title: 'Gigante',
+            width: '60px',
+            minWidth: '60px',
+            nowrap: true,
+            responsiveAutoHidePriority: 10,
+            customRenderString: (itemMap, itemInstance) =>
+                'PalavraQueNaoQuebraDeJeitoNenhumEOcupaMuitoEspacoNaTela',
+          ),
+          DatatableCol(
+            key: 'situacao',
+            title: 'Situacao',
+            width: '120px',
+            minWidth: '120px',
+            responsiveAutoHidePriority: 20,
+          ),
+        ],
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'processo': '61109/2016',
+            'gigante': 'PalavraQueNaoQuebraDeJeitoNenhumEOcupaMuitoEspacoNaTela',
+            'situacao': 'Em andamento',
+          },
+        ],
+        totalRecords: 1,
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    expect(
+      host.table!.renderedRows.first.responsiveHiddenColumns
+          .map((coluna) => coluna.key),
+      contains('gigante'),
+      reason: 'a largura declarada foi usada no lugar do minimo real, entao o '
+          'auto-hide achou que a coluna cabia',
+    );
+  });
+
+  test('trocar de data nao vai escondendo colunas a cada troca', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 640px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'processo',
+            title: 'Processo',
+            width: '110px',
+            minWidth: '110px',
+            responsiveAutoHideRequired: true,
+          ),
+          DatatableCol(
+            key: 'ondeEsta',
+            title: 'Onde esta agora',
+            width: '150px',
+            minWidth: '150px',
+            responsiveAutoHidePriority: 60,
+          ),
+          DatatableCol(
+            key: 'grupo',
+            title: 'Grupo',
+            width: '120px',
+            minWidth: '120px',
+            responsiveAutoHidePriority: 40,
+          ),
+          DatatableCol(
+            key: 'situacao',
+            title: 'Situacao',
+            width: '130px',
+            minWidth: '130px',
+            responsiveAutoHidePriority: 30,
+          ),
+          DatatableCol(
+            key: 'observacao',
+            title: 'Observacao',
+            width: '150px',
+            minWidth: '150px',
+            responsiveAutoHidePriority: 10,
+          ),
+          DatatableCol(
+            key: 'assunto',
+            title: 'Assunto',
+            width: '130px',
+            minWidth: '130px',
+            responsiveAutoHidePriority: 20,
+          ),
+        ],
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    Set<String> escondidas() => host.table!.renderedRows.isEmpty
+        ? <String>{}
+        : host.table!.renderedRows.first.responsiveHiddenColumns
+            .map((coluna) => coluna.key)
+            .toSet();
+
+    final primeiro = escondidas();
+
+    // Trocar o `DataFrame` e nada mais -- e o que uma aba, uma pagina nova ou
+    // uma busca fazem. A janela nao muda de tamanho, o container tampouco, e
+    // as colunas visiveis tem que continuar as mesmas.
+    //
+    // O que quebrava: o setter de `data` limpa o cache de medicao mas nao o
+    // conjunto auto-escondido, entao a medicao seguinte lia as colunas
+    // visiveis ja esticadas para preencher o espaco das escondidas. A largura
+    // inflada nao cabia, escondia mais uma, as restantes esticavam mais, e
+    // cada troca de aba comia outra coluna.
+    for (var troca = 1; troca <= 4; troca++) {
+      await fixture.update((component) {
+        component.data = DataFrame<Map<String, dynamic>>(
+          items: <Map<String, dynamic>>[
+            <String, dynamic>{
+              'processo': '61109/201$troca',
+              'ondeEsta': 'Protocolo Geral',
+              'grupo': 'Prioritarios',
+              'situacao': 'Em andamento, recebido',
+              'observacao': 'Aguardando resposta da Procuradoria',
+              'assunto': 'Revisao documental',
+            },
+          ],
+          totalRecords: 1,
+        );
+      });
+      await _settleTable(fixture);
+      await _settleTable(fixture);
+      await _settleTable(fixture);
+
+      expect(
+        escondidas(),
+        primeiro,
+        reason: 'a troca $troca mudou as colunas escondidas sem resize algum',
+      );
+    }
+  });
+
+  test('reage ao container encolher sem resize da janela', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.responsiveAutoHideColumns = true;
+      component.tableContainerStyle = 'width: 900px;';
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'processo',
+            title: 'Processo',
+            width: '160px',
+            minWidth: '160px',
+            responsiveAutoHideRequired: true,
+          ),
+          DatatableCol(
+            key: 'ondeEsta',
+            title: 'Onde esta agora',
+            width: '150px',
+            minWidth: '150px',
+            responsiveAutoHidePriority: 10,
+            customRenderString: (itemMap, itemInstance) => 'Protocolo Geral',
+          ),
+          DatatableCol(
+            key: 'observacao',
+            title: 'Observacao',
+            width: '200px',
+            minWidth: '200px',
+            responsiveAutoHidePriority: 20,
+            customRenderString: (itemMap, itemInstance) => 'Sem observacao',
+          ),
+        ],
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+    await _settleTable(fixture);
+    await _settleTable(fixture);
+    final host = fixture.assertOnlyInstance;
+
+    Element? cabecalho(String key) =>
+        fixture.rootElement.querySelector('thead th[data-key="$key"]');
+
+    expect(cabecalho('ondeEsta')!.classes.contains('hide'), isFalse);
+
+    // O container encolhe sozinho -- uma sidebar recolhendo, um card mudando
+    // de tamanho, a barra de rolagem da pagina aparecendo. A janela nao muda
+    // de tamanho, entao nenhum evento `resize` e disparado.
+    //
+    // O estilo e escrito direto no DOM e nada de `fixture.update` vem depois
+    // de proposito: quem tem que disparar a deteccao de mudanca e o proprio
+    // `ResizeObserver` do componente. Se o callback dele cair fora da zona do
+    // Angular -- o construtor de `dart:html` nao faz o bind de zona que os
+    // streams de evento fazem -- o `markForCheck` nao marca nada e as classes
+    // abaixo nunca chegam ao DOM.
+    final container = fixture.rootElement.querySelector('div') as HtmlElement;
+    container.style.width = '300px';
+
+    var escondeu = false;
+    for (var tentativa = 0; tentativa < 40 && !escondeu; tentativa++) {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      escondeu = cabecalho('ondeEsta')?.classes.contains('hide') ?? false;
+    }
+
+    expect(
+      escondeu,
+      isTrue,
+      reason: 'o datatable nao reagiu ao container encolher, ou reagiu fora '
+          'da zona do Angular e o DOM ficou para tras',
+    );
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isTrue);
+  });
+
+  test('para de redesenhar quando o layout nao converge', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.debugInstrumentation = true;
+      component.responsiveAutoHideColumns = true;
+      component.simulateScrollbarFeedback = true;
+      component.tableContainerStyle = component.allColumnsContainerStyle;
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'processo',
+            title: 'Processo',
+            width: '160px',
+            minWidth: '160px',
+            responsiveAutoHideRequired: true,
+          ),
+          DatatableCol(
+            key: 'ondeEsta',
+            title: 'Onde esta agora',
+            width: '150px',
+            minWidth: '150px',
+            responsiveAutoHidePriority: 10,
+            customRenderString: (itemMap, itemInstance) => 'Protocolo Geral',
+          ),
+        ],
+      );
+      component.data = DataFrame<Map<String, dynamic>>(
+        items: <Map<String, dynamic>>[
+          <String, dynamic>{
+            'processo': '61109/2016',
+            'ondeEsta': 'Protocolo Geral',
+          },
+        ],
+        totalRecords: 1,
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+
+    for (var frame = 0; frame < 40; frame++) {
+      await _settleTable(fixture);
+    }
+    final host = fixture.assertOnlyInstance;
+
+    int autoHideChanges() => host.instrumentationEvents
+        .where((event) => event.stage == 'responsiveAutoHideSync.changed')
+        .length;
+
+    expect(
+      host.instrumentationEvents
+          .any((event) => event.stage == 'responsiveReflow.suspended'),
+      isTrue,
+      reason: 'o guarda de reflow tem que cortar a corrente de redesenhos',
+    );
+
+    final changesAfterGuard = autoHideChanges();
+    for (var frame = 0; frame < 8; frame++) {
+      await _settleTable(fixture);
+    }
+
+    expect(autoHideChanges(), changesAfterGuard);
+  });
+
+  test('um resize de verdade religa o auto-hide depois do guarda', () async {
+    final fixture = await testBed.create(beforeChangeDetection: (component) {
+      component.debugInstrumentation = true;
+      component.responsiveAutoHideColumns = true;
+      component.simulateScrollbarFeedback = true;
+      component.tableContainerStyle = component.allColumnsContainerStyle;
+      component.settings = DatatableSettings(
+        colsDefinitions: <DatatableCol>[
+          DatatableCol(
+            key: 'processo',
+            title: 'Processo',
+            width: '160px',
+            minWidth: '160px',
+            responsiveAutoHideRequired: true,
+          ),
+          DatatableCol(
+            key: 'ondeEsta',
+            title: 'Onde esta agora',
+            width: '150px',
+            minWidth: '150px',
+            responsiveAutoHidePriority: 10,
+            customRenderString: (itemMap, itemInstance) => 'Protocolo Geral',
+          ),
+        ],
+      );
+      component.searchInFields = <DatatableSearchField>[];
+    });
+
+    for (var frame = 0; frame < 40; frame++) {
+      await _settleTable(fixture);
+    }
+    final host = fixture.assertOnlyInstance;
+
+    expect(
+      host.instrumentationEvents
+          .any((event) => event.stage == 'responsiveReflow.suspended'),
+      isTrue,
+    );
+
+    await fixture.update((component) {
+      component.simulateScrollbarFeedback = false;
+      component.tableContainerStyle = 'width: 1200px;';
+      window.dispatchEvent(Event('resize'));
+    });
+    await _settleAfterResize(fixture);
+    await _settleAfterResize(fixture);
+
+    expect(
+      host.instrumentationEvents
+          .any((event) => event.stage == 'responsiveReflow.resumed'),
+      isTrue,
+    );
+    expect(host.table!.renderedRows.first.hasResponsiveHiddenColumns, isFalse);
   });
 
   test('ignora largura esticada anterior ao recalcular auto-hide no resize',

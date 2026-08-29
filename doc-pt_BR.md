@@ -461,6 +461,126 @@ Por baixo dos dois casos acima está o `li-modal`, que agora expõe `open` além
 
 Vale um cuidado ao adotar `lazyContent` num modal que já existe: o conteúdo é destruído ao fechar e recriado a cada abertura. Um `@ViewChild` que aponte para dentro do modal fica nulo enquanto ele está fechado, e qualquer busca feita no `ngOnInit` do conteúdo passa a rodar a cada abertura.
 
+## O loop de layout do datatable em `1.0.0-dev.41`
+
+A tela **Protocolo > Acompanhamento Especial** do SALI travava com zoom em 110%: a tabela piscava sem parar, cerca de 30 redesenhos por segundo, e a página ficava inutilizável. Em 100% e em 125% não acontecia nada.
+
+### O ciclo
+
+O `li-datatable` com `[responsiveAutoHideColumns]="true"` mede o espaço disponível a cada desenho e esconde a coluna de menor prioridade quando as colunas não cabem. O desenho seguinte mede de novo, e é aí que o ciclo se fecha:
+
+1. As colunas passam do espaço disponível por poucos pixels. O auto-hide esconde uma.
+2. Sem essa coluna a tabela encurta. A página encurta junto e a **barra de rolagem vertical some**.
+3. Sem a barra, o container ganha os ~16px que ela ocupava. Agora todas as colunas cabem.
+4. O auto-hide devolve a coluna escondida. A tabela cresce, a barra volta, e o passo 1 recomeça.
+
+Não é preciso evento nenhum para manter isso vivo: cada desenho do datatable agenda duas passagens de medição (`postRenderSync` e `responsiveAutoHideSync`), e cada medição diferente da anterior agenda outro desenho. A corrente se alimenta sozinha, frame a frame.
+
+O ciclo só existe numa faixa estreita — quando a sobra das colunas é **menor que a largura da barra de rolagem**. Com muita sobra as colunas ficam escondidas nos dois estados; com folga, cabem nos dois. Foi por isso que só o zoom de 110% mostrou o problema: ele colocou a tela exatamente nessa faixa. Na página de exemplo, a faixa vai de 632px a 640px de container; fora dela o layout converge sozinho.
+
+### A correção
+
+Três camadas, da causa para a rede de segurança.
+
+**1. Histerese no auto-hide.** O limiar deixou de ser simétrico: a coluna some assim que estoura o espaço, mas só volta quando sobram `DatatableResponsiveController.autoHideRestoreMargin` (24px). Como a barra de rolagem devolve ~16px, esse ganho sozinho não desfaz mais a decisão — e o ciclo não fecha.
+
+```dart
+// datatable_responsive_controller.dart
+final fitWidth = _autoHiddenColumnKeys.isEmpty
+    ? availableWidth
+    : _restoreThreshold(availableWidth); // availableWidth - 24
+```
+
+A margem nunca passa de metade do container, senão num container muito estreito ela comeria o orçamento inteiro e esconderia tudo.
+
+**2. Largura medida estável.** `getBoundingClientRect().width` oscila nas últimas casas decimais com zoom fracionário (110%, 125%), e a comparação era `!=` entre doubles — cada frame parecia um layout novo e forçava um redesenho. A largura passou a ser arredondada, e diferenças abaixo de meio pixel devolvem o valor anterior em vez de um novo, para a referência não escorregar meio pixel por frame até cruzar o limiar.
+
+**3. Guarda de reflow.** Depois de 8 redesenhos responsivos seguidos — contados dentro de uma janela de 1s, porque um frame parado no meio de um loop não é convergência — o datatable para de medir e mantém o último layout. Só um evento de verdade religa: `resize` da janela, `data` ou `settings` novos, troca de modo grid, uma coluna ligada/desligada à mão, ou o próprio container mudando de largura. É a rede de segurança: nenhum arranjo de CSS trava mais a tela, mesmo que apareça um ciclo que a histerese não cubra.
+
+O guarda emite `responsiveReflow.suspended`, `responsiveReflow.containerChanged` e `responsiveReflow.resumed` no stream de instrumentação (`[debugInstrumentation]="true"`), então dá para ver quando ele age.
+
+### O container passou a ser observado
+
+O `resize` da janela não cobre um container que muda de tamanho sozinho — uma sidebar recolhendo, um card mudando, a barra de rolagem da página aparecendo. Antes o datatable só remedia depois de um desenho, então um container que encolheu ficava com as colunas erradas até algo mais provocar um redesenho. E enquanto o guarda segurava a corrente nada era desenhado, logo nada era medido: a tabela podia ficar parada no layout errado.
+
+Agora um `ResizeObserver` acompanha o container. Duas armadilhas apareceram no caminho, e as duas estão cobertas por teste:
+
+**O alvo não pode ser o host.** `li-datatable` é um custom element sem `display` próprio — nem o SCSS do componente nem o `all.css` do tema declaram um —, então ele computa `inline`, e um `ResizeObserver` não reporta nada para uma caixa inline não substituída. Ele ficaria mudo. Quem é observado é o container de rolagem, que é bloco e é exatamente o elemento que a medição lê. Como o `*ngIf` troca os viewports de tabela e grid, o alvo é reconferido depois de cada desenho.
+
+**A zona.** O `dart:html` monta o `ResizeObserver` com `convertDartClosureToJS` e **sem** `_wrapZone`, ao contrário de todos os streams de evento que ele expõe. O callback chega na zona raiz, fora do Angular, onde `markForCheck` não marca nada. Pior: `requestAnimationFrame` captura a `Zone.current` no momento em que é chamado, então um frame agendado de dentro do callback herdaria a zona errada também. A zona é capturada na criação do observer, onde ainda é a do Angular, e o trabalho é devolvido para dentro dela com `runGuarded`.
+
+```dart
+final angularZone = Zone.current;
+_containerResizeObserver = ResizeObserver(
+  (List<dynamic> entries, ResizeObserver observer) {
+    angularZone.runGuarded(_scheduleContainerResizeSync);
+  },
+);
+```
+
+Mudanças só de altura são descartadas — linhas expandindo, conteúdo chegando, nada disso muda quais colunas cabem — e as entregas do observer são juntadas em uma medição por frame.
+
+### Como as colunas passaram a ser medidas
+
+Duas descobertas de campo mudaram a medição de largura do auto-hide.
+
+**Medir a tabela renderizada não funciona.** Uma coluna escondida não está no layout — medi-la ali dá zero, e zero entra no cálculo como "não ocupa espaço", devolvendo a coluna cedo demais e trazendo rolagem horizontal. Já uma coluna visível, com vizinhas escondidas, estica para preencher o vão — medi-la ali infla o total, e o auto-hide passa a esconder colunas que cabiam (era o que comia uma coluna a cada troca de aba). Não existe momento em que a tabela renderizada mostre todas as colunas no tamanho mínimo delas.
+
+A solução é a mesma do DataTables Responsive (`_resizeAuto`): clonar a tabela, devolver todas as colunas ao fluxo, e medir o clone dentro de um contêiner de 1×1px com `overflow: hidden` e `width: auto` — sem espaço para esticar, cada coluna encolhe até o mínimo que o conteúdo permite, e todas são lidas na mesma passada, no mesmo estado. Dois detalhes deram trabalho:
+
+- Esconder uma coluna aplica **três** classes (`hide`, `datatable-mobile-hidden`, `dtr-hidden`). Remover só a primeira deixava as outras segurando o `display: none`, e a coluna media zero do mesmo jeito.
+- O clone precisa perder as classes do modo colapsado (`collapsed`, `dtr-inline`): ele representa o estado com tudo visível, que por definição não é o colapsado — e mantê-las trazia junto o `nowrap` do tema, quase dobrando o total medido.
+
+**O tema proíbe quebrar linha no celular.** O `all.css` traz, nos breakpoints dele (576/768/992px), `white-space: nowrap` para toda célula de `.datatable-scroll` — é o padrão Limitless de "no celular a tabela rola na horizontal". O modo responsivo faz o oposto: quebra, esconde por prioridade e nunca rola. Com o `nowrap` do tema valendo, cada coluna media o texto inteiro numa linha, o auto-hide concluía que quase nada cabia e desabava para uma ou duas colunas com espaço sobrando ao lado — 5 colunas em 810px viravam 2 em 710px, exatamente ao cruzar o breakpoint de 768.
+
+Agora o container de rolagem carrega `datatable-scroll--responsive` sempre que auto-hide ou collapse estão ligados, e o stylesheet do componente restaura o `white-space: normal` ali. O `nowrap` por coluna (`DatatableCol.nowrap`) é estilo inline e não é afetado; o layout fixo com reticências continua valendo; e quem usa o datatable no padrão do tema, com rolagem horizontal, não muda nada. Medido na página de exemplo, o salto 5→2 virou 5→4→3, sem barra de rolagem horizontal em nenhuma das doze larguras varridas.
+
+Uma nota sobre um sintoma que **não** é bug: trocar de aba (ou de página) pode deslocar as colunas alguns pixels mesmo com o mesmo cabeçalho. É o `table-layout: auto` — a distribuição de largura depende do conteúdo de todas as linhas visíveis, e conjuntos de linhas diferentes assentam diferente. Medido na mesma aba, só trocando de página: `assunto` foi de 148.1px para 142.3px.
+
+### Os dois mecanismos responsivos, e qual mede o quê
+
+Vale saber que são dois, porque eles respondem a perguntas diferentes:
+
+| | pergunta | mede |
+|---|---|---|
+| `responsiveAutoHideColumns` | "as colunas cabem?" | o container |
+| `responsiveCollapse` | "estou no mobile?" | a janela (`window.innerWidth`) |
+
+O auto-hide sempre mediu o container, e agora é avisado por `ResizeObserver`. O collapse — o modo que faz sumir as colunas marcadas com `hideOnMobile` — decide por `window.innerWidth` contra `responsiveCollapseMaxWidth`.
+
+A diferença aparece quando o datatable tem menos espaço do que a janela sugere: dentro de um modal estreito, numa coluna de grid, ou com a sidebar da aplicação aberta. Numa tela de 1920px com o container em 1350px, o `innerWidth` continua 1920 e o collapse não ativa, mesmo com a tabela apertada. As colunas que o auto-hide esconde continuam virando detalhe da linha normalmente — nada de informação se perde —, mas o `hideOnMobile` não é honrado.
+
+Quem decide é a aplicação, com `responsiveCollapseByContainer`:
+
+```html
+<li-datatable
+    [responsiveCollapse]="true"
+    [responsiveCollapseByContainer]="true"
+    [responsiveCollapseContainerMaxWidth]="991"
+    [responsiveAutoHideColumns]="true">
+</li-datatable>
+```
+
+Com ele ligado, o collapse passa a olhar o mesmo espaço que o auto-hide olha. O flag é opt-in de propósito: as duas leituras são legítimas — uma tela que ocupa a página inteira quer mesmo o breakpoint da janela — e trocar o padrão mudaria o layout de quem já usa a biblioteca.
+
+### Do lado da aplicação: `scrollbar-gutter`
+
+Vale matar a causa na origem. `scrollbar-gutter: stable` no `html` reserva o espaço da barra de rolagem para sempre, então ela aparecer ou sumir deixa de mexer na largura de tudo que está na página:
+
+```css
+html {
+    scrollbar-gutter: stable;
+}
+```
+
+Isso não substitui a histerese — o container muda de tamanho por outros motivos, e a biblioteca não manda no CSS de quem a usa —, mas elimina o gatilho concreto que travou a tela do SALI. É uma linha, e hoje tem suporte amplo.
+
+### Onde ver funcionando
+
+A página **Loop de layout** do app de exemplo (`example/lib/src/pages/datatable_layout_loop/`) replica a tela do SALI — abas, card, paginação, os mesmos inputs de responsividade — e fecha o mesmo ciclo com um controle de largura e um interruptor que simula a barra de rolagem. Os contadores mostram redesenhos por segundo, mudanças de auto-hide e quais colunas estão escondidas.
+
+Medido nela, com o navegador em `deviceScaleFactor` 1.1 e o container em 636px: **90 redesenhos em 3s antes da correção, 0 depois**. `ui_test/e2e/datatable_layout_loop_test.dart` verifica isso no navegador de verdade.
+
 ## Datatable responsivo, colunas fixadas e menus em `1.0.0-dev.40`
 
 O `li-datatable` já recolhia colunas em telas estreitas, mas três detalhes do modo responsivo só apareciam no uso real em celular — e um deles vinha do jeito como o tema Limitless declara suas variáveis.

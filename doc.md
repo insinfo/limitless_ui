@@ -20,6 +20,126 @@ This is not a toy setup. The goal is a structure that can support real CRUD modu
 
 Important terminology note: in Dart servers, "multithreaded" usually means **multi-isolate**. Dart isolates do not share memory the way native OS threads do. That is the correct mental model for scalable Dart backend processes.
 
+## The datatable layout loop in `1.0.0-dev.41`
+
+SALI's **Protocolo > Acompanhamento Especial** screen froze at 110% browser zoom: the table flickered without stopping, around 30 redraws a second, and the page became unusable. At 100% and at 125% nothing happened.
+
+### The cycle
+
+`li-datatable` with `[responsiveAutoHideColumns]="true"` measures the available space on every draw and hides the lowest-priority column when the columns do not fit. The next draw measures again, and that is where the cycle closes:
+
+1. The columns overflow the available space by a few pixels. Auto-hide hides one.
+2. Without that column the table gets shorter. The page gets shorter with it and the **vertical scrollbar retracts**.
+3. Without the scrollbar the container gains back the ~16px it occupied. Now every column fits.
+4. Auto-hide restores the hidden column. The table grows, the scrollbar returns, and step 1 starts over.
+
+No event is needed to keep this alive: each draw schedules two measurement passes (`postRenderSync` and `responsiveAutoHideSync`), and any measurement that differs from the last schedules another draw. The chain feeds itself, frame by frame.
+
+The cycle only exists in a narrow band — when the columns' overflow is **smaller than the scrollbar's width**. With a large overflow the columns stay hidden in both states; with room to spare they fit in both. That is why only 110% zoom exposed it: it put the screen exactly in that band. On the example page the band runs from 632px to 640px of container width; outside it the layout converges on its own.
+
+### The fix
+
+Three layers, from the cause to the safety net.
+
+**1. Hysteresis in auto-hide.** The threshold is no longer symmetric: a column disappears as soon as it overflows, but only comes back when there is `DatatableResponsiveController.autoHideRestoreMargin` (24px) to spare. Since the scrollbar hands back ~16px, that gain alone no longer undoes the decision — and the cycle does not close.
+
+```dart
+// datatable_responsive_controller.dart
+final fitWidth = _autoHiddenColumnKeys.isEmpty
+    ? availableWidth
+    : _restoreThreshold(availableWidth); // availableWidth - 24
+```
+
+The margin never exceeds half the container, otherwise on a very narrow container it would eat the whole budget and hide everything.
+
+**2. A stable measured width.** `getBoundingClientRect().width` drifts in its last decimals at fractional zoom (110%, 125%), and the comparison was `!=` between doubles — every frame looked like a new layout and forced a redraw. The width is now rounded, and differences below half a pixel return the previous value instead of a new one, so the baseline does not slide half a pixel per frame until it crosses the epsilon.
+
+**3. A reflow guard.** After 8 consecutive responsive redraws — counted within a 1s window, because a quiet frame in the middle of a loop is not convergence — the datatable stops measuring and keeps the last layout. Only a real event re-arms it: a window `resize`, new `data` or `settings`, a grid-mode switch, a column toggled by hand, or the container itself changing width. This is the safety net: no CSS arrangement can freeze the screen any more, even one carrying a cycle the hysteresis does not cover.
+
+The guard emits `responsiveReflow.suspended`, `responsiveReflow.containerChanged` and `responsiveReflow.resumed` on the instrumentation stream (`[debugInstrumentation]="true"`), so you can see when it acts.
+
+### The container is now observed
+
+A window `resize` misses every container that resizes on its own — a sidebar collapsing, a card changing size, the page scrollbar coming and going. The datatable used to re-measure only after a draw, so a container that shrank kept the wrong columns until something else happened to redraw it. And while the guard held the chain nothing was drawn, therefore nothing was measured: the table could sit in the wrong layout indefinitely.
+
+A `ResizeObserver` now watches the container. Two traps showed up on the way, and both are covered by tests:
+
+**The target cannot be the host.** `li-datatable` is a custom element with no `display` of its own — neither the component's SCSS nor the theme's `all.css` declares one — so it computes to `inline`, and a `ResizeObserver` reports nothing for a non-replaced inline box. It would sit there silent. What gets observed is the scroll container, which is block-level and is the very element the measurement reads. Since `*ngIf` swaps the table and grid viewports, the target is re-checked after every draw.
+
+**The zone.** `dart:html` builds its `ResizeObserver` with `convertDartClosureToJS` and **no** `_wrapZone`, unlike every event stream it exposes. The callback arrives in the root zone, outside Angular, where `markForCheck` marks nothing. Worse: `requestAnimationFrame` captures `Zone.current` when it is called, so a frame scheduled from inside that callback would inherit the wrong zone too. The zone is captured when the observer is created, where it is still Angular's, and the work is handed back into it with `runGuarded`:
+
+```dart
+final angularZone = Zone.current;
+_containerResizeObserver = ResizeObserver(
+  (List<dynamic> entries, ResizeObserver observer) {
+    angularZone.runGuarded(_scheduleContainerResizeSync);
+  },
+);
+```
+
+Height-only changes are discarded — rows expanding, content arriving, none of which changes which columns fit — and the observer's deliveries are collapsed into one measurement per frame.
+
+### How columns are measured now
+
+Two field findings changed how auto-hide measures widths.
+
+**Measuring the rendered table does not work.** A hidden column is not in the layout — measuring it there yields zero, and zero enters the calculation as "takes no space", restoring the column too early and bringing back the horizontal scrollbar. A visible column with hidden neighbours stretches to fill the gap — measuring it there inflates the total, and auto-hide starts hiding columns that fit (that is what ate one column per tab switch). There is no moment when the rendered table shows every column at its minimum size.
+
+The solution is DataTables Responsive's own (`_resizeAuto`): clone the table, bring every column back into flow, and measure the clone inside a 1×1px `overflow: hidden` holder with `width: auto` — with no room to stretch, each column shrinks to the true minimum its content allows, and all of them are read in one pass, in one state. Two details bit:
+
+- Hiding a column applies **three** classes (`hide`, `datatable-mobile-hidden`, `dtr-hidden`). Removing only the first left the others holding `display: none`, and the column still measured zero.
+- The clone must drop the collapsed-mode classes (`collapsed`, `dtr-inline`): it represents the all-visible state, which by definition is not the collapsed one — and keeping them dragged in the theme's `nowrap`, nearly doubling the measured total.
+
+**The theme forbids wrapping on mobile.** At its breakpoints (576/768/992px), `all.css` sets `white-space: nowrap` on every cell of `.datatable-scroll` — the Limitless pattern of "on a phone the table scrolls horizontally". Responsive mode does the opposite: wrap, hide by priority, never scroll. With the theme's `nowrap` in force, each column measured its full text on one line, auto-hide concluded almost nothing fit, and the table collapsed to one or two columns with empty space beside them — 5 columns at 810px dropped to 2 at 710px, exactly at the 768 breakpoint.
+
+The scroll container now carries `datatable-scroll--responsive` whenever auto-hide or collapse is on, and the component stylesheet restores `white-space: normal` there. Per-column `DatatableCol.nowrap` is inline style and unaffected; fixed-layout ellipsis rules still win; and tables using the theme's horizontal-scroll pattern are untouched. Measured on the example page, the 5→2 jump became 5→4→3, with no horizontal scrollbar at any of the twelve widths swept.
+
+One note on a symptom that is **not** a bug: switching tabs (or pages) can shift columns by a few pixels even with identical headers. That is `table-layout: auto` — width distribution depends on the content of every visible row, and different row sets settle differently. Measured on the same tab, changing only the page: `assunto` went from 148.1px to 142.3px.
+
+### The two responsive mechanisms, and what each one measures
+
+It is worth knowing there are two, because they answer different questions:
+
+| | question | measures |
+|---|---|---|
+| `responsiveAutoHideColumns` | "do the columns fit?" | the container |
+| `responsiveCollapse` | "am I on mobile?" | the window (`window.innerWidth`) |
+
+Auto-hide has always measured the container, and is now driven by a `ResizeObserver`. Collapse — the mode that hides columns marked `hideOnMobile` — decides from `window.innerWidth` against `responsiveCollapseMaxWidth`.
+
+The difference shows up when the datatable has less room than the window suggests: inside a narrow modal, in a grid column, or with the application's sidebar open. On a 1920px screen with the container at 1350px, `innerWidth` is still 1920 and collapse does not engage, even with the table squeezed. Columns hidden by auto-hide still become row details as usual — no information is lost — but `hideOnMobile` is not honoured.
+
+The application decides, through `responsiveCollapseByContainer`:
+
+```html
+<li-datatable
+    [responsiveCollapse]="true"
+    [responsiveCollapseByContainer]="true"
+    [responsiveCollapseContainerMaxWidth]="991"
+    [responsiveAutoHideColumns]="true">
+</li-datatable>
+```
+
+With it on, collapse looks at the same space auto-hide looks at. The flag is opt-in on purpose: both readings are legitimate — a screen that fills the page really does want the window breakpoint — and flipping the default would change the layout of everything already using the library.
+
+### On the application side: `scrollbar-gutter`
+
+It is worth killing the cause at the source. `scrollbar-gutter: stable` on `html` reserves the scrollbar's space permanently, so it appearing or retracting stops moving the width of everything on the page:
+
+```css
+html {
+    scrollbar-gutter: stable;
+}
+```
+
+This does not replace the hysteresis — containers change size for other reasons, and a library does not get to dictate its consumer's CSS — but it removes the concrete trigger that froze the SALI screen. It is one line, and support is broad today.
+
+### Where to see it working
+
+The example app's **Loop de layout** page (`example/lib/src/pages/datatable_layout_loop/`) replicates the SALI screen — tabs, card, pagination, the same responsive inputs — and closes the same cycle through a width control and a switch that simulates the scrollbar. The counters show redraws per second, auto-hide changes, and which columns are hidden.
+
+Measured there, with the browser at `deviceScaleFactor` 1.1 and the container at 636px: **90 redraws in 3s before the fix, 0 after**. `ui_test/e2e/datatable_layout_loop_test.dart` verifies this in a real browser.
+
 ## Responsive datatable, fixed columns and menus in `1.0.0-dev.40`
 
 `li-datatable` already collapsed columns on narrow screens, but three details of that mode only showed up in real phone use — and one of them came from the way the Limitless theme declares its variables.

@@ -483,6 +483,77 @@ Pass `refresh(immediate: true)` to rebuild synchronously, so `rows` and `rendere
 
 A full screen built around this is in the example app under **Dados → Lista de Órgãos** (`#/lista-orgao`), with a selector that switches between `refresh()`, `refresh(immediate: true)`, reassigning `data`, reloading from the service, and doing nothing.
 
+### Responsive columns in a `li-datatable`
+
+`li-datatable` has two responsive mechanisms. They are independent, they answer
+different questions, and they do not measure the same thing:
+
+| | question | measures |
+|---|---|---|
+| `responsiveAutoHideColumns` | "do the columns fit?" | the container |
+| `responsiveCollapse` | "am I on mobile?" | the window (`window.innerWidth`) |
+
+**Auto-hide** adds up the column widths, compares them with the space the
+container actually has, and hides the lowest-priority columns until the rest
+fit. Priority comes from `DatatableCol.responsiveAutoHidePriority` (lower
+numbers go first); `responsiveAutoHideRequired: true` keeps a column out of the
+running entirely, which is the default on `DatatableActionColumn`. Whatever it
+hides becomes a row detail behind the expand control, so nothing is lost.
+
+The container is watched by a `ResizeObserver`, so this reacts to anything that
+changes the space available — a sidebar collapsing, a modal resizing, a grid
+column reflowing — not only to the window being resized.
+
+Auto-hide restores a hidden column only once the container has ~24px to spare
+beyond what the column needs. That margin is deliberate: without it, the width
+a retracting page scrollbar hands back is enough on its own to make everything
+fit again, which brings the scrollbar back, and the layout flips between the
+two states forever. See "The datatable layout loop in `1.0.0-dev.41`" in
+`doc.md` for the full account.
+
+**Collapse** is the mobile mode, and it is what makes columns marked
+`hideOnMobile` disappear. By default it compares `window.innerWidth` with
+`responsiveCollapseMaxWidth`, which is the window, not the container. A
+datatable inside a narrow modal, a grid column, or a page with an open sidebar
+therefore stays in desktop mode on a wide screen even while it is squeezed.
+
+That is a deliberate default — a screen that fills the page really does want
+the window breakpoint — so the choice is left to the application. Turn on
+`responsiveCollapseByContainer` when the datatable does not own the full width:
+
+```html
+<li-datatable
+    [data]="processes"
+    [settings]="columns"
+    [dataTableFilter]="filters"
+    (dataRequest)="loadPage($event)"
+    [responsiveAutoHideColumns]="true"
+    [responsiveCollapse]="true"
+    [responsiveCollapseByContainer]="true"
+    [responsiveCollapseContainerMaxWidth]="991">
+</li-datatable>
+```
+
+With it on, collapse looks at the same space auto-hide looks at.
+
+One thing worth doing on the application side, whatever the datatable does:
+
+```css
+html {
+    scrollbar-gutter: stable;
+}
+```
+
+That reserves the page scrollbar's space permanently, so it appearing or
+retracting stops moving the width of everything on the page. It does not
+replace the margin above — containers change size for other reasons — but it
+removes the most common trigger.
+
+The example app has a screen built to make all of this visible, under
+**Dados → Loop de layout** (`#/datatable-layout-loop`): a width control, a
+switch that reproduces the scrollbar feedback, and live counters for redraws
+and auto-hide changes.
+
 ### Loading a `li-datatable-select` list on demand
 
 The `li-datatable-select` modal renders its content lazily, so the inner datatable only exists once the modal opens. That datatable never asks for data on its own — it emits `dataRequest` only when the user paginates, sorts, or searches — so a screen that simply stops preloading the list would open an empty modal.

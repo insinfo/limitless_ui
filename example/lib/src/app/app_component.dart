@@ -215,6 +215,8 @@ class AppComponent implements OnDestroy {
   String get utilitiesLabel => i18n.isPortuguese ? 'Utilitários' : 'Utilities';
   String get workQueueLabel =>
       i18n.isPortuguese ? 'Inbox responsiva' : 'Responsive inbox';
+  String get datatableLayoutLoopLabel =>
+      i18n.isPortuguese ? 'Loop de layout' : 'Layout loop';
   String get colorPickerLabel =>
       i18n.isPortuguese ? 'Color picker' : 'Color picker';
   String get offcanvasLabel => 'Offcanvas';
@@ -461,6 +463,11 @@ class AppComponent implements OnDestroy {
               label: workQueueLabel,
               iconClass: 'ph-kanban',
               url: DemoRoutePaths.workQueue.toUrl(),
+            ),
+            DemoNavItem(
+              label: datatableLayoutLoopLabel,
+              iconClass: 'ph-arrows-clockwise',
+              url: DemoRoutePaths.datatableLayoutLoop.toUrl(),
             ),
             DemoNavItem(
               label: t.nav.treeview,

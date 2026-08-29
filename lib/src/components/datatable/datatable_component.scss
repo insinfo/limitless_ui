@@ -27,6 +27,18 @@
     overflow-x: auto;
 }
 
+// Desfaz o `white-space: nowrap` que o tema aplica às células de
+// `.datatable-scroll` abaixo dos breakpoints dele. Veja
+// `isResponsiveTextWrapActive` no componente para o porquê. Fica antes das
+// regras de `datatable-table-layout-fixed`, que têm a mesma especificidade e
+// devem continuar vencendo por ordem — o layout fixo com reticências depende
+// do nowrap delas. O `nowrap` por coluna (`DatatableCol.nowrap`) é estilo
+// inline e não é afetado.
+.datatable-scroll--responsive td,
+.datatable-scroll--responsive th {
+    white-space: normal;
+}
+
 .datatable-fast-table {
     width: 100%;
     table-layout: auto;
@@ -449,6 +461,22 @@
 
 .dataTable tr.child:hover {
     background: transparent !important;
+}
+
+// O tema (`all.css`, herdado do CSS do DataTables Responsive) aplica
+// `white-space: nowrap` a TODA primeira célula quando a tabela colapsa,
+// assumindo que ela é a que hospeda o controle de expandir. Desde a `dev.40`
+// o controle vai para a primeira coluna elegível, que pode não ser a
+// primeira — e uma coluna de texto longo presa em `nowrap` não quebra,
+// estoura a largura da tabela e traz de volta a rolagem horizontal que o
+// auto-hide existe para evitar. O cálculo não tem como prever isso: ele mede
+// a coluna no estado em que ela pode quebrar.
+//
+// A regra é desfeita para quem não hospeda o controle. Quem hospeda mantém o
+// `nowrap`, que é o que impede o triângulo de cair sozinho numa linha.
+.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:not(.dtr-control),
+.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:not(.dtr-control) {
+    white-space: normal;
 }
 
 .dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:not(.datatable-control-col),

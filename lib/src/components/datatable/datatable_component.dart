@@ -85,6 +85,31 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _syncTemplateContexts();
   }
 
+  /// Width changes under this are treated as noise, not as a new layout.
+  ///
+  /// `getBoundingClientRect` drifts in the last decimals between frames at
+  /// fractional browser zoom (110%, 125%), and an exact comparison would report
+  /// a new available width on every single frame.
+  static const double _availableWidthEpsilon = 0.5;
+
+  /// Responsive redraws allowed in a row before the datatable stops measuring.
+  ///
+  /// Each responsive redraw re-measures and may schedule the next one. A layout
+  /// where two states each make the other look correct would keep that chain
+  /// alive forever and freeze the page, so the chain is cut here and only a
+  /// real event (resize, new data, new settings, user interaction) restarts it.
+  static const int _maxResponsiveReflowStreak = 8;
+
+  /// Idle time that ends a streak of responsive redraws.
+  ///
+  /// A loop redraws every few animation frames, so the gap between two of its
+  /// redraws never comes close to this. A datatable that settled stops
+  /// redrawing altogether and the window always elapses. Counting frames alone
+  /// would not do: a loop can go through a frame with nothing to apply, and
+  /// that lull is not convergence.
+  static const Duration _responsiveReflowQuietWindow =
+      Duration(milliseconds: 1000);
+
   static final StreamController<void> _globalResizeController =
       StreamController<void>.broadcast();
   static StreamSubscription<Event>? _globalWindowResizeSubscription;
@@ -166,6 +191,15 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   Map<Object, _DatatableRowUiState>? _pendingRefreshRowState;
   bool _visible = true;
   double _responsiveAvailableWidthCache = 0;
+  int _responsiveReflowStreak = 0;
+  bool _responsiveReflowSuspended = false;
+  DateTime? _lastResponsiveReflowAt;
+  ResizeObserver? _containerResizeObserver;
+  HtmlElement? _observedResizeTarget;
+  int? _containerResizeFrameId;
+  double _lastObservedContainerWidth = 0;
+  double _responsiveReflowBandMin = 0;
+  double _responsiveReflowBandMax = 0;
   bool _responsiveCollapseViewportActiveCache = false;
   bool _responsiveCollapseContainerActiveCache = false;
   bool _responsiveCollapseActiveCache = false;
@@ -298,6 +332,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     }
 
     _gridMode = value;
+    _resetResponsiveReflowGuard();
     if (virtualScroll) {
       _virtualScrollController.requestReset();
     }
@@ -337,6 +372,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     }
 
     _enableResponsiveFeatures = value;
+    _resetResponsiveReflowGuard();
     if (!_enableResponsiveFeatures) {
       _cancelResponsiveAutoHideFrame();
       _responsiveController.clearRuntimeState();
@@ -566,6 +602,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   set settings(DatatableSettings value) {
     _settings = value;
     _resetResponsiveMeasurementCache();
+    _resetResponsiveReflowGuard();
     final validKeys = _settings.colsDefinitions
         .map((column) => column.key)
         .where((key) => key.trim().isNotEmpty)
@@ -593,6 +630,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   set data(DataFrame value) {
     _data = value;
     _dataInputChangeCount++;
+    _resetResponsiveReflowGuard();
     if (virtualScroll) {
       _virtualScrollController.requestReset();
     }
@@ -661,6 +699,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       });
     });
 
+    _startContainerResizeObserver();
+
     drawPagination();
     _syncTemplateContexts();
     if (_canDrawNow) {
@@ -687,6 +727,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     _isDestroyed = true;
     _resizeDebounce?.cancel();
     _resizeSubscription?.cancel();
+    _stopContainerResizeObserver();
     if (_drawAnimationFrameId != null) {
       window.cancelAnimationFrame(_drawAnimationFrameId!);
       _drawAnimationFrameId = null;
@@ -1590,6 +1631,12 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   void _handleViewportChange() {
+    // A real resize is new information: whatever made the previous burst flip
+    // no longer holds, so measuring is allowed again.
+    _resetResponsiveReflowGuard();
+    // The minimum width of a column does not follow the container, but it does
+    // follow the font, and a zoom change arrives here as a resize.
+    _resetResponsiveMeasurementCache();
     final responsiveStateChanged = _syncResponsiveViewportState(
       reason: 'viewport change',
     );
@@ -1671,11 +1718,13 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       final responsiveStateChanged = _syncResponsiveViewportState(
         reason: 'postRenderSync.frame',
       );
-      if (responsiveStateChanged) {
+      if (responsiveStateChanged && !_responsiveReflowSuspended) {
+        _registerResponsiveReflow('postRenderSync.viewportState');
         _manualRowsRevision++;
         scheduleDraw(force: true, reason: 'responsive viewport state');
       }
       _syncSortingIndicators();
+      syncContainerResizeObserverTarget();
       _syncResponsiveColumnWidthCache();
       _syncFixedColumnOffsets();
       _scheduleResponsiveAutoHideSync();
@@ -2133,6 +2182,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       _responsiveController.setForcedVisible(columnKey, shouldShowColumn);
     }
 
+    _resetResponsiveReflowGuard();
+
     for (final row in rows) {
       for (final column in row.columns) {
         if (column.key == col.key) {
@@ -2158,6 +2209,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       settings.colsDefinitions.every(isColumnEffectivelyVisible);
 
   void toggleAllColumnsVisibility() {
+    _resetResponsiveReflowGuard();
     final newVisibility = !allColumnsVisible;
     for (final col in settings.colsDefinitions) {
       col.visibility = newVisibility;
@@ -2619,6 +2671,21 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   bool get _isResponsiveCollapseActive => _responsiveCollapseActiveCache;
 
+  /// Se o container de rolagem deve deixar as células quebrarem linha.
+  ///
+  /// O tema manda as células de `.datatable-scroll` não quebrarem abaixo dos
+  /// breakpoints dele (576/768/992) — é o padrão Limitless de "no celular a
+  /// tabela rola na horizontal". O modo responsivo faz o oposto: quebra,
+  /// esconde por prioridade e nunca rola. Os dois não podem valer ao mesmo
+  /// tempo: com o `nowrap` do tema, cada coluna mede o texto inteiro numa
+  /// linha, o auto-hide conclui que quase nada cabe e desaba para uma ou duas
+  /// colunas com espaço sobrando ao lado (5 colunas em 810px viravam 2 em
+  /// 710px). A classe só entra com os recursos responsivos ativos, então quem
+  /// usa o datatable no padrão do tema não muda nada.
+  bool get isResponsiveTextWrapActive =>
+      _areResponsiveFeaturesActive &&
+      (responsiveAutoHideColumns || responsiveCollapse);
+
   bool get hasResponsiveCollapsedColumns =>
       _areResponsiveFeaturesActive &&
       (_isResponsiveCollapseActive || _autoHiddenColumnKeys.isNotEmpty);
@@ -2864,7 +2931,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    _responsiveController.syncColumnWidthCache(
+    _responsiveController.measureMinimumColumnWidths(
       tableElement: table,
       showCheckboxToSelectRow: showCheckboxToSelectRow,
     );
@@ -2872,6 +2939,215 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
 
   void _resetResponsiveMeasurementCache() {
     _responsiveController.resetMeasurementCache();
+  }
+
+  /// Records one responsive-driven redraw and reports whether to keep going.
+  ///
+  /// Returns `false` once the streak is over [_maxResponsiveReflowStreak]: the
+  /// layout is flipping between two states instead of settling, so the last one
+  /// is kept and further measuring stops until [_resetResponsiveReflowGuard].
+  bool _registerResponsiveReflow(String reason) {
+    if (_responsiveReflowSuspended) {
+      return false;
+    }
+
+    final now = DateTime.now();
+    final lastReflow = _lastResponsiveReflowAt;
+    if (lastReflow != null &&
+        now.difference(lastReflow) > _responsiveReflowQuietWindow) {
+      _responsiveReflowStreak = 0;
+      _responsiveReflowBandMin = _responsiveAvailableWidthCache;
+      _responsiveReflowBandMax = _responsiveAvailableWidthCache;
+    }
+    _lastResponsiveReflowAt = now;
+
+    if (_responsiveReflowStreak == 0) {
+      _responsiveReflowBandMin = _responsiveAvailableWidthCache;
+      _responsiveReflowBandMax = _responsiveAvailableWidthCache;
+    } else if (_responsiveAvailableWidthCache < _responsiveReflowBandMin) {
+      _responsiveReflowBandMin = _responsiveAvailableWidthCache;
+    } else if (_responsiveAvailableWidthCache > _responsiveReflowBandMax) {
+      _responsiveReflowBandMax = _responsiveAvailableWidthCache;
+    }
+
+    _responsiveReflowStreak++;
+    if (_responsiveReflowStreak <= _maxResponsiveReflowStreak) {
+      return true;
+    }
+
+    _responsiveReflowSuspended = true;
+    _cancelResponsiveAutoHideFrame();
+    _emitInstrumentation(
+      'responsiveReflow.suspended',
+      details: <String, Object?>{
+        'reason': reason,
+        'streak': _responsiveReflowStreak,
+        'availableWidth': _responsiveAvailableWidthCache,
+        'bandMin': _responsiveReflowBandMin,
+        'bandMax': _responsiveReflowBandMax,
+        'autoHiddenColumns': _autoHiddenColumnKeys.length,
+      },
+    );
+    return false;
+  }
+
+  /// Watches the container for width changes the window never announces.
+  ///
+  /// A window `resize` misses everything that resizes the container on its own
+  /// -- a sidebar collapsing, a card changing size, the page scrollbar coming
+  /// and going. Without this the datatable only re-measures after a draw, so a
+  /// container that shrank kept the wrong columns until something else
+  /// happened to redraw it. It is also the only thing still looking at the
+  /// container while the reflow guard holds the redraw chain down.
+  void _startContainerResizeObserver() {
+    if (_containerResizeObserver != null) {
+      return;
+    }
+
+    _lastObservedContainerWidth = _measureResponsiveAvailableWidth();
+
+    // `dart:html` builds a `ResizeObserver` with `convertDartClosureToJS` and
+    // no `_wrapZone`, unlike every event stream it exposes, so the callback
+    // arrives in the root zone -- outside Angular. `markForCheck` there marks
+    // nothing, and `requestAnimationFrame` captures `Zone.current` when it is
+    // called, so a frame scheduled from inside the callback would inherit the
+    // wrong zone too. Capturing the zone here, where it is still Angular's,
+    // and handing the work back into it is what keeps the view updating.
+    final angularZone = Zone.current;
+    _containerResizeObserver = ResizeObserver(
+      (List<dynamic> entries, ResizeObserver observer) {
+        angularZone.runGuarded(_scheduleContainerResizeSync);
+      },
+    );
+    syncContainerResizeObserverTarget();
+  }
+
+  /// Points the observer at the element that currently carries the width.
+  ///
+  /// Not the host: `li-datatable` is a custom element with no `display` of its
+  /// own, so it computes to `inline`, and a `ResizeObserver` reports nothing
+  /// for a non-replaced inline box -- it would sit there silent. The scroll
+  /// container is block-level and is the very element
+  /// [_measureResponsiveAvailableWidth] reads.
+  ///
+  /// It also changes identity: `*ngIf` swaps table and grid viewports, so this
+  /// runs after every draw and re-points the observer when the target moved.
+  void syncContainerResizeObserverTarget() {
+    final observer = _containerResizeObserver;
+    if (observer == null) {
+      return;
+    }
+
+    final target = scrollContainer ?? gridScrollContainer;
+    if (identical(target, _observedResizeTarget)) {
+      return;
+    }
+
+    final previousTarget = _observedResizeTarget;
+    if (previousTarget != null) {
+      observer.unobserve(previousTarget);
+    }
+
+    _observedResizeTarget = target;
+    if (target != null) {
+      observer.observe(target);
+    }
+  }
+
+  /// Collapses the observer's deliveries into one measurement per frame.
+  ///
+  /// Measuring inside the callback would read the layout in the middle of the
+  /// pass that triggered it; the next frame already carries the final layout,
+  /// and several deliveries become a single read.
+  void _scheduleContainerResizeSync() {
+    if (_isDestroyed || _containerResizeFrameId != null) {
+      return;
+    }
+
+    _containerResizeFrameId = window.requestAnimationFrame((_) {
+      _containerResizeFrameId = null;
+      _handleContainerResize();
+    });
+  }
+
+  void _handleContainerResize() {
+    if (_isDestroyed || !_areResponsiveFeaturesActive) {
+      return;
+    }
+
+    final measuredWidth = _measureResponsiveAvailableWidth();
+    if ((measuredWidth - _lastObservedContainerWidth).abs() <
+        _availableWidthEpsilon) {
+      // Only the height moved -- rows expanding, content arriving. None of
+      // that changes which columns fit.
+      return;
+    }
+
+    _lastObservedContainerWidth = measuredWidth;
+    _emitInstrumentation(
+      'containerResize.sync',
+      details: <String, Object?>{
+        'availableWidth': measuredWidth,
+        'suspended': _responsiveReflowSuspended,
+      },
+    );
+
+    if (_responsiveReflowSuspended) {
+      if (_isWidthInsideReflowBand(measuredWidth)) {
+        // One of the two widths the loop was flipping between. Re-arming on
+        // those would just start it again.
+        return;
+      }
+
+      _emitInstrumentation(
+        'responsiveReflow.containerChanged',
+        details: <String, Object?>{
+          'availableWidth': measuredWidth,
+          'bandMin': _responsiveReflowBandMin,
+          'bandMax': _responsiveReflowBandMax,
+        },
+      );
+      _resetResponsiveReflowGuard();
+    }
+
+    _syncResponsiveViewportState(reason: 'containerResize');
+    _syncResponsiveColumnWidthCache();
+    _syncResponsiveAutoHideNow();
+    _changeDetectorRef.markForCheck();
+  }
+
+  void _stopContainerResizeObserver() {
+    _containerResizeObserver?.disconnect();
+    _containerResizeObserver = null;
+    _observedResizeTarget = null;
+    if (_containerResizeFrameId != null) {
+      window.cancelAnimationFrame(_containerResizeFrameId!);
+      _containerResizeFrameId = null;
+    }
+  }
+
+  /// Whether [width] is one of the widths the stuck layout was flipping between.
+  ///
+  /// The band is widened by the auto-hide margin so the loop's own two states
+  /// stay inside it -- re-arming on those would just restart the loop.
+  bool _isWidthInsideReflowBand(double width) {
+    const tolerance = DatatableResponsiveController.autoHideRestoreMargin;
+    return width >= _responsiveReflowBandMin - tolerance &&
+        width <= _responsiveReflowBandMax + tolerance;
+  }
+
+  /// Lets responsive measuring run again after a real layout event.
+  void _resetResponsiveReflowGuard() {
+    if (_responsiveReflowStreak == 0 && !_responsiveReflowSuspended) {
+      return;
+    }
+
+    _responsiveReflowStreak = 0;
+    _responsiveReflowSuspended = false;
+    _lastResponsiveReflowAt = null;
+    _responsiveReflowBandMin = 0;
+    _responsiveReflowBandMax = 0;
+    _emitInstrumentation('responsiveReflow.resumed');
   }
 
   bool _cancelResponsiveAutoHideFrame() {
@@ -2887,7 +3163,8 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   void _scheduleResponsiveAutoHideSync() {
     if (_isDestroyed ||
         !_areResponsiveFeaturesActive ||
-        !responsiveAutoHideColumns) {
+        !responsiveAutoHideColumns ||
+        _responsiveReflowSuspended) {
       _emitInstrumentation('responsiveAutoHideSync.skipped');
       return;
     }
@@ -2927,6 +3204,11 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   }
 
   bool _syncResponsiveAutoHideNow() {
+    if (_responsiveReflowSuspended) {
+      _emitInstrumentation('responsiveAutoHideSync.suspended');
+      return false;
+    }
+
     final stopwatch = debugInstrumentation ? (Stopwatch()..start()) : null;
     final availableWidth = _resolveResponsiveAvailableWidth();
     final changed = _responsiveController.syncAutoHiddenColumns(
@@ -2952,6 +3234,9 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
     }
 
     _manualRowsRevision++;
+    // Counted even when it trips the guard: this state still has to reach the
+    // DOM once, it is only the measuring afterwards that stops.
+    _registerResponsiveReflow('responsiveAutoHide');
     stopwatch?.stop();
     _emitInstrumentation(
       'responsiveAutoHideSync.changed',
@@ -2960,6 +3245,7 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
         'availableWidth': availableWidth,
         'autoHiddenColumns': _autoHiddenColumnKeys.length,
         'manualRowsRevision': _manualRowsRevision,
+        'reflowStreak': _responsiveReflowStreak,
       },
     );
     scheduleDraw(force: true, reason: 'responsive auto-hide');
@@ -3072,15 +3358,29 @@ class LiDataTableComponent implements AfterChanges, AfterViewInit, OnDestroy {
   double _measureResponsiveAvailableWidth() {
     final scrollElement = scrollContainer;
     if (scrollElement != null && scrollElement.clientWidth > 0) {
-      return scrollElement.clientWidth.toDouble();
+      return _stabilizeAvailableWidth(scrollElement.clientWidth.toDouble());
     }
 
     final rootRectWidth = rootElement.getBoundingClientRect().width.toDouble();
     if (rootRectWidth > 0) {
-      return rootRectWidth;
+      return _stabilizeAvailableWidth(rootRectWidth.roundToDouble());
     }
 
     return 0;
+  }
+
+  /// Keeps the previous width when the new measurement is sub-pixel noise.
+  ///
+  /// Returning the cached value instead of the fresh one keeps the comparison
+  /// in [_emitResponsiveViewportStateSync] exact and stops the baseline from
+  /// drifting a fraction of a pixel per frame until it crosses the epsilon.
+  double _stabilizeAvailableWidth(double measuredWidth) {
+    final previousWidth = _responsiveAvailableWidthCache;
+    if ((measuredWidth - previousWidth).abs() < _availableWidthEpsilon) {
+      return previousWidth;
+    }
+
+    return measuredWidth;
   }
 
   void _syncFixedColumnOffsets() {
