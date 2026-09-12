@@ -683,15 +683,36 @@ respondendo a cada recriação com relayout) e o `li-date-range-picker` saindo d
 tela dentro de um offcanvas à direita, porque o popper 1.3.0 recortava o painel
 também pelos ancestrais com overflow da referência.
 
+### O narrated loading sem cartão
+
+`LiNarratedFullScreenLoading` ganhou `presentation`. O padrão, `card`, é o
+que já existia: spinner, título, mensagem e barra num cartão com sombra. O
+`plain` desenha só título, mensagem e barra direto sobre o backdrop com blur —
+o visual que o SALI tinha antes de migrar para a biblioteca, em que o overlay
+lê como um véu sobre a página e não como um diálogo na frente dela.
+
+```dart
+// Num ponto de chamada:
+LiNarratedFullScreenLoading(
+  title: 'Carregando anexo',
+  messages: const ['Lendo arquivo selecionado...'],
+  presentation: LiNarratedLoadingPresentation.plain,
+).showOnBody();
+
+// Ou para a aplicação inteira, do main():
+LiNarratedFullScreenLoading.defaultPresentation =
+    LiNarratedLoadingPresentation.plain;
+```
+
 ### Rodando o E2E sobre o build release
 
 O `webdev serve` compila com DDC e serve centenas de módulos; cada carga de
 página leva segundos, e o Puppeteer abre um navegador novo por teste. O
-`tool/serve_example.dart` serve o `webdev build --release` da memória, já
+`tool/serve_example.dart` serve o build release (`build_runner build --release`) da memória, já
 comprimido:
 
 ```bash
-cd example && dart run webdev build --release --output web:build && cd ..
+cd example && dart run build_runner build --release --output web:build --delete-conflicting-outputs && cd ..
 dart run tool/serve_example.dart --dir example/build --port 8081
 RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 dart test ui_test/e2e/ -j 1
 ```

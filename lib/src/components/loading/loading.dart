@@ -512,8 +512,31 @@ class LiSimpleLoading {
   }
 }
 
+/// How [LiNarratedFullScreenLoading] draws itself over the page.
+enum LiNarratedLoadingPresentation {
+  /// A card in the middle of the backdrop: spinner in a circle, title,
+  /// message and the progress track, on a white surface with a shadow.
+  card,
+
+  /// Title, message and track straight on the blurred backdrop — no card,
+  /// no spinner. The look SALI had before it moved to `limitless_ui`, kept
+  /// for applications that want the overlay to read as a veil over the
+  /// page rather than a dialog in front of it.
+  plain,
+}
+
 class LiNarratedFullScreenLoading {
   static int? _defaultZIndexOverride;
+
+  /// Presentation used when the constructor gets none. An application that
+  /// wants every narrated overlay to be the plain veil sets it once:
+  ///
+  /// ```dart
+  /// LiNarratedFullScreenLoading.defaultPresentation =
+  ///     LiNarratedLoadingPresentation.plain;
+  /// ```
+  static LiNarratedLoadingPresentation defaultPresentation =
+      LiNarratedLoadingPresentation.card;
 
   /// Stacking order of the narrated overlay.
   ///
@@ -548,19 +571,23 @@ class LiNarratedFullScreenLoading {
     required this.messages,
     this.stepDuration = const Duration(milliseconds: 1600),
     int? zIndex,
-  }) : zIndex = zIndex ?? defaultZIndex;
+    LiNarratedLoadingPresentation? presentation,
+  })  : zIndex = zIndex ?? defaultZIndex,
+        presentation = presentation ?? defaultPresentation;
 
   factory LiNarratedFullScreenLoading.pdfGeneration({
     String title = 'Gerando PDF',
     List<String>? messages,
     Duration stepDuration = const Duration(milliseconds: 1600),
     int? zIndex,
+    LiNarratedLoadingPresentation? presentation,
   }) {
     return LiNarratedFullScreenLoading(
       title: title,
       messages: messages ?? defaultPdfMessages,
       stepDuration: stepDuration,
       zIndex: zIndex,
+      presentation: presentation,
     );
   }
 
@@ -568,6 +595,11 @@ class LiNarratedFullScreenLoading {
   final List<String> messages;
   final Duration stepDuration;
   final int zIndex;
+
+  /// Card or plain veil — see [LiNarratedLoadingPresentation].
+  final LiNarratedLoadingPresentation presentation;
+
+  bool get _isPlain => presentation == LiNarratedLoadingPresentation.plain;
 
   Element _root = DivElement();
   DivElement? _messageElement;
@@ -584,7 +616,12 @@ class LiNarratedFullScreenLoading {
 
     _root = DivElement()
       ..classes.add('li-narrated-full-screen-loading')
+      ..classes.add(_isPlain
+          ? 'li-narrated-full-screen-loading--plain'
+          : 'li-narrated-full-screen-loading--card')
       ..attributes['data-li-narrated-full-screen-loading'] = 'true'
+      ..attributes['data-li-narrated-presentation'] =
+          _isPlain ? 'plain' : 'card'
       ..style.position = 'fixed'
       ..style.left = '0'
       ..style.top = '0'
@@ -709,9 +746,27 @@ class LiNarratedFullScreenLoading {
     transform: rotate(360deg);
   }
 }
+/* The plain veil: the same title, message and track, with nothing drawn
+   around them — the backdrop is the surface. */
+.li-narrated-full-screen-loading--plain .li-narrated-full-screen-loading__shell {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.li-narrated-full-screen-loading--plain .li-narrated-full-screen-loading__title {
+  font-size: 1.1rem;
+}
+.li-narrated-full-screen-loading--plain .li-narrated-full-screen-loading__message {
+  margin-bottom: 1.125rem;
+}
+.li-narrated-full-screen-loading--plain .li-narrated-full-screen-loading__track {
+  border-radius: 0;
+}
 </style>
 <div class="li-narrated-full-screen-loading__shell" role="status" aria-live="polite" aria-busy="true">
-  <div class="li-narrated-full-screen-loading__icon"><i class="ph-spinner-gap ph-lg"></i></div>
+  ${_isPlain ? '' : '<div class="li-narrated-full-screen-loading__icon"><i class="ph-spinner-gap ph-lg"></i></div>'}
   <div class="li-narrated-full-screen-loading__title"></div>
   <div class="li-narrated-full-screen-loading__message"></div>
   <div class="li-narrated-full-screen-loading__track">

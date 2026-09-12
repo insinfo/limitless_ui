@@ -62,7 +62,12 @@
                         <button class="btn btn-outline-primary" type="button" (click)="showNarratedLoadingDemo()">
                           {{ narratedLoadingMethodLabel }}
                         </button>
+                        <button class="btn btn-outline-secondary" type="button" (click)="showNarratedLoadingPlainDemo()"
+                          [attr.data-label]="'helpers_narrated_plain'">
+                          {{ narratedLoadingPlainMethodLabel }}
+                        </button>
                       </div>
+                      <p class="demo-helper-note mb-0 mt-3">{{ narratedLoadingPlainNote }}</p>
                     </div>
                   </div>
                 </div>

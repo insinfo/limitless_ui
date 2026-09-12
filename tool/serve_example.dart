@@ -10,7 +10,7 @@
 //
 // Usage, from the repository root:
 //
-//   cd example && dart run webdev build --release --output web:build && cd ..
+//   cd example && dart run build_runner build --release --output web:build --delete-conflicting-outputs && cd ..
 //   dart run tool/serve_example.dart --dir example/build --port 8081
 //
 // Then, in another shell:
@@ -112,7 +112,7 @@ Future<void> main(List<String> arguments) async {
   if (!root.existsSync()) {
     stderr.writeln('Directory not found: ${root.path}');
     stderr.writeln(
-        'Build it first: cd example && dart run webdev build --release --output web:build');
+        'Build it first: cd example && dart run build_runner build --release --output web:build --delete-conflicting-outputs');
     exitCode = 66;
     return;
   }

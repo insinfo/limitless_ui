@@ -103,7 +103,7 @@ jobs:
           # main.dart.js instead of the DDC dev server's hundreds of modules,
           # and the suite opens a fresh browser per test.
           pushd example
-          dart run webdev build --release --output web:build -- --delete-conflicting-outputs
+          dart run build_runner build --release --output web:build --delete-conflicting-outputs
           popd
 
           dart run tool/serve_example.dart --dir example/build --port 8081 --quiet > /tmp/limitless-example-serve.log 2>&1 &

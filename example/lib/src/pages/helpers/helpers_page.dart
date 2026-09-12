@@ -51,6 +51,13 @@ class HelpersPageComponent implements OnDestroy {
 
   String get narratedLoadingMethodLabel => 'pdfGeneration().showOnBody()';
 
+  String get narratedLoadingPlainMethodLabel =>
+      'presentation: plain';
+
+  String get narratedLoadingPlainNote => _isPt
+      ? 'O modo plain desenha só título, mensagem e barra sobre o backdrop com blur, sem cartão nem spinner — o visual do SALI antes do limitless_ui. LiNarratedFullScreenLoading.defaultPresentation troca o padrão de toda a aplicação de uma vez.'
+      : 'The plain presentation draws only the title, message and track over the blurred backdrop, with no card and no spinner — the look SALI had before limitless_ui. LiNarratedFullScreenLoading.defaultPresentation switches the whole application at once.';
+
   String get dialogCoverageIntro => _isPt
       ? 'Aqui ficam os métodos públicos atuais de LiSimpleDialogComponent. O demo fullscreen fecha automaticamente após 2 segundos para não deixar overlay preso na página.'
       : 'This section covers the current public LiSimpleDialogComponent methods. The fullscreen demos auto-dismiss after 2 seconds so the page does not keep stale overlays.';
@@ -275,12 +282,14 @@ class HelpersPageComponent implements OnDestroy {
     required List<String> messages,
     required String api,
     Duration duration = _narratedDemoDuration,
+    LiNarratedLoadingPresentation? presentation,
   }) {
     _resetTransientPreviews();
     final narratedLoading = LiNarratedFullScreenLoading.pdfGeneration(
       title: title,
       messages: messages,
       stepDuration: const Duration(milliseconds: 800),
+      presentation: presentation,
     );
     _narratedLoading = narratedLoading;
     narratedLoading.showOnBody();
@@ -351,6 +360,25 @@ class HelpersPageComponent implements OnDestroy {
       title: _narratedLoadingTitle,
       messages: _narratedLoadingMessages,
       api: _narratedLoadingApi,
+    );
+  }
+
+  void showNarratedLoadingPlainDemo() {
+    _showNarratedLoadingPreview(
+      title: _isPt ? 'Carregando anexo' : 'Loading attachment',
+      messages: _isPt
+          ? const <String>[
+              'Lendo arquivo selecionado...',
+              'Validando assinatura...',
+              'Enviando...',
+            ]
+          : const <String>[
+              'Reading the selected file...',
+              'Validating the signature...',
+              'Uploading...',
+            ],
+      api: 'LiNarratedFullScreenLoading(presentation: plain).showOnBody()',
+      presentation: LiNarratedLoadingPresentation.plain,
     );
   }
 
