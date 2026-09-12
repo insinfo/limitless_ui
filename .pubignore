@@ -8,6 +8,9 @@ site_ngdart/
 example/
 test/
 ui_test/
+# The E2E static server; it needs the dev dependency on `args` and is of
+# no use to a consumer of the library.
+tool/
 coverage/
 
 # Codecov CI uploader. It is downloaded into the package root, is not tracked
