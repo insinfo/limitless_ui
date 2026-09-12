@@ -1,6 +1,6 @@
 .li-toast-stack {
   position: fixed;
-  z-index: 2000;
+  z-index: 2100; // LiOverlayLayers.toastStack
   display: flex;
   flex-direction: column;
   gap: 0.75rem;

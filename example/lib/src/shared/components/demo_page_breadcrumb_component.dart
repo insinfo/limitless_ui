@@ -27,6 +27,8 @@ class DemoPageBreadcrumbComponent {
     'tabs',
     'modal',
     'offcanvas',
+    'overlay-layers',
+    'target-alert',
     'breadcrumbs',
     'page-header',
     'pagination',

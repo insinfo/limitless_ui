@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:html' as html;
+import '../../core/overlay_positioning.dart';
+import '../../core/overlay_layers.dart';
 import '../../core/outside_click.dart';
 
 /// Lightweight DOM-based popover helper for quick warning messages.
@@ -40,7 +42,12 @@ class LiSimplePopover {
       ..style.position = 'fixed'
       ..style.margin = '0'
       ..style.maxWidth = '420px'
-      ..style.zIndex = '10000'
+      // Above whatever is blocking right now — a popover anchored inside a
+      // modal or an alert has to be reachable from it. See `LiOverlayLayers`.
+      ..style.zIndex = '${LiOverlayStack.resolve(
+        referenceElement: target,
+        baseZIndex: LiOverlayLayers.anchoredMenu,
+      )}'
       ..style.visibility = 'hidden';
 
     final arrow = html.DivElement()..classes.add('popover-arrow');

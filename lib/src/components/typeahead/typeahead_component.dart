@@ -6,6 +6,8 @@ import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 import 'package:popper/popper.dart';
+import '../../core/overlay_positioning.dart';
+import '../../core/overlay_layers.dart';
 
 import '../../directives/safe_inner_html_directive.dart';
 import 'typeahead_config.dart';
@@ -255,7 +257,16 @@ class LiTypeaheadComponent
 
   @override
   void ngOnInit() {
-    _syncVisibleItemsFromTerm(rawSearchTerm, markForCheck: false);
+    // Warm the visible items, but never open: opening is the user's move —
+    // focus, typing or an arrow key. With `openOnFocus` and an empty term this
+    // used to open the popup while the page was still loading, portalled to
+    // the body at (0, 0) because the input had no layout yet, and with a
+    // z-index resolved before any modal around it had opened.
+    _syncVisibleItemsFromTerm(
+      rawSearchTerm,
+      markForCheck: false,
+      openPopup: false,
+    );
   }
 
   @override
@@ -505,9 +516,13 @@ class LiTypeaheadComponent
     );
   }
 
+  /// Recomputes [visibleItems] for [term] and, when [openPopup] is set, opens
+  /// the popup around them. With [openPopup] off only the local items are
+  /// refreshed — nothing is shown and no async search is started.
   Future<void> _syncVisibleItemsFromTerm(
     String term, {
     bool markForCheck = true,
+    bool openPopup = true,
   }) async {
     final normalizedTerm = term.trim();
     final hasEnoughChars =
@@ -517,6 +532,17 @@ class LiTypeaheadComponent
     if (!canSearch) {
       visibleItems = const <LiTypeaheadItem>[];
       dismissPopup();
+      if (markForCheck) {
+        _markForCheck();
+      }
+      return;
+    }
+
+    if (!openPopup) {
+      if (searchCallback == null) {
+        visibleItems =
+            _filterItems(normalizedTerm).take(math.max(1, maxResults)).toList();
+      }
       if (markForCheck) {
         _markForCheck();
       }
@@ -821,10 +847,10 @@ class LiTypeaheadComponent
     _overlay = PopperAnchoredOverlay.attach(
       referenceElement: reference,
       floatingElement: floating,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiTypeaheadComponent',
-        hostZIndex: '10000',
-        floatingZIndex: '1056',
+        referenceElement: reference,
+        baseHostZIndex: LiOverlayLayers.anchoredMenu,
       ),
       popperOptions: const PopperOptions(
         placement: 'bottom-start',

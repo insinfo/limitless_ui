@@ -8,6 +8,8 @@ class DemoRoutePaths {
   static final tabs = RoutePath(path: 'tabs');
   static final modal = RoutePath(path: 'modal');
   static final offcanvas = RoutePath(path: 'offcanvas');
+  static final overlayLayers = RoutePath(path: 'overlay-layers');
+  static final targetAlert = RoutePath(path: 'target-alert');
   static final breadcrumbs = RoutePath(path: 'breadcrumbs');
   static final pageHeader = RoutePath(path: 'page-header');
   static final pagination = RoutePath(path: 'pagination');

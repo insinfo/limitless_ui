@@ -62,8 +62,12 @@ import 'package:limitless_ui_example/src/pages/notification/notification_page.te
     as notification_page;
 import 'package:limitless_ui_example/src/pages/offcanvas/offcanvas_page.template.dart'
     as offcanvas_page;
+import 'package:limitless_ui_example/src/pages/overlay_layers/overlay_layers_page.template.dart'
+    as overlay_layers_page;
 import 'package:limitless_ui_example/src/pages/overview/overview_page.template.dart'
     as overview_page;
+import 'package:limitless_ui_example/src/pages/target_alert/target_alert_page.template.dart'
+    as target_alert_page;
 import 'package:limitless_ui_example/src/pages/popover/popover_page.template.dart'
     as popover_page;
 import 'package:limitless_ui_example/src/pages/progress/progress_page.template.dart'
@@ -139,6 +143,16 @@ class DemoRoutes {
   static final offcanvas = RouteDefinition(
     routePath: DemoRoutePaths.offcanvas,
     component: offcanvas_page.OffcanvasPageComponentNgFactory,
+  );
+
+  static final overlayLayers = RouteDefinition(
+    routePath: DemoRoutePaths.overlayLayers,
+    component: overlay_layers_page.OverlayLayersPageComponentNgFactory,
+  );
+
+  static final targetAlert = RouteDefinition(
+    routePath: DemoRoutePaths.targetAlert,
+    component: target_alert_page.TargetAlertPageComponentNgFactory,
   );
 
   static final breadcrumbs = RouteDefinition(
@@ -367,6 +381,8 @@ class DemoRoutes {
     tabs,
     modal,
     offcanvas,
+    overlayLayers,
+    targetAlert,
     breadcrumbs,
     pageHeader,
     pagination,

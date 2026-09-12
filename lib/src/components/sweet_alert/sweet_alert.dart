@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import '../../core/overlay_layers.dart';
 
 enum SweetAlertType { success, error, warning, info, question }
 
@@ -447,7 +448,8 @@ class SweetAlert {
       ..setAttribute('data-open', 'true')
       ..setAttribute('data-toast', toast ? 'true' : 'false');
     root.classes.addAll(_classNames(containerClass));
-    root.style.zIndex = '3000';
+    root.style.zIndex =
+        '${toast ? LiOverlayLayers.notificationToast : LiOverlayLayers.alert}';
     root.style.overflowY = 'auto';
     if (!toast && backdrop) {
       root.classes.add('swal2-backdrop-show');

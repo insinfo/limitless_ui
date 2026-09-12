@@ -1,6 +1,6 @@
 name: limitless_ui
 description: Reusable AngularDart UI components and directives for web applications.
-version: 1.0.0-dev.41
+version: 1.0.0-dev.42
 homepage: https://github.com/insinfo/limitless_ui
 repository: https://github.com/insinfo/limitless_ui
 issue_tracker: https://github.com/insinfo/limitless_ui/issues
@@ -30,3 +30,5 @@ dev_dependencies:
   build_web_compilers: ^4.0.11
   # para ui testes
   puppeteer: ^3.16.0
+  # tool/serve_example.dart
+  args: ^2.4.0

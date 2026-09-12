@@ -6,6 +6,7 @@ import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 import 'package:popper/popper.dart';
+import '../../core/overlay_layers.dart';
 
 import '../../core/li_before_open_event.dart';
 import '../../core/overlay_positioning.dart';
@@ -533,10 +534,10 @@ class LiSelectComponent
     _overlay = PopperAnchoredOverlay.attach(
       referenceElement: reference,
       floatingElement: floating,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiSelectComponent',
-        hostZIndex: '10000',
-        floatingZIndex: '1000',
+        referenceElement: reference,
+        baseHostZIndex: LiOverlayLayers.anchoredMenu,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',

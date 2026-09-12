@@ -4,6 +4,8 @@ import 'dart:math';
 
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
+import '../../core/overlay_positioning.dart';
+import '../../core/overlay_layers.dart';
 import '../../core/outside_click.dart';
 
 /// Public directives used by the dropdown menu component.
@@ -27,6 +29,23 @@ class LiDropdownMenuOption {
   final String description;
   final bool disabled;
   final bool divider;
+
+  /// Two options with the same content are the same option, wherever the
+  /// instances came from — see [LiDropdownMenuComponent.options].
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LiDropdownMenuOption &&
+          other.value == value &&
+          other.label == label &&
+          other.iconClass == iconClass &&
+          other.description == description &&
+          other.disabled == disabled &&
+          other.divider == divider;
+
+  @override
+  int get hashCode =>
+      Object.hash(value, label, iconClass, description, disabled, divider);
 }
 
 @Component(
@@ -54,8 +73,43 @@ class LiDropdownMenuComponent implements OnDestroy {
   String _viewportMaxHeight = '';
   String _menuMaxHeight = '';
 
+  List<LiDropdownMenuOption> _options = const <LiDropdownMenuOption>[];
+
+  /// The options, compared by content.
+  ///
+  /// A getter that builds the list on every change detection is a common
+  /// AngularDart pattern, and it used to be lethal here: every tick handed the
+  /// `ngFor` a list of new instances, the items were torn down and rebuilt,
+  /// and once the menu was open the popper's mutation observer answered each
+  /// rebuild with a relayout — a loop that ended with the tab crashing. A list
+  /// with the same content keeps the instances the `ngFor` already has.
   @Input()
-  List<LiDropdownMenuOption> options = const <LiDropdownMenuOption>[];
+  set options(List<LiDropdownMenuOption> value) {
+    if (_sameOptions(_options, value)) {
+      return;
+    }
+    _options = value;
+  }
+
+  List<LiDropdownMenuOption> get options => _options;
+
+  static bool _sameOptions(
+    List<LiDropdownMenuOption> current,
+    List<LiDropdownMenuOption> next,
+  ) {
+    if (identical(current, next)) {
+      return true;
+    }
+    if (current.length != next.length) {
+      return false;
+    }
+    for (var i = 0; i < current.length; i++) {
+      if (current[i] != next[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   @Input()
   String value = '';
@@ -468,10 +522,10 @@ class LiDropdownMenuComponent implements OnDestroy {
     _overlay = PopperAnchoredOverlay.attach(
       referenceElement: reference,
       floatingElement: floating,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiDropdownMenuComponent',
-        hostZIndex: '10000',
-        floatingZIndex: '1056',
+        referenceElement: reference,
+        baseHostZIndex: LiOverlayLayers.anchoredMenu,
         // Restore the menu element to its inline parent when the portal is
         // disposed (e.g. when `container` flips to `inline` as the PDF viewer
         // enters fullscreen). Without this the element is removed from the DOM

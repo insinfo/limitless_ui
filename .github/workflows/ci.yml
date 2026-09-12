@@ -99,20 +99,25 @@ jobs:
           printf '#!/usr/bin/env bash\nexec "%s" --no-sandbox "$@"\n' "$CHROME_BIN" > /tmp/chrome-no-sandbox
           chmod +x /tmp/chrome-no-sandbox
 
+          # Release build served from memory by tool/serve_example.dart: one
+          # main.dart.js instead of the DDC dev server's hundreds of modules,
+          # and the suite opens a fresh browser per test.
           pushd example
-          dart run webdev serve web:8081 --auto refresh --hostname 0.0.0.0 -- --delete-conflicting-outputs > /tmp/limitless-example-serve.log 2>&1 &
-          SERVER_PID=$!
+          dart run webdev build --release --output web:build -- --delete-conflicting-outputs
           popd
+
+          dart run tool/serve_example.dart --dir example/build --port 8081 --quiet > /tmp/limitless-example-serve.log 2>&1 &
+          SERVER_PID=$!
 
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
 
           READY=0
-          for _ in $(seq 1 90); do
+          for _ in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:8081 >/dev/null; then
               READY=1
               break
             fi
-            sleep 2
+            sleep 1
           done
 
           if [ "$READY" != "1" ]; then

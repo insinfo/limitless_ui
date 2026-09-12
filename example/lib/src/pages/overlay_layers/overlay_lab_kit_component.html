@@ -1,0 +1,181 @@
+<div class="overlay-lab-kit" [attr.data-host]="hostKey" #blocoCortina>
+  <div class="overlay-lab-kit__diagnostic" [attr.data-label]="'overlay_lab_diag'" [attr.data-value]="conteinerBloqueante">
+    <span class="badge bg-primary bg-opacity-10 text-primary overlay-lab-kit__host">{{ host }}</span>
+    <span class="overlay-lab-kit__owner">{{ diagnosticoResumo }}</span>
+    <span class="overlay-lab-kit__resolved">
+      <span class="overlay-lab-kit__pair"><code>anchored</code> → {{ zAncorado }}</span>
+      <span class="overlay-lab-kit__pair"><code>anchoredMenu</code> → {{ zMenu }}</span>
+      <span class="overlay-lab-kit__pair"><code>anchoredTooltip</code> → {{ zTooltip }}</span>
+      <span class="overlay-lab-kit__pair"><code>anchoredPicker</code> → {{ zPicker }}</span>
+    </span>
+    <button class="btn btn-link btn-sm p-0 ms-auto text-nowrap" type="button" (click)="medir()">
+      <i class="ph-ruler me-1"></i>{{ rotuloMedir }}
+    </button>
+  </div>
+
+  <h6 class="overlay-lab-kit__section">{{ tituloMenus }}</h6>
+  <div class="overlay-lab-kit__grid">
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-select</code> <span class="text-muted">anchoredMenu</span></label>
+      <li-select [dataSource]="opcoesStatus" labelKey="label" valueKey="id" [(ngModel)]="statusEscolhido"></li-select>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-multi-select</code> <span class="text-muted">anchored</span></label>
+      <li-multi-select [dataSource]="opcoesCanais" labelKey="label" valueKey="id" [(ngModel)]="canaisEscolhidos"></li-multi-select>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-typeahead</code> <span class="text-muted">anchoredMenu</span></label>
+      <li-typeahead [dataSource]="cidades" [openOnFocus]="true" [minLength]="0" [maxResults]="6"
+        [placeholder]="placeholderCidade" [(ngModel)]="cidadeEscolhida"></li-typeahead>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-treeview-select</code> <span class="text-muted">anchoredMenu</span></label>
+      <li-treeview-select [data]="arvore" [placeholder]="placeholderArvore" [searchPlaceholder]="placeholderBuscaArvore"
+        [(ngModel)]="noEscolhido"></li-treeview-select>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-tag-filter</code> <span class="text-muted">anchored</span></label>
+      <li-tag-filter [dataSource]="etiquetas" labelKey="nome" valueKey="id" colorKey="cor" [placeholder]="placeholderEtiquetas"
+        [(ngModel)]="etiquetasEscolhidas"></li-tag-filter>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-dropdown-menu</code> <span class="text-muted">anchoredMenu · container="body"</span></label>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <li-dropdown-menu [options]="opcoesDoMenu" ariaLabel="overlay-lab-menu" triggerLabel="li-dropdown-menu"
+          triggerIconClass="ph-dots-three-outline" triggerClass="btn btn-outline-primary btn-sm" menuClass="wmin-sm-200"
+          container="body" (valueChange)="aoEscolherNoMenu($event)"></li-dropdown-menu>
+        <span class="text-muted small" *ngIf="acaoDoMenu.isNotEmpty">{{ rotuloUltimaAcao }}: <code>{{ acaoDoMenu }}</code></span>
+      </div>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>liDropdown</code> <span class="text-muted">{{ notaDropdownDiretiva }}</span></label>
+      <div liDropdown container="body" [attr.data-label]="'overlay_lab_dropdown'">
+        <button class="btn btn-outline-secondary btn-sm" liDropdownToggle [attr.data-label]="'overlay_lab_dropdown_toggle'">
+          liDropdown
+        </button>
+        <div liDropdownMenu [attr.data-label]="'overlay_lab_dropdown_menu'">
+          <button liDropdownItem [attr.data-label]="'overlay_lab_dropdown_item'">Abrir</button>
+          <button liDropdownItem>Duplicar</button>
+          <button liDropdownItem>Arquivar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>liDropdownMenuPosition</code> <span class="text-muted">anchoredMenu</span></label>
+      <div class="dropdown" liDropdownMenuPosition="bottom-start" [attr.data-label]="'overlay_lab_position'">
+        <button class="btn btn-outline-secondary btn-sm li-dropdown-trigger" type="button" aria-expanded="false"
+          [attr.data-label]="'overlay_lab_position_toggle'">
+          liDropdownMenuPosition
+        </button>
+        <div class="dropdown-menu" [attr.data-label]="'overlay_lab_position_menu'">
+          <button type="button" class="dropdown-item li-dropdown-close" [attr.data-label]="'overlay_lab_position_item'">Abrir</button>
+          <button type="button" class="dropdown-item li-dropdown-close">Duplicar</button>
+          <button type="button" class="dropdown-item li-dropdown-close">Arquivar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-token-field</code> <span class="text-muted">anchoredMenu · menu de ações</span></label>
+      <li-token-field [(ngModel)]="codigosDeProcesso" [placeholder]="placeholderCodigos" [wrapTokens]="true"></li-token-field>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-datatable-select</code> <span class="text-muted">modal · abre um li-modal próprio</span></label>
+      <li-datatable-select [settings]="selecaoSettings" [dataTableFilter]="selecaoFiltro" [data]="selecaoDados"
+        [searchInFields]="selecaoCampos" labelKey="nome" valueKey="id" [title]="tituloDaSelecao"
+        [placeholder]="placeholderDaSelecao" [mobileResponsiveCollapse]="true" [ngModel]="pessoaEscolhida"
+        (ngModelChange)="aoEscolherPessoa($event)" (dataRequest)="aoPedirDadosDaTabela($event)"></li-datatable-select>
+    </div>
+
+    <div class="overlay-lab-kit__cell overlay-lab-kit__cell--wide">
+      <label class="form-label"><code>li-datatable</code> <span class="text-muted">anchoredMenu · menu de excedente das ações, exportação e colunas</span></label>
+      <div class="overlay-lab-kit__table">
+        <li-datatable [dataTableFilter]="tabelaFiltro" [data]="tabelaDados" [settings]="tabelaSettings"
+          [showCheckboxToSelectRow]="false" [disableRowClick]="true" [disableSearchEvent]="true"
+          (dataRequest)="aoPedirDadosDaTabela($event)"></li-datatable>
+      </div>
+      <div class="text-muted small mt-2" *ngIf="acaoDaTabela.isNotEmpty">{{ rotuloUltimaAcao }}: <code>{{ acaoDaTabela }}</code></div>
+    </div>
+  </div>
+
+  <h6 class="overlay-lab-kit__section">{{ tituloPickers }}</h6>
+  <div class="overlay-lab-kit__grid">
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-date-picker</code> <span class="text-muted">anchoredPicker</span></label>
+      <li-date-picker [(ngModel)]="dataEscolhida"></li-date-picker>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-date-range-picker</code> <span class="text-muted">anchoredPicker</span></label>
+      <li-date-range-picker [start]="inicioDoPeriodo" [end]="fimDoPeriodo"
+        (startChange)="inicioDoPeriodo = $event" (endChange)="fimDoPeriodo = $event"></li-date-range-picker>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-time-picker</code> <span class="text-muted">anchoredPicker</span></label>
+      <li-time-picker [(ngModel)]="horaEscolhida" [use24Hour]="true"></li-time-picker>
+    </div>
+
+    <div class="overlay-lab-kit__cell">
+      <label class="form-label"><code>li-color-picker</code> <span class="text-muted">anchoredPicker</span></label>
+      <li-color-picker [(ngModel)]="corEscolhida" [showInput]="true" [allowEmpty]="true"></li-color-picker>
+    </div>
+  </div>
+
+  <h6 class="overlay-lab-kit__section">{{ tituloDicas }}</h6>
+  <div class="overlay-lab-kit__actions">
+    <button type="button" class="btn btn-outline-secondary btn-sm" [liTooltip]="textoDoTooltip" triggers="click"
+      container="body" [animation]="false" [attr.data-label]="'overlay_lab_tooltip'">
+      <i class="ph-chat-teardrop-text me-1"></i>{{ rotuloTooltip }} <span class="text-muted">· anchoredTooltip</span>
+    </button>
+
+    <li-popover [popoverTitle]="tituloDoPopover" [popover]="textoDoPopover" trigger="click" placement="bottom" container="body">
+      <button type="button" class="btn btn-outline-primary btn-sm" [attr.data-label]="'overlay_lab_popover'">
+        <i class="ph-chat-centered-text me-1"></i>{{ rotuloPopover }} <span class="text-muted">· anchoredTooltip</span>
+      </button>
+    </li-popover>
+
+    <button #btnPopoverSimples type="button" class="btn btn-outline-warning btn-sm" (click)="mostrarPopoverSimples(btnPopoverSimples)"
+      [attr.data-label]="'overlay_lab_simple_popover'">
+      <i class="ph-warning me-1"></i>LiSimplePopover <span class="text-muted">· anchoredMenu</span>
+    </button>
+
+    <button #btnPopoverAlerta type="button" class="btn btn-outline-info btn-sm" (click)="mostrarPopoverDoAlerta(btnPopoverAlerta)"
+      [attr.data-label]="'overlay_lab_swal_popover'">
+      <i class="ph-bell-simple me-1"></i>SweetAlertPopover <span class="text-muted">· anchoredMenu</span>
+    </button>
+  </div>
+
+  <h6 class="overlay-lab-kit__section">{{ tituloBloqueantes }}</h6>
+  <div class="overlay-lab-kit__actions">
+    <button type="button" class="btn btn-outline-dark btn-sm" (click)="abrirDialogo()" [attr.data-label]="'overlay_lab_dialog'">
+      <i class="ph-question me-1"></i>LiSimpleDialog <span class="text-muted">· dialog</span>
+    </button>
+    <button type="button" class="btn btn-outline-danger btn-sm" (click)="abrirAlerta()" [attr.data-label]="'overlay_lab_alert'">
+      <i class="ph-warning-octagon me-1"></i>SweetAlert <span class="text-muted">· alert</span>
+    </button>
+    <button type="button" class="btn btn-outline-primary btn-sm" (click)="dispararToast()" [attr.data-label]="'overlay_lab_toast'">
+      <i class="ph-stack me-1"></i>li-toast-stack <span class="text-muted">· toastStack</span>
+    </button>
+    <button type="button" class="btn btn-outline-success btn-sm" (click)="dispararNotificacao()" [attr.data-label]="'overlay_lab_notification'">
+      <i class="ph-bell me-1"></i>li-notification-toast <span class="text-muted">· notificationToast</span>
+    </button>
+    <button type="button" class="btn btn-outline-teal btn-sm" (click)="dispararToastSimples()" [attr.data-label]="'overlay_lab_simple_toast'">
+      <i class="ph-check-circle me-1"></i>LiSimpleToast <span class="text-muted">· notificationToast</span>
+    </button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cortinaNoBloco()" [attr.data-label]="'overlay_lab_curtain_target'">
+      <i class="ph-spinner me-1"></i>{{ rotuloCortinaBloco }} <span class="text-muted">· loadingTarget</span>
+    </button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cortinaNaPagina()" [attr.data-label]="'overlay_lab_curtain_body'">
+      <i class="ph-spinner-gap me-1"></i>{{ rotuloCortinaPagina }} <span class="text-muted">· loadingBody</span>
+    </button>
+  </div>
+</div>

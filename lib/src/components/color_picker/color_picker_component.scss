@@ -141,6 +141,15 @@
   background-clip: padding-box;
 }
 
+// A finger dragging on a picker surface moves the handle, never the page.
+// The document-level `touchmove` listener is passive in Chrome, so this is
+// the only thing that actually stops the scroll.
+.sp-color,
+.sp-hue,
+.sp-alpha {
+  touch-action: none;
+}
+
 .sp-dragger {
   --li-color-picker-dragger-edge-offset: 0.375rem;
   transform: translate(0.125rem, 0.125rem);

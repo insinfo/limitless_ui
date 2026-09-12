@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import '../../core/overlay_layers.dart';
 
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart'
@@ -764,8 +765,8 @@ class LiDatePickerComponent
       portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiDatePickerComponent',
         referenceElement: reference,
-        baseHostZIndex: 1085,
-        baseFloatingZIndex: 1086,
+        baseHostZIndex: LiOverlayLayers.anchoredPicker,
+        baseFloatingZIndex: LiOverlayLayers.anchoredPicker + 1,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',
@@ -775,6 +776,12 @@ class LiDatePickerComponent
           'top-end',
         ],
         strategy: PopperStrategy.fixed,
+        // The panel is portalled to the body, so only the viewport can clip
+        // it. Left to `clippingAncestors`, popper 1.3.0 also honoured the
+        // trigger's overflow ancestors: inside a right-hand offcanvas the
+        // panel was squeezed into the offcanvas column and, being wider than
+        // it, pushed off the right edge of the screen.
+        boundary: PopperBoundary.viewport,
         padding: PopperInsets.all(8),
         offset: PopperOffset(mainAxis: 8),
         onLayout: _handleOverlayLayout,

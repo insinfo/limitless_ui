@@ -3240,6 +3240,16 @@ dart test ui_test\e2e\puppeteer_test.dart
 
 Without `RUN_EXAMPLE_E2E=true`, the Puppeteer tests are intentionally skipped so normal local `dart test` runs do not need a running web server.
 
+The fast path — and the one CI uses — runs the suite against the release build, served from memory by a plain-Dart static server (`tool/serve_example.dart`). `webdev serve` compiles with DDC and serves hundreds of modules per page load; the release build is one `main.dart.js`, pre-gzipped, so a fresh browser per test loads the page in a fraction of the time:
+
+```bash
+cd example && dart run webdev build --release --output web:build && cd ..
+dart run tool/serve_example.dart --dir example/build --port 8081
+RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 dart test ui_test/e2e/ -j 1
+```
+
+`dart run tool/serve_example.dart --help` lists the options (`--dir`, `--port`, `--host`, `--quiet`).
+
 Generate local coverage for the VM-only suite:
 
 ```bash

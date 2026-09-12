@@ -20,6 +20,242 @@ This is not a toy setup. The goal is a structure that can support real CRUD modu
 
 Important terminology note: in Dart servers, "multithreaded" usually means **multi-isolate**. Dart isolates do not share memory the way native OS threads do. That is the correct mental model for scalable Dart backend processes.
 
+## The overlay stacking scale in `1.0.0-dev.42`
+
+A UI library with ten kinds of overlay needs **one** answer to "what sits on
+top". Up to `dev.41` `limitless_ui` had several, and they disagreed.
+
+### What was there
+
+The scale lived as loose numbers across about fifteen files and three languages
+— Dart, SCSS and an inline `style=` in the notification toast template. Nobody
+could answer "what is above what" without grepping, and every new overlay was a
+guess. Two guesses had already collided:
+
+| collision | value | winner |
+|---|---|---|
+| `li-toast-stack` × `LiSimpleDialogComponent` | 2000 | whichever node came later in the DOM |
+| `li-notification-toast` × `SweetAlert` | 3000 | same |
+
+Anchored overlays ran in **two regimes**. Seven of them — tooltip, the three
+pickers, multi-select, tag filter and the datatable column menu — went through
+`resolveModalAwarePortalOptions` and rose above an open modal. Seven others —
+`li-dropdown-menu` as component and as directive, `li-select`, `li-typeahead`,
+`li-treeview-select`, the alert popover and `li-simple-popover` — pinned
+`hostZIndex: '10000'` and rose above nothing, which also left them floating over
+dialogs and alerts they had nothing to do with.
+
+`li-offcanvas` sat at 1201: above the first modal (1200) and **below** the second
+(1210) — an order nobody chose, visible only when an offcanvas was opened from
+inside the second stacked modal.
+
+### What exists now
+
+One class, `LiOverlayLayers`, holding the whole scale and the reason for each
+layer:
+
+| layer | value | why there |
+|---|---|---|
+| `anchored` | 1000 | attached to a field: above the page, below anything blocking |
+| `anchoredMenu` | 1056 | one above the theme's modal, so a menu inside a modal is usable |
+| `anchoredTooltip` | 1080 | the theme's own tooltip level |
+| `anchoredPicker` | 1085 | above the tooltip, because a picker takes clicks and a tooltip does not |
+| `offcanvas` | 1150 | slides over the page, goes under a modal |
+| `modal` | 1200 | plus `modalStep` for each stacked modal |
+| `dialog` | 2000 | a question, so it comes over any modal |
+| `toastStack` | 2100 | a notice has to be readable over the dialog it refers to |
+| `alert` | 3000 | interrupts everything below to be answered |
+| `notificationToast` | 3100 | same reasoning as `toastStack`, one level up |
+| `loadingTarget` | 50000 | covers its own container only |
+| `loadingBody` | 500000 | covers the page, above everything, on purpose |
+
+Every field is mutable, so an application with its own scale aligns the library
+from `main()` without touching any call site:
+
+```dart
+void main() {
+  LiOverlayLayers.modal = 3200;
+  LiOverlayLayers.dialog = 3400;
+  runApp(...);
+}
+```
+
+### One rule for anchored overlays
+
+`LiOverlayStack.resolve` answers "what z-index does this overlay need": never
+below the requested base, above the blocking container that holds the reference,
+or — when the reference is not inside one — above the topmost blocking container
+on screen.
+
+What counts as blocking lives in `LiOverlayStack.blockingSelectors`, and the list
+is mutable: an application that draws a blocking layer of its own can have the
+library's overlays clear it too.
+
+```dart
+LiOverlayStack.blockingSelectors.add('.my-signing-curtain');
+```
+
+`resolveModalAwarePortalOptions` keeps its signature and now uses that rule — the
+name says "modal" for compatibility, but it finally does what the name always
+promised. It used to scan `.modal[data-status="open"]`, which **never** matched
+`LiSimpleDialogComponent`: the dialog carries `.modal` on its root but
+`data-open`, not `data-status`. Nor `SweetAlert`, nor the offcanvas.
+
+### The loading curtain is not part of the calculation
+
+`loadingBody` is above everything by decision, not by oversight: the curtain
+exists to keep the operator from navigating, clicking a save button twice or
+opening another modal while an operation runs. A curtain that yielded to a dialog
+would let exactly those clicks through.
+
+The price is real: a dialog raised while the curtain is up is born **underneath**
+it, unreadable and unable to receive a click — and with `await` that becomes a
+dead screen, because the `finally` that would hide the curtain only runs once the
+operator answers.
+
+The library does **not** resolve this on the caller's behalf. A component
+reaching into another component's state and dismissing it is a side effect nobody
+asked for, and it would unblock the page in the middle of the very operation the
+curtain is there to protect. Hiding the curtain where the operation ends is the
+application's call; `LiSimpleLoading.hideAll()` is there for anyone who wants to
+enforce that in one place.
+
+### The one thing that does go above the curtain: `LiTargetAlert`
+
+There is exactly one layer above `loadingBody`, and it is `targetAlert` (500100).
+`LiTargetAlert` is a contextual error panel pinned to an element, and it is what
+*replaces* a curtain that failed — the load ended badly and the panel says so.
+Underneath the curtain it would be invisible, and the operator would be left
+watching a spinner that never stops, which is the very failure the ordering
+exists to prevent.
+
+```dart
+class MinhaTelaComponent implements OnDestroy {
+  // One instance per SCREEN — `show` hides the previous panel first, so the
+  // same instance serves every attempt that fails here. This is the opposite
+  // of LiSimpleLoading, which is created per operation.
+  final LiTargetAlert _erroDaLista = LiTargetAlert();
+
+  @ViewChild('areaDaLista')
+  html.Element? areaDaLista;
+
+  Future<void> carregar() async {
+    final loading = LiSimpleLoading()..showOnBody();
+    try {
+      _erroDaLista.hide();
+      itens = await servico.listar();
+    } catch (e) {
+      loading.hide();            // curtain out, panel in
+      _erroDaLista.show(
+        target: areaDaLista,
+        title: 'Não foi possível carregar a lista',
+        message: 'Verifique a conexão e tente de novo.',
+        detail: e.toString(),    // collapsed: it is what goes into a ticket
+        onRetry: carregar,
+      );
+    } finally {
+      loading.hide();
+    }
+  }
+
+  @override
+  void ngOnDestroy() => _erroDaLista.hide();
+}
+```
+
+`onAction` adds a second button for the case where the error has a known fix that
+lives somewhere else — "Open mappings", "Go to step 4" — so the operator is not
+left reading what to do and then hunting for where to do it. Both buttons hide
+the panel before running the callback, because the callback usually starts a new
+load, and its curtain would otherwise be born underneath the panel. Without a
+`target` the panel covers the page (`position: fixed`); with one it is appended
+inside the target and follows it on scroll and resize, which is why `hide()`
+belongs in `ngOnDestroy` — it is what cancels those subscriptions and the
+`ResizeObserver`.
+
+### The defect the measurement turned up
+
+`resolveModalAwarePortalOptions` discarded a `baseFloatingZIndex` **lower** than
+`baseHostZIndex`: only a positive delta survived. The datatable column menu asked
+for host 10000 and floating 1080 and got 10000 for both — that second argument did
+nothing at that call site. The distance between host and floating panel is now
+kept in either direction.
+
+### What a consumer may notice
+
+- `li-toast-stack` and `li-notification-toast` now sit **above** the dialog and
+  the alert instead of tying with them;
+- `li-offcanvas` now sits **under** the modal — but follows the anchored rule
+  too: opened while a modal, dialog or alert is already up, it resolves its
+  z-index on the spot and clears it (see below);
+- `liDropdown` with `container="body"` and `li-popover` joined the scale: the
+  first pinned its wrapper at 1055, under any modal, so a menu opened inside a
+  modal could not be seen; the second ran a scan of its own that only knew
+  `li-modal`;
+- the former fixed-`10000` group resolves its z-index when it opens, so it comes
+  above the modal, dialog or alert that owns it and stops floating over unrelated
+  ones.
+
+Applications that already pinned their own values through the parameters these
+components accept are unaffected.
+
+### The offcanvas opened from inside a modal
+
+On the scale the offcanvas (1150) sits under the modal (1200): an offcanvas is
+navigation, a modal is a task. That is what Bootstrap 5 does — `.offcanvas` at
+1045, `.modal` at 1055 — and an offcanvas opened while a modal is up is born
+behind it. PrimeNG and Angular's CDK do the opposite: opening order wins, and
+whoever opens last is on top.
+
+`limitless_ui` went with the second rule, for a practical reason: the only way
+to open an offcanvas while a modal is up is from inside that modal, and nobody
+wants it born behind — the modal's backdrop would not even let it be closed.
+The offcanvas is born at 1150, but if something blocking is up when it opens it
+resolves its z-index through `LiOverlayStack.resolve` like any anchored overlay
+and clears it. A modal opened afterwards, from inside the offcanvas, still lands
+on top, because the modal stack starts higher.
+
+The node that carries the z-index is the shell, `.li-offcanvas-shell`, which got
+a `data-status` to be listed in `LiOverlayStack.blockingSelectors`. The selector
+first written for that list, `.li-offcanvas[data-status="open"]`, named a class
+the component never had — the lab on the **Overlay layers** page showed a
+`li-select` opened inside the offcanvas at 1056, under it.
+
+### The combination lab
+
+The example app's **Overlay layers** page mounts the same kit — every anchored
+overlay in the library plus the blocking ones fired from inside a container —
+on the page, inside a modal, inside a second stacked modal, inside an offcanvas
+and inside a modal opened over an offcanvas. Each instance measures what
+`LiOverlayStack.resolve` returns from there and names the blocking container
+around it. The E2E `ui_test/e2e/overlay_layers_test.dart` runs the whole matrix
+in Chrome: it opens every overlay inside every container and checks with
+`elementFromPoint` that the panel is the thing on top. The unit-level version,
+with `ngtest`, is `test/core/overlay_stacking_in_containers_test.dart`: it mounts
+the real components and reads the z-index each one writes — every case there was
+a defect seen in the lab first.
+
+It is what surfaced the rest of this release: `li-typeahead` opening its popup
+in `ngOnInit` (with `openOnFocus`, an empty term is already a search),
+`li-dropdown-menu` crashing the tab when `options` came from a getter (a new
+list on every change detection, the `ngFor` rebuilding the items, popper's
+observer answering each rebuild with a relayout), and `li-date-range-picker`
+leaving the screen inside a right-hand offcanvas, because popper 1.3.0 also
+clipped the panel by the reference's overflow ancestors.
+
+### Running the E2E against the release build
+
+`webdev serve` compiles with DDC and serves hundreds of modules; a page load
+takes seconds, and Puppeteer opens a fresh browser per test.
+`tool/serve_example.dart` serves the `webdev build --release` output from
+memory, pre-gzipped:
+
+```bash
+cd example && dart run webdev build --release --output web:build && cd ..
+dart run tool/serve_example.dart --dir example/build --port 8081
+RUN_EXAMPLE_E2E=true UI_EXAMPLE_BASE_URL=http://127.0.0.1:8081 dart test ui_test/e2e/ -j 1
+```
+
 ## The datatable layout loop in `1.0.0-dev.41`
 
 SALI's **Protocolo > Acompanhamento Especial** screen froze at 110% browser zoom: the table flickered without stopping, around 30 redraws a second, and the page became unusable. At 100% and at 125% nothing happened.

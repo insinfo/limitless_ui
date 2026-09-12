@@ -1,0 +1,5 @@
+// A area que faz o papel de alvo precisa de altura propria: e sobre ela que o
+// painel se posiciona, e num container raso nao daria para ver o resultado.
+:host .demo-area-da-lista {
+  min-height: 320px;
+}

@@ -1,0 +1,233 @@
+<div class="demo-page">
+  <li-toast-stack [service]="toastService" placement="top-end"></li-toast-stack>
+  <li-notification-outlet [service]="notificationService"></li-notification-outlet>
+
+  <div class="page-header page-header-light shadow-sm rounded-0 border">
+    <div class="page-header-content d-lg-flex">
+      <div class="d-flex">
+        <h4 class="page-title mb-0">{{ pageTitle }} <span class="fw-normal">{{ pageSubtitle }}</span></h4>
+      </div>
+    </div>
+    <div class="page-header-content d-lg-flex border-top">
+      <demo-page-breadcrumb [currentLabel]="breadcrumb"></demo-page-breadcrumb>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <li-tabsx type="tabs">
+        <li-tabx [header]="t.common.tabOverview" [active]="true">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ intro }}</p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.common.sectionDescription }}</h6>
+                  <p class="mb-0 text-muted">{{ descriptionBody }}</p>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.common.sectionFeatures }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li *ngFor="let item of features">{{ item }}</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="card card-body h-100">
+                  <h6 class="mb-2">{{ t.common.sectionLimitations }}</h6>
+                  <ul class="mb-0 ps-3">
+                    <li *ngFor="let item of limits">{{ item }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- A escala, lida da biblioteca -->
+            <div class="overlay-layers-section">
+              <h5 class="mb-1">{{ tituloDaEscala }}</h5>
+              <p class="text-muted mb-3">{{ textoDaEscala }}</p>
+              <div class="table-responsive overlay-layers-scale">
+                <table class="table table-sm mb-0" [attr.data-label]="'overlay_layers_scale'">
+                  <thead>
+                    <tr>
+                      <th>{{ colunaCamada }}</th>
+                      <th class="text-end">z-index</th>
+                      <th>{{ colunaMotivo }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let camada of camadas" [attr.data-label]="'overlay_layers_row'" [attr.data-value]="camada.nome">
+                      <td><code>{{ camada.nome }}</code></td>
+                      <td class="text-end">{{ camada.valor }}</td>
+                      <td class="text-muted">{{ camada.motivo }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Laboratório -->
+            <div class="overlay-layers-section">
+              <h5 class="mb-1">{{ tituloDoLaboratorio }}</h5>
+              <p class="text-muted mb-3">{{ textoDoLaboratorio }}</p>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6 col-xl-3" *ngFor="let conteiner of conteineres">
+                  <div class="border rounded p-3 h-100 d-flex flex-column">
+                    <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                      <h6 class="mb-0">{{ conteiner.titulo }}</h6>
+                      <code class="small text-nowrap">{{ conteiner.camada }}</code>
+                    </div>
+                    <p class="text-muted mb-3 flex-grow-1">{{ conteiner.descricao }}</p>
+                    <button [class]="conteiner.classeDoBotao" type="button" (click)="abrirConteiner(conteiner.chave)"
+                      [attr.data-label]="'overlay_lab_open'" [attr.data-value]="conteiner.chave">
+                      {{ conteiner.rotuloDoBotao }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="demo-summary-box" [attr.data-label]="'overlay_lab_log'">
+                <div class="fw-semibold mb-1">{{ tituloDoRegistro }}</div>
+                <div class="text-muted" *ngIf="registro.isEmpty">{{ registroVazio }}</div>
+                <ol class="overlay-layers-log mb-0" *ngIf="registro.isNotEmpty">
+                  <li *ngFor="let linha of registro">{{ linha }}</li>
+                </ol>
+              </div>
+            </div>
+
+            <!-- O kit solto na página, como referência -->
+            <div class="overlay-layers-section">
+              <h5 class="mb-1">{{ tituloDoKitNaPagina }}</h5>
+              <p class="text-muted mb-3">{{ textoDoKitNaPagina }}</p>
+              <div class="overlay-layers-host">
+                <overlay-lab-kit [host]="rotuloHostPagina" hostKey="page" [toastService]="toastService"
+                  [notificationService]="notificationService" (logged)="registrar($event)"></overlay-lab-kit>
+              </div>
+            </div>
+
+            <!-- A cortina -->
+            <div class="overlay-layers-section">
+              <h5 class="mb-1">{{ tituloDaCortina }}</h5>
+              <p class="text-muted">{{ textoDaCortina1 }}</p>
+              <p class="text-muted">{{ textoDaCortina2 }}</p>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-outline-primary" type="button" (click)="cortinaFeitaDireito()"
+                  [attr.data-label]="'overlay_curtain_right'">
+                  <i class="ph-check-circle me-1"></i>{{ rotuloCortinaFeitaDireito }}
+                </button>
+                <button class="btn btn-outline-secondary" type="button" (click)="cortinaEsquecidaMasResgatada()"
+                  [attr.data-label]="'overlay_curtain_hide_all'">
+                  <i class="ph-lifebuoy me-1"></i>{{ rotuloCortinaResgatada }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </li-tabx>
+
+        <li-tabx [header]="t.common.tabApi">
+          <div class="card-body">
+            <p class="text-muted mb-3">{{ apiIntro }}</p>
+            <ul class="mb-4 ps-3">
+              <li *ngFor="let item of apiItems">{{ item }}</li>
+            </ul>
+
+            <h6 class="mb-2">{{ tituloSnippetDaEscala }}</h6>
+            <li-highlight [code]="snippetDaEscala" language="dart"></li-highlight>
+
+            <h6 class="mt-4 mb-2">{{ tituloSnippetDaRegra }}</h6>
+            <li-highlight [code]="snippetDaRegra" language="dart"></li-highlight>
+
+            <h6 class="mt-4 mb-2">{{ tituloSnippetDaCortina }}</h6>
+            <li-highlight [code]="snippetDaCortina" language="dart"></li-highlight>
+          </div>
+        </li-tabx>
+      </li-tabsx>
+    </div>
+  </div>
+
+  <!-- Contêiner: modal -->
+  <li-modal #modalKit [title-text]="tituloModalKit" headerColor="primary" size="xtra-large" [lazyContent]="true"
+    [enableShadow]="true" [fullScreenOnMobile]="true" (open)="kitModal?.remedir()">
+    <overlay-lab-kit #kitModal [host]="rotuloHostModal" hostKey="modal" [toastService]="toastService"
+      [notificationService]="notificationService" (logged)="registrar($event)"></overlay-lab-kit>
+    <div class="overlay-layers-modal-actions mt-4">
+      <button class="btn btn-outline-secondary" type="button" (click)="abrirOffcanvasSobOModal()"
+        [attr.data-label]="'overlay_lab_open_offcanvas_under'">
+        {{ rotuloAbrirOffcanvasSobOModal }}
+      </button>
+      <button class="btn btn-primary" type="button" (click)="modalKit?.close()">{{ rotuloFechar }}</button>
+    </div>
+  </li-modal>
+
+  <!-- Contêiner: modal empilhado -->
+  <li-modal #modalPai [title-text]="tituloModalPai" headerColor="indigo" size="xtra-large" [lazyContent]="true"
+    [enableShadow]="true" [fullScreenOnMobile]="true" (open)="kitModalPai?.remedir()">
+    <div class="alert alert-info alert-icon-start mb-4">
+      <span class="alert-icon bg-info text-white"><i class="ph-stack"></i></span>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <span>{{ textoModalPai }}</span>
+        <button class="btn btn-sm btn-info" type="button" (click)="abrirModalFilho()"
+          [attr.data-label]="'overlay_lab_open_child'">
+          {{ rotuloAbrirSegundoModal }}
+        </button>
+      </div>
+    </div>
+    <overlay-lab-kit #kitModalPai [host]="rotuloHostModalPai" hostKey="stacked-parent" [toastService]="toastService"
+      [notificationService]="notificationService" (logged)="registrar($event)"></overlay-lab-kit>
+    <div class="overlay-layers-modal-actions mt-4">
+      <button class="btn btn-outline-primary" type="button" (click)="abrirModalFilho()">{{ rotuloAbrirSegundoModal }}</button>
+      <button class="btn btn-primary" type="button" (click)="modalPai?.close()">{{ rotuloFechar }}</button>
+    </div>
+  </li-modal>
+
+  <li-modal #modalFilho [title-text]="tituloModalFilho" headerColor="dark" size="xtra-large" [lazyContent]="true"
+    [enableShadow]="true" [verticalCenter]="true" [fullScreenOnMobile]="true" (open)="kitModalFilho?.remedir()">
+    <overlay-lab-kit #kitModalFilho [host]="rotuloHostModalFilho" hostKey="stacked-child" [toastService]="toastService"
+      [notificationService]="notificationService" (logged)="registrar($event)"></overlay-lab-kit>
+    <div class="overlay-layers-modal-actions mt-4">
+      <button class="btn btn-primary" type="button" (click)="modalFilho?.close()">{{ rotuloFechar }}</button>
+    </div>
+  </li-modal>
+
+  <!-- Contêiner: offcanvas -->
+  <li-offcanvas #offcanvasKit [title-text]="tituloOffcanvasKit" position="end" size="lg" [lazyContent]="true"
+    (open)="kitOffcanvas?.remedir()">
+    <overlay-lab-kit #kitOffcanvas [host]="rotuloHostOffcanvas" hostKey="offcanvas" [toastService]="toastService"
+      [notificationService]="notificationService" (logged)="registrar($event)"></overlay-lab-kit>
+  </li-offcanvas>
+
+  <!-- Contêiner: offcanvas com modal por cima -->
+  <li-offcanvas #offcanvasComModal [title-text]="tituloOffcanvasComModal" position="start" size="lg" [lazyContent]="true"
+    (open)="kitOffcanvasComModal?.remedir()">
+    <div class="alert alert-info alert-icon-start mb-4">
+      <span class="alert-icon bg-info text-white"><i class="ph-app-window"></i></span>
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <span>{{ textoOffcanvasComModal }}</span>
+        <button class="btn btn-sm btn-info" type="button" (click)="abrirModalSobreOffcanvas()"
+          [attr.data-label]="'overlay_lab_open_modal_over'">
+          {{ rotuloAbrirModalSobreOffcanvas }}
+        </button>
+      </div>
+    </div>
+    <overlay-lab-kit #kitOffcanvasComModal [host]="rotuloHostOffcanvasComModal" hostKey="offcanvas-parent" [toastService]="toastService"
+      [notificationService]="notificationService" (logged)="registrar($event)"></overlay-lab-kit>
+  </li-offcanvas>
+
+  <li-modal #modalSobreOffcanvas [title-text]="tituloModalSobreOffcanvas" headerColor="teal" size="xtra-large"
+    [lazyContent]="true" [enableShadow]="true" [fullScreenOnMobile]="true" (open)="kitModalSobreOffcanvas?.remedir()">
+    <overlay-lab-kit #kitModalSobreOffcanvas [host]="rotuloHostModalSobreOffcanvas" hostKey="modal-over-offcanvas" [toastService]="toastService"
+      [notificationService]="notificationService" (logged)="registrar($event)"></overlay-lab-kit>
+    <div class="overlay-layers-modal-actions mt-4">
+      <button class="btn btn-primary" type="button" (click)="modalSobreOffcanvas?.close()">{{ rotuloFechar }}</button>
+    </div>
+  </li-modal>
+
+  <!-- Por decisão da escala: offcanvas aberto de dentro de um modal nasce atrás dele -->
+  <li-offcanvas #offcanvasSobOModal [title-text]="tituloOffcanvasSobOModal" position="end" size="sm" [lazyContent]="true">
+    <p class="text-muted">{{ textoOffcanvasSobOModal }}</p>
+  </li-offcanvas>
+</div>

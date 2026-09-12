@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:math' as math;
 
+import '../../core/overlay_layers.dart';
+
 String _resolveLoadingOverlayColor() {
   final theme = document.documentElement?.attributes['data-color-theme'];
   return theme == 'dark' ? 'rgb(15 23 42 / 72%)' : 'rgb(248 250 252 / 78%)';
@@ -16,13 +18,13 @@ class LiSimpleLoading {
   /// ```dart
   /// LiSimpleLoading.defaultBodyZIndex = 500000;
   /// ```
-  static int defaultBodyZIndex = 500000;
+  static int defaultBodyZIndex = LiOverlayLayers.loadingBody;
 
   /// Stacking order of an overlay scoped to a target element.
   ///
   /// Lower than [defaultBodyZIndex] because it only has to cover its own
   /// container, not the whole page. Mutable for the same reason.
-  static int defaultTargetZIndex = 50000;
+  static int defaultTargetZIndex = LiOverlayLayers.loadingTarget;
 
   /// When true, showing over an overlay that is already visible trips an
   /// assertion instead of silently re-arming it.
@@ -34,6 +36,41 @@ class LiSimpleLoading {
   /// development. Assertions are stripped from release builds, so the
   /// bookkeeping below still runs there.
   static bool debugAssertSingleShow = false;
+
+  /// Overlays that are currently mounted, across every instance.
+  ///
+  /// It exists for one reason: so a dialog can take the curtain out of its way
+  /// before showing up. The curtain sits above everything on purpose — that is
+  /// its job, to block interaction while an operation runs — which means a
+  /// dialog raised while it is up is born *underneath* it: unreadable, and
+  /// unable to receive a click. With `await`, that is not cosmetic, it is a
+  /// dead screen: the `finally` that would hide the curtain only runs after the
+  /// operator answers, and they cannot answer what they cannot see.
+  ///
+  /// Relying on every call site to remember `hide()` before speaking does not
+  /// work, because forgetting raises no error — it just freezes the page.
+  static final Set<LiSimpleLoading> _mounted = <LiSimpleLoading>{};
+
+  /// Hides every mounted overlay and returns how many were hidden.
+  ///
+  /// Called by the library's own dialogs before they render. [hide] is
+  /// idempotent, so the `finally` of whoever showed the curtain stays correct
+  /// afterwards — it simply finds nothing left to do.
+  ///
+  /// This does **not** replace hiding the curtain where it belongs. The `catch`
+  /// that is about to show a message still owes its `hide()`, because it is the
+  /// one that knows the operation ended. This is the safety net, not the rule.
+  static int hideAll() {
+    if (_mounted.isEmpty) return 0;
+    final mounted = _mounted.toList(growable: false);
+    for (final loading in mounted) {
+      loading.hide();
+    }
+    return mounted.length;
+  }
+
+  /// How many overlays are mounted right now. Useful for tests and diagnostics.
+  static int get mountedCount => _mounted.length;
 
   bool _visible = false;
 
@@ -146,6 +183,7 @@ class LiSimpleLoading {
       ..observe(_target!);
 
     _visible = true;
+    _mounted.add(this);
     _rafUpdate();
   }
 
@@ -194,6 +232,7 @@ class LiSimpleLoading {
 
   void hide() {
     _visible = false;
+    _mounted.remove(this);
     _winScrollSub?.cancel();
     _containerScrollSub?.cancel();
     _resizeSub?.cancel();
@@ -246,6 +285,7 @@ class LiSimpleLoading {
 
     _mountOverlay(target);
     _visible = true;
+    _mounted.add(this);
   }
 
   void showHorizontal({Element? target, int? zIndex}) {
@@ -324,6 +364,7 @@ class LiSimpleLoading {
 
     _mountOverlay(target);
     _visible = true;
+    _mounted.add(this);
   }
 
   void showHorizontal2({Element? target, int? zIndex}) {
@@ -467,6 +508,7 @@ class LiSimpleLoading {
 
     _mountOverlay(target);
     _visible = true;
+    _mounted.add(this);
   }
 }
 

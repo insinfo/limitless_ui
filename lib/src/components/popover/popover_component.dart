@@ -6,6 +6,8 @@ import 'package:popper/popper.dart';
 
 import 'popover_config.dart';
 import '../../core/outside_click.dart';
+import '../../core/overlay_layers.dart';
+import '../../core/overlay_positioning.dart';
 
 /// Public directives used by the popover component.
 const liPopoverDirectives = <Object>[
@@ -84,8 +86,6 @@ class _LiPopoverFloatingOverlay {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiPopoverComponent implements OnDestroy {
-  static const int _defaultOverlayZIndex = 1080;
-  static const int _modalOverlayZIndexOffset = 1;
 
   LiPopoverComponent(this._hostElement, this._viewContainerRef,
       [@Optional() LiPopoverConfig? config])
@@ -1069,57 +1069,15 @@ class LiPopoverComponent implements OnDestroy {
         html.document.body!;
   }
 
+  /// The same rule every other anchored overlay follows — see
+  /// `LiOverlayLayers`. The popover used to run a scan of its own that only
+  /// knew `li-modal`, so a popover opened inside an offcanvas, a dialog or a
+  /// SweetAlert stayed at the theme's 1080 and under them.
   int _resolveOverlayZIndex() {
-    final owningModal = _resolveOwningModalElement();
-    final owningModalZIndex = _parseElementZIndex(owningModal);
-    if (owningModalZIndex != null) {
-      return owningModalZIndex + _modalOverlayZIndexOffset;
-    }
-
-    final topModalZIndex = _highestOpenModalZIndex();
-    if (topModalZIndex != null) {
-      return topModalZIndex + _modalOverlayZIndexOffset;
-    }
-
-    return _defaultOverlayZIndex;
-  }
-
-  html.Element? _resolveOwningModalElement() {
-    return _referenceElement.closest('.modal') ??
-        _hostElement.closest('.modal');
-  }
-
-  int? _highestOpenModalZIndex() {
-    final openModals =
-        html.document.querySelectorAll('.modal[data-status="open"]');
-    int? highestZIndex;
-
-    for (final modal in openModals) {
-      final zIndex = _parseElementZIndex(modal);
-      if (zIndex == null) {
-        continue;
-      }
-      if (highestZIndex == null || zIndex > highestZIndex) {
-        highestZIndex = zIndex;
-      }
-    }
-
-    return highestZIndex;
-  }
-
-  int? _parseElementZIndex(html.Element? element) {
-    if (element == null) {
-      return null;
-    }
-
-    final inlineZIndex = int.tryParse(element.style.zIndex.trim());
-    if (inlineZIndex != null) {
-      return inlineZIndex;
-    }
-
-    final computedZIndex =
-        int.tryParse(element.getComputedStyle().zIndex.trim());
-    return computedZIndex;
+    return LiOverlayStack.resolve(
+      referenceElement: _referenceElement,
+      baseZIndex: LiOverlayLayers.anchoredTooltip,
+    );
   }
 
   void _bindDocumentListeners() {

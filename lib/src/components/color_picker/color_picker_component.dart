@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import '../../core/overlay_layers.dart';
 import 'dart:math' as math;
 
 import 'package:ngdart/angular.dart';
@@ -959,13 +960,19 @@ class LiColorPickerComponent
       portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiColorPickerComponent',
         referenceElement: reference,
-        baseHostZIndex: 1085,
-        baseFloatingZIndex: 1086,
+        baseHostZIndex: LiOverlayLayers.anchoredPicker,
+        baseFloatingZIndex: LiOverlayLayers.anchoredPicker + 1,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',
         fallbackPlacements: <String>['top-start', 'bottom-end', 'top-end'],
         strategy: PopperStrategy.fixed,
+        // The panel is portalled to the body, so only the viewport can clip
+        // it. Left to `clippingAncestors`, popper 1.3.0 also honoured the
+        // trigger's overflow ancestors: inside a right-hand offcanvas the
+        // panel was squeezed into the offcanvas column and, being wider than
+        // it, pushed off the right edge of the screen.
+        boundary: PopperBoundary.viewport,
         padding: PopperInsets.all(8),
         offset: PopperOffset(mainAxis: 8),
         onLayout: _handleOverlayLayout,
@@ -1097,7 +1104,12 @@ class LiColorPickerComponent
       return;
     }
 
-    event.preventDefault();
+    // No `preventDefault()` here: Chrome registers `touchmove` listeners on
+    // the document as passive, so the call did nothing but log an
+    // "[Intervention] Unable to preventDefault inside passive event listener"
+    // warning on every move of the finger. What keeps the page from
+    // scrolling during the drag is `touch-action: none` on the drag surfaces
+    // (see the stylesheet), which the browser honours before any listener.
     _scheduleDragUpdate(point, target);
   }
 

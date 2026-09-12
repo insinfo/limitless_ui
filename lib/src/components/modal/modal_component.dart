@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:ngdart/angular.dart';
+import '../../core/overlay_layers.dart';
 
 /// Generic modal component for AngularDart applications.
 ///
@@ -18,8 +19,8 @@ import 'package:ngdart/angular.dart';
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiModalComponent implements OnInit, OnDestroy {
-  static const int _baseZIndex = 1200;
-  static const int _zIndexStep = 10;
+  static int get _baseZIndex => LiOverlayLayers.modal;
+  static int get _zIndexStep => LiOverlayLayers.modalStep;
   static int _nextTitleId = 0;
   static final List<LiModalComponent> _openModalStack = <LiModalComponent>[];
 

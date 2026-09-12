@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import '../../core/overlay_layers.dart';
 import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
@@ -570,8 +571,8 @@ class LiMultiSelectComponent
       portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiMultiSelectComponent',
         referenceElement: reference,
-        baseHostZIndex: 1000,
-        baseFloatingZIndex: 1000,
+        baseHostZIndex: LiOverlayLayers.anchored,
+        baseFloatingZIndex: LiOverlayLayers.anchored,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',

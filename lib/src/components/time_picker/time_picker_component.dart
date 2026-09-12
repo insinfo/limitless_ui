@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import '../../core/overlay_layers.dart';
 import 'dart:math' as math;
 
 import 'package:ngdart/angular.dart';
@@ -852,8 +853,8 @@ class LiTimePickerComponent
       portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiTimePickerComponent',
         referenceElement: reference,
-        baseHostZIndex: 1085,
-        baseFloatingZIndex: 1086,
+        baseHostZIndex: LiOverlayLayers.anchoredPicker,
+        baseFloatingZIndex: LiOverlayLayers.anchoredPicker + 1,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',
@@ -863,6 +864,12 @@ class LiTimePickerComponent
           'top-end',
         ],
         strategy: PopperStrategy.fixed,
+        // The panel is portalled to the body, so only the viewport can clip
+        // it. Left to `clippingAncestors`, popper 1.3.0 also honoured the
+        // trigger's overflow ancestors: inside a right-hand offcanvas the
+        // panel was squeezed into the offcanvas column and, being wider than
+        // it, pushed off the right edge of the screen.
+        boundary: PopperBoundary.viewport,
         padding: PopperInsets.all(8),
         offset: PopperOffset(mainAxis: 8),
         onLayout: _handleOverlayLayout,
@@ -954,7 +961,9 @@ class LiTimePickerComponent
         return;
       }
 
-      event.preventDefault();
+      // No `preventDefault()`: a document `touchmove` listener is passive in
+      // Chrome, so the call only logged an "[Intervention]" warning per move.
+      // `touch-action: none` on the clock face is what stops the scroll.
       final touch = touches.first;
       _queuePointerUpdate(touch.client.x.toDouble(), touch.client.y.toDouble());
     });

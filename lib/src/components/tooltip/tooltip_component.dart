@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
+import '../../core/overlay_layers.dart';
 
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
@@ -756,8 +757,8 @@ class _LiTooltipOverlay implements OnDestroy {
       portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiTooltipComponent',
         referenceElement: _referenceElement,
-        baseHostZIndex: 1080,
-        baseFloatingZIndex: 1080,
+        baseHostZIndex: LiOverlayLayers.anchoredTooltip,
+        baseFloatingZIndex: LiOverlayLayers.anchoredTooltip,
       ),
       popperOptions: PopperOptions(
         placement: _resolvedPlacement,

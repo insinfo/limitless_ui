@@ -1,0 +1,112 @@
+// O kit é montado na página e dentro de modal, offcanvas e modal empilhado;
+// o estilo precisa caber em qualquer largura sem depender do contêiner.
+
+:host {
+	display: block;
+}
+
+// A cortina de bloco (`LiSimpleLoading.show(target:)`) é posicionada em
+// relação ao alvo; sem isto ela cobriria o pai mais próximo posicionado.
+.overlay-lab-kit {
+	position: relative;
+}
+
+.overlay-lab-kit__diagnostic {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 1rem;
+	padding: 0.75rem 1rem;
+	margin-bottom: 1rem;
+	border: 1px solid var(--border-color-translucent);
+	border-radius: var(--border-radius-lg);
+	background: color-mix(in srgb, var(--card-bg, var(--body-bg, #fff)) 95%, var(--body-color) 5%);
+	font-size: 0.8125rem;
+}
+
+.overlay-lab-kit__host {
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+}
+
+.overlay-lab-kit__owner {
+	font-weight: 500;
+}
+
+// Cada par "camada → valor" é uma unidade: quebra entre pares, nunca no meio
+// de um — num offcanvas estreito a faixa vira duas ou três linhas.
+.overlay-lab-kit__resolved {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 0.75rem;
+	min-width: 0;
+	color: var(--body-color-secondary, var(--text-muted));
+}
+
+.overlay-lab-kit__pair {
+	white-space: nowrap;
+}
+
+.overlay-lab-kit__owner {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.overlay-lab-kit__section {
+	margin: 1.25rem 0 0.75rem;
+	padding-bottom: 0.375rem;
+	border-bottom: 1px solid var(--border-color-translucent);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--body-color-secondary, var(--text-muted));
+}
+
+.overlay-lab-kit__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 1rem;
+}
+
+.overlay-lab-kit__cell {
+	min-width: 0;
+}
+
+.overlay-lab-kit__cell--wide {
+	grid-column: 1 / -1;
+}
+
+.overlay-lab-kit__cell .form-label {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+	margin-bottom: 0.375rem;
+	font-size: 0.8125rem;
+}
+
+.overlay-lab-kit__cell .form-label code {
+	font-size: 0.8125rem;
+}
+
+.overlay-lab-kit__cell .form-label .text-muted {
+	font-size: 0.75rem;
+}
+
+.overlay-lab-kit__table {
+	border: 1px solid var(--border-color-translucent);
+	border-radius: var(--border-radius-lg);
+	overflow: hidden;
+}
+
+.overlay-lab-kit__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.overlay-lab-kit__actions .btn .text-muted {
+	font-size: 0.7rem;
+}

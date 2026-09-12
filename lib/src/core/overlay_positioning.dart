@@ -2,56 +2,137 @@ import 'dart:html' as html;
 
 import 'package:popper/popper.dart';
 
+import 'overlay_layers.dart';
+
+/// Selectors of the containers an anchored overlay has to clear.
+///
+/// These are the layers that *block*: while one of them is on screen, what is
+/// underneath cannot be reached. An overlay opened from inside one has to draw
+/// above it, or it is invisible to the person who opened it.
+///
+/// The loading curtain is **not** here, and that is deliberate. It outranks
+/// everything on purpose — see [LiOverlayLayers] — and while it is up nothing
+/// below can be clicked anyway, so there is nothing to clear.
+///
+/// Mutable, so an application that draws its own blocking layer can have the
+/// library's overlays clear it too:
+///
+/// ```dart
+/// LiOverlayStack.blockingSelectors.add('.minha-cortina-de-assinatura');
+/// ```
+class LiOverlayStack {
+  LiOverlayStack._();
+
+  /// Containers an anchored overlay must draw above.
+  ///
+  /// `li-modal` carries `data-status`; the dialog carries `data-li-simple-dialog`
+  /// and also a `.modal` class, which is why it is matched by its own attribute
+  /// instead of by the class — it has no `data-status`, so before `dev.42` the
+  /// scan for open modals simply did not see it.
+  ///
+  /// The offcanvas is matched by its shell, `.li-offcanvas-shell`: that is the
+  /// node that carries the z-index, and the one an anchored overlay inside the
+  /// panel finds with `closest`. It got its `data-status` in `dev.42` for this
+  /// list — the selector first written here, `.li-offcanvas[data-status]`,
+  /// named a class the component never had, so a select opened inside an
+  /// offcanvas stayed under it.
+  static final List<String> blockingSelectors = <String>[
+    '.modal[data-status="open"]',
+    '[data-li-simple-dialog="true"]',
+    '.swal2-container',
+    '.li-offcanvas-shell[data-status="open"]',
+  ];
+
+  /// Highest z-index currently occupied by a blocking container, or `null` when
+  /// none is on screen.
+  static int? topmostBlockingZIndex() {
+    var topmost = -1;
+    for (final selector in blockingSelectors) {
+      for (final element in html.document.querySelectorAll(selector)) {
+        final zIndex = _parseElementZIndex(element);
+        if (zIndex != null && zIndex > topmost) {
+          topmost = zIndex;
+        }
+      }
+    }
+    return topmost >= 0 ? topmost : null;
+  }
+
+  /// The blocking container [element] lives inside, if any.
+  static html.Element? owningBlockingContainer(html.Element element) {
+    for (final selector in blockingSelectors) {
+      final owner = element.closest(selector);
+      if (owner != null) {
+        return owner;
+      }
+    }
+    return null;
+  }
+
+  /// A z-index for an overlay anchored at [referenceElement].
+  ///
+  /// Never below [baseZIndex]; above the blocking container that owns the
+  /// reference, or — when the reference is not inside one — above the topmost
+  /// blocking container on screen.
+  static int resolve({
+    required html.Element referenceElement,
+    required int baseZIndex,
+    int? offset,
+  }) {
+    final step = offset ?? LiOverlayLayers.stackOffset;
+
+    final owner = owningBlockingContainer(referenceElement);
+    final owningZIndex = _parseElementZIndex(owner);
+    if (owningZIndex != null) {
+      return _max(baseZIndex, owningZIndex + step);
+    }
+
+    final topmost = topmostBlockingZIndex();
+    if (topmost != null) {
+      return _max(baseZIndex, topmost + step);
+    }
+
+    return baseZIndex;
+  }
+}
+
+/// Portal options for an overlay that has to clear whatever is blocking.
+///
+/// The name says "modal" for compatibility: until `1.0.0-dev.42` this only knew
+/// about `li-modal`. It now clears every layer in
+/// [LiOverlayStack.blockingSelectors], which is what the name always meant to
+/// promise.
 PopperPortalOptions resolveModalAwarePortalOptions({
   required String hostClassName,
   required html.Element referenceElement,
   required int baseHostZIndex,
   int? baseFloatingZIndex,
   int modalZIndexOffset = 1,
+  bool restoreOnDispose = false,
 }) {
   final effectiveFloatingZIndex = baseFloatingZIndex ?? baseHostZIndex;
-  final modalAwareHostZIndex = _resolveModalAwareHostZIndex(
+  final resolvedHostZIndex = LiOverlayStack.resolve(
     referenceElement: referenceElement,
-    baseHostZIndex: baseHostZIndex,
-    modalZIndexOffset: modalZIndexOffset,
+    baseZIndex: baseHostZIndex,
+    offset: modalZIndexOffset,
   );
+
+  // The floating panel keeps its distance from the host, in either direction.
+  //
+  // Only a positive delta used to survive here, which silently threw away a
+  // `baseFloatingZIndex` lower than `baseHostZIndex` — the datatable column
+  // menu asked for host 10000 and floating 1080 and got 10000 for both. Either
+  // the call was wrong or this was; keeping the sign makes the call site mean
+  // what it says.
   final floatingDelta = effectiveFloatingZIndex - baseHostZIndex;
-  final modalAwareFloatingZIndex =
-      modalAwareHostZIndex + (floatingDelta > 0 ? floatingDelta : 0);
+  final resolvedFloatingZIndex = resolvedHostZIndex + floatingDelta;
 
   return PopperPortalOptions(
     hostClassName: hostClassName,
-    hostZIndex: '$modalAwareHostZIndex',
-    floatingZIndex: '$modalAwareFloatingZIndex',
+    hostZIndex: '$resolvedHostZIndex',
+    floatingZIndex: '$resolvedFloatingZIndex',
+    restoreOnDispose: restoreOnDispose,
   );
-}
-
-int _resolveModalAwareHostZIndex({
-  required html.Element referenceElement,
-  required int baseHostZIndex,
-  required int modalZIndexOffset,
-}) {
-  final owningModal = referenceElement.closest('.modal');
-  final owningModalZIndex = _parseElementZIndex(owningModal);
-  if (owningModalZIndex != null) {
-    return _max(baseHostZIndex, owningModalZIndex + modalZIndexOffset);
-  }
-
-  final openModals =
-      html.document.querySelectorAll('.modal[data-status="open"]');
-  var highestModalZIndex = -1;
-  for (final modal in openModals) {
-    final zIndex = _parseElementZIndex(modal);
-    if (zIndex != null && zIndex > highestModalZIndex) {
-      highestModalZIndex = zIndex;
-    }
-  }
-
-  if (highestModalZIndex >= 0) {
-    return _max(baseHostZIndex, highestModalZIndex + modalZIndexOffset);
-  }
-
-  return baseHostZIndex;
 }
 
 int? _parseElementZIndex(html.Element? element) {
@@ -59,12 +140,14 @@ int? _parseElementZIndex(html.Element? element) {
     return null;
   }
 
-  final inlineZIndex = int.tryParse(element.style.zIndex.trim());
-  if (inlineZIndex != null) {
-    return inlineZIndex;
+  final inline = element.style.zIndex;
+  final parsedInline = int.tryParse(inline);
+  if (parsedInline != null) {
+    return parsedInline;
   }
 
-  return int.tryParse(element.getComputedStyle().zIndex.trim());
+  final computed = element.getComputedStyle().zIndex;
+  return int.tryParse(computed);
 }
 
 int _max(int a, int b) => a >= b ? a : b;

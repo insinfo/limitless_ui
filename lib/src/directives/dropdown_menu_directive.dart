@@ -3,6 +3,7 @@ import 'dart:html';
 
 import 'package:ngdart/angular.dart';
 import 'package:popper/popper.dart';
+import '../core/overlay_layers.dart';
 
 import '../core/outside_click.dart';
 import '../core/overlay_positioning.dart';
@@ -167,10 +168,10 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     _overlay = PopperAnchoredOverlay.attach(
       referenceElement: reference,
       floatingElement: floating,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiDropdownMenuPositionDirective',
-        hostZIndex: '10000',
-        floatingZIndex: '1056',
+        referenceElement: reference,
+        baseHostZIndex: LiOverlayLayers.anchoredMenu,
       ),
       popperOptions: PopperOptions(
         placement: xPlacement,

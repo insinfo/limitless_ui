@@ -1,0 +1,117 @@
+<demo-page-breadcrumb></demo-page-breadcrumb>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title">Target alert</h5>
+    <p class="text-muted mb-0">
+      <code>LiTargetAlert</code> responde o que um spinner não responde: a carga falhou, e agora o quê. Ele cobre a
+      área que deveria ter mostrado o dado, diz o que houve e oferece uma saída — tentar de novo e, quando existe,
+      uma ação que mora em outro lugar da aplicação.
+    </p>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header">
+    <h6 class="mb-0">Veja acontecendo</h6>
+  </div>
+  <div class="card-body">
+    <p class="text-muted">
+      Os botões abaixo agem sobre a área cinza — é ela o <code>target</code>. Repare que o painel fica
+      <strong>dentro</strong> dela: ele não é um diálogo da página, é o estado de erro daquele pedaço da tela.
+    </p>
+
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <button class="btn btn-primary" type="button" (click)="falhaSimples()">
+        <i class="ph-warning me-1"></i> Falha simples
+      </button>
+      <button class="btn btn-outline-primary" type="button" (click)="falhaComDetalhe()">
+        <i class="ph-bug me-1"></i> Com detalhe técnico
+      </button>
+      <button class="btn btn-outline-primary" type="button" (click)="falhaComSaida()">
+        <i class="ph-arrow-square-out me-1"></i> Com ação de saída
+      </button>
+      <button class="btn btn-outline-primary" type="button" (click)="falhaNoTopo()">
+        <i class="ph-arrow-line-up me-1"></i> Ancorado no topo
+      </button>
+      <button class="btn btn-outline-danger" type="button" (click)="cortinaQueTerminaEmErro()">
+        <i class="ph-spinner-gap me-1"></i> Cortina que termina em erro
+      </button>
+      <button class="btn btn-outline-secondary" type="button" (click)="falhaDaPaginaInteira()">
+        <i class="ph-browser me-1"></i> Sem alvo (página inteira)
+      </button>
+      <button class="btn btn-light" type="button" (click)="esconder()">
+        <i class="ph-x me-1"></i> hide()
+      </button>
+    </div>
+
+    <div class="alert alert-info" *ngIf="registro != ''">
+      <i class="ph-info me-2"></i>{{registro}}
+    </div>
+
+    <div #areaDaLista class="bg-light border rounded p-3 demo-area-da-lista">
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Descrição</th>
+              <th class="text-end">Situação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Linha que a carga teria trazido</td>
+              <td class="text-end"><span class="badge bg-success">Ativo</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Outra linha, igualmente hipotética</td>
+              <td class="text-end"><span class="badge bg-success">Ativo</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>E mais uma, para a área ter altura</td>
+              <td class="text-end"><span class="badge bg-secondary">Inativo</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header">
+    <h6 class="mb-0">Uma instância por tela, não uma por carga</h6>
+  </div>
+  <div class="card-body">
+    <p class="text-muted">
+      A instância guarda o overlay, as assinaturas de scroll/resize e os callbacks dos botões. <code>show</code>
+      sempre chama <code>hide</code> antes, então a mesma instância atende todas as tentativas que falharem naquela
+      tela. Chame <code>hide()</code> no <code>ngOnDestroy</code> para o painel e os ouvintes saírem junto com a rota.
+    </p>
+    <p class="text-muted">
+      É o oposto do <code>LiSimpleLoading</code>, que é criado <strong>por operação</strong>, no mesmo escopo do par
+      <code>show</code>/<code>hide</code> — duas cargas simultâneas compartilhando uma instância de cortina deixam um
+      overlay órfão na página.
+    </p>
+    <li-highlight [code]="snippetDoUso" language="dart"></li-highlight>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header">
+    <h6 class="mb-0">Por que ele desenha acima da cortina</h6>
+  </div>
+  <div class="card-body">
+    <p class="text-muted mb-0">
+      <code>LiOverlayLayers.targetAlert</code> ({{targetAlertZIndex}}) é o único nível acima de
+      <code>LiOverlayLayers.loadingBody</code> ({{loadingBodyZIndex}}), porque este painel é o que
+      <strong>substitui</strong> uma cortina que falhou. Por baixo dela ele seria invisível, e o operador ficaria
+      olhando um spinner que não para nunca. A escala inteira está na página
+      <a [routerLink]="DemoRoutePaths.overlayLayers.toUrl()">Overlay layers</a>.
+    </p>
+  </div>
+</div>

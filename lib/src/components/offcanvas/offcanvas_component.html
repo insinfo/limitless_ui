@@ -1,4 +1,5 @@
 <div *ngIf="isRendered" class="li-offcanvas-shell" [class.li-offcanvas-open]="isOpen"
+  [attr.data-status]="isOpen ? 'open' : 'closed'" [style.z-index]="shellZIndex"
   [class.li-offcanvas-has-backdrop]="enableBackdrop" [class.li-offcanvas-no-backdrop]="!enableBackdrop">
   <div *ngIf="enableBackdrop" [class]="backdropClasses" (mousedown)="onBackdropMouseDown($event)"></div>
 

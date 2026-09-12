@@ -3,6 +3,9 @@ import 'dart:html' as html;
 
 import 'package:ngdart/angular.dart';
 
+import '../../core/overlay_layers.dart';
+import '../../core/overlay_positioning.dart';
+
 const liOffcanvasDirectives = <Object>[
   LiOffcanvasComponent,
   LiOffcanvasHeaderDirective,
@@ -147,6 +150,18 @@ class LiOffcanvasComponent
   Timer? _shownTimer;
   Timer? _hiddenTimer;
   html.Element? _previouslyFocusedElement;
+
+  /// Inline z-index of the shell while it has to sit above a blocking
+  /// container that was already on screen when it opened; `null` leaves the
+  /// stylesheet's [LiOverlayLayers.offcanvas] in charge.
+  ///
+  /// The base puts the offcanvas under a modal — an offcanvas is navigation,
+  /// a modal is a task — but the only way to open one while a modal is up is
+  /// from inside that modal, and then it is meant to be seen. So it follows
+  /// the rule every anchored overlay follows: resolved at open time, above
+  /// whatever is blocking at that moment. A modal opened afterwards from
+  /// inside it still lands on top, because the modal stack starts higher.
+  String? shellZIndex;
   bool _lockedBodyScroll = false;
   bool _pendingFocus = false;
   String? _registeredOffcanvasId;
@@ -360,6 +375,7 @@ class LiOffcanvasComponent
 
     _hiddenTimer?.cancel();
     _previouslyFocusedElement = html.document.activeElement;
+    shellZIndex = _resolveShellZIndex();
     isRendered = true;
     isOpen = true;
     _pendingFocus = true;
@@ -381,6 +397,18 @@ class LiOffcanvasComponent
       return;
     }
     open();
+  }
+
+  String? _resolveShellZIndex() {
+    // The host is appended to the body, so it is never inside the container
+    // it was opened from; the element that had focus — the trigger, usually —
+    // is what tells whether a modal, dialog or alert owns this offcanvas.
+    final reference = _previouslyFocusedElement ?? rootElement;
+    final resolved = LiOverlayStack.resolve(
+      referenceElement: reference,
+      baseZIndex: LiOverlayLayers.offcanvas,
+    );
+    return resolved > LiOverlayLayers.offcanvas ? '$resolved' : null;
   }
 
   void close() {

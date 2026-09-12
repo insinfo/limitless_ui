@@ -6,6 +6,7 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 import 'package:popper/popper.dart';
+import '../../core/overlay_layers.dart';
 import 'package:essential_core/essential_core.dart';
 
 import '../../core/overlay_positioning.dart';
@@ -1317,10 +1318,10 @@ class LiTreeviewSelectComponent
     _overlay = PopperAnchoredOverlay.attach(
       referenceElement: reference,
       floatingElement: floating,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'LiTreeviewSelectComponent',
-        hostZIndex: '10000',
-        floatingZIndex: '1056',
+        referenceElement: reference,
+        baseHostZIndex: LiOverlayLayers.anchoredMenu,
       ),
       popperOptions: PopperOptions(
         placement: 'bottom-start',

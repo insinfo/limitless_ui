@@ -5,6 +5,7 @@ import 'dart:html';
 import 'package:popper/popper.dart';
 
 import '../../core/outside_click.dart';
+import '../../core/overlay_layers.dart';
 import '../../core/overlay_positioning.dart';
 
 export 'datatable_style.dart';
@@ -181,8 +182,8 @@ class _DatatableActionFloatingOverlay {
       options: resolveModalAwarePortalOptions(
         hostClassName: 'DatatableActionOverflowPortal',
         referenceElement: referenceElement,
-        baseHostZIndex: 10000,
-        baseFloatingZIndex: 1080,
+        baseHostZIndex: LiOverlayLayers.anchoredMenu,
+        baseFloatingZIndex: LiOverlayLayers.anchoredMenu,
       ),
     );
 

@@ -8,6 +8,8 @@ import 'package:popper/popper.dart';
 
 import 'dropdown_config.dart';
 import '../../core/outside_click.dart';
+import '../../core/overlay_layers.dart';
+import '../../core/overlay_positioning.dart';
 
 /// Public directives used by dropdown APIs.
 const liDropdownDirectives = <Object>[
@@ -550,9 +552,17 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _resetContainer();
     if (container == 'body') {
       final wrapper = _bodyContainer ??= html.DivElement();
+      // Resolved on every open, like the other anchored overlays: a menu
+      // opened from inside a modal has to clear it. This was a fixed 1055 —
+      // the theme's dropdown level — which put the menu under any modal
+      // (1200), so a `liDropdown` with `container="body"` inside a modal
+      // opened and could not be seen. See `LiOverlayLayers`.
       wrapper.style
         ..position = 'absolute'
-        ..zIndex = '1055';
+        ..zIndex = '${LiOverlayStack.resolve(
+          referenceElement: _hostElement,
+          baseZIndex: LiOverlayLayers.anchoredMenu,
+        )}';
       menu.style.position = 'static';
       wrapper.append(menu);
       html.document.body?.append(wrapper);

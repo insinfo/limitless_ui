@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:popper/popper.dart';
+import '../../core/overlay_positioning.dart';
+import '../../core/overlay_layers.dart';
 import '../../core/outside_click.dart';
 
 class SweetAlertPopover {
@@ -40,7 +42,7 @@ class SweetAlertPopover {
     rootPopover.attributes['data-popper-placement'] = 'top';
     rootPopover.style.position = 'fixed';
     rootPopover.style.margin = '0px';
-    rootPopover.style.zIndex = '10000';
+    rootPopover.style.zIndex = '${LiOverlayLayers.anchoredMenu}';
 
     final popoverArrow = DivElement();
     popoverArrow.classes.add('popover-arrow');
@@ -84,10 +86,11 @@ class SweetAlertPopover {
     final overlay = PopperAnchoredOverlay.attach(
       referenceElement: target,
       floatingElement: rootPopover,
-      portalOptions: const PopperPortalOptions(
+      portalOptions: resolveModalAwarePortalOptions(
         hostClassName: 'SweetAlertPopover',
-        hostZIndex: '10000',
-        floatingZIndex: '10001',
+        referenceElement: target,
+        baseHostZIndex: LiOverlayLayers.anchoredMenu,
+        baseFloatingZIndex: LiOverlayLayers.anchoredMenu + 1,
       ),
       popperOptions: PopperOptions(
         placement: 'top-start',

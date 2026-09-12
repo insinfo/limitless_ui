@@ -734,7 +734,9 @@ class LiSliderComponent
         return;
       }
       _applyPointerPosition(_dragHandleIndex!, positionPercent);
-      event.preventDefault();
+      // No `preventDefault()`: a document `touchmove` listener is passive in
+      // Chrome, so the call only logged an "[Intervention]" warning per move.
+      // `touch-action: none` on the track is what stops the page scrolling.
     });
     _touchEndSubscription ??= html.document.onTouchEnd.listen((_) {
       _dragHandleIndex = null;

@@ -1,0 +1,53 @@
+.overlay-layers-section {
+	padding-top: 1.5rem;
+	margin-top: 1.5rem;
+	border-top: 1px solid var(--border-color-translucent);
+}
+
+.overlay-layers-scale {
+	border: 1px solid var(--border-color-translucent);
+	border-radius: var(--border-radius-lg);
+}
+
+.overlay-layers-scale .table {
+	--bs-table-bg: transparent;
+}
+
+.overlay-layers-scale td,
+.overlay-layers-scale th {
+	vertical-align: middle;
+}
+
+.overlay-layers-log {
+	padding-left: 1.25rem;
+	display: grid;
+	gap: 0.25rem;
+}
+
+// A primeira linha é a mais recente; o resto é histórico.
+.overlay-layers-log li + li {
+	color: var(--body-color-secondary, var(--text-muted));
+	font-size: 0.8125rem;
+}
+
+.overlay-layers-host {
+	padding: 1rem 1.25rem 1.25rem;
+	border: 1px dashed var(--border-color);
+	border-radius: var(--border-radius-lg);
+}
+
+.overlay-layers-modal-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.75rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--border-color-translucent);
+}
+
+.demo-summary-box {
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--border-color-translucent);
+	border-radius: var(--border-radius-lg);
+	background: color-mix(in srgb, var(--card-bg) 95%, var(--body-color) 5%);
+}

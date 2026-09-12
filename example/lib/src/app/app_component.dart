@@ -279,6 +279,16 @@ class AppComponent implements OnDestroy {
               url: DemoRoutePaths.offcanvas.toUrl(),
             ),
             DemoNavItem(
+              label: 'Overlay layers',
+              iconClass: 'ph-stack',
+              url: DemoRoutePaths.overlayLayers.toUrl(),
+            ),
+            DemoNavItem(
+              label: 'Target alert',
+              iconClass: 'ph-warning-octagon',
+              url: DemoRoutePaths.targetAlert.toUrl(),
+            ),
+            DemoNavItem(
               label: breadcrumbsLabel,
               iconClass: 'ph-path',
               url: DemoRoutePaths.breadcrumbs.toUrl(),
@@ -583,6 +593,17 @@ class AppComponent implements OnDestroy {
       'cabecalho',
       'page title',
       'breadcrumb header'
+    ],
+    '/overlay-layers': <String>[
+      'z-index',
+      'zindex',
+      'empilhamento',
+      'stacking',
+      'camadas',
+      'layers',
+      'overlay',
+      'modal com select',
+      'dropdown dentro de modal',
     ],
     '/treeview': <String>['arvore', 'tree', 'hierarquia'],
     '/sweet-alert': <String>['sweetalert', 'dialog', 'popup'],

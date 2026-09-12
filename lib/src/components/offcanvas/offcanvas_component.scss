@@ -1,7 +1,7 @@
 .li-offcanvas-shell {
     position: fixed;
     inset: 0;
-    z-index: 1200;
+    z-index: 1150; // LiOverlayLayers.offcanvas
     pointer-events: none;
 }
 
@@ -12,7 +12,7 @@
     opacity: 0;
     pointer-events: auto;
     transition: opacity 0.3s ease;
-    z-index: 1199;
+    z-index: 1149; // LiOverlayLayers.offcanvas - 1 (backdrop)
 }
 
 .li-offcanvas-backdrop.show {
@@ -20,7 +20,7 @@
 }
 
 .offcanvas {
-    z-index: 1201;
+    z-index: 1151; // LiOverlayLayers.offcanvas + 1
     display: flex;
     flex-direction: column;
     pointer-events: auto;

@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
+import '../../core/overlay_layers.dart';
 
 enum LiDialogColor { DANGER, PRIMARY, SUCCESS, WARNING, INFO, PINK }
 
@@ -33,6 +34,11 @@ class LiSimpleDialogInputConfig {
 }
 
 class LiSimpleDialogComponent {
+
+  /// Kept `const` because it is the default value of a parameter, which Dart
+  /// requires to be constant. The layer that actually moves is
+  /// [LiOverlayLayers.dialog]; pass `zIndex: LiOverlayLayers.dialog` to follow
+  /// an application that shifted the scale.
   static const int defaultZIndex = 2000;
 
   static String getColor(LiDialogColor dialogColor) {
