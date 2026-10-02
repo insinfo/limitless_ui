@@ -135,6 +135,23 @@ await waitForAttributeMatching(
   (value) => value == 'approved',
 );''';
 
+  static const String disabledReadonlySnippet = '''
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [disabled]="true"
+  [(ngModel)]="disabledStatus">
+</li-select>
+
+<li-select
+  [dataSource]="statusOptions"
+  labelKey="label"
+  valueKey="id"
+  [readonly]="true"
+  [(ngModel)]="readonlyStatus">
+</li-select>''';
+
   static const String validationSnippet = '''
 <li-select
   [dataSource]="statusOptions"
@@ -176,6 +193,13 @@ await waitForAttributeMatching(
   String noSearchStatus = 'draft';
   String badgeNoSearchStatus = 'review';
   String projectedStatus = 'priority';
+  String disabledStatus = 'approved';
+  String? disabledEmptyStatus;
+  String readonlyStatus = 'review';
+  String toggleStatus = 'draft';
+
+  /// `editable`, `readonly` ou `disabled`.
+  String toggleState = 'readonly';
   Map<String, dynamic>? selectedStatusModel;
 
   String get selectedStatusLabel => _labelFor(selectedStatus, statusOptions);

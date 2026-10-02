@@ -1,6 +1,8 @@
 ## 1.0.0-dev.43
 
 - Fixed the disabled `li-select` in dark themes: its button had a hardcoded `#e9ecef` background while the text colour followed the theme, so it rendered light text on a light background. The background now derives from `--body-bg` and `--body-color`, the same rule `li-multi-select` and `datatable-select` already used.
+- Added `[readonly]` to `li-select`. Unlike `disabled`, the trigger stays focusable with the regular field colours and carries `aria-readonly`; the panel does not open from a click, the keyboard or `openDropdown()`, the clear button is hidden and so is the caret. `ngModel` writes still go through. Covered by `test/select/li_select_readonly_test.dart`; the select page of the example app shows disabled and read-only side by side.
+- Fixed `triggerIconMode="overlay"`/`"addon"` on `li-select` and `li-multi-select` still drawing the native caret in the dark theme: Limitless redraws it with `[data-color-theme=dark] .form-select:not([data-color-theme])`, which outranked the component's `background-image: none`. The rule is now `!important`, as the theme itself does for `.form-select[multiple]`.
 
 ## 1.0.0-dev.42
 

@@ -2,6 +2,8 @@
     <div *ngIf="triggerTemplate != null" #dropdownButton
         class="li-select-custom-trigger"
         [class.disabled]="isDisabled"
+        [class.readonly]="readonly"
+        [attr.aria-readonly]="readonly ? 'true' : null"
         [attr.name]="resolvedName"
         [attr.data-label]="'li_select_toggle'"
         [attr.data-value]="selectedDataValue"
@@ -34,6 +36,7 @@
             [attr.aria-activedescendant]="activeDescendantId"
             [attr.aria-describedby]="resolvedDescribedBy"
             [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+            [attr.aria-readonly]="readonly ? 'true' : null"
             aria-haspopup="listbox"
             [attr.data-invalid]="effectiveInvalid ? 'true' : null"
             (click)="toggleDropdown()" tabindex="0" [disabled]="isDisabled">
@@ -62,6 +65,7 @@
         [attr.aria-activedescendant]="activeDescendantId"
         [attr.aria-describedby]="resolvedDescribedBy"
         [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
+        [attr.aria-readonly]="readonly ? 'true' : null"
         aria-haspopup="listbox"
         [attr.data-invalid]="effectiveInvalid ? 'true' : null"
         (click)="toggleDropdown()" tabindex="0" [disabled]="isDisabled">

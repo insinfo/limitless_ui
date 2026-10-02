@@ -121,6 +121,79 @@
               </div>
             </div>
 
+            <h6 class="mb-3">{{ isPortuguese ? 'Desabilitado e somente leitura' : 'Disabled and read-only' }}</h6>
+            <div class="row g-4 mb-4">
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-semibold">{{ isPortuguese ? 'Desabilitado com valor' : 'Disabled with value' }}</label>
+                <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                  [disabled]="true" [(ngModel)]="disabledStatus">
+                </li-select>
+              </div>
+
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-semibold">{{ isPortuguese ? 'Desabilitado vazio' : 'Disabled, empty' }}</label>
+                <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                  [disabled]="true" [placeholder]="isPortuguese ? 'Selecione' : 'Select'"
+                  [(ngModel)]="disabledEmptyStatus">
+                </li-select>
+              </div>
+
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-semibold">{{ isPortuguese ? 'Somente leitura' : 'Read-only' }}</label>
+                <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                  [readonly]="true" [showClearButton]="true" [(ngModel)]="readonlyStatus">
+                </li-select>
+              </div>
+
+              <div class="col-lg-3 col-md-6">
+                <label class="form-label fw-semibold">{{ isPortuguese ? 'Trigger customizado' : 'Custom trigger' }}</label>
+                <div class="d-flex gap-2 flex-wrap">
+                  <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                    [disabled]="true" [(ngModel)]="disabledStatus">
+                    <template liSelectTrigger let-ctx>
+                      <span class="badge bg-primary d-inline-flex align-items-center gap-1">
+                        <i class="ph ph-prohibit"></i>
+                        <span>{{ ctx.displayValue }}</span>
+                      </span>
+                    </template>
+                  </li-select>
+                  <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                    [readonly]="true" [(ngModel)]="readonlyStatus">
+                    <template liSelectTrigger let-ctx>
+                      <span class="badge bg-success d-inline-flex align-items-center gap-1">
+                        <i class="ph ph-lock-simple"></i>
+                        <span>{{ ctx.displayValue }}</span>
+                      </span>
+                    </template>
+                  </li-select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+              <div class="col-lg-6">
+                <label class="form-label fw-semibold">{{ isPortuguese ? 'Alternar estado' : 'Toggle state' }}</label>
+                <li-select [dataSource]="statusOptions" labelKey="label" valueKey="id" disabledKey="disabled"
+                  [disabled]="toggleState == 'disabled'" [readonly]="toggleState == 'readonly'"
+                  [(ngModel)]="toggleStatus">
+                </li-select>
+                <div class="btn-group btn-group-sm mt-2" role="group">
+                  <button type="button" class="btn btn-light" [class.active]="toggleState == 'editable'"
+                    (click)="toggleState = 'editable'">{{ isPortuguese ? 'Editável' : 'Editable' }}</button>
+                  <button type="button" class="btn btn-light" [class.active]="toggleState == 'readonly'"
+                    (click)="toggleState = 'readonly'">readonly</button>
+                  <button type="button" class="btn btn-light" [class.active]="toggleState == 'disabled'"
+                    (click)="toggleState = 'disabled'">disabled</button>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="demo-summary-box h-100">
+                  <div><strong>disabled:</strong> {{ isPortuguese ? 'fora do tab, sem foco, fundo esmaecido. Use quando o campo não se aplica no estado atual.' : 'out of the tab order, not focusable, dimmed background. Use when the field does not apply in the current state.' }}</div>
+                  <div class="mt-2"><strong>readonly:</strong> {{ isPortuguese ? 'focável e legível, com aria-readonly; não abre o painel, não limpa e não mostra a seta. Use quando o valor importa mas não pode ser alterado aqui.' : 'focusable and readable, with aria-readonly; does not open the panel, clear, or show the caret. Use when the value matters but cannot be changed here.' }}</div>
+                </div>
+              </div>
+            </div>
+
             <div class="demo-summary-box">
               <div><strong>{{ t.common.status }}:</strong> {{ selectedStatusLabel }}</div>
               <div><strong>modelChange:</strong> {{ selectedStatusModelLabel }}</div>
@@ -171,6 +244,10 @@
                 <h6 class="mb-2 mt-4">Busca opcional</h6>
                 <p class="text-muted mb-3">A busca fica ligada por padrão porque o select costuma ser usado com listas longas. Quando a tela tem poucos itens e o programador controla esse tamanho, use <code>[searchable]="false"</code>; o overlay abre direto na lista de opções.</p>
                 <li-highlight [code]="searchDisabledSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">Desabilitado e somente leitura</h6>
+                <p class="text-muted mb-3"><code>[disabled]</code> tira o campo do tab e esmaece o fundo, acompanhando o tema claro ou escuro. <code>[readonly]</code> mantém o foco e as cores normais, marca <code>aria-readonly</code> e só impede a interação: o painel não abre, o botão de limpar some e a seta é ocultada. Em ambos, o <code>ngModel</code> continua aceitando escrita programática.</p>
+                <li-highlight [code]="disabledReadonlySnippet" language="html"></li-highlight>
 
                 <h6 class="mb-2 mt-4">Validação declarativa</h6>
                 <p class="text-muted mb-3">Para selects, a base declarativa fica em <code>liRules</code>, <code>liMessages</code> e <code>liValidationMode</code>. <code>liType</code> é exclusivo do <code>li-input</code>.</p>

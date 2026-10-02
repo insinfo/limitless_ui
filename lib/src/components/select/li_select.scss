@@ -29,6 +29,15 @@ $background-color: white;
     cursor: not-allowed;
 }
 
+.dropdown-button--readonly {
+    background-image: none !important;
+    cursor: default;
+}
+
+.li-select-custom-trigger.readonly {
+    cursor: default;
+}
+
 .li-select-custom-trigger {
     display: inline-block;
     max-width: 100%;
@@ -51,7 +60,7 @@ $background-color: white;
 }
 
 .dropdown-button--no-native-indicator {
-    background-image: none;
+    background-image: none !important;
 }
 
 .dropdown-button--with-overlay-icon {

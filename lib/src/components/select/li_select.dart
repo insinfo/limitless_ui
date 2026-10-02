@@ -56,6 +56,8 @@ class LiSelectTriggerContext {
 
   bool get disabled => _component.isDisabled;
 
+  bool get readonly => _component.readonly;
+
   bool get isOpen => _component.dropdownOpen;
 
   void open() => _component.openDropdown();
@@ -142,6 +144,19 @@ class LiSelectComponent
 
   @Input('disabled')
   bool isDisabled = false;
+
+  /// Shows the selected value without letting the user change it.
+  ///
+  /// Unlike [isDisabled], the trigger stays focusable and keeps the regular
+  /// field colours, so the value can still be read, tabbed to and announced by
+  /// a screen reader (`aria-readonly`). The panel does not open, the clear
+  /// button is hidden and the caret is dropped so the field does not invite a
+  /// click. Programmatic writes through `ngModel` still go through.
+  @Input()
+  bool readonly = false;
+
+  /// Whether the user can open the panel or change the value.
+  bool get isInteractive => !isDisabled && !readonly;
 
   @Input()
   bool invalid = false;
@@ -342,7 +357,7 @@ class LiSelectComponent
 
   bool get hasSelection => currentValue != null;
 
-  bool get showsClearButton => showClearButton && hasSelection;
+  bool get showsClearButton => showClearButton && hasSelection && !readonly;
 
   String? get selectedDataValue => currentValue?.value?.toString();
 
@@ -360,6 +375,7 @@ class LiSelectComponent
         hidesNativeIndicator ? 'dropdown-button--no-native-indicator' : '',
         usesOverlayTriggerIcon ? 'dropdown-button--with-overlay-icon' : '',
         showsClearButton ? 'dropdown-button--with-clear' : '',
+        readonly ? 'dropdown-button--readonly' : '',
         effectiveInvalid ? 'is-invalid' : '',
         effectiveValid ? 'is-valid' : '',
       ]);
@@ -602,6 +618,10 @@ class LiSelectComponent
   }
 
   void openDropdown() {
+    if (!isInteractive) {
+      return;
+    }
+
     final wasOpen = dropdownOpen;
 
     if (!wasOpen && !_dispatchBeforeOpen()) {
@@ -686,7 +706,7 @@ class LiSelectComponent
 
   void clearSelection([html.Event? event]) {
     event?.stopPropagation();
-    if (isDisabled || currentValue == null) {
+    if (!isInteractive || currentValue == null) {
       return;
     }
 
@@ -704,7 +724,7 @@ class LiSelectComponent
   }
 
   void toggleDropdown() {
-    if (isDisabled) {
+    if (!isInteractive) {
       return;
     }
 

@@ -146,7 +146,7 @@ $background-color: white;
 }
 
 .dropdown-button--no-native-indicator {
-    background-image: none;
+    background-image: none !important;
 }
 
 .dropdown-button--with-overlay-icon {
