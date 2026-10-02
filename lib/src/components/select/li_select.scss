@@ -24,7 +24,7 @@ $background-color: white;
 }
 
 .dropdown-button:disabled {
-    background-color: #e9ecef;
+    background-color: color-mix(in srgb, var(--body-bg) 88%, var(--body-color) 12%);
     opacity: 0.65;
     cursor: not-allowed;
 }
