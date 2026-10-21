@@ -27,7 +27,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.33`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.44`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -48,7 +48,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.33
+  limitless_ui: ^1.0.0-dev.44
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -1441,6 +1441,8 @@ Most useful features:
 - per-cell styling with `cellStyleResolver` and per-row styling with `rowStyleResolver`;
 - grid mode with `gridMode`, `gridTemplateColumns`, `gridGap`, projected `<template li-datatable-card let-ctx>`, and `customCardBuilder`;
 - built-in XLSX and PDF export support.
+
+PDF export notes: the built-in PDF (`TinePDF`, also used by `li-datatable`) draws text with the standard Helvetica font in `WinAnsiEncoding`, that is, Windows-1252. Every Latin-1 character plus `€ ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ Ž ‘ ’ “ ” • – — ˜ ™ š › œ ž Ÿ` comes out as written. A character without a 1252 byte never aborts the export; it is substituted predictably (`TinePDF.encodeWinAnsi` documents the rules): letters with diacritics outside 1252 become the base letter (`ł` → `l`), typographic variants become their plain form (`‐` → `-`, narrow spaces → space, `→` → `->`), zero-width characters are dropped, and anything else, such as emoji or CJK, becomes `?`. Cell values that contain HTML are reduced to their text with an inert `DomParser` document, so exporting never runs markup from the data.
 
 Current datatable performance notes:
 

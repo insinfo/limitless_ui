@@ -461,6 +461,82 @@ Por baixo dos dois casos acima está o `li-modal`, que agora expõe `open` além
 
 Vale um cuidado ao adotar `lazyContent` num modal que já existe: o conteúdo é destruído ao fechar e recriado a cada abertura. Um `@ViewChild` que aponte para dentro do modal fica nulo enquanto ele está fechado, e qualquer busca feita no `ngOnInit` do conteúdo passa a rodar a cada abertura.
 
+## Codificação do texto no PDF em `1.0.0-dev.44`
+
+### O defeito
+
+O `TinePDF` declara a única fonte como `/BaseFont /Helvetica` com
+`/Encoding /WinAnsiEncoding`, mas gravava todo texto com `latin1.encode(str)`.
+WinAnsiEncoding é o Windows-1252, que difere do ISO-8859-1 justamente em
+0x80–0x9F — é ali que moram `€ … — – “ ” ‘ ’ • ™`. O `latin1.encode` lança
+exceção para todos eles e para qualquer coisa acima de U+00FF; um único
+travessão ou aspa curva numa célula derrubava a exportação de PDF inteira do
+`li-datatable` com `Invalid argument (string): Contains invalid characters`.
+
+### O codificador
+
+`TinePDF.encodeWinAnsi(String)` converte o texto nos bytes que a fonte espera e
+nunca lança exceção por causa do conteúdo. Código a código:
+
+| entrada | saída |
+|---|---|
+| U+0000–U+007F e U+00A0–U+00FF | o mesmo byte (Latin-1 direto) |
+| `€ ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ Ž ‘ ’ “ ” • – — ˜ ™ š › œ ž Ÿ` | o byte do 1252, 0x80–0x9F |
+| marca combinante após uma letra (`e` + U+0301) | a letra pré-composta do 1252 (`é`) quando existe; senão a marca é descartada |
+| Latim Estendido-A (`ă ą ć č đ ę ğ ı ł ń ő ř ś ş ţ ů ű ź ż`…), `ș ț` | a letra base; `Ĳ ĳ` viram `IJ ij` |
+| `‐ ‑ ‒ ⁃ −` | `-`; `―` vira `—` |
+| U+2000–U+200A, U+202F, U+205F, U+3000, U+2028, U+2029 | espaço comum |
+| `‛ ′ ‵ ʼ ʹ ❛ ❜` / `‟ ″ ‶ ʺ ❝ ❞` | `'` / `"` |
+| `→ ← ↔ ⇒ ≤ ≥ ≠ ≈ ⁄ ∕ ∗ ∙ ‧ ‣ № μ` | `-> <- <-> => <= >= != ~ / / * · · • No µ` |
+| formas de largura total U+FF01–U+FF5E | o caractere ASCII |
+| espaço de largura zero, joiners, word joiner, BOM, seletores de variação | descartados |
+| todo o resto: emoji, CJK, outras escritas, controles C1, surrogates soltos | `?` |
+
+U+00A0 (espaço não separável) e U+00AD (hífen suave) existem no WinAnsi e são
+mantidos. Os controles C1 U+0080–U+009F **não** passam direto: no 1252 esses
+bytes são outros caracteres. Os escapes de string do PDF para `(`, `)`, `\`, CR
+e LF continuam iguais; todo byte fora de 0x20–0x7E sai como escape octal, e o
+content stream continua ASCII.
+
+### Larguras
+
+`TinePDF.measureText` usava a tabela da Helvetica só em 0x20–0x7E e contava 556
+para o resto. Agora mede os bytes já codificados, com as larguras do AFM da
+Helvetica para toda a faixa 0x80–0xFF: `—` e `…` valem 1000, `í` vale 278, `“`
+vale 333. Caractere substituído mede como a substituição (`→` como `->`), e o
+descartado não ocupa nada. As larguras de coluna e a quebra de linha do
+datatable usam esses números, e a quebra não separa mais um par de surrogates
+em duas linhas.
+
+### Links
+
+Ações de URI no PDF precisam ser ASCII de 7 bits. `PageContext.link` agora
+aplica percent-encoding UTF-8 a caracteres não ASCII e a espaços, preservando
+escapes `%XX` existentes, e a URI é sempre gravada como string do PDF — uma URL
+relativa começando com `/` saía como nome do PDF.
+
+### HTML nas células exportadas
+
+Para tirar o texto de uma célula cujo valor contém HTML, o exportador fazia
+`setInnerHtml(raw, treeSanitizer: NodeTreeSanitizer.trusted)` num
+`DivElement`. Mesmo solto, esse elemento pertence ao documento vivo: um
+`<img src=x onerror=...>` vindo do dado era baixado e o handler executava quando
+o usuário clicava em "exportar". Agora o valor é lido com
+`DomParser().parseFromString(raw, 'text/html')`, um documento sem contexto de
+navegação — nenhum script roda, nenhum handler dispara, nenhum recurso é
+pedido — e o texto sai do `<body>` dele.
+
+### Testes
+
+- `test/tine_pdf_test.dart` (VM): cada byte do 1252 em 0x80–0x9F, Latin-1 e
+  acentos do português, composição NFD, redução à letra base, substituições
+  tipográficas, `?` para emoji/CJK/C1/surrogate solto, PDF com `“ — … €`
+  contendo os escapes octais esperados, URIs de link e larguras.
+- `test/datatable/datatable_exporter_test.dart` (Chrome): valor com HTML vira
+  texto sem rodar `onerror`/`onload`/`<script>` e sem pedir a imagem;
+  `exportPdf` conclui com `“ — … € 😀 中文` nas linhas. Os dois testes falham
+  contra a implementação anterior.
+
 ## A escala de empilhamento dos overlays em `1.0.0-dev.42`
 
 Uma biblioteca de UI com dez tipos de overlay precisa de **uma** resposta para

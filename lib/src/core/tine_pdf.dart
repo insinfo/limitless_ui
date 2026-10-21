@@ -166,9 +166,203 @@ _JpegInfo _parseJpeg(Uint8List bytes) {
   throw Exception('Invalid JPEG: no valid SOF marker found');
 }
 
-String _pdfString(String str) {
+/// Helvetica advance widths (1/1000 em) for the WinAnsiEncoding bytes
+/// 0x80–0xFF, taken from the standard Helvetica AFM. The slots that
+/// Windows-1252 leaves undefined (0x81, 0x8D, 0x8F, 0x90, 0x9D) are never
+/// produced by [TinePDF.encodeWinAnsi] and keep the generic 556 width.
+const List<int> _highWidths = [
+  // 0x80
+  556, 556, 222, 556, 333, 1000, 556, 556,
+  333, 1000, 667, 333, 1000, 556, 611, 556,
+  // 0x90
+  556, 222, 222, 333, 333, 350, 556, 1000,
+  333, 1000, 500, 333, 944, 556, 500, 667,
+  // 0xA0
+  278, 333, 556, 556, 556, 556, 260, 556,
+  333, 737, 370, 556, 584, 333, 737, 333,
+  // 0xB0
+  400, 584, 333, 333, 333, 556, 537, 278,
+  333, 333, 365, 556, 834, 834, 834, 611,
+  // 0xC0
+  667, 667, 667, 667, 667, 667, 1000, 722,
+  667, 667, 667, 667, 278, 278, 278, 278,
+  // 0xD0
+  722, 722, 778, 778, 778, 778, 778, 584,
+  778, 722, 722, 722, 722, 667, 667, 611,
+  // 0xE0
+  556, 556, 556, 556, 556, 556, 889, 500,
+  556, 556, 556, 556, 278, 278, 278, 278,
+  // 0xF0
+  556, 556, 556, 556, 556, 556, 556, 584,
+  611, 556, 556, 556, 556, 500, 556, 500,
+];
+
+/// Width of one WinAnsiEncoding byte in Helvetica, in 1/1000 em.
+int _byteWidth(int byte) {
+  if (byte >= 32 && byte <= 126) return _widths[byte - 32];
+  if (byte >= 0x80) return _highWidths[byte - 0x80];
+  return 556;
+}
+
+/// Unicode code points that Windows-1252 places in 0x80–0x9F, the range
+/// where it differs from ISO-8859-1.
+const Map<int, int> _cp1252HighBytes = {
+  0x20AC: 0x80, // €
+  0x201A: 0x82, // ‚
+  0x0192: 0x83, // ƒ
+  0x201E: 0x84, // „
+  0x2026: 0x85, // …
+  0x2020: 0x86, // †
+  0x2021: 0x87, // ‡
+  0x02C6: 0x88, // ˆ
+  0x2030: 0x89, // ‰
+  0x0160: 0x8A, // Š
+  0x2039: 0x8B, // ‹
+  0x0152: 0x8C, // Œ
+  0x017D: 0x8E, // Ž
+  0x2018: 0x91, // ‘
+  0x2019: 0x92, // ’
+  0x201C: 0x93, // “
+  0x201D: 0x94, // ”
+  0x2022: 0x95, // •
+  0x2013: 0x96, // –
+  0x2014: 0x97, // —
+  0x02DC: 0x98, // ˜
+  0x2122: 0x99, // ™
+  0x0161: 0x9A, // š
+  0x203A: 0x9B, // ›
+  0x0153: 0x9C, // œ
+  0x017E: 0x9E, // ž
+  0x0178: 0x9F, // Ÿ
+};
+
+/// Base letters for Latin Extended-A (U+0100–U+017F), one per code point.
+/// The few code points that Windows-1252 can encode (Œ œ Š š Ÿ Ž ž) are
+/// resolved by [_cp1252HighBytes] before this table is consulted; Ĳ and ĳ
+/// are expanded by [_winAnsiSubstitutes].
+const String _latinExtendedABase = 'AaAaAaCcCcCcCcDd'
+    'DdEeEeEeEeEeGgGg'
+    'GgGgHhHhIiIiIiIi'
+    'IiIiJjKkkLlLlLlL'
+    'lLlNnNnNnnNnOoOo'
+    'OoOoRrRrRrSsSsSs'
+    'SsTtTtTtUuUuUuUu'
+    'UuUuWwYyYZzZzZzs';
+
+/// Combining diacritical marks that can merge with the preceding ASCII
+/// letter into a character Windows-1252 can encode (text in NFD form).
+/// Each entry maps a mark to `[bases, composed]`, position by position.
+const Map<int, List<String>> _combiningCompositions = {
+  0x0300: ['AEIOUaeiou', 'ÀÈÌÒÙàèìòù'],
+  0x0301: ['AEIOUYaeiouy', 'ÁÉÍÓÚÝáéíóúý'],
+  0x0302: ['AEIOUaeiou', 'ÂÊÎÔÛâêîôû'],
+  0x0303: ['ANOano', 'ÃÑÕãñõ'],
+  0x0308: ['AEIOUYaeiouy', 'ÄËÏÖÜŸäëïöüÿ'],
+  0x030A: ['Aa', 'Åå'],
+  0x030C: ['SZsz', 'ŠŽšž'],
+  0x0327: ['Cc', 'Çç'],
+};
+
+/// Replacements for characters that Windows-1252 cannot encode but that
+/// have an obvious readable equivalent. Every replacement is itself
+/// encodable without further substitution.
+const Map<int, String> _winAnsiSubstitutes = {
+  // Ligatures and letters outside Latin Extended-A.
+  0x0132: 'IJ', 0x0133: 'ij',
+  0x0218: 'S', 0x0219: 's', 0x021A: 'T', 0x021B: 't',
+  0x03BC: 'µ', // Greek mu -> micro sign
+  // Hyphens and dashes.
+  0x2010: '-', 0x2011: '-', 0x2012: '-', 0x2043: '-', 0x2212: '-',
+  0x2015: '—', // horizontal bar -> em dash
+  // Quotes, apostrophes and primes.
+  0x02B9: "'", 0x02BA: '"', 0x02BC: "'",
+  0x201B: "'", 0x201F: '"',
+  0x2032: "'", 0x2033: '"', 0x2035: "'", 0x2036: '"',
+  0x275B: "'", 0x275C: "'", 0x275D: '"', 0x275E: '"',
+  // Other punctuation and symbols.
+  0x2023: '•', // triangular bullet -> bullet
+  0x2024: '.', 0x2025: '..',
+  0x2027: '·', 0x2219: '·',
+  0x2044: '/', 0x2215: '/', 0x2216: r'\', 0x2217: '*',
+  0x2116: 'No',
+  0x2190: '<-', 0x2192: '->', 0x2194: '<->', 0x21D2: '=>',
+  0x2248: '~', 0x2260: '!=', 0x2264: '<=', 0x2265: '>=',
+};
+
+/// Returns the Windows-1252 byte for [codePoint] when it has a direct
+/// representation, or `null` otherwise. The C1 control range U+0080–U+009F
+/// has no representation: those bytes mean other characters in 1252.
+int? _directWinAnsiByte(int codePoint) {
+  if (codePoint < 0x80 || (codePoint >= 0xA0 && codePoint <= 0xFF)) {
+    return codePoint;
+  }
+  return _cp1252HighBytes[codePoint];
+}
+
+bool _isSpaceVariant(int c) =>
+    (c >= 0x2000 && c <= 0x200A) ||
+    c == 0x2028 ||
+    c == 0x2029 ||
+    c == 0x202F ||
+    c == 0x205F ||
+    c == 0x3000;
+
+bool _isIgnorable(int c) =>
+    (c >= 0x200B && c <= 0x200D) ||
+    c == 0x2060 ||
+    c == 0xFEFF ||
+    (c >= 0xFE00 && c <= 0xFE0F) ||
+    (c >= 0x0300 && c <= 0x036F);
+
+void _appendWinAnsi(String text, List<int> out) {
+  for (final c in text.runes) {
+    final direct = _directWinAnsiByte(c);
+    if (direct != null) {
+      out.add(direct);
+      continue;
+    }
+
+    final composition = _combiningCompositions[c];
+    if (composition != null && out.isNotEmpty) {
+      final index = composition[0].indexOf(String.fromCharCode(out.last));
+      if (index >= 0) {
+        out[out.length - 1] =
+            _directWinAnsiByte(composition[1].codeUnitAt(index))!;
+        continue;
+      }
+    }
+    if (_isIgnorable(c)) continue;
+    if (_isSpaceVariant(c)) {
+      out.add(0x20);
+      continue;
+    }
+
+    final substitute = _winAnsiSubstitutes[c];
+    if (substitute != null) {
+      for (final unit in substitute.codeUnits) {
+        out.add(_directWinAnsiByte(unit)!);
+      }
+      continue;
+    }
+    if (c >= 0x0100 && c <= 0x017F) {
+      out.add(_latinExtendedABase.codeUnitAt(c - 0x0100));
+      continue;
+    }
+    if (c >= 0xFF01 && c <= 0xFF5E) {
+      // Fullwidth ASCII forms.
+      out.add(c - 0xFEE0);
+      continue;
+    }
+    out.add(0x3F); // '?'
+  }
+}
+
+String _pdfString(String str) =>
+    _pdfStringFromBytes(TinePDF.encodeWinAnsi(str));
+
+String _pdfStringFromBytes(List<int> bytes) {
   final buffer = StringBuffer('(');
-  for (final byte in latin1.encode(str)) {
+  for (final byte in bytes) {
     switch (byte) {
       case 0x5C:
         buffer.write(r'\\');
@@ -194,6 +388,23 @@ String _pdfString(String str) {
     }
   }
   buffer.write(')');
+  return buffer.toString();
+}
+
+/// PDF URI actions must be 7-bit ASCII: anything else (spaces included) is
+/// percent-encoded as UTF-8; existing `%XX` escapes are kept as they are.
+String _asciiUri(String url) {
+  final buffer = StringBuffer();
+  for (final c in url.runes) {
+    if (c > 0x20 && c < 0x7F) {
+      buffer.writeCharCode(c);
+    } else {
+      for (final byte in utf8.encode(String.fromCharCode(c))) {
+        buffer
+            .write('%${byte.toRadixString(16).toUpperCase().padLeft(2, '0')}');
+      }
+    }
+  }
   return buffer.toString();
 }
 
@@ -342,7 +553,7 @@ class PageContext {
 
   void link(String url, double x, double y, double w, double h,
       {String? underline}) {
-    _links.add(_LinkEntry(url, [x, y, x + w, y + h]));
+    _links.add(_LinkEntry(_asciiUri(url), [x, y, x + w, y + h]));
     if (underline != null) {
       String c = _colorOp(_parseColor(underline), 'RG');
       if (c.isNotEmpty) {
@@ -364,13 +575,38 @@ class TinePDF {
   int _nextId = 1;
   bool _built = false;
 
+  /// Width of [str] in points when drawn with Helvetica at [size].
+  ///
+  /// The text is measured exactly as [PageContext.text] writes it: after
+  /// [encodeWinAnsi], so a substituted character takes the width of its
+  /// replacement and a dropped one takes none.
   static double measureText(String str, double size) {
     int width = 0;
-    for (int i = 0; i < str.length; i++) {
-      int code = str.codeUnitAt(i);
-      width += (code >= 32 && code <= 126) ? _widths[code - 32] : 556;
+    for (final byte in encodeWinAnsi(str)) {
+      width += _byteWidth(byte);
     }
     return (width * size) / 1000.0;
+  }
+
+  /// Encodes [text] as WinAnsiEncoding (Windows-1252), the encoding the
+  /// built-in Helvetica font is declared with.
+  ///
+  /// Never throws because of the content. Characters without a 1252 byte
+  /// are replaced predictably:
+  ///
+  /// * letters with diacritics outside 1252 become the base letter
+  ///   (`ă` → `a`, `ł` → `l`, `ș` → `s`); combining marks merge with the
+  ///   preceding letter when the result exists in 1252 (`e` + U+0301 → `é`)
+  ///   and are dropped otherwise;
+  /// * typographic variants become their plain form: `‐ ‑ ‒ −` → `-`,
+  ///   thin, narrow and ideographic spaces → space, `‛ ′ ʼ` → `'`,
+  ///   `‟ ″` → `"`, `→` → `->`, `≤` → `<=`, fullwidth forms → ASCII;
+  /// * zero-width characters and variation selectors are dropped;
+  /// * everything else (emoji, CJK, C1 controls...) becomes `?`.
+  static Uint8List encodeWinAnsi(String text) {
+    final out = <int>[];
+    _appendWinAnsi(text, out);
+    return Uint8List.fromList(out);
   }
 
   Ref _addObject(Map<String, Object?> dict, [Uint8List? streamBytes]) {
@@ -404,7 +640,13 @@ class TinePDF {
               'Subtype': '/Link',
               'Rect': lnk.rect,
               'Border': [0, 0, 0],
-              'A': {'Type': '/Action', 'S': '/URI', 'URI': lnk.url}
+              // Serialized up front so a relative URL starting with "/" or
+              // "(" is not emitted as a PDF name or as raw string syntax.
+              'A': {
+                'Type': '/Action',
+                'S': '/URI',
+                'URI': _pdfStringFromBytes(lnk.url.codeUnits)
+              }
             }))
         .toList();
 

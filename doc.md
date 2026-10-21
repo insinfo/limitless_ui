@@ -20,6 +20,83 @@ This is not a toy setup. The goal is a structure that can support real CRUD modu
 
 Important terminology note: in Dart servers, "multithreaded" usually means **multi-isolate**. Dart isolates do not share memory the way native OS threads do. That is the correct mental model for scalable Dart backend processes.
 
+## PDF text encoding in `1.0.0-dev.44`
+
+### The defect
+
+`TinePDF` declares its only font as `/BaseFont /Helvetica` with
+`/Encoding /WinAnsiEncoding`, but wrote every string with
+`latin1.encode(str)`. WinAnsiEncoding is Windows-1252, which differs from
+ISO-8859-1 exactly in 0x80–0x9F: that is where `€ … — – “ ” ‘ ’ • ™` live.
+`latin1.encode` throws for all of them, and for anything above U+00FF, so a
+single typographic dash or curly quote in one cell aborted the whole
+`li-datatable` PDF export with `Invalid argument (string): Contains invalid
+characters`.
+
+### The encoder
+
+`TinePDF.encodeWinAnsi(String)` turns text into the bytes the font expects and
+never throws because of the content. Code point by code point:
+
+| input | output |
+|---|---|
+| U+0000–U+007F and U+00A0–U+00FF | the same byte (Latin-1 direct) |
+| `€ ‚ ƒ „ … † ‡ ˆ ‰ Š ‹ Œ Ž ‘ ’ “ ” • – — ˜ ™ š › œ ž Ÿ` | their 1252 byte, 0x80–0x9F |
+| combining mark after a letter (`e` + U+0301) | the precomposed 1252 letter (`é`) when it exists, otherwise the mark is dropped |
+| Latin Extended-A (`ă ą ć č đ ę ğ ı ł ń ő ř ś ş ţ ů ű ź ż`…), `ș ț` | the base letter; `Ĳ ĳ` become `IJ ij` |
+| `‐ ‑ ‒ ⁃ −` | `-`; `―` becomes `—` |
+| U+2000–U+200A, U+202F, U+205F, U+3000, U+2028, U+2029 | a plain space |
+| `‛ ′ ‵ ʼ ʹ ❛ ❜` / `‟ ″ ‶ ʺ ❝ ❞` | `'` / `"` |
+| `→ ← ↔ ⇒ ≤ ≥ ≠ ≈ ⁄ ∕ ∗ ∙ ‧ ‣ № μ` | `-> <- <-> => <= >= != ~ / / * · · • No µ` |
+| fullwidth forms U+FF01–U+FF5E | the ASCII character |
+| zero-width space/joiners, word joiner, BOM, variation selectors | dropped |
+| anything else: emoji, CJK, other scripts, C1 controls, lone surrogates | `?` |
+
+U+00A0 (no-break space) and U+00AD (soft hyphen) exist in WinAnsi and are kept
+as they are. The C1 controls U+0080–U+009F are **not** passed through: in 1252
+those bytes are other characters. The PDF string escapes for `(`, `)`, `\`,
+CR and LF are unchanged; every byte outside 0x20–0x7E is written as an octal
+escape, so the content stream stays ASCII.
+
+### Widths
+
+`TinePDF.measureText` used the Helvetica table only for 0x20–0x7E and counted
+556 for everything else. It now measures the encoded bytes, with the Helvetica
+AFM widths for the whole 0x80–0xFF range: `—` and `…` are 1000, `í` is 278,
+`“` is 333. A substituted character measures as its replacement (`→` as `->`),
+a dropped one as nothing. The datatable column widths and line wrapping use
+these numbers, and the wrapper no longer splits a surrogate pair across two
+lines.
+
+### Links
+
+URI actions in a PDF must be 7-bit ASCII. `PageContext.link` now
+percent-encodes non-ASCII characters and spaces as UTF-8, keeping existing
+`%XX` escapes, and the URI is always written as a PDF string — a relative URL
+starting with `/` used to be emitted as a PDF name.
+
+### HTML in exported cells
+
+To get the text of a cell whose value contains HTML, the exporter parsed it
+with `setInnerHtml(raw, treeSanitizer: NodeTreeSanitizer.trusted)` on a
+`DivElement`. Even detached, that element belongs to the live document: an
+`<img src=x onerror=...>` in the data was fetched and its handler ran when the
+user clicked "export". The value is now parsed with
+`DomParser().parseFromString(raw, 'text/html')`, a document without browsing
+context — no script runs, no handler fires, no resource is requested — and the
+text is read from its `<body>`.
+
+### Tests
+
+- `test/tine_pdf_test.dart` (VM): every 1252 byte in 0x80–0x9F, Latin-1 and
+  Brazilian Portuguese accents, NFD composition, base-letter reduction,
+  typographic substitutions, `?` for emoji/CJK/C1/lone surrogates, a PDF with
+  `“ — … €` containing the expected octal escapes, link URIs and widths.
+- `test/datatable/datatable_exporter_test.dart` (Chrome): HTML values are
+  reduced to text without running `onerror`/`onload`/`<script>` and without
+  requesting the image; `exportPdf` completes with `“ — … € 😀 中文` in the
+  rows. Both tests fail against the previous implementation.
+
 ## The overlay stacking scale in `1.0.0-dev.42`
 
 A UI library with ten kinds of overlay needs **one** answer to "what sits on

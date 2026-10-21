@@ -433,6 +433,170 @@ void main() {
     });
   });
 
+  group('WinAnsi encoding', () {
+    test('maps every defined Windows-1252 byte in 0x80-0x9F', () {
+      const expected = <String, int>{
+        '€': 0x80,
+        '‚': 0x82,
+        'ƒ': 0x83,
+        '„': 0x84,
+        '…': 0x85,
+        '†': 0x86,
+        '‡': 0x87,
+        'ˆ': 0x88,
+        '‰': 0x89,
+        'Š': 0x8A,
+        '‹': 0x8B,
+        'Œ': 0x8C,
+        'Ž': 0x8E,
+        '‘': 0x91,
+        '’': 0x92,
+        '“': 0x93,
+        '”': 0x94,
+        '•': 0x95,
+        '–': 0x96,
+        '—': 0x97,
+        '˜': 0x98,
+        '™': 0x99,
+        'š': 0x9A,
+        '›': 0x9B,
+        'œ': 0x9C,
+        'ž': 0x9E,
+        'Ÿ': 0x9F,
+      };
+      expect(expected, hasLength(27));
+      expected.forEach((char, byte) {
+        expect(TinePDF.encodeWinAnsi(char), [byte],
+            reason: 'U+${char.codeUnitAt(0).toRadixString(16)}');
+      });
+    });
+
+    test('keeps ASCII and Latin-1 code points as their own byte', () {
+      final ascii = String.fromCharCodes(List.generate(128, (i) => i));
+      expect(TinePDF.encodeWinAnsi(ascii), List.generate(128, (i) => i));
+
+      final latin1 = String.fromCharCodes(List.generate(96, (i) => 0xA0 + i));
+      expect(TinePDF.encodeWinAnsi(latin1), List.generate(96, (i) => 0xA0 + i));
+    });
+
+    test('encodes Brazilian Portuguese accents directly', () {
+      const text = 'ÁÉÍÓÚÂÊÔÃÕÀÇÜáéíóúâêôãõàçüºª';
+      expect(TinePDF.encodeWinAnsi(text), text.codeUnits);
+      expect(TinePDF.encodeWinAnsi('Relatório às 10h — São Paulo'), [
+        ...'Relat'.codeUnits,
+        0xF3,
+        ...'rio '.codeUnits,
+        0xE0,
+        ...'s 10h '.codeUnits,
+        0x97,
+        ...' S'.codeUnits,
+        0xE3,
+        ...'o Paulo'.codeUnits,
+      ]);
+    });
+
+    test('composes combining marks with the preceding letter', () {
+      // "ação" and "Ö" written in NFD form.
+      expect(TinePDF.encodeWinAnsi('ação'), [0x61, 0xE7, 0xE3, 0x6F]);
+      expect(TinePDF.encodeWinAnsi('Ö'), [0xD6]);
+      expect(TinePDF.encodeWinAnsi('š'), [0x9A]);
+      // No 1252 character for "q" + acute: the mark is dropped.
+      expect(TinePDF.encodeWinAnsi('q́'), 'q'.codeUnits);
+      expect(TinePDF.encodeWinAnsi('́x'), 'x'.codeUnits);
+    });
+
+    test('reduces letters outside Windows-1252 to the base letter', () {
+      expect(_encodedText('ĂăĄąĆćČčĐđĘęĞğİıŁłŃńŐőŘřŚśŞşŢţŦŧŨũŮůŰűŹźŻż'),
+          'AaAaCcCcDdEeGgIiLlNnOoRrSsSsTtTtUuUuUuZzZz');
+      expect(_encodedText('Ĳĳ ȘșȚț'), 'IJij SsTt');
+    });
+
+    test('maps typographic variants to plain equivalents', () {
+      expect(_encodedText('a‐b‑c‒d−e'), 'a-b-c-d-e');
+      expect(_encodedText('a b c d　e'), 'a b c d e');
+      expect(_encodedText('‛x′ ʼy ‟z″'), "'x' 'y \"z\"");
+      expect(_encodedText('a→b ≤ c ≥ d ≠ e'), 'a->b <= c >= d != e');
+      expect(_encodedText('ＡＢＣ１２３'), 'ABC123');
+      expect(TinePDF.encodeWinAnsi('―'), [0x97]);
+      expect(TinePDF.encodeWinAnsi('μ'), [0xB5]);
+    });
+
+    test('drops zero-width characters and variation selectors', () {
+      expect(_encodedText('a​b‍c﻿d⁠e️'), 'abcde');
+    });
+
+    test('replaces anything else with a question mark', () {
+      expect(_encodedText('中文'), '??');
+      expect(_encodedText('😀 ok'), '? ok');
+      expect(_encodedText('👍🏽'), '??');
+      expect(_encodedText('Ωש'), '??');
+      expect(TinePDF.encodeWinAnsi('\u0081\u009D'), [0x3F, 0x3F],
+          reason: 'C1 controls must not reuse the 1252 bytes 0x80-0x9F');
+      expect(TinePDF.encodeWinAnsi('x\uD800y'), [0x78, 0x3F, 0x79],
+          reason: 'a lone surrogate is unrepresentable, not an error');
+    });
+
+    test('every substitute is itself a single-byte WinAnsi string', () {
+      final all = String.fromCharCodes([
+        for (var c = 0x100; c <= 0x2FFF; c++) c,
+        for (var c = 0xFF01; c <= 0xFF5E; c++) c,
+      ]);
+      final bytes = TinePDF.encodeWinAnsi(all);
+      expect(bytes.every((b) => b >= 0 && b <= 0xFF), isTrue);
+      expect(
+          bytes.where((b) => const [0x81, 0x8D, 0x8F, 0x90, 0x9D].contains(b)),
+          isEmpty,
+          reason: 'bytes undefined in Windows-1252 are never produced');
+    });
+
+    test('text with quotes, dashes, ellipsis and euro builds without throwing',
+        () {
+      final doc = TinePDF()
+        ..page(build: (ctx) {
+          ctx.text('“Olá” — teste… €10 (ok) \\ 中', 50, 700, 12);
+          ctx.text('Centro – 😀', 50, 680, 12,
+              align: TextAlign.right, width: 200);
+        });
+
+      late Uint8List bytes;
+      expect(() => bytes = doc.build(), returnsNormally);
+      final content = _content(bytes);
+
+      expect(content,
+          contains(r'(\223Ol\341\224 \227 teste\205 \20010 \(ok\) \\ ?) Tj'));
+      expect(content, contains(r'(Centro \226 ?) Tj'));
+      expect(content, contains('/Encoding /WinAnsiEncoding'));
+    });
+
+    test('link URIs are percent-encoded ASCII and relative paths stay strings',
+        () {
+      final doc = TinePDF()
+        ..page(build: (ctx) {
+          ctx.link('https://example.com/ação?q=a b&r=%20', 50, 700, 100, 20);
+          ctx.link('/relativo', 50, 650, 100, 20);
+        });
+
+      final content = _content(doc.build());
+
+      expect(content,
+          contains('/URI (https://example.com/a%C3%A7%C3%A3o?q=a%20b&r=%20)'));
+      expect(content, contains('/URI (/relativo)'));
+    });
+
+    test('measureText uses the width of the encoded glyph', () {
+      expect(TinePDF.measureText('—', 1000), 1000);
+      expect(TinePDF.measureText('…', 1000), 1000);
+      expect(TinePDF.measureText('“', 1000), 333);
+      expect(TinePDF.measureText('€', 1000), 556);
+      expect(TinePDF.measureText('í', 1000), 278);
+      expect(TinePDF.measureText('Ç', 1000), 722);
+      expect(TinePDF.measureText('‐', 1000), TinePDF.measureText('-', 1000));
+      expect(TinePDF.measureText('a​b', 12), TinePDF.measureText('ab', 12));
+      expect(TinePDF.measureText('→', 12), TinePDF.measureText('->', 12));
+      expect(TinePDF.measureText('😀', 12), TinePDF.measureText('?', 12));
+    });
+  });
+
   group('markdown', () {
     test('creates valid PDF with headings, lists, paragraph and rule', () {
       final bytes = markdown('''
@@ -642,6 +806,11 @@ Paragraph line.
 TinePDF _docWithEmptyPage() => TinePDF()..page(build: (_) {});
 
 String _content(Uint8List bytes) => utf8.decode(bytes, allowMalformed: true);
+
+/// The WinAnsi bytes of [text] read back one character per byte, which is
+/// readable for the ASCII-only substitutions under test.
+String _encodedText(String text) =>
+    String.fromCharCodes(TinePDF.encodeWinAnsi(text));
 
 Future<Uint8List> _collectStream(Stream<Uint8List> stream) async {
   final chunks = await stream.toList();

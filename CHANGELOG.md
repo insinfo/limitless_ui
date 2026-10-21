@@ -1,3 +1,8 @@
+## 1.0.0-dev.44
+
+- Fixed PDF export (`li-datatable` and `TinePDF`) aborting on any character outside Latin-1, such as `—`, `“ ”`, `…` or `€`: text was encoded with `latin1` while the font is declared as `/WinAnsiEncoding`. Text is now encoded as real Windows-1252 through the new `TinePDF.encodeWinAnsi`, and a character without a 1252 byte is substituted (base letter, plain punctuation, or `?`) instead of throwing. `measureText` measures the encoded bytes with the Helvetica widths of the whole 0x20–0xFF range, and link URIs are percent-encoded to ASCII. See "PDF text encoding in `1.0.0-dev.44`" in `doc.md`.
+- Fixed the datatable export running the HTML of cell values: the text was extracted with `setInnerHtml(..., NodeTreeSanitizer.trusted)` on an element of the live document, so `<img src=x onerror=...>` in the data executed when exporting. The value is now parsed with `DomParser`, which runs no handler and fetches no resource. Covered by `test/datatable/datatable_exporter_test.dart`.
+
 ## 1.0.0-dev.43
 
 - Fixed the disabled `li-select` in dark themes: its button had a hardcoded `#e9ecef` background while the text colour followed the theme, so it rendered light text on a light background. The background now derives from `--body-bg` and `--body-color`, the same rule `li-multi-select` and `datatable-select` already used.

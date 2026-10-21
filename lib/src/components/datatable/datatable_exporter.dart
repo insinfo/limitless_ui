@@ -385,17 +385,26 @@ class DatatableExporter {
     if (col.htmlElement != null) {
       return col.htmlElement!.text?.trim() ?? '';
     }
+    return plainTextFromHtml(col.value);
+  }
 
-    final raw = col.value.trim();
+  /// Extracts the visible text of a cell value that may contain HTML.
+  ///
+  /// The markup is parsed into an inert document created by [DomParser]:
+  /// it has no browsing context, so scripts never run, event handlers such
+  /// as `onerror` never fire and images or other resources are never
+  /// fetched. Parsing the value into an element of the live document (even
+  /// a detached one) would load `<img src=x onerror=...>` and execute the
+  /// handler, which turns exporting a table into running data as code.
+  static String plainTextFromHtml(String value) {
+    final raw = value.trim();
     if (raw.isEmpty) {
       return '';
     }
 
-    final container = DivElement()
-      ..setInnerHtml(raw, treeSanitizer: NodeTreeSanitizer.trusted);
-
-    final normalized =
-        container.text?.replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';
+    final parsed = DomParser().parseFromString(raw, 'text/html');
+    final root = parsed.querySelector('body') ?? parsed.documentElement;
+    final normalized = root?.text?.replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';
 
     return normalized.isNotEmpty ? normalized : raw;
   }
@@ -548,6 +557,11 @@ class DatatableExporter {
       if (safeEnd <= 0) {
         safeEnd = 1;
       }
+      // Never split a surrogate pair: each half would become its own "?".
+      if (safeEnd < remaining.length &&
+          _isHighSurrogate(remaining.codeUnitAt(safeEnd - 1))) {
+        safeEnd = safeEnd > 1 ? safeEnd - 1 : safeEnd + 1;
+      }
 
       parts.add(remaining.substring(0, safeEnd));
       remaining = remaining.substring(safeEnd);
@@ -555,6 +569,9 @@ class DatatableExporter {
 
     return parts;
   }
+
+  static bool _isHighSurrogate(int codeUnit) =>
+      codeUnit >= 0xD800 && codeUnit <= 0xDBFF;
 
   static double _rowHeightForLines(
     int lineCount, {
