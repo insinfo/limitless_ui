@@ -27,7 +27,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.44`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.45`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -48,7 +48,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.44
+  limitless_ui: ^1.0.0-dev.45
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -986,6 +986,19 @@ Future<void> save(LiFormDirective form) async {
 ```
 
 This is the recommended path for robust forms because it keeps field validation local to each component and submit orchestration local to the form container.
+
+Fields do not have to sit in the same template as `liForm`. A long form is usually split into child components — an address section, a contact section — and their fields still belong to the `liForm` of the page around them: `validateAndFocusFirstInvalid()` marks and focuses them like any other. This relies on `LiFormDirective` being declared with `visibility: Visibility.all`, which it is since `1.0.0-dev.45`; before that, ngdart's default `Visibility.local` hid the form from any other view and the fields of a child component silently ignored the submit.
+
+```html
+<!-- page -->
+<div liForm #personForm="liForm">
+  <address-section></address-section>
+  <button type="button" (click)="save(personForm)">Salvar</button>
+</div>
+
+<!-- address-section template: no liForm here, the page's form is found by DI -->
+<li-input label="Street" [liRules]="requiredRules" [(ngModel)]="address.street"></li-input>
+```
 
 ### Native input validation feedback
 

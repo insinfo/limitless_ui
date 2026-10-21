@@ -15,6 +15,11 @@ import 'package:ngforms/ngforms.dart';
 @Directive(
   selector: '[liForm]',
   exportAs: 'liForm',
+  // Fields reach the form through DI from their own component templates.
+  // Without this, ngdart's default Visibility.local hides the directive from
+  // any view other than the one that declares it, and a field inside a
+  // child component silently never learns about the submit.
+  visibility: Visibility.all,
 )
 class LiFormDirective {
   LiFormDirective(

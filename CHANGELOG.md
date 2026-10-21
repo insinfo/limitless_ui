@@ -1,3 +1,7 @@
+## 1.0.0-dev.45
+
+- Fixed fields inside a child component ignoring the `liForm` of the page around them. `LiFormDirective` declared no `visibility`, and ngdart's default is `Visibility.local`: the directive can only be injected from the template that declares it. `li-input`, `li-select` and the other form components ask for it with a plain `@Optional()`, so a field in the template of a child component — an address section split out of a long form — received `null`, `validateAndFocusFirstInvalid()` reported the form as valid with that section empty, and the field never turned `is-invalid`. Native controls with `liRequired`/`liDocumentValidator` were affected the same way. The directive is now `visibility: Visibility.all`. Covered by `test/directives/li_form_child_component_test.dart`, which fails without the fix.
+
 ## 1.0.0-dev.44
 
 - Fixed PDF export (`li-datatable` and `TinePDF`) aborting on any character outside Latin-1, such as `—`, `“ ”`, `…` or `€`: text was encoded with `latin1` while the font is declared as `/WinAnsiEncoding`. Text is now encoded as real Windows-1252 through the new `TinePDF.encodeWinAnsi`, and a character without a 1252 byte is substituted (base letter, plain punctuation, or `?`) instead of throwing. `measureText` measures the encoded bytes with the Helvetica widths of the whole 0x20–0xFF range, and link URIs are percent-encoded to ASCII. See "PDF text encoding in `1.0.0-dev.44`" in `doc.md`.
