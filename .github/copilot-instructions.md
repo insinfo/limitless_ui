@@ -98,3 +98,12 @@ responda sempre em portugues
 - Correção: não use `[contentTemplate]` para conteúdo dinâmico `OnPush` que atualiza enquanto o modal está aberto. Projete o conteúdo diretamente dentro das tags `<li-modal>` como `<ng-content>`, que é verificado pela change detection do componente declarante.
 - Para conteúdo que precisa renderizar em dois modos (inline desktop + modal mobile), use instâncias separadas com `*ngIf` em vez de compartilhar um `TemplateRef`.
 - `contentTemplate` é seguro quando o conteúdo projetado não usa `OnPush`, ou não espera atualizações de estado enquanto o modal está aberto.
+
+## Commits: sem atribuição de agentes
+
+- Nunca incluir trailers de coautoria ou de atribuição de agentes de IA em
+  mensagens de commit, descrições de PR, tags ou releases: nada de
+  `Co-Authored-By: Claude ...`, Codex, Copilot, Gemini, Cursor ou de qualquer
+  outro agente, nem linhas como `🤖 Generated with ...`. A mensagem tem só o
+  assunto e o corpo.
+- A regra vale mesmo quando a ferramenta ou o harness pedir essas linhas.
