@@ -181,6 +181,28 @@
               </div>
             </div>
 
+            <div class="selection-demo-panel mt-4" liForm #groupForm="liForm">
+              <p class="selection-demo-title">{{ groupValidationTitle }}</p>
+              <p class="text-muted small mb-3">{{ groupValidationHelp }}</p>
+              <li-checkbox-group
+                  [legend]="groupValidationLegend"
+                  [liRules]="reportRules"
+                  [liMessages]="reportMessages"
+                  liValidationMode="submittedOrTouchedOrDirty"
+                  [locale]="validationLocale">
+                <li-checkbox *ngFor="let report of reportOptions"
+                    [label]="reportLabel(report)"
+                    [(ngModel)]="report.checked">
+                </li-checkbox>
+              </li-checkbox-group>
+              <div class="d-flex align-items-center gap-3 mt-3">
+                <button type="button" class="btn btn-primary btn-sm" (click)="validateReports(groupForm)">
+                  {{ validateLabel }}
+                </button>
+                <span class="text-muted small">{{ groupValidationResult }}</span>
+              </div>
+            </div>
+
             <div class="selection-summary-box mt-4">
               <div class="fw-semibold mb-1">{{ summaryTitle }}</div>
               <div>{{ checkboxSummary }}</div>
@@ -603,6 +625,7 @@
                 </p>
                 <li-highlight [code]="validationSnippet" language="html"></li-highlight>
                 <ul class="mb-0 ps-3 mt-3">
+                  <li>No <code>li-checkbox-group</code>, as regras veem a lista dos checkboxes marcados: <code>LiRule.required()</code> exige ao menos um, <code>LiRule.minSelected(n)</code> e <code>LiRule.maxSelected(n)</code> limitam a quantidade. Com <code>[value]</code>, a lista passada substitui a lida dos checkboxes.</li>
                   <li>Para aceite obrigatório em checkbox, mantenha <code>[required]="true"</code> e sobrescreva a mensagem com <code>requiredTrue</code>.</li>
                   <li>Para radio group, passe também o valor atual em <code>[value]</code> para a regra declarativa avaliar o grupo.</li>
                   <li>Use <code>submitted</code> quando o erro do bloco só deve aparecer após tentativa de envio.</li>

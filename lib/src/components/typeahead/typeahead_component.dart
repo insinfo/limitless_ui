@@ -9,7 +9,12 @@ import 'package:popper/popper.dart';
 import '../../core/overlay_positioning.dart';
 import '../../core/overlay_layers.dart';
 
+import '../../directives/li_form_directive.dart';
 import '../../directives/safe_inner_html_directive.dart';
+import '../../validation/li_rule.dart';
+import '../../validation/li_rule_context.dart';
+import '../../validation/li_validation.dart';
+import '../../validation/li_validation_issue.dart';
 import 'typeahead_config.dart';
 import 'typeahead_highlight_component.dart';
 import '../../core/outside_click.dart';
@@ -63,10 +68,11 @@ typedef LiTypeaheadResultMarkupBuilder = String Function(
   ],
 )
 class LiTypeaheadComponent
-    implements ControlValueAccessor<dynamic>, OnInit, OnDestroy {
+    implements ControlValueAccessor<dynamic>, OnInit, AfterChanges, OnDestroy {
   LiTypeaheadComponent(
     this._changeDetectorRef, [
     @Optional() LiTypeaheadConfig? config,
+    @Optional() this._formDirective,
   ]) : _config = config ?? LiTypeaheadConfig() {
     final seq = _nextSequence++;
     popupId = 'li-typeahead-popup-$seq';
@@ -94,6 +100,7 @@ class LiTypeaheadComponent
 
   final ChangeDetectorRef _changeDetectorRef;
   final LiTypeaheadConfig _config;
+  final LiFormDirective? _formDirective;
   final StreamController<dynamic> _changeController =
       StreamController<dynamic>.broadcast();
   final StreamController<dynamic> _userChangeController =
@@ -125,6 +132,14 @@ class LiTypeaheadComponent
   String _committedInputValue = '';
   String rawSearchTerm = '';
   String? _asyncErrorMessage;
+
+  StreamSubscription<bool>? _formSubmissionSubscription;
+  bool _touched = false;
+  bool _dirty = false;
+  bool _formSubmitted = false;
+  LiValidationIssue? _autoValidationIssue;
+  List<LiRule> _effectiveRules = const <LiRule>[];
+  Map<String, String> _effectiveMessages = const <String, String>{};
 
   @Input()
   late String autocomplete;
@@ -183,6 +198,10 @@ class LiTypeaheadComponent
   @Input()
   late String loadingText;
 
+  /// Message shown in the popup when [searchCallback] fails.
+  ///
+  /// Not a validation message: the field error goes in
+  /// [validationErrorText].
   @Input()
   late String errorText;
 
@@ -206,6 +225,45 @@ class LiTypeaheadComponent
 
   @Input()
   LiTypeaheadResultMarkupBuilder? resultMarkupBuilder;
+
+  /// Declarative rules evaluated against the model value.
+  ///
+  /// The value is what `ngModel` holds: the `value` of the chosen suggestion,
+  /// the typed text when [editable] is `true`, or `null`. With [editable]
+  /// `false`, text typed without choosing a suggestion leaves the model
+  /// `null`, so `LiRule.required()` fails until a suggestion is chosen.
+  @Input()
+  List<LiRule> liRules = const <LiRule>[];
+
+  @Input()
+  Map<String, String> liMessages = const <String, String>{};
+
+  @Input()
+  String liValidationMode = 'submittedOrTouchedOrDirty';
+
+  @Input()
+  bool validateOnInput = true;
+
+  /// Locale of the default rule messages.
+  @Input()
+  String locale = 'pt_BR';
+
+  /// External invalid state, typically from the backend. Wins over the
+  /// automatic validation.
+  @Input()
+  bool invalid = false;
+
+  /// External invalid state, same as [invalid].
+  @Input()
+  bool dataInvalid = false;
+
+  /// External field error, typically from the backend. Wins over the message
+  /// of the automatic validation.
+  ///
+  /// Named apart from [errorText], which on this component has always been
+  /// the message shown when the search fails.
+  @Input()
+  String validationErrorText = '';
 
   @Output('currentValueChange')
   Stream<dynamic> get currentValueChange => _changeController.stream;
@@ -248,7 +306,36 @@ class LiTypeaheadComponent
   String get resolvedInputClass => _joinClasses(<String>[
         'form-control',
         _formControlSizeClass,
+        effectiveInvalid ? 'is-invalid' : '',
+        effectiveValid ? 'is-valid' : '',
       ]);
+
+  bool get effectiveAutoInvalid =>
+      _shouldShowValidation && _autoValidationIssue != null;
+
+  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+
+  bool get effectiveValid =>
+      !effectiveInvalid &&
+      _shouldShowValidation &&
+      _effectiveRules.isNotEmpty &&
+      _autoValidationIssue == null;
+
+  String get effectiveValidationErrorText {
+    final externalMessage = validationErrorText.trim();
+    if (externalMessage.isNotEmpty) {
+      return externalMessage;
+    }
+
+    return _autoValidationIssue?.message ?? '';
+  }
+
+  bool get showValidationFeedback =>
+      effectiveValidationErrorText.trim().isNotEmpty && effectiveInvalid;
+
+  String? get resolvedAriaInvalid => effectiveInvalid ? 'true' : null;
+
+  String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
 
   @Input()
   set dataSource(dynamic value) {
@@ -257,6 +344,15 @@ class LiTypeaheadComponent
 
   @override
   void ngOnInit() {
+    _formSubmitted = _formDirective?.submitted ?? false;
+    _formSubmissionSubscription =
+        _formDirective?.submissionStateChanges.listen((submitted) {
+      _formSubmitted = submitted;
+      _runAutoValidation();
+      _markForCheck();
+    });
+    _rebuildValidationConfig();
+
     // Warm the visible items, but never open: opening is the user's move —
     // focus, typing or an arrow key. With `openOnFocus` and an empty term this
     // used to open the popup while the page was still loading, portalled to
@@ -270,8 +366,15 @@ class LiTypeaheadComponent
   }
 
   @override
+  void ngAfterChanges() {
+    _rebuildValidationConfig();
+    _markForCheck();
+  }
+
+  @override
   void writeValue(dynamic value) {
     _lastWrittenValue = value;
+    _runAutoValidation();
 
     if (value == null) {
       _selectedItem = null;
@@ -321,6 +424,7 @@ class LiTypeaheadComponent
   @override
   void ngOnDestroy() {
     _destroyed = true;
+    _formSubmissionSubscription?.cancel();
     _debounceTimer?.cancel();
     _unbindDocumentListeners();
     _overlay?.dispose();
@@ -358,6 +462,9 @@ class LiTypeaheadComponent
 
   void handleBlur() {
     _touchCallback?.call();
+    _touched = true;
+    _runAutoValidation();
+    _markForCheck();
 
     if (showHint) {
       _writeInputValue(_committedInputValue);
@@ -377,12 +484,20 @@ class LiTypeaheadComponent
     final nextValue = value ?? '';
     rawSearchTerm = nextValue;
     _committedInputValue = nextValue;
+    _dirty = true;
 
     if (!editable) {
       _selectedItem = null;
       _emitModelValue(null);
     } else {
       _emitModelValue(nextValue);
+    }
+
+    if (validateOnInput ||
+        _shouldShowValidation ||
+        _autoValidationIssue != null) {
+      _runAutoValidation();
+      _markForCheck();
     }
 
     _scheduleSearch();
@@ -722,10 +837,12 @@ class LiTypeaheadComponent
 
     final previousValue = _selectedItem?.value;
     _selectedItem = item;
+    _dirty = true;
     _committedInputValue = _formatItemForInput(item);
     rawSearchTerm = _committedInputValue;
     _writeInputValue(_committedInputValue);
     _emitModelValue(item.value);
+    _runAutoValidation();
     _changeController.add(item.value);
     if (previousValue != item.value) {
       _userChangeController.add(item.value);
@@ -940,6 +1057,40 @@ class LiTypeaheadComponent
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
   }
+
+  void _rebuildValidationConfig() {
+    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
+      ...liRules,
+    ]);
+    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
+      ...liMessages,
+    });
+    _runAutoValidation();
+  }
+
+  void _runAutoValidation() {
+    if (_effectiveRules.isEmpty) {
+      _autoValidationIssue = null;
+      return;
+    }
+
+    _autoValidationIssue = liValidateValue(
+      value: _lastWrittenValue,
+      rules: _effectiveRules,
+      context: LiRuleContext(
+        fieldName: name,
+        messages: _effectiveMessages,
+        locale: locale,
+      ),
+    );
+  }
+
+  bool get _shouldShowValidation => liShouldShowValidation(
+        mode: liValidationMode,
+        touched: _touched,
+        dirty: _dirty,
+        submitted: _formSubmitted,
+      );
 
   String get _normalizedSize {
     final normalized = size.trim().toLowerCase();

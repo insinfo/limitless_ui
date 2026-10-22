@@ -11,6 +11,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
+    LiFormDirective,
     LiInputComponent,
     LiPasswordInputComponent,
     LiDateRangePickerComponent,
@@ -171,6 +172,66 @@ class InputsPageComponent {
   DateTime? frozenRangeEnd = DateTime(2026, 4, 22);
   String eventDrivenLookup = '1024';
   String lastInputEvent = '';
+
+  /// Exemplo de `valueType`: o modelo é `int?`/`double?`, não `String`.
+  /// Com `[(ngModel)]` num campo `num?`, o modo `text` estouraria `TypeError`.
+  static const String numericSnippet = '''
+<li-input
+    label="Quantidade"
+    valueType="integer"
+    [liRules]="quantityRules"
+    [(ngModel)]="quantity">
+</li-input>
+
+<li-input
+    label="Peso"
+    valueType="decimal"
+    [decimalPlaces]="2"
+    [liRules]="weightRules"
+    [(ngModel)]="weight">
+</li-input>
+
+// int? quantity;  double? weight;
+static const List<LiRule> quantityRules = <LiRule>[
+  LiRule.required(),
+  LiRule.min(1),
+  LiRule.max(500),
+];
+static const List<LiRule> weightRules = <LiRule>[LiRule.max(1000)];''';
+
+  static const List<LiRule> numericQuantityRules = <LiRule>[
+    LiRule.required(),
+    LiRule.min(1),
+    LiRule.max(500),
+  ];
+
+  static const List<LiRule> numericWeightRules = <LiRule>[LiRule.max(1000)];
+
+  int? numericQuantity;
+  double? numericWeight = 72.5;
+  String numericResult = '';
+
+  String get validationLocale => isPt ? 'pt_BR' : 'en_US';
+  String get numericTitle => isPt ? 'Valores numéricos' : 'Numeric values';
+  String get numericHelp => isPt
+      ? 'Com valueType o modelo recebe int ou double em vez de texto. Só se digitam dígitos e o separador decimal do locale; LiRule.min, LiRule.max e LiRule.integer validam o número.'
+      : 'With valueType the model receives an int or a double instead of text. Only digits and the locale decimal separator can be typed; LiRule.min, LiRule.max and LiRule.integer validate the number.';
+  String get numericApiHelp => isPt
+      ? 'valueType="integer" entrega int?, valueType="decimal" entrega double?; vazio é null. allowNegative libera o sinal e decimalPlaces limita as casas. Troca direta de <input type="number"> ligado a um campo num?.'
+      : 'valueType="integer" hands over an int?, valueType="decimal" a double?; empty is null. allowNegative allows the sign and decimalPlaces caps the fraction. A drop-in for <input type="number"> bound to a num? field.';
+  String get numericQuantityLabel =>
+      isPt ? 'Quantidade (int?)' : 'Quantity (int?)';
+  String get numericWeightLabel => isPt ? 'Peso (double?)' : 'Weight (double?)';
+  String get numericValidateLabel => isPt ? 'Validar' : 'Validate';
+
+  String describeNumeric(num? value) => value == null ? 'null' : '$value';
+
+  Future<void> validateNumeric(LiFormDirective form) async {
+    final valid = await form.validateAndFocusFirstInvalid();
+    numericResult = valid
+        ? (isPt ? 'Formulário válido.' : 'Form is valid.')
+        : (isPt ? 'Há campos inválidos.' : 'Some fields are invalid.');
+  }
 
   bool get isPt => i18n.isPortuguese;
   List<Map<String, dynamic>> get statusOptions =>

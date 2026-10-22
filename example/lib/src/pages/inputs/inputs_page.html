@@ -161,6 +161,40 @@
                     </div>
                   </div>
                 </div>
+
+                <div class="card mt-4">
+                  <div class="card-header">
+                    <h5 class="mb-0">{{ numericTitle }}</h5>
+                  </div>
+                  <div class="card-body" liForm #numericForm="liForm">
+                    <p class="text-muted mb-3">{{ numericHelp }}</p>
+
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <li-input [label]="numericQuantityLabel" valueType="integer"
+                          [liRules]="numericQuantityRules" [locale]="validationLocale"
+                          [(ngModel)]="numericQuantity">
+                        </li-input>
+                      </div>
+                      <div class="col-md-6">
+                        <li-input [label]="numericWeightLabel" valueType="decimal" [decimalPlaces]="2"
+                          [liRules]="numericWeightRules" [locale]="validationLocale" suffixText="kg"
+                          [(ngModel)]="numericWeight">
+                        </li-input>
+                      </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-sm mt-3" (click)="validateNumeric(numericForm)">
+                      {{ numericValidateLabel }}
+                    </button>
+
+                    <div class="demo-summary-box mt-3">
+                      <div><strong>{{ numericQuantityLabel }}:</strong> {{ describeNumeric(numericQuantity) }}</div>
+                      <div><strong>{{ numericWeightLabel }}:</strong> {{ describeNumeric(numericWeight) }}</div>
+                      <div *ngIf="numericResult.isNotEmpty">{{ numericResult }}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="col-xl-6">
@@ -298,6 +332,10 @@
                     sobrescreva mensagens por código com <code>liMessages</code> e ajuste quando o feedback aparece com <code>liValidationMode</code>.
                   </p>
                   <li-highlight [code]="validationSnippet" language="html"></li-highlight>
+
+                  <h6 class="mb-3 mt-4">{{ numericTitle }}</h6>
+                  <p class="text-muted mb-3">{{ numericApiHelp }}</p>
+                  <li-highlight [code]="numericSnippet" language="html"></li-highlight>
 
                   <h6 class="mb-3 mt-4">{{ passwordSnippetTitle }}</h6>
                   <p class="text-muted mb-3">

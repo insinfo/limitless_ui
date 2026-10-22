@@ -112,6 +112,28 @@
               </div>
 
               <div class="col-xl-6">
+                <div class="card card-body h-100" liForm #stateForm="liForm">
+                  <h6 class="mb-2">{{ validationTitle }}</h6>
+                  <p class="text-muted mb-3">{{ validationBody }}</p>
+                  <li-typeahead [dataSource]="states" [editable]="false" [placeholder]="strictPlaceholder"
+                    [liRules]="requiredStateRules" [liMessages]="requiredStateMessages"
+                    liValidationMode="submitted" [locale]="validationLocale"
+                    [invalid]="stateBackendError.isNotEmpty" [validationErrorText]="stateBackendError"
+                    [(ngModel)]="validatedState">
+                  </li-typeahead>
+                  <div class="d-flex flex-wrap gap-2 mt-3">
+                    <button type="button" class="btn btn-primary btn-sm" (click)="validateState(stateForm)">
+                      {{ validateLabel }}
+                    </button>
+                    <button type="button" class="btn btn-light btn-sm" (click)="toggleStateBackendError()">
+                      {{ backendErrorLabel }}
+                    </button>
+                  </div>
+                  <div class="small text-muted mt-2">{{ validationResult }}</div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
                 <div class="card card-body h-100">
                   <h6 class="mb-2">{{ highlightTitle }}</h6>
                   <p class="text-muted mb-3">{{ highlightBody }}</p>
@@ -145,6 +167,10 @@
                 </ul>
 
                 <li-highlight [code]="apiSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-2 mt-4">{{ validationTitle }}</h6>
+                <p class="text-muted mb-3">{{ validationApiBody }}</p>
+                <li-highlight [code]="validationSnippet" language="html"></li-highlight>
 
                 <h6 class="mb-2 mt-4">{{ userSelectionTitle }}</h6>
                 <p class="text-muted mb-3">{{ userSelectionBody }}</p>

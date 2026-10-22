@@ -10,6 +10,7 @@ import 'package:limitless_ui_example/limitless_ui_example.dart';
     formDirectives,
     LiCheckboxComponent,
     LiCheckboxGroupComponent,
+    LiFormDirective,
     LiHighlightComponent,
     LiRadioComponent,
     LiRadioGroupComponent,
@@ -59,9 +60,7 @@ class SelectionControlsPageComponent {
 <li-checkbox
     label="Aceito os termos"
     [required]="true"
-    [liMessages]="{
-      'requiredTrue': 'Confirme o aceite.'
-    }"
+    [liMessages]="termsMessages"
     liValidationMode="submitted"
     [(ngModel)]="acceptedTerms">
 </li-checkbox>
@@ -69,13 +68,80 @@ class SelectionControlsPageComponent {
 <li-radio-group
     [legend]="radioFormLegend"
     [value]="approvalMode"
-    [liRules]="[LiRule.required()]"
-    [liMessages]="{
-      'required': 'Selecione um modo de aprovação.'
-    }"
+    [liRules]="requiredRules"
+    [liMessages]="approvalMessages"
     liValidationMode="submitted">
   ...
-</li-radio-group>''';
+</li-radio-group>
+
+<li-checkbox-group
+    legend="Relatórios"
+    [liRules]="reportRules"
+    liValidationMode="submitted">
+  <li-checkbox label="Diário" [(ngModel)]="daily"></li-checkbox>
+  <li-checkbox label="Semanal" [(ngModel)]="weekly"></li-checkbox>
+  <li-checkbox label="Mensal" [(ngModel)]="monthly"></li-checkbox>
+</li-checkbox-group>
+
+// Templates do AngularDart não aceitam literais de lista/mapa:
+// as regras e mensagens ficam em campos do componente.
+static const List<LiRule> requiredRules = <LiRule>[LiRule.required()];
+static const List<LiRule> reportRules = <LiRule>[
+  LiRule.minSelected(2),
+  LiRule.maxSelected(3),
+];
+static const Map<String, String> termsMessages = <String, String>{
+  'requiredTrue': 'Confirme o aceite.',
+};''';
+
+  /// Regras do grupo de relatórios: ao menos um marcado, e entre 2 e 3.
+  static const List<LiRule> reportRules = <LiRule>[
+    LiRule.required(),
+    LiRule.minSelected(2),
+    LiRule.maxSelected(3),
+  ];
+
+  final List<ReportOption> reportOptions = <ReportOption>[
+    ReportOption('daily'),
+    ReportOption('weekly'),
+    ReportOption('monthly'),
+    ReportOption('quarterly'),
+  ];
+
+  String groupValidationResult = '';
+
+  String get validationLocale => isPt ? 'pt_BR' : 'en_US';
+  String get validateLabel => isPt ? 'Validar' : 'Validate';
+  String get groupValidationTitle =>
+      isPt ? 'Validação do grupo' : 'Group validation';
+  String get groupValidationHelp => isPt
+      ? 'O grupo valida a seleção dos checkboxes projetados: obrigatório, no mínimo 2 e no máximo 3.'
+      : 'The group validates the selection of the projected checkboxes: required, at least 2 and at most 3.';
+  String get groupValidationLegend =>
+      isPt ? 'Relatórios por e-mail' : 'E-mailed reports';
+  Map<String, String> get reportMessages => isPt
+      ? const <String, String>{'required': 'Escolha os relatórios.'}
+      : const <String, String>{'required': 'Pick the reports.'};
+
+  String reportLabel(ReportOption report) {
+    switch (report.code) {
+      case 'daily':
+        return isPt ? 'Diário' : 'Daily';
+      case 'weekly':
+        return isPt ? 'Semanal' : 'Weekly';
+      case 'monthly':
+        return isPt ? 'Mensal' : 'Monthly';
+      default:
+        return isPt ? 'Trimestral' : 'Quarterly';
+    }
+  }
+
+  Future<void> validateReports(LiFormDirective form) async {
+    final valid = await form.validateAndFocusFirstInvalid();
+    groupValidationResult = valid
+        ? (isPt ? 'Seleção válida.' : 'Valid selection.')
+        : (isPt ? 'Seleção inválida.' : 'Invalid selection.');
+  }
 
   static const String automationHooksSnippet = '''
 await clickFirstVisible(
@@ -409,4 +475,12 @@ await clickFirstVisible(
         return value;
     }
   }
+}
+
+/// Opção de relatório do exemplo de validação do `li-checkbox-group`.
+class ReportOption {
+  ReportOption(this.code);
+
+  final String code;
+  bool checked = false;
 }

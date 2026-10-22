@@ -20,6 +20,144 @@ This is not a toy setup. The goal is a structure that can support real CRUD modu
 
 Important terminology note: in Dart servers, "multithreaded" usually means **multi-isolate**. Dart isolates do not share memory the way native OS threads do. That is the correct mental model for scalable Dart backend processes.
 
+## Declarative validation in `1.0.0-dev.46`
+
+Three components were left out of the declarative layer described in the
+README: `li-checkbox-group` only took a hand-wired `[invalid]`/`[errorText]`,
+`li-typeahead` had no validation at all, and `li-input` could only hand text to
+the model. `1.0.0-dev.46` brings the three to the same contract as
+`li-radio-group` and `li-select`: `liRules`, `liMessages`, `liValidationMode`,
+`validateOnInput` and `locale`, the external `invalid`/`dataInvalid`/message
+inputs winning over the rules, and the `liForm` submit marking and focusing the
+field.
+
+### `li-checkbox-group`: what the rules see
+
+A checkbox group usually binds each box to a `bool` field of its own, so there
+is no collection on the page for the rules to read. The group builds one: each
+projected `li-checkbox` finds its group through DI (the group is declared with
+`visibility: Visibility.all`, so boxes from an `*ngFor` or from a child
+component are found too), registers itself, and reports every change of its
+checked state — a click marks the group dirty, a value written by `ngModel`
+does not. Without `[value]`, the rules receive a list with the `trueValue` of
+every checked box.
+
+When the page does keep the selection as a collection, bind it to `[value]`.
+The setter records that it was bound, so a bound `null` means "nothing
+selected" rather than "read the boxes". The group compares the list by content
+on `ngAfterChanges`, so a new list marks it dirty; a list mutated in place does
+not trigger `ngAfterChanges` at all, so replace it.
+
+- `LiRule.required()` on a group means "at least one checked": an empty list
+  fails `required`.
+- `LiRule.minSelected(n)` and `LiRule.maxSelected(n)` count the items of an
+  `Iterable` or `Map` (a non-empty scalar counts as one). Like every rule other
+  than `required`/`requiredTrue`, `minSelected` passes on an empty selection,
+  which keeps "optional, but at least two when filled" expressible; combine it
+  with `required` when the group is mandatory.
+
+The group paints `is-invalid`/`is-valid`, `aria-invalid` and `data-invalid` on
+its `fieldset`. `liForm` finds invalid fields through the DOM, so
+`validateAndFocusFirstInvalid()` lands on the first focusable element inside
+the invalid `fieldset` — the first enabled checkbox.
+
+### `li-typeahead`: `validationErrorText`, not `errorText`
+
+`errorText` already exists on `li-typeahead`, with a different meaning: the
+message the popup shows when `searchCallback` throws. Reusing it for the field
+error would make every page that customizes the search failure suddenly paint
+the field red. The external field error is therefore a new input,
+`validationErrorText`. `invalidFeedbackText` was considered, since `li-input`
+has it, but there it is a legacy alias that `errorText` overrides; naming a new
+input after a legacy one would have been misleading.
+
+The rules run on the model value — what `ngModel` holds — not on the visible
+text: the `value` of the chosen suggestion, the typed text when `editable` is
+on, or `null`. With `[editable]="false"`, typing without picking a suggestion
+emits `null`, so `LiRule.required()` fails until a suggestion is chosen even
+though the input shows text. A value written by the model before an
+asynchronous `dataSource` arrives counts as filled, because it is a real model
+value.
+
+Typing and choosing a suggestion mark the field dirty; blur marks it touched.
+The inner input carries `is-invalid`/`is-valid`, `aria-invalid` and
+`data-invalid`, and the message renders under the input with
+`data-label="li_ta_feedback"`.
+
+### `li-input`: `valueType`
+
+`writeValue` used to turn everything into a `String`, and `handleInput` handed
+that text to the model. Bound to a `num?` field, the generated template casts
+the `ngModelChange` value to the field type, and the first keystroke throws
+`TypeError: type 'String' is not a subtype of type 'num?'`. `valueType` adds
+two numeric modes beside the default `text`:
+
+| `valueType` | model | typing |
+|---|---|---|
+| `text` (default) | `String` | unchanged |
+| `integer` | `int?` | digits; a leading `-` with `allowNegative` |
+| `decimal` | `double?` | digits, a leading `-` with `allowNegative`, one decimal separator of `locale`, at most `decimalPlaces` digits after it |
+
+Details of the numeric modes:
+
+- Empty is `null`, and so is a lone `-` or separator.
+- The native input stays `type="text"`. A `type="number"` input would refuse
+  the `,` of `pt_BR` and report an empty `value` for anything it cannot parse.
+- The decimal separator comes from the `intl` number symbols of `locale`, with
+  a fallback of `.` for English locales and `,` otherwise. Only that separator
+  is accepted: in `pt_BR` a typed `.` is dropped, so a pasted `1.234,56` reads
+  as `1234,56`.
+- Typing is filtered in one left-to-right pass on every `input` event, and the
+  caret is put back where it was relative to the kept characters.
+- `writeValue` accepts `num`, `String` or `null`. Strings are read in machine
+  format first (`3.5`), then in the format of `locale` (`3,5`). Display is
+  without grouping, whole numbers without a fractional part, and rounded to
+  `decimalPlaces` when it is set. A fractional value written into an `integer`
+  field is kept as it is — the model is not changed behind the page's back —
+  and `LiRule.integer()` reports it.
+- `inputmode` defaults to `numeric` (`integer`) or `decimal`. With
+  `allowNegative`, it is left unset, because the numeric keypads of iOS have no
+  minus key; an explicit `inputMode` always wins.
+- `min` and `max` hold numbers for the native `type="number"` input. Since the
+  numeric modes render `type="text"`, they become `LiRule.min`/`LiRule.max`
+  instead, in the same compatibility slot as `required` and `minLength`.
+- Masks, `maskFormatter` and `liType` normalizers do not apply.
+- A change of `valueType`, `locale`, `decimalPlaces` or `allowNegative`
+  re-renders the text from the current number; other input changes leave a
+  half-typed `3,` alone.
+
+`LiInputComponent` now implements `ControlValueAccessor<dynamic>` instead of
+`ControlValueAccessor<String?>`. Text mode behaves exactly as before.
+
+### The numeric rules
+
+`LiRule.min(n)`, `LiRule.max(n)` and `LiRule.integer()` read `num` values
+directly and strings the same way `writeValue` does, so they also work on a
+text `li-input`. Text that is not a number passes `min`/`max` (it is not their
+concern) and fails `integer`. Bounds in the messages are written with the
+decimal separator of the locale (`2,5` in `pt_BR`).
+
+Default messages:
+
+| code | `pt_BR` | English |
+|---|---|---|
+| `min` | Informe um valor maior ou igual a {n}. | Enter a value greater than or equal to {n}. |
+| `max` | Informe um valor menor ou igual a {n}. | Enter a value less than or equal to {n}. |
+| `integer` | Informe um número inteiro. | Enter a whole number. |
+| `minSelected` | Selecione pelo menos {n} opções. | Select at least {n} options. |
+| `maxSelected` | Selecione no máximo {n} opções. | Select no more than {n} options. |
+
+### Tests
+
+- `test/checkbox/li_checkbox_group_validation_test.dart`
+- `test/typeahead/li_typeahead_validation_test.dart`
+- `test/input/li_input_numeric_test.dart`
+- `test/forms/li_numeric_and_selection_rules_test.dart`
+
+Each covers a rule failing and passing, a validation mode, the external error
+winning, `validateAndFocusFirstInvalid()` marking and focusing, and the field
+inside a child component of a page with `liForm`.
+
 ## PDF text encoding in `1.0.0-dev.44`
 
 ### The defect

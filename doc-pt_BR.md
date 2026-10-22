@@ -156,6 +156,151 @@ Esse fluxo é o ponto de equilíbrio recomendado no projeto:
 - regras contextuais continuam na página ou no serviço;
 - erros de backend ainda podem sobrescrever a mensagem final do campo.
 
+## Validação declarativa em `1.0.0-dev.46`
+
+Três componentes tinham ficado de fora da camada declarativa descrita acima: o
+`li-checkbox-group` só aceitava `[invalid]`/`[errorText]` montados à mão, o
+`li-typeahead` não tinha validação nenhuma e o `li-input` só sabia entregar
+texto ao model. A `1.0.0-dev.46` põe os três no mesmo contrato do
+`li-radio-group` e do `li-select`: `liRules`, `liMessages`, `liValidationMode`,
+`validateOnInput` e `locale`, os inputs externos de inválido e de mensagem
+vencendo as regras, e o submit do `liForm` marcando e focando o campo.
+
+### `li-checkbox-group`: o que as regras enxergam
+
+Num grupo de checkboxes cada caixa costuma estar ligada a um campo `bool`
+próprio, então não existe coleção na página para as regras lerem. O grupo monta
+uma: cada `li-checkbox` projetado encontra o grupo por DI (o grupo é declarado
+com `visibility: Visibility.all`, então caixas vindas de `*ngFor` ou de um
+componente filho também o encontram), se registra e avisa toda mudança do
+estado marcado — clique marca o grupo como sujo, valor escrito pelo `ngModel`
+não. Sem `[value]`, as regras recebem a lista com o `trueValue` de cada caixa
+marcada.
+
+Quando a página já guarda a seleção como coleção, passe-a em `[value]`. O
+setter registra que houve binding, então um `null` ligado significa "nada
+selecionado", e não "leia as caixas". O grupo compara a lista pelo conteúdo no
+`ngAfterChanges`, então uma lista nova marca o grupo como sujo; uma lista
+alterada no lugar nem dispara `ngAfterChanges`, por isso troque a lista em vez
+de mutá-la.
+
+- `LiRule.required()` num grupo significa "ao menos um marcado": a lista vazia
+  reprova o `required`.
+- `LiRule.minSelected(n)` e `LiRule.maxSelected(n)` contam os itens de um
+  `Iterable` ou `Map` (um escalar não vazio conta como um). Como toda regra que
+  não é `required`/`requiredTrue`, o `minSelected` passa com a seleção vazia, o
+  que mantém expressável o "opcional, mas ao menos dois se preencher";
+  combine com `required` quando o grupo for obrigatório.
+
+O grupo pinta `is-invalid`/`is-valid`, `aria-invalid` e `data-invalid` no
+`fieldset`. O `liForm` encontra campos inválidos pelo DOM, então o
+`validateAndFocusFirstInvalid()` cai no primeiro elemento focável dentro do
+`fieldset` inválido — a primeira checkbox habilitada.
+
+### `li-typeahead`: `validationErrorText`, não `errorText`
+
+O `li-typeahead` já tem `errorText`, com outro significado: a mensagem que o
+popup mostra quando o `searchCallback` lança exceção. Reaproveitá-lo para o erro
+do campo faria toda página que personaliza a falha da busca passar a pintar o
+campo de vermelho. Por isso o erro externo do campo é um input novo,
+`validationErrorText`. `invalidFeedbackText` foi considerado, porque o
+`li-input` o tem, mas lá ele é um alias legado que o `errorText` sobrescreve;
+batizar um input novo com o nome de um legado induziria a erro.
+
+As regras rodam sobre o valor do model — o que o `ngModel` guarda —, não sobre
+o texto visível: o `value` da sugestão escolhida, o texto digitado quando
+`editable` está ligado, ou `null`. Com `[editable]="false"`, digitar sem
+escolher sugestão emite `null`, então o `LiRule.required()` reprova até uma
+sugestão ser escolhida, mesmo com texto no input. Um valor escrito pelo model
+antes de um `dataSource` assíncrono chegar conta como preenchido, porque é um
+valor real do model.
+
+Digitar e escolher sugestão marcam o campo como sujo; o blur o marca como
+tocado. O input interno recebe `is-invalid`/`is-valid`, `aria-invalid` e
+`data-invalid`, e a mensagem aparece abaixo dele com
+`data-label="li_ta_feedback"`.
+
+### `li-input`: `valueType`
+
+O `writeValue` convertia tudo para `String`, e o `handleInput` entregava esse
+texto ao model. Ligado a um campo `num?`, o template gerado faz o cast do valor
+do `ngModelChange` para o tipo do campo, e a primeira tecla estoura
+`TypeError: type 'String' is not a subtype of type 'num?'`. O `valueType`
+acrescenta dois modos numéricos ao `text` padrão:
+
+| `valueType` | model | digitação |
+|---|---|---|
+| `text` (padrão) | `String` | inalterada |
+| `integer` | `int?` | dígitos; `-` inicial com `allowNegative` |
+| `decimal` | `double?` | dígitos, `-` inicial com `allowNegative`, um separador decimal da `locale`, no máximo `decimalPlaces` dígitos depois dele |
+
+Detalhes dos modos numéricos:
+
+- Vazio é `null`, e também um `-` ou um separador sozinhos.
+- O input nativo continua `type="text"`. Um `type="number"` recusaria a `,` do
+  `pt_BR` e devolveria `value` vazio para tudo o que não conseguisse ler.
+- O separador decimal vem dos símbolos numéricos do `intl` para a `locale`, com
+  fallback para `.` em locales inglesas e `,` nas demais. Só esse separador é
+  aceito: em `pt_BR` o `.` digitado é descartado, então um `1.234,56` colado
+  vira `1234,56`.
+- A digitação é filtrada numa única passada da esquerda para a direita a cada
+  evento `input`, e o cursor volta para a mesma posição relativa aos
+  caracteres mantidos.
+- O `writeValue` aceita `num`, `String` ou `null`. Strings são lidas primeiro
+  no formato de máquina (`3.5`), depois no formato da `locale` (`3,5`). A
+  exibição não tem agrupamento, número inteiro aparece sem parte fracionária e
+  o valor é arredondado para `decimalPlaces` quando ele está definido. Um valor
+  fracionário escrito num campo `integer` é mantido como veio — o model não é
+  alterado pelas costas da página — e o `LiRule.integer()` acusa.
+- O `inputmode` padrão é `numeric` (`integer`) ou `decimal`. Com
+  `allowNegative`, ele fica sem valor, porque o teclado numérico do iOS não tem
+  a tecla de menos; um `inputMode` explícito sempre vence.
+- `min` e `max` guardam números para o `type="number"` nativo. Como os modos
+  numéricos desenham `type="text"`, eles viram `LiRule.min`/`LiRule.max`, no
+  mesmo lugar de compatibilidade de `required` e `minLength`.
+- Máscara, `maskFormatter` e normalizador de `liType` não se aplicam.
+- Mudar `valueType`, `locale`, `decimalPlaces` ou `allowNegative` redesenha o
+  texto a partir do número atual; mudanças em outros inputs deixam em paz um
+  `3,` digitado pela metade.
+- `decimalPlaces` é `int?`: use `[decimalPlaces]="2"`. O literal
+  `decimalPlaces="2"` é `String` e não compila.
+
+O `LiInputComponent` agora implementa `ControlValueAccessor<dynamic>` em vez de
+`ControlValueAccessor<String?>`. O modo texto se comporta exatamente como antes.
+
+### As regras numéricas
+
+`LiRule.min(n)`, `LiRule.max(n)` e `LiRule.integer()` leem `num` direto e
+strings do mesmo jeito que o `writeValue`, então também funcionam num
+`li-input` de texto. Texto que não é número passa em `min`/`max` (não é
+problema delas) e reprova no `integer`. Os limites nas mensagens saem com o
+separador decimal da locale (`2,5` em `pt_BR`).
+
+Mensagens padrão:
+
+| código | `pt_BR` | inglês |
+|---|---|---|
+| `min` | Informe um valor maior ou igual a {n}. | Enter a value greater than or equal to {n}. |
+| `max` | Informe um valor menor ou igual a {n}. | Enter a value less than or equal to {n}. |
+| `integer` | Informe um número inteiro. | Enter a whole number. |
+| `minSelected` | Selecione pelo menos {n} opções. | Select at least {n} options. |
+| `maxSelected` | Selecione no máximo {n} opções. | Select no more than {n} options. |
+
+As mensagens novas em português saem acentuadas; as antigas
+(`Campo obrigatorio.`, `Digite um CPF valido.`) ficaram como estavam para não
+quebrar quem compara o texto.
+
+### Testes
+
+- `test/checkbox/li_checkbox_group_validation_test.dart`
+- `test/typeahead/li_typeahead_validation_test.dart`
+- `test/input/li_input_numeric_test.dart`
+- `test/forms/li_numeric_and_selection_rules_test.dart`
+
+Cada um cobre regra reprovando e passando, modo de validação, erro externo
+vencendo, `validateAndFocusFirstInvalid()` marcando e focando, e o campo dentro
+de um componente filho de uma página com `liForm`.
+
 ## Componentes novos do `limitless_ui` em `1.0.0-dev.22`
 
 Além da camada de formulários declarativos, a versão `1.0.0-dev.22` expandiu o pacote com quatro superfícies importantes: um campo de senha com máscara controlada em Dart, um visualizador de PDF genérico com PDF.js, um editor rico isolado baseado em Quill `2.0.3` e um helper fullscreen imperativo para fluxos longos com mensagens narradas.

@@ -7,6 +7,7 @@ import 'package:ngforms/ngforms.dart';
 import '../../directives/li_form_directive.dart';
 import '../../validation/li_built_in_input_types.dart';
 import '../../validation/li_input_type.dart';
+import '../../validation/li_number_parsing.dart';
 import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
@@ -31,7 +32,7 @@ const liInputDirectives = <Object>[
 )
 class LiInputComponent
     implements
-        ControlValueAccessor<String?>,
+        ControlValueAccessor<dynamic>,
         AfterChanges,
         AfterViewInit,
         OnDestroy {
@@ -95,8 +96,42 @@ class LiInputComponent
   @Input()
   String inputMode = '';
 
+  /// Locale of the default rule messages and, with a numeric [valueType],
+  /// of the decimal separator typed and displayed in the field.
   @Input()
   String locale = 'pt_BR';
+
+  /// Type of the value the model receives.
+  ///
+  /// - `text` (default): the model receives the text of the field, as a
+  ///   `String`. Unchanged from earlier versions.
+  /// - `integer`: the model receives an `int?`; only digits can be typed
+  ///   (and a leading `-` with [allowNegative]).
+  /// - `decimal`: the model receives a `double?`; digits and the decimal
+  ///   separator of [locale] can be typed, with at most [decimalPlaces]
+  ///   digits after it.
+  ///
+  /// In both numeric types an empty field is `null`, `writeValue` accepts
+  /// `num`, `String` or `null`, the native input stays `type="text"` (so the
+  /// locale separator can be typed and the browser does not sanitize the
+  /// value away) and `inputmode` defaults to `numeric`/`decimal`. Masks and
+  /// `liType` normalizers do not apply. `min` and `max`, when they hold a
+  /// number, become `LiRule.min`/`LiRule.max` rules.
+  @Input()
+  String valueType = 'text';
+
+  /// Whether a leading `-` can be typed in a numeric [valueType].
+  ///
+  /// Off by default. When on, `inputmode` is not set by default, because the
+  /// numeric keypads of iOS have no minus key; pass [inputMode] to choose.
+  @Input()
+  bool allowNegative = false;
+
+  /// Maximum number of digits after the decimal separator when [valueType]
+  /// is `decimal`. `null` (default) does not limit them; `0` blocks the
+  /// separator. Ignored for other value types.
+  @Input()
+  int? decimalPlaces;
 
   @Input()
   String enterKeyHint = '';
@@ -258,6 +293,8 @@ class LiInputComponent
   Stream<html.KeyboardEvent> get inputEnter => _enterController.stream;
 
   String _value = '';
+  num? _numericValue;
+  String _numericFormatSignature = '';
   bool _touched = false;
   bool _dirty = false;
   bool _formSubmitted = false;
@@ -267,7 +304,7 @@ class LiInputComponent
   Map<String, String> _effectiveMessages = const <String, String>{};
   html.MutationObserver? _hostClassObserver;
 
-  ChangeFunction<String?> _onChange = (String? _, {String? rawValue}) {};
+  ChangeFunction<dynamic> _onChange = (dynamic _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
 
   @HostBinding('class.d-block')
@@ -286,8 +323,50 @@ class LiInputComponent
   String? get resolvedAutocomplete => _resolvedString(autocomplete,
       fallback: resolvedLiInputType?.autocomplete);
 
-  String? get resolvedInputMode =>
-      _resolvedString(inputMode, fallback: resolvedLiInputType?.inputMode);
+  String? get resolvedInputMode => _resolvedString(
+        inputMode,
+        fallback: isNumeric
+            ? _defaultNumericInputMode
+            : resolvedLiInputType?.inputMode,
+      );
+
+  /// Normalized [valueType]: `text`, `integer` or `decimal`.
+  String get resolvedValueType {
+    switch (valueType.trim().toLowerCase()) {
+      case 'integer':
+        return 'integer';
+      case 'decimal':
+        return 'decimal';
+      default:
+        return 'text';
+    }
+  }
+
+  /// Whether [valueType] is `integer` or `decimal`.
+  bool get isNumeric => resolvedValueType != 'text';
+
+  bool get _isDecimal => resolvedValueType == 'decimal';
+
+  /// Value held by the model in a numeric [valueType]: `int`, `double` or
+  /// `null`. Always `null` in `text` mode.
+  num? get numericValue => isNumeric ? _numericValue : null;
+
+  String get _decimalSeparator => liDecimalSeparator(locale);
+
+  int? get _effectiveDecimalPlaces {
+    final places = decimalPlaces;
+    if (!_isDecimal || places == null) {
+      return null;
+    }
+    return places < 0 ? null : places;
+  }
+
+  String? get _defaultNumericInputMode {
+    if (allowNegative) {
+      return null;
+    }
+    return _isDecimal ? 'decimal' : 'numeric';
+  }
 
   String? get resolvedEnterKeyHint =>
       enterKeyHint.trim().isEmpty ? null : enterKeyHint.trim();
@@ -356,7 +435,7 @@ class LiInputComponent
     return resolvedLiInputType?.mask?.trim() ?? '';
   }
 
-  bool get hasMask => effectiveMask.isNotEmpty && !multiline;
+  bool get hasMask => effectiveMask.isNotEmpty && !multiline && !isNumeric;
 
   bool get hasLabel => label.trim().isNotEmpty;
 
@@ -382,7 +461,7 @@ class LiInputComponent
   bool get showValidFeedback => validFeedbackText.trim().isNotEmpty && isValid;
 
   bool get hasCustomMaskFormatter =>
-      maskFormatter != null && resolvedType != 'number';
+      maskFormatter != null && resolvedType != 'number' && !isNumeric;
 
   String get resolvedInvalidFeedbackText => effectiveErrorText;
 
@@ -447,6 +526,9 @@ class LiInputComponent
   }
 
   String get resolvedBaseType {
+    if (isNumeric) {
+      return 'text';
+    }
     switch (effectiveHtmlType.trim().toLowerCase()) {
       case 'email':
       case 'number':
@@ -521,7 +603,7 @@ class LiInputComponent
       ]);
 
   @override
-  void registerOnChange(ChangeFunction<String?> fn) {
+  void registerOnChange(ChangeFunction<dynamic> fn) {
     _onChange = fn;
   }
 
@@ -532,6 +614,7 @@ class LiInputComponent
 
   @override
   void ngAfterChanges() {
+    _refreshNumericDisplayIfFormatChanged();
     _rebuildValidationConfig(normalizeCurrentValue: true);
     _syncInputValue();
     _markForCheck();
@@ -539,6 +622,14 @@ class LiInputComponent
 
   @override
   void writeValue(dynamic value) {
+    if (isNumeric) {
+      _writeNumericValue(value);
+      _syncInputValue();
+      _runAutoValidation();
+      _markForCheck();
+      return;
+    }
+
     final normalized = switch (value) {
       String v => v,
       null => '',
@@ -584,9 +675,13 @@ class LiInputComponent
 
   void handleInput(String value) {
     _dirty = true;
-    _value = _normalizeIncomingValue(value);
-    _syncInputValue();
-    _onChange(_value, rawValue: value);
+    if (isNumeric) {
+      _handleNumericInput(value);
+    } else {
+      _value = _normalizeIncomingValue(value);
+      _syncInputValue();
+      _onChange(_value, rawValue: value);
+    }
     if (validateOnInput ||
         _shouldShowValidation ||
         _autoValidationIssue != null) {
@@ -698,6 +793,133 @@ class LiInputComponent
     }
   }
 
+  /// Applies a value written by the model in a numeric [valueType].
+  void _writeNumericValue(dynamic value) {
+    final parsed = liParseNumber(value, locale: locale);
+    if (parsed == null) {
+      _numericValue = null;
+      _value = '';
+      return;
+    }
+
+    if (_isDecimal) {
+      _numericValue = parsed.toDouble();
+    } else {
+      // A fractional value written into an integer field is kept as it is:
+      // the model is not silently changed, and `LiRule.integer()` reports it.
+      _numericValue =
+          parsed == parsed.truncateToDouble() ? parsed.toInt() : parsed;
+    }
+    _value = _formatNumericValue(_numericValue!);
+  }
+
+  String _formatNumericValue(num value) => liFormatNumber(
+        value,
+        decimalSeparator: _decimalSeparator,
+        decimalPlaces: _effectiveDecimalPlaces,
+      );
+
+  /// Keeps only what can be typed in a numeric [valueType].
+  ///
+  /// A single left-to-right pass, so sanitizing the text before the caret
+  /// gives exactly the part of the result before the new caret position.
+  String _sanitizeNumericText(String raw) {
+    final separator = _decimalSeparator;
+    final places = _effectiveDecimalPlaces;
+    final acceptsSeparator = _isDecimal && places != 0;
+    final buffer = StringBuffer();
+    var seenSeparator = false;
+    var fractionDigits = 0;
+
+    for (var i = 0; i < raw.length; i++) {
+      final character = raw[i];
+      final code = character.codeUnitAt(0);
+      if (code >= 0x30 && code <= 0x39) {
+        if (seenSeparator) {
+          if (places != null && fractionDigits >= places) {
+            continue;
+          }
+          fractionDigits++;
+        }
+        buffer.write(character);
+      } else if (character == '-' && allowNegative && buffer.isEmpty) {
+        buffer.write(character);
+      } else if (acceptsSeparator &&
+          !seenSeparator &&
+          character == separator) {
+        buffer.write(character);
+        seenSeparator = true;
+      }
+    }
+
+    return buffer.toString();
+  }
+
+  num? _parseNumericText(String text) {
+    if (_isDecimal) {
+      return liParseLocalizedNumber(text, _decimalSeparator)?.toDouble();
+    }
+    final digits = text.trim();
+    if (digits.isEmpty || digits == '-') {
+      return null;
+    }
+    return int.tryParse(digits);
+  }
+
+  void _handleNumericInput(String raw) {
+    final element = inputElement;
+    int? caret;
+    if (element is html.InputElement) {
+      try {
+        caret = element.selectionStart;
+      } catch (_) {
+        caret = null;
+      }
+    }
+
+    final sanitized = _sanitizeNumericText(raw);
+    _value = sanitized;
+    _numericValue = _parseNumericText(sanitized);
+
+    if (sanitized != raw) {
+      _syncInputValue();
+      if (element is html.InputElement && caret != null) {
+        final caretInRaw = caret.clamp(0, raw.length);
+        final position =
+            _sanitizeNumericText(raw.substring(0, caretInRaw)).length;
+        try {
+          element.setSelectionRange(position, position);
+        } catch (_) {
+          // Some input types do not support selection; nothing to restore.
+        }
+      }
+    }
+
+    _onChange(_numericValue, rawValue: sanitized);
+  }
+
+  /// Re-renders the field when an input that changes how a number is shown
+  /// ([valueType], [locale], [decimalPlaces], [allowNegative]) changes.
+  ///
+  /// Other input changes leave the text alone, so a half-typed `3,` survives
+  /// an unrelated binding update.
+  void _refreshNumericDisplayIfFormatChanged() {
+    final signature =
+        '$resolvedValueType|${locale.trim()}|$decimalPlaces|$allowNegative';
+    if (signature == _numericFormatSignature) {
+      return;
+    }
+    _numericFormatSignature = signature;
+
+    if (!isNumeric) {
+      return;
+    }
+
+    final current = _numericValue ??
+        (_value.trim().isEmpty ? null : liParseNumber(_value, locale: locale));
+    _writeNumericValue(current);
+  }
+
   void _rebuildValidationConfig({required bool normalizeCurrentValue}) {
     _resolvedLiInputType = liInputType ?? LiBuiltInInputTypes.resolve(liType);
     _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
@@ -720,6 +942,7 @@ class LiInputComponent
       if (minLength > 0) LiRule.minLength(minLength),
       if (maxLength > 0) LiRule.maxLength(maxLength),
       if (pattern.trim().isNotEmpty) LiRule.pattern(pattern.trim()),
+      ..._numericBoundRules(),
       ...liRules,
     ];
 
@@ -734,6 +957,21 @@ class LiInputComponent
     return rules;
   }
 
+  /// `min` and `max` hold numbers for the native `type="number"` input. In a
+  /// numeric [valueType] the native input is `type="text"` and ignores them,
+  /// so they become rules instead.
+  List<LiRule> _numericBoundRules() {
+    if (!isNumeric) {
+      return const <LiRule>[];
+    }
+    final minValue = liParseNumber(min);
+    final maxValue = liParseNumber(max);
+    return <LiRule>[
+      if (minValue != null) LiRule.min(minValue),
+      if (maxValue != null) LiRule.max(maxValue),
+    ];
+  }
+
   void _runAutoValidation() {
     if (_effectiveRules.isEmpty) {
       _autoValidationIssue = null;
@@ -741,7 +979,9 @@ class LiInputComponent
       return;
     }
 
-    final normalizedValue = resolvedLiInputType?.normalize(_value) ?? _value;
+    final dynamic normalizedValue = isNumeric
+        ? _numericValue
+        : resolvedLiInputType?.normalize(_value) ?? _value;
     _autoValidationIssue = liValidateValue(
       value: normalizedValue,
       rules: _effectiveRules,
@@ -756,6 +996,10 @@ class LiInputComponent
   }
 
   String _normalizeIncomingValue(String value) {
+    if (isNumeric) {
+      return value;
+    }
+
     if (hasCustomMaskFormatter) {
       return maskFormatter!(value);
     }

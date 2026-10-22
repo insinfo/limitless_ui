@@ -1,3 +1,4 @@
+import 'li_number_parsing.dart';
 import 'li_rule_context.dart';
 
 abstract class LiRule {
@@ -18,6 +19,38 @@ abstract class LiRule {
   const factory LiRule.onlyNumbers([String? message]) = LiOnlyNumbersRule;
   const factory LiRule.pattern(String pattern, [String? message]) =
       LiPatternRule;
+
+  /// Fails when the value is a number lower than [min].
+  ///
+  /// Reads `num` values directly and strings as numbers (machine format
+  /// first, then the format of the rule context locale). Empty values pass:
+  /// combine with [LiRule.required] when the field is mandatory.
+  const factory LiRule.min(num min, [String? message]) = LiMinRule;
+
+  /// Fails when the value is a number greater than [max].
+  ///
+  /// Same reading as [LiRule.min]. Empty values pass.
+  const factory LiRule.max(num max, [String? message]) = LiMaxRule;
+
+  /// Fails when the value is not a whole number.
+  ///
+  /// `3` and `3.0` pass, `3.5` and text that is not a number fail. Empty
+  /// values pass.
+  const factory LiRule.integer([String? message]) = LiIntegerRule;
+
+  /// Fails when fewer than [min] items are selected.
+  ///
+  /// Counts the items of an `Iterable` or `Map` value, such as the selection
+  /// of `li-checkbox-group` or `li-multi-select`. An empty selection passes:
+  /// combine with [LiRule.required], which on a group means "at least one".
+  const factory LiRule.minSelected(int min, [String? message]) =
+      LiMinSelectedRule;
+
+  /// Fails when more than [max] items are selected.
+  ///
+  /// Same counting as [LiRule.minSelected].
+  const factory LiRule.maxSelected(int max, [String? message]) =
+      LiMaxSelectedRule;
   factory LiRule.custom(
     String? Function(dynamic value) fn, {
     String? code,
@@ -283,6 +316,130 @@ class LiPatternRule extends _LiBaseRule {
   }
 }
 
+class LiMinRule extends _LiBaseRule {
+  const LiMinRule(this.min, [super.message]);
+
+  final num min;
+
+  @override
+  String get code => 'min';
+
+  @override
+  String? validate(dynamic value, LiRuleContext context) {
+    final number = liParseNumber(value, locale: context.locale);
+    if (number == null || number >= min) {
+      return null;
+    }
+
+    final bound = _formatBound(min, context);
+    return resolveMessage(
+      context,
+      context.isEnglishLocale
+          ? 'Enter a value greater than or equal to $bound.'
+          : 'Informe um valor maior ou igual a $bound.',
+    );
+  }
+}
+
+class LiMaxRule extends _LiBaseRule {
+  const LiMaxRule(this.max, [super.message]);
+
+  final num max;
+
+  @override
+  String get code => 'max';
+
+  @override
+  String? validate(dynamic value, LiRuleContext context) {
+    final number = liParseNumber(value, locale: context.locale);
+    if (number == null || number <= max) {
+      return null;
+    }
+
+    final bound = _formatBound(max, context);
+    return resolveMessage(
+      context,
+      context.isEnglishLocale
+          ? 'Enter a value less than or equal to $bound.'
+          : 'Informe um valor menor ou igual a $bound.',
+    );
+  }
+}
+
+class LiIntegerRule extends _LiBaseRule {
+  const LiIntegerRule([super.message]);
+
+  @override
+  String get code => 'integer';
+
+  @override
+  String? validate(dynamic value, LiRuleContext context) {
+    if (value == null || (value is String && value.trim().isEmpty)) {
+      return null;
+    }
+
+    final number = liParseNumber(value, locale: context.locale);
+    if (number != null && number == number.truncateToDouble()) {
+      return null;
+    }
+
+    return resolveMessage(
+      context,
+      context.isEnglishLocale
+          ? 'Enter a whole number.'
+          : 'Informe um número inteiro.',
+    );
+  }
+}
+
+class LiMinSelectedRule extends _LiBaseRule {
+  const LiMinSelectedRule(this.min, [super.message]);
+
+  final int min;
+
+  @override
+  String get code => 'minSelected';
+
+  @override
+  String? validate(dynamic value, LiRuleContext context) {
+    final count = _selectionCount(value);
+    if (count == 0 || count >= min) {
+      return null;
+    }
+
+    return resolveMessage(
+      context,
+      context.isEnglishLocale
+          ? 'Select at least $min ${min == 1 ? 'option' : 'options'}.'
+          : 'Selecione pelo menos $min ${min == 1 ? 'opção' : 'opções'}.',
+    );
+  }
+}
+
+class LiMaxSelectedRule extends _LiBaseRule {
+  const LiMaxSelectedRule(this.max, [super.message]);
+
+  final int max;
+
+  @override
+  String get code => 'maxSelected';
+
+  @override
+  String? validate(dynamic value, LiRuleContext context) {
+    final count = _selectionCount(value);
+    if (count <= max) {
+      return null;
+    }
+
+    return resolveMessage(
+      context,
+      context.isEnglishLocale
+          ? 'Select no more than $max ${max == 1 ? 'option' : 'options'}.'
+          : 'Selecione no máximo $max ${max == 1 ? 'opção' : 'opções'}.',
+    );
+  }
+}
+
 class LiCustomRule implements LiRule {
   LiCustomRule(
     this._validator, {
@@ -320,6 +477,29 @@ bool _hasRequiredValue(dynamic value) {
   }
 
   return true;
+}
+
+int _selectionCount(dynamic value) {
+  if (value == null) {
+    return 0;
+  }
+  if (value is Iterable) {
+    return value.length;
+  }
+  if (value is Map) {
+    return value.length;
+  }
+  if (value is String) {
+    return value.trim().isEmpty ? 0 : 1;
+  }
+  return 1;
+}
+
+String _formatBound(num bound, LiRuleContext context) {
+  return liFormatNumber(
+    bound,
+    decimalSeparator: liDecimalSeparator(context.locale),
+  );
 }
 
 int? _valueLength(dynamic value) {

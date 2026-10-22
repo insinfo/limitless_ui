@@ -27,7 +27,7 @@ Demo page: https://insinfo.github.io/limitless_ui/
 
 ## Publication status
 
-The package is prepared for publication and currently versioned as `1.0.0-dev.45`, because it still depends on AngularDart pre-release packages:
+The package is prepared for publication and currently versioned as `1.0.0-dev.46`, because it still depends on AngularDart pre-release packages:
 
 - `ngdart: ^8.0.0-dev.4`
 - `ngforms: ^5.0.0-dev.3`
@@ -48,7 +48,7 @@ Publication metadata is configured in [pubspec.yaml](pubspec.yaml) and CI is def
 
 ```yaml
 dependencies:
-  limitless_ui: ^1.0.0-dev.45
+  limitless_ui: ^1.0.0-dev.46
 ```
 
 ### When using data-oriented components backed by `essential_core`
@@ -750,16 +750,16 @@ For advanced cases the directive still accepts `LiTextMaskConfig` or a Dart-side
 
 ## Declarative form validation
 
-The form API now supports a declarative validation layer designed to reduce template verbosity without removing control from the host application. The goal is to keep the common case short, preserve backend-driven errors, and reuse the same mental model across `li-input`, `li-select`, `li-multi-select`, `li-checkbox` and adjacent field components.
+The form API now supports a declarative validation layer designed to reduce template verbosity without removing control from the host application. The goal is to keep the common case short, preserve backend-driven errors, and reuse the same mental model across `li-input`, `li-select`, `li-multi-select`, `li-checkbox`, `li-checkbox-group`, `li-radio-group`, `li-typeahead` and adjacent field components.
 
 The public building blocks are:
 
 - `liType`: string preset for common field shapes such as CPF, email or phone.
 - `liInputType`: object-based escape hatch for custom reusable field presets.
-- `liRules`: declarative validation rules that compose with presets.
+- `liRules`: declarative validation rules that compose with presets. Built in: `LiRule.required()`, `requiredTrue()`, `minLength(n)`, `maxLength(n)`, `email()`, `cpf()`, `cnpj()`, `cpfOrCnpj()`, `onlyNumbers()`, `pattern(...)`, `custom(...)`, the numeric `min(n)`, `max(n)` and `integer()`, and the selection-count `minSelected(n)` and `maxSelected(n)`. Every rule except `required`/`requiredTrue` passes on an empty value, so "optional, but valid when filled" needs no extra code.
 - `liMessages`: per-field message overrides keyed by rule code.
 - `liValidationMode`: controls when automatic validation becomes visible.
-- `invalid`, `dataInvalid` and `errorText`: explicit external overrides, typically used for backend errors.
+- `invalid`, `dataInvalid` and `errorText`: explicit external overrides, typically used for backend errors. On `li-typeahead` the external message is `validationErrorText`, because `errorText` there has always been the search-failure message.
 
 ### Bind rules and messages as component fields
 
@@ -960,6 +960,91 @@ static final List<LiRule> skillsRules = <LiRule>[
   LiRule.custom(validateAtLeastTwoSkills, code: 'skills'),
 ];
 ```
+
+### Selection rules on `li-checkbox-group`
+
+`li-checkbox-group` validates the selection of the group as a whole. Without `[value]`, the rules see a list with the `trueValue` of every projected `li-checkbox` that is checked, so a group of boolean fields needs no extra state on the page. `LiRule.required()` means "at least one checked", and `LiRule.minSelected(n)`/`LiRule.maxSelected(n)` bound the count. Bind `[value]` when the page already keeps the selection as a collection (a list of ids, for instance): that value replaces the one read from the checkboxes. Replace the list instead of mutating it in place, so the group sees the change.
+
+```html
+<li-checkbox-group
+    legend="Reports"
+    [liRules]="reportRules"
+    liValidationMode="submitted">
+  <li-checkbox label="Daily" [(ngModel)]="daily"></li-checkbox>
+  <li-checkbox label="Weekly" [(ngModel)]="weekly"></li-checkbox>
+  <li-checkbox label="Monthly" [(ngModel)]="monthly"></li-checkbox>
+</li-checkbox-group>
+```
+
+```dart
+static const List<LiRule> reportRules = <LiRule>[
+  LiRule.required(),
+  LiRule.minSelected(2),
+  LiRule.maxSelected(3),
+];
+```
+
+The group paints `is-invalid`/`is-valid` and `data-invalid` on its `fieldset`, shows one message under the boxes, and `liForm.validateAndFocusFirstInvalid()` focuses its first checkbox. `[invalid]`, `[dataInvalid]` and `[errorText]` keep working as before and win over the rules.
+
+### Validation on `li-typeahead`
+
+`li-typeahead` takes `liRules`, `liMessages`, `liValidationMode`, `locale`, `[invalid]`, `[dataInvalid]` and `[validationErrorText]`. The rules run on the model value: the `value` of the chosen suggestion, the typed text when `editable` is on, or `null`. With `[editable]="false"`, text typed without picking a suggestion keeps the model `null`, so `LiRule.required()` fails until a suggestion is chosen.
+
+```html
+<li-typeahead
+    [dataSource]="states"
+    [editable]="false"
+    [liRules]="requiredRules"
+    liValidationMode="submitted"
+    [invalid]="backendErrors.containsKey('state')"
+    [validationErrorText]="backendErrors['state'] ?? ''"
+    [(ngModel)]="person.state">
+</li-typeahead>
+```
+
+The external error is `validationErrorText`, not `errorText`: on this component `errorText` has always been the message the popup shows when `searchCallback` fails, and giving it a second meaning would break existing pages. The inner input carries `is-invalid`/`is-valid`, `aria-invalid` and `data-invalid`, so `liForm` marks and focuses it.
+
+### Numeric values with `valueType`
+
+`li-input` hands text to the model by default. `valueType` changes that:
+
+- `text` (default): the model receives a `String`, exactly as before;
+- `integer`: the model receives an `int?`;
+- `decimal`: the model receives a `double?`.
+
+In both numeric types an empty field is `null`, `writeValue` accepts `num`, `String` or `null`, only valid characters can be typed (digits, a leading `-` with `[allowNegative]="true"`, and the decimal separator of `locale` with at most `[decimalPlaces]` digits after it), and `inputmode` defaults to `numeric`/`decimal`. The native input stays `type="text"`, so `pt_BR` users can type `3,5`. `min` and `max`, when they hold a number, become `LiRule.min`/`LiRule.max`.
+
+This is the drop-in for `<input type="number" [(ngModel)]="quantity">` bound to a `num?` field — the case that fails at run time with `TypeError: type 'String' is not a subtype of type 'num?'` when the component hands text to the model:
+
+```html
+<li-input
+    label="Quantity"
+    valueType="integer"
+    [liRules]="quantityRules"
+    [(ngModel)]="quantity">
+</li-input>
+
+<li-input
+    label="Weight"
+    valueType="decimal"
+    [decimalPlaces]="2"
+    suffixText="kg"
+    [(ngModel)]="weight">
+</li-input>
+```
+
+```dart
+int? quantity;
+double? weight;
+
+static const List<LiRule> quantityRules = <LiRule>[
+  LiRule.required(),
+  LiRule.min(1),
+  LiRule.max(500),
+];
+```
+
+`decimalPlaces` is an `int?` input: bind it as `[decimalPlaces]="2"`, since the literal `decimalPlaces="2"` is a `String` and does not compile. Numbers are shown without grouping. Masks and `liType` normalizers do not apply in a numeric `valueType`. With `allowNegative`, `inputmode` is left unset by default because iOS numeric keypads have no minus key; pass `inputMode` to choose.
 
 ### Pairing field validation with `liForm`
 

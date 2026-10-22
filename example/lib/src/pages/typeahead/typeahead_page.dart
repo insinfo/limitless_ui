@@ -64,6 +64,7 @@ class TypeaheadGlobalConfigDemoComponent {
     LiHighlightComponent,
     LiTabsComponent,
     LiTabxDirective,
+    LiFormDirective,
     LiTypeaheadComponent,
     LiTypeaheadHighlightComponent,
     TypeaheadGlobalConfigDemoComponent,
@@ -129,6 +130,35 @@ Future<List<Map<String, dynamic>>> remoteCitySearch(String term) async {
   (userValueChange)="searchRelatedData(\$event)">
 </li-typeahead>''';
 
+  static const String validationSnippet = '''
+<div liForm #stateForm="liForm">
+  <li-typeahead
+    [dataSource]="states"
+    [editable]="false"
+    [liRules]="requiredStateRules"
+    [liMessages]="requiredStateMessages"
+    liValidationMode="submitted"
+    [invalid]="stateBackendError.isNotEmpty"
+    [validationErrorText]="stateBackendError"
+    [(ngModel)]="validatedState">
+  </li-typeahead>
+</div>
+
+<!-- errorText continua sendo a mensagem de falha da busca no popup;
+     o erro do campo vem em validationErrorText. -->''';
+
+  /// Regras do typeahead validado: com `editable=false`, texto digitado sem
+  /// escolher uma sugestão deixa o modelo `null` e o `required` reprova.
+  static const List<LiRule> requiredStateRules = <LiRule>[LiRule.required()];
+
+  static const Map<String, String> _requiredStateMessagesPt = <String, String>{
+    'required': 'Escolha um estado da lista.',
+  };
+
+  static const Map<String, String> _requiredStateMessagesEn = <String, String>{
+    'required': 'Pick a state from the list.',
+  };
+
   static const String automationHooksSnippet = '''
 await clickFirstVisible(page, '.demo-page [data-label="li_ta_input"]');
 await page.keyboard.type('sa');
@@ -159,6 +189,40 @@ await clickFirstVisible(page, '#\$popupId [data-label^="li_ta_item_"]');''';
   dynamic selectedCity;
   dynamic strictSelection;
   dynamic remoteSelection;
+  dynamic validatedState;
+  String stateBackendError = '';
+  String validationResult = '';
+
+  Map<String, String> get requiredStateMessages =>
+      _isPt ? _requiredStateMessagesPt : _requiredStateMessagesEn;
+  String get validationLocale => _isPt ? 'pt_BR' : 'en_US';
+  String get validationTitle =>
+      _isPt ? 'Validação declarativa' : 'Declarative validation';
+  String get validationBody => _isPt
+      ? 'liRules, liMessages e liValidationMode no typeahead. Digitar sem escolher uma sugestão conta como vazio, e o liForm marca e foca o campo.'
+      : 'liRules, liMessages and liValidationMode on the typeahead. Typing without picking a suggestion counts as empty, and liForm marks and focuses the field.';
+  String get validationApiBody => _isPt
+      ? 'O erro externo do campo usa validationErrorText, porque errorText já é a mensagem de falha da busca. invalid e validationErrorText vencem a validação automática.'
+      : 'The external field error uses validationErrorText, because errorText already is the search failure message. invalid and validationErrorText win over the automatic validation.';
+  String get validateLabel => _isPt ? 'Validar' : 'Validate';
+  String get backendErrorLabel => _isPt
+      ? 'Simular erro do backend'
+      : 'Simulate backend error';
+
+  Future<void> validateState(LiFormDirective form) async {
+    final valid = await form.validateAndFocusFirstInvalid();
+    validationResult = valid
+        ? (_isPt ? 'Válido: $validatedState' : 'Valid: $validatedState')
+        : (_isPt ? 'Há erros no campo.' : 'The field has errors.');
+  }
+
+  void toggleStateBackendError() {
+    stateBackendError = stateBackendError.isNotEmpty
+        ? ''
+        : (_isPt
+            ? 'Estado indisponível para cadastro.'
+            : 'State not available for registration.');
+  }
 
   String lastEvent = '';
 

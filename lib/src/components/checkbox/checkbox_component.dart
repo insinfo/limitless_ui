@@ -9,6 +9,7 @@ import '../../validation/li_rule.dart';
 import '../../validation/li_rule_context.dart';
 import '../../validation/li_validation.dart';
 import '../../validation/li_validation_issue.dart';
+import 'checkbox_group_component.dart';
 
 @Component(
   selector: 'li-checkbox',
@@ -24,12 +25,19 @@ class LiCheckboxComponent
   LiCheckboxComponent(
     this._changeDetectorRef, [
     @Optional() this._formDirective,
-  ]) : _generatedId = 'li-checkbox-${_nextId++}';
+    @Optional() this._group,
+  ]) : _generatedId = 'li-checkbox-${_nextId++}' {
+    _group?.registerCheckbox(this);
+  }
 
   static int _nextId = 0;
 
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
+
+  /// Group this checkbox belongs to, told about every change of [checked] so
+  /// its rules see the current selection.
+  final LiCheckboxGroupComponent? _group;
   final String _generatedId;
 
   dynamic _value = false;
@@ -211,6 +219,7 @@ class LiCheckboxComponent
     _dirty = true;
     _value = (value ?? false) ? trueValue : falseValue;
     _onChange(_value, rawValue: _value?.toString() ?? '');
+    _group?.handleCheckboxChange(userInteraction: true);
     if (validateOnInput ||
         _shouldShowValidation ||
         _autoValidationIssue != null) {
@@ -238,6 +247,7 @@ class LiCheckboxComponent
   @override
   void writeValue(dynamic value) {
     _value = value ?? falseValue;
+    _group?.handleCheckboxChange(userInteraction: false);
     _runAutoValidation();
     _markForCheck();
   }
@@ -251,6 +261,7 @@ class LiCheckboxComponent
   @override
   void ngOnDestroy() {
     _formSubmissionSubscription?.cancel();
+    _group?.unregisterCheckbox(this);
   }
 
   String _joinClasses(List<String> values) {
