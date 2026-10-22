@@ -11,10 +11,7 @@ import 'package:essential_core/essential_core.dart';
 
 import '../../core/overlay_positioning.dart';
 import '../../directives/li_form_directive.dart';
-import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import 'tree_view_base.dart';
 import 'treeview_settings.dart';
 import '../../core/outside_click.dart';
@@ -89,6 +86,7 @@ class LiTreeviewSelectTriggerDirective {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiTreeviewSelectComponent
+    with LiValidatedField
     implements ControlValueAccessor<dynamic>, OnInit, AfterChanges, OnDestroy {
   LiTreeviewSelectComponent(
     this._changeDetectorRef, [
@@ -96,13 +94,7 @@ class LiTreeviewSelectComponent
   ]) {
     final seq = _nextSequence++;
     listboxId = 'li-treeview-dropdown-$seq';
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription =
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _markForCheck();
-    });
+    connectValidationForm(_formDirective);
   }
 
   static int _nextSequence = 0;
@@ -126,13 +118,6 @@ class LiTreeviewSelectComponent
 
   ChangeFunction<dynamic>? _ngModelValueChangeCallback;
   TouchFunction _touchCallback = () {};
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
-  StreamSubscription<bool>? _formSubmissionSubscription;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   dynamic _sourceData;
   TreeViewSettings _settings = const TreeViewSettings();
@@ -163,6 +148,7 @@ class LiTreeviewSelectComponent
   @Input()
   String searchPlaceholder = '';
 
+  @override
   @Input()
   String locale = 'pt_BR';
 
@@ -173,25 +159,7 @@ class LiTreeviewSelectComponent
   String? name;
 
   @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
-
-  @Input()
-  bool invalid = false;
-
-  @Input()
   bool valid = false;
-
-  @Input()
-  bool dataInvalid = false;
 
   @Input()
   String errorText = '';
@@ -349,29 +317,24 @@ class LiTreeviewSelectComponent
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
+  @override
+  dynamic get validationValue =>
+      multiple ? _selectedValues() : _pendingModelValue;
 
-  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+  @override
+  String get externalErrorText => errorText;
 
-  bool get effectiveValid =>
-      !effectiveInvalid &&
-      (valid ||
-          (_shouldShowValidation &&
-              _effectiveRules.isNotEmpty &&
-              _autoValidationIssue == null));
+  @override
+  String? get validationFieldName =>
+      resolvedPlaceholder.trim().isEmpty ? null : resolvedPlaceholder;
 
-  String get effectiveErrorText {
-    final externalMessage = errorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
+  @override
+  bool get externalValid => valid;
 
-    return _autoValidationIssue?.message ?? '';
+  @override
+  void didChangeFormSubmission() {
+    _markForCheck();
   }
-
-  bool get showErrorFeedback =>
-      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
@@ -600,7 +563,7 @@ class LiTreeviewSelectComponent
   @override
   void ngOnDestroy() {
     _destroyed = true;
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _searchDebounceTimer?.cancel();
     _unbindDocumentListeners();
     _overlay?.dispose();
@@ -619,7 +582,7 @@ class LiTreeviewSelectComponent
     } else {
       selectedNode = _findNodeByValue(rootNodes, value);
     }
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -778,7 +741,7 @@ class LiTreeviewSelectComponent
     if (multiple) {
       _toggleMultipleNodeSelection(node);
       _pendingModelValue = _selectedValues();
-      _dirty = true;
+      validationDirty = true;
       _changeController.add(_pendingModelValue);
       _userChangeController.add(_pendingModelValue);
       _ngModelValueChangeCallback?.call(_pendingModelValue);
@@ -793,7 +756,7 @@ class LiTreeviewSelectComponent
     final previousModelValue = _pendingModelValue;
     selectedNode = node;
     _pendingModelValue = _selectedValueFor(node);
-    _dirty = true;
+    validationDirty = true;
     _changeController.add(_pendingModelValue);
     if (previousModelValue != _pendingModelValue) {
       _userChangeController.add(_pendingModelValue);
@@ -841,7 +804,7 @@ class LiTreeviewSelectComponent
     selectedNode = null;
     _clearSelectedState(rootNodes);
     selectedNodes = <TreeViewNode>[];
-    _dirty = true;
+    validationDirty = true;
     _changeController.add(_pendingModelValue);
     if (hadSelection) {
       _userChangeController.add(_pendingModelValue);
@@ -1426,50 +1389,20 @@ class LiTreeviewSelectComponent
   }
 
   void _markTouched() {
-    if (_touched) {
+    if (validationTouched) {
       _touchCallback();
-      _runAutoValidation();
+      runValidation();
       return;
     }
-    _touched = true;
+    validationTouched = true;
     _touchCallback();
-    _runAutoValidation();
+    runValidation();
   }
 
   void _rebuildValidationConfig() {
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
-    _runAutoValidation();
+    rebuildValidationConfig();
+    runValidation();
   }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: multiple ? _selectedValues() : _pendingModelValue,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName:
-            resolvedPlaceholder.trim().isEmpty ? null : resolvedPlaceholder,
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
-  }
-
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
 
   String get _normalizedSize {
     final normalized = size.trim().toLowerCase();

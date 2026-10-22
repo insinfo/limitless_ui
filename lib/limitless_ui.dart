@@ -149,5 +149,6 @@ export 'src/validation/li_input_type.dart';
 export 'src/validation/li_preset_input_type.dart';
 export 'src/validation/li_rule.dart';
 export 'src/validation/li_rule_context.dart';
+export 'src/validation/li_validated_field.dart';
 export 'src/validation/li_validation.dart';
 export 'src/validation/li_validation_issue.dart';

@@ -156,6 +156,26 @@ Esse fluxo é o ponto de equilíbrio recomendado no projeto:
 - regras contextuais continuam na página ou no serviço;
 - erros de backend ainda podem sobrescrever a mensagem final do campo.
 
+## Um mixin de validação para todos os campos em `1.0.0-dev.47`
+
+Até a `1.0.0-dev.46`, cada componente de formulário tinha a sua própria cópia da camada de validação declarativa: montar as regras efetivas, decidir quando mostrá-las (`liValidationMode` contra touched, dirty e a submissão do `liForm`), respeitar `invalid`/`dataInvalid`/`errorText` vindos de fora, resolver `liMessages` e se registrar no `liForm`. Quatorze cópias foram se distanciando, e foi assim que o `li-checkbox-group` e o `li-typeahead` passaram tanto tempo sem validação.
+
+A `1.0.0-dev.47` leva essa camada para um único mixin, `LiValidatedField` (`lib/src/validation/li_validated_field.dart`, exportado). Os quatorze componentes passam a usá-lo: `li-input`, `li-password-input`, `li-currency-input`, `li-select`, `li-multi-select`, `li-checkbox`, `li-checkbox-group`, `li-radio-group`, `li-typeahead`, `li-date-picker`, `li-time-picker`, `li-datatable-select`, `li-treeview-select` e `li-file-upload`. A API pública não muda: os mesmos inputs, outputs, classes CSS, atributos `data-*` e mensagens.
+
+O que fica onde:
+
+- **Mixin:** os inputs `liRules`, `liMessages`, `liValidationMode`, `validateOnInput`, `invalid` e `dataInvalid` (o ngdart reconhece `@Input` de mixin); o estado de touched, dirty e submitted; a falha atual; os getters que o template usa para pintar (`effectiveInvalid`, `effectiveValid`, `effectiveErrorText`, `showErrorFeedback`, `resolvedAriaInvalid`, `resolvedDataInvalidAttr`); e `connectValidationForm`, `rebuildValidationConfig` e `runValidation`.
+- **Componente:** `locale` e a mensagem externa (`errorText` na maioria; `validationErrorText` no typeahead, cujo `errorText` é a falha da busca), o valor que as regras enxergam (`validationValue`) e em que ponto do ciclo de vida chamar o mixin.
+
+A refatoração manteve de propósito os comportamentos que diferem entre componentes, porque unificá-los mudaria o que o usuário vê. As diferenças principais, úteis para quem escreve regra própria:
+
+- o momento em que o componente se inscreve no `liForm` (construtor, `ngOnInit`, `ngAfterChanges` ou `ngAfterViewInit`);
+- se tocar no campo de novo revalida ou não;
+- o `validateOnInput` é aceito mas ignorado pelos selects, pelos pickers, pelo campo de moeda, pelo datatable-select, pelo treeview-select e pelo upload de arquivos;
+- o `fieldName` entregue ao `LiRuleContext` é o `name` nos campos de texto, a `legend` nos grupos e um id, título ou placeholder nos demais.
+
+Um campo próprio da aplicação ganha a camada inteira ao misturar `LiValidatedField`; veja "Building a validated custom field" no README para um componente completo. Coberto por `test/forms/li_validated_field_test.dart`.
+
 ## Validação declarativa em `1.0.0-dev.46`
 
 Três componentes tinham ficado de fora da camada declarativa descrita acima: o

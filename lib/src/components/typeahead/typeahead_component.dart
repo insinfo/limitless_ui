@@ -11,10 +11,7 @@ import '../../core/overlay_layers.dart';
 
 import '../../directives/li_form_directive.dart';
 import '../../directives/safe_inner_html_directive.dart';
-import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import 'typeahead_config.dart';
 import 'typeahead_highlight_component.dart';
 import '../../core/outside_click.dart';
@@ -68,6 +65,7 @@ typedef LiTypeaheadResultMarkupBuilder = String Function(
   ],
 )
 class LiTypeaheadComponent
+    with LiValidatedField
     implements ControlValueAccessor<dynamic>, OnInit, AfterChanges, OnDestroy {
   LiTypeaheadComponent(
     this._changeDetectorRef, [
@@ -132,14 +130,6 @@ class LiTypeaheadComponent
   String _committedInputValue = '';
   String rawSearchTerm = '';
   String? _asyncErrorMessage;
-
-  StreamSubscription<bool>? _formSubmissionSubscription;
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   @Input()
   late String autocomplete;
@@ -226,36 +216,10 @@ class LiTypeaheadComponent
   @Input()
   LiTypeaheadResultMarkupBuilder? resultMarkupBuilder;
 
-  /// Declarative rules evaluated against the model value.
-  ///
-  /// The value is what `ngModel` holds: the `value` of the chosen suggestion,
-  /// the typed text when [editable] is `true`, or `null`. With [editable]
-  /// `false`, text typed without choosing a suggestion leaves the model
-  /// `null`, so `LiRule.required()` fails until a suggestion is chosen.
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
-
   /// Locale of the default rule messages.
+  @override
   @Input()
   String locale = 'pt_BR';
-
-  /// External invalid state, typically from the backend. Wins over the
-  /// automatic validation.
-  @Input()
-  bool invalid = false;
-
-  /// External invalid state, same as [invalid].
-  @Input()
-  bool dataInvalid = false;
 
   /// External field error, typically from the backend. Wins over the message
   /// of the automatic validation.
@@ -310,32 +274,31 @@ class LiTypeaheadComponent
         effectiveValid ? 'is-valid' : '',
       ]);
 
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
+  /// The model value: the `value` of the chosen suggestion, the typed text
+  /// when [editable] is `true`, or `null`. With [editable] `false`, text typed
+  /// without choosing a suggestion leaves the model `null`, so
+  /// `LiRule.required()` fails until a suggestion is chosen.
+  @override
+  dynamic get validationValue => _lastWrittenValue;
 
-  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+  /// [validationErrorText], because [errorText] on this component is the
+  /// message shown when the search fails.
+  @override
+  String get externalErrorText => validationErrorText;
 
-  bool get effectiveValid =>
-      !effectiveInvalid &&
-      _shouldShowValidation &&
-      _effectiveRules.isNotEmpty &&
-      _autoValidationIssue == null;
+  @override
+  String? get validationFieldName => name;
 
-  String get effectiveValidationErrorText {
-    final externalMessage = validationErrorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
-
-    return _autoValidationIssue?.message ?? '';
+  @override
+  void didChangeFormSubmission() {
+    _markForCheck();
   }
 
-  bool get showValidationFeedback =>
-      effectiveValidationErrorText.trim().isNotEmpty && effectiveInvalid;
+  /// Message shown under the field, same as [effectiveErrorText].
+  String get effectiveValidationErrorText => effectiveErrorText;
 
-  String? get resolvedAriaInvalid => effectiveInvalid ? 'true' : null;
-
-  String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
+  /// Whether the validation message is rendered, same as [showErrorFeedback].
+  bool get showValidationFeedback => showErrorFeedback;
 
   @Input()
   set dataSource(dynamic value) {
@@ -344,13 +307,7 @@ class LiTypeaheadComponent
 
   @override
   void ngOnInit() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription =
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _markForCheck();
-    });
+    connectValidationForm(_formDirective);
     _rebuildValidationConfig();
 
     // Warm the visible items, but never open: opening is the user's move —
@@ -374,7 +331,7 @@ class LiTypeaheadComponent
   @override
   void writeValue(dynamic value) {
     _lastWrittenValue = value;
-    _runAutoValidation();
+    runValidation();
 
     if (value == null) {
       _selectedItem = null;
@@ -424,7 +381,7 @@ class LiTypeaheadComponent
   @override
   void ngOnDestroy() {
     _destroyed = true;
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _debounceTimer?.cancel();
     _unbindDocumentListeners();
     _overlay?.dispose();
@@ -462,8 +419,8 @@ class LiTypeaheadComponent
 
   void handleBlur() {
     _touchCallback?.call();
-    _touched = true;
-    _runAutoValidation();
+    validationTouched = true;
+    runValidation();
     _markForCheck();
 
     if (showHint) {
@@ -484,7 +441,7 @@ class LiTypeaheadComponent
     final nextValue = value ?? '';
     rawSearchTerm = nextValue;
     _committedInputValue = nextValue;
-    _dirty = true;
+    validationDirty = true;
 
     if (!editable) {
       _selectedItem = null;
@@ -493,10 +450,8 @@ class LiTypeaheadComponent
       _emitModelValue(nextValue);
     }
 
-    if (validateOnInput ||
-        _shouldShowValidation ||
-        _autoValidationIssue != null) {
-      _runAutoValidation();
+    if (shouldRevalidate) {
+      runValidation();
       _markForCheck();
     }
 
@@ -837,12 +792,12 @@ class LiTypeaheadComponent
 
     final previousValue = _selectedItem?.value;
     _selectedItem = item;
-    _dirty = true;
+    validationDirty = true;
     _committedInputValue = _formatItemForInput(item);
     rawSearchTerm = _committedInputValue;
     _writeInputValue(_committedInputValue);
     _emitModelValue(item.value);
-    _runAutoValidation();
+    runValidation();
     _changeController.add(item.value);
     if (previousValue != item.value) {
       _userChangeController.add(item.value);
@@ -1059,38 +1014,9 @@ class LiTypeaheadComponent
   }
 
   void _rebuildValidationConfig() {
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
-    _runAutoValidation();
+    rebuildValidationConfig();
+    runValidation();
   }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: _lastWrittenValue,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: name,
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
-  }
-
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
 
   String get _normalizedSize {
     final normalized = size.trim().toLowerCase();

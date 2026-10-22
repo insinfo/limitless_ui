@@ -11,9 +11,7 @@ import 'package:popper/popper.dart';
 import '../../core/overlay_positioning.dart';
 import '../../directives/li_form_directive.dart';
 import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import '../../core/outside_click.dart';
 
 enum TimePickerDialMode { hour, minute }
@@ -84,6 +82,7 @@ class LiTimePickerTriggerDirective {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiTimePickerComponent
+    with LiValidatedField
     implements ControlValueAccessor<Duration?>, AfterChanges, OnDestroy {
   LiTimePickerComponent(
     this._changeDetectorRef, [
@@ -106,7 +105,6 @@ class LiTimePickerComponent
   StreamSubscription<html.MouseEvent>? _documentMouseUpSubscription;
   StreamSubscription<html.TouchEvent>? _documentTouchMoveSubscription;
   StreamSubscription<html.TouchEvent>? _documentTouchEndSubscription;
-  StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
   Duration? value;
@@ -120,6 +118,7 @@ class LiTimePickerComponent
   @Input()
   String? name;
 
+  @override
   @Input()
   String locale = 'pt_BR';
 
@@ -130,13 +129,7 @@ class LiTimePickerComponent
   bool use24Hour = false;
 
   @Input()
-  bool invalid = false;
-
-  @Input()
   bool valid = false;
-
-  @Input()
-  bool dataInvalid = false;
 
   @Input()
   bool required = false;
@@ -146,18 +139,6 @@ class LiTimePickerComponent
 
   @Input()
   String helperText = '';
-
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
 
   @Input()
   String feedbackClass = '';
@@ -238,40 +219,33 @@ class LiTimePickerComponent
 
   ChangeFunction<Duration?> _onChange = (Duration? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
+  @override
+  dynamic get validationValue => value;
 
-  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+  @override
+  String get externalErrorText => errorText;
 
-  bool get effectiveValid =>
-      !effectiveInvalid &&
-      (valid ||
-          (_shouldShowValidation &&
-              _effectiveRules.isNotEmpty &&
-              _autoValidationIssue == null));
+  @override
+  String? get validationFieldName => 'timePicker';
 
-  bool get hasHelperText => helperText.trim().isNotEmpty;
+  @override
+  bool get externalValid => valid;
 
-  String get effectiveErrorText {
-    final externalMessage = errorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
+  @override
+  List<LiRule> buildValidationRules() => <LiRule>[
+        if (required) const LiRequiredRule(),
+        ...liRules,
+      ];
 
-    return _autoValidationIssue?.message ?? '';
+  @override
+  void didChangeFormSubmission() {
+    _markForCheck();
   }
 
-  bool get showErrorFeedback =>
-      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
+  bool get hasHelperText => helperText.trim().isNotEmpty;
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
@@ -348,31 +322,11 @@ class LiTimePickerComponent
 
   bool get hasValue => value != null;
 
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
-
   @override
   void ngAfterChanges() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription ??=
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _markForCheck();
-    });
-
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      if (required) const LiRequiredRule(),
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
-    _runAutoValidation();
+    connectValidationForm(_formDirective);
+    rebuildValidationConfig();
+    runValidation();
     _markForCheck();
   }
 
@@ -723,28 +677,28 @@ class LiTimePickerComponent
     value = _normalizeDuration(
       Duration(hours: draftHour24, minutes: draftMinute),
     );
-    _dirty = true;
+    validationDirty = true;
     _valueChangeController.add(value);
     if (previousValue != value) {
       _userValueChangeController.add(value);
     }
     _onChange(value);
     _markTouched();
-    _runAutoValidation();
+    runValidation();
     close();
   }
 
   void clear() {
     final hadValue = value != null;
     value = null;
-    _dirty = true;
+    validationDirty = true;
     _valueChangeController.add(null);
     if (hadValue) {
       _userValueChangeController.add(null);
     }
     _onChange(null);
     _markTouched();
-    _runAutoValidation();
+    runValidation();
     close();
   }
 
@@ -789,7 +743,7 @@ class LiTimePickerComponent
     this.value = _normalizeDuration(value);
     _syncDraftFromValue();
     _syncInputTexts();
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -1244,33 +1198,16 @@ class LiTimePickerComponent
   }
 
   void _markTouched() {
-    if (_touched) {
+    if (validationTouched) {
       _onTouched();
-      if (_shouldShowValidation || _autoValidationIssue != null) {
-        _runAutoValidation();
+      if (shouldShowValidation || validationIssue != null) {
+        runValidation();
       }
       return;
     }
-    _touched = true;
+    validationTouched = true;
     _onTouched();
-    _runAutoValidation();
-  }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: value,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: 'timePicker',
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
+    runValidation();
   }
 
   String _joinClasses(List<String> values) {
@@ -1285,7 +1222,7 @@ class LiTimePickerComponent
     _unbindDocumentListeners();
     _stopClockDrag();
     _overlay?.dispose();
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _valueChangeController.close();
     _userValueChangeController.close();
     _openChangeController.close();

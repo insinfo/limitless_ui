@@ -12,10 +12,7 @@ import '../../core/li_before_open_event.dart';
 import '../../core/overlay_positioning.dart';
 import '../../directives/li_form_directive.dart';
 import '../../exceptions/invalid_argument_exception.dart';
-import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import 'li_option.dart';
 import '../../core/outside_click.dart';
 
@@ -91,6 +88,7 @@ class LiSelectTriggerDirective {
   ],
 )
 class LiSelectComponent
+    with LiValidatedField
     implements
         ControlValueAccessor<dynamic>,
         AfterChanges,
@@ -129,18 +127,11 @@ class LiSelectComponent
   bool _destroyed = false;
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
-  StreamSubscription<bool>? _formSubmissionSubscription;
   bool _overlayRelayoutPending = false;
   dynamic _lastWrittenValue;
 
   dynamic Function(dynamic, {String rawValue})? _ngModelValueChangeCallback;
   TouchFunction _onTouched = () {};
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   @Input('disabled')
   bool isDisabled = false;
@@ -159,13 +150,7 @@ class LiSelectComponent
   bool get isInteractive => !isDisabled && !readonly;
 
   @Input()
-  bool invalid = false;
-
-  @Input()
   bool valid = false;
-
-  @Input()
-  bool dataInvalid = false;
 
   @Input()
   String errorText = '';
@@ -189,23 +174,12 @@ class LiSelectComponent
   @Input()
   String triggerIconClass = '';
 
+  @override
   @Input()
   String locale = 'pt_BR';
 
   @Input()
   String size = '';
-
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
 
   /// Whether the search input is displayed in the dropdown.
   ///
@@ -293,29 +267,22 @@ class LiSelectComponent
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
+  @override
+  dynamic get validationValue => currentValue?.value;
 
-  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+  @override
+  String get externalErrorText => errorText;
 
-  bool get effectiveValid =>
-      !effectiveInvalid &&
-      (valid ||
-          (_shouldShowValidation &&
-              _effectiveRules.isNotEmpty &&
-              _autoValidationIssue == null));
+  @override
+  String? get validationFieldName => id.trim().isEmpty ? null : id.trim();
 
-  String get effectiveErrorText {
-    final externalMessage = errorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
+  @override
+  bool get externalValid => valid;
 
-    return _autoValidationIssue?.message ?? '';
+  @override
+  void didChangeFormSubmission() {
+    _markForCheck();
   }
-
-  bool get showErrorFeedback =>
-      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
@@ -446,13 +413,13 @@ class LiSelectComponent
       if (autoSelectFirstOption) {
         currentValue = options.where((option) => !option.disabled).firstOrNull;
       }
-      _runAutoValidation();
+      runValidation();
       _markForCheck();
       return;
     }
 
     _selectCurrentValue(newVal);
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -520,13 +487,7 @@ class LiSelectComponent
 
   @override
   void ngOnInit() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription =
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _markForCheck();
-    });
+    connectValidationForm(_formDirective);
     _rebuildValidationConfig();
     if (_lastWrittenValue != null) {
       _selectCurrentValue(_lastWrittenValue);
@@ -535,7 +496,7 @@ class LiSelectComponent
     } else {
       currentValue = null;
     }
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -666,7 +627,7 @@ class LiSelectComponent
       }
 
       currentValue = option;
-      _runAutoValidation();
+      runValidation();
 
       if (isCloseDropDown && dropdownOpen) {
         closeDropdown();
@@ -689,7 +650,7 @@ class LiSelectComponent
     }
 
     final previousValue = currentValue?.value;
-    _dirty = true;
+    validationDirty = true;
     currentValue = selItem;
     _lastWrittenValue = currentValue?.value;
     closeDropdown();
@@ -700,7 +661,7 @@ class LiSelectComponent
     }
     _ngModelValueChangeCallback?.call(currentValue?.value);
     _markTouched();
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -879,7 +840,7 @@ class LiSelectComponent
     _unbindDocumentListeners();
     closeDropdown(markForCheck: false);
     _overlay?.dispose();
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _changeController.close();
     _modelChangeController.close();
     _userChangeController.close();
@@ -997,7 +958,7 @@ class LiSelectComponent
     final currentSelectedValue = _lastWrittenValue ?? currentValue?.value;
     options = nextOptions;
     _selectCurrentValueOrFirstOption(currentSelectedValue);
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -1025,7 +986,7 @@ class LiSelectComponent
     final currentSelectedValue = _lastWrittenValue ?? currentValue?.value;
     options = nextOptions;
     _selectCurrentValueOrFirstOption(currentSelectedValue);
-    _runAutoValidation();
+    runValidation();
 
     if (markForCheck) {
       _markForCheck();
@@ -1088,7 +1049,7 @@ class LiSelectComponent
     _lastWrittenValue = null;
 
     if (isUserInteraction) {
-      _dirty = true;
+      validationDirty = true;
     }
 
     if (isCallCurrentValueChange) {
@@ -1104,7 +1065,7 @@ class LiSelectComponent
     if (isUserInteraction) {
       _markTouched();
     }
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -1113,48 +1074,19 @@ class LiSelectComponent
   }
 
   void _rebuildValidationConfig() {
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
-    _runAutoValidation();
-  }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: currentValue?.value,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: id.trim().isEmpty ? null : id.trim(),
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
+    rebuildValidationConfig();
+    runValidation();
   }
 
   void _markTouched() {
-    if (_touched) {
+    if (validationTouched) {
       _onTouched();
       return;
     }
-    _touched = true;
+    validationTouched = true;
     _onTouched();
-    _runAutoValidation();
+    runValidation();
   }
-
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
 
   String get _normalizedSize {
     final normalized = size.trim().toLowerCase();

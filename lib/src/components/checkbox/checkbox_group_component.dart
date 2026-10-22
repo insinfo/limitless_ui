@@ -1,12 +1,7 @@
-import 'dart:async';
-
 import 'package:ngdart/angular.dart';
 
 import '../../directives/li_form_directive.dart';
-import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import 'checkbox_component.dart';
 
 /// Groups `li-checkbox` controls under one legend, one error and one set of
@@ -31,7 +26,9 @@ import 'checkbox_component.dart';
   // keeps that working when they come from an `*ngFor` or a child component.
   visibility: Visibility.all,
 )
-class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
+class LiCheckboxGroupComponent
+    with LiValidatedField
+    implements AfterChanges, OnDestroy {
   LiCheckboxGroupComponent(
     this._changeDetectorRef, [
     @Optional() this._formDirective,
@@ -40,17 +37,10 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
   final List<LiCheckboxComponent> _checkboxes = <LiCheckboxComponent>[];
-  StreamSubscription<bool>? _formSubmissionSubscription;
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
   bool _hasTrackedValue = false;
   bool _hasExplicitValue = false;
   dynamic _explicitValue;
   dynamic _lastValue;
-  LiValidationIssue? _autoValidationIssue;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   @Input()
   String legend = '';
@@ -77,19 +67,12 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
   String legendClass = '';
 
   /// Locale of the default rule messages.
+  @override
   @Input()
   String locale = 'pt_BR';
 
-  /// External invalid state. Wins over the automatic validation.
-  @Input()
-  bool invalid = false;
-
   @Input()
   bool valid = false;
-
-  /// External invalid state, same as [invalid].
-  @Input()
-  bool dataInvalid = false;
 
   /// Selection validated by the rules.
   ///
@@ -104,52 +87,30 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
 
   dynamic get value => _hasExplicitValue ? _explicitValue : _checkedValues();
 
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
+  @override
+  dynamic get validationValue => value;
 
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
+  @override
+  String get externalErrorText => errorText;
 
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
+  @override
+  String? get validationFieldName =>
+      legend.trim().isEmpty ? null : legend.trim();
 
-  @Input()
-  bool validateOnInput = true;
+  @override
+  bool get externalValid => valid;
+
+  @override
+  void didChangeFormSubmission() {
+    _markForCheck();
+  }
 
   bool get hasLegend => legend.trim().isNotEmpty;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
-  bool get showErrorFeedback =>
-      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
-
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
-
-  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
-
-  bool get effectiveValid =>
-      !effectiveInvalid &&
-      (valid ||
-          (_shouldShowValidation &&
-              _effectiveRules.isNotEmpty &&
-              _autoValidationIssue == null));
-
-  String get effectiveErrorText {
-    final externalMessage = errorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
-
-    return _autoValidationIssue?.message ?? '';
-  }
-
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
-
-  String? get resolvedAriaInvalid => effectiveInvalid ? 'true' : null;
-
-  String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
 
   String get resolvedContainerClass => _joinClasses(<String>[
         'li-selection-group',
@@ -171,24 +132,12 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
 
   @override
   void ngAfterChanges() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription ??=
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _markForCheck();
-    });
-
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
+    connectValidationForm(_formDirective);
+    rebuildValidationConfig();
 
     if (_hasExplicitValue) {
       if (_hasTrackedValue && !_areValuesEqual(_lastValue, _explicitValue)) {
-        _dirty = true;
+        validationDirty = true;
       }
       _hasTrackedValue = true;
       _lastValue = _explicitValue is Iterable
@@ -196,14 +145,14 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
           : _explicitValue;
     }
 
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
   @HostListener('focusout')
   void handleFocusOut() {
-    _touched = true;
-    _runAutoValidation();
+    validationTouched = true;
+    runValidation();
     _markForCheck();
   }
 
@@ -216,7 +165,7 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
       return;
     }
     _checkboxes.add(checkbox);
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -225,7 +174,7 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
     if (!_checkboxes.remove(checkbox)) {
       return;
     }
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -235,12 +184,10 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
   /// by the form model; only the first marks the group as dirty.
   void handleCheckboxChange({required bool userInteraction}) {
     if (userInteraction) {
-      _dirty = true;
+      validationDirty = true;
     }
-    if (validateOnInput ||
-        _shouldShowValidation ||
-        _autoValidationIssue != null) {
-      _runAutoValidation();
+    if (shouldRevalidate) {
+      runValidation();
     }
     _markForCheck();
   }
@@ -249,30 +196,6 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
       .where((checkbox) => checkbox.checked)
       .map((checkbox) => checkbox.trueValue)
       .toList(growable: false);
-
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: value,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: legend.trim().isEmpty ? null : legend.trim(),
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
-  }
 
   void _markForCheck() {
     _changeDetectorRef.markForCheck();
@@ -304,7 +227,7 @@ class LiCheckboxGroupComponent implements AfterChanges, OnDestroy {
 
   @override
   void ngOnDestroy() {
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _checkboxes.clear();
   }
 }

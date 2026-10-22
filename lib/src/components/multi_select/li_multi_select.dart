@@ -13,10 +13,7 @@ import '../../core/overlay_positioning.dart';
 import '../../directives/click_outside.dart';
 import '../../directives/li_form_directive.dart';
 import '../../exceptions/invalid_argument_exception.dart';
-import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import 'li_multi_option.dart';
 
 class CustomMultiSelectItem {
@@ -151,6 +148,7 @@ class LiMultiSelectTriggerDirective {
   ],
 )
 class LiMultiSelectComponent
+    with LiValidatedField
     implements
         ControlValueAccessor<dynamic>,
         AfterChanges,
@@ -166,13 +164,7 @@ class LiMultiSelectComponent
   bool isDisabled = false;
 
   @Input()
-  bool invalid = false;
-
-  @Input()
   bool valid = false;
-
-  @Input()
-  bool dataInvalid = false;
 
   @Input()
   String errorText = '';
@@ -186,23 +178,12 @@ class LiMultiSelectComponent
   @Input()
   String describedBy = '';
 
+  @override
   @Input()
   String locale = 'pt_BR';
 
   @Input()
   String size = '';
-
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
 
   @Input()
   bool showClearButton = true;
@@ -236,13 +217,6 @@ class LiMultiSelectComponent
   late final String listboxId;
   late final String _idPrefix;
   TouchFunction _onTouched = () {};
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
-  StreamSubscription<bool>? _formSubmissionSubscription;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   /// Last value written by the form model. `writeValue` can run before the
   /// options exist (projected `li-multi-option` children are only readable
@@ -254,29 +228,22 @@ class LiMultiSelectComponent
 
   bool get _isEnglishLocale => locale.toLowerCase().startsWith('en');
 
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
+  @override
+  dynamic get validationValue => selectedValues;
 
-  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+  @override
+  String get externalErrorText => errorText;
 
-  bool get effectiveValid =>
-      !effectiveInvalid &&
-      (valid ||
-          (_shouldShowValidation &&
-              _effectiveRules.isNotEmpty &&
-              _autoValidationIssue == null));
+  @override
+  String? get validationFieldName => listboxId;
 
-  String get effectiveErrorText {
-    final externalMessage = errorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
+  @override
+  bool get externalValid => valid;
 
-    return _autoValidationIssue?.message ?? '';
+  @override
+  void didChangeFormSubmission() {
+    _markForCheck();
   }
-
-  bool get showErrorFeedback =>
-      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
@@ -428,7 +395,7 @@ class LiMultiSelectComponent
     _lastWrittenValues =
         newVal is List ? List<dynamic>.from(newVal) : const <dynamic>[];
     _applySelectedValues(_lastWrittenValues!);
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -541,18 +508,12 @@ class LiMultiSelectComponent
 
   @override
   void ngOnInit() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription =
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _markForCheck();
-    });
+    connectValidationForm(_formDirective);
     _rebuildValidationConfig();
     final pendingValues = _lastWrittenValues;
     if (pendingValues != null) {
       _applySelectedValues(pendingValues);
-      _runAutoValidation();
+      runValidation();
       _markForCheck();
     }
   }
@@ -733,7 +694,7 @@ class LiMultiSelectComponent
     _destroyed = true;
     closeDropdown(markForCheck: false);
     _overlay?.dispose();
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _changeController.close();
     _modelChangeController.close();
     _userChangeController.close();
@@ -742,7 +703,7 @@ class LiMultiSelectComponent
   }
 
   void reset({bool emitUserValueChange = false}) {
-    _dirty = true;
+    validationDirty = true;
     for (final element in options) {
       element.selected = false;
     }
@@ -756,7 +717,7 @@ class LiMultiSelectComponent
       _callback!(selectedValues);
     }
     _markTouched();
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
     _scheduleOverlayUpdate();
   }
@@ -778,7 +739,7 @@ class LiMultiSelectComponent
   }
 
   void _toggleOptionSelection(CustomMultiSelectItem option) {
-    _dirty = true;
+    validationDirty = true;
     option.selected = !option.selected;
     _lastWrittenValues = selectedValues;
 
@@ -789,7 +750,7 @@ class LiMultiSelectComponent
       _callback!(selectedValues);
     }
     _markTouched();
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
     _scheduleOverlayUpdate();
   }
@@ -840,7 +801,7 @@ class LiMultiSelectComponent
     final valuesToRestore = _lastWrittenValues ?? selectedValues;
     options = nextOptions;
     _applySelectedValues(valuesToRestore);
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -869,7 +830,7 @@ class LiMultiSelectComponent
     options = nextOptions;
     _applySelectedValues(valuesToRestore);
 
-    _runAutoValidation();
+    runValidation();
 
     if (markForCheck) {
       _markForCheck();
@@ -953,48 +914,19 @@ class LiMultiSelectComponent
   }
 
   void _rebuildValidationConfig() {
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
-    _runAutoValidation();
-  }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: selectedValues,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: listboxId,
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
+    rebuildValidationConfig();
+    runValidation();
   }
 
   void _markTouched() {
-    if (_touched) {
+    if (validationTouched) {
       _onTouched();
       return;
     }
-    _touched = true;
+    validationTouched = true;
     _onTouched();
-    _runAutoValidation();
+    runValidation();
   }
-
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
 
   String get _normalizedSize {
     final normalized = size.trim().toLowerCase();

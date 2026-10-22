@@ -9,9 +9,7 @@ import '../../validation/li_built_in_input_types.dart';
 import '../../validation/li_input_type.dart';
 import '../../validation/li_number_parsing.dart';
 import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 
 typedef LiInputValidator = String? Function(String value);
 typedef LiInputMaskFormatter = String Function(String value);
@@ -31,6 +29,7 @@ const liInputDirectives = <Object>[
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiInputComponent
+    with LiValidatedField
     implements
         ControlValueAccessor<dynamic>,
         AfterChanges,
@@ -58,7 +57,6 @@ class LiInputComponent
       StreamController<html.KeyboardEvent>.broadcast();
   final StreamController<html.KeyboardEvent> _enterController =
       StreamController<html.KeyboardEvent>.broadcast();
-  StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
   String id = '';
@@ -98,6 +96,7 @@ class LiInputComponent
 
   /// Locale of the default rule messages and, with a numeric [valueType],
   /// of the decimal separator typed and displayed in the field.
+  @override
   @Input()
   String locale = 'pt_BR';
 
@@ -185,12 +184,6 @@ class LiInputComponent
   LiInputValidator? validator;
 
   @Input()
-  bool invalid = false;
-
-  @Input()
-  bool dataInvalid = false;
-
-  @Input()
   String errorText = '';
 
   @Input()
@@ -198,18 +191,6 @@ class LiInputComponent
 
   @Input()
   LiInputType? liInputType;
-
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
 
   @Input()
   int maxLength = 0;
@@ -295,13 +276,7 @@ class LiInputComponent
   String _value = '';
   num? _numericValue;
   String _numericFormatSignature = '';
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
   LiInputType? _resolvedLiInputType;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
   html.MutationObserver? _hostClassObserver;
 
   ChangeFunction<dynamic> _onChange = (dynamic _, {String? rawValue}) {};
@@ -406,6 +381,45 @@ class LiInputComponent
 
   LiInputType? get resolvedLiInputType => _resolvedLiInputType;
 
+  /// The number in a numeric [valueType]; otherwise the text, normalized by
+  /// the field preset when there is one.
+  @override
+  dynamic get validationValue => isNumeric
+      ? _numericValue
+      : resolvedLiInputType?.normalize(_value) ?? _value;
+
+  @override
+  String get externalErrorText => errorText;
+
+  @override
+  String? get validationFieldName => resolvedName;
+
+  @override
+  Object? get validationInputType => resolvedLiInputType;
+
+  /// Preset rules, then the rules derived from [required], [minLength],
+  /// [maxLength], [pattern] and the numeric [min]/[max], then [liRules], then
+  /// the legacy [validator].
+  @override
+  List<LiRule> buildValidationRules() => _buildEffectiveRules();
+
+  @override
+  Map<String, String> buildValidationMessages() => <String, String>{
+        ...?_resolvedLiInputType?.messages,
+        ...liMessages,
+      };
+
+  @override
+  void didRunValidation() {
+    _syncValidationClasses();
+  }
+
+  @override
+  void didChangeFormSubmission() {
+    _syncValidationClasses();
+    _markForCheck();
+  }
+
   int? get effectiveMinLength =>
       minLength > 0 ? minLength : resolvedLiInputType?.minLength;
 
@@ -413,7 +427,7 @@ class LiInputComponent
       maxLength > 0 ? maxLength : resolvedLiInputType?.maxLength;
 
   bool get effectiveRequired =>
-      required || _effectiveRules.any((rule) => rule.code == 'required');
+      required || effectiveRules.any((rule) => rule.code == 'required');
 
   String get effectiveHtmlType {
     final explicitType = type.trim();
@@ -465,23 +479,22 @@ class LiInputComponent
 
   String get resolvedInvalidFeedbackText => effectiveErrorText;
 
+  /// Also invalid while the host carries `is-invalid` or `data-invalid`.
+  @override
   bool get effectiveInvalid =>
       invalid || dataInvalid || _hasHostInvalidState || effectiveAutoInvalid;
 
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
-
-  bool get _effectiveAutoValid =>
-      _shouldShowValidation &&
-      _effectiveRules.isNotEmpty &&
-      _autoValidationIssue == null;
+  /// An `is-valid` class set on the host.
+  @override
+  bool get externalValid => _hostElement.classes.contains('is-valid');
 
   bool get isInvalid => effectiveInvalid;
 
-  bool get isValid =>
-      !isInvalid &&
-      (_effectiveAutoValid || _hostElement.classes.contains('is-valid'));
+  bool get isValid => effectiveValid;
 
+  /// [errorText] first, then the legacy [invalidFeedbackText] while the field
+  /// is invalid, then the message of the automatic validation.
+  @override
   String get effectiveErrorText {
     final externalMessage = errorText.trim();
     if (externalMessage.isNotEmpty) {
@@ -493,7 +506,7 @@ class LiInputComponent
       return legacyMessage;
     }
 
-    return _autoValidationIssue?.message ?? '';
+    return validationIssue?.message ?? '';
   }
 
   int get resolvedRows => rows < 2 ? 2 : rows;
@@ -625,7 +638,7 @@ class LiInputComponent
     if (isNumeric) {
       _writeNumericValue(value);
       _syncInputValue();
-      _runAutoValidation();
+      runValidation();
       _markForCheck();
       return;
     }
@@ -637,7 +650,7 @@ class LiInputComponent
     };
     _value = _normalizeIncomingValue(normalized);
     _syncInputValue();
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -649,14 +662,7 @@ class LiInputComponent
 
   @override
   void ngAfterViewInit() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription =
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _syncValidationClasses();
-      _markForCheck();
-    });
+    connectValidationForm(_formDirective);
 
     _hostClassObserver = html.MutationObserver((_, __) {
       _syncValidationClasses();
@@ -674,7 +680,7 @@ class LiInputComponent
   }
 
   void handleInput(String value) {
-    _dirty = true;
+    validationDirty = true;
     if (isNumeric) {
       _handleNumericInput(value);
     } else {
@@ -682,10 +688,8 @@ class LiInputComponent
       _syncInputValue();
       _onChange(_value, rawValue: value);
     }
-    if (validateOnInput ||
-        _shouldShowValidation ||
-        _autoValidationIssue != null) {
-      _runAutoValidation();
+    if (shouldRevalidate) {
+      runValidation();
     } else {
       _syncValidationClasses();
     }
@@ -693,9 +697,9 @@ class LiInputComponent
   }
 
   void handleBlur(html.Event event) {
-    _touched = true;
+    validationTouched = true;
     _onTouched();
-    _runAutoValidation();
+    runValidation();
     _blurController.add(event);
     _markForCheck();
   }
@@ -922,17 +926,13 @@ class LiInputComponent
 
   void _rebuildValidationConfig({required bool normalizeCurrentValue}) {
     _resolvedLiInputType = liInputType ?? LiBuiltInInputTypes.resolve(liType);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...?_resolvedLiInputType?.messages,
-      ...liMessages,
-    });
-    _effectiveRules = List<LiRule>.unmodifiable(_buildEffectiveRules());
+    rebuildValidationConfig();
 
     if (normalizeCurrentValue) {
       _value = _normalizeIncomingValue(_value);
     }
 
-    _runAutoValidation();
+    runValidation();
   }
 
   List<LiRule> _buildEffectiveRules() {
@@ -970,29 +970,6 @@ class LiInputComponent
       if (minValue != null) LiRule.min(minValue),
       if (maxValue != null) LiRule.max(maxValue),
     ];
-  }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      _syncValidationClasses();
-      return;
-    }
-
-    final dynamic normalizedValue = isNumeric
-        ? _numericValue
-        : resolvedLiInputType?.normalize(_value) ?? _value;
-    _autoValidationIssue = liValidateValue(
-      value: normalizedValue,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: resolvedName,
-        inputType: resolvedLiInputType,
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
-    _syncValidationClasses();
   }
 
   String _normalizeIncomingValue(String value) {
@@ -1065,13 +1042,6 @@ class LiInputComponent
       _hostElement.classes.contains('is-invalid') ||
       _hostElement.attributes['data-invalid'] == 'true';
 
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
-
   String? _resolvedString(String value, {String? fallback}) {
     final normalized = value.trim();
     if (normalized.isNotEmpty) {
@@ -1085,7 +1055,7 @@ class LiInputComponent
   @override
   void ngOnDestroy() {
     _hostClassObserver?.disconnect();
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _blurController.close();
     _focusController.close();
     _clickController.close();

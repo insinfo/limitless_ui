@@ -6,10 +6,7 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 
 import '../../directives/li_form_directive.dart';
-import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import '../datatable/datatable_col.dart';
 import '../datatable/datatable_component.dart';
 import '../datatable/datatable_settings.dart';
@@ -257,6 +254,7 @@ class LiDatatableSelectModalContentDirective {
   ],
 )
 class LiDatatableSelectComponent
+    with LiValidatedField
     implements ControlValueAccessor<dynamic>, AfterChanges, OnDestroy {
   final ChangeDetectorRef _changeDetectorRef;
   final LiFormDirective? _formDirective;
@@ -265,13 +263,7 @@ class LiDatatableSelectComponent
     this._changeDetectorRef, [
     @Optional() this._formDirective,
   ]) {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription =
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _changeDetectorRef.markForCheck();
-    });
+    connectValidationForm(_formDirective);
   }
 
   // ---------------------------------------------------------------------------
@@ -280,20 +272,13 @@ class LiDatatableSelectComponent
 
   dynamic Function(dynamic, {String rawValue})? _onChange;
   TouchFunction _onTouched = () {};
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
-  StreamSubscription<bool>? _formSubmissionSubscription;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   @override
   void writeValue(dynamic newVal) {
     if (newVal == _selectedValue) return;
     _selectedValue = newVal;
     _syncLabelFromValue();
-    _runAutoValidation();
+    runValidation();
     _changeDetectorRef.markForCheck();
   }
 
@@ -321,13 +306,7 @@ class LiDatatableSelectComponent
   bool isDisabled = false;
 
   @Input()
-  bool invalid = false;
-
-  @Input()
   bool valid = false;
-
-  @Input()
-  bool dataInvalid = false;
 
   @Input()
   String errorText = '';
@@ -341,6 +320,7 @@ class LiDatatableSelectComponent
   @Input()
   String describedBy = '';
 
+  @override
   @Input()
   String locale = 'pt_BR';
 
@@ -349,18 +329,6 @@ class LiDatatableSelectComponent
 
   @Input()
   String? name;
-
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
 
   /// The key used to extract the display label from each data row map.
   @Input()
@@ -647,29 +615,23 @@ class LiDatatableSelectComponent
 
   bool get isModalOpen => modal?.isOpen == true;
 
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
+  @override
+  dynamic get validationValue => selectedValue;
 
-  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
+  @override
+  String get externalErrorText => errorText;
 
-  bool get effectiveValid =>
-      !effectiveInvalid &&
-      (valid ||
-          (_shouldShowValidation &&
-              _effectiveRules.isNotEmpty &&
-              _autoValidationIssue == null));
+  @override
+  String? get validationFieldName =>
+      resolvedTitleText.trim().isEmpty ? null : resolvedTitleText;
 
-  String get effectiveErrorText {
-    final externalMessage = errorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
+  @override
+  bool get externalValid => valid;
 
-    return _autoValidationIssue?.message ?? '';
+  @override
+  void didChangeFormSubmission() {
+    _changeDetectorRef.markForCheck();
   }
-
-  bool get showErrorFeedback =>
-      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
 
   bool get hasHelperText => helperText.trim().isNotEmpty;
 
@@ -929,7 +891,7 @@ class LiDatatableSelectComponent
     _selectedLabels = <String>[];
     _pendingSelectedValues = <dynamic>[];
     _pendingSelectedLabels = <String>[];
-    _dirty = true;
+    validationDirty = true;
     _valueChangeCtrl.add(selectedValue);
     if (emitUserValueChange && hadSelection) {
       _userValueChangeCtrl.add(selectedValue);
@@ -979,7 +941,7 @@ class LiDatatableSelectComponent
             : (value is List ? List<dynamic>.from(value) : <dynamic>[value]))
         : value;
     _syncLabelFromValue();
-    _dirty = true;
+    validationDirty = true;
     _valueChangeCtrl.add(_selectedValue);
     _onChange?.call(_selectedValue);
     _markTouched();
@@ -996,7 +958,7 @@ class LiDatatableSelectComponent
     _selectedValue = multiple ? <dynamic>[value] : value;
     _selectedLabel = label;
     _selectedLabels = label.isEmpty ? <String>[] : <String>[label];
-    _dirty = true;
+    validationDirty = true;
     _valueChangeCtrl.add(selectedValue);
     if (emitUserValueChange &&
         !_areSelectionValuesEqual(previousSelectedValue, selectedValue)) {
@@ -1033,7 +995,7 @@ class LiDatatableSelectComponent
     _selectedLabels =
         _selectedLabel.isEmpty ? <String>[] : <String>[_selectedLabel];
 
-    _dirty = true;
+    validationDirty = true;
     _valueChangeCtrl.add(_selectedValue);
     if (emitUserValueChange &&
         !_areSelectionValuesEqual(previousSelectedValue, selectedValue)) {
@@ -1098,7 +1060,7 @@ class LiDatatableSelectComponent
 
   @override
   void ngOnDestroy() {
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _valueChangeCtrl.close();
     _userValueChangeCtrl.close();
     _dataRequestCtrl.close();
@@ -1108,49 +1070,20 @@ class LiDatatableSelectComponent
   }
 
   void _markTouched() {
-    if (_touched) {
+    if (validationTouched) {
       _onTouched();
-      _runAutoValidation();
+      runValidation();
       return;
     }
-    _touched = true;
+    validationTouched = true;
     _onTouched();
-    _runAutoValidation();
+    runValidation();
   }
 
   void _rebuildValidationConfig() {
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
-    _runAutoValidation();
+    rebuildValidationConfig();
+    runValidation();
   }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: selectedValue,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: resolvedTitleText.trim().isEmpty ? null : resolvedTitleText,
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
-  }
-
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
 
   String get _normalizedSize {
     final normalized = size.trim().toLowerCase();
@@ -1304,7 +1237,7 @@ class LiDatatableSelectComponent
     _selectedValue = List<dynamic>.from(_pendingSelectedValues);
     _selectedLabels = List<String>.from(_pendingSelectedLabels);
     _selectedLabel = '';
-    _dirty = true;
+    validationDirty = true;
     _valueChangeCtrl.add(selectedValue);
     if (emitUserValueChange) {
       _userValueChangeCtrl.add(selectedValue);

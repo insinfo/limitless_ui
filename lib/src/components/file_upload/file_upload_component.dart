@@ -13,9 +13,7 @@ import 'package:ngforms/ngforms.dart'
 import '../../directives/li_form_directive.dart';
 import '../modal/modal_component.dart';
 import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import 'file_drop_directive.dart';
 import 'file_select_directive.dart';
 import 'file_type.dart';
@@ -66,6 +64,7 @@ class LiFileUploadPreviewItem {
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiFileUploadComponent
+    with LiValidatedField
     implements ControlValueAccessor<List<html.File>?>, AfterChanges, OnDestroy {
   static const num _minPreviewZoomLevel = 0.25;
   static const num _maxPreviewZoomLevel = 8;
@@ -83,7 +82,6 @@ class LiFileUploadComponent
       DomSanitizationService();
   final StreamController<List<html.File>> _filesChangeController =
       StreamController<List<html.File>>.broadcast();
-  StreamSubscription<bool>? _formSubmissionSubscription;
   StreamSubscription<html.Event>? _fullscreenChangeSubscription;
 
   List<html.File> _files = <html.File>[];
@@ -139,29 +137,12 @@ class LiFileUploadComponent
   @Input()
   String helperText = '';
 
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
-
+  @override
   @Input()
   String locale = 'pt_BR';
 
   @Input()
-  bool invalid = false;
-
-  @Input()
   bool valid = false;
-
-  @Input()
-  bool dataInvalid = false;
 
   @Input()
   bool required = false;
@@ -205,12 +186,6 @@ class LiFileUploadComponent
   ChangeFunction<List<html.File>?> _onChange =
       (List<html.File>? _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   bool isDragOver = false;
   List<LiFileUploadPreviewItem> previewItems =
@@ -234,31 +209,40 @@ class LiFileUploadComponent
 
   bool get hasFileErrors => fileErrors.isNotEmpty;
 
-  String get effectiveErrorText {
-    final externalMessage = errorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
+  @override
+  dynamic get validationValue => _files;
 
-    return _autoValidationIssue?.message ?? '';
+  @override
+  String get externalErrorText => errorText;
+
+  @override
+  String? get validationFieldName => resolvedTitle;
+
+  @override
+  List<LiRule> buildValidationRules() => <LiRule>[
+        if (required) const LiRequiredRule(),
+        ...liRules,
+      ];
+
+  @override
+  void didChangeFormSubmission() {
+    _markForCheck();
   }
 
-  bool get showErrorFeedback =>
-      effectiveInvalid && effectiveErrorText.trim().isNotEmpty;
-
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
-
+  /// Also invalid while a selected file breaks [maxSize] or [allowedTypes].
+  @override
   bool get effectiveInvalid =>
       invalid || dataInvalid || hasFileErrors || effectiveAutoInvalid;
 
+  /// Also valid, once visible, when files are selected and no rule is set.
+  @override
   bool get effectiveValid =>
       !effectiveInvalid &&
       (valid ||
-          (_shouldShowValidation &&
-              (_files.isNotEmpty || _effectiveRules.isNotEmpty) &&
+          (shouldShowValidation &&
+              (_files.isNotEmpty || effectiveRules.isNotEmpty) &&
               !hasFileErrors &&
-              _autoValidationIssue == null));
+              validationIssue == null));
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
@@ -453,22 +437,9 @@ class LiFileUploadComponent
         feedbackClass,
       ]);
 
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
-
   @override
   void ngAfterChanges() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription ??=
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _markForCheck();
-    });
+    connectValidationForm(_formDirective);
     _fullscreenChangeSubscription ??=
         html.document.onFullscreenChange.listen((_) {
       final isBrowserFullscreen = html.document.fullscreenElement != null;
@@ -479,14 +450,8 @@ class LiFileUploadComponent
       _markForCheck();
     });
 
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      if (required) const LiRequiredRule(),
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
-    _runAutoValidation();
+    rebuildValidationConfig();
+    runValidation();
     _markForCheck();
   }
 
@@ -550,13 +515,13 @@ class LiFileUploadComponent
         identical(activePreviewItem!.file, removedFile)) {
       closePreview();
     }
-    _dirty = true;
+    validationDirty = true;
     final nextFiles = List<html.File>.from(_files)..removeAt(index);
     _setFiles(nextFiles, emitToForm: true);
   }
 
   void clear() {
-    _dirty = true;
+    validationDirty = true;
     closePreview();
     _setFiles(const <html.File>[], emitToForm: true);
   }
@@ -710,7 +675,7 @@ class LiFileUploadComponent
       return;
     }
 
-    _dirty = true;
+    validationDirty = true;
 
     final normalizedIncoming =
         multiple ? _mergeFiles(_files, incoming) : <html.File>[incoming.first];
@@ -789,7 +754,7 @@ class LiFileUploadComponent
       _onChange(payload, rawValue: _files.length.toString());
       _markTouched();
     }
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -1021,39 +986,22 @@ class LiFileUploadComponent
   }
 
   void _markTouched() {
-    if (_touched) {
+    if (validationTouched) {
       _onTouched();
-      if (_shouldShowValidation || _autoValidationIssue != null) {
-        _runAutoValidation();
+      if (shouldShowValidation || validationIssue != null) {
+        runValidation();
       }
       return;
     }
-    _touched = true;
+    validationTouched = true;
     _onTouched();
-    _runAutoValidation();
-  }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: _files,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: resolvedTitle,
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
+    runValidation();
   }
 
   @override
   void ngOnDestroy() {
     _disposePreviewUrls();
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _fullscreenChangeSubscription?.cancel();
     _filesChangeController.close();
   }

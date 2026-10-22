@@ -8,9 +8,7 @@ import '../../directives/li_form_directive.dart';
 import '../../validation/li_built_in_input_types.dart';
 import '../../validation/li_input_type.dart';
 import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 
 typedef LiPasswordInputValidator = String? Function(String value);
 
@@ -29,6 +27,7 @@ const liPasswordInputDirectives = <Object>[
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiPasswordInputComponent
+    with LiValidatedField
     implements
         ControlValueAccessor<String?>,
         AfterChanges,
@@ -56,7 +55,6 @@ class LiPasswordInputComponent
       StreamController<html.KeyboardEvent>.broadcast();
   final StreamController<html.KeyboardEvent> _enterController =
       StreamController<html.KeyboardEvent>.broadcast();
-  StreamSubscription<bool>? _formSubmissionSubscription;
 
   @Input()
   String id = '';
@@ -91,6 +89,7 @@ class LiPasswordInputComponent
   @Input()
   String inputMode = 'text';
 
+  @override
   @Input()
   String locale = 'pt_BR';
 
@@ -131,12 +130,6 @@ class LiPasswordInputComponent
   LiPasswordInputValidator? validator;
 
   @Input()
-  bool invalid = false;
-
-  @Input()
-  bool dataInvalid = false;
-
-  @Input()
   String errorText = '';
 
   @Input()
@@ -144,18 +137,6 @@ class LiPasswordInputComponent
 
   @Input()
   LiInputType? liInputType;
-
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
 
   @Input()
   String inputClass = '';
@@ -217,13 +198,7 @@ class LiPasswordInputComponent
   String _realValue = '';
   bool _passwordVisible = false;
   bool _updatingView = false;
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
   LiInputType? _resolvedLiInputType;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
   html.MutationObserver? _hostClassObserver;
 
   ChangeFunction<String?> _onChange = (String? _, {String? rawValue}) {};
@@ -286,8 +261,44 @@ class LiPasswordInputComponent
 
   LiInputType? get resolvedLiInputType => _resolvedLiInputType;
 
+  /// The password, normalized by the field preset when there is one.
+  @override
+  dynamic get validationValue =>
+      resolvedLiInputType?.normalize(_realValue) ?? _realValue;
+
+  @override
+  String get externalErrorText => errorText;
+
+  @override
+  String? get validationFieldName => resolvedName;
+
+  @override
+  Object? get validationInputType => resolvedLiInputType;
+
+  /// Preset rules, then the rules derived from [required], [minLength],
+  /// [maxLength] and [pattern], then [liRules], then the legacy [validator].
+  @override
+  List<LiRule> buildValidationRules() => _buildEffectiveRules();
+
+  @override
+  Map<String, String> buildValidationMessages() => <String, String>{
+        ...?_resolvedLiInputType?.messages,
+        ...liMessages,
+      };
+
+  @override
+  void didRunValidation() {
+    _syncValidationClasses();
+  }
+
+  @override
+  void didChangeFormSubmission() {
+    _syncValidationClasses();
+    _markForCheck();
+  }
+
   bool get effectiveRequired =>
-      required || _effectiveRules.any((rule) => rule.code == 'required');
+      required || effectiveRules.any((rule) => rule.code == 'required');
 
   bool get hasLabel => label.trim().isNotEmpty;
 
@@ -304,23 +315,22 @@ class LiPasswordInputComponent
 
   String get resolvedInvalidFeedbackText => effectiveErrorText;
 
+  /// Also invalid while the host carries `is-invalid` or `data-invalid`.
+  @override
   bool get effectiveInvalid =>
       invalid || dataInvalid || _hasHostInvalidState || effectiveAutoInvalid;
 
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
-
-  bool get _effectiveAutoValid =>
-      _shouldShowValidation &&
-      _effectiveRules.isNotEmpty &&
-      _autoValidationIssue == null;
+  /// An `is-valid` class set on the host.
+  @override
+  bool get externalValid => _hostElement.classes.contains('is-valid');
 
   bool get isInvalid => effectiveInvalid;
 
-  bool get isValid =>
-      !isInvalid &&
-      (_effectiveAutoValid || _hostElement.classes.contains('is-valid'));
+  bool get isValid => effectiveValid;
 
+  /// [errorText] first, then the legacy [invalidFeedbackText] while the field
+  /// is invalid, then the message of the automatic validation.
+  @override
   String get effectiveErrorText {
     final externalMessage = errorText.trim();
     if (externalMessage.isNotEmpty) {
@@ -332,7 +342,7 @@ class LiPasswordInputComponent
       return legacyMessage;
     }
 
-    return _autoValidationIssue?.message ?? '';
+    return validationIssue?.message ?? '';
   }
 
   String get currentDisplayValue =>
@@ -418,7 +428,7 @@ class LiPasswordInputComponent
     };
     _realValue = normalized;
     _renderDisplayedValue();
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -433,14 +443,7 @@ class LiPasswordInputComponent
 
   @override
   void ngAfterViewInit() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription =
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _syncValidationClasses();
-      _markForCheck();
-    });
+    connectValidationForm(_formDirective);
 
     _hostClassObserver = html.MutationObserver((_, __) {
       _syncValidationClasses();
@@ -463,15 +466,13 @@ class LiPasswordInputComponent
       return;
     }
 
-    _dirty = true;
+    validationDirty = true;
 
     if (_passwordVisible) {
       _realValue = field.value ?? '';
       _onChange(_realValue, rawValue: _realValue);
-      if (validateOnInput ||
-          _shouldShowValidation ||
-          _autoValidationIssue != null) {
-        _runAutoValidation();
+      if (shouldRevalidate) {
+        runValidation();
       } else {
         _syncValidationClasses();
       }
@@ -520,9 +521,9 @@ class LiPasswordInputComponent
   }
 
   void handleBlur(html.Event event) {
-    _touched = true;
+    validationTouched = true;
     _onTouched();
-    _runAutoValidation();
+    runValidation();
     _blurController.add(event);
     _markForCheck();
   }
@@ -639,10 +640,8 @@ class LiPasswordInputComponent
     final caret = safeStart + inserted.length;
     _renderDisplayedValue(selectionStart: caret, selectionEnd: caret);
     _onChange(_realValue, rawValue: _realValue);
-    if (validateOnInput ||
-        _shouldShowValidation ||
-        _autoValidationIssue != null) {
-      _runAutoValidation();
+    if (shouldRevalidate) {
+      runValidation();
     } else {
       _syncValidationClasses();
     }
@@ -696,17 +695,13 @@ class LiPasswordInputComponent
 
   void _rebuildValidationConfig({required bool normalizeCurrentValue}) {
     _resolvedLiInputType = liInputType ?? LiBuiltInInputTypes.resolve(liType);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...?_resolvedLiInputType?.messages,
-      ...liMessages,
-    });
-    _effectiveRules = List<LiRule>.unmodifiable(_buildEffectiveRules());
+    rebuildValidationConfig();
 
     if (normalizeCurrentValue) {
       _realValue = _normalizeIncomingValue(_realValue);
     }
 
-    _runAutoValidation();
+    runValidation();
   }
 
   List<LiRule> _buildEffectiveRules() {
@@ -728,28 +723,6 @@ class LiPasswordInputComponent
     }
 
     return rules;
-  }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      _syncValidationClasses();
-      return;
-    }
-
-    final normalizedValue =
-        resolvedLiInputType?.normalize(_realValue) ?? _realValue;
-    _autoValidationIssue = liValidateValue(
-      value: normalizedValue,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: resolvedName,
-        inputType: resolvedLiInputType,
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
-    _syncValidationClasses();
   }
 
   String _normalizeIncomingValue(String value) {
@@ -830,13 +803,6 @@ class LiPasswordInputComponent
       _hostElement.classes.contains('is-invalid') ||
       _hostElement.attributes['data-invalid'] == 'true';
 
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
-
   String? _resolvedString(String value, {String? fallback}) {
     final normalized = value.trim();
     if (normalized.isNotEmpty) {
@@ -850,7 +816,7 @@ class LiPasswordInputComponent
   @override
   void ngOnDestroy() {
     _hostClassObserver?.disconnect();
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _blurController.close();
     _focusController.close();
     _clickController.close();

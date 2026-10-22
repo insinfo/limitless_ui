@@ -918,7 +918,7 @@ The validation pipeline uses a fixed precedence model so component behavior stay
 
 - field preset: `liInputType` wins over `liType`;
 - field options: explicit component inputs win over preset defaults;
-- validation rules: preset rules run first, then `liRules`, then compatibility rules derived from inputs such as `required`, `minLength`, `maxLength`, `pattern` and legacy `validator`;
+- validation rules: preset rules run first, then the rules derived from inputs such as `required`, `minLength`, `maxLength`, `pattern` and the numeric `min`/`max`, then `liRules`, and the legacy `validator` last. The first failing rule is the message shown, so a `required` input reports before a custom rule in `liRules`;
 - error message source: `errorText` wins over automatic messages;
 - invalid state source: `invalid` and `dataInvalid` win over automatic invalid state.
 
@@ -1184,6 +1184,87 @@ final List<LiRule> compensationRules = <LiRule>[
   [(ngModel)]="person.expectedCompensationMinorUnits">
 </li-currency-input>
 ```
+
+### Building a validated custom field
+
+Every form component of the library gets its declarative validation from one mixin, `LiValidatedField`, and an application component can use it too. The mixin brings the inputs `liRules`, `liMessages`, `liValidationMode`, `validateOnInput`, `invalid` and `dataInvalid` — ngdart collects `@Input`s from mixins, so they bind like inputs declared on the component — plus the touched/dirty state, the `liForm` submission and the getters a template paints from: `effectiveInvalid`, `effectiveValid`, `effectiveErrorText`, `showErrorFeedback`, `resolvedAriaInvalid` and `resolvedDataInvalidAttr`.
+
+The component supplies `locale`, the external message (`externalErrorText`, usually an `errorText` input) and the value the rules see (`validationValue`), marks the wrapper with `data-invalid` and the element that takes the focus with `data-li-form-focus-target`, and calls the mixin from its lifecycle:
+
+```dart
+@Component(
+  selector: 'app-code-field',
+  template: '''
+    <div [attr.data-invalid]="resolvedDataInvalidAttr">
+      <input #control type="text"
+          [attr.data-li-form-focus-target]="'true'"
+          [attr.aria-invalid]="resolvedAriaInvalid"
+          [class.is-invalid]="effectiveInvalid"
+          [class.is-valid]="effectiveValid"
+          [value]="text"
+          (input)="handleInput(control.value)"
+          (blur)="handleBlur()">
+      <div *ngIf="showErrorFeedback" class="invalid-feedback d-block">{{ effectiveErrorText }}</div>
+    </div>
+  ''',
+  directives: [coreDirectives],
+  changeDetection: ChangeDetectionStrategy.onPush,
+)
+class CodeFieldComponent
+    with LiValidatedField
+    implements AfterChanges, OnDestroy {
+  CodeFieldComponent(this._changeDetectorRef, [@Optional() this._form]);
+
+  final ChangeDetectorRef _changeDetectorRef;
+  final LiFormDirective? _form;
+
+  @override
+  @Input()
+  String locale = 'pt_BR';
+
+  @Input()
+  String errorText = '';
+
+  String text = '';
+
+  @override
+  dynamic get validationValue => text;
+
+  @override
+  String get externalErrorText => errorText;
+
+  // The submission of liForm arrives outside the component's own handlers.
+  @override
+  void didChangeFormSubmission() => _changeDetectorRef.markForCheck();
+
+  @override
+  void ngAfterChanges() {
+    connectValidationForm(_form);
+    rebuildValidationConfig();
+    runValidation();
+  }
+
+  void handleInput(String? value) {
+    text = value ?? '';
+    validationDirty = true;
+    if (shouldRevalidate) runValidation();
+  }
+
+  void handleBlur() {
+    validationTouched = true;
+    runValidation();
+  }
+
+  @override
+  void ngOnDestroy() => disconnectValidationForm();
+}
+```
+
+```html
+<app-code-field [liRules]="codeRules" liValidationMode="submitted"></app-code-field>
+```
+
+Override `buildValidationRules()` to add rules derived from other inputs (the library's fields put a `required` flag first), `buildValidationMessages()` to merge the messages of a preset, `externalValid` to honour a `valid` input, `validationFieldName`/`validationInputType` to fill the `LiRuleContext`, and `didRunValidation()` to react after every run. `effectiveInvalid`, `effectiveValid` and `effectiveErrorText` can be overridden as well, when the field has an invalid source of its own. `test/forms/li_validated_field_test.dart` is this component, end to end.
 
 ## Generic vs `essential_core`-backed components
 

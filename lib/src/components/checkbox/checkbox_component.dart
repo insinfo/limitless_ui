@@ -1,14 +1,10 @@
-import 'dart:async';
-
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart'
     show ChangeFunction, ControlValueAccessor, TouchFunction, ngValueAccessor;
 
 import '../../directives/li_form_directive.dart';
 import '../../validation/li_rule.dart';
-import '../../validation/li_rule_context.dart';
-import '../../validation/li_validation.dart';
-import '../../validation/li_validation_issue.dart';
+import '../../validation/li_validated_field.dart';
 import 'checkbox_group_component.dart';
 
 @Component(
@@ -21,6 +17,7 @@ import 'checkbox_group_component.dart';
   changeDetection: ChangeDetectionStrategy.onPush,
 )
 class LiCheckboxComponent
+    with LiValidatedField
     implements ControlValueAccessor<dynamic>, AfterChanges, OnDestroy {
   LiCheckboxComponent(
     this._changeDetectorRef, [
@@ -41,13 +38,6 @@ class LiCheckboxComponent
   final String _generatedId;
 
   dynamic _value = false;
-  bool _touched = false;
-  bool _dirty = false;
-  bool _formSubmitted = false;
-  LiValidationIssue? _autoValidationIssue;
-  StreamSubscription<bool>? _formSubmissionSubscription;
-  List<LiRule> _effectiveRules = const <LiRule>[];
-  Map<String, String> _effectiveMessages = const <String, String>{};
 
   @Input()
   dynamic trueValue = true;
@@ -76,6 +66,7 @@ class LiCheckboxComponent
   @Input()
   String describedBy = '';
 
+  @override
   @Input()
   String locale = 'pt_BR';
 
@@ -95,13 +86,7 @@ class LiCheckboxComponent
   String variant = '';
 
   @Input()
-  bool invalid = false;
-
-  @Input()
   bool valid = false;
-
-  @Input()
-  bool dataInvalid = false;
 
   @Input()
   bool inline = false;
@@ -114,18 +99,6 @@ class LiCheckboxComponent
 
   @Input()
   bool required = false;
-
-  @Input()
-  List<LiRule> liRules = const <LiRule>[];
-
-  @Input()
-  Map<String, String> liMessages = const <String, String>{};
-
-  @Input()
-  String liValidationMode = 'submittedOrTouchedOrDirty';
-
-  @Input()
-  bool validateOnInput = true;
 
   ChangeFunction<dynamic> _onChange = (dynamic _, {String? rawValue}) {};
   TouchFunction _onTouched = () {};
@@ -143,36 +116,31 @@ class LiCheckboxComponent
 
   bool get hasErrorText => errorText.trim().isNotEmpty;
 
-  String get effectiveErrorText {
-    final externalMessage = errorText.trim();
-    if (externalMessage.isNotEmpty) {
-      return externalMessage;
-    }
+  @override
+  dynamic get validationValue => checked;
 
-    return _autoValidationIssue?.message ?? '';
+  @override
+  String get externalErrorText => errorText;
+
+  @override
+  String? get validationFieldName => resolvedName;
+
+  @override
+  bool get externalValid => valid;
+
+  @override
+  List<LiRule> buildValidationRules() => <LiRule>[
+        if (required) const LiRequiredTrueRule(),
+        ...liRules,
+      ];
+
+  @override
+  void didChangeFormSubmission() {
+    _markForCheck();
   }
-
-  bool get showErrorFeedback =>
-      effectiveErrorText.trim().isNotEmpty && effectiveInvalid;
-
-  bool get effectiveAutoInvalid =>
-      _shouldShowValidation && _autoValidationIssue != null;
-
-  bool get effectiveInvalid => invalid || dataInvalid || effectiveAutoInvalid;
-
-  bool get effectiveValid =>
-      !effectiveInvalid &&
-      (valid ||
-          (_shouldShowValidation &&
-              _effectiveRules.isNotEmpty &&
-              _autoValidationIssue == null));
 
   String? get resolvedDescribedBy =>
       describedBy.trim().isEmpty ? null : describedBy.trim();
-
-  String? get resolvedAriaInvalid => effectiveInvalid ? 'true' : null;
-
-  String? get resolvedDataInvalidAttr => effectiveInvalid ? 'true' : null;
 
   String? get currentDataValue => _value?.toString();
 
@@ -216,22 +184,20 @@ class LiCheckboxComponent
   }
 
   void handleChange(bool? value) {
-    _dirty = true;
+    validationDirty = true;
     _value = (value ?? false) ? trueValue : falseValue;
     _onChange(_value, rawValue: _value?.toString() ?? '');
     _group?.handleCheckboxChange(userInteraction: true);
-    if (validateOnInput ||
-        _shouldShowValidation ||
-        _autoValidationIssue != null) {
-      _runAutoValidation();
+    if (shouldRevalidate) {
+      runValidation();
     }
     _markForCheck();
   }
 
   void handleBlur() {
-    _touched = true;
+    validationTouched = true;
     _onTouched();
-    _runAutoValidation();
+    runValidation();
   }
 
   @override
@@ -248,7 +214,7 @@ class LiCheckboxComponent
   void writeValue(dynamic value) {
     _value = value ?? falseValue;
     _group?.handleCheckboxChange(userInteraction: false);
-    _runAutoValidation();
+    runValidation();
     _markForCheck();
   }
 
@@ -260,7 +226,7 @@ class LiCheckboxComponent
 
   @override
   void ngOnDestroy() {
-    _formSubmissionSubscription?.cancel();
+    disconnectValidationForm();
     _group?.unregisterCheckbox(this);
   }
 
@@ -276,45 +242,8 @@ class LiCheckboxComponent
   }
 
   void _rebuildValidationConfig() {
-    _formSubmitted = _formDirective?.submitted ?? false;
-    _formSubmissionSubscription ??=
-        _formDirective?.submissionStateChanges.listen((submitted) {
-      _formSubmitted = submitted;
-      _runAutoValidation();
-      _markForCheck();
-    });
-
-    _effectiveRules = List<LiRule>.unmodifiable(<LiRule>[
-      if (required) const LiRequiredTrueRule(),
-      ...liRules,
-    ]);
-    _effectiveMessages = Map<String, String>.unmodifiable(<String, String>{
-      ...liMessages,
-    });
-    _runAutoValidation();
+    connectValidationForm(_formDirective);
+    rebuildValidationConfig();
+    runValidation();
   }
-
-  void _runAutoValidation() {
-    if (_effectiveRules.isEmpty) {
-      _autoValidationIssue = null;
-      return;
-    }
-
-    _autoValidationIssue = liValidateValue(
-      value: checked,
-      rules: _effectiveRules,
-      context: LiRuleContext(
-        fieldName: resolvedName,
-        messages: _effectiveMessages,
-        locale: locale,
-      ),
-    );
-  }
-
-  bool get _shouldShowValidation => liShouldShowValidation(
-        mode: liValidationMode,
-        touched: _touched,
-        dirty: _dirty,
-        submitted: _formSubmitted,
-      );
 }
