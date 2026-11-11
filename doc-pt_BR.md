@@ -156,6 +156,21 @@ Esse fluxo é o ponto de equilíbrio recomendado no projeto:
 - regras contextuais continuam na página ou no serviço;
 - erros de backend ainda podem sobrescrever a mensagem final do campo.
 
+## Chaves do `li-select` e `dataSource` constante em `1.0.0-dev.49`
+
+As chaves de rótulo e de valor são configuração do componente, não dado, e o normal é passá-las como atributo fixo:
+`labelKey="rotulo" valueKey="valor"`, como o `bindLabel="nome"` do ng-select e o `optionLabel="nome"` do PrimeNG.
+Essas bibliotecas também aceitam binding (`[bindLabel]="campo"`) porque reagem quando a entrada muda.
+
+Até a `1.0.0-dev.48`, o `li-select` aceitava `[labelKey]`/`[valueKey]` em binding, mas só os lia ao receber o
+`dataSource` e não remontava as opções depois. O ngdart aplica um `dataSource` constante (lista de enum,
+`DataFrame` `static final`) no bloco da primeira verificação, antes de qualquer outro binding e seja qual for a ordem no
+template. Com `[labelKey]="Model.rotuloCol"`, toda opção ficava sem rótulo e com o valor errado, e a lista aparecia
+vazia. Com lista vinda do servidor, ela chega depois, com as chaves já definidas, e o defeito passava despercebido.
+
+A partir da `1.0.0-dev.49`, mudar `labelKey`, `valueKey` ou `disabledKey` remonta as opções a partir do último
+`dataSource`, e a ordem dos bindings deixa de importar. O atributo fixo continua sendo a forma recomendada.
+
 ## `li-pdf-viewer` dentro de modal: tela cheia, toolbar, "Ir para página" e impressão em `1.0.0-dev.48`
 
 Cinco defeitos apareceram com o viewer dentro de um `li-modal` (`size="xxx-large"`, `[enableModalBodyClass]="false"`), que é como as aplicações abrem um documento.

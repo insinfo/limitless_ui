@@ -20,6 +20,21 @@ This is not a toy setup. The goal is a structure that can support real CRUD modu
 
 Important terminology note: in Dart servers, "multithreaded" usually means **multi-isolate**. Dart isolates do not share memory the way native OS threads do. That is the correct mental model for scalable Dart backend processes.
 
+## `li-select` keys and constant data sources in `1.0.0-dev.49`
+
+The label and value keys are component configuration, not data, so the usual form is a plain attribute:
+`labelKey="rotulo" valueKey="valor"`, like `bindLabel="name"` in ng-select or `optionLabel="name"` in PrimeNG.
+Those libraries also accept a binding (`[bindLabel]="field"`) because they react when the input changes.
+
+Up to `1.0.0-dev.48`, `li-select` accepted `[labelKey]`/`[valueKey]` bindings but read them only when `dataSource`
+arrived and never rebuilt the options afterwards. ngdart sets a constant data source (an enum list, a `static final`
+`DataFrame`) in the first-check block, before any other binding and whatever the order in the template, so with
+`[labelKey]="Model.rotuloCol"` every option got an empty label and the wrong value, and the list showed up empty. A data
+source loaded from the server arrives later, with the keys already set, so the problem went unnoticed there.
+
+From `1.0.0-dev.49` changing `labelKey`, `valueKey` or `disabledKey` rebuilds the options from the last `dataSource`,
+and the order of the bindings no longer matters. A plain attribute is still the recommended form.
+
 ## `li-pdf-viewer` in a modal: full screen, toolbar, "Go to page" and print in `1.0.0-dev.48`
 
 Five defects showed up with the viewer inside a `li-modal` (`size="xxx-large"`, `[enableModalBodyClass]="false"`), the way applications open a document.

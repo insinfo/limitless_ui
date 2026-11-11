@@ -48,6 +48,11 @@ Commits vão direto na `main`; este repositório não usa branch de feature.
 - **CHANGELOG conciso, documentação detalhada.** A entrada do `CHANGELOG.md` resume o
   que mudou; a explicação longa — a causa, o raciocínio, o que foi medido — vai para
   `doc-pt_BR.md` e `doc.md`.
+- **Entrada que muda estado derivado precisa reagir à mudança, em qualquer ordem.** Se um setter (como o
+  `dataSource` do `li-select`) monta estado a partir de outras entradas (`labelKey`, `valueKey`), essas entradas
+  também têm setter que refaz o estado, ou o componente refaz em `ngAfterChanges`. O ngdart aplica binding constante
+  (enum, `static final`) antes dos outros, independentemente da ordem no template; ler a outra entrada só no
+  primeiro setter deixa o componente quebrado com dado constante. Foi o defeito do `li-select` até a dev.48.
 - **Toda funcionalidade nova precisa de demonstração viva** no app de exemplo
   (`example/`), com a entrada correspondente na navegação.
 - **Testes.** Os testes de navegador rodam com

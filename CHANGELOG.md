@@ -1,3 +1,8 @@
+## 1.0.0-dev.49
+
+- `li-select`: changing `labelKey`, `valueKey` or `disabledKey` rebuilds the options from the last `dataSource`, so a constant data source no longer renders an empty list when the keys are bound. See "`li-select` keys and constant data sources in `1.0.0-dev.49`" in `doc.md`/`doc-pt_BR.md`.
+- `li-select` with a `List<Map>` data source: a missing label key no longer throws; the label is empty. Covered by `test/select/li_select_key_order_test.dart`.
+
 ## 1.0.0-dev.48
 
 - `li-pdf-viewer` inside a `li-modal`: the CSS full screen used when the Fullscreen API is unavailable or refused (iframe without `allow="fullscreen"`) drew at z-index 1080, under the modal and its backdrop; it now sits at the new `LiOverlayLayers.fullscreenFallback` (1900), the API is only called when `document.fullscreenEnabled`, Escape leaves the CSS mode without closing the modal, and a viewer destroyed in that mode no longer leaves an orphan copy. The DOM was never duplicated; the "repeated" toolbar was the viewer painted under the modal.

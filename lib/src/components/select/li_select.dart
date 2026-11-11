@@ -369,14 +369,48 @@ class LiSelectComponent
   @Input()
   String? name;
 
+  /// Key of each option map that holds the visible text.
+  ///
+  /// Changing it rebuilds the options from the last [dataSource], so the order of
+  /// the bindings in the template does not matter: `[dataSource]` may come before
+  /// `[labelKey]`/`[valueKey]` even when the data source is a constant.
   @Input('labelKey')
-  String labelKey = 'label';
+  set labelKey(String value) {
+    if (value == _labelKey) return;
+    _labelKey = value;
+    _rebuildFromLastDataSource();
+  }
 
+  String get labelKey => _labelKey;
+  String _labelKey = 'label';
+
+  /// Key of each option map that holds the value; `null` uses the whole item.
+  /// Changing it rebuilds the options, like [labelKey].
   @Input('valueKey')
-  String? valueKey;
+  set valueKey(String? value) {
+    if (value == _valueKey) return;
+    _valueKey = value;
+    _rebuildFromLastDataSource();
+  }
 
+  String? get valueKey => _valueKey;
+  String? _valueKey;
+
+  /// Key of each option map that marks it as disabled. Changing it rebuilds the
+  /// options, like [labelKey].
   @Input('disabledKey')
-  String? disabledKey;
+  set disabledKey(String? value) {
+    if (value == _disabledKey) return;
+    _disabledKey = value;
+    _rebuildFromLastDataSource();
+  }
+
+  String? get disabledKey => _disabledKey;
+  String? _disabledKey;
+
+  /// The last value given to [dataSource], kept to rebuild the options when a key
+  /// input arrives after it.
+  dynamic _lastDataSource;
 
   List<CustomSelectItem> options = [];
 
@@ -441,6 +475,21 @@ class LiSelectComponent
 
   @Input()
   set dataSource(dynamic ops) {
+    _lastDataSource = ops;
+    _buildOptionsFrom(ops);
+  }
+
+  /// Rebuilds the options from [_lastDataSource] after a key input changed; does
+  /// nothing before the first [dataSource].
+  void _rebuildFromLastDataSource() {
+    final ops = _lastDataSource;
+    if (ops == null) return;
+    _buildOptionsFrom(ops);
+  }
+
+  /// Turns [ops] (a `List<Map<String, dynamic>>` or a `DataFrame`) into options,
+  /// reading [labelKey], [valueKey] and [disabledKey].
+  void _buildOptionsFrom(dynamic ops) {
     final nextOptions = <CustomSelectItem>[];
 
     if (ops is List<Map<String, dynamic>>) {
@@ -448,7 +497,7 @@ class LiSelectComponent
         nextOptions.add(
           CustomSelectItem(
             value: valueKey != null ? map[valueKey] : map,
-            text: map[labelKey],
+            text: map[labelKey]?.toString() ?? '',
             instanceObj: map,
             disabled: disabledKey != null ? map[disabledKey] == true : false,
           ),
