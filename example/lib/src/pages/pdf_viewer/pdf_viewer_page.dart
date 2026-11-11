@@ -19,6 +19,7 @@ import 'pdf_viewer_signature_demo_panel_component.dart';
     PdfViewerSignatureDemoPanelComponent,
     LiTabsComponent,
     LiTabxDirective,
+    LiModalComponent,
   ],
 )
 class PdfViewerPageComponent {
@@ -242,6 +243,30 @@ final toolbarActions = <LiPdfViewerToolbarAction>[
       String get inspectorToggleLabel => isPt
         ? (sidePanelOpen ? 'Ocultar painel' : 'Mostrar painel')
         : (sidePanelOpen ? 'Hide panel' : 'Show panel');
+  // --- Viewer dentro de modal -------------------------------------------------
+
+  /// Título do viewer do modal na toolbar; desligado por padrão, porque o
+  /// cabeçalho do modal já mostra o nome do documento.
+  bool modalShowTitle = false;
+
+  /// Último erro de ação (impressão ou download) do viewer do modal.
+  String modalActionError = '';
+
+  String get modalCardTitle =>
+      isPt ? 'Viewer dentro de modal' : 'Viewer inside a modal';
+  String get modalCardBody => isPt
+      ? 'Abre o viewer num li-modal xxx-large sem o padding do corpo, como nas aplicações. Teste a tela cheia: com a Fullscreen API ele ocupa a tela; num iframe sem allow="fullscreen" ele cai no modo CSS, por cima do modal e do backdrop, e volta ao lugar com o botão ou com Esc. A toolbar mantém o fundo nos dois casos.'
+      : 'Opens the viewer in an xxx-large li-modal without the body padding, as applications do. Try full screen: with the Fullscreen API it takes the screen; in an iframe without allow="fullscreen" it falls back to the CSS mode, over the modal and its backdrop, and goes back with the button or Escape. The toolbar keeps its background in both.';
+  String get modalOpenLabel => isPt ? 'Abrir no modal' : 'Open in a modal';
+  String get modalShowTitleLabel => isPt
+      ? 'Mostrar o título na toolbar (showTitle)'
+      : 'Show the title in the toolbar (showTitle)';
+
+  /// Registra a falha de impressão ou download do viewer do modal.
+  void onModalActionError(String message) {
+    modalActionError = message;
+  }
+
   String get releaseDocLabel =>
       isPt ? 'Carregar release note' : 'Load release note';
   String get handbookDocLabel =>
@@ -257,6 +282,9 @@ final toolbarActions = <LiPdfViewerToolbarAction>[
           'Os inputs `enable*Action` permitem esconder ações sem CSS local.',
           '`customToolbarActions`, `toolbarActionsTemplate` e `sidePanelTemplate` permitem encaixar fluxos como assinatura, inspeção e ações de negócio sem acoplar o viewer.',
           'Os outputs `documentLoaded`, `pageChange`, `scaleChange` e `loadError` permitem reagir ao estado do viewer.',
+          '`showTitle` tira o título da toolbar; dentro de modal o cabeçalho já mostra o nome.',
+          'A tela cheia usa a Fullscreen API quando o documento permite e, senão, um modo CSS por cima de qualquer `li-modal`.',
+          'Falha de impressão ou de download sai em `actionError` e num aviso por cima do documento, que continua aberto.',
         ]
       : const <String>[
           '`bytes` and `url` cover the two main loading scenarios.',
@@ -265,6 +293,9 @@ final toolbarActions = <LiPdfViewerToolbarAction>[
           'The `enable*Action` inputs let you hide actions without local CSS.',
           '`customToolbarActions`, `toolbarActionsTemplate`, and `sidePanelTemplate` let you plug in signature, inspection, and business-specific actions without coupling the viewer.',
           'The `documentLoaded`, `pageChange`, `scaleChange`, and `loadError` outputs expose viewer state.',
+          '`showTitle` drops the title from the toolbar; inside a modal the header already shows the name.',
+          'Full screen uses the Fullscreen API when the document allows it and, otherwise, a CSS mode over any `li-modal`.',
+          'A failed print or download goes to `actionError` and to a notice over the document, which stays open.',
         ];
     String get statusSummary => isPt
       ? 'Documento: $activeDocumentTitle | Paginas: $loadedPages | Pagina atual: $observedPage | Zoom: ${(observedScale * 100).round()}%'

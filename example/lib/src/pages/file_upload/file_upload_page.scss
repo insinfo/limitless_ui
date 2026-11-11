@@ -41,3 +41,14 @@
 html[data-color-theme='dark'] .upload-summary-box {
   background: rgba(var(--white-rgb), 0.03);
 }
+
+.upload-event-log {
+  max-height: 16rem;
+  overflow-y: auto;
+  padding-left: 1.25rem;
+  font-size: 0.8125rem;
+}
+
+.upload-event-log code {
+  overflow-wrap: anywhere;
+}

@@ -14,28 +14,149 @@
     <li-tabsx type="tabs">
       <li-tabx [header]="t.common.tabOverview" [active]="true">
         <div class="card-body">
-          <h5 class="mb-2">Upload com drag and drop, preview e diretivas utilitárias</h5>
+          <h5 class="mb-2">{{ overviewTitle }}</h5>
           <p class="text-muted mb-0">{{ overviewIntro }}</p>
         </div>
 
         <div class="card border-0 shadow-none">
           <div class="card-body pt-0">
             <div class="row g-4">
+              <div class="col-12">
+                <div class="card h-100" id="file-upload-full-control">
+                  <div class="card-header">
+                    <h5 class="mb-0">{{ controlTitle }}</h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="text-muted">{{ controlIntro }}</p>
+
+                    <div class="row g-4">
+                      <div class="col-xl-7">
+                        <li-file-upload
+                            [(ngModel)]="controlFiles"
+                            [locale]="uploadLocale"
+                            [previewMode]="controlPreviewMode"
+                            [enablePreviewModal]="true"
+                            [title]="controlDropTitle"
+                            [clearLabel]="controlClearLabel"
+                            [showCaption]="controlShowCaption"
+                            [showBrowseButton]="controlShowBrowseButton"
+                            [showClearButton]="controlShowClearButton"
+                            [showDropzoneClearButton]="controlShowDropzoneClearButton"
+                            [showPreviewButton]="controlShowPreviewButton"
+                            [showRemoveButton]="controlShowRemoveButton"
+                            [showFileSize]="controlShowFileSize"
+                            [showFileName]="controlShowFileName"
+                            [showUploadIndicator]="controlShowUploadIndicator"
+                            [dropzoneClickOpensPicker]="controlDropzoneClickOpensPicker"
+                            [itemClickAction]="controlItemClickAction"
+                            [confirmAction]="controlConfirmAction"
+                            (beforeAdd)="onControlBeforeAdd($event)"
+                            (beforeRemove)="onControlBeforeRemove($event)"
+                            (beforeClear)="onControlBefore('beforeClear', $event)"
+                            (beforePreview)="onControlBefore('beforePreview', $event)"
+                            (beforeReplace)="onControlBefore('beforeReplace', $event)"
+                            (beforeBrowse)="onControlBefore('beforeBrowse', $event)"
+                            (added)="onControlAfter('added', $event)"
+                            (removed)="onControlAfter('removed', $event)"
+                            (cleared)="onControlAfter('cleared', $event)"
+                            (previewOpened)="onControlAfter('previewOpened', $event)"
+                            (replaced)="onControlAfter('replaced', $event)">
+                        </li-file-upload>
+
+                        <div class="upload-summary-box mt-3">
+                          <div class="fw-semibold mb-1">{{ summaryLabel }}</div>
+                          <div>{{ controlSummary }}</div>
+                        </div>
+                      </div>
+
+                      <div class="col-xl-5">
+                        <div class="mb-3">
+                          <div class="fw-semibold mb-2">{{ previewModeLabel }}</div>
+                          <div class="btn-group flex-wrap" role="group">
+                            <button
+                                *ngFor="let mode of previewModes"
+                                type="button"
+                                class="btn btn-sm"
+                                [class.btn-primary]="controlPreviewMode == mode"
+                                [class.btn-light]="controlPreviewMode != mode"
+                                (click)="controlPreviewMode = mode">
+                              {{ mode }}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="mb-3">
+                          <div class="fw-semibold mb-2">{{ itemClickLabel }}</div>
+                          <div class="btn-group flex-wrap" role="group">
+                            <button
+                                *ngFor="let action of itemClickActions"
+                                type="button"
+                                class="btn btn-sm"
+                                [class.btn-primary]="controlItemClickAction == action"
+                                [class.btn-light]="controlItemClickAction != action"
+                                (click)="controlItemClickAction = action">
+                              {{ itemClickActionName(action) }}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="fw-semibold mb-2">{{ displayGroupLabel }}</div>
+                        <div class="row g-1 mb-3 upload-control-toggles">
+                          <div class="col-sm-6"><li-toggle label="showCaption" [(ngModel)]="controlShowCaption"></li-toggle></div>
+                          <div class="col-sm-6"><li-toggle label="showBrowseButton" [(ngModel)]="controlShowBrowseButton"></li-toggle></div>
+                          <div class="col-sm-6"><li-toggle label="showClearButton" [(ngModel)]="controlShowClearButton"></li-toggle></div>
+                          <div class="col-sm-6"><li-toggle label="showDropzoneClearButton" [(ngModel)]="controlShowDropzoneClearButton"></li-toggle></div>
+                          <div class="col-sm-6"><li-toggle label="showPreviewButton" [(ngModel)]="controlShowPreviewButton"></li-toggle></div>
+                          <div class="col-sm-6"><li-toggle label="showRemoveButton" [(ngModel)]="controlShowRemoveButton"></li-toggle></div>
+                          <div class="col-sm-6"><li-toggle label="showFileSize" [(ngModel)]="controlShowFileSize"></li-toggle></div>
+                          <div class="col-sm-6"><li-toggle label="showFileName" [(ngModel)]="controlShowFileName"></li-toggle></div>
+                          <div class="col-sm-6"><li-toggle label="showUploadIndicator" [(ngModel)]="controlShowUploadIndicator"></li-toggle></div>
+                        </div>
+
+                        <div class="fw-semibold mb-2">{{ behaviorGroupLabel }}</div>
+                        <div class="row g-1 mb-3 upload-control-toggles">
+                          <div class="col-sm-6"><li-toggle label="dropzoneClickOpensPicker" [(ngModel)]="controlDropzoneClickOpensPicker"></li-toggle></div>
+                        </div>
+
+                        <div class="fw-semibold mb-2">{{ cancelGroupLabel }}</div>
+                        <div class="row g-1 mb-3 upload-control-toggles">
+                          <div class="col-12"><li-toggle [label]="protectFirstLabel" [(ngModel)]="protectFirstFile"></li-toggle></div>
+                          <div class="col-12"><li-toggle [label]="confirmClearLabel" [(ngModel)]="confirmClear"></li-toggle></div>
+                          <div class="col-12"><li-toggle [label]="onlyImagesLabel" [(ngModel)]="onlyImagesAndPdf"></li-toggle></div>
+                        </div>
+
+                        <div class="upload-summary-box">
+                          <div class="d-flex align-items-center justify-content-between mb-1">
+                            <div class="fw-semibold">{{ eventLogLabel }}</div>
+                            <button type="button" class="btn btn-sm btn-link p-0" (click)="clearEventLog()">{{ clearLogLabel }}</button>
+                          </div>
+                          <div *ngIf="eventLog.isEmpty" class="text-muted">{{ emptyLogLabel }}</div>
+                          <ol *ngIf="eventLog.isNotEmpty" class="upload-event-log mb-0">
+                            <li *ngFor="let entry of eventLog"><code>{{ entry }}</code></li>
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">Compact file list</h5>
+                    <h5 class="mb-0">{{ compactTitle }}</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="attachments"
+                        [locale]="uploadLocale"
                         previewMode="compact"
-                        helperText="Use `maxFiles`, `accept`, `showPreview` e `[(ngModel)]` no componente principal."
-                        browseLabel="Selecionar anexos">
+                        [helperText]="compactHelper"
+                        [browseLabel]="compactBrowse">
                     </li-file-upload>
 
                     <div class="upload-summary-box mt-3">
-                      <div class="fw-semibold mb-1">Resumo</div>
+                      <div class="fw-semibold mb-1">{{ summaryLabel }}</div>
                       <div>{{ attachmentsSummary }}</div>
                     </div>
                   </div>
@@ -45,22 +166,23 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">Limitless overlay queue</h5>
+                    <h5 class="mb-0">{{ limitlessTitle }}</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="limitlessFiles"
+                        [locale]="uploadLocale"
                         accept="image/*,application/pdf"
                         previewMode="limitless"
                         [enablePreviewModal]="true"
                         [maxFiles]="4"
-                        title="Fila visual com acoes sobrepostas"
-                        subtitle="Cada miniatura ganha overlay para zoom/remocao e barra inferior com metadados."
-                        browseLabel="Montar fila visual">
+                        [title]="limitlessDropTitle"
+                        [subtitle]="limitlessDropSubtitle"
+                        [browseLabel]="limitlessBrowse">
                     </li-file-upload>
 
                     <div class="upload-summary-box mt-3">
-                      <div class="fw-semibold mb-1">Resumo</div>
+                      <div class="fw-semibold mb-1">{{ summaryLabel }}</div>
                       <div>{{ limitlessSummary }}</div>
                     </div>
                   </div>
@@ -70,22 +192,50 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">Thumbnail preview and modal</h5>
+                    <h5 class="mb-0">{{ captionlessTitle }}</h5>
+                  </div>
+                  <div class="card-body demo-upload-card-body">
+                    <li-file-upload
+                        [(ngModel)]="captionlessFiles"
+                        [locale]="uploadLocale"
+                        accept="image/*,application/pdf"
+                        previewMode="limitless"
+                        [enablePreviewModal]="true"
+                        [showCaption]="false"
+                        [title]="captionlessDropTitle"
+                        [subtitle]="captionlessDropSubtitle"
+                        [browseLabel]="captionlessBrowse"
+                        [helperText]="captionlessHelper">
+                    </li-file-upload>
+
+                    <div class="upload-summary-box mt-3">
+                      <div class="fw-semibold mb-1">{{ summaryLabel }}</div>
+                      <div>{{ captionlessSummary }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h5 class="mb-0">{{ thumbnailsTitle }}</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="previewFiles"
+                        [locale]="uploadLocale"
                         accept="image/*,application/pdf"
                         previewMode="thumbnails"
                         [enablePreviewModal]="true"
                         [maxFiles]="4"
-                        title="Solte imagens ou PDFs para visualizar"
-                        subtitle="Miniaturas aparecem dentro do card e podem ser ampliadas em modal."
-                        browseLabel="Selecionar arquivos visuais">
+                        [title]="thumbnailsDropTitle"
+                        [subtitle]="thumbnailsDropSubtitle"
+                        [browseLabel]="thumbnailsBrowse">
                     </li-file-upload>
 
                     <div class="upload-summary-box mt-3">
-                      <div class="fw-semibold mb-1">Resumo</div>
+                      <div class="fw-semibold mb-1">{{ summaryLabel }}</div>
                       <div>{{ previewSummary }}</div>
                     </div>
                   </div>
@@ -95,23 +245,24 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">Single cover image</h5>
+                    <h5 class="mb-0">{{ coverTitle }}</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="coverFiles"
+                        [locale]="uploadLocale"
                         accept="image/*"
                         previewMode="thumbnails"
                         [enablePreviewModal]="true"
                         [multiple]="false"
                         [maxFiles]="1"
-                        title="Solte uma imagem de capa"
-                        subtitle="Aceita uma única imagem para a página ou card."
-                        browseLabel="Selecionar capa">
+                        [title]="coverDropTitle"
+                        [subtitle]="coverDropSubtitle"
+                        [browseLabel]="coverBrowse">
                     </li-file-upload>
 
                     <div class="upload-summary-box mt-3">
-                      <div class="fw-semibold mb-1">Resumo</div>
+                      <div class="fw-semibold mb-1">{{ summaryLabel }}</div>
                       <div>{{ coverSummary }}</div>
                     </div>
                   </div>
@@ -121,21 +272,22 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">Hidden preview</h5>
+                    <h5 class="mb-0">{{ hiddenPreviewTitle }}</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="compactFiles"
+                        [locale]="uploadLocale"
                         [showPreview]="false"
                         [maxFiles]="5"
-                        title="Seleção rápida sem preview"
-                        subtitle="Ideal para fluxos em que a lista final aparece em outro lugar da tela."
-                        browseLabel="Escolher documentos"
-                        helperText="Pré-visualização desligada; o resumo abaixo recebe os nomes selecionados.">
+                        [title]="hiddenPreviewDropTitle"
+                        [subtitle]="hiddenPreviewDropSubtitle"
+                        [browseLabel]="hiddenPreviewBrowse"
+                        [helperText]="hiddenPreviewHelper">
                     </li-file-upload>
 
                     <div class="upload-summary-box mt-3">
-                      <div class="fw-semibold mb-1">Resumo</div>
+                      <div class="fw-semibold mb-1">{{ summaryLabel }}</div>
                       <div>{{ compactSummary }}</div>
                     </div>
                   </div>
@@ -145,21 +297,22 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">Accepted file types</h5>
+                    <h5 class="mb-0">{{ mediaTitle }}</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
                         [(ngModel)]="mediaFiles"
+                        [locale]="uploadLocale"
                         accept="image/*,video/*"
                         [maxFiles]="3"
-                        title="Imagens e vídeos"
-                        subtitle="Aceita apenas mídia para prévia de campanha, banner ou card."
-                        browseLabel="Selecionar mídia"
-                        helperText="Combina `accept` com `maxFiles` para um fluxo mais controlado.">
+                        [title]="mediaDropTitle"
+                        [subtitle]="mediaDropSubtitle"
+                        [browseLabel]="mediaBrowse"
+                        [helperText]="mediaHelper">
                     </li-file-upload>
 
                     <div class="upload-summary-box mt-3">
-                      <div class="fw-semibold mb-1">Resumo</div>
+                      <div class="fw-semibold mb-1">{{ summaryLabel }}</div>
                       <div>{{ mediaSummary }}</div>
                     </div>
                   </div>
@@ -169,21 +322,22 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">Disabled state</h5>
+                    <h5 class="mb-0">{{ disabledTitle }}</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <li-file-upload
+                        [locale]="uploadLocale"
                         [disabled]="true"
                         [multiple]="false"
-                        title="Uploader desabilitado"
-                        subtitle="Útil quando a permissão do usuário ainda não foi concedida."
-                        browseLabel="Aguardando liberação"
-                        helperText="O botão e a área de drop ficam indisponíveis sem exigir tratamento extra no host.">
+                        [title]="disabledDropTitle"
+                        [subtitle]="disabledDropSubtitle"
+                        [browseLabel]="disabledBrowse"
+                        [helperText]="disabledHelper">
                     </li-file-upload>
 
                     <div class="upload-summary-box mt-3">
-                      <div class="fw-semibold mb-1">Observação</div>
-                      <div>Esse card reproduz o estado bloqueado, semelhante aos exemplos de componentes desabilitados do Limitless.</div>
+                      <div class="fw-semibold mb-1">{{ noteLabel }}</div>
+                      <div>{{ disabledNote }}</div>
                     </div>
                   </div>
                 </div>
@@ -192,7 +346,7 @@
               <div class="col-xl-6">
                 <div class="card h-100">
                   <div class="card-header">
-                    <h5 class="mb-0">Low-level directives</h5>
+                    <h5 class="mb-0">{{ directivesTitle }}</h5>
                   </div>
                   <div class="card-body demo-upload-card-body">
                     <div
@@ -207,14 +361,11 @@
                           class="form-control mb-3"
                           multiple
                           (filesChange)="onDirectiveFiles($event)">
-                      <div class="text-muted">
-                        Arraste arquivos para esta área ou use o input acima. Esse bloco mostra o uso manual das diretivas sem o
-                        wrapper `li-file-upload`.
-                      </div>
+                      <div class="text-muted">{{ directivesHint }}</div>
                     </div>
 
                     <div class="upload-summary-box mt-3">
-                      <div class="fw-semibold mb-1">Arquivos recebidos</div>
+                      <div class="fw-semibold mb-1">{{ receivedLabel }}</div>
                       <div>{{ directiveSummary }}</div>
                     </div>
                   </div>
@@ -233,11 +384,31 @@
             <div class="col-xl-4">
               <div class="card card-body h-100">
                 <h6 class="mb-2">{{ mainInputsTitle }}</h6>
-                <ul class="mb-0 ps-3">
+                <ul *ngIf="!i18n.isEnglish" class="mb-0 ps-3">
                   <li><code>li-file-upload</code> cobre browse, drop, preview, limite e filtros de tipo.</li>
                   <li><code>[(ngModel)]</code> recebe a lista de arquivos selecionados.</li>
                   <li><code>previewMode</code> aceita <code>compact</code>, <code>thumbnails</code> e <code>limitless</code>.</li>
+                  <li><code>[showCaption]="false"</code> tira o campo de legenda da barra de baixo; o botão ocupa a barra.</li>
+                  <li><code>showBrowseButton</code>, <code>browseIcon</code>, <code>showClearButton</code>, <code>clearLabel</code> e <code>showDropzoneClearButton</code> controlam a barra e a área; com legenda, escolher e limpar desligados a barra some.</li>
+                  <li><code>showPreviewButton</code>, <code>showRemoveButton</code>, <code>showFileSize</code>, <code>showFileName</code> e <code>showUploadIndicator</code> controlam cada arquivo.</li>
+                  <li><code>dropzoneClickOpensPicker</code> e <code>itemClickAction</code> (<code>dropzone</code>, <code>none</code>, <code>preview</code>, <code>replace</code>) dizem o que o clique faz.</li>
+                  <li><code>beforeAdd</code>, <code>beforeRemove</code>, <code>beforeClear</code>, <code>beforePreview</code>, <code>beforeReplace</code> e <code>beforeBrowse</code> cancelam com <code>preventDefault()</code>, síncrono; <code>confirmAction</code> cancela de forma assíncrona.</li>
+                  <li><code>added</code>, <code>removed</code>, <code>cleared</code>, <code>previewOpened</code> e <code>replaced</code> avisam depois.</li>
+                  <li><code>[locale]</code> troca todos os textos padrão entre <code>pt_BR</code> e <code>en_US</code>.</li>
                   <li><code>liFileDrop</code> e <code>liFileSelect</code> permitem montar um host customizado.</li>
+                </ul>
+                <ul *ngIf="i18n.isEnglish" class="mb-0 ps-3">
+                  <li><code>li-file-upload</code> covers browse, drop, preview, limits and type filters.</li>
+                  <li><code>[(ngModel)]</code> receives the list of selected files.</li>
+                  <li><code>previewMode</code> takes <code>compact</code>, <code>thumbnails</code> and <code>limitless</code>.</li>
+                  <li><code>[showCaption]="false"</code> drops the caption field from the bottom bar; the button takes the bar.</li>
+                  <li><code>showBrowseButton</code>, <code>browseIcon</code>, <code>showClearButton</code>, <code>clearLabel</code> and <code>showDropzoneClearButton</code> shape the bar and the dropzone; with caption, browse and clear off the bar is gone.</li>
+                  <li><code>showPreviewButton</code>, <code>showRemoveButton</code>, <code>showFileSize</code>, <code>showFileName</code> and <code>showUploadIndicator</code> shape each file.</li>
+                  <li><code>dropzoneClickOpensPicker</code> and <code>itemClickAction</code> (<code>dropzone</code>, <code>none</code>, <code>preview</code>, <code>replace</code>) set what a click does.</li>
+                  <li><code>beforeAdd</code>, <code>beforeRemove</code>, <code>beforeClear</code>, <code>beforePreview</code>, <code>beforeReplace</code> and <code>beforeBrowse</code> cancel with a synchronous <code>preventDefault()</code>; <code>confirmAction</code> cancels asynchronously.</li>
+                  <li><code>added</code>, <code>removed</code>, <code>cleared</code>, <code>previewOpened</code> and <code>replaced</code> report afterwards.</li>
+                  <li><code>[locale]</code> switches every default text between <code>pt_BR</code> and <code>en_US</code>.</li>
+                  <li><code>liFileDrop</code> and <code>liFileSelect</code> let you build a custom host.</li>
                 </ul>
               </div>
             </div>
@@ -247,11 +418,18 @@
                 <h6 class="mb-3">{{ uploadSnippetTitle }}</h6>
                 <li-highlight [code]="uploadSnippet" language="html"></li-highlight>
 
+                <h6 class="mb-3 mt-4">{{ controlSnippetTitle }}</h6>
+                <li-highlight [code]="controlSnippet" language="html"></li-highlight>
+
+                <h6 class="mb-3 mt-4">{{ cancelSnippetTitle }}</h6>
+                <li-highlight [code]="cancelSnippet" language="dart"></li-highlight>
+
                 <h6 class="mb-3 mt-4">{{ directivesSnippetTitle }}</h6>
                 <li-highlight [code]="directivesSnippet" language="html"></li-highlight>
 
-                <h6 class="mb-3 mt-4">Validação declarativa</h6>
-                <p class="text-muted mb-3">Além de erros por arquivo e restrições de tipo/tamanho, o uploader agora aceita <code>liRules</code>, <code>liMessages</code> e <code>liValidationMode</code> para regras do campo como um todo.</p>
+                <h6 class="mb-3 mt-4">{{ validationTitle }}</h6>
+                <p *ngIf="!i18n.isEnglish" class="text-muted mb-3">Além de erros por arquivo e restrições de tipo/tamanho, o uploader aceita <code>liRules</code>, <code>liMessages</code> e <code>liValidationMode</code> para regras do campo como um todo.</p>
+                <p *ngIf="i18n.isEnglish" class="text-muted mb-3">Besides per-file errors and type/size limits, the uploader takes <code>liRules</code>, <code>liMessages</code> and <code>liValidationMode</code> for rules on the field as a whole.</p>
                 <li-highlight [code]="validationSnippet" language="html"></li-highlight>
               </div>
             </div>

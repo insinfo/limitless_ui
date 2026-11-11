@@ -20,6 +20,202 @@ This is not a toy setup. The goal is a structure that can support real CRUD modu
 
 Important terminology note: in Dart servers, "multithreaded" usually means **multi-isolate**. Dart isolates do not share memory the way native OS threads do. That is the correct mental model for scalable Dart backend processes.
 
+## `li-pdf-viewer` in a modal: full screen, toolbar, "Go to page" and print in `1.0.0-dev.48`
+
+Five defects showed up with the viewer inside a `li-modal` (`size="xxx-large"`, `[enableModalBodyClass]="false"`), the way applications open a document.
+
+### Full screen when the Fullscreen API is refused
+
+The application ran inside an iframe without `allow="fullscreen"`. The viewer called `requestFullscreen()` anyway, Chrome logged `[Violation] Permissions policy violation: fullscreen is not allowed in this document`, the promise was rejected and the viewer fell back to its CSS full screen. That fallback already moved the host to `<body>`, which is right: inside the modal, `.modal-dialog` has a `transform`, which makes it the containing block of any `position: fixed` descendant, so a "fixed" viewer would stay inside the dialog. What was wrong was the layer: `:host(.pdf-viewer-viewport-fullscreen)` used `z-index: 1080`, and `li-modal` draws at 1200 (plus 10 per stacked modal). The viewer covered the page, but under the modal and its translucent backdrop.
+
+A browser test measured it before the fix: host in `<body>` at z-index 1080, `.modal` at 1200, and the element at the centre of the screen was `li-modal-backdrop`. It also counted the DOM before, during and after: one toolbar, one viewer and the same pages throughout. The "toolbar and pages repeated several times" were not copies in the DOM: it was the viewer painted under the modal, seen through the backdrop and around the empty dialog, with a transparent toolbar (next section).
+
+What changed:
+
+- the viewer asks for the Fullscreen API only when `document.fullscreenEnabled` is `true`, so the violation is no longer logged; a rejected promise still falls back;
+- the CSS mode sits at the new `LiOverlayLayers.fullscreenFallback` (1900), set inline when it starts: above every stacked modal, below `dialog` (2000), so a question asked over it still shows;
+- Escape leaves the CSS mode. The listener is on the capture phase of `window`, so it runs before the `document` listener with which `li-modal` closes, and stops the key there: Escape leaves full screen and the modal stays open;
+- a viewer destroyed while in the CSS mode (an `*ngIf`, a modal with `lazyContent` closing) used to be put back in its old parent by `ngOnDestroy`, after Angular had already removed it, leaving an orphan copy in the page. It is now only taken out of `<body>`.
+
+### The toolbar background
+
+`--pdf-toolbar-bg` was `color-mix(in srgb, var(--card-bg) 88%, var(--body-bg) 12%)`. The Limitless theme defines `--card-bg` only inside `.card` (and `--modal-bg` only inside `.modal`). In a card the toolbar was light; in a modal `var(--card-bg)` resolved to nothing, the whole `color-mix` became invalid and the background transparent. Out of full screen the white of the modal showed through and nobody noticed; in full screen the dark viewer background showed, and the title and "/ 14" became almost unreadable.
+
+The host now defines `--pdf-surface-bg: var(--card-bg, var(--modal-bg, var(--white)))`, and in the dark theme (`:host-context([data-color-theme=dark])`) the last fallback is the theme's dark card colour, `#2c2d33`, because `--white` stays white there. The toolbar and the page field use that surface, and the toolbar border uses `--border-color`. It no longer depends on what is around the viewer: card, modal, `<body>` or the top layer of `:fullscreen`.
+
+### "Go to page"
+
+The field is `<input type="number" [(ngModel)]>`. ngforms puts a `NumberValueAccessor` on it, which delivers a `num` (or `null`), and the field of the component was a `String`: every key threw `TypeError: type 'int' is not a subtype of type 'String'`. It is now `num? goToPageValue`, and `goToPageTarget` turns it into a page only when it is an integer between 1 and the page count. Otherwise the field gets `is-invalid`, the hint turns red with `labels.invalidPage`, and OK is disabled. Enter confirms. The other `type="number"` fields of the package and the example were checked: `li-input` has its own value accessor and the example converts with `toString()`.
+
+The modal uses `[compactHeader]="true"`, like the side panel modal, the only other internal dialog of the viewer.
+
+### Print
+
+`IFrameElement.contentWindow` in `dart:html` is a Dart wrapper (`WindowBase`), not the JS window, and `js_util.callMethod(wrapper, 'print', [])` failed with `NoSuchMethodError: tried to call a non-function`. On top of that the failure went to `_setError`, the state of a failed load, which replaced the document with the red "Unable to load PDF" panel.
+
+The window is now read on the JS side, from the element's `contentWindow` or by name in `window.frames` (as new_sali does); it gets `focus()` and then `print()`. A failure, of printing or of downloading, no longer touches the loaded document: it shows `labels.printFailed` or `labels.downloadFailed` in a notice over the document that closes by itself after six seconds or by its button, and emits the technical message on the new `actionError` output. The print iframe and its object URL are removed on failure too, not only after `afterprint`.
+
+### `showTitle`
+
+The title at the left of the toolbar has had an input since `1.0.0-dev.22`, `[showTitle]`, never documented. With `false` the title is not rendered and the controls take the space. Inside a modal whose header already shows the file name, that is the expected setting.
+
+### Tests and example
+
+`test/pdf_viewer/li_pdf_viewer_fullscreen_test.dart` puts the viewer in a `li-modal` like the applications do. It covers the Fullscreen API unavailable (the API is not called; the host goes to `<body>` above the modal, is what sits at the centre of the screen, keeps one toolbar and the same pages, and goes back to its slot), a refused request, entering and leaving twice, Escape leaving full screen with the modal still open, a viewer destroyed in full screen leaving nothing behind, the toolbar background, `showTitle`, typing and confirming "Go to page" with Enter and OK (and the invalid values), the JS window with `print` reaching the bridge, and a failed print that shows the notice and keeps the document. The test page has no theme, so the test injects the Limitless variables as the theme defines them, with `--card-bg` only inside `.card`. The Fullscreen API goes through `LiPdfViewerBrowserBridge` (`fullscreenEnabled`, `requestFullscreen`) so the test can deny it.
+
+The PDF viewer page of the example has a "Viewer inside a modal" card that opens the viewer in an `xxx-large` modal, with `showTitle` off by default.
+
+## A configurable `li-file-upload` with cancelable actions in `1.0.0-dev.48`
+
+Until now `li-file-upload` always drew the same parts and ran every action without asking the application. Pages that had to hide the browse button, keep a mandatory attachment from being removed, or ask before clearing the queue ended up with `::ng-deep` and `display: none`, or replaced the component with the low-level directives. `1.0.0-dev.48` adds an input for each visible part and events before and after each action. The defaults reproduce what the component already did, so a page that uses none of this does not change.
+
+### Inputs
+
+| input | default | what it does |
+|---|---|---|
+| `showCaption` | `true` | read-only caption field of the bottom bar and its icon |
+| `showBrowseButton` | `true` | blue browse button; off, the `input[type=file]` stays in the component, outside the bar, and the dropzone click and `browse()` still open the picker |
+| `browseLabel` | `''` (text of `locale`) | label of the browse button |
+| `browseIcon` | `'ph-file-plus'` | icon class of the browse button; empty drops the icon |
+| `showClearButton` | `false` | "Clear" button of the bar, which removes every file; shown only while there are files |
+| `clearLabel` | `''` (text of `locale`) | label of the clear button and accessible name of the dropzone "X" |
+| `showDropzoneClearButton` | `true` | "X" at the corner of the dropzone; with files, removes them all, like the clear button |
+| `showPreviewButton` | `true` | magnifier that opens the modal, in the `thumbnails` and `limitless` cards |
+| `showRemoveButton` | `true` | remove button of each file, in the cards and in the `compact` list |
+| `showFileSize` | `true` | size of each file, in the cards and in the list |
+| `showFileName` | `true` | name of each file, in the cards and in the list |
+| `showUploadIndicator` | `true` | green icon of each card |
+| `dropzoneClickOpensPicker` | `true` | a click (or Enter/Space) on the empty dropzone opens the picker; dropping files keeps working |
+| `itemClickAction` | `LiFileItemClickAction.dropzone` | what a click on the card, thumbnail or row does |
+| `confirmAction` | `null` | `Future<bool> Function(LiFileUploadActionEvent)`; when set, the component waits for it before each action and cancels on `false` |
+
+Three parts had a behavior written down nowhere:
+
+- **The "Clear" button of the bar never showed.** The component always puts `file-input-ajax-new` on its root, and the Limitless theme has `.file-input-ajax-new .fileinput-remove-button { display: none }`. The button was in the DOM but hidden; people only saw the dropzone "X". That is why `showClearButton` defaults to `false`: by default the screen stays the same, and the button is no longer rendered at all. With `true` it gets `li-file-upload__clear-button`, which beats the theme rule.
+- **The dropzone "X"** runs the same clear as the bar button: removes every file and closes the modal. It now goes through `beforeClear` and `confirmAction`.
+- **The green card icon** (`.file-upload-indicator`, `ph-file-arrow-up`) is not a button. It comes from the Krajee fileinput markup, where it marks a file not uploaded yet; this component uploads nothing, and the icon was always `aria-hidden` with no click. Hence the name `showUploadIndicator`, and the icon now has the title "Not uploaded yet".
+
+With caption, browse and clear all off (or clear on but no files), the bar is not rendered and the root gets `li-file-upload--without-bar`, which drops the margin the dropzone kept for it. The `input[type=file]` lives outside the bar, `visually-hidden`, and is still what the dropzone click and `browse()` trigger.
+
+With the browse button off and the caption on, the bar gets `li-file-upload__caption--no-browse`: the field no longer joins a button on its right and keeps its own corners.
+
+### Clicking a file
+
+`LiFileItemClickAction` has four values:
+
+- `dropzone` (default): the click bubbles to the dropzone and opens the picker to **add** files, when `dropzoneClickOpensPicker` is on. This is what happened before, because the card sits inside the dropzone and only buttons were excluded from its click.
+- `none`: nothing happens.
+- `preview`: opens the modal for that file, when it can be previewed (image or PDF, with `enablePreviewModal`).
+- `replace`: opens the picker to **replace that file**. The picker opens with `multiple` off; the first file picked takes the old one's position, and `replaced` carries both.
+
+With `preview` or `replace` the item gets `cursor: pointer` and a PDF thumbnail stops taking the click (`pointer-events: none`), since the `iframe` would swallow it. The card buttons keep doing only their own thing.
+
+### Events
+
+Every user action emits a cancelable event before it and another after it. All carry a `LiFileUploadActionEvent` with `action` (`LiFileUploadAction.add`, `remove`, `clear`, `preview`, `replace` or `browse`), `file`, `index`, `files` and, in `replaced`, `previousFile`.
+
+| action | before | after |
+|---|---|---|
+| add (drop or pick) | `beforeAdd` | `added`, with only the files that entered |
+| remove one | `beforeRemove` | `removed` |
+| clear all (bar button or "X") | `beforeClear` | `cleared`, with the files removed |
+| open the modal | `beforePreview` | `previewOpened` |
+| replace one (`itemClickAction` `replace`) | `beforeReplace`, before the picker opens | `replaced`, with the new `file` and the old `previousFile` |
+| open the picker to add | `beforeBrowse` | — |
+
+`filesChange` and `ngModel` are unchanged and still fire on every change of the list.
+
+**Cancelling through the event is synchronous.** The `before*` streams are `StreamController.broadcast(sync: true)`: the handler runs inside the component's call, which reads `defaultPrevented` as soon as it returns. `preventDefault()` has to come before the first `await`; after it, the action has already run.
+
+```dart
+void beforeRemove(LiFileUploadActionEvent event) {
+  if (event.index == 0) {
+    event.preventDefault(); // the first attachment is mandatory
+  }
+}
+```
+
+```html
+<li-file-upload [(ngModel)]="attachments" (beforeRemove)="beforeRemove($event)">
+</li-file-upload>
+```
+
+**To cancel on something asynchronous, use `confirmAction`.** After the `before*` event (and only if nobody cancelled), the component calls the function and waits for the `Future`: `true` runs the action, `false` cancels it. An error cancels too and goes to the zone. The function receives every action; complete with `true` for the ones that need no confirmation.
+
+```dart
+Future<bool> confirm(LiFileUploadActionEvent event) async {
+  if (event.action != LiFileUploadAction.remove) {
+    return true;
+  }
+  final result = await SweetAlert.confirm(
+    title: 'Remove ${event.file!.name}?',
+    confirmButtonText: 'Remove',
+    cancelButtonText: 'Cancel',
+  );
+  return result.isConfirmed;
+}
+```
+
+```html
+<li-file-upload [(ngModel)]="attachments" [confirmAction]="confirm"></li-file-upload>
+```
+
+Without `confirmAction` the action runs inside the same click, as before. With it, opening the picker (`browse` and `replace`) waits for the answer: browsers open the file dialog only during a user gesture, and the click on the SweetAlert button is a new one, but a slow check with no interaction may get the picker blocked.
+
+**`beforeAdd` filters too.** `event.files` holds the files offered (only the first without `multiple`), before the duplicate filter and `maxFiles`. Whatever the handler (or `confirmAction`) leaves in that list is what enters; it may remove items or assign another list. An empty list adds nothing.
+
+```dart
+void beforeAdd(LiFileUploadActionEvent event) {
+  event.files.removeWhere((file) => file.size > 5 * 1024 * 1024);
+}
+```
+
+### Methods
+
+Actions have two doors. `browse()`, `requestRemove(index)`, `requestClear()`, `requestPreview(item)` and `requestReplace(index)` do what the buttons do: they go through `before*` and `confirmAction` and return a `Future<bool>` telling whether the action ran. `openPicker()`, `removeAt(index)`, `clear()`, `openPreview(item)` and `replaceAt(index, file)` run at once, for when the application already decided; they still emit the after event.
+
+### Two fixes that came along
+
+- The remove button of each card had the clear text ("Clear") as its `title`; it is now "Remove".
+- Enter or Space on a button inside the dropzone (remove, preview) bubbled to the dropzone, which cancelled the key and opened the picker. The key now stays with the button.
+
+### Tests
+
+`test/file_upload/li_file_upload_actions_test.dart` covers the defaults, every display input in the three modes, the bar going away, `dropzoneClickOpensPicker`, the four `itemClickAction` values, cancelled `beforeRemove` and `beforeClear`, `confirmAction` with `false` and with `true`, and the `beforeAdd` filter. So the OS file dialog never opens, the test cancels the click on the `input[type=file]` and counts how many times it happened.
+
+The example app has a "Full control" card on the file upload page: toggles for every input, a choice of `previewMode` and `itemClickAction`, a log of every event, removing the first file blocked in `beforeRemove`, clearing confirmed by SweetAlert in `confirmAction`, and an images-and-PDFs filter in `beforeAdd`.
+
+## `li-file-upload` in English and Portuguese in `1.0.0-dev.48`
+
+`limitless_ui` has no global language service: each component takes `@Input() locale` (default `'pt_BR'`), uses English when the value starts with `en` and Portuguese otherwise. `li-file-upload` already followed that, but the example page did not pass `[locale]` to it. With the top selector on EN the page was in English and the uploader still said "Arraste arquivos aqui", "Selecionar arquivos ..." and "Limpar".
+
+Every default text of the component now lives in one table per language, English and Brazilian Portuguese, and `locale` picks the table. That covers the dropzone title and subtitle, the caption placeholder, the labels of the browse, clear and cancel buttons, the `title`/`aria-label` of the card buttons (preview, remove and the upload indicator), the modal, PDF, document, previous and next titles, the zoom, rotate, full screen and borderless buttons, and the size and type error messages. The Portuguese texts got their missing accents: "Visualização do PDF", "Abrir visualização", "Visualizar próximo arquivo", "Girar 90 graus no sentido horário", "Pré-visualização", "tamanho máximo", "Tipo de arquivo não permitido". "Resetar zoom" became "Restaurar zoom".
+
+What the application passes as an input still wins over the default text: `title`, `subtitle`, `browseLabel`, `clearLabel`, `pdfPreviewTitle`, `documentPreviewTitle`, `previousFileTitle` and `nextFileTitle`.
+
+The switch is live: changing `[locale]` re-renders, and the error messages of files already in the queue are rebuilt in the new language without recreating the preview URLs. The required-field message comes from the validation layer, which already followed `locale`. The component has no file-count message: above `maxFiles` the extra files are dropped silently, as before.
+
+The example page passes `[locale]="uploadLocale"` (`'pt_BR'` or `'en_US'`, following the top selector) to every uploader and translates its own texts (card titles, "Summary", helper texts and the API tab list). `test/file_upload/li_file_upload_locale_test.dart` switches the `locale` of an uploader already on screen between `pt_BR` and `en_US` and checks the title, subtitle, placeholder, buttons, card `title` and `aria-label`, and the size error of a file already queued; another case checks that a `browseLabel` set by the application wins over the language.
+
+## `li-file-upload` without the caption field in `1.0.0-dev.48`
+
+The bottom bar of `li-file-upload` mirrors the Krajee fileinput that the Limitless theme styles: a read-only input (`.file-caption-name`, placeholder "Select files ...") that lists the names of the selected files, its icon (`.file-caption-icon`), the clear button and the browse button. In the `compact` mode the list is the only place where several names fit in one line, but in `thumbnails` and `limitless` every card already shows the name under its thumbnail, so the field repeats them in a box that looks editable and is not. Applications were hiding it with `::ng-deep` from the page.
+
+`[showCaption]="false"` stops rendering the field and the icon. The default stays `true`, so existing pages do not change.
+
+```html
+<li-file-upload
+  [(ngModel)]="attachments"
+  accept="image/*,application/pdf"
+  previewMode="limitless"
+  [showCaption]="false">
+</li-file-upload>
+```
+
+Without the field the bar holds only buttons, and the `input-group` rules of Bootstrap would square their corners: they test `:first-child`/`:last-child` counting hidden siblings too (the cancel button always stays in the DOM with `display: none`, and until this version so did the clear button, hidden by the theme), so the browse button would lose its corners. With `showCaption` off the bar gets `li-file-upload__caption--buttons-only`, and in it each button keeps its own radius, a gap separates them, and the browse button grows to the free width. The overriding rules use `!important` because the `input-group` selectors weigh 0,7,0.
+
+`test/file_upload/li_file_upload_caption_test.dart` renders one uploader with the default and one with `[showCaption]="false"`, with and without files, and checks that the field and the icon exist only in the first, that the browse button and its `input[type=file]` stay in both, and that the class of the buttons-only bar appears only in the second.
+
 ## One validation mixin for every field in `1.0.0-dev.47`
 
 Until `1.0.0-dev.46` each form component carried its own copy of the declarative validation layer: building the effective rules, deciding when to show them (`liValidationMode` against touched, dirty and the `liForm` submission), honouring the external `invalid`/`dataInvalid`/`errorText`, resolving `liMessages`, and registering with `liForm`. Fourteen copies drifted apart, which is how `li-checkbox-group` and `li-typeahead` shipped without validation for so long.
@@ -297,6 +493,7 @@ layer:
 | `anchoredPicker` | 1085 | above the tooltip, because a picker takes clicks and a tooltip does not |
 | `offcanvas` | 1150 | slides over the page, goes under a modal |
 | `modal` | 1200 | plus `modalStep` for each stacked modal |
+| `fullscreenFallback` | 1900 | added in `1.0.0-dev.48`: the CSS full screen of `li-pdf-viewer`, over every stacked modal and under dialogs |
 | `dialog` | 2000 | a question, so it comes over any modal |
 | `toastStack` | 2100 | a notice has to be readable over the dialog it refers to |
 | `alert` | 3000 | interrupts everything below to be answered |

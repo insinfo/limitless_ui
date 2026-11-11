@@ -8,6 +8,26 @@ class FakePdfViewerBrowserBridge implements LiPdfViewerBrowserBridge {
   final List<String> clickedDownloads = <String>[];
   int printCalls = 0;
 
+  /// What `document.fullscreenEnabled` reports.
+  bool fullscreenAllowed = true;
+
+  /// Whether `requestFullscreen()` is refused (its promise rejects).
+  bool refuseFullscreen = false;
+
+  /// Elements `requestFullscreen()` was called on.
+  final List<html.Element> fullscreenRequests = <html.Element>[];
+
+  @override
+  bool get fullscreenEnabled => fullscreenAllowed;
+
+  @override
+  Future<void> requestFullscreen(html.Element element) async {
+    fullscreenRequests.add(element);
+    if (refuseFullscreen) {
+      throw StateError('Permissions check failed');
+    }
+  }
+
   @override
   void clickAnchor(html.AnchorElement anchor) {
     clickedDownloads.add(anchor.download ?? '');
@@ -20,9 +40,19 @@ class FakePdfViewerBrowserBridge implements LiPdfViewerBrowserBridge {
     return url;
   }
 
+  /// What printWindow received last: has to be the JS window, with `print`.
+  Object? lastPrintTarget;
+
+  /// Makes printWindow fail, as a browser that refuses to print would.
+  bool failPrint = false;
+
   @override
   void printWindow(dynamic targetFrame) {
     printCalls += 1;
+    lastPrintTarget = targetFrame as Object?;
+    if (failPrint) {
+      throw StateError('print refused');
+    }
   }
 
   @override

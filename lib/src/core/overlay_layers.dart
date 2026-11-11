@@ -17,6 +17,7 @@
 /// | [anchoredPicker] | 1085 | above the tooltip, because a picker is interactive and a tooltip is not |
 /// | [offcanvas] | 1150 | slides over the page, goes under a modal |
 /// | [modal] | 1200 | plus [modalStep] for each stacked modal |
+/// | [fullscreenFallback] | 1900 | a viewer "full screen" by CSS covers every modal, under any question asked over it |
 /// | [dialog] | 2000 | a question, so it comes over any modal |
 /// | [toastStack] | 2100 | a notice has to be readable over the dialog it refers to |
 /// | [alert] | 3000 | interrupts everything below to be answered |
@@ -89,6 +90,15 @@ class LiOverlayLayers {
 
   /// Distance between two stacked modals.
   static int modalStep = 10;
+
+  /// Element shown full screen by CSS because the Fullscreen API is not
+  /// available or was refused (an iframe without `allow="fullscreen"`, for
+  /// instance): `li-pdf-viewer`.
+  ///
+  /// Above every stacked [modal], since the viewer usually lives in one and has
+  /// to cover it, its backdrop and the navbar; below [dialog], so a question
+  /// raised while it is up still shows over it.
+  static int fullscreenFallback = 1900;
 
   /// Blocking dialog: alert, confirmation, prompt.
   static int dialog = 2000;

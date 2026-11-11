@@ -1498,6 +1498,7 @@ Preview-related inputs:
 
 - `previewMode`: accepts `compact`, `thumbnails`, and `limitless`.
 - `showPreview`: hides the selected-files list/grid entirely when `false`.
+- `showCaption`: with `false`, drops the read-only caption field (the list of selected names) and its icon from the bottom bar, leaving the browse button alone; useful with `thumbnails` and `limitless`, whose cards already show the names.
 - `enablePreviewModal`: enables enlarged previews for images and PDFs.
 - `enablePreviewZoom`: shows zoom controls inside the preview modal for image previews.
 - `maxFiles`, `maxSize`, `accept`, `allowedTypes`: constrain the queue before submit.
@@ -1513,6 +1514,64 @@ Preview-related inputs:
   [enablePreviewModal]="true"
   [enablePreviewZoom]="true"
   browseLabel="Browse attachments">
+</li-file-upload>
+```
+
+Display and behavior inputs (the defaults keep the layout and behavior of earlier versions):
+
+| input | default | effect |
+|---|---|---|
+| `showCaption` | `true` | caption field of the bottom bar |
+| `showBrowseButton` | `true` | browse button; when off, the native input stays so the dropzone click and `browse()` still work |
+| `browseLabel` / `browseIcon` | locale text / `'ph-file-plus'` | label and icon class of the browse button (empty icon = none) |
+| `showClearButton` / `clearLabel` | `false` / locale text | "Clear" button of the bar (the Limitless theme always hid it before, hence `false`) |
+| `showDropzoneClearButton` | `true` | "X" at the dropzone corner, which clears every file |
+| `showPreviewButton`, `showRemoveButton` | `true` | per-file preview and remove buttons |
+| `showFileSize`, `showFileName` | `true` | per-file size and name |
+| `showUploadIndicator` | `true` | green "not uploaded yet" icon of each card (a status icon, not a button) |
+| `dropzoneClickOpensPicker` | `true` | a click or Enter/Space on the empty dropzone opens the picker |
+| `itemClickAction` | `LiFileItemClickAction.dropzone` | click on a file: `dropzone` (acts as a dropzone click), `none`, `preview` or `replace` (picks a file for that position) |
+| `confirmAction` | `null` | `Future<bool> Function(LiFileUploadActionEvent)` awaited before each user action; `false` cancels |
+| `locale` | `'pt_BR'` | language of every default text (`en*` = English, otherwise Brazilian Portuguese) |
+
+With caption, browse and clear all off, the bottom bar is not rendered at all.
+
+Outputs, all carrying a `LiFileUploadActionEvent` (`action`, `file`, `index`, `files`, `previousFile`, `preventDefault()`, `defaultPrevented`):
+
+| action | before (cancelable) | after |
+|---|---|---|
+| add (drop or pick) | `beforeAdd` (may also filter `event.files`) | `added` |
+| remove one | `beforeRemove` | `removed` |
+| clear all | `beforeClear` | `cleared` |
+| open the preview modal | `beforePreview` | `previewOpened` |
+| replace one | `beforeReplace` | `replaced` |
+| open the picker | `beforeBrowse` | — |
+
+`filesChange` and `ngModel` are unchanged. The `before*` streams are synchronous, so `preventDefault()` must run before the handler's first `await`; for asynchronous decisions use `confirmAction`:
+
+```dart
+// Synchronous: keep the first attachment.
+void beforeRemove(LiFileUploadActionEvent event) {
+  if (event.index == 0) event.preventDefault();
+}
+
+// Asynchronous: ask before removing.
+Future<bool> confirm(LiFileUploadActionEvent event) async {
+  if (event.action != LiFileUploadAction.remove) return true;
+  final result = await SweetAlert.confirm(
+    title: 'Remove ${event.file!.name}?',
+    confirmButtonText: 'Remove',
+    cancelButtonText: 'Cancel',
+  );
+  return result.isConfirmed;
+}
+```
+
+```html
+<li-file-upload
+  [(ngModel)]="attachments"
+  [confirmAction]="confirm"
+  (beforeRemove)="beforeRemove($event)">
 </li-file-upload>
 ```
 
@@ -2276,7 +2335,21 @@ Most relevant inputs and features:
 - `customToolbarActions`, `<template liPdfViewerToolbarActions>`, and `<template liPdfViewerSidePanel>` let hosts attach business actions and body-level side-panel content without forking the viewer;
 - `enableDownloadAction`, `enablePrintAction`, `enableRotateAction`, `enableFitWidthAction`, `enablePanModeAction`, `enableFullscreenAction`, and `enableGoToPageAction` allow action-level pruning without local CSS;
 - `extractPageText(...)`, `extractDocumentText(...)`, `getPageInfo(...)`, and `getAllPageInfo(...)` expose generic read APIs for inspection and metadata flows;
-- `documentLoaded`, `pageChange`, `scaleChange`, `loadError`, and `sidePanelOpenChange` surface viewer state back to the host.
+- `documentLoaded`, `pageChange`, `scaleChange`, `loadError`, and `sidePanelOpenChange` surface viewer state back to the host;
+- `showTitle` (default `true`) renders the document title at the left of the toolbar; turn it off inside a modal whose header already shows the name, and the controls take the space;
+- `actionError` reports a failed print or download; the document stays on screen and a notice shows over it for a few seconds (`labels.printFailed`, `labels.downloadFailed`), unlike `loadError`, which replaces the document.
+
+Full screen uses the Fullscreen API when `document.fullscreenEnabled` is `true`. When it is not (an iframe without `allow="fullscreen"`) or the browser refuses the request, the viewer falls back to a CSS full screen: the host moves to `<body>` (a `transform` on `.modal-dialog` would trap `position: fixed` inside a modal), sits at `LiOverlayLayers.fullscreenFallback` (1900, above every stacked `li-modal`, below dialogs), and goes back to its place on the button or on Escape, which does not reach the modal around it.
+
+```html
+<li-modal size="xxx-large" [enableModalBodyClass]="false" [title-text]="fileName">
+  <div style="height: 75vh;">
+    <li-pdf-viewer [bytes]="bytes" [title]="fileName" [showTitle]="false"
+        (actionError)="onViewerActionError($event)">
+    </li-pdf-viewer>
+  </div>
+</li-modal>
+```
 
 ### Quill Text Editor
 

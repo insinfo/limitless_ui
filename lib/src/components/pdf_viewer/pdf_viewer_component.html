@@ -175,6 +175,12 @@
       <div *ngIf="errorMessage != null" class="li-pdf-viewer__overlay li-pdf-viewer__overlay--error">
         {{ labels.errorPrefix }} {{ errorMessage }}
       </div>
+
+      <div *ngIf="actionNotice != null" class="li-pdf-viewer__notice alert alert-warning" role="status">
+        <span class="li-pdf-viewer__notice-text">{{ actionNotice }}</span>
+        <button type="button" class="btn-close" [attr.aria-label]="labels.dismiss"
+          (click)="dismissActionNotice()"></button>
+      </div>
     </div>
 
     <aside *ngIf="shouldShowInlineSidePanel"
@@ -202,15 +208,22 @@
   </div>
 
   <li-modal #goToPageModal [title-text]="labels.goToPageTitle" size="modal-sm" headerColor="primary"
-    [lazyContent]="true" [verticalCenter]="true" [fullScreenOnMobile]="false"
+    [compactHeader]="true" [lazyContent]="true" [verticalCenter]="true" [fullScreenOnMobile]="false"
     (close)="onGoToPageModalClose()">
     <label class="form-label" for="pdfGoToPageInput">{{ labels.page }}</label>
-    <input id="pdfGoToPageInput" class="form-control" type="number" min="1" [max]="totalPages"
-      [(ngModel)]="goToPageInputText" placeholder="1">
-    <div class="form-text">{{ labels.pageRangeHint(totalPages) }}</div>
+    <input id="pdfGoToPageInput" class="form-control" type="number" min="1" step="1" [max]="totalPages"
+      [class.is-invalid]="goToPageInvalid" [attr.aria-invalid]="goToPageInvalid ? 'true' : null"
+      aria-describedby="pdfGoToPageHint"
+      [ngModel]="goToPageValue" (ngModelChange)="onGoToPageValueChange($event)"
+      (keydown)="onGoToPageKeyDown($event)" placeholder="1">
+    <div id="pdfGoToPageHint" class="form-text li-pdf-viewer__go-to-page-hint"
+      [class.text-danger]="goToPageInvalid">
+      <span *ngIf="goToPageInvalid">{{ labels.invalidPage }} </span>{{ labels.pageRangeHint(totalPages) }}
+    </div>
     <div class="d-flex justify-content-end gap-2 mt-3">
       <button type="button" class="btn btn-light" (click)="closeGoToPageModal()">{{ labels.cancel }}</button>
-      <button type="button" class="btn btn-primary" (click)="confirmGoToPage()">{{ labels.confirm }}</button>
+      <button type="button" class="btn btn-primary li-pdf-viewer__go-to-page-confirm"
+        [disabled]="goToPageInvalid" (click)="confirmGoToPage()">{{ labels.confirm }}</button>
     </div>
   </li-modal>
 
@@ -220,6 +233,7 @@
       [title-text]="resolvedSidePanelTitle ?? title"
       size="large"
       headerColor="primary"
+      [compactHeader]="true"
       [enableModalBodyClass]="false"
       [dialogScrollable]="true"
       [fullScreenOnMobile]="true"

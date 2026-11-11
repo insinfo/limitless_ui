@@ -11,6 +11,15 @@ abstract class LiPdfViewerBrowserBridge {
   void clickAnchor(html.AnchorElement anchor);
 
   void printWindow(dynamic targetFrame);
+
+  /// Whether the document may use the Fullscreen API at all:
+  /// `document.fullscreenEnabled`, `false` in an iframe without
+  /// `allow="fullscreen"`. Asking anyway logs a permissions policy violation.
+  bool get fullscreenEnabled;
+
+  /// Calls `requestFullscreen()` (or the WebKit prefix) on [element]. The
+  /// future fails when the browser refuses.
+  Future<void> requestFullscreen(html.Element element);
 }
 
 class DefaultLiPdfViewerBrowserBridge implements LiPdfViewerBrowserBridge {
@@ -34,6 +43,45 @@ class DefaultLiPdfViewerBrowserBridge implements LiPdfViewerBrowserBridge {
   @override
   void printWindow(dynamic targetFrame) {
     js_util.callMethod(targetFrame, 'print', const <Object?>[]);
+  }
+
+  @override
+  bool get fullscreenEnabled {
+    final document = html.document;
+    if (js_util.hasProperty(document, 'fullscreenEnabled')) {
+      return js_util.getProperty<Object?>(document, 'fullscreenEnabled') ==
+          true;
+    }
+    if (js_util.hasProperty(document, 'webkitFullscreenEnabled')) {
+      return js_util.getProperty<Object?>(
+              document, 'webkitFullscreenEnabled') ==
+          true;
+    }
+    return false;
+  }
+
+  @override
+  Future<void> requestFullscreen(html.Element element) async {
+    if (js_util.hasProperty(element, 'requestFullscreen')) {
+      final result = js_util.callMethod<Object?>(
+        element,
+        'requestFullscreen',
+        const <Object?>[],
+      );
+      if (result != null) {
+        await js_util.promiseToFuture<Object?>(result);
+      }
+      return;
+    }
+    if (js_util.hasProperty(element, 'webkitRequestFullscreen')) {
+      js_util.callMethod<Object?>(
+        element,
+        'webkitRequestFullscreen',
+        const <Object?>[],
+      );
+      return;
+    }
+    throw UnsupportedError('Fullscreen API not available');
   }
 }
 

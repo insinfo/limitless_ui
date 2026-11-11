@@ -10,10 +10,15 @@
   --toolbar-height: 40px;
   --toolbar-horizontal-padding: 8px;
   --toolbar-vertical-padding: 4px;
-  --pdf-toolbar-bg: color-mix(in srgb, var(--card-bg) 88%, var(--body-bg) 12%);
-  --pdf-toolbar-border: var(--border-color-translucent);
+  // The theme defines `--card-bg` only inside `.card` and `--modal-bg` only
+  // inside `.modal`. Out of both (a viewer in a plain page, or moved to the
+  // body by the CSS full screen) `var(--card-bg)` alone resolves to nothing
+  // and the toolbar went transparent over the dark viewer background.
+  --pdf-surface-bg: var(--card-bg, var(--modal-bg, var(--white)));
+  --pdf-toolbar-bg: color-mix(in srgb, var(--pdf-surface-bg) 88%, var(--body-bg) 12%);
+  --pdf-toolbar-border: var(--border-color);
   --pdf-viewer-bg: color-mix(in srgb, var(--body-bg) 16%, var(--dark) 84%);
-  --pdf-input-bg: var(--card-bg);
+  --pdf-input-bg: var(--pdf-surface-bg);
   --pdf-input-color: var(--body-color);
   --pdf-input-border: var(--border-color-translucent);
   --pdf-overlay-bg: rgba(15, 23, 42, 0.72);
@@ -21,6 +26,12 @@
   --pdf-page-shadow: 0 18px 40px rgba(var(--body-color-rgb), 0.18);
   --pdf-page-bg: var(--white);
   --pdf-page-margin: 1rem auto;
+}
+
+// Dark theme: `--white` stays white there, so the last fallback is the dark
+// card colour of the theme.
+:host-context([data-color-theme=dark]) {
+  --pdf-surface-bg: var(--card-bg, var(--modal-bg, #2c2d33));
 }
 
 :host(.pdf-viewer-viewport-fullscreen),
@@ -429,6 +440,26 @@
 
 .li-pdf-viewer__overlay--error {
   background: rgba(var(--danger-rgb), 0.82);
+}
+
+// Failed print or download: a notice over the document, which stays usable.
+.li-pdf-viewer__notice {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: calc(100% - 1.5rem);
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  box-shadow: var(--box-shadow, 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15));
+}
+
+.li-pdf-viewer__notice .btn-close {
+  flex: 0 0 auto;
 }
 
 .toolbar-page-input {

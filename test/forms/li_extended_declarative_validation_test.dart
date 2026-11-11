@@ -165,9 +165,11 @@ void main() {
     final fixture = await testBed.create();
     await _settle(fixture);
 
+    // The visible clear control is the dropzone close button; the bar clear
+    // button needs [showClearButton] since 1.0.0-dev.48.
     expect(
       fixture.rootElement.querySelector(
-        '#upload-field .fileinput-remove-button',
+        '#upload-field .btn-close.fileinput-remove',
       ),
       isNull,
     );
@@ -189,7 +191,7 @@ void main() {
         as html.Element;
     final preview = uploadDropzone.querySelector('.li-file-upload__preview');
     final clearButton = fixture.rootElement.querySelector(
-      '#upload-field .fileinput-remove-button',
+      '#upload-field .btn-close.fileinput-remove',
     );
     final previewStatus = uploadDropzone.querySelector('.file-preview-status');
 

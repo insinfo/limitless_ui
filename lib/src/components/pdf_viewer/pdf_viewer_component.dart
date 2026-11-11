@@ -8,6 +8,7 @@ import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart';
 
 import '../dropdown_menu/dropdown_menu_component.dart';
+import '../../core/overlay_layers.dart';
 import '../modal/modal_component.dart';
 import 'pdf_viewer_browser_bridge.dart';
 import 'pdf_viewer_document_controller.dart';
@@ -283,6 +284,10 @@ class LiPdfViewerLabels {
     this.selectZoomTitle = 'Select zoom',
     this.pageRangeHintPrefix = 'Enter a page between',
     this.pageRangeHintMiddle = 'and',
+    this.printFailed = 'Could not print the PDF. Use the browser print (Ctrl+P).',
+    this.downloadFailed = 'Could not download the PDF.',
+    this.invalidPage = 'Invalid page.',
+    this.dismiss = 'Close',
   });
 
   static const LiPdfViewerLabels english = LiPdfViewerLabels();
@@ -313,6 +318,11 @@ class LiPdfViewerLabels {
     selectZoomTitle: 'Selecionar zoom',
     pageRangeHintPrefix: 'Informe uma página entre',
     pageRangeHintMiddle: 'e',
+    printFailed:
+        'Não foi possível imprimir o PDF. Use a impressão do navegador (Ctrl+P).',
+    downloadFailed: 'Não foi possível baixar o PDF.',
+    invalidPage: 'Página inválida.',
+    dismiss: 'Fechar',
   );
 
   final String loading;
@@ -340,6 +350,19 @@ class LiPdfViewerLabels {
   final String selectZoomTitle;
   final String pageRangeHintPrefix;
   final String pageRangeHintMiddle;
+
+  /// Notice shown over the document when printing fails.
+  final String printFailed;
+
+  /// Notice shown over the document when the download fails.
+  final String downloadFailed;
+
+  /// Prefix of the "Go to page" warning for an empty, out of range or
+  /// fractional page.
+  final String invalidPage;
+
+  /// Accessible name of the button that closes a notice.
+  final String dismiss;
 
   String pageRangeHint(int totalPages) {
     return '$pageRangeHintPrefix 1 $pageRangeHintMiddle $totalPages.';
@@ -399,6 +422,8 @@ class LiPdfViewerComponent
       StreamController<double>.broadcast();
   final StreamController<int> _documentLoadedController =
       StreamController<int>.broadcast();
+  final StreamController<String> _actionErrorController =
+      StreamController<String>.broadcast();
   final StreamController<String> _errorController =
       StreamController<String>.broadcast();
   final StreamController<LiPdfViewerToolbarActionEvent>
@@ -576,6 +601,12 @@ class LiPdfViewerComponent
   @Output('loadError')
   Stream<String> get loadError => _errorController.stream;
 
+  /// A toolbar action failed (print or download), with the technical
+  /// message. Unlike [loadError] the document stays on screen; the viewer
+  /// shows [actionNotice] over it for a few seconds.
+  @Output()
+  Stream<String> get actionError => _actionErrorController.stream;
+
   @Output()
   Stream<LiPdfViewerToolbarActionEvent> get toolbarAction =>
       _toolbarActionController.stream;
@@ -585,6 +616,12 @@ class LiPdfViewerComponent
 
   bool isLoading = false;
   String? errorMessage;
+
+  /// Transient notice over the document after a failed print or download;
+  /// `null` when there is none. It does not replace the document like
+  /// [errorMessage] does.
+  String? actionNotice;
+  Timer? _actionNoticeTimer;
   dynamic _pdfSource;
   int currentPage = 1;
   int _rotation = 0;
@@ -604,7 +641,28 @@ class LiPdfViewerComponent
   Point<num>? _pendingOrigin;
   Timer? _zoomDebounceTimer;
   html.ResizeObserver? _resizeObserver;
-  String goToPageInputText = '';
+  /// Value of the "Go to page" field. The field is `type="number"`, whose
+  /// `NumberValueAccessor` delivers a `num` (or `null` when empty); it used to
+  /// be a `String`, which threw a `TypeError` on every key.
+  num? goToPageValue;
+
+  /// The page the "Go to page" field points to, or `null` while it is empty,
+  /// fractional or outside 1..[totalPages].
+  int? get goToPageTarget {
+    final value = goToPageValue;
+    if (value == null || !value.isFinite || value != value.roundToDouble()) {
+      return null;
+    }
+    final page = value.toInt();
+    if (page < 1 || page > totalPages) {
+      return null;
+    }
+    return page;
+  }
+
+  /// Whether the "Go to page" field holds something that is not a valid page;
+  /// the warning shows and OK is disabled.
+  bool get goToPageInvalid => goToPageTarget == null;
   List<LiPdfViewerToolbarAction> leadingCustomToolbarActions =
       const <LiPdfViewerToolbarAction>[];
   List<LiPdfViewerToolbarAction> trailingCustomToolbarActions =
@@ -878,11 +936,13 @@ class LiPdfViewerComponent
     _disposeBrowserListeners();
     _disposePrintArtifacts();
     _windowResizeSub?.cancel();
-    _exitFallbackFullscreen();
+    _exitFallbackFullscreen(restore: false);
     _pageChangeController.close();
     _scaleChangeController.close();
     _documentLoadedController.close();
     _errorController.close();
+    _actionNoticeTimer?.cancel();
+    _actionErrorController.close();
     _toolbarActionController.close();
     _sidePanelOpenChangeController.close();
   }
@@ -987,7 +1047,7 @@ class LiPdfViewerComponent
     if (!enableGoToPageAction) {
       return;
     }
-    goToPageInputText = currentPage > 0 ? '$currentPage' : '';
+    goToPageValue = currentPage > 0 ? currentPage : null;
     _changeDetectorRef.markForCheck();
     Timer.run(() {
       goToPageModal?.open();
@@ -1038,13 +1098,31 @@ class LiPdfViewerComponent
     _updateSidePanelOpen(false);
   }
 
+  /// Goes to the page in the "Go to page" field, from OK or Enter. Does
+  /// nothing while the value is not a page of the document.
   void confirmGoToPage() {
-    final pageNum = int.tryParse(goToPageInputText.trim());
-    if (pageNum == null || pageNum < 1 || pageNum > totalPages) {
+    final pageNum = goToPageTarget;
+    if (pageNum == null) {
+      _changeDetectorRef.markForCheck();
       return;
     }
     closeGoToPageModal();
     scrollToPage(pageNum);
+  }
+
+  /// `ngModelChange` of the "Go to page" field.
+  void onGoToPageValueChange(num? value) {
+    goToPageValue = value;
+    _changeDetectorRef.markForCheck();
+  }
+
+  /// Enter in the "Go to page" field confirms it.
+  void onGoToPageKeyDown(html.KeyboardEvent event) {
+    if (event.key != 'Enter') {
+      return;
+    }
+    event.preventDefault();
+    confirmGoToPage();
   }
 
   void nextPage() => scrollToPage(min(currentPage + 1, totalPages));
@@ -1088,6 +1166,12 @@ class LiPdfViewerComponent
     _changeDetectorRef.markForCheck();
   }
 
+  /// Enters or leaves full screen. Uses the Fullscreen API when the document
+  /// allows it (`document.fullscreenEnabled`); when it is not allowed, or the
+  /// browser refuses the request, falls back to a CSS full screen: the host
+  /// moves to `<body>`, fixed over the page at
+  /// [LiOverlayLayers.fullscreenFallback], above any `li-modal`, and goes back
+  /// to its place on the way out (button or Escape).
   Future<void> toggleFullscreen() async {
     if (!enableFullscreenAction) {
       return;
@@ -1134,10 +1218,13 @@ class LiPdfViewerComponent
         liPdfViewerBrowserBridge.revokeObjectUrl(blobUrl);
       });
     } catch (error) {
-      _setError('Failed to download PDF: $error');
+      _reportActionFailure(labels.downloadFailed, 'Failed to download PDF: $error');
     }
   }
 
+  /// Prints the document through a hidden iframe holding its bytes. A failure
+  /// shows [LiPdfViewerLabels.printFailed] over the document and emits
+  /// [actionError]; the document stays loaded.
   Future<void> printDocument() async {
     final document = pdfDocument;
     if (!enablePrintAction || document == null) {
@@ -1148,41 +1235,78 @@ class LiPdfViewerComponent
       final data = await document.getDataDart();
       final blob = html.Blob(<Object>[data], 'application/pdf');
 
-      if (_printObjectUrl != null) {
-        liPdfViewerBrowserBridge.revokeObjectUrl(_printObjectUrl!);
-      }
-      _printFrame?.remove();
+      _disposePrintArtifacts();
 
       _printObjectUrl = liPdfViewerBrowserBridge.createObjectUrlFromBlob(blob);
-      _printFrame = html.IFrameElement()
+      final frame = html.IFrameElement()
         ..id = 'liPdfViewerPrintFrame'
         ..name = 'liPdfViewerPrintFrame'
         ..src = _printObjectUrl
         ..style.display = 'none';
+      _printFrame = frame;
 
-      html.document.body?.append(_printFrame!);
-      _afterPrintSubscription?.cancel();
+      html.document.body?.append(frame);
       _afterPrintSubscription = html.window.on['afterprint'].listen((_) {
         _disposePrintArtifacts();
       });
 
-      await _printFrame!.onLoad.first;
-      try {
-        dynamic targetFrame = _printFrame?.contentWindow;
-        if (targetFrame == null) {
-          final frames = js_util.getProperty(html.window, 'frames');
-          targetFrame = js_util.getProperty(frames, 'liPdfViewerPrintFrame');
-        }
-        if (targetFrame == null) {
-          throw StateError('Print frame is not available.');
-        }
-        liPdfViewerBrowserBridge.printWindow(targetFrame);
-      } catch (error) {
-        _setError('Failed to print PDF: $error');
+      await frame.onLoad.first;
+      final targetWindow = _printWindowOf(frame);
+      if (targetWindow == null) {
+        throw StateError('Print frame is not available.');
       }
+      try {
+        js_util.callMethod<Object?>(targetWindow, 'focus', const <Object?>[]);
+      } catch (_) {}
+      liPdfViewerBrowserBridge.printWindow(targetWindow);
     } catch (error) {
-      _setError('Failed to prepare PDF printing: $error');
+      _disposePrintArtifacts();
+      _reportActionFailure(labels.printFailed, 'Failed to print PDF: $error');
     }
+  }
+
+  /// The JS window of the print [frame]. `IFrameElement.contentWindow` in
+  /// `dart:html` is a Dart wrapper (`WindowBase`) without `print`, so the
+  /// window is read on the JS side: the element's `contentWindow`, or the
+  /// frame by name in `window.frames`.
+  Object? _printWindowOf(html.IFrameElement frame) {
+    final fromElement = js_util.getProperty<Object?>(frame, 'contentWindow');
+    if (fromElement != null && js_util.hasProperty(fromElement, 'print')) {
+      return fromElement;
+    }
+    final frames = js_util.getProperty<Object?>(html.window, 'frames');
+    if (frames == null) {
+      return null;
+    }
+    final named = js_util.getProperty<Object?>(frames, frame.name ?? '');
+    if (named != null && js_util.hasProperty(named, 'print')) {
+      return named;
+    }
+    return null;
+  }
+
+  /// Shows [notice] over the document for a few seconds and emits
+  /// [technical] on [actionError], without touching the loaded document.
+  void _reportActionFailure(String notice, String technical) {
+    _log(technical);
+    actionNotice = notice;
+    _actionNoticeTimer?.cancel();
+    _actionNoticeTimer = Timer(const Duration(seconds: 6), dismissActionNotice);
+    if (!_actionErrorController.isClosed) {
+      _actionErrorController.add(technical);
+    }
+    _changeDetectorRef.markForCheck();
+  }
+
+  /// Hides the notice of a failed action.
+  void dismissActionNotice() {
+    _actionNoticeTimer?.cancel();
+    _actionNoticeTimer = null;
+    if (actionNotice == null) {
+      return;
+    }
+    actionNotice = null;
+    _changeDetectorRef.markForCheck();
   }
 
   Future<LiPdfViewerPageText> extractPageText(
@@ -1959,26 +2083,17 @@ class LiPdfViewerComponent
     _changeDetectorRef.markForCheck();
   }
 
+  /// Asks for the Fullscreen API and reports whether the host is now full
+  /// screen. Does not even ask when `document.fullscreenEnabled` is `false`
+  /// (an iframe without `allow="fullscreen"`), which would only log a
+  /// permissions policy violation, and takes a rejected promise as a no.
   Future<bool> _requestNativeFullscreen() async {
+    final bridge = liPdfViewerBrowserBridge;
+    if (!bridge.fullscreenEnabled) {
+      return false;
+    }
     try {
-      if (js_util.hasProperty(_hostElement, 'requestFullscreen')) {
-        final result = js_util.callMethod<Object?>(
-          _hostElement,
-          'requestFullscreen',
-          const <Object?>[],
-        );
-        if (result != null) {
-          await js_util.promiseToFuture<Object?>(result);
-        }
-      } else if (js_util.hasProperty(_hostElement, 'webkitRequestFullscreen')) {
-        js_util.callMethod<Object?>(
-          _hostElement,
-          'webkitRequestFullscreen',
-          const <Object?>[],
-        );
-      } else {
-        return false;
-      }
+      await bridge.requestFullscreen(_hostElement);
     } catch (_) {
       return false;
     }
@@ -2012,6 +2127,11 @@ class LiPdfViewerComponent
     _syncFullscreenState();
   }
 
+  /// CSS full screen. The host is moved to `<body>`: inside a `li-modal` the
+  /// `.modal-dialog` has a `transform`, which turns `position: fixed` into
+  /// "fixed to the dialog", and the modal's stacking context would keep the
+  /// viewer under the backdrop whatever its z-index. At the body it is fixed
+  /// to the window, at [LiOverlayLayers.fullscreenFallback].
   void _enterFallbackFullscreen() {
     if (_isFallbackFullscreen) {
       return;
@@ -2025,16 +2145,47 @@ class LiPdfViewerComponent
       body.append(_hostElement);
     }
     _hostElement.classes.add('pdf-viewer-viewport-fullscreen');
+    _hostElement.style.zIndex = '${LiOverlayLayers.fullscreenFallback}';
+    // Capture phase of the window: runs before the document listener with
+    // which a `li-modal` closes on Escape.
+    html.window.addEventListener('keydown', _fallbackKeyListener, true);
     _isFallbackFullscreen = true;
   }
 
-  void _exitFallbackFullscreen() {
+  /// One function object for add and remove: two tear-offs of
+  /// [_onFallbackKeyDown] are equal in Dart but are two JS functions.
+  late final html.EventListener _fallbackKeyListener = _onFallbackKeyDown;
+
+  /// Escape while in the CSS full screen leaves it, and nothing else: the
+  /// key does not reach a `li-modal` around the viewer.
+  void _onFallbackKeyDown(html.Event event) {
+    if (!_isFallbackFullscreen || event is! html.KeyboardEvent) {
+      return;
+    }
+    if (event.key != 'Escape' && event.key != 'Esc') {
+      return;
+    }
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    _exitFallbackFullscreen();
+    _syncFullscreenState();
+  }
+
+  /// Leaves the CSS full screen. With [restore] the host goes back where it
+  /// was; without it (the component is being destroyed) the host is only
+  /// taken out of `<body>`, so a viewer destroyed while full screen does not
+  /// come back as an orphan copy in its old parent.
+  void _exitFallbackFullscreen({bool restore = true}) {
     if (!_isFallbackFullscreen) {
       return;
     }
+    html.window.removeEventListener('keydown', _fallbackKeyListener, true);
     _hostElement.classes.remove('pdf-viewer-viewport-fullscreen');
+    _hostElement.style.zIndex = '';
     final parent = _fallbackFullscreenParent;
-    if (parent != null && _hostElement.parent != parent) {
+    if (!restore) {
+      _hostElement.remove();
+    } else if (parent != null && _hostElement.parent != parent) {
       final next = _fallbackFullscreenNextElementSibling;
       if (next != null && next.parent == parent) {
         parent.insertBefore(_hostElement, next);
@@ -2514,8 +2665,12 @@ class LiPdfViewerComponent
     _webkitFullscreenChangeSub?.cancel();
   }
 
+  /// Removes the print iframe, revokes its object URL and stops listening for
+  /// `afterprint`. Runs before a new print, after printing, on failure and on
+  /// destroy.
   void _disposePrintArtifacts() {
     _printFrame?.remove();
+    _printFrame = null;
     if (_printObjectUrl != null) {
       liPdfViewerBrowserBridge.revokeObjectUrl(_printObjectUrl!);
       _printObjectUrl = null;

@@ -119,6 +119,56 @@
   color: var(--white);
 }
 
+// `showCaption` off: the bar holds only buttons. Each one keeps its own rounded
+// corners, because the input-group rules square the inner ones counting hidden
+// siblings too (the cancel button is always hidden), and the browse button
+// takes the free width. `!important` beats the 0,7,0 specificity of those
+// input-group rules.
+.li-file-upload__caption--buttons-only .input-group,
+.li-file-upload__caption--no-browse .input-group {
+  gap: var(--spacer-2, 0.5rem);
+}
+
+.li-file-upload__caption--buttons-only .input-group > .btn,
+.li-file-upload__caption--no-browse .input-group > .btn {
+  margin-left: 0 !important;
+  border-radius: var(--btn-border-radius, var(--border-radius)) !important;
+}
+
+.li-file-upload__caption--buttons-only .input-group > .btn-file {
+  flex: 1 1 auto;
+}
+
+// `showBrowseButton` off: the caption field is no longer joined to a button on
+// its right, and the hidden icon after it would square its corners.
+.li-file-upload__caption--no-browse .input-group > .file-caption-name {
+  margin-left: 0 !important;
+  border-radius: var(--input-border-radius, var(--border-radius)) !important;
+}
+
+// `showClearButton` on: the theme hides `.fileinput-remove-button` inside
+// `.file-input-ajax-new`, the class this component always carries.
+.li-file-upload .li-file-upload__clear-button {
+  display: inline-flex;
+  align-items: center;
+}
+
+// No caption, browse or clear button: the bar is gone, and so is the gap the
+// dropzone kept for it.
+.li-file-upload--without-bar .file-preview {
+  margin-bottom: 0;
+}
+
+// `itemClickAction` preview or replace: the file reacts to the click.
+.li-file-upload__item--clickable {
+  cursor: pointer;
+}
+
+// A PDF thumbnail would keep the click inside its own document.
+.li-file-upload__thumb-frame--passive {
+  pointer-events: none;
+}
+
 .li-file-upload__footer-bar {
   border-top: 0;
   flex-wrap: nowrap;

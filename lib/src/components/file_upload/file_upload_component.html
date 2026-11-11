@@ -1,12 +1,12 @@
 <div [class]="resolvedRootClass">
   <div class="li-file-upload__preview file-preview">
     <button
-        *ngIf="hasFiles"
+        *ngIf="showsDropzoneClearButton"
         type="button"
         class="btn-close fileinput-remove"
         [disabled]="disabled"
-        [attr.aria-label]="clearLabel"
-        (click)="clear()">
+        [attr.aria-label]="resolvedClearLabel"
+        (click)="requestClear()">
     </button>
 
     <div
@@ -14,7 +14,7 @@
         [attr.data-li-form-focus-target]="'true'"
         [class]="resolvedDropzoneClass"
         [attr.tabindex]="disabled ? '-1' : '0'"
-        [attr.role]="'button'"
+        [attr.role]="dropzoneClickOpensPicker ? 'button' : null"
         [attr.aria-describedby]="resolvedDescribedBy"
         [attr.aria-invalid]="effectiveInvalid ? 'true' : null"
         [attr.data-invalid]="effectiveInvalid ? 'true' : null"
@@ -31,19 +31,23 @@
         <ul *ngIf="!isCardPreviewMode" [class]="resolvedListClass + ' li-file-upload__compact-list'">
           <li
               *ngFor="let item of previewItems; let i = index; trackBy: trackByPreview"
-              class="list-group-item li-file-upload__item">
+              class="list-group-item li-file-upload__item"
+              [class.li-file-upload__item--clickable]="itemClickIsActive"
+              (click)="onItemClick($event, i)">
             <span [class]="kindClass(item)">{{ item.kindLabel }}</span>
             <div class="li-file-upload__meta">
-              <div class="fw-semibold text-break">{{ item.file.name }}</div>
-              <div class="text-muted fs-sm">{{ item.sizeLabel }}</div>
+              <div *ngIf="showFileName" class="fw-semibold text-break li-file-upload__file-name">{{ item.file.name }}</div>
+              <div *ngIf="showFileSize" class="text-muted fs-sm li-file-upload__file-size">{{ item.sizeLabel }}</div>
               <div *ngIf="item.hasError" class="invalid-feedback d-block">{{ item.errorText }}</div>
             </div>
             <button
+                *ngIf="showRemoveButton"
                 type="button"
-                class="btn btn-sm btn-light btn-icon rounded-pill"
+                class="btn btn-sm btn-light btn-icon rounded-pill li-file-upload__compact-remove"
                 [disabled]="disabled"
-                (click)="removeAt(i)"
-                [attr.aria-label]="(isEnglishLocale ? 'Remove ' : 'Remover ') + item.file.name">
+                [attr.title]="removeLabel"
+                (click)="requestRemove(i)"
+                [attr.aria-label]="removePreviewAriaLabel + ': ' + item.file.name">
               <i class="ph-x"></i>
             </button>
           </li>
@@ -57,7 +61,9 @@
         <article
             *ngFor="let item of previewItems; let i = index; trackBy: trackByPreview"
             class="file-preview-frame krajee-default kv-preview-thumb"
-            [class.li-file-upload__card--limitless]="isLimitlessPreviewMode">
+            [class.li-file-upload__card--limitless]="isLimitlessPreviewMode"
+            [class.li-file-upload__item--clickable]="itemClickIsActive"
+            (click)="onItemClick($event, i)">
           <div class="kv-file-content">
             <img
                 *ngIf="item.isImage && item.previewSafeUrl != null"
@@ -69,6 +75,7 @@
             <iframe
                 *ngIf="item.isPdf && item.previewResourceUrl != null"
                 class="kv-preview-data li-file-upload__thumb-frame"
+                [class.li-file-upload__thumb-frame--passive]="itemClickIsActive"
                 [src]="item.previewResourceUrl!"
                 [attr.title]="resolvedPdfPreviewTitle">
             </iframe>
@@ -78,61 +85,69 @@
 
             <div *ngIf="isLimitlessPreviewMode" class="li-file-upload__card-overlay d-none">
               <button
-                  *ngIf="canOpenPreview(item)"
+                  *ngIf="showsPreviewButton(item)"
                   type="button"
                   class="li-file-upload__overlay-preview"
                   [disabled]="disabled"
                   [attr.aria-label]="zoomPreviewAriaLabel + ': ' + item.file.name"
-                  (click)="openPreview(item)">
+                  (click)="requestPreview(item)">
                 <i class="ph-magnifying-glass-plus"></i>
               </button>
               <button
+                  *ngIf="showRemoveButton"
                   type="button"
                   class="li-file-upload__overlay-remove"
                   [disabled]="disabled"
                   [attr.aria-label]="removePreviewAriaLabel + ': ' + item.file.name"
-                  (click)="removeAt(i)">
+                  (click)="requestRemove(i)">
                 <i class="ph-x"></i>
               </button>
             </div>
           </div>
 
-          <div class="file-thumbnail-footer">
-            <div class="file-footer-caption" [attr.title]="item.file.name">{{ item.file.name }}</div>
-            <div class="li-file-upload__footer-bar d-flex align-items-center justify-content-between px-2 py-1">
-              <div class="file-size-info"><samp>{{ item.sizeLabel }}</samp></div>
+          <div *ngIf="showsCardFooter(item)" class="file-thumbnail-footer">
+            <div *ngIf="showFileName" class="file-footer-caption" [attr.title]="item.file.name">{{ item.file.name }}</div>
+            <div
+                *ngIf="showsCardFooterBar(item)"
+                class="li-file-upload__footer-bar d-flex align-items-center justify-content-between px-2 py-1">
+              <div class="file-size-info"><samp *ngIf="showFileSize">{{ item.sizeLabel }}</samp></div>
 
-              <div class="file-footer-buttons">
-                <span class="file-upload-indicator" aria-hidden="true">
+              <div *ngIf="showsCardButtons(item)" class="file-footer-buttons">
+                <span
+                    *ngIf="showUploadIndicator"
+                    class="file-upload-indicator"
+                    [attr.title]="uploadIndicatorLabel"
+                    aria-hidden="true">
                   <i class="ph-file-arrow-up text-success"></i>
                 </span>
                 <button
-                    *ngIf="canOpenPreview(item) && !isLimitlessPreviewMode"
+                    *ngIf="showsPreviewButton(item) && !isLimitlessPreviewMode"
                     type="button"
                     class="li-file-upload__action--preview"
                     [disabled]="disabled"
                     [attr.aria-label]="zoomPreviewAriaLabel + ': ' + item.file.name"
                     [attr.title]="previewLabel"
-                    (click)="openPreview(item)">
+                    (click)="requestPreview(item)">
                   <i class="ph-magnifying-glass-plus"></i>
                 </button>
                 <button
-                    *ngIf="canOpenPreview(item) && isLimitlessPreviewMode"
+                    *ngIf="showsPreviewButton(item) && isLimitlessPreviewMode"
                     type="button"
                     class="li-file-upload__footer-preview"
                     [disabled]="disabled"
                     [attr.aria-label]="zoomPreviewAriaLabel + ': ' + item.file.name"
                     [attr.title]="previewLabel"
-                    (click)="openPreview(item)">
+                    (click)="requestPreview(item)">
                   <i class="ph-magnifying-glass-plus"></i>
                 </button>
                 <button
+                    *ngIf="showRemoveButton"
                     type="button"
                     class="li-file-upload__remove-button"
                     [disabled]="disabled"
                     [attr.aria-label]="removePreviewAriaLabel + ': ' + item.file.name"
-                    [attr.title]="clearLabel"
-                    (click)="removeAt(i)">
+                    [attr.title]="removeLabel"
+                    (click)="requestRemove(i)">
                   <i class="ph-x"></i>
                 </button>
               </div>
@@ -176,9 +191,30 @@
 
   <div class="clearfix"></div>
 
-  <div class="file-caption">
+  <!-- With the browse button hidden the native input lives here, out of the bar. -->
+  <input
+      *ngIf="!showBrowseButton"
+      #detachedFileInput
+      liFileSelect
+      type="file"
+      class="visually-hidden li-file-upload__native-input"
+      tabindex="-1"
+      aria-hidden="true"
+      [disabled]="disabled"
+      [multiple]="multiple"
+      [attr.name]="resolvedName"
+      [attr.accept]="resolvedAccept.isEmpty ? null : resolvedAccept"
+      (filesChange)="onFileInputChange($event)"
+      (cancel)="onFileInputCancel()">
+
+  <div
+      *ngIf="hasBottomBar"
+      class="file-caption"
+      [class.li-file-upload__caption--buttons-only]="!showCaption"
+      [class.li-file-upload__caption--no-browse]="!showBrowseButton">
     <div class="input-group">
       <input
+          *ngIf="showCaption"
           readonly
           class="file-caption-name form-control kv-fileinput-caption"
           [attr.name]="resolvedName"
@@ -186,19 +222,19 @@
           [value]="captionValue"
           [attr.title]="captionValue">
 
-      <span class="file-caption-icon">
+      <span *ngIf="showCaption" class="file-caption-icon">
         <i class="bi-file-earmark-arrow-up"></i>
       </span>
 
       <button
-          *ngIf="hasFiles"
+          *ngIf="showsClearButton"
           type="button"
-          class="btn btn-light fileinput-remove fileinput-remove-button"
+          class="btn btn-light fileinput-remove fileinput-remove-button li-file-upload__clear-button"
           [disabled]="disabled"
-          [attr.title]="clearLabel"
-          (click)="clear()">
+          [attr.title]="resolvedClearLabel"
+          (click)="requestClear()">
         <i class="ph-x fs-base me-2"></i>
-        <span class="hidden-xs">{{ clearLabel }}</span>
+        <span class="hidden-xs">{{ resolvedClearLabel }}</span>
       </button>
 
       <button
@@ -211,10 +247,12 @@
       </button>
 
       <label
+          *ngIf="showBrowseButton"
           class="btn btn-primary btn-file"
           [class.disabled]="disabled"
-          [attr.aria-label]="browseAriaLabel">
-        <i class="ph-file-plus me-2"></i>
+          [attr.aria-label]="browseAriaLabel"
+          (click)="onBrowseButtonClick($event)">
+        <i *ngIf="resolvedBrowseIcon.isNotEmpty" [class]="resolvedBrowseIcon + ' me-2'"></i>
         <span class="hidden-xs">{{ resolvedBrowseLabel }}</span>
         <input
             #fileInput
@@ -225,7 +263,8 @@
             [multiple]="multiple"
             [attr.name]="resolvedName"
             [attr.accept]="resolvedAccept.isEmpty ? null : resolvedAccept"
-            (filesChange)="onFilesSelected($event)">
+            (filesChange)="onFileInputChange($event)"
+            (cancel)="onFileInputCancel()">
       </label>
     </div>
   </div>
