@@ -148,7 +148,7 @@
                         ? 'Role a página até este cartão ficar no pé da janela (ou abra o DevTools embaixo) e abra um dos campos: sem espaço embaixo, o calendário abre em cima, colado no campo, com o mês e as setas à vista. Se não couber de nenhum lado, fica no lado com mais espaço, com rolagem interna. Role a caixa com o calendário aberto: ele acompanha o campo.'
                         : 'Scroll the page until this card sits at the bottom of the window (or dock DevTools at the bottom) and open a field: with no room below, the calendar opens above, glued to the field, with the month and arrows in view. If it fits on neither side, it takes the roomier one and scrolls inside. Scroll the box with the calendar open: it follows the field.' }}
                   </p>
-                  <div class="date-picker-near-end-box" data-label="demo_dp_near_end_box">
+                  <div class="date-picker-near-end-box" [attr.data-label]="'demo_dp_near_end_box'">
                     <div class="date-picker-near-end-spacer"></div>
                     <label class="form-label mb-1">{{ isPortuguese ? 'Fechamento' : 'Closed between' }}</label>
                     <div class="d-flex align-items-center gap-1">
