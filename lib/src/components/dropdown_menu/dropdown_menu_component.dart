@@ -66,6 +66,10 @@ class LiDropdownMenuComponent implements OnDestroy {
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   PopperAnchoredOverlay? _overlay;
+
+  /// Re-runs the layout when the menu or the trigger changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
   bool _overlayRelayoutPending = false;
   bool _inlineViewportRelayoutPending = false;
   bool _openUpwardForViewport = false;
@@ -457,7 +461,9 @@ class LiDropdownMenuComponent implements OnDestroy {
     _registerAsOpenMenu();
     _syncMenuStyleState();
     if (usesBodyDropdownOverlay && !usesMobilePresentation) {
+      resetOverlayViewportConstraints(floatingElement: menuElement);
       _overlay?.startAutoUpdate();
+      _resizeWatch.observe(<html.Element?>[triggerButtonElement, menuElement]);
       _scheduleOverlayUpdate();
     }
     _scheduleViewportAdaptation();
@@ -480,6 +486,7 @@ class LiDropdownMenuComponent implements OnDestroy {
     if (usesBodyDropdownOverlay) {
       _overlay?.stopAutoUpdate();
     }
+    _resizeWatch.disconnect();
     _unbindDocumentListeners();
 
     if (restoreFocus) {
@@ -538,7 +545,26 @@ class LiDropdownMenuComponent implements OnDestroy {
         strategy: PopperStrategy.fixed,
         padding: const PopperInsets.all(8),
         offset: const PopperOffset(mainAxis: 4),
+        onLayout: _handleOverlayLayout,
       ),
+    );
+  }
+
+  /// Puts the menu on the side [placement] asks for when it fits, on the other
+  /// one when only that fits, otherwise on the roomier side with the menu
+  /// capped and scrolling; always 4px from the trigger. The items keep their
+  /// own `menuMaxHeight`: the cap goes on the menu, so it never fights the
+  /// `[style.max-height]` binding of the list.
+  void _handleOverlayLayout(PopperLayout layout) {
+    if (usesMobilePresentation) {
+      return;
+    }
+    placeAnchoredOverlay(
+      floatingElement: menuElement,
+      layout: layout,
+      preferredSide:
+          _resolvedOverlayPlacement.startsWith('top') ? 'top' : 'bottom',
+      gap: 4,
     );
   }
 
@@ -647,8 +673,14 @@ class LiDropdownMenuComponent implements OnDestroy {
           ? viewportHeight - menuRect.top
           : (shouldOpenUpward ? spaceAbove : spaceBelow);
       final availableHeight = max(80, availableSpace - 8).floor();
+      // In the body the overlay layout caps the whole menu to the room on its
+      // side (placeAnchoredOverlay); capping the items here as well measured
+      // the menu where popper had clamped it and left it short, below the
+      // trigger, with the room above unused.
       final nextMaxHeight =
-          menuRect.height > availableHeight ? '${availableHeight}px' : '';
+          !usesBodyDropdownOverlay && menuRect.height > availableHeight
+              ? '${availableHeight}px'
+              : '';
       final menuItems = menu.querySelector('.li-dropdown-menu__items');
       final itemContentHeight = menu
           .querySelectorAll('.li-dropdown-menu__items > *')
@@ -704,6 +736,8 @@ class LiDropdownMenuComponent implements OnDestroy {
 
   void _disposeOverlay() {
     _overlayRelayoutPending = false;
+    _resizeWatch.disconnect();
+    resetOverlayViewportConstraints(floatingElement: menuElement);
     _overlay?.stopAutoUpdate();
     _overlay?.dispose();
     _overlay = null;

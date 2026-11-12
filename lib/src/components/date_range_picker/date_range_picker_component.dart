@@ -145,6 +145,10 @@ class LiDateRangePickerComponent
     implements ControlValueAccessor<LiDateRangeValue?>, OnDestroy {
   final ChangeDetectorRef _changeDetectorRef;
   PopperAnchoredOverlay? _overlay;
+
+  /// Re-runs the layout when the panel or the field changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
 
@@ -631,8 +635,10 @@ class LiDateRangePickerComponent
       resetOverlayViewportConstraints(floatingElement: panelElement);
       _overlay?.startAutoUpdate();
       _overlay?.update();
+      _resizeWatch.observe(<html.Element?>[triggerElement, panelElement]);
     } else {
       _overlay?.stopAutoUpdate();
+      _resizeWatch.disconnect();
     }
     _bindDocumentListeners();
 
@@ -943,6 +949,7 @@ class LiDateRangePickerComponent
     }
     _unbindDocumentListeners();
     _overlay?.stopAutoUpdate();
+    _resizeWatch.disconnect();
     isOpen = false;
     hoverDateValue = null;
     isSelectingEnd = false;
@@ -1040,15 +1047,10 @@ class LiDateRangePickerComponent
     );
   }
 
+  /// Puts the panel below the field, or above it when it only fits there, or
+  /// on the roomier side capped and scrolling; always glued to the field.
   void _handleOverlayLayout(PopperLayout layout) {
-    normalizeOverlayVerticalPosition(
-      floatingElement: panelElement,
-      layout: layout,
-    );
-    constrainOverlayHeightToViewport(
-      floatingElement: panelElement,
-      layout: layout,
-    );
+    placeAnchoredOverlay(floatingElement: panelElement, layout: layout);
   }
 
   void _bindDocumentListeners() {
@@ -1421,6 +1423,7 @@ class LiDateRangePickerComponent
   @override
   void ngOnDestroy() {
     _unbindDocumentListeners();
+    _resizeWatch.disconnect();
     _overlay?.dispose();
     _inicioChangeController.close();
     _fimChangeController.close();

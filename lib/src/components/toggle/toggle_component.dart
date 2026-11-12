@@ -120,11 +120,17 @@ class LiToggleComponent implements ControlValueAccessor<dynamic> {
 
   String? get falseDataValue => falseValue?.toString();
 
+  /// Classes of the `<label>` that wraps the switch. A `<label>` toggles its input on a
+  /// click anywhere inside it, and Bootstrap's `.form-check` is `display: block`, so
+  /// the clickable area used to be the whole row: a stray click next to the switch
+  /// flipped the value. `d-inline-block` keeps the area to the switch and its text
+  /// (the reverse layout keeps the block, since it aligns to the right).
   String get resolvedContainerClass => _joinClasses(<String>[
         'form-check',
         'form-switch',
         inline ? 'form-check-inline' : '',
         reverse ? 'form-check-reverse' : '',
+        !inline && !reverse ? 'd-inline-block' : '',
         containerClass,
       ]);
 

@@ -14,3 +14,18 @@
 	font-weight: 700;
 	margin-bottom: 0.5rem;
 }
+
+/* Caixa com rolagem do cartão "Perto do fim da tela": o campo fica no meio de
+   um conteúdo mais alto que a caixa, para conferir que o calendário acompanha
+   o campo quando só a caixa rola. */
+.date-picker-near-end-box {
+	height: 13rem;
+	overflow-y: auto;
+	padding: 0 0.25rem;
+	border: 1px dashed var(--border-color);
+	border-radius: var(--border-radius);
+}
+
+.date-picker-near-end-spacer {
+	height: 8rem;
+}

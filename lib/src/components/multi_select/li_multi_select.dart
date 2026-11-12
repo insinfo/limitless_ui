@@ -160,6 +160,10 @@ class LiMultiSelectComponent
   final LiFormDirective? _formDirective;
   PopperAnchoredOverlay? _overlay;
 
+  /// Re-runs the layout when the panel or the field changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
+
   @Input('disabled')
   bool isDisabled = false;
 
@@ -585,6 +589,7 @@ class LiMultiSelectComponent
     inputSearch?.value = '';
 
     _overlay?.stopAutoUpdate();
+    _resizeWatch.disconnect();
 
     if (wasOpen) {
       _markTouched();
@@ -632,6 +637,8 @@ class LiMultiSelectComponent
 
     dropdownOpen = true;
     _overlay?.startAutoUpdate();
+    _resizeWatch.observe(
+        <html.Element?>[dropdownButtonElement, dropdownContainerEle]);
     Future.delayed(const Duration(milliseconds: 20), () {
       _overlay?.update();
     });
@@ -693,6 +700,7 @@ class LiMultiSelectComponent
   void ngOnDestroy() {
     _destroyed = true;
     closeDropdown(markForCheck: false);
+    _resizeWatch.disconnect();
     _overlay?.dispose();
     disconnectValidationForm();
     _changeController.close();
@@ -860,37 +868,32 @@ class LiMultiSelectComponent
     return true;
   }
 
+  /// Puts the panel below the trigger, or above when it only fits there, or
+  /// on the roomier side; the list is what gets capped and scrolls.
+  ///
+  /// The list also has a minimum height (room for up to five options), which
+  /// CSS lets win over `max-height`: it is lowered to the cap when the cap is
+  /// tighter, and the panel is placed again with the height that results.
   void _handleOverlayLayout(PopperLayout layout) {
-    _normalizeOverlayVerticalPosition(layout);
+    _placeOverlay(layout);
 
-    final basePlacement = layout.placement.split('-').first;
-    final clippingTop = layout.clippingRect.top.toDouble();
-    final clippingBottom =
-        clippingTop + layout.clippingRect.height.toDouble() - 8;
-    final referenceTop = layout.referenceRect.top.toDouble();
-    final referenceBottom =
-        referenceTop + layout.referenceRect.height.toDouble();
-    // Compute height from viewport space only. Using the panel's current
-    // rendered size in this callback can cause Popper to relayout forever.
-    final availablePanelHeight = basePlacement == 'top'
-        ? referenceTop - clippingTop - 8
-        : clippingBottom - referenceBottom;
-    final availableListHeight = math.max(50.0, availablePanelHeight - 20.0);
-    final desiredMaxHeight = '${availableListHeight.floor()}px';
-    final desiredMinHeight =
-        '${math.min(minHeight.toDouble(), availableListHeight).floor()}px';
-
-    if (listElement.style.maxHeight != desiredMaxHeight ||
-        listElement.style.minHeight != desiredMinHeight) {
-      listElement.style.maxHeight = desiredMaxHeight;
+    final cap = double.tryParse(listElement.style.maxHeight.replaceAll('px', ''));
+    final minListHeight =
+        cap == null ? minHeight.toDouble() : math.min(minHeight.toDouble(), cap);
+    final desiredMinHeight = '${minListHeight.floor()}px';
+    if (listElement.style.minHeight != desiredMinHeight) {
       listElement.style.minHeight = desiredMinHeight;
+      _placeOverlay(layout);
     }
   }
 
-  void _normalizeOverlayVerticalPosition(PopperLayout layout) {
-    normalizeOverlayVerticalPosition(
+  /// One [placeAnchoredOverlay] pass with the list as the scroll element.
+  void _placeOverlay(PopperLayout layout) {
+    placeAnchoredOverlay(
       floatingElement: dropdownContainerEle,
       layout: layout,
+      scrollElement: listElement,
+      minScrollHeight: 50,
     );
   }
 

@@ -20,6 +20,111 @@ This is not a toy setup. The goal is a structure that can support real CRUD modu
 
 Important terminology note: in Dart servers, "multithreaded" usually means **multi-isolate**. Dart isolates do not share memory the way native OS threads do. That is the correct mental model for scalable Dart backend processes.
 
+## Anchored overlays near the edge of the window in `1.0.0-dev.50`
+
+### The defect
+
+In the Ciente "Solicitações - Pesquisa avançada" screen, the date fields are two `li-date-picker`s side by side, empty.
+With a short window (DevTools open, about 600px of viewport), the calendar did not fit below the field, flipped up
+and was drawn at the top of the window: away from the field, over the navbar, and cut, with the month row and its
+"<" ">" arrows above the edge, so only "Dom Seg Ter..." onwards showed. With room below (the "Fechamento" field, lower
+down, with a tall window) the panel opened below, whole and right. Resizing the window with the calendar open put it
+in the right place, glued above the field.
+
+### The cause
+
+The four pickers (date, date range, time, colour), the datatable column menu and `liDropdownMenuPosition` ran two
+helpers from popper's `onLayout`:
+
+1. `normalizeOverlayVerticalPosition` glued the panel to the side popper had picked, using the height popper measured:
+   above the field, `top = field.top - naturalHeight`;
+2. `constrainOverlayHeightToViewport` then capped `max-height` to the room on that side, **without moving the panel**.
+
+When the natural height is larger than the room above, step 1 gives a negative `top` (the header goes off the top of
+the window) and step 2 shrinks the panel from the bottom, so its lower edge ends `naturalHeight - roomAbove` pixels
+above the field. A browser test measured it with an empty picker, a field at 422px and a panel 414px tall: the panel
+went from -133.6 to 280.4, 142px away from the field.
+
+Why only the first open, and why resizing fixed it: the next layout measures the panel *already capped*, takes that
+height as the panel's, and glues it correctly. Opening runs two layouts, both measured before the cap, and nothing ran
+a third: popper's auto update follows scroll, resize and `childList`/`characterData` mutations, and opening an empty
+picker changes no text in the panel. With a value, the footer switches from "no date" to the date on open, that
+mutation runs a third layout and the defect disappears — which is why the existing test, with a value, never saw it.
+Popper itself measures a `display: none` panel correctly (it shows it invisibly for the measurement); the panel was
+not measured too early, it was capped too late.
+
+Two more things were wrong in the same place. Popper decides the side by the *smaller overflow* and then its `shift`
+clamps the panel into the viewport, so an overlay with no helper on top (`li-typeahead`, `li-dropdown-menu` and
+`liDropdown` in the body) was pushed over its own field when it fitted on neither side. And a change of size that is
+not a DOM mutation — a class, a stylesheet, a web font arriving — left the panel where it was.
+
+### The fix: `placeAnchoredOverlay` and `LiOverlayResizeWatch`
+
+`placeAnchoredOverlay` (in `lib/src/core/overlay_positioning.dart`, exported) replaces the two helpers and does, in
+one synchronous pass from `onLayout`, what Floating UI does with `flip` + `shift` + `size`:
+
+1. measures the natural height with the cap of the previous pass lifted (stylesheet limits, like the `15rem` of the
+   tag filter list, still count; the scroll position is kept). A panel still `display: none` is measured shown and
+   invisible, like popper does;
+2. picks the side: the preferred one (`bottom`, or `top` for a `dropup`/`top-*` placement) if it fits, the other if it
+   fits there, otherwise the side with more room;
+3. caps: the panel itself (`max-height`, `overflow-y: auto`), or, with `scrollElement`, only the list inside it, never
+   below `minScrollHeight`;
+4. measures again and writes `transform` so the edge touches the field: the top at `field.bottom + gap` or the bottom at
+   `field.top - gap`;
+5. keeps the panel horizontally over the field (popper's shift keeps it in the viewport; this is `limitShift`).
+
+It rewrites `data-popper-placement` when the side differs from popper's and returns a `LiOverlayPlacement` (`side`,
+`availableHeight`, `naturalHeight`, `capped`). Popper keeps deciding the horizontal alignment.
+
+`LiOverlayResizeWatch` puts a `ResizeObserver` on the field and the panel while open and runs the layout again on the
+next frame (one per frame, never inside the observer's own delivery, so the browser never reports a
+`ResizeObserver loop`). Switching to the month or year view, a stylesheet that makes the panel taller, or the panel
+appearing after the first layout all reposition it.
+
+`normalizeOverlayVerticalPosition` and `constrainOverlayHeightToViewport` stay public but deprecated (removal in
+`2.0.0`); the second now moves a capped panel above the field back down onto it, so code outside the library that pairs
+them no longer leaves the gap.
+
+### Which components had it, and what they do now
+
+| component | before | now |
+|---|---|---|
+| `li-date-picker`, `li-date-range-picker`, `li-time-picker` | header off the top and the panel away from the field on the first open (measured) | glued, capped, scrolling |
+| `li-color-picker`, datatable column menu, `liDropdownMenuPosition` | same code; hidden by a second layout (a text mutation or a frame-delayed update) | same helper |
+| `li-select`, `li-multi-select`, `li-tag-filter`, `li-treeview-select` | list cap from a fixed estimate of the chrome after popper picked the side; mostly hidden by the update 20ms after opening | the list is the `scrollElement` (minimum 50, 50, 64 and 160px) |
+| `li-typeahead` | popup clamped over the input being typed in (input at 20px, popup from 8 to 722px) | glued 4px away, the result list scrolls |
+| `li-dropdown-menu` in the body | menu clamped over its trigger (trigger at 422px, menu from 8 to 760px) | roomier side, cap on the menu; the items keep `menuMaxHeight` |
+| `liDropdown` with `container="body"` | wrapper clamped over the anchor | wrapper placed and capped; the menu's own viewport clamp is off in the body, so there is a single scrollbar |
+
+Not affected: `li-datatable-select` opens a modal; `li-popover` and `li-tooltip` are not anchored to a field and keep
+popper's `flip`/`shift`; `liDropdown` without `container="body"` keeps its previous behaviour.
+
+### Tests and example
+
+- `test/date_picker/li_date_picker_placement_test.dart`: opens below when it fits; opens above and glued when it does
+  not fit below, checked on the first frame with no resize; with no room on either side it takes the roomier side,
+  glued, capped, scrolling, the month header visible and hit at its centre by `elementFromPoint`; follows a change of
+  content and a change of size with no DOM mutation; follows a scroll container. The host is empty, as in the Ciente;
+  the "no room" case and the size case fail on `1.0.0-dev.49`.
+- `test/core/anchored_overlay_placement_test.dart`: the same two cases (no room on either side; near the top of the
+  window) for select, multi-select, time picker, date range picker, colour picker, typeahead, `li-dropdown-menu`,
+  `liDropdownMenuPosition` and `liDropdown` in the body. On `1.0.0-dev.49` the time picker, date range picker,
+  typeahead and `li-dropdown-menu` fail.
+- A viewport this short cannot be had by resizing the test window, so the field sits on a `position: fixed` strip
+  whose `top` the test sets, and a stylesheet makes the panel taller than either side when the content is not a long
+  list.
+- The date picker page of the example app has a "Near the bottom of the screen" card: two empty fields inside a box
+  with its own scroll.
+
+## `li-toggle` click area in `1.0.0-dev.50`
+
+The switch is an `<input>` inside a `<label class="form-check form-switch">`. A label toggles its input on a click
+anywhere inside it, and Bootstrap's `.form-check` is `display: block`, so the clickable area was the whole row: a
+stray click in the empty space beside the switch flipped the value. The label now also gets `d-inline-block`, which
+keeps the area to the switch and its text. The `inline` (`form-check-inline`) and `reverse` (`form-check-reverse`,
+right-aligned) layouts are left as they were. Covered in `test/forms/li_selection_controls_components_test.dart`.
+
 ## `li-select` keys and constant data sources in `1.0.0-dev.49`
 
 The label and value keys are component configuration, not data, so the usual form is a plain attribute:

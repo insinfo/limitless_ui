@@ -99,6 +99,10 @@ class LiTimePickerComponent
       StreamController<bool>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
+
+  /// Re-runs the layout when the panel or the field changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   StreamSubscription<html.MouseEvent>? _documentMouseMoveSubscription;
@@ -509,8 +513,10 @@ class LiTimePickerComponent
       resetOverlayViewportConstraints(floatingElement: panelElement);
       _overlay?.startAutoUpdate();
       _overlay?.update();
+      _resizeWatch.observe(<html.Element?>[triggerElement, panelElement]);
     } else {
       _overlay?.stopAutoUpdate();
+      _resizeWatch.disconnect();
     }
     _bindDocumentListeners();
 
@@ -724,6 +730,7 @@ class LiTimePickerComponent
     _unbindDocumentListeners();
     _stopClockDrag();
     _overlay?.stopAutoUpdate();
+    _resizeWatch.disconnect();
     isOpen = false;
     dialMode = TimePickerDialMode.hour;
     _syncInputTexts();
@@ -831,15 +838,10 @@ class LiTimePickerComponent
     );
   }
 
+  /// Puts the panel below the field, or above it when it only fits there, or
+  /// on the roomier side capped and scrolling; always glued to the field.
   void _handleOverlayLayout(PopperLayout layout) {
-    normalizeOverlayVerticalPosition(
-      floatingElement: panelElement,
-      layout: layout,
-    );
-    constrainOverlayHeightToViewport(
-      floatingElement: panelElement,
-      layout: layout,
-    );
+    placeAnchoredOverlay(floatingElement: panelElement, layout: layout);
   }
 
   void _bindDocumentListeners() {
@@ -1221,6 +1223,7 @@ class LiTimePickerComponent
   void ngOnDestroy() {
     _unbindDocumentListeners();
     _stopClockDrag();
+    _resizeWatch.disconnect();
     _overlay?.dispose();
     disconnectValidationForm();
     _valueChangeController.close();

@@ -104,6 +104,11 @@ class LiDropdownDirective implements OnInit, OnDestroy {
   LiDropdownAnchorDirective? _anchor;
   PopperController? _popperController;
   html.DivElement? _bodyContainer;
+
+  /// Re-runs the layout when the menu or the anchor changes size while the
+  /// menu is open in the body.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _popperController?.update());
   StreamSubscription<html.MouseEvent>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
 
@@ -580,9 +585,32 @@ class LiDropdownDirective implements OnInit, OnDestroy {
     _bodyContainer = null;
   }
 
+  /// Stops the popper and the size watch of the open menu.
   void _destroyPopper() {
+    _resizeWatch.disconnect();
     _popperController?.dispose();
     _popperController = null;
+  }
+
+  /// With `container="body"`, puts the wrapper on the side of the anchor
+  /// where the menu fits — or on the roomier side, capped and scrolling —
+  /// glued 2px to the anchor.
+  ///
+  /// Popper's own `shift` clamped a menu taller than the room on its side into
+  /// the viewport, over the anchor. The cap goes on the wrapper, not on the
+  /// menu, so it never fights [_applyViewportAdaptationStyles], which owns the
+  /// menu's inline `max-height` (and `menuMaxHeight`).
+  void _placeBodyContainer(PopperLayout layout) {
+    final wrapper = _bodyContainer;
+    if (wrapper == null) {
+      return;
+    }
+    placeAnchoredOverlay(
+      floatingElement: wrapper,
+      layout: layout,
+      preferredSide: _isDropup(_firstPlacement) ? 'top' : 'bottom',
+      gap: 2,
+    );
   }
 
   void _refreshExistingPositioning() {
@@ -630,6 +658,7 @@ class LiDropdownDirective implements OnInit, OnDestroy {
         observeMutations: false,
         layoutWriter: _writeStablePopperLayout,
         onLayout: (layout) {
+          _placeBodyContainer(layout);
           if (_adaptToViewport && _markPopperLayoutChanged(layout)) {
             _scheduleViewportAdaptation();
           }
@@ -637,6 +666,9 @@ class LiDropdownDirective implements OnInit, OnDestroy {
       ),
     );
     _popperController!.startAutoUpdate();
+    if (_bodyContainer != null) {
+      _resizeWatch.observe(<html.Element?>[anchor, _bodyContainer]);
+    }
     _popperController!.update();
     _applyPlacementClasses();
   }
@@ -835,8 +867,11 @@ class LiDropdownDirective implements OnInit, OnDestroy {
 
     final shouldClampWidth =
         _viewportWidthClamped || menuRect.width > maxViewportWidth + 0.5;
-    final shouldClampHeight =
-        _viewportHeightClamped || menuRect.height > maxViewportHeight + 0.5;
+    // In the body the wrapper is capped to the room beside the anchor by
+    // _placeBodyContainer; capping the menu to the whole viewport as well
+    // would only add a second scrollbar inside the first.
+    final shouldClampHeight = _bodyContainer == null &&
+        (_viewportHeightClamped || menuRect.height > maxViewportHeight + 0.5);
 
     final configuredMaxWidth = _menuMaxWidth;
     final configuredMaxHeight = _menuMaxHeight;

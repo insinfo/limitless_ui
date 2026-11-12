@@ -219,6 +219,16 @@ void main() {
 
     expect(host.toggleValue, 'paused');
   });
+
+  test('toggle label is inline-block, so a click beside it does not flip the value',
+      () async {
+    final fixture = await testBed.create();
+    await _settle(fixture);
+    final label = fixture.rootElement
+        .querySelector('li-toggle label[data-label="li_toggle"]') as html.Element;
+
+    expect(label.classes, containsAll(<String>['form-check', 'd-inline-block']));
+  });
 }
 
 Future<void> _settle(

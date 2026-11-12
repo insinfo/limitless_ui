@@ -76,6 +76,14 @@ await clickFirstVisible(page, '[data-label="li_dp_clear_trigger"]');''';
   DateTime? englishDate = DateTime(2026, 11, 4);
   DateTime? disabledDate = DateTime(2026, 3, 12);
   DateTime? badgeDate = DateTime(2026, 4, 17);
+
+  /// Início do intervalo do cartão "Perto do fim da tela". Começa vazio, como
+  /// na pesquisa do Ciente: um campo vazio não muda texto nenhum ao abrir, e
+  /// era esse o caso em que o calendário saía cortado no topo da janela.
+  DateTime? nearEndStart;
+
+  /// Fim do intervalo do cartão "Perto do fim da tela".
+  DateTime? nearEndEnd;
   final DateTime minDate = DateTime(2026, 3, 5);
   final DateTime maxDate = DateTime(2026, 3, 25);
 

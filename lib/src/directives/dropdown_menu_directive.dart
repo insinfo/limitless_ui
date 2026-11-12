@@ -14,6 +14,10 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
   Element? _triggerElement;
   Element? _menuElement;
   PopperAnchoredOverlay? _overlay;
+
+  /// Re-runs the layout when the menu or the trigger changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
   StreamSubscription<KeyboardEvent>? _documentKeyDownSS;
   bool _overlayRelayoutPending = false;
 
@@ -91,6 +95,7 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
       if (!shouldOpen) {
         _overlayRelayoutPending = false;
         _overlay?.stopAutoUpdate();
+        _resizeWatch.disconnect();
         resetOverlayViewportConstraints(floatingElement: dropdownMenu);
         return;
       }
@@ -98,6 +103,7 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
       if (_usesBodyOverlay) {
         _ensureOverlay();
         _overlay?.startAutoUpdate();
+        _resizeWatch.observe(<Element?>[_triggerElement, dropdownMenu]);
         _scheduleOverlayUpdate();
       } else {
         dropdownMenu.style.removeProperty('top');
@@ -119,6 +125,7 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     }
     _overlayRelayoutPending = false;
     _overlay?.stopAutoUpdate();
+    _resizeWatch.disconnect();
     _setExpanded(false);
   }
 
@@ -184,15 +191,15 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
     );
   }
 
+  /// Puts the menu on the side [xPlacement] asks for when it fits, on the
+  /// other one when only that fits, otherwise on the roomier side capped and
+  /// scrolling; always 4px from the trigger.
   void _handleOverlayLayout(PopperLayout layout) {
-    normalizeOverlayVerticalPosition(
+    placeAnchoredOverlay(
       floatingElement: _menuElement,
       layout: layout,
-      gap: 4,
-    );
-    constrainOverlayHeightToViewport(
-      floatingElement: _menuElement,
-      layout: layout,
+      preferredSide:
+          xPlacement.trim().toLowerCase().startsWith('top') ? 'top' : 'bottom',
       gap: 4,
     );
   }
@@ -223,6 +230,7 @@ class LiDropdownMenuPositionDirective implements AfterContentInit, OnDestroy {
   void ngOnDestroy() {
     globalBodyClickSS?.cancel();
     _documentKeyDownSS?.cancel();
+    _resizeWatch.disconnect();
     _overlay?.stopAutoUpdate();
     _overlay?.dispose();
   }

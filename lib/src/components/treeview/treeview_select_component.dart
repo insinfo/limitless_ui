@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:math' as math;
 
 import 'package:ngdart/angular.dart';
 import 'package:ngforms/ngforms.dart'
@@ -109,6 +108,10 @@ class LiTreeviewSelectComponent
       StreamController<bool>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
+
+  /// Re-runs the layout when the panel or the trigger changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   Timer? _searchDebounceTimer;
@@ -566,6 +569,7 @@ class LiTreeviewSelectComponent
     disconnectValidationForm();
     _searchDebounceTimer?.cancel();
     _unbindDocumentListeners();
+    _resizeWatch.disconnect();
     _overlay?.dispose();
     _changeController.close();
     _userChangeController.close();
@@ -627,6 +631,10 @@ class LiTreeviewSelectComponent
     dropdownOpen = true;
     _ensureOverlay();
     _overlay?.startAutoUpdate();
+    if (_overlay != null) {
+      _resizeWatch.observe(
+          <html.Element?>[triggerButtonElement, dropdownPanelElement]);
+    }
     _bindDocumentListeners();
 
     if (pageLoader != null && rootNodes.isEmpty && !loadingRootNodes) {
@@ -663,6 +671,7 @@ class LiTreeviewSelectComponent
 
     dropdownOpen = false;
     _overlay?.stopAutoUpdate();
+    _resizeWatch.disconnect();
     _unbindDocumentListeners();
 
     if (markTouched) {
@@ -1302,12 +1311,16 @@ class LiTreeviewSelectComponent
     );
   }
 
+  /// Puts the panel below the trigger, or above when it only fits there, or
+  /// on the roomier side; the tree is what gets capped and scrolls, never
+  /// shorter than 160px and never taller than its own 24rem.
   void _handleOverlayLayout(PopperLayout layout) {
-    normalizeOverlayVerticalPosition(
+    placeAnchoredOverlay(
       floatingElement: dropdownPanelElement,
       layout: layout,
+      scrollElement: scrollContainerElement,
+      minScrollHeight: 160,
     );
-    _syncPopupMaxHeight();
   }
 
   void _scheduleOverlayUpdate() {
@@ -1323,27 +1336,7 @@ class LiTreeviewSelectComponent
       }
 
       _overlay?.update();
-      _syncPopupMaxHeight();
     });
-  }
-
-  void _syncPopupMaxHeight() {
-    final popup = dropdownPanelElement;
-    final scroll = scrollContainerElement;
-    final trigger = triggerButtonElement;
-    if (popup == null || scroll == null || trigger == null) {
-      return;
-    }
-
-    final viewportHeight = html.window.innerHeight?.toDouble() ?? 900.0;
-    final triggerRect = trigger.getBoundingClientRect();
-    final popupRect = popup.getBoundingClientRect();
-    final opensUpward = popupRect.top < triggerRect.top;
-    final availableHeight = opensUpward
-        ? triggerRect.top - 16
-        : viewportHeight - triggerRect.bottom - 16;
-    final nextHeight = math.max(160.0, availableHeight - 8);
-    scroll.style.maxHeight = '${nextHeight.floor()}px';
   }
 
   void _bindDocumentListeners() {

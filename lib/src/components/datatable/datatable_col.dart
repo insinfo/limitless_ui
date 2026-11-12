@@ -162,16 +162,24 @@ class _DatatableResolvedActionLayout {
   });
 }
 
+/// The overflow menu of a column's actions, portalled to the body and kept
+/// glued to its toggle.
 class _DatatableActionFloatingOverlay {
   _DatatableActionFloatingOverlay._(
     this._controller, {
     required this.portal,
     required this.floatingElement,
+    required this.referenceElement,
   });
 
   final PopperController _controller;
   final PopperPortal portal;
   final Element floatingElement;
+  final Element referenceElement;
+
+  /// Re-runs the layout when the menu or its toggle changes size.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _controller.update());
 
   factory _DatatableActionFloatingOverlay.attach({
     required Element referenceElement,
@@ -208,29 +216,32 @@ class _DatatableActionFloatingOverlay {
       controller,
       portal: portal,
       floatingElement: floatingElement,
+      referenceElement: referenceElement,
     );
   }
 
   /// Keeps the menu anchored to the toggle and scrollable when the viewport
   /// is too short to show every action.
   static void _handleLayout(Element floatingElement, PopperLayout layout) {
-    normalizeOverlayVerticalPosition(
-      floatingElement: floatingElement,
-      layout: layout,
-      gap: 4,
-    );
-    constrainOverlayHeightToViewport(
+    placeAnchoredOverlay(
       floatingElement: floatingElement,
       layout: layout,
       gap: 4,
     );
   }
 
+  /// Recomputes the position once.
   Future<PopperLayout?> update() => _controller.update();
 
-  void startAutoUpdate() => _controller.startAutoUpdate();
+  /// Follows scroll, resize, DOM changes and size changes until [dispose].
+  void startAutoUpdate() {
+    _controller.startAutoUpdate();
+    _resizeWatch.observe(<Element?>[referenceElement, floatingElement]);
+  }
 
+  /// Stops following and hands the menu back to its original parent.
   void dispose() {
+    _resizeWatch.disconnect();
     resetOverlayViewportConstraints(floatingElement: floatingElement);
     _controller.dispose();
     portal.dispose();

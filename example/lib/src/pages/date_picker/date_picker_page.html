@@ -139,6 +139,29 @@
                   </div>
                 </div>
               </div>
+
+              <div class="col-lg-6">
+                <div class="card card-body h-100">
+                  <h6 class="mb-3">{{ isPortuguese ? 'Perto do fim da tela' : 'Near the bottom of the screen' }}</h6>
+                  <p class="text-muted mb-2">
+                    {{ isPortuguese
+                        ? 'Role a página até este cartão ficar no pé da janela (ou abra o DevTools embaixo) e abra um dos campos: sem espaço embaixo, o calendário abre em cima, colado no campo, com o mês e as setas à vista. Se não couber de nenhum lado, fica no lado com mais espaço, com rolagem interna. Role a caixa com o calendário aberto: ele acompanha o campo.'
+                        : 'Scroll the page until this card sits at the bottom of the window (or dock DevTools at the bottom) and open a field: with no room below, the calendar opens above, glued to the field, with the month and arrows in view. If it fits on neither side, it takes the roomier one and scrolls inside. Scroll the box with the calendar open: it follows the field.' }}
+                  </p>
+                  <div class="date-picker-near-end-box" data-label="demo_dp_near_end_box">
+                    <div class="date-picker-near-end-spacer"></div>
+                    <label class="form-label mb-1">{{ isPortuguese ? 'Fechamento' : 'Closed between' }}</label>
+                    <div class="d-flex align-items-center gap-1">
+                      <li-date-picker class="flex-fill" [(ngModel)]="nearEndStart"
+                          [placeholder]="isPortuguese ? 'Início' : 'Start'"></li-date-picker>
+                      <span>-</span>
+                      <li-date-picker class="flex-fill" [(ngModel)]="nearEndEnd"
+                          [placeholder]="isPortuguese ? 'Fim' : 'End'"></li-date-picker>
+                    </div>
+                    <div class="date-picker-near-end-spacer"></div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="alert alert-primary border-primary-subtle mt-4 mb-0 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">

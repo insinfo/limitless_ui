@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:html' as html;
 import '../../core/overlay_layers.dart';
-import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
@@ -74,6 +73,10 @@ class LiTagFilterComponent
   bool _destroyed = false;
 
   PopperAnchoredOverlay? _overlay;
+
+  /// Re-runs the layout when the panel or the field changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   ChangeFunction<List<dynamic>>? _onChange;
@@ -289,6 +292,8 @@ class LiTagFilterComponent
     _bindDocumentListeners();
     dropdownOpen = true;
     _overlay?.startAutoUpdate();
+    _resizeWatch.observe(
+        <html.Element?>[dropdownButtonElement, dropdownContainerElement]);
     Future<void>.delayed(const Duration(milliseconds: 20), () {
       _overlay?.update();
       if (searchable) {
@@ -307,6 +312,7 @@ class LiTagFilterComponent
     dropdownOpen = false;
     _overlayRelayoutPending = false;
     _overlay?.stopAutoUpdate();
+    _resizeWatch.disconnect();
     _unbindDocumentListeners();
     _resetSearch(markForCheck: false);
     _markTouched();
@@ -382,6 +388,7 @@ class LiTagFilterComponent
     _destroyed = true;
     _unbindDocumentListeners();
     closeDropdown();
+    _resizeWatch.disconnect();
     _overlay?.dispose();
     _valueChangeController.close();
     _modelChangeController.close();
@@ -665,36 +672,17 @@ class LiTagFilterComponent
     );
   }
 
+  /// Puts the panel below the trigger, or above when it only fits there, or
+  /// on the roomier side; the tag list is what gets capped and scrolls, never
+  /// shorter than 64px and never taller than its own 15rem.
   void _handleOverlayLayout(PopperLayout layout) {
-    normalizeOverlayVerticalPosition(
+    placeAnchoredOverlay(
       floatingElement: dropdownContainerElement,
       layout: layout,
+      scrollElement:
+          dropdownContainerElement?.querySelector('.li-tag-filter__list'),
+      minScrollHeight: 64,
     );
-
-    final listElement =
-        dropdownContainerElement?.querySelector('.li-tag-filter__list');
-    if (listElement == null) {
-      return;
-    }
-
-    final basePlacement = layout.placement.split('-').first;
-    final clippingTop = layout.clippingRect.top.toDouble();
-    final clippingBottom =
-        clippingTop + layout.clippingRect.height.toDouble() - 8;
-    final referenceTop = layout.referenceRect.top.toDouble();
-    final referenceBottom =
-        referenceTop + layout.referenceRect.height.toDouble();
-    final availablePanelHeight = basePlacement == 'top'
-        ? referenceTop - clippingTop - 8
-        : clippingBottom - referenceBottom;
-    const chromeHeight = 92.0;
-    final availableListHeight =
-        math.max(64.0, availablePanelHeight - chromeHeight);
-    final desiredMaxHeight = '${availableListHeight.floor()}px';
-
-    if (listElement.style.maxHeight != desiredMaxHeight) {
-      listElement.style.maxHeight = desiredMaxHeight;
-    }
   }
 
   void _bindDocumentListeners() {

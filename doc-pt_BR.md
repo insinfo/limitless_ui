@@ -156,6 +156,110 @@ Esse fluxo é o ponto de equilíbrio recomendado no projeto:
 - regras contextuais continuam na página ou no serviço;
 - erros de backend ainda podem sobrescrever a mensagem final do campo.
 
+## Painéis ancorados perto da borda da janela em `1.0.0-dev.50`
+
+### O defeito
+
+Na tela "Solicitações - Pesquisa avançada" do Ciente, os campos de data são dois `li-date-picker` lado a lado, vazios.
+Com a janela baixa (DevTools aberto, cerca de 600px de área útil), o calendário não cabia embaixo do campo, virava
+para cima e era desenhado no topo da janela: longe do campo, por cima da navbar e cortado, com a linha do mês e as
+setas "<" ">" acima da borda, aparecendo só a partir de "Dom Seg Ter...". Com espaço embaixo (o campo "Fechamento",
+mais abaixo, com a janela alta), o painel abria embaixo, inteiro e certo. Redimensionar a janela com o calendário
+aberto o punha no lugar, colado em cima do campo.
+
+### A causa
+
+Os quatro pickers (data, intervalo, hora e cor), o menu de coluna do datatable e o `liDropdownMenuPosition` rodavam
+dois helpers no `onLayout` do popper:
+
+1. `normalizeOverlayVerticalPosition` colava o painel no lado que o popper escolheu, com a altura que o popper mediu:
+   em cima do campo, `top = campo.top - alturaNatural`;
+2. `constrainOverlayHeightToViewport` depois limitava o `max-height` ao espaço daquele lado, **sem mover o painel**.
+
+Quando a altura natural é maior que o espaço em cima, o passo 1 dá um `top` negativo (o cabeçalho sai pelo alto da
+janela) e o passo 2 encolhe o painel por baixo, então a borda de baixo termina `alturaNatural - espaçoEmCima` pixels
+acima do campo. Um teste de navegador mediu com o picker vazio, o campo em 422px e o painel com 414px: o painel ia de
+-133,6 a 280,4, a 142px do campo.
+
+Por que só na primeira abertura, e por que o resize corrigia: o layout seguinte mede o painel *já limitado*, toma essa
+altura como a do painel e cola certo. Abrir roda dois layouts, os dois medidos antes do limite, e nada rodava um
+terceiro: o auto update do popper acompanha rolagem, resize e mutações `childList`/`characterData`, e abrir um picker
+vazio não muda texto nenhum no painel. Com valor, o rodapé troca de "nenhuma data" para a data ao abrir, essa mutação
+roda o terceiro layout e o defeito some — por isso o teste que já existia, com valor, nunca o viu. O popper mede certo
+um painel `display: none` (mostra invisível para medir); o painel não era medido cedo demais, era limitado tarde demais.
+
+Mais duas coisas estavam erradas no mesmo ponto. O popper decide o lado pelo *menor estouro* e depois o `shift` dele
+empurra o painel para dentro da viewport, então um overlay sem helper por cima (`li-typeahead`, `li-dropdown-menu` e
+`liDropdown` no body) ia parar em cima do próprio campo quando não cabia em nenhum lado. E uma mudança de tamanho que
+não é mutação de DOM — uma classe, uma folha de estilo, uma fonte web que chega — deixava o painel onde estava.
+
+### A correção: `placeAnchoredOverlay` e `LiOverlayResizeWatch`
+
+`placeAnchoredOverlay` (em `lib/src/core/overlay_positioning.dart`, exportado) substitui os dois helpers e faz, numa
+passada síncrona a partir do `onLayout`, o que o Floating UI faz com `flip` + `shift` + `size`:
+
+1. mede a altura natural com o limite da passada anterior retirado (o limite da folha de estilo, como os `15rem` da
+   lista do tag filter, continua valendo; a posição de rolagem é mantida). Painel ainda `display: none` é medido
+   visível e invisível, como o popper faz;
+2. escolhe o lado: o preferido (`bottom`, ou `top` num placement `dropup`/`top-*`) se couber, o outro se couber lá,
+   senão o lado com mais espaço;
+3. limita: o próprio painel (`max-height`, `overflow-y: auto`) ou, com `scrollElement`, só a lista dentro dele, nunca
+   abaixo de `minScrollHeight`;
+4. mede de novo e escreve o `transform` para a borda encostar no campo: o topo em `campo.bottom + gap` ou a base em
+   `campo.top - gap`;
+5. mantém o painel horizontalmente sobre o campo (o shift do popper o mantém na viewport; isto é o `limitShift`).
+
+Reescreve o `data-popper-placement` quando o lado difere do escolhido pelo popper e devolve um `LiOverlayPlacement`
+(`side`, `availableHeight`, `naturalHeight`, `capped`). O popper continua decidindo o alinhamento horizontal.
+
+`LiOverlayResizeWatch` põe um `ResizeObserver` no campo e no painel enquanto aberto e roda o layout de novo no frame
+seguinte (um por frame, nunca dentro da própria entrega do observer, para o navegador não reclamar de
+`ResizeObserver loop`). Trocar para a visão de mês ou ano, uma folha de estilo que aumenta o painel ou o painel
+aparecendo depois do primeiro layout, tudo reposiciona.
+
+`normalizeOverlayVerticalPosition` e `constrainOverlayHeightToViewport` continuam públicos, mas obsoletos (saem na
+`2.0.0`); o segundo agora desce até o campo um painel limitado em cima dele, então código fora da biblioteca que usa os
+dois juntos não fica mais com o vão.
+
+### Quem tinha o defeito, e o que fazem agora
+
+| componente | antes | agora |
+|---|---|---|
+| `li-date-picker`, `li-date-range-picker`, `li-time-picker` | cabeçalho cortado no topo e painel longe do campo na primeira abertura (medido) | colado, limitado, com rolagem |
+| `li-color-picker`, menu de coluna do datatable, `liDropdownMenuPosition` | mesmo código; escondido por um segundo layout (mutação de texto ou update num frame depois) | mesmo helper |
+| `li-select`, `li-multi-select`, `li-tag-filter`, `li-treeview-select` | limite da lista por uma estimativa fixa do resto do painel, depois de o popper escolher o lado; quase sempre escondido pelo update 20ms depois de abrir | a lista é o `scrollElement` (mínimo de 50, 50, 64 e 160px) |
+| `li-typeahead` | popup empurrado por cima do campo em que se digita (campo em 20px, popup de 8 a 722px) | colado a 4px, a lista de resultados rola |
+| `li-dropdown-menu` no body | menu empurrado por cima do gatilho (gatilho em 422px, menu de 8 a 760px) | lado com mais espaço, limite no menu; os itens mantêm o `menuMaxHeight` |
+| `liDropdown` com `container="body"` | invólucro empurrado por cima da âncora | invólucro posicionado e limitado; o limite à viewport do próprio menu fica desligado no body, para não haver duas barras de rolagem |
+
+Fora do defeito: o `li-datatable-select` abre um modal; `li-popover` e `li-tooltip` não ficam presos a um campo e
+continuam com o `flip`/`shift` do popper; o `liDropdown` sem `container="body"` segue como era.
+
+### Testes e exemplo
+
+- `test/date_picker/li_date_picker_placement_test.dart`: abre embaixo quando cabe; abre em cima e colado quando não
+  cabe embaixo, conferido no primeiro frame e sem resize; sem espaço nos dois lados, fica no lado com mais espaço,
+  colado, limitado, com rolagem, com o cabeçalho do mês visível e atingido no centro pelo `elementFromPoint`; acompanha
+  troca de conteúdo e mudança de tamanho sem mutação de DOM; acompanha a rolagem de um container. O host é vazio, como
+  no Ciente; o caso sem espaço e o de tamanho falham na `1.0.0-dev.49`.
+- `test/core/anchored_overlay_placement_test.dart`: os mesmos dois casos (sem espaço nos dois lados; perto do topo da
+  janela) para select, multi-select, time picker, date range picker, color picker, typeahead, `li-dropdown-menu`,
+  `liDropdownMenuPosition` e `liDropdown` no body. Na `1.0.0-dev.49` falham o time picker, o date range picker, o
+  typeahead e o `li-dropdown-menu`.
+- Uma viewport tão baixa não se consegue redimensionando a janela do teste, então o campo fica numa faixa
+  `position: fixed` cujo `top` o teste define, e uma folha de estilo deixa o painel mais alto que os dois lados quando
+  o conteúdo não é uma lista longa.
+- A página do date picker no app de exemplo ganhou o cartão "Perto do fim da tela": dois campos vazios dentro de uma
+  caixa com rolagem própria.
+
+## Área de clique do `li-toggle` em `1.0.0-dev.50`
+
+O switch é um `<input>` dentro de um `<label class="form-check form-switch">`. O label alterna o input com um clique
+em qualquer ponto dele, e o `.form-check` do Bootstrap é `display: block`, então a área clicável era a linha inteira:
+um clique perdido no espaço vazio ao lado do switch trocava o valor. O label agora recebe também `d-inline-block`, que
+restringe a área ao switch e ao texto. Os layouts `inline` (`form-check-inline`) e `reverse` (`form-check-reverse`,
+alinhado à direita) ficam como estavam. Coberto em `test/forms/li_selection_controls_components_test.dart`.
+
 ## Chaves do `li-select` e `dataSource` constante em `1.0.0-dev.49`
 
 As chaves de rótulo e de valor são configuração do componente, não dado, e o normal é passá-las como atributo fixo:

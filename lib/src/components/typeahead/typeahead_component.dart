@@ -108,6 +108,10 @@ class LiTypeaheadComponent
       StreamController<LiTypeaheadSelectItemEvent<dynamic>>.broadcast();
 
   PopperAnchoredOverlay? _overlay;
+
+  /// Re-runs the layout when the popup or the input changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
   StreamSubscription<html.Event>? _documentClickSubscription;
   StreamSubscription<html.KeyboardEvent>? _documentKeySubscription;
   Timer? _debounceTimer;
@@ -384,6 +388,7 @@ class LiTypeaheadComponent
     disconnectValidationForm();
     _debounceTimer?.cancel();
     _unbindDocumentListeners();
+    _resizeWatch.disconnect();
     _overlay?.dispose();
     _changeController.close();
     _userChangeController.close();
@@ -403,6 +408,7 @@ class LiTypeaheadComponent
     _asyncErrorMessage = null;
     _overlayRelayoutPending = false;
     _overlay?.stopAutoUpdate();
+    _resizeWatch.disconnect();
     _unbindDocumentListeners();
     _markForCheck();
   }
@@ -630,6 +636,7 @@ class LiTypeaheadComponent
       if (popupOpen) {
         _ensureOverlay();
         _overlay?.startAutoUpdate();
+        _watchOverlaySize();
         _bindDocumentListeners();
         _scheduleOverlayUpdate();
       }
@@ -654,6 +661,7 @@ class LiTypeaheadComponent
         if (markForCheck) {
           _ensureOverlay();
           _overlay?.startAutoUpdate();
+          _watchOverlaySize();
           _bindDocumentListeners();
           _scheduleOverlayUpdate();
           _markForCheck();
@@ -689,6 +697,7 @@ class LiTypeaheadComponent
     activeIndex = focusFirst ? 0 : -1;
     _ensureOverlay();
     _overlay?.startAutoUpdate();
+    _watchOverlaySize();
     _bindDocumentListeners();
     _scheduleOverlayUpdate();
     _showHintIfNeeded();
@@ -924,18 +933,42 @@ class LiTypeaheadComponent
         referenceElement: reference,
         baseHostZIndex: LiOverlayLayers.anchoredMenu,
       ),
-      popperOptions: const PopperOptions(
+      popperOptions: PopperOptions(
         placement: 'bottom-start',
-        fallbackPlacements: <String>[
+        fallbackPlacements: const <String>[
           'top-start',
           'bottom-end',
           'top-end',
         ],
         strategy: PopperStrategy.fixed,
-        padding: PopperInsets.all(8),
-        offset: PopperOffset(mainAxis: 4),
+        padding: const PopperInsets.all(8),
+        offset: const PopperOffset(mainAxis: 4),
         matchReferenceWidth: true,
+        onLayout: _handleOverlayLayout,
       ),
+    );
+  }
+
+  /// Watches the popup and the input for size changes while the popup is
+  /// open in the body (results arriving, a longer error message).
+  void _watchOverlaySize() {
+    if (_overlay == null) {
+      return;
+    }
+    _resizeWatch.observe(<html.Element?>[inputElement, popupElement]);
+  }
+
+  /// Puts the popup below the input, or above when it only fits there, or on
+  /// the roomier side, 4px from the input; the result list is what gets
+  /// capped and scrolls, never shorter than 120px. Never over the input being
+  /// typed in.
+  void _handleOverlayLayout(PopperLayout layout) {
+    placeAnchoredOverlay(
+      floatingElement: popupElement,
+      layout: layout,
+      gap: 4,
+      scrollElement: resultsListElement,
+      minScrollHeight: 120,
     );
   }
 
@@ -952,27 +985,7 @@ class LiTypeaheadComponent
       }
 
       _overlay?.update();
-      _syncPopupMaxHeight();
     });
-  }
-
-  void _syncPopupMaxHeight() {
-    final popup = popupElement;
-    final list = resultsListElement;
-    final input = inputElement;
-    if (popup == null || list == null || input == null) {
-      return;
-    }
-
-    final viewportHeight = html.window.innerHeight?.toDouble() ?? 900.0;
-    final inputRect = input.getBoundingClientRect();
-    final popupRect = popup.getBoundingClientRect();
-    final opensUpward = popupRect.top < inputRect.top;
-    final availableHeight = opensUpward
-        ? inputRect.top - 16
-        : viewportHeight - inputRect.bottom - 16;
-    final nextHeight = math.max(120.0, availableHeight - 8);
-    list.style.maxHeight = '${nextHeight.floor()}px';
   }
 
   void _bindDocumentListeners() {

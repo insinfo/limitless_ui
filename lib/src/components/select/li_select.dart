@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:math' as math;
 
 import 'package:essential_core/essential_core.dart';
 import 'package:ngdart/angular.dart';
@@ -112,6 +111,10 @@ class LiSelectComponent
   static int _nextSequence = 0;
 
   PopperAnchoredOverlay? _overlay;
+
+  /// Re-runs the layout when the panel or the field changes size while open.
+  late final LiOverlayResizeWatch _resizeWatch =
+      LiOverlayResizeWatch(() => _overlay?.update());
   final StreamController<dynamic> _changeController =
       StreamController<dynamic>();
   final StreamController<dynamic> _modelChangeController =
@@ -608,6 +611,7 @@ class LiSelectComponent
 
     inputSearch?.value = '';
     _overlay?.stopAutoUpdate();
+    _resizeWatch.disconnect();
     _unbindDocumentListeners();
 
     if (wasOpen) {
@@ -646,6 +650,8 @@ class LiSelectComponent
     currentIndex = currentValue == null ? -1 : options.indexOf(currentValue!);
     dropdownOpen = true;
     _overlay?.startAutoUpdate();
+    _resizeWatch.observe(
+        <html.Element?>[dropdownButtonElement, dropdownContainerEle]);
     _bindDocumentListeners();
 
     Future.delayed(const Duration(milliseconds: 20), () {
@@ -888,6 +894,7 @@ class LiSelectComponent
     _destroyed = true;
     _unbindDocumentListeners();
     closeDropdown(markForCheck: false);
+    _resizeWatch.disconnect();
     _overlay?.dispose();
     disconnectValidationForm();
     _changeController.close();
@@ -897,38 +904,15 @@ class LiSelectComponent
     _beforeOpenController.close();
   }
 
+  /// Puts the panel below the trigger, or above when it only fits there, or
+  /// on the roomier side; the list (not the search box) is what gets capped
+  /// and scrolls, never shorter than 50px.
   void _handleOverlayLayout(PopperLayout layout) {
-    _normalizeOverlayVerticalPosition(layout);
-
-    final basePlacement = layout.placement.split('-').first;
-    final clippingTop = layout.clippingRect.top.toDouble();
-    final clippingBottom =
-        clippingTop + layout.clippingRect.height.toDouble() - 8;
-    final referenceTop = layout.referenceRect.top.toDouble();
-    final referenceBottom =
-        referenceTop + layout.referenceRect.height.toDouble();
-    final availablePanelHeight = basePlacement == 'top'
-        ? referenceTop - clippingTop - 8
-        : clippingBottom - referenceBottom;
-    // Keep overlay sizing based on the viewport and trigger geometry only.
-    // Measuring the rendered dropdown here would feed Popper's auto-update
-    // loop and can cause layout thrashing in the browser.
-    const chromeHeight = 60.0;
-    final availableListHeight = math.max(
-      50.0,
-      availablePanelHeight - chromeHeight,
-    );
-    final desiredMaxHeight = '${availableListHeight.floor()}px';
-
-    if (listElement.style.maxHeight != desiredMaxHeight) {
-      listElement.style.maxHeight = desiredMaxHeight;
-    }
-  }
-
-  void _normalizeOverlayVerticalPosition(PopperLayout layout) {
-    normalizeOverlayVerticalPosition(
+    placeAnchoredOverlay(
       floatingElement: dropdownContainerEle,
       layout: layout,
+      scrollElement: listElement,
+      minScrollHeight: 50,
     );
   }
 
